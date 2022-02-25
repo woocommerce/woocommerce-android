@@ -313,7 +313,11 @@ class OrderCreationViewModel @Inject constructor(
             name = ORDER_CUSTOM_FEE_NAME,
             total = feeValue
         )
-        _orderDraft.update { it.copy(feesLines = listOf(newFee)) }
+        _orderDraft.update { draft ->
+            draft.feesLines.map { it.copy(name = null) }
+                .toMutableList().apply { add(newFee) }
+                .let { draft.copy(feesLines = it) }
+        }
     }
 
     fun onFeeRemoved() {
