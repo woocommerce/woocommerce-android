@@ -60,6 +60,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     private lateinit var selectedSite: SelectedSite
     private lateinit var dateUtils: DateUtils
     private lateinit var currencyFormatter: CurrencyFormatter
+    private lateinit var usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter
 
     private var revenueStatsModel: RevenueStatsUiModel? = null
     private var chartRevenueStats = mapOf<String, Double>()
@@ -105,12 +106,14 @@ class MyStoreStatsView @JvmOverloads constructor(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
         selectedSite: SelectedSite,
         dateUtils: DateUtils,
-        currencyFormatter: CurrencyFormatter
+        currencyFormatter: CurrencyFormatter,
+        usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter
     ) {
         this.selectedSite = selectedSite
         this.activeGranularity = period
         this.dateUtils = dateUtils
         this.currencyFormatter = currencyFormatter
+        this.usageTracksEventEmitter = usageTracksEventEmitter
 
         initChart()
 
@@ -214,6 +217,8 @@ class MyStoreStatsView @JvmOverloads constructor(
         fadeInLabelValue(visitorsValue, chartVisitorStats.values.sum().toString())
         updateDate(revenueStatsModel, activeGranularity)
         updateColorForStatsHeaderValues(R.color.color_on_surface_high)
+
+        usageTracksEventEmitter.interacted()
     }
 
     private fun updateColorForStatsHeaderValues(@ColorRes colorRes: Int) {
@@ -291,6 +296,8 @@ class MyStoreStatsView @JvmOverloads constructor(
         updateConversionRate()
         updateDateOnScrubbing(date, activeGranularity)
         updateColorForStatsHeaderValues(R.color.color_secondary)
+
+        usageTracksEventEmitter.interacted()
     }
 
     private fun updateVisitorsValue(date: String) {

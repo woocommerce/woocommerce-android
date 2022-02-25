@@ -60,6 +60,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var dateUtils: DateUtils
+    @Inject lateinit var usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter
 
     private var _binding: FragmentMyStoreBinding? = null
     private val binding get() = _binding!!
@@ -116,7 +117,8 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
             viewModel.activeStatsGranularity.value ?: DEFAULT_STATS_GRANULARITY,
             selectedSite,
             dateUtils,
-            currencyFormatter
+            currencyFormatter,
+            usageTracksEventEmitter
         )
 
         binding.myStoreTopPerformers.initView(selectedSite)
