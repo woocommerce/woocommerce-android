@@ -35,7 +35,6 @@ class ProductTypesBottomSheetViewModel @Inject constructor(
     fun loadProductTypes() {
         _productTypesBottomSheetList.value = if (navArgs.isAddProduct) {
             ProductTypeBottomSheetBuilder().buildBottomSheetList()
-                .filter { it.isEnabledForAddFlow }
         } else {
             ProductTypeBottomSheetBuilder().buildBottomSheetList()
         }
