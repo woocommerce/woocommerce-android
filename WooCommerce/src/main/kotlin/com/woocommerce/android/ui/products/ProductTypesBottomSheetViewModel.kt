@@ -37,6 +37,9 @@ class ProductTypesBottomSheetViewModel @Inject constructor(
             ProductTypeBottomSheetBuilder().buildBottomSheetList()
         } else {
             ProductTypeBottomSheetBuilder().buildBottomSheetList()
+                .filter { !(it.type == navArgs.currentProductType?.let{nonNullProductType -> ProductType.fromString(nonNullProductType)} &&
+                    it.isVirtual == navArgs.isCurrentProductVirtual)
+                }
         }
     }
 
@@ -74,7 +77,6 @@ class ProductTypesBottomSheetViewModel @Inject constructor(
         @StringRes val titleResource: Int,
         @StringRes val descResource: Int,
         @DrawableRes val iconResource: Int,
-        val isEnabledForAddFlow: Boolean = true,
         val isVirtual: Boolean = false
     ) : Parcelable
 }
