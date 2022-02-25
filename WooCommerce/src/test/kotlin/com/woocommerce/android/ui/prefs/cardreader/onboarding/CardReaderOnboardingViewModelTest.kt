@@ -152,7 +152,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given wcpay not not supported in coutnry, when learn more clicked, then app shows learn more section`() =
+    fun `given wcpay not supported in country, when learn more clicked, then app shows learn more section`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(
