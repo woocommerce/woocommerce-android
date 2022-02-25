@@ -88,7 +88,7 @@ Language: nl
     <string name="order_creation_new_customer_add_different_shipping_address">Voeg een ander verzendadres toe</string>
     <string name="order_creation_product_instock">Op voorraad</string>
     <string name="order_creation_product_stock_quantity">%s op voorraad</string>
-    <string name="order_creation_new_customer">Nieuwe klant</string>
+    <string name="order_creation_customer_details">Nieuwe klant</string>
     <string name="order_creation_add_products">Product toevoegen</string>
     <string name="order_creation_products">Producten</string>
     <string name="order_creation_add_customer">Klant toevoegen</string>

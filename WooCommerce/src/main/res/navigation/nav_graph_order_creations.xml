@@ -141,7 +141,12 @@
         android:id="@+id/orderCreationShippingFragment"
         android:name="com.woocommerce.android.ui.orders.creation.shipping.OrderCreationShippingFragment"
         android:label="OrderCreationShippingFragment"
-        tools:layout="@layout/fragment_order_creation_shipping" />
+        tools:layout="@layout/fragment_order_creation_shipping" >
+        <argument
+            android:name="currentShippingLine"
+            app:nullable="true"
+            app:argType="com.woocommerce.android.model.Order$ShippingLine" />
+    </fragment>
     <fragment
         android:id="@+id/orderCreationEditFeeFragment"
         android:name="com.woocommerce.android.ui.orders.creation.fees.OrderCreationEditFeeFragment"

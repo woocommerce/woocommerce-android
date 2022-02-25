@@ -205,13 +205,17 @@ class ConnectionManagerTest {
                 on { locationId }.thenReturn("location_id")
                 on { cardReader }.thenReturn(reader)
             }
+            val message = "error_message"
+            val exception: TerminalException = mock {
+                on { errorMessage }.thenReturn(message)
+            }
             whenever(terminalWrapper.connectToReader(any(), any(), any(), any())).thenAnswer {
-                (it.arguments[2] as ReaderCallback).onFailure(mock())
+                (it.arguments[2] as ReaderCallback).onFailure(exception)
             }
 
             connectionManager.startConnectionToReader(cardReader, "location_id")
 
-            verify(terminalListenerImpl).updateReaderStatus(CardReaderStatus.NotConnected)
+            verify(terminalListenerImpl).updateReaderStatus(CardReaderStatus.NotConnected(message))
         }
 
     @Test
@@ -242,7 +246,7 @@ class ConnectionManagerTest {
 
         connectionManager.disconnectReader()
 
-        verify(terminalListenerImpl).updateReaderStatus(CardReaderStatus.NotConnected)
+        verify(terminalListenerImpl).updateReaderStatus(CardReaderStatus.NotConnected())
     }
 
     @Test
@@ -275,6 +279,6 @@ class ConnectionManagerTest {
 
         connectionManager.disconnectReader()
 
-        verify(terminalListenerImpl).updateReaderStatus(CardReaderStatus.NotConnected)
+        verify(terminalListenerImpl).updateReaderStatus(CardReaderStatus.NotConnected())
     }
 }

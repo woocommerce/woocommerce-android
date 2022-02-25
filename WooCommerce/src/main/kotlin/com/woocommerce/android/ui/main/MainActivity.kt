@@ -9,6 +9,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
@@ -108,6 +110,10 @@ class MainActivity :
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var toolbar: Toolbar
+
+    private val sitePickerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        handleSitePickerResult(it)
+    }
 
     private val appBarOffsetListener by lazy {
         AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset ->
@@ -615,6 +621,18 @@ class MainActivity :
         initFragment(null)
     }
 
+    fun startSitePicker() {
+        val sitePickerIntent = Intent(this, SitePickerActivity::class.java)
+        sitePickerLauncher.launch(sitePickerIntent)
+    }
+
+    private fun handleSitePickerResult(activityResult: ActivityResult) {
+        if (activityResult.resultCode == RESULT_OK) {
+            presenter.selectedSiteChanged(selectedSite.get())
+            restart()
+        }
+    }
+
     /**
      * Called when the user switches sites - restarts the activity so all fragments and child fragments are reset
      */
@@ -810,7 +828,7 @@ class MainActivity :
             binding.bottomNav.active(MORE.position)
         }
 
-        val action = MoreMenuFragmentDirections.actionMoreMenuFragmentToReviewDetailFragment(
+        val action = NavGraphMainDirections.actionGlobalReviewDetailFragment(
             remoteReviewId = remoteReviewId,
             tempStatus = tempStatus,
             launchedFromNotification = launchedFromNotification,

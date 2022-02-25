@@ -5,14 +5,17 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationShippingBinding
+import com.woocommerce.android.extensions.drop
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
+import com.woocommerce.android.ui.orders.creation.shipping.OrderCreationShippingViewModel.RemoveShipping
 import com.woocommerce.android.ui.orders.creation.shipping.OrderCreationShippingViewModel.UpdateShipping
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.hilt.android.AndroidEntryPoint
@@ -21,7 +24,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class OrderCreationShippingFragment : BaseFragment(R.layout.fragment_order_creation_shipping) {
     private val viewModel: OrderCreationShippingViewModel by viewModels()
-    private val sharedViewModel: OrderCreationViewModel by navGraphViewModels(R.id.nav_graph_order_creations)
+    private val sharedViewModel: OrderCreationViewModel by hiltNavGraphViewModels(R.id.nav_graph_order_creations)
 
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
@@ -53,11 +56,14 @@ class OrderCreationShippingFragment : BaseFragment(R.layout.fragment_order_creat
             decimals = viewModel.currencyDecimals,
             currencyFormatter = currencyFormatter
         )
-        amountEditText.value.observe(viewLifecycleOwner) { amount ->
-            viewModel.onAmountEdited(amount)
+        amountEditText.value.drop(1).observe(viewLifecycleOwner) {
+            viewModel.onAmountEdited(it)
         }
         nameEditText.setOnTextChangedListener {
             viewModel.onNameEdited(it?.toString().orEmpty())
+        }
+        removeShippingButton.setOnClickListener {
+            viewModel.onRemoveShippingClicked()
         }
     }
 
@@ -69,11 +75,18 @@ class OrderCreationShippingFragment : BaseFragment(R.layout.fragment_order_creat
             new.name?.takeIfNotEqualTo(old?.name) { name ->
                 binding.nameEditText.setTextIfDifferent(name)
             }
+            new.isEditFlow.takeIfNotEqualTo(old?.isEditFlow) { isEditFlow ->
+                binding.removeShippingButton.isVisible = isEditFlow
+            }
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is UpdateShipping -> {
                     sharedViewModel.onShippingEdited(event.amount, event.name)
+                    findNavController().navigateUp()
+                }
+                is RemoveShipping -> {
+                    sharedViewModel.onShippingRemoved()
                     findNavController().navigateUp()
                 }
             }

@@ -88,7 +88,7 @@ Language: de
     <string name="order_creation_new_customer_add_different_shipping_address">Abweichende Versandadresse hinzufügen</string>
     <string name="order_creation_product_instock">Vorrätig</string>
     <string name="order_creation_product_stock_quantity">%s vorrätig</string>
-    <string name="order_creation_new_customer">Neukunde</string>
+    <string name="order_creation_customer_details">Neukunde</string>
     <string name="order_creation_add_products">Produkt hinzufügen</string>
     <string name="order_creation_products">Produkte</string>
     <string name="order_creation_add_customer">Kunde hinzufügen</string>
