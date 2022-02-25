@@ -259,11 +259,15 @@ private class CurrencyEditText @JvmOverloads constructor(
             if (text != null) {
                 val cleanedText = text.trimStart('-').trimStart('0')
                 if (cleanedText.isNotEmpty()) {
-                    val updatedText = if (text.startsWith('-')) "-" else "" + cleanedText
+                    val updatedText = "${if (text.startsWith('-')) "-" else ""}$cleanedText"
                     val currentSelectionPosition = selectionStart
                     setText(updatedText)
 
-                    setSelection(max(0, currentSelectionPosition + updatedText.length - text.length))
+                    try {
+                        setSelection(currentSelectionPosition + updatedText.length - text.length)
+                    } catch (e: IndexOutOfBoundsException) {
+                        // Ignore
+                    }
                 }
             }
 
