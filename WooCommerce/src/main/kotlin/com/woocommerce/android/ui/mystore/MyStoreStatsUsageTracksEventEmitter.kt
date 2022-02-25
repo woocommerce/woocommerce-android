@@ -7,6 +7,6 @@ import javax.inject.Inject
 @ActivityRetainedScoped
 class MyStoreStatsUsageTracksEventEmitter @Inject constructor() {
     fun interacted(at: Date = Date()) {
-        println("$this interacted at $at")
+        println("🦀 $this interacted at $at")
     }
 }

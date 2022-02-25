@@ -255,6 +255,7 @@ class MyStoreViewModel @Inject constructor(
     private fun onTopPerformerSelected(productId: Long) {
         triggerEvent(MyStoreEvent.OpenTopPerformer(productId))
         AnalyticsTracker.track(AnalyticsTracker.Stat.TOP_EARNER_PRODUCT_TAPPED)
+        usageTracksEventEmitter.interacted()
     }
 
     private fun WCRevenueStatsModel.toStoreStatsUiModel(): RevenueStatsUiModel {
