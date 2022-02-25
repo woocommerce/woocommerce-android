@@ -50,7 +50,7 @@ class ProductTypesBottomSheetViewModel @Inject constructor(
 
     fun onProductTypeSelected(productTypeUiItem: ProductTypesBottomSheetUiItem) {
         if (navArgs.isAddProduct) {
-            val properties = mapOf("product_type" to productTypeUiItem.type.value.toLowerCase(ROOT))
+            val properties = mapOf("product_type" to productTypeUiItem.type.value.lowercase(ROOT))
             AnalyticsTracker.track(Stat.ADD_PRODUCT_PRODUCT_TYPE_SELECTED, properties)
 
             saveUserSelection(productTypeUiItem)
