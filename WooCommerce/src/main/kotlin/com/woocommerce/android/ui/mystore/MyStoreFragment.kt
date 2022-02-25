@@ -78,6 +78,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         get() = activity as? MainNavigationRouter
 
     private var isEmptyViewVisible: Boolean = false
+    private var wasPreviouslyStopped = false
 
     private val tabSelectedListener = object : TabLayout.OnTabSelectedListener {
         override fun onTabSelected(tab: TabLayout.Tab) {
@@ -246,9 +247,16 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         super.onResume()
         handleFeedbackRequestCardState()
         AnalyticsTracker.trackViewShown(this)
+
+        // Avoid executing interacted() on first load. Only when the user navigated away from the fragment.
+        if (wasPreviouslyStopped) {
+            usageTracksEventEmitter.interacted()
+            wasPreviouslyStopped = false
+        }
     }
 
     override fun onStop() {
+        wasPreviouslyStopped = true
         errorSnackbar?.dismiss()
         super.onStop()
     }
