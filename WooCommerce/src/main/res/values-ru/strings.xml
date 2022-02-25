@@ -88,7 +88,7 @@ Language: ru
     <string name="order_creation_new_customer_add_different_shipping_address">Добавить другой адрес доставки</string>
     <string name="order_creation_product_instock">В наличии</string>
     <string name="order_creation_product_stock_quantity">%s в наличии</string>
-    <string name="order_creation_new_customer">Новый клиент</string>
+    <string name="order_creation_customer_details">Новый клиент</string>
     <string name="order_creation_add_products">Добавить товар</string>
     <string name="order_creation_products">Товары</string>
     <string name="order_creation_add_customer">Добавить клиента</string>

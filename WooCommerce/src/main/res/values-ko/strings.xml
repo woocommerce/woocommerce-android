@@ -88,7 +88,7 @@ Language: ko_KR
     <string name="order_creation_new_customer_add_different_shipping_address">다른 배송 주소 추가</string>
     <string name="order_creation_product_instock">재고 있음</string>
     <string name="order_creation_product_stock_quantity">%s 재고 있음</string>
-    <string name="order_creation_new_customer">신규 고객</string>
+    <string name="order_creation_customer_details">신규 고객</string>
     <string name="order_creation_add_products">상품 추가</string>
     <string name="order_creation_products">상품</string>
     <string name="order_creation_add_customer">고객 추가</string>
