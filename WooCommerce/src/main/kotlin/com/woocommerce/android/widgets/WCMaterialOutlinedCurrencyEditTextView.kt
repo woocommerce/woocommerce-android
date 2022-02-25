@@ -10,6 +10,7 @@ import android.util.TypedValue
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.annotation.AttrRes
+import androidx.core.content.res.use
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.android.material.textfield.TextInputEditText
