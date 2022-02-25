@@ -11,13 +11,11 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.*
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.*
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateInProgress
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
-import com.woocommerce.android.ui.prefs.cardreader.InPersonPaymentsCanadaFeatureFlag
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.*
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.*
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingChecker
@@ -37,8 +35,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 @HiltViewModel
@@ -51,9 +47,6 @@ class CardReaderConnectViewModel @Inject constructor(
     private val locationRepository: CardReaderLocationRepository,
     private val selectedSite: SelectedSite,
     private val cardReaderManager: CardReaderManager,
-    private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag,
-    private val wooStore: WooCommerceStore,
-    private val cardReaderConfigFactory: CardReaderConfigFactory,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderConnectDialogFragmentArgs by savedState.navArgs()
 
@@ -213,7 +206,7 @@ class CardReaderConnectViewModel @Inject constructor(
                 is CardReaderOnboardingState.OnboardingCompleted -> {
                     triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
                 }
-                else -> triggerEvent(CardReaderConnectEvent.NavigateToOnboardingFlow)
+                else -> triggerEvent(NavigateToOnboardingFlow)
             }
         }
     }
@@ -227,7 +220,7 @@ class CardReaderConnectViewModel @Inject constructor(
                 .discoverReaders(
                     isSimulated = BuildConfig.USE_SIMULATED_READER,
                     cardReaderTypesToDiscover = CardReaderTypesToDiscover.SpecificReaders(
-                        getSupportedReaders()
+                        listOf(SpecificReader.Chipper2X, SpecificReader.StripeM2, SpecificReader.WisePade3)
                     )
                 )
                 .flowOn(dispatchers.io)
@@ -237,26 +230,15 @@ class CardReaderConnectViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getSupportedReaders() =
-        if (inPersonPaymentsCanadaFeatureFlag.isEnabled()) {
-            cardReaderConfigFactory.getCardReaderConfigFor(
-                getStoreCountryCode()
-            ).allReaders
-        } else {
-            cardReaderConfigFactory.getCardReaderConfigFor(
-                getStoreCountryCode()
-            ).allReaders.filter { specificReader ->
-                specificReader != SpecificReader.WisePade3
-            }
-        }
-
     private suspend fun listenToConnectionStatus() {
         cardReaderManager.readerStatus.collect { status ->
             when (status) {
                 is CardReaderStatus.Connected -> onReaderConnected(status.cardReader)
-                CardReaderStatus.NotConnected -> {
-                    if (connectionStarted) onReaderConnectionFailed()
-                    else Unit
+                is CardReaderStatus.NotConnected -> {
+                    if (connectionStarted) {
+                        status.errorMessage?.let { triggerEvent(ShowToastString(it)) }
+                        onReaderConnectionFailed()
+                    } else Unit
                 }
                 CardReaderStatus.Connecting -> {
                     connectionStarted = true
@@ -304,7 +286,7 @@ class CardReaderConnectViewModel @Inject constructor(
     fun onUpdateReaderResult(updateResult: CardReaderUpdateViewModel.UpdateResult) {
         when (updateResult) {
             CardReaderUpdateViewModel.UpdateResult.FAILED -> {
-                triggerEvent(CardReaderConnectEvent.ShowToast(R.string.card_reader_detail_connected_update_failed))
+                triggerEvent(ShowToast(R.string.card_reader_detail_connected_update_failed))
                 exitFlow(connected = false)
             }
             CardReaderUpdateViewModel.UpdateResult.SUCCESS -> {
@@ -420,9 +402,9 @@ class CardReaderConnectViewModel @Inject constructor(
         result: CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress
     ) {
         if (selectedSite.getIfExists()?.isWPCom == true || selectedSite.getIfExists()?.isWPComAtomic == true) {
-            triggerEvent(CardReaderConnectEvent.OpenWPComWebView(result.url))
+            triggerEvent(OpenWPComWebView(result.url))
         } else {
-            triggerEvent(CardReaderConnectEvent.OpenGenericWebView(result.url))
+            triggerEvent(OpenGenericWebView(result.url))
             exitFlow(connected = false)
         }
     }
@@ -468,15 +450,7 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     private fun trackLocationFailureFetching(errorDescription: String?) {
-        tracker.trackFetchingLocationFailed(errorDescription,)
-    }
-
-    private suspend fun getStoreCountryCode(): String? {
-        return withContext(dispatchers.io) {
-            wooStore.getStoreCountryCode(selectedSite.get()) ?: null.also {
-                WooLog.e(WooLog.T.CARD_READER, "Store's country code not found.")
-            }
-        }
+        tracker.trackFetchingLocationFailed(errorDescription)
     }
 
     sealed class ListItemViewState {

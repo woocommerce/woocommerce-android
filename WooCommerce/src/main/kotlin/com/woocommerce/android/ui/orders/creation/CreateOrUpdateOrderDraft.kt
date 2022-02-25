@@ -71,6 +71,10 @@ class CreateOrUpdateOrderDraft @Inject constructor(
             }
 
         val hasSameShippingLines = old.shippingLines
+            .filter {
+                // Check only non-removed shipping lines to avoid circular update when removing
+                it.methodId != null
+            }
             .areSameAs(new.shippingLines) { newLine ->
                 this.methodId == newLine.methodId &&
                     this.methodTitle == newLine.methodTitle &&

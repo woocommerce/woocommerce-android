@@ -257,7 +257,7 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
         }
     }
 
-    override fun getFragmentTitle() = getString(R.string.order_creation_new_customer)
+    override fun getFragmentTitle() = getString(R.string.order_creation_customer_details)
 
     override fun onDestroyView() {
         super.onDestroyView()
