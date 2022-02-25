@@ -96,6 +96,9 @@ class OrderCreationFeeFragment :
             new.shouldDisplayRemoveFeeButton.takeIfNotEqualTo(old?.shouldDisplayRemoveFeeButton) {
                 removeFeeButton.isVisible = it
             }
+            new.shouldDisplayPercentageSwitch.takeIfNotEqualTo(old?.shouldDisplayPercentageSwitch) {
+                feeTypeSwitch.isVisible = it
+            }
         }
     }
 
