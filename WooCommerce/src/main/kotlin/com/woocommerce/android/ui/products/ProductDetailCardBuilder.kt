@@ -641,6 +641,7 @@ class ProductDetailCardBuilder(
                 }
             )
         }
+
     private fun Product.warning(): ProductProperty? {
         val variations = variationRepository.getProductVariationList(this.remoteId)
 

@@ -37,8 +37,13 @@ class ProductTypesBottomSheetViewModel @Inject constructor(
             ProductTypeBottomSheetBuilder().buildBottomSheetList()
         } else {
             ProductTypeBottomSheetBuilder().buildBottomSheetList()
-                .filter { !(it.type == navArgs.currentProductType?.let{nonNullProductType -> ProductType.fromString(nonNullProductType)} &&
-                    it.isVirtual == navArgs.isCurrentProductVirtual)
+                .filter {
+                    !(it.type == navArgs.currentProductType?.let { nonNullProductType ->
+                        ProductType.fromString(
+                            nonNullProductType
+                        )
+                    } &&
+                        it.isVirtual == navArgs.isCurrentProductVirtual)
                 }
         }
     }
