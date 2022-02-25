@@ -1,18 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-02-02 13:54:03+0000
+Translation-Revision-Date: 2022-02-15 18:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="card_reader_onboarding_both_plugins_activated_refresh_button">Nach dem Update aktualisieren</string>
+    <string name="card_reader_onboarding_both_plugins_activated_open_store_admin_label">Plugins verwalten</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_two">WooCommerce-Zahlungen</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_one">WooCommerce Stripe-Gateway</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">Persönliche Zahlungen funktionieren nur, wenn eines der folgenden Plugins aktiviert ist. Bitte setze dich mit einem Website-Administrator in Verbindung, um eines dieser Plugins zu deaktivieren und fortzufahren:</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_admin">Persönliche Zahlungen funktionieren nur, wenn eines der folgenden Plugins aktiviert ist. Deaktiviere eines der folgenden Plugins, um fortzufahren:</string>
+    <string name="card_reader_onboarding_both_plugins_activated_header">In Konflikt stehende Zahlungsplugins entdeckt</string>
+    <string name="card_reader_wisepad_3_manual_card_reader">Handbuch für Kartenlesegerät WisePad 3</string>
+    <string name="order_creation_price_calculation_failed">Aktualisierung des Preises nicht möglich</string>
+    <string name="order_creation_payment_tax">Steuern</string>
+    <string name="order_creation_payment_tax_hint">Steuern werden anhand deiner Shop-Einstellungen automatisch berechnet.</string>
+    <string name="exclusive_or">oder</string>
     <string name="settings_install_jetpack">Jetpack installieren</string>
     <string name="card_reader_onboarding_account_rejected_header">„Persönliche Zahlungen“ ist derzeit nicht verfügbar</string>
     <string name="order_creation_success_snackbar">Bestellung erstellt</string>
     <string name="order_creation_failure_snackbar">Erstellen der Bestellung fehlgeschlagen</string>
     <string name="order_creation_loading_dialog_message">Bitte warten …</string>
     <string name="order_creation_loading_dialog_title">Deine Bestellung wird erstellt</string>
-    <string name="order_creation_payment_tax_hint">Gesamtbetrag ohne Steuern. Steuern werden anhand deiner Shop-Einstellungen automatisch berechnet.</string>
     <string name="order_creation_payment_order_total">Bestellung Gesamtsumme</string>
     <string name="order_creation_payment_products_total">Produkte insgesamt</string>
     <string name="order_creation_payment">Zahlung</string>
@@ -77,7 +88,7 @@ Language: de
     <string name="order_creation_new_customer_add_different_shipping_address">Abweichende Versandadresse hinzufügen</string>
     <string name="order_creation_product_instock">Vorrätig</string>
     <string name="order_creation_product_stock_quantity">%s vorrätig</string>
-    <string name="order_creation_new_customer">Neukunde</string>
+    <string name="order_creation_customer_details">Neukunde</string>
     <string name="order_creation_add_products">Produkt hinzufügen</string>
     <string name="order_creation_products">Produkte</string>
     <string name="order_creation_add_customer">Kunde hinzufügen</string>

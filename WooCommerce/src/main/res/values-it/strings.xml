@@ -1,18 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-02-02 11:54:03+0000
+Translation-Revision-Date: 2022-02-15 18:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="card_reader_onboarding_both_plugins_activated_refresh_button">Ricarica dopo l\'aggiornamento</string>
+    <string name="card_reader_onboarding_both_plugins_activated_open_store_admin_label">Gestisci i plugin</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_two">WooCommerce Payments</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_one">Gateway stripe WooCommerce</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">I pagamenti di persona funzioneranno solo con uno dei seguenti plugin attivato. Per continuare, contatta un amministratore del sito per disattivare uno di questi plugin:</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_admin">I pagamenti di persona funzioneranno solo con uno dei seguenti plugin attivato. Per continuare disattiva uno di questi plugin:</string>
+    <string name="card_reader_onboarding_both_plugins_activated_header">Conflitto con i plugin di pagamento rilevato</string>
+    <string name="card_reader_wisepad_3_manual_card_reader">Manuale del lettore di schede WisePad 3</string>
+    <string name="order_creation_price_calculation_failed">Impossibile aggiornare i prezzi</string>
+    <string name="order_creation_payment_tax">Imposte</string>
+    <string name="order_creation_payment_tax_hint">Le imposte verranno calcolate automaticamente in base alle impostazioni del negozio.</string>
+    <string name="exclusive_or">oppure</string>
     <string name="settings_install_jetpack">Installa Jetpack</string>
     <string name="card_reader_onboarding_account_rejected_header">Pagamenti di persona attualmente non disponibile</string>
     <string name="order_creation_success_snackbar">Ordine creato</string>
     <string name="order_creation_failure_snackbar">Creazione dell\'ordine non riuscita</string>
     <string name="order_creation_loading_dialog_message">Attendi…</string>
     <string name="order_creation_loading_dialog_title">Creazione del tuo ordine</string>
-    <string name="order_creation_payment_tax_hint">Totale escluse le imposte. Le imposte verranno calcolate automaticamente in base alle impostazioni del negozio.</string>
     <string name="order_creation_payment_order_total">Totale ordine</string>
     <string name="order_creation_payment_products_total">Totale prodotti</string>
     <string name="order_creation_payment">Pagamento</string>
@@ -77,7 +88,7 @@ Language: it
     <string name="order_creation_new_customer_add_different_shipping_address">Aggiungi un indirizzo di spedizione differente</string>
     <string name="order_creation_product_instock">In magazzino</string>
     <string name="order_creation_product_stock_quantity">%s in magazzino</string>
-    <string name="order_creation_new_customer">Nuovo cliente</string>
+    <string name="order_creation_customer_details">Nuovo cliente</string>
     <string name="order_creation_add_products">Aggiungi prodotto</string>
     <string name="order_creation_products">Prodotti</string>
     <string name="order_creation_add_customer">Aggiungi il cliente</string>

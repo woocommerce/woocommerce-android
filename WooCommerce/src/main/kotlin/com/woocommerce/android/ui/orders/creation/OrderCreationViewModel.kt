@@ -65,13 +65,6 @@ class OrderCreationViewModel @Inject constructor(
 
     private val _orderDraft = savedState.getStateFlow(viewModelScope, Order.EMPTY)
     val orderDraft = _orderDraft
-        .onEach {
-            viewState = viewState.copy(
-                isOrderValidForCreation = it.items.isNotEmpty() &&
-                    it.shippingAddress != Address.EMPTY &&
-                    it.billingAddress != Address.EMPTY
-            )
-        }
         .asLiveData()
 
     val orderStatusData: LiveData<OrderStatus> = _orderDraft
@@ -212,7 +205,7 @@ class OrderCreationViewModel @Inject constructor(
     }
 
     fun onShippingButtonClicked() {
-        triggerEvent(EditShipping)
+        triggerEvent(EditShipping(currentDraft.shippingLines.firstOrNull { it.methodId != null }))
     }
 
     fun onCreateOrderClicked(order: Order) {
@@ -307,15 +300,24 @@ class OrderCreationViewModel @Inject constructor(
         }
     }
 
+    fun onShippingRemoved() {
+        _orderDraft.update { draft ->
+            // We are iterating over all shipping lines, but on the current feature, we support only one shipping item
+            val shippingLines = draft.shippingLines.map {
+                it.copy(methodId = null)
+            }
+            draft.copy(shippingLines = shippingLines)
+        }
+    }
+
     @Parcelize
     data class ViewState(
         val isProgressDialogShown: Boolean = false,
-        private val isOrderValidForCreation: Boolean = false,
         val isUpdatingOrderDraft: Boolean = false,
         val showOrderUpdateSnackbar: Boolean = false
     ) : Parcelable {
         @IgnoredOnParcel
-        val canCreateOrder: Boolean = isOrderValidForCreation && !isUpdatingOrderDraft && !showOrderUpdateSnackbar
+        val canCreateOrder: Boolean = !isUpdatingOrderDraft && !showOrderUpdateSnackbar
     }
 }
 

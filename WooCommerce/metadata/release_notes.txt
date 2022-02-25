@@ -1,1 +1,4 @@
-You’ve been asking to create orders in the app. We’re happy to say we have a sneak peek ready if you want to help us test it out! Head over to settings in the app and turn on the beta feature for Order Creation. Right now, you can add products, notes, and addresses, and future releases will have additional functionality.
+- [**] In-Person Payments: Add support for Stripe by WooCommerce extension
+- [***] All merchants can create Simple Payments orders. [https://github.com/woocommerce/woocommerce-android/issues/5804]
+- [***] Introduced a new main navigation tab called "More", where you can browse different sub-sections of the app: Switch Store, Settings, WooCommerce Admin, View Store and Reviews. [https://github.com/woocommerce/woocommerce-android/pull/5897]
+

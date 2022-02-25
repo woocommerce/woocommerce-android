@@ -1467,7 +1467,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `given reader status is NOT connected, when payment screen is shown, then make sure NOT to initiate payment`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
-            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected))
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
 
             // When
             viewModel.start()
@@ -1494,7 +1494,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             val events = mutableListOf<Event>()
-            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected))
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
             viewModel.event.observeForever {
                 events.add(it)
             }
@@ -1511,7 +1511,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             val events = mutableListOf<Event>()
-            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected))
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
             viewModel.event.observeForever {
                 events.add(it)
             }
@@ -1528,7 +1528,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `given reader status is NOT connected, when payment screen is shown, then exit event is triggered`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
-            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected))
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
 
             // When
             viewModel.start()

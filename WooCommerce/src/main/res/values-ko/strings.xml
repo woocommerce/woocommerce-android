@@ -1,18 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-02-02 13:54:03+0000
+Translation-Revision-Date: 2022-02-15 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="card_reader_onboarding_both_plugins_activated_refresh_button">업데이트 후 새로 고침</string>
+    <string name="card_reader_onboarding_both_plugins_activated_open_store_admin_label">플러그인 관리</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_two">WooCommerce 결제</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_one">WooCommerce Stripe 게이트웨이</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">활성화된 다음 플러그인 중 하나만 직접 결제와 연동합니다. 계속하려면 사이트 관리자에게 문의하여 다음과 같은 플러그인 중 하나를 비활성화하세요.</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_admin">활성화된 다음 플러그인 중 하나만 직접 결제와 연동합니다. 계속하려면 다음과 같은 플러그인 중 하나를 비활성화하세요.</string>
+    <string name="card_reader_onboarding_both_plugins_activated_header">충돌하는 결제 플러그인 감지됨</string>
+    <string name="card_reader_wisepad_3_manual_card_reader">WisePad 3 카드 리더 사용설명서</string>
+    <string name="order_creation_price_calculation_failed">가격을 업데이트할 수 없음</string>
+    <string name="order_creation_payment_tax">세금</string>
+    <string name="order_creation_payment_tax_hint">스토어 설정에 따라 세금이 자동으로 계산됩니다.</string>
+    <string name="exclusive_or">또는</string>
     <string name="settings_install_jetpack">젯팩 설치</string>
     <string name="card_reader_onboarding_account_rejected_header">현재 직접 결제 사용 불가능</string>
     <string name="order_creation_success_snackbar">주문 생성됨</string>
     <string name="order_creation_failure_snackbar">주문 생성 실패</string>
     <string name="order_creation_loading_dialog_message">기다려주세요…</string>
     <string name="order_creation_loading_dialog_title">주문 생성 중</string>
-    <string name="order_creation_payment_tax_hint">제외되는 세금 합계. 스토어 설정에 따라 세금이 자동으로 계산됩니다.</string>
     <string name="order_creation_payment_order_total">주문 합계</string>
     <string name="order_creation_payment_products_total">상품 합계</string>
     <string name="order_creation_payment">결제</string>
@@ -77,7 +88,7 @@ Language: ko_KR
     <string name="order_creation_new_customer_add_different_shipping_address">다른 배송 주소 추가</string>
     <string name="order_creation_product_instock">재고 있음</string>
     <string name="order_creation_product_stock_quantity">%s 재고 있음</string>
-    <string name="order_creation_new_customer">신규 고객</string>
+    <string name="order_creation_customer_details">신규 고객</string>
     <string name="order_creation_add_products">상품 추가</string>
     <string name="order_creation_products">상품</string>
     <string name="order_creation_add_customer">고객 추가</string>

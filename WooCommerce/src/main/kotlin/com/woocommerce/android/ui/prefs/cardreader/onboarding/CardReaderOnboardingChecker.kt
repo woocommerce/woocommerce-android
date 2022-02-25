@@ -2,9 +2,12 @@ package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
 import androidx.annotation.VisibleForTesting
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus
-import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.*
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_COMPLETED
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_PENDING
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -28,8 +31,18 @@ import javax.inject.Inject
 const val SUPPORTED_WCPAY_VERSION = "3.2.1"
 
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-const val SUPPORTED_STRIPE_EXTENSION_VERSION = "5.8.1"
+const val SUPPORTED_STRIPE_EXTENSION_VERSION = "6.2.0"
 
+/**
+ * This class is used to check if the selected store is ready to accept In Person Payments. The app should check store's
+ * eligibility every time it attempts to connect to a card reader.
+ *
+ * This class contains a side-effect, it stores "onboarding completed"/"onboarding not completed"/"onboarding pending"
+ * and Preferred Plugin (either WCPay or Stripe Extension) into shared preferences.
+ *
+ * Onboarding Pending means that the store is ready to accept in person payments, but the Stripe account contains some
+ * pending requirements and will be disabled if the requirements are not met.
+ */
 class CardReaderOnboardingChecker @Inject constructor(
     private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
@@ -67,8 +80,9 @@ class CardReaderOnboardingChecker @Inject constructor(
     @Suppress("ReturnCount", "ComplexMethod")
     private suspend fun fetchOnboardingState(): CardReaderOnboardingState {
         val countryCode = getStoreCountryCode()
-        val cardReaderConfig = cardReaderConfigFactory.getCardReaderConfigFor(countryCode)
         if (!isCountrySupported(countryCode)) return StoreCountryNotSupported(countryCode)
+        val cardReaderConfig = cardReaderConfigFactory.getCardReaderConfigFor(countryCode)
+            as CardReaderConfigForSupportedCountry
 
         val fetchSitePluginsResult = wooStore.fetchSitePlugins(selectedSite.get())
         if (fetchSitePluginsResult.isError) return GenericError
@@ -94,7 +108,7 @@ class CardReaderOnboardingChecker @Inject constructor(
         if (
             preferredPlugin.type == STRIPE_EXTENSION_GATEWAY &&
             !cardReaderConfig.isStripeExtensionSupported
-        ) return StoreCountryNotSupported(countryCode)
+        ) return PluginIsNotSupportedInTheCountry(preferredPlugin.type, countryCode!!)
 
         val fluxCPluginType = preferredPlugin.type.toInPersonPaymentsPluginType()
 
@@ -241,6 +255,14 @@ sealed class CardReaderOnboardingState(
      * Store is not located in one of the supported countries.
      */
     data class StoreCountryNotSupported(val countryCode: String?) : CardReaderOnboardingState()
+
+    /**
+     * Preferred Plugin is not supported in the country
+     */
+    data class PluginIsNotSupportedInTheCountry(
+        override val preferredPlugin: PluginType,
+        val countryCode: String
+    ) : CardReaderOnboardingState()
 
     /**
      * WCPay plugin is not installed on the store.
