@@ -29,6 +29,7 @@ import org.wordpress.android.fluxc.utils.WCCurrencyUtils
 import java.math.BigDecimal
 import java.math.RoundingMode.HALF_UP
 import java.text.DecimalFormat
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.pow
 
@@ -274,7 +275,7 @@ private class CurrencyEditText @JvmOverloads constructor(
     private fun formatValue(value: BigDecimal): String {
         val siteSettings = siteSettings
         return if (siteSettings != null) {
-            WCCurrencyUtils.formatCurrencyForDisplay(value.toDouble(), siteSettings)
+            WCCurrencyUtils.formatCurrencyForDisplay(value.toDouble(), siteSettings, Locale.ROOT)
         } else {
             val decimalFormat = DecimalFormat("0.${"0".repeat(decimals)}")
             decimalFormat.format(value)
@@ -286,7 +287,7 @@ private class CurrencyEditText @JvmOverloads constructor(
          * Cleans the [text] so that it only has numerical characters and has the correct number of fractional digits.
          */
         fun clean(text: CharSequence?, decimals: Int): BigDecimal? {
-            val nonNumericPattern = Regex("[^\\d-]")
+            val nonNumericPattern = Regex("[^0-9\\-]")
             var cleanValue = text.toString().replace(nonNumericPattern, "").toBigDecimalOrNull() ?: return null
 
             if (decimals > 0) {
