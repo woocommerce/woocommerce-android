@@ -278,4 +278,36 @@ class OrderCreationFeeViewModelTest : BaseUnitTest() {
 
         assertThat(lastReceivedChange).isFalse
     }
+
+    @Test
+    fun `when order total is zero, then set shouldDisplayPercentageSwitch to false`() {
+        var lastReceivedChange: Boolean? = null
+        savedState = OrderCreationFeeFragmentArgs(BigDecimal.ZERO)
+            .initSavedStateHandle()
+        initSut()
+
+        sut.viewStateData.observeForever { _, viewState ->
+            lastReceivedChange = viewState.shouldDisplayPercentageSwitch
+        }
+
+        sut.start()
+
+        assertThat(lastReceivedChange).isFalse
+    }
+
+    @Test
+    fun `when order total is not zero, then set shouldDisplayPercentageSwitch to true`() {
+        var lastReceivedChange: Boolean? = null
+        savedState = OrderCreationFeeFragmentArgs(DEFAULT_ORDER_TOTAL)
+            .initSavedStateHandle()
+        initSut()
+
+        sut.viewStateData.observeForever { _, viewState ->
+            lastReceivedChange = viewState.shouldDisplayPercentageSwitch
+        }
+
+        sut.start()
+
+        assertThat(lastReceivedChange).isTrue
+    }
 }
