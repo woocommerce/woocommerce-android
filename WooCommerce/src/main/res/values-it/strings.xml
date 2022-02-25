@@ -88,7 +88,7 @@ Language: it
     <string name="order_creation_new_customer_add_different_shipping_address">Aggiungi un indirizzo di spedizione differente</string>
     <string name="order_creation_product_instock">In magazzino</string>
     <string name="order_creation_product_stock_quantity">%s in magazzino</string>
-    <string name="order_creation_new_customer">Nuovo cliente</string>
+    <string name="order_creation_customer_details">Nuovo cliente</string>
     <string name="order_creation_add_products">Aggiungi prodotto</string>
     <string name="order_creation_products">Prodotti</string>
     <string name="order_creation_add_customer">Aggiungi il cliente</string>

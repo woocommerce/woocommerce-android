@@ -341,18 +341,18 @@
     <string name="orderlist_bottom_sheet_create_order_description">Create a new manual order</string>
     <string name="orderlist_bottom_sheet_simple_payment_action">Simple payment</string>
     <string name="orderlist_bottom_sheet_simple_payment_description">Create an order with minimal information</string>
-    <string name="order_creation_fragment_title">New Order</string>
+    <string name="order_creation_fragment_title">New order</string>
     <string name="order_creation_status_edit_content_description">Edit order status</string>
     <string name="order_creation_customer">Customer</string>
     <string name="order_creation_customer_edit_content_description">Edit customer details</string>
-    <string name="order_creation_customer_note">Customer Note</string>
+    <string name="order_creation_customer_note">Customer note</string>
     <string name="order_creation_customer_note_edit_content_description">Edit customer note</string>
-    <string name="order_creation_add_customer">Add customer</string>
+    <string name="order_creation_add_customer">Add customer details</string>
     <string name="order_creation_add_customer_note">Add note</string>
     <string name="order_creation_products">Products</string>
-    <string name="order_creation_add_products">Add Product</string>
+    <string name="order_creation_add_products">Add product</string>
     <string name="order_creation_add_fee">Add fee</string>
-    <string name="order_creation_new_customer">New customer</string>
+    <string name="order_creation_customer_details">Customer details</string>
     <string name="order_creation_product_stock_quantity">%s in stock</string>
     <string name="order_creation_product_instock">In stock</string>
     <string name="order_creation_new_customer_add_different_shipping_address">Add a different shipping address</string>
@@ -985,7 +985,7 @@
         -->
     <string name="card_reader_connect_scanning_header">Scanning for readers</string>
     <string name="card_reader_connect_scanning_progress" translatable="false">@string/card_reader_connect_scanning_header</string>
-    <string name="card_reader_connect_scanning_hint">Press the power button of your reader until you see a flashing blue light</string>
+    <string name="card_reader_connect_scanning_hint">Press the power button of your reader</string>
     <string name="card_reader_connect_reader_found_header">Do you want to connect reader %s?</string>
     <string name="card_reader_connect_multiple_readers_found_header">Several readers found</string>
     <string name="card_reader_connect_to_reader">Connect to reader</string>
@@ -1056,6 +1056,10 @@
     <string name="card_reader_onboarding_country_not_supported_hint">You can still accept In-Person Cash Payments by enabling the \"cash on delivery\" payment method on your store</string>
     <string name="card_reader_onboarding_country_not_supported_contact_support">Need some help? &lt;a href=\'\'&gt;Contact support&lt;/a&gt;</string>
     <string name="card_reader_onboarding_country_not_supported_learn_more">&lt;a href=\'\'&gt;Learn more&lt;/a&gt; about accepting payments with your mobile device and ordering card readers</string>
+
+    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">We don\'t support Stripe in %1$s</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">We don\'t support WooCommerce Payments in %1$s</string>
+    <string name="card_reader_onboarding_stripe_account_in_unsupported_country">We don\'t support Stripe accounts registered in %1$s</string>
 
     <string name="card_reader_onboarding_wcpay_not_installed_header">Install WooCommerce Payments</string>
     <string name="card_reader_onboarding_wcpay_not_installed_hint">You\’ll need to install the free WooCommerce Payments extension on your store to accept In-Person Payments.</string>
@@ -1685,7 +1689,7 @@
     <string name="checking_email">Checking email</string>
     <string name="email_invalid">Enter a valid email address</string>
     <string name="forgot_password">Lost your password?</string>
-    
+
     <string name="no_site_error">The site at this address is not a WordPress site. For us to connect to it, the site must use WordPress.</string>
     <string name="invalid_site_url_message">Check that the site URL entered is valid</string>
     <string name="xmlrpc_missing_method_error">Couldn\'t connect. Required XML-RPC methods are missing on the server.</string>
