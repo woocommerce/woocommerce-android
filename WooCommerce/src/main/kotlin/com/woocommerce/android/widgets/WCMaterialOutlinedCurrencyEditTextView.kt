@@ -31,6 +31,7 @@ import java.math.BigDecimal
 import java.text.DecimalFormatSymbols
 import java.util.Locale
 import javax.inject.Inject
+import kotlin.math.max
 
 @AndroidEntryPoint
 class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
@@ -230,7 +231,7 @@ private class CurrencyEditText @JvmOverloads constructor(
             }.toString().replace(decimalSeparator, ".")
             return@InputFilter when {
                 !supportsEmptyState && newValue.isEmpty() -> {
-                    if (source.isEmpty()) dest.subSequence(dstart, dend) else ""
+                    if (source.isEmpty()) "0" else ""
                 }
                 newValue.toBigDecimalOrNull() == null -> ""
                 newValue.contains(".") &&
@@ -262,7 +263,7 @@ private class CurrencyEditText @JvmOverloads constructor(
                     val currentSelectionPosition = selectionStart
                     setText(updatedText)
 
-                    setSelection(currentSelectionPosition + updatedText.length - text.length)
+                    setSelection(max(0, currentSelectionPosition + updatedText.length - text.length))
                 }
             }
 
