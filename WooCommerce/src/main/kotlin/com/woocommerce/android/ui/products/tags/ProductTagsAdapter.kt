@@ -49,16 +49,11 @@ class ProductTagsAdapter(
             return
         }
 
-        if (this.productTags.isEmpty()) {
-            this.productTags.addAll(productsTags)
-            notifyDataSetChanged()
-        } else {
-            val diffResult =
-                DiffUtil.calculateDiff(ProductTagItemDiffUtil(this.productTags, productsTags))
-            this.productTags.clear()
-            this.productTags.addAll(productsTags)
-            diffResult.dispatchUpdatesTo(this)
-        }
+        val diffResult =
+            DiffUtil.calculateDiff(ProductTagItemDiffUtil(this.productTags, productsTags))
+        this.productTags.clear()
+        this.productTags.addAll(productsTags)
+        diffResult.dispatchUpdatesTo(this)
     }
 
     fun hasFilter() = currentFilter.isNotEmpty()
