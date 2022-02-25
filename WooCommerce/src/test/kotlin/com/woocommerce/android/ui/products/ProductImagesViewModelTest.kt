@@ -48,10 +48,7 @@ class ProductImagesViewModelTest : BaseUnitTest() {
         initialize()
 
         viewModel.onGalleryImageDragStarted()
-
-        observeState { state ->
-            assertThat(state.productImagesState is Dragging).isTrue()
-        }
+        assertThat(viewModel.productImagesState.value is Dragging).isTrue
     }
 
     @Test
@@ -99,10 +96,7 @@ class ProductImagesViewModelTest : BaseUnitTest() {
         val imageToDelete = images.first()
 
         viewModel.onDeleteImageConfirmed(imageToDelete)
-
-        observeState { state ->
-            assertThat(state.images).doesNotContain(imageToDelete)
-        }
+        assertThat(viewModel.productImages.value).doesNotContain(imageToDelete)
     }
 
     @Test
@@ -115,10 +109,7 @@ class ProductImagesViewModelTest : BaseUnitTest() {
             from = images.indexOf(imageA),
             to = images.lastIndex
         )
-
-        observeState { state ->
-            assertThat(state.images).contains(imageA, Index.atIndex(images.lastIndex))
-        }
+        assertThat(viewModel.productImages.value).contains(imageA, Index.atIndex(images.lastIndex))
     }
 
     @Test
@@ -169,10 +160,8 @@ class ProductImagesViewModelTest : BaseUnitTest() {
         viewModel.onDeleteImageConfirmed(imageToRemove)
         viewModel.onValidateButtonClicked()
 
-        observeState { state ->
-            assertThat(state.images).doesNotContain(imageToRemove)
-            assertThat(state.images).contains(imageToReorder, Index.atIndex(2))
-        }
+        assertThat(viewModel.productImages.value).doesNotContain(imageToRemove)
+        assertThat(viewModel.productImages.value).contains(imageToReorder, Index.atIndex(2))
     }
 
     @Test
@@ -190,9 +179,7 @@ class ProductImagesViewModelTest : BaseUnitTest() {
         viewModel.onDeleteImageConfirmed(imageToRemove)
         viewModel.onNavigateBackButtonClicked()
 
-        observeState { state ->
-            assertThat(state.images).isEqualTo(images)
-        }
+        assertThat(viewModel.productImages.value).isEqualTo(images)
     }
 
     private fun observeState(check: (ProductImagesViewModel.ViewState) -> Unit) =
