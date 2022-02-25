@@ -5,6 +5,7 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -18,6 +19,9 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 import org.wordpress.android.util.DisplayUtils
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -26,6 +30,7 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: SimplePaymentsDialogViewModel by viewModels()
+    private val sharedViewModel by hiltNavGraphViewModels<SimplePaymentsSharedViewModel>(R.id.nav_graph_main)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +53,10 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
         }
 
         val binding = DialogSimplePaymentsBinding.bind(view)
+        binding.editPrice.setNonFloatingHint(
+            DecimalFormat("0.${"0".repeat(sharedViewModel.decimals)}", DecimalFormatSymbols(Locale.ROOT))
+                .format(0.0)
+        )
         binding.buttonDone.setOnClickListener {
             viewModel.onDoneButtonClicked()
         }

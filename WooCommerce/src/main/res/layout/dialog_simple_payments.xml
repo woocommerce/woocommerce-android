@@ -56,16 +56,17 @@
         android:id="@+id/editPrice"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:boxBackgroundMode="none"
         android:gravity="center"
         android:textSize="@dimen/text_major_100"
+        app:boxBackgroundMode="none"
+        app:editTextLayoutMode="wrap"
+        app:hintEnabled="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:supportsEmptyState="true"
         app:supportsNegativeValues="false"
-        app:supportsEmptyState="false"
-        app:editTextLayoutMode="wrap"
         tools:hint="0.00" />
 
     <com.google.android.material.button.MaterialButton
