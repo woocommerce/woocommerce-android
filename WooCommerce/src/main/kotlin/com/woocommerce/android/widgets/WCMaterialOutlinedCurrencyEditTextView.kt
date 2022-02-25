@@ -31,6 +31,7 @@ import java.math.RoundingMode.HALF_UP
 import java.text.DecimalFormat
 import java.util.Locale
 import javax.inject.Inject
+import kotlin.math.max
 import kotlin.math.pow
 
 @AndroidEntryPoint
@@ -246,17 +247,20 @@ private class CurrencyEditText @JvmOverloads constructor(
     private fun formatAndUpdateValue(currentText: CharSequence?, cleanValue: BigDecimal) {
         val currentSelectionPosition = selectionStart
 
-        var formattedValue = formatValue(cleanValue)
-
-        if (currentText?.startsWith("-") == true && cleanValue.isEqualTo(BigDecimal.ZERO)) {
-            // A special case for negative values if the actual value is still 0
-            formattedValue = "-$formattedValue"
-        }
+        val (formattedValue, selectionPosition) =
+            if (currentText?.startsWith("-") == true && cleanValue.isEqualTo(BigDecimal.ZERO)) {
+                // A special case for negative values if the actual value is still 0
+                val value = "-${formatValue(cleanValue)}"
+                Pair(value, value.length)
+            } else {
+                val value = formatValue(cleanValue)
+                val selectionOffset = value.length - (currentText?.length ?: 0)
+                Pair(value, currentSelectionPosition + selectionOffset)
+            }
 
         _value.value = cleanValue
         setText(formattedValue)
-        val selectionOffset = formattedValue.length - (currentText?.length ?: 0)
-        setSelection(currentSelectionPosition + selectionOffset)
+        setSelection(max(0, selectionPosition))
     }
 
     override fun setText(text: CharSequence?, type: BufferType?) {
