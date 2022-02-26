@@ -142,6 +142,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         DASHBOARD_NEW_STATS_REVERTED_BANNER_LEARN_MORE_TAPPED,
         DASHBOARD_NEW_STATS_AVAILABILITY_BANNER_CANCEL_TAPPED,
         DASHBOARD_NEW_STATS_AVAILABILITY_BANNER_TRY_TAPPED,
+        USED_ANALYTICS,
 
         // -- Orders List
         ORDERS_LIST_FILTER,
