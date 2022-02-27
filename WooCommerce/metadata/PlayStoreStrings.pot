@@ -11,16 +11,18 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_086"
+msgid ""
+"8.6:\n"
+"This release contains a helpful feature for merchants looking to record a quick monetary transaction that we call simple payments. Quickly take an in-person credit card payment or send your customer a payment link to your site!\n"
+"\n"
+"You’ll also see we changed the tabs a bit and added a “More” tab. Store settings and a few other things were moved there to prepare for more features!\n"
+msgstr ""
+
 msgctxt "release_note_085"
 msgid ""
 "8.5:\n"
 "You’ve been asking to create orders in the app. We’re happy to say we have a sneak peek ready if you want to help us test it out! Head over to settings in the app and turn on the beta feature for Order Creation. Right now, you can add products, notes, and addresses, and future releases will have additional functionality.\n"
-msgstr ""
-
-msgctxt "release_note_084"
-msgid ""
-"8.4:\n"
-"We’re in the process of refreshing the look of the app! You’ll notice some nice visual changes to the sales graph in My Store and a new conversion calculation. We’re also no longer rounding the sales totals to provide greater clarity. This isn’t the last of it – more updates to come in the next few weeks!\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!
