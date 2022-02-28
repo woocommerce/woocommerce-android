@@ -1,11 +1,13 @@
 package com.woocommerce.android.ui.mystore
 
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.USED_ANALYTICS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.wordpress.android.util.DateTimeUtils
-import java.util.*
 
 class MyStoreStatsUsageTracksEventEmitterTest {
 
@@ -30,9 +32,10 @@ class MyStoreStatsUsageTracksEventEmitterTest {
         verifyNoInteractions(analyticsTrackerWrapper)
 
         // When
+        usageTracksEventEmitter.interacted("2021-11-23T00:00:11Z")
 
         // Then
-
+        verify(analyticsTrackerWrapper, times(1)).track(USED_ANALYTICS)
     }
 }
 
