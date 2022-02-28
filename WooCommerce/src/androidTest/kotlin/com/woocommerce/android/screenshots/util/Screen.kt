@@ -4,11 +4,10 @@ import android.app.Activity
 import android.content.res.Configuration
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import androidx.test.espresso.Espresso
-import androidx.test.espresso.Espresso.*
-import androidx.test.espresso.UiController
-import androidx.test.espresso.ViewAction
-import androidx.test.espresso.ViewInteraction
+import androidx.test.espresso.*
+import androidx.test.espresso.Espresso.closeSoftKeyboard
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -341,7 +340,7 @@ open class Screen {
         return mCurrentActivity
     }
 
-    fun getTranslatedString(resourceID: Int): String {
+    protected fun getTranslatedString(resourceID: Int): String {
         return getCurrentActivity()!!.resources.getString(resourceID)
     }
 

@@ -4,16 +4,14 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.FeatureAnnouncementItem
-import com.woocommerce.android.push.NotificationChannelType
-import com.woocommerce.android.push.NotificationMessageHandler
-import com.woocommerce.android.push.NotificationTestUtils
-import com.woocommerce.android.push.WooNotificationType
+import com.woocommerce.android.push.*
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivityViewModel.*
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -77,6 +75,9 @@ class MainActivityViewModelTest : BaseUnitTest() {
     private val featureAnnouncementRepository: FeatureAnnouncementRepository = mock()
     private val buildConfigWrapper: BuildConfigWrapper = mock()
     private val prefs: AppPrefs = mock()
+    private val unseenReviewsCountHandler: UnseenReviewsCountHandler = mock {
+        on { observeUnseenCount() } doReturn MutableStateFlow(0)
+    }
 
     private val testAnnouncement = FeatureAnnouncement(
         appVersionName = "14.2",
@@ -118,7 +119,8 @@ class MainActivityViewModelTest : BaseUnitTest() {
                 notificationMessageHandler,
                 featureAnnouncementRepository,
                 buildConfigWrapper,
-                prefs
+                prefs,
+                unseenReviewsCountHandler
             )
         )
 

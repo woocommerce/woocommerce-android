@@ -26,29 +26,18 @@ import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.AddProduct
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.EditCustomer
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.EditCustomerNote
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.EditShipping
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.ShowCreatedOrder
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.ShowProductDetails
+import com.woocommerce.android.ui.orders.creation.fees.OrderCreationEditFeeViewModel.FeeType
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.*
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.IgnoredOnParcel
@@ -76,13 +65,6 @@ class OrderCreationViewModel @Inject constructor(
 
     private val _orderDraft = savedState.getStateFlow(viewModelScope, Order.EMPTY)
     val orderDraft = _orderDraft
-        .onEach {
-            viewState = viewState.copy(
-                isOrderValidForCreation = it.items.isNotEmpty() &&
-                    it.shippingAddress != Address.EMPTY &&
-                    it.billingAddress != Address.EMPTY
-            )
-        }
         .asLiveData()
 
     val orderStatusData: LiveData<OrderStatus> = _orderDraft
@@ -178,6 +160,11 @@ class OrderCreationViewModel @Inject constructor(
         }
     }
 
+    @Suppress("UnusedPrivateMember")
+    fun onFeeEdited(feeValue: BigDecimal, feeType: FeeType) {
+        // TODO handle fee submission
+    }
+
     fun onEditOrderStatusClicked(currentStatus: OrderStatus) {
         launch(dispatchers.io) {
             orderDetailRepository
@@ -213,8 +200,12 @@ class OrderCreationViewModel @Inject constructor(
         retryOrderDraftUpdateTrigger.tryEmit(Unit)
     }
 
+    fun onFeeButtonClicked() {
+        triggerEvent(EditFee)
+    }
+
     fun onShippingButtonClicked() {
-        triggerEvent(EditShipping)
+        triggerEvent(EditShipping(currentDraft.shippingLines.firstOrNull { it.methodId != null }))
     }
 
     fun onCreateOrderClicked(order: Order) {
@@ -309,15 +300,24 @@ class OrderCreationViewModel @Inject constructor(
         }
     }
 
+    fun onShippingRemoved() {
+        _orderDraft.update { draft ->
+            // We are iterating over all shipping lines, but on the current feature, we support only one shipping item
+            val shippingLines = draft.shippingLines.map {
+                it.copy(methodId = null)
+            }
+            draft.copy(shippingLines = shippingLines)
+        }
+    }
+
     @Parcelize
     data class ViewState(
         val isProgressDialogShown: Boolean = false,
-        private val isOrderValidForCreation: Boolean = false,
         val isUpdatingOrderDraft: Boolean = false,
         val showOrderUpdateSnackbar: Boolean = false
     ) : Parcelable {
         @IgnoredOnParcel
-        val canCreateOrder: Boolean = isOrderValidForCreation && !isUpdatingOrderDraft && !showOrderUpdateSnackbar
+        val canCreateOrder: Boolean = !isUpdatingOrderDraft && !showOrderUpdateSnackbar
     }
 }
 

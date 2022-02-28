@@ -1,0 +1,2 @@
+8.5:
+Ni har bett oss om möjligheten att skapa beställningar i appen. Vi är glada att kunna meddela att vi har en smygtitt redo om ni vill hjälpa oss att testa funktionen! Gå till inställningarna i appen och aktivera betafunktionen Skapa beställning. För tillfället kan du lägga till produkter, anteckningar och adresser. Kommande versioner kommer att ha ytterligare funktioner.

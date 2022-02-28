@@ -181,7 +181,7 @@ data class Order(
     @Parcelize
     data class ShippingLine(
         val itemId: Long,
-        val methodId: String,
+        val methodId: String?,
         val methodTitle: String,
         val totalTax: BigDecimal,
         val total: BigDecimal

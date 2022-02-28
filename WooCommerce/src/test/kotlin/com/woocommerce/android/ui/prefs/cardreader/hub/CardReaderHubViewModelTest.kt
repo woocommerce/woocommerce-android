@@ -1,20 +1,33 @@
 package com.woocommerce.android.ui.prefs.cardreader.hub
 
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.InPersonPaymentsCanadaFeatureFlag
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.SiteModel
 
 class CardReaderHubViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: CardReaderHubViewModel
     private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag = mock()
+    private val appPrefsWrapper: AppPrefsWrapper = mock {
+        on(it.getCardReaderPreferredPlugin(any(), any(), any()))
+            .thenReturn(WOOCOMMERCE_PAYMENTS)
+    }
+    private val selectedSite: SelectedSite = mock {
+        on(it.get()).thenReturn(SiteModel())
+    }
 
     private val countryCode = "US"
     private val savedState = CardReaderHubFragmentArgs(storeCountryCode = countryCode).initSavedStateHandle()
@@ -195,6 +208,36 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given wcpay active, when user clicks on purchase card reader, then woo purchase link shown`() {
+        whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
+            .thenReturn(WOOCOMMERCE_PAYMENTS)
+
+        (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
+            .find {
+                it.label == UiString.UiStringRes(R.string.card_reader_purchase_card_reader)
+            }!!.onItemClicked.invoke()
+
+        assertThat(
+            (viewModel.event.value as CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow).url
+        ).isEqualTo(AppUrls.WOOCOMMERCE_M2_PURCHASE_CARD_READER)
+    }
+
+    @Test
+    fun `given stripe active, when user clicks on purchase card reader, then stripe purchase link shown`() {
+        whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
+            .thenReturn(STRIPE_EXTENSION_GATEWAY)
+
+        (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
+            .find {
+                it.label == UiString.UiStringRes(R.string.card_reader_purchase_card_reader)
+            }!!.onItemClicked.invoke()
+
+        assertThat(
+            (viewModel.event.value as CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow).url
+        ).isEqualTo(AppUrls.STRIPE_M2_PURCHASE_CARD_READER)
+    }
+
+    @Test
     fun `when user clicks on bbpos manual card reader, then app opens external webview with bbpos link`() {
         (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
             .find {
@@ -243,6 +286,6 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     private fun initViewModel() {
-        viewModel = CardReaderHubViewModel(savedState, inPersonPaymentsCanadaFeatureFlag)
+        viewModel = CardReaderHubViewModel(savedState, inPersonPaymentsCanadaFeatureFlag, appPrefsWrapper, selectedSite)
     }
 }

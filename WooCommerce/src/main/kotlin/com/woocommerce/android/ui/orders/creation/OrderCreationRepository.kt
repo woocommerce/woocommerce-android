@@ -57,8 +57,8 @@ class OrderCreationRepository @Inject constructor(
                     quantity = item.quantity
                 )
             },
-            shippingAddress = order.shippingAddress.toShippingAddressModel(),
-            billingAddress = order.billingAddress.toBillingAddressModel(),
+            shippingAddress = order.shippingAddress.takeIf { it != Address.EMPTY }?.toShippingAddressModel(),
+            billingAddress = order.billingAddress.takeIf { it != Address.EMPTY }?.toBillingAddressModel(),
             customerNote = order.customerNote,
             shippingLines = order.shippingLines.map { it.toDataModel() }
         )

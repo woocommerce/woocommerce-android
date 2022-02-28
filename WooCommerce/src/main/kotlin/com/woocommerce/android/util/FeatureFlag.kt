@@ -13,7 +13,8 @@ enum class FeatureFlag {
     ORDER_FILTERS,
     ANALYTICS_HUB,
     PAYMENTS_STRIPE_EXTENSION,
-    IN_PERSON_PAYMENTS_CANADA;
+    IN_PERSON_PAYMENTS_CANADA,
+    MORE_MENU_INBOX;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -23,10 +24,12 @@ enum class FeatureFlag {
             ORDER_CREATION_M2 -> false
             JETPACK_CP,
             CARD_READER -> true // Keeping the flag for a few sprints so we can quickly disable the feature if needed
-            PAYMENTS_STRIPE_EXTENSION -> false
+            // Keeping the flag for a few sprints so we can quickly disable the feature if needed
+            PAYMENTS_STRIPE_EXTENSION -> true
             ORDER_FILTERS,
             ANALYTICS_HUB,
-            IN_PERSON_PAYMENTS_CANADA -> PackageUtils.isDebugBuild()
+            IN_PERSON_PAYMENTS_CANADA,
+            MORE_MENU_INBOX -> PackageUtils.isDebugBuild()
         }
     }
 }
