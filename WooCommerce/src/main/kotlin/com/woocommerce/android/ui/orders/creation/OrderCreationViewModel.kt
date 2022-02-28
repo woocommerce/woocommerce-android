@@ -83,9 +83,6 @@ class OrderCreationViewModel @Inject constructor(
             items.map { item -> mapItemToProductUiModel(item) }
         }.asLiveData()
 
-    private val currentFee: Order.FeeLine?
-        get() = _orderDraft.value.feesLines.firstOrNull()
-
     private val retryOrderDraftUpdateTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
     val currentDraft
@@ -199,7 +196,9 @@ class OrderCreationViewModel @Inject constructor(
     }
 
     fun onFeeButtonClicked() {
-        triggerEvent(EditFee(_orderDraft.value.total, currentFee?.total))
+        val currentOrderTotal = _orderDraft.value.total
+        val currentFeeTotal = _orderDraft.value.feesLines.firstOrNull()?.total
+        triggerEvent(EditFee(currentOrderTotal, currentFeeTotal))
     }
 
     fun onShippingButtonClicked() {
