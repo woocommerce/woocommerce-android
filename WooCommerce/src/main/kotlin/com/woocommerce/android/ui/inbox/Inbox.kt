@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.inbox
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -10,8 +11,12 @@ import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.inbox.InboxViewModel.InboxNoteUi
@@ -25,11 +30,48 @@ fun Inbox(viewModel: InboxViewModel) {
 
 @Composable
 fun Inbox(state: InboxState) {
-    InboxNotesList(notes = state.notes)
+    when {
+        state.isLoading -> InboxSkeleton()
+        state.notes.isEmpty() -> InboxEmptyCase()
+        state.notes.isNotEmpty() -> InboxEmptyCase()
+    }
 }
 
 @Composable
-fun InboxNotesList(notes: List<InboxNoteUi>) {
+fun InboxEmptyCase() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 32.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = stringResource(id = R.string.empty_inbox_title),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.h6
+        )
+        Spacer(Modifier.size(54.dp))
+        Image(
+            painter = painterResource(id = R.drawable.img_empty_inbox),
+            contentDescription = null,
+        )
+        Spacer(Modifier.size(48.dp))
+        Text(
+            text = stringResource(id = R.string.empty_inbox_description),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.body1
+        )
+    }
+}
+
+@Composable
+fun InboxSkeleton() {
+
+}
+
+@Composable
+fun InboxNotes(notes: List<InboxNoteUi>) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {

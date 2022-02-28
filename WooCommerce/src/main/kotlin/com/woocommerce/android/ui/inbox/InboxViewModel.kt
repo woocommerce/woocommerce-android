@@ -76,7 +76,6 @@ class InboxViewModel @Inject constructor(
 
     data class InboxState(
         val isLoading: Boolean = false,
-        val isEmpty: Boolean = false,
         val isError: Boolean = false,
         val notes: List<InboxNoteUi> = emptyList()
     )
