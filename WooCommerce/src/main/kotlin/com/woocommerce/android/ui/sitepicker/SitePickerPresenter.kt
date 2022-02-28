@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.sitepicker
 
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
@@ -30,7 +31,8 @@ class SitePickerPresenter
     private val accountStore: AccountStore,
     private val siteStore: SiteStore,
     private val wooCommerceStore: WooCommerceStore,
-    private val userEligibilityFetcher: UserEligibilityFetcher
+    private val userEligibilityFetcher: UserEligibilityFetcher,
+    private val appPrefs: AppPrefs
 ) : SitePickerContract.Presenter {
     private var view: SitePickerContract.View? = null
 
@@ -142,6 +144,7 @@ class SitePickerPresenter
     }
 
     override fun updateWooSiteSettings(site: SiteModel) {
+        appPrefs.resetSitePreferences()
         dispatcher.dispatch(WCCoreActionBuilder.newFetchSiteSettingsAction(site))
     }
 
