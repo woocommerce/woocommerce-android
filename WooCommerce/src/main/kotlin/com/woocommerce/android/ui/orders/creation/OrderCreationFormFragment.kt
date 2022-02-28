@@ -19,9 +19,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationFormBinding
 import com.woocommerce.android.databinding.LayoutOrderCreationCustomerInfoBinding
 import com.woocommerce.android.databinding.OrderCreationPaymentSectionBinding
-import com.woocommerce.android.extensions.handleDialogResult
-import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.extensions.*
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.base.BaseFragment
@@ -222,14 +220,19 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
 
         feeButton.setOnClickListener { viewModel.onFeeButtonClicked() }
 
-        newOrderData.feesLines.firstOrNull { it.name != null }
-            ?.takeIf { it.total > BigDecimal.ZERO }
-            ?.let {
-                feeButton.setText(R.string.order_creation_payment_fee)
-                feeButton.setIconResource(0)
-                feeValue.isVisible = true
-                feeValue.text = bigDecimalFormatter(it.total)
-            } ?: apply {
+        val currentFeeTotal = newOrderData.feesLines
+            .firstOrNull { it.name != null }
+            ?.total
+            ?: BigDecimal.ZERO
+
+        val hasFee = currentFeeTotal.isNotEqualTo(BigDecimal.ZERO)
+
+        if (hasFee) {
+            feeButton.setText(R.string.order_creation_payment_fee)
+            feeButton.setIconResource(0)
+            feeValue.isVisible = true
+            feeValue.text = bigDecimalFormatter(currentFeeTotal)
+        } else {
             feeButton.setText(R.string.order_creation_add_fee)
             feeButton.setIconResource(R.drawable.ic_add)
             feeValue.isVisible = false
