@@ -1,20 +1,14 @@
 package com.woocommerce.android.ui.prefs
 
-import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.ui.orders.cardreader.ClearCardReaderData
 import com.woocommerce.android.util.CoroutineTestRule
+import com.woocommerce.android.util.FeatureFlag
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.kotlin.KArgumentCaptor
-import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
+import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.action.NotificationAction
@@ -34,7 +28,7 @@ class AppSettingsPresenterTest {
 
     private val dispatcher: Dispatcher = mock()
     private val accountStore: AccountStore = mock()
-    private val cardReaderManager: CardReaderManager = mock()
+    private val clearCardReaderData: ClearCardReaderData = mock()
 
     private lateinit var appSettingsPresenter: AppSettingsPresenter
 
@@ -42,7 +36,12 @@ class AppSettingsPresenterTest {
 
     @Before
     fun setup() {
-        appSettingsPresenter = AppSettingsPresenter(dispatcher, accountStore, cardReaderManager, mock())
+        appSettingsPresenter = AppSettingsPresenter(
+            dispatcher,
+            accountStore,
+            mock(),
+            clearCardReaderData
+        )
         appSettingsPresenter.takeView(appSettingsContractView)
 
         actionCaptor = argumentCaptor()
@@ -74,30 +73,13 @@ class AppSettingsPresenterTest {
 
     @Test
     fun `cleanPaymentsData with initialized manager should disconnect reader`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // GIVEN
-            whenever(cardReaderManager.initialized).thenReturn(true)
+        if (FeatureFlag.CARD_READER.isEnabled()) {
 
-            // WHEN
-            appSettingsPresenter.clearCardReaderData()
+            coroutinesTestRule.testDispatcher.runBlockingTest {
+                appSettingsPresenter.logout()
 
-            // THEN
-            verify(cardReaderManager).clearCachedCredentials()
-            verify(cardReaderManager).disconnectReader()
+                verify(clearCardReaderData).invoke()
+            }
         }
     }
-
-    @Test
-    fun `cleanPaymentsData with not initialized manager should not disconnect reader`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // GIVEN
-            whenever(cardReaderManager.initialized).thenReturn(false)
-
-            // WHEN
-            appSettingsPresenter.clearCardReaderData()
-
-            // THEN
-            verify(cardReaderManager, never()).clearCachedCredentials()
-            verify(cardReaderManager, never()).disconnectReader()
-        }
 }
