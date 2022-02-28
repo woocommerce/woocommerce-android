@@ -19,6 +19,7 @@ import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyLong
 import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
 class CardReaderTrackerTest : BaseUnitTest() {
@@ -35,8 +36,17 @@ class CardReaderTrackerTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock {
         on(it.get()).thenReturn(SiteModel())
     }
+    private val wooStore: WooCommerceStore = mock() {
+        on { getStoreCountryCode(any()) }.thenReturn(COUNTRY_CODE)
+    }
 
-    private val cardReaderTracker = CardReaderTracker(trackerWrapper, appPrefsWrapper, selectedSite)
+    private val cardReaderTracker = CardReaderTracker(
+        trackerWrapper,
+        appPrefsWrapper,
+        selectedSite,
+        wooStore,
+        coroutinesTestRule.testDispatchers,
+    )
 
     @Test
     fun `when track learn more invoked, then CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED tracked`() =
@@ -458,6 +468,36 @@ class CardReaderTrackerTest : BaseUnitTest() {
                 eq(dummyErrorMgs)
             )
         }
+
+    @Test
+    fun `given US country, when tracking, then US property tracked`() {
+        val countryCode = "US"
+        whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn(countryCode)
+
+        cardReaderTracker.track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
+
+        val captor = argumentCaptor<Map<String, Any>>()
+        verify(trackerWrapper).track(
+            eq(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS),
+            captor.capture(),
+        )
+        assertThat(captor.firstValue["country"]).isEqualTo(countryCode)
+    }
+
+    @Test
+    fun `given CA country, when tracking, then CA property tracked`() {
+        val countryCode = "CA"
+        whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn(countryCode)
+
+        cardReaderTracker.track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
+
+        val captor = argumentCaptor<Map<String, Any>>()
+        verify(trackerWrapper).track(
+            eq(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS),
+            captor.capture(),
+        )
+        assertThat(captor.firstValue["country"]).isEqualTo(countryCode)
+    }
 
     @Test
     fun `when location fetching succeeds, then CARD_READER_LOCATION_SUCCESS tracked`() =

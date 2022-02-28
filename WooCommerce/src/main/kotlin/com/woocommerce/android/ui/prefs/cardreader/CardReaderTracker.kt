@@ -43,7 +43,7 @@ class CardReaderTracker @Inject constructor(
                 trackerWrapper.track(
                     stat,
                     properties,
-                    this.javaClass.simpleName,
+                    this@CardReaderTracker.javaClass.simpleName,
                     errorType,
                     errorDescription
                 )
