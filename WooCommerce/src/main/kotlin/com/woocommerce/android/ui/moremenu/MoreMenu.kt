@@ -4,7 +4,10 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.foundation.*
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells.Fixed
 import androidx.compose.foundation.lazy.LazyVerticalGrid
@@ -12,15 +15,20 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.*
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -33,7 +41,9 @@ import com.bumptech.glide.request.transition.Transition
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
-import com.woocommerce.android.ui.moremenu.MenuButtonType.*
+import com.woocommerce.android.ui.moremenu.MenuButtonType.PRODUCT_REVIEWS
+import com.woocommerce.android.ui.moremenu.MenuButtonType.VIEW_ADMIN
+import com.woocommerce.android.ui.moremenu.MenuButtonType.VIEW_STORE
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuViewState
 
 @ExperimentalFoundationApi
@@ -60,68 +70,24 @@ fun MoreMenu(
     val siteUrl = state.siteUrl
     val userAvatarUrl = state.userAvatarUrl
 
-    Column(Modifier.padding(start = 12.dp, end = 12.dp)) {
+    Column {
         Spacer(modifier = Modifier.height(32.dp))
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 10.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(horizontal = 10.dp)
-                    .fillMaxWidth(fraction = 0.8f)
-            ) {
-                Row {
-                    Column {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        MoreMenuUserAvatar(avatarUrl = userAvatarUrl)
-                    }
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Column {
-                        Text(
-                            text = siteName,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp,
-                            color = colorResource(id = color.color_on_surface)
-                        )
-                        Text(
-                            text = siteUrl,
-                            fontSize = 14.sp,
-                            color = colorResource(id = color.color_on_surface),
-                            modifier = Modifier
-                                .padding(vertical = 4.dp)
-                        )
-                        Text(
-                            text = stringResource(string.settings_switch_store),
-                            color = colorResource(color.color_secondary),
-                            fontSize = 14.sp,
-                            modifier = Modifier
-                                .clickable(
-                                    enabled = true,
-                                    onClickLabel = stringResource(id = string.settings_switch_store),
-                                    role = Role.Button
-                                ) { onSwitchStore() }
-                        )
-                    }
-                }
+            Column(modifier = Modifier.weight(1f)) {
+                MoreMenuMyStoreHeader(userAvatarUrl, siteName, siteUrl, onSwitchStore)
             }
-
-            IconButton(
-                onClick = { onSettingsClick() },
-            ) {
-                Icon(
-                    painter = painterResource(id = drawable.ic_more_screen_settings),
-                    contentDescription = stringResource(id = string.settings),
-                    tint = Color.Unspecified
-                )
-            }
+            SettingsButton(onSettingsClick)
         }
-        Spacer(modifier = Modifier.height(32.dp))
         LazyVerticalGrid(
             cells = Fixed(2),
-            contentPadding = PaddingValues(ButtonDefaults.IconSpacing),
-            horizontalArrangement = Arrangement.spacedBy(ButtonDefaults.IconSpacing),
-            verticalArrangement = Arrangement.spacedBy(ButtonDefaults.IconSpacing)
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 28.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             itemsIndexed(uiButtons) { _, item ->
                 MoreMenuButton(
@@ -131,6 +97,63 @@ fun MoreMenu(
                     onClick = item.onClick
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun SettingsButton(onSettingsClick: () -> Unit) {
+    IconButton(
+        onClick = { onSettingsClick() },
+    ) {
+        Icon(
+            painter = painterResource(id = drawable.ic_more_screen_settings),
+            contentDescription = stringResource(id = string.settings),
+            tint = Color.Unspecified
+        )
+    }
+}
+
+@Composable
+private fun MoreMenuMyStoreHeader(
+    userAvatarUrl: String,
+    siteName: String,
+    siteUrl: String,
+    onSwitchStore: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .clickable(
+                enabled = true,
+                onClickLabel = stringResource(id = string.settings_switch_store),
+                role = Role.Button,
+                onClick = onSwitchStore
+            )
+    ) {
+        Column {
+            Spacer(modifier = Modifier.height(8.dp))
+            MoreMenuUserAvatar(avatarUrl = userAvatarUrl)
+        }
+        Spacer(modifier = Modifier.width(16.dp))
+        Column {
+            Text(
+                text = siteName,
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+                color = colorResource(id = color.color_on_surface)
+            )
+            Text(
+                text = siteUrl,
+                fontSize = 14.sp,
+                color = colorResource(id = color.color_on_surface),
+                modifier = Modifier
+                    .padding(vertical = 4.dp)
+            )
+            Text(
+                text = stringResource(string.settings_switch_store),
+                color = colorResource(color.color_secondary),
+                fontSize = 14.sp
+            )
         }
     }
 }
