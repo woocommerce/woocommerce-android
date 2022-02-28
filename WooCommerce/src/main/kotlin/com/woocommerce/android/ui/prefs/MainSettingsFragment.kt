@@ -47,7 +47,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
 
     interface AppSettingsListener {
         fun onRequestLogout()
-        fun onSiteChanged()
         fun onProductAddonsOptionChanged(enabled: Boolean)
         fun onOrderCreationOptionChanged(enabled: Boolean)
     }
@@ -200,7 +199,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         // knows it has changed
         if (requestCode == RequestCodes.SITE_PICKER && resultCode == Activity.RESULT_OK) {
             updateStoreSettings()
-            settingsListener.onSiteChanged()
             presenter.setupJetpackInstallOption()
         }
     }

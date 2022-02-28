@@ -18,11 +18,10 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
 import com.woocommerce.android.util.AnalyticsUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PreferencesWrapper
 import dagger.android.DispatchingAndroidInjector
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -31,8 +30,6 @@ class AppSettingsActivity :
     AppSettingsListener,
     AppSettingsContract.View {
     companion object {
-        private const val KEY_SITE_CHANGED = "key_site_changed"
-        const val RESULT_CODE_SITE_CHANGED = Activity.RESULT_FIRST_USER
         const val RESULT_CODE_BETA_OPTIONS_CHANGED = 2
         const val KEY_BETA_OPTION_CHANGED = "key_beta_option_changed"
     }
@@ -44,7 +41,6 @@ class AppSettingsActivity :
     @Inject lateinit var notificationMessageHandler: NotificationMessageHandler
 
     private val sharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
-    private var siteChanged = false
     private var isBetaOptionChanged = false
 
     private lateinit var binding: ActivityAppSettingsBinding
@@ -63,13 +59,9 @@ class AppSettingsActivity :
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         savedInstanceState?.let {
-            siteChanged = it.getBoolean(KEY_SITE_CHANGED)
             isBetaOptionChanged = it.getBoolean(KEY_BETA_OPTION_CHANGED)
         }
 
-        if (siteChanged) {
-            setResult(RESULT_CODE_SITE_CHANGED)
-        }
         if (isBetaOptionChanged) {
             setResult(RESULT_CODE_BETA_OPTIONS_CHANGED)
         }
@@ -86,7 +78,6 @@ class AppSettingsActivity :
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putBoolean(KEY_SITE_CHANGED, siteChanged)
         outState.putBoolean(KEY_BETA_OPTION_CHANGED, isBetaOptionChanged)
         super.onSaveInstanceState(outState)
     }
@@ -100,18 +91,6 @@ class AppSettingsActivity :
             finish()
             true
         }
-    }
-
-    /**
-     * User switched sites from the main settings fragment, set the result code so the calling activity
-     * will know the site changed
-     */
-    override fun onSiteChanged() {
-        if (FeatureFlag.CARD_READER.isEnabled()) presenter.clearCardReaderData()
-        siteChanged = true
-        setResult(RESULT_CODE_SITE_CHANGED)
-
-        prefs.resetSitePreferences()
     }
 
     override fun onRequestLogout() {
@@ -165,7 +144,6 @@ class AppSettingsActivity :
                     )
                 )
 
-                if (FeatureFlag.CARD_READER.isEnabled()) presenter.clearCardReaderData()
                 presenter.logout()
             }
             .setNegativeButton(R.string.back) { _, _ ->
