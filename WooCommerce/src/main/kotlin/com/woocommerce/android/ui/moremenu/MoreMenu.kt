@@ -4,7 +4,10 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.foundation.*
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells.Fixed
 import androidx.compose.foundation.lazy.LazyVerticalGrid
@@ -12,15 +15,20 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.*
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -33,7 +41,9 @@ import com.bumptech.glide.request.transition.Transition
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
-import com.woocommerce.android.ui.moremenu.MenuButtonType.*
+import com.woocommerce.android.ui.moremenu.MenuButtonType.PRODUCT_REVIEWS
+import com.woocommerce.android.ui.moremenu.MenuButtonType.VIEW_ADMIN
+import com.woocommerce.android.ui.moremenu.MenuButtonType.VIEW_STORE
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuViewState
 
 @ExperimentalFoundationApi
@@ -123,7 +133,9 @@ fun MoreMenu(
             horizontalArrangement = Arrangement.spacedBy(ButtonDefaults.IconSpacing),
             verticalArrangement = Arrangement.spacedBy(ButtonDefaults.IconSpacing)
         ) {
-            itemsIndexed(uiButtons) { _, item ->
+            itemsIndexed(
+                uiButtons.filter { it.isEnabled }
+            ) { _, item ->
                 MoreMenuButton(
                     text = item.text,
                     iconDrawable = item.icon,
