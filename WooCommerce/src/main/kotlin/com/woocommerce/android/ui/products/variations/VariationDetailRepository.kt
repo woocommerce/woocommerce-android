@@ -1,10 +1,10 @@
 package com.woocommerce.android.ui.products.variations
 
 import com.woocommerce.android.AppConstants
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_LOADED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_UPDATE_ERROR
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_UPDATE_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_LOADED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_UPDATE_ERROR
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_UPDATE_SUCCESS
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.toAppModel

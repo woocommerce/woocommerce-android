@@ -8,6 +8,7 @@ import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.DialogSimplePaymentsBinding
 import com.woocommerce.android.extensions.navigateSafely
@@ -54,7 +55,7 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
             viewModel.onDoneButtonClicked()
         }
         binding.imageClose.setOnClickListener {
-            AnalyticsTracker.track(AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_CANCELED)
+            AnalyticsTracker.track(AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_CANCELED)
             findNavController().navigateUp()
         }
 

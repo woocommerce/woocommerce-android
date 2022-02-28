@@ -6,6 +6,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_CONTEXT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
@@ -18,7 +19,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TO
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_CREATION
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.runWithContext
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
@@ -103,7 +103,7 @@ class OrderCreationViewModel @Inject constructor(
 
     fun onOrderStatusChanged(status: Order.Status) {
         AnalyticsTracker.track(
-            Stat.ORDER_STATUS_CHANGE,
+            AnalyticsEvent.ORDER_STATUS_CHANGE,
             mapOf(
                 KEY_FROM to _orderDraft.value.status.value,
                 KEY_TO to status.value,
@@ -123,7 +123,7 @@ class OrderCreationViewModel @Inject constructor(
 
     fun onProductSelected(remoteProductId: Long, variationId: Long? = null) {
         AnalyticsTracker.track(
-            Stat.ORDER_PRODUCT_ADD,
+            AnalyticsEvent.ORDER_PRODUCT_ADD,
             mapOf(KEY_FLOW to VALUE_FLOW_CREATION)
         )
         val uniqueId = variationId ?: remoteProductId
@@ -145,7 +145,7 @@ class OrderCreationViewModel @Inject constructor(
     fun onCustomerAddressEdited(billingAddress: Address, shippingAddress: Address) {
         val hasDifferentShippingDetails = _orderDraft.value.shippingAddress != _orderDraft.value.billingAddress
         AnalyticsTracker.track(
-            Stat.ORDER_CUSTOMER_ADD,
+            AnalyticsEvent.ORDER_CUSTOMER_ADD,
             mapOf(
                 KEY_FLOW to VALUE_FLOW_CREATION,
                 KEY_HAS_DIFFERENT_SHIPPING_DETAILS to hasDifferentShippingDetails
@@ -214,7 +214,7 @@ class OrderCreationViewModel @Inject constructor(
             viewState = viewState.copy(isProgressDialogShown = true)
             orderCreationRepository.placeOrder(order).fold(
                 onSuccess = {
-                    AnalyticsTracker.track(Stat.ORDER_CREATION_SUCCESS)
+                    AnalyticsTracker.track(AnalyticsEvent.ORDER_CREATION_SUCCESS)
                     triggerEvent(ShowSnackbar(string.order_creation_success_snackbar))
                     triggerEvent(ShowCreatedOrder(it.id))
                 },
@@ -272,7 +272,7 @@ class OrderCreationViewModel @Inject constructor(
 
     private fun trackOrderCreationFailure(it: Throwable) {
         AnalyticsTracker.track(
-            Stat.ORDER_CREATION_FAILED,
+            AnalyticsEvent.ORDER_CREATION_FAILED,
             mapOf(
                 KEY_ERROR_CONTEXT to it::class.java.simpleName,
                 KEY_ERROR_TYPE to it,
@@ -283,7 +283,7 @@ class OrderCreationViewModel @Inject constructor(
 
     private fun trackCreateOrderButtonClick() {
         AnalyticsTracker.track(
-            Stat.ORDER_CREATE_BUTTON_TAPPED,
+            AnalyticsEvent.ORDER_CREATE_BUTTON_TAPPED,
             mapOf(
                 KEY_STATUS to _orderDraft.value.status,
                 KEY_PRODUCT_COUNT to products.value?.count(),

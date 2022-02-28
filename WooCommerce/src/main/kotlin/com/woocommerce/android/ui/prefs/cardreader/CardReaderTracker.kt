@@ -2,9 +2,9 @@ package com.woocommerce.android.ui.prefs.cardreader
 
 import androidx.annotation.VisibleForTesting
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.*
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType
@@ -23,7 +23,7 @@ class CardReaderTracker @Inject constructor(
 ) {
     @VisibleForTesting
     fun track(
-        stat: Stat,
+        stat: AnalyticsEvent,
         properties: MutableMap<String, Any> = mutableMapOf(),
         errorType: String? = null,
         errorDescription: String? = null,
@@ -95,8 +95,8 @@ class CardReaderTracker @Inject constructor(
 
     private fun getPluginNameReasonPrefix(pluginType: PluginType): String {
         return when (pluginType) {
-            PluginType.WOOCOMMERCE_PAYMENTS -> "wcpay"
-            PluginType.STRIPE_EXTENSION_GATEWAY -> "stripe_extension"
+            WOOCOMMERCE_PAYMENTS -> "wcpay"
+            STRIPE_EXTENSION_GATEWAY -> "stripe_extension"
         }
     }
 
@@ -128,7 +128,7 @@ class CardReaderTracker @Inject constructor(
     }
 
     private fun trackSoftwareUpdateEvent(
-        event: AnalyticsTracker.Stat,
+        event: AnalyticsEvent,
         requiredUpdate: Boolean,
         errorDescription: String? = null,
     ) {
