@@ -14,12 +14,18 @@ import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardi
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
+import com.woocommerce.android.util.CoroutineDispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 class CardReaderTracker @Inject constructor(
     private val trackerWrapper: AnalyticsTrackerWrapper,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val selectedSite: SelectedSite,
+    private val wooStore: WooCommerceStore,
+    private val dispatchers: CoroutineDispatchers,
 ) {
     @VisibleForTesting
     fun track(
@@ -28,19 +34,22 @@ class CardReaderTracker @Inject constructor(
         errorType: String? = null,
         errorDescription: String? = null,
     ) {
-        addPreferredPluginSlugProperty(properties)
+        GlobalScope.launch(context = dispatchers.io) {
+            addPreferredPluginSlugProperty(properties)
+            addStoreCountryCodeProperty(properties)
 
-        val isError = !errorType.isNullOrBlank() || !errorDescription.isNullOrEmpty()
-        if (isError) {
-            trackerWrapper.track(
-                stat,
-                properties,
-                this.javaClass.simpleName,
-                errorType,
-                errorDescription
-            )
-        } else {
-            trackerWrapper.track(stat, properties)
+            val isError = !errorType.isNullOrBlank() || !errorDescription.isNullOrEmpty()
+            if (isError) {
+                trackerWrapper.track(
+                    stat,
+                    properties,
+                    this.javaClass.simpleName,
+                    errorType,
+                    errorDescription
+                )
+            } else {
+                trackerWrapper.track(stat, properties)
+            }
         }
     }
 
@@ -56,6 +65,10 @@ class CardReaderTracker @Inject constructor(
             STRIPE_EXTENSION_GATEWAY -> "woocommerce-gateway-stripe"
             null -> "unknown"
         }
+    }
+
+    private fun addStoreCountryCodeProperty(properties: MutableMap<String, Any>) {
+        properties["country"] = wooStore.getStoreCountryCode(selectedSite.get()) ?: "unknown"
     }
 
     fun trackOnboardingLearnMoreTapped() {
