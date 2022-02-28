@@ -42,6 +42,6 @@ class MyStoreStatsUsageTracksEventEmitterTest {
 private fun MyStoreStatsUsageTracksEventEmitter.interacted(vararg dates: String) {
     dates.forEach {
         val date = DateTimeUtils.dateUTCFromIso8601(it)
-        interacted(at = date)
+        interacted(date)
     }
 }
