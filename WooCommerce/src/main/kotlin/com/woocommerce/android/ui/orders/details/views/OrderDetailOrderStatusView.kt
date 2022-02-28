@@ -99,10 +99,6 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
         }
     }
 
-    fun setEditButtonContentDescription(contentDescription: String) {
-        binding.orderStatusEditButton.contentDescription = contentDescription
-    }
-
     enum class Mode {
         OrderCreation, OrderEdit
     }

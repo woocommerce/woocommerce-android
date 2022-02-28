@@ -111,9 +111,6 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                 }
             }
         )
-        orderStatusView.setEditButtonContentDescription(
-            contentDescription = getString(R.string.order_creation_status_edit_content_description)
-        )
     }
 
     private fun FragmentOrderCreationFormBinding.initNotesSection() {
