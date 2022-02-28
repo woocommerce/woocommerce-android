@@ -19,12 +19,15 @@ class UnseenReviewsCountHandler @Inject constructor(
 ) {
     private val unseenReviewsCount: SharedFlow<Int> =
         selectedSite.observe()
-            .filterNotNull()
             .flatMapLatest { site ->
-                notificationStore.observeNotificationsForSite(
-                    site = site,
-                    filterBySubtype = listOf(STORE_REVIEW.toString())
-                )
+                if (site != null) {
+                    notificationStore.observeNotificationsForSite(
+                        site = site,
+                        filterBySubtype = listOf(STORE_REVIEW.toString())
+                    )
+                } else {
+                    flowOf(emptyList())
+                }
             }
             .map { it.count { notification -> !notification.read } }
             .distinctUntilChanged()
