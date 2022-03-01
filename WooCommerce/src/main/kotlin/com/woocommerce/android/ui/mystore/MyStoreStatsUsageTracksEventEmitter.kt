@@ -28,6 +28,12 @@ class MyStoreStatsUsageTracksEventEmitter @Inject constructor(
     fun interacted(interactionTime: Date = Date()) {
         println("🦀 $this interacted at $interactionTime")
 
+        // Check if they were idle for some time.
+        lastInteractionTime?.let {
+            if (DateTimeUtils.secondsBetween(interactionTime, it) >= IDLE_TIME_THRESHOLD) {
+                reset()
+            }
+        }
 
         val firstInteractionTime = firstInteractionTime ?: run {
             interactions = 1
