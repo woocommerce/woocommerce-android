@@ -77,7 +77,8 @@ class MyStoreStatsUsageTracksEventEmitter @Inject constructor(
         lastInteractionTime = interactionTime
 
         if (DateTimeUtils.secondsBetween(interactionTime, firstInteractionTime) >= MINIMUM_INTERACTION_TIME &&
-            interactions >= INTERACTIONS_THRESHOLD) {
+            interactions >= INTERACTIONS_THRESHOLD
+        ) {
             reset()
             analyticsTrackerWrapper.track(USED_ANALYTICS)
         }
