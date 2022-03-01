@@ -5,7 +5,6 @@ import android.view.View
 import android.view.ViewGroup.LayoutParams
 import androidx.core.view.children
 import androidx.core.view.isVisible
-import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -22,10 +21,7 @@ import com.woocommerce.android.R.attr
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentMyStoreBinding
-import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.setClickableText
-import com.woocommerce.android.extensions.startHelpActivity
-import com.woocommerce.android.extensions.verticalOffsetChanges
+import com.woocommerce.android.extensions.*
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
@@ -37,9 +33,7 @@ import com.woocommerce.android.util.*
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.NetworkUtils
@@ -94,7 +88,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         override fun onTabReselected(tab: TabLayout.Tab) {}
     }
 
-    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+    @OptIn(FlowPreview::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
@@ -140,18 +134,8 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
 
         tabLayout.addOnTabSelectedListener(tabSelectedListener)
 
-        val scrollChanges = callbackFlow<Int> {
-            val listener = NestedScrollView.OnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
-                println("scroll $scrollY $oldScrollY ${v.isInTouchMode} ${v.isPressed}")
-                trySend(scrollY)
-            }
-
-            binding.statsScrollView.setOnScrollChangeListener(listener)
-            awaitClose { binding.statsScrollView.setOnScrollChangeListener(null as NestedScrollView.OnScrollChangeListener?) }
-        }
-
-        scrollChanges
-            .debounce(400)
+        binding.statsScrollView.scrollChanges()
+            .debounce(300)
             .onEach {
                 println("shiki: collecting scrollChangeEvents $it")
             }
