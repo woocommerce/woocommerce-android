@@ -1,4 +1,5 @@
-# This pipeline is meant to be run via the Buildkite API, and is only used for release builds
+# This pipeline is meant to be run via the Buildkite API, and is
+# only used for release builds
 
 # Nodes with values to reuse in the pipeline.
 common_params:
@@ -11,4 +12,4 @@ steps:
     command: ".buildkite/commands/release-build.sh"
     plugins: *common_plugins
     notify:
-    - slack: "#build-and-ship"
+      - slack: "#build-and-ship"
