@@ -234,7 +234,6 @@ workflows:
       - Lint
       - Dependency Tree Diff
       - Test
-      - Installable Build
       - Ensure Screenshots Tests Build
       - Connected Tests:
           name: UI Tests (Pixel 2 | API 28)
