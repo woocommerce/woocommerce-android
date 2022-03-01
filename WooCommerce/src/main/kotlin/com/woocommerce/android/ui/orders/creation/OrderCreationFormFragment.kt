@@ -95,6 +95,14 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     }
 
     private fun FragmentOrderCreationFormBinding.initView() {
+        initOrderStatusView()
+        initNotesSection()
+        initCustomerSection()
+        initProductsSection()
+        initPaymentSection()
+    }
+
+    private fun FragmentOrderCreationFormBinding.initOrderStatusView() {
         orderStatusView.initView(
             mode = OrderDetailOrderStatusView.Mode.OrderCreation,
             editOrderStatusClickListener = {
@@ -102,6 +110,12 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                     viewModel.onEditOrderStatusClicked(it)
                 }
             }
+        )
+    }
+
+    private fun FragmentOrderCreationFormBinding.initNotesSection() {
+        notesSection.setEditButtonContentDescription(
+            contentDescription = getString(R.string.order_creation_customer_note_edit_content_description)
         )
         notesSection.setAddButtons(
             listOf(
@@ -116,6 +130,12 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         notesSection.setOnEditButtonClicked {
             viewModel.onCustomerNoteClicked()
         }
+        notesSection.setEditButtonContentDescription(
+            contentDescription = getString(R.string.order_creation_customer_note_edit_content_description)
+        )
+    }
+
+    private fun FragmentOrderCreationFormBinding.initCustomerSection() {
         customerSection.setAddButtons(
             listOf(
                 AddButton(
@@ -129,6 +149,12 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         customerSection.setOnEditButtonClicked {
             viewModel.onCustomerClicked()
         }
+        customerSection.setEditButtonContentDescription(
+            contentDescription = getString(R.string.order_creation_customer_edit_content_description)
+        )
+    }
+
+    private fun FragmentOrderCreationFormBinding.initProductsSection() {
         productsSection.setAddButtons(
             listOf(
                 AddButton(
@@ -139,6 +165,9 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                 )
             )
         )
+    }
+
+    private fun FragmentOrderCreationFormBinding.initPaymentSection() {
         paymentSection.shippingLayout.isVisible = FeatureFlag.ORDER_CREATION_M2.isEnabled()
         paymentSection.shippingButton.setOnClickListener {
             viewModel.onShippingButtonClicked()
