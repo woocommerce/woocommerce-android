@@ -3,7 +3,10 @@ package com.woocommerce.android.widgets
 import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
+import android.text.InputFilter
 import android.text.InputType
+import android.text.Spanned
+import android.text.method.DigitsKeyListener
 import android.util.AttributeSet
 import android.util.SparseArray
 import android.util.TypedValue
@@ -28,6 +31,7 @@ import org.wordpress.android.fluxc.utils.WCCurrencyUtils
 import java.math.BigDecimal
 import java.math.RoundingMode.HALF_UP
 import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.max
@@ -174,6 +178,83 @@ private abstract class CurrencyEditText(context: Context) : TextInputEditText(co
 
     abstract fun initView(formattingParameters: CurrencyFormattingParameters?)
     abstract fun setValue(value: BigDecimal)
+}
+
+private class RegularCurrencyEditText(context: Context) : CurrencyEditText(context) {
+    private var isChangingText = false
+    private var isInitialized = false
+
+    override var supportsNegativeValues: Boolean
+        get() = this.inputType and InputType.TYPE_NUMBER_FLAG_SIGNED != 0
+        set(value) {
+            if (value) {
+                this.inputType =
+                    InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL or InputType.TYPE_NUMBER_FLAG_SIGNED
+            } else {
+                this.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+            }
+        }
+
+    private val _value = MutableLiveData<BigDecimal?>()
+    override val value: LiveData<BigDecimal?> = _value
+
+    override fun initView(formattingParameters: CurrencyFormattingParameters?) {
+        val decimalSeparator = formattingParameters?.currencyDecimalSeparator
+            ?: DecimalFormatSymbols(Locale.getDefault()).decimalSeparator.toString()
+        val numberOfDecimals = formattingParameters?.currencyDecimalNumber ?: 2
+
+        val acceptedDigits = "0123456789.$decimalSeparator${if (supportsNegativeValues) "-" else ""}"
+        keyListener = DigitsKeyListener.getInstance(acceptedDigits)
+        filters =
+            arrayOf(InputFilter { source: CharSequence, start: Int, end: Int, dest: Spanned, dstart: Int, dend: Int ->
+                val newValue = StringBuilder(dest).apply {
+                    replace(dstart, dend, source.subSequence(start, end).toString())
+                }.toString().replace(decimalSeparator, ".")
+                return@InputFilter when {
+                    !supportsEmptyState && newValue.isEmpty() -> {
+                        if (source.isEmpty()) "0" else ""
+                    }
+                    newValue.toBigDecimalOrNull() == null -> ""
+                    newValue.contains(".") &&
+                        newValue.substringAfterLast(".").length > numberOfDecimals -> ""
+                    else -> source.toString().replace(".", decimalSeparator)
+                }
+            })
+
+        isInitialized = true
+        if (!supportsEmptyState) {
+            setValue(BigDecimal.ZERO)
+            setSelection(text!!.length)
+        }
+    }
+
+    override fun setValue(value: BigDecimal) {
+        setText(value.toPlainString())
+    }
+
+    override fun onTextChanged(text: CharSequence?, start: Int, lengthBefore: Int, lengthAfter: Int) {
+        if (isInitialized && !isChangingText) {
+            isChangingText = true
+
+            _value.value = text?.toString()?.toBigDecimalOrNull()
+            if (text != null) {
+                val cleanedText = text.trimStart('-').trimStart('0')
+                if (cleanedText.isNotEmpty()) {
+                    val updatedText = "${if (text.startsWith('-')) "-" else ""}$cleanedText"
+                    val currentSelectionPosition = selectionStart
+                    setText(updatedText)
+
+                    try {
+                        setSelection(currentSelectionPosition + updatedText.length - text.length)
+                    } catch (e: IndexOutOfBoundsException) {
+                        // Ignore
+                    }
+                }
+            }
+
+            isChangingText = false
+        }
+    }
 }
 
 /**
