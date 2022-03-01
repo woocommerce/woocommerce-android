@@ -18,13 +18,12 @@ import com.google.android.material.textfield.TextInputLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.isNotEqualTo
-import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.models.CurrencyFormattingParameters
 import com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView.EditTextLayoutMode.FILL
 import com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView.EditTextLayoutMode.WRAP
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.fluxc.model.WCSettingsModel
 import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.*
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.WCCurrencyUtils
 import java.math.BigDecimal
 import java.math.RoundingMode.HALF_UP
@@ -44,15 +43,14 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
         private const val KEY_SUPER_STATE = "WC-OUTLINED-CURRENCY-VIEW-SUPER-STATE"
     }
 
-    private val currencyEditText: CurrencyEditText = CurrencyEditText(context).apply {
+    private val currencyEditText: FullFormattingCurrencyEditText = FullFormattingCurrencyEditText(context).apply {
         imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI
     }
 
     val editText: TextInputEditText
         get() = currencyEditText
 
-    @Inject lateinit var wcStore: WooCommerceStore
-    @Inject lateinit var selectedSite: SelectedSite
+    @Inject lateinit var parameterRepository: ParameterRepository
 
     var supportsNegativeValues: Boolean = true
         set(value) {
@@ -106,19 +104,16 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
             )
         }
 
-        val siteSettings = selectedSite.getIfExists()?.let {
-            wcStore.getSiteSettings(it)
-        }
+        val siteParameters = parameterRepository.getParameters()
 
-        siteSettings?.let {
-            val currencySymbol = wcStore.getSiteCurrency(selectedSite.get(), siteSettings.currencyCode)
-            when (siteSettings.currencyPosition) {
-                LEFT, LEFT_SPACE -> prefixText = currencySymbol
-                RIGHT, RIGHT_SPACE -> suffixText = currencySymbol
+        siteParameters.currencyFormattingParameters?.let {
+            when (it.currencyPosition) {
+                LEFT, LEFT_SPACE -> prefixText = siteParameters.currencySymbol.orEmpty()
+                RIGHT, RIGHT_SPACE -> suffixText = siteParameters.currencySymbol.orEmpty()
             }
         }
         currencyEditText.initView(
-            siteSettings = siteSettings,
+            formattingParameters = siteParameters.currencyFormattingParameters,
             supportsNegativeValues = supportsNegativeValues,
             supportsEmptyState = supportsEmptyState
         )
@@ -176,17 +171,20 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
     }
 }
 
-private class CurrencyEditText @JvmOverloads constructor(
+private class FullFormattingCurrencyEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.editTextStyle
 ) : TextInputEditText(context, attrs, defStyleAttr) {
     private var isChangingText = false
+
     private val decimals
-        get() = siteSettings?.currencyDecimalNumber ?: 0
+        get() = formattingParameters?.currencyDecimalNumber ?: 0
 
     private var isInitialized = false
-    private var siteSettings: WCSettingsModel? = null
+
+    private var formattingParameters: CurrencyFormattingParameters? = null
+
     var supportsNegativeValues: Boolean
         get() = this.inputType and InputType.TYPE_NUMBER_FLAG_SIGNED != 0
         set(value) {
@@ -203,11 +201,11 @@ private class CurrencyEditText @JvmOverloads constructor(
     val value: LiveData<BigDecimal?> = _value
 
     fun initView(
-        siteSettings: WCSettingsModel?,
+        formattingParameters: CurrencyFormattingParameters?,
         supportsNegativeValues: Boolean,
         supportsEmptyState: Boolean
     ) {
-        this.siteSettings = siteSettings
+        this.formattingParameters = formattingParameters
         this.supportsNegativeValues = supportsNegativeValues
         this.supportsEmptyState = supportsEmptyState
         isInitialized = true
@@ -277,9 +275,15 @@ private class CurrencyEditText @JvmOverloads constructor(
     }
 
     private fun formatValue(value: BigDecimal): String {
-        val siteSettings = siteSettings
-        return if (siteSettings != null) {
-            WCCurrencyUtils.formatCurrencyForDisplay(value.toDouble(), siteSettings, Locale.ROOT)
+        val formattingParameters = formattingParameters
+        return if (formattingParameters != null) {
+            WCCurrencyUtils.formatCurrencyForDisplay(
+                rawValue = value.toDouble(),
+                currencyDecimalNumber = formattingParameters.currencyDecimalNumber,
+                currencyDecimalSeparator = formattingParameters.currencyDecimalSeparator,
+                currencyThousandSeparator = formattingParameters.currencyThousandSeparator,
+                locale = Locale.ROOT
+            )
         } else {
             val decimalFormat = DecimalFormat("0.${"0".repeat(decimals)}")
             decimalFormat.format(value)
