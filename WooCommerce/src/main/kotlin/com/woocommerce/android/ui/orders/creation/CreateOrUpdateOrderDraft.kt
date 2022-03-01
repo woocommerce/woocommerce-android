@@ -20,7 +20,6 @@ class CreateOrUpdateOrderDraft @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(changes: Flow<Order>, retryTrigger: Flow<Unit>): Flow<OrderDraftUpdateStatus> {
         return changes
-            .filter { it.items.isNotEmpty() }
             .distinctUntilChanged { old, new ->
                 areEquivalent(old, new)
             }
@@ -57,7 +56,6 @@ class CreateOrUpdateOrderDraft @Inject constructor(
 
     private fun areEquivalent(old: Order, new: Order): Boolean {
         // Make sure to update the prices only when items did change
-        // TODO M2: we need to include more checks here: fees and shipping lines...
         val hasSameItems = old.items
             .filter {
                 // Check only non-zero quantities, to avoid circular update when removing products
