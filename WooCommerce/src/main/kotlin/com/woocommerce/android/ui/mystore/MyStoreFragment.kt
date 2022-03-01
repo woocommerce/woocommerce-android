@@ -54,7 +54,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
 
         val DEFAULT_STATS_GRANULARITY = StatsGranularity.DAYS
 
-        private const val SCROLL_CHANGE_EVENTS_DEBOUNCE_DURATION = 300L
+        private const val SCROLL_CHANGE_EVENTS_DEBOUNCE_DURATION = 1000L
     }
 
     private val viewModel: MyStoreViewModel by viewModels()
