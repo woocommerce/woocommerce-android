@@ -17,6 +17,7 @@ PROJECT_ROOT_FOLDER = File.dirname(File.expand_path(__dir__))
 BUILD_PRODUCTS_PATH = File.join(PROJECT_ROOT_FOLDER, 'artifacts')
 INSTALLABLE_BUILD_DOMAIN = 'https://d2twmm2nzpx3bg.cloudfront.net'
 RELEASE_NOTES_PATH = File.join(PROJECT_ROOT_FOLDER, 'WooCommerce', 'metadata', 'release_notes.txt')
+PLAY_STORE_PACKAGE_NAME = 'com.woocommerce.android'
 
 ########################################################################
 # Environment
@@ -325,15 +326,11 @@ platform :android do
     android_build_preflight unless options[:skip_prechecks]
 
     # Create the file names
-    version = android_get_release_version
-    build_bundle(version: version, flavor: 'Vanilla')
-
-    aab_file_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', aab_file_name(version))
-
+    aab_file_path = build_bundle
     UI.error("Unable to find a build artifact at #{aab_file_path}") unless File.exist? aab_file_path
 
     upload_to_play_store(
-      package_name: 'com.woocommerce.android',
+      package_name: PLAY_STORE_PACKAGE_NAME,
       aab: aab_file_path,
       track: 'production',
       release_status: 'draft',
@@ -370,14 +367,11 @@ platform :android do
     android_build_preflight unless options[:skip_prechecks]
 
     # Create the file names
-    version = android_get_release_version
-    build_bundle(version: version, flavor: 'Vanilla')
-
-    aab_file_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', aab_file_name(version))
+    aab_file_path = build_bundle
     UI.error("Unable to find a build artifact at #{aab_file_path}") unless File.exist? aab_file_path
 
     upload_to_play_store(
-      package_name: 'com.woocommerce.android',
+      package_name: PLAY_STORE_PACKAGE_NAME,
       aab: aab_file_path,
       track: 'beta',
       release_status: 'draft',
@@ -536,32 +530,33 @@ platform :android do
   # This lane builds an app bundle
   # -----------------------------------------------------------------------------------
   # Usage:
-  # bundle exec fastlane build_bundle [skip_confirm:<skip confirm>]
+  # bundle exec fastlane build_bundle
   #####################################################################################
   desc 'Builds an app bundle'
-  lane :build_bundle do |options|
-    # Create the file names
-    version = options[:version]
-    name = aab_file_name(version)
-    aab_file = 'WooCommerce-vanilla-release.aab'
-    output_dir = 'WooCommerce/build/outputs/bundle/'
-    build_dir = 'artifacts/'
+  lane :build_bundle do
 
-    # Build
-    Dir.chdir('.') do
-      UI.message('Cleaning branch...')
-      gradle(task: 'clean')
-      UI.message('Running lint...')
-      gradle(task: 'lint', flavor: options[:flavor], build_type: 'Release')
-      UI.message("Building #{version['name']} / #{version['code']} - #{aab_file}...")
-      gradle(task: 'bundle', flavor: options[:flavor], build_type: 'Release')
-    end
+    gradle(task: 'clean') unless is_ci
+    gradle(task: 'lint')
 
-    Dir.chdir('..') do
-      sh("mkdir -p #{build_dir} && cp -v #{output_dir}#{options[:flavor].downcase}Release/#{aab_file} #{build_dir}#{name}")
-      UI.message("Bundle ready: #{name}")
-    end
-    "#{build_dir}#{name}"
+    gradle(
+      build_type: "Release",
+      flavor: 'Vanilla',
+      task: 'bundle'
+    )
+
+    copy_artifacts(
+      target_path: BUILD_PRODUCTS_PATH,
+      artifacts: [
+        lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH],
+        lane_context[SharedValues::GRADLE_MAPPING_TXT_OUTPUT_PATH],
+        lane_context[SharedValues::GRADLE_OUTPUT_JSON_OUTPUT_PATH],
+      ]
+    )
+
+    # Copy the file into a place with a predictable name for the GitHub Release Artifact
+    FileUtils.cp(lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH], File.join(BUILD_PRODUCTS_PATH, aab_file_name))
+
+    lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH]
   end
   #####################################################################################
   # screenshots
@@ -594,7 +589,6 @@ platform :android do
     #               # reject { |locale| locale[:glotpress] == 'zh-cn' }.
     #               map { |locale| locale[:google_play] }
     #           end
-
 
     locales = ['en-EN']
 
@@ -704,17 +698,16 @@ platform :android do
 
   # Creates a new GitHub Release for the given version
   #
-  # @param [Hash<String>] version The version to create. Expects keys "name" and "code"
   # @param [Bool] prerelease If true, the GitHub Release will have the prerelease flag
   #
   private_lane :create_gh_release do |options|
-    version = options[:version]
+    version = android_get_release_version
     prerelease = options[:prerelease] || false
 
     # APKs built on CI are not signed with master key, which means Google Sign-In won't work with those.
     # So don't attach them to the release, as this ends up being confusing for beta-testers.
-    apk_file_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', universal_apk_name(version)) unless is_ci
-    aab_file_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', aab_file_name(version))
+    apk_file_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', universal_apk_name) unless is_ci
+    aab_file_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', aab_file_name
     release_assets = [apk_file_path, aab_file_path].compact
 
     create_release(
@@ -735,11 +728,13 @@ platform :android do
   #####################################################################################
   # Utils
   #####################################################################################
-  def aab_file_name(version)
+  def aab_file_name
+    version = android_get_release_version
     "wcandroid-#{version['name']}.aab"
   end
 
-  def universal_apk_name(version)
+  def universal_apk_name
+    version = android_get_release_version
     "wcandroid-#{version['name']}-universal.apk"
   end
 
