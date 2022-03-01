@@ -697,7 +697,7 @@ platform :android do
     File.open(options[:relese_notes_path], 'a') do |f|
       f.puts('<en-US>')
       f.puts("#{options[:version_name]}:")
-      f.puts(File.open(en_release_notes_path).read)
+      f.puts(File.read(en_release_notes_path))
       f.puts('</en-US>')
     end
   end
