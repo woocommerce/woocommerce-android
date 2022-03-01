@@ -26,7 +26,6 @@ import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus
-import com.woocommerce.android.ui.orders.creation.fees.OrderCreationEditFeeViewModel.FeeType
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.*
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -58,6 +57,7 @@ class OrderCreationViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val PARAMETERS_KEY = "parameters_key"
+        private const val ORDER_CUSTOM_FEE_NAME = "order_custom_fee"
     }
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
@@ -160,11 +160,6 @@ class OrderCreationViewModel @Inject constructor(
         }
     }
 
-    @Suppress("UnusedPrivateMember")
-    fun onFeeEdited(feeValue: BigDecimal, feeType: FeeType) {
-        // TODO handle fee submission
-    }
-
     fun onEditOrderStatusClicked(currentStatus: OrderStatus) {
         launch(dispatchers.io) {
             orderDetailRepository
@@ -201,7 +196,9 @@ class OrderCreationViewModel @Inject constructor(
     }
 
     fun onFeeButtonClicked() {
-        triggerEvent(EditFee)
+        val currentOrderTotal = _orderDraft.value.total
+        val currentFeeTotal = _orderDraft.value.feesLines.firstOrNull()?.total
+        triggerEvent(EditFee(currentOrderTotal, currentFeeTotal))
     }
 
     fun onShippingButtonClicked() {
@@ -307,6 +304,24 @@ class OrderCreationViewModel @Inject constructor(
                 it.copy(methodId = null)
             }
             draft.copy(shippingLines = shippingLines)
+        }
+    }
+
+    fun onFeeEdited(feeValue: BigDecimal) {
+        val newFee = _orderDraft.value.feesLines.firstOrNull { it.name != null }
+            ?: Order.FeeLine.EMPTY
+
+        _orderDraft.update { draft ->
+            listOf(newFee.copy(name = ORDER_CUSTOM_FEE_NAME, total = feeValue))
+                .let { draft.copy(feesLines = it) }
+        }
+    }
+
+    fun onFeeRemoved() {
+        _orderDraft.update { draft ->
+            draft.feesLines
+                .map { it.copy(name = null) }
+                .let { draft.copy(feesLines = it) }
         }
     }
 

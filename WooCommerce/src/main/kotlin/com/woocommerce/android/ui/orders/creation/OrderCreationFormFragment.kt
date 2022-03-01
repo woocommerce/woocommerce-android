@@ -19,9 +19,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationFormBinding
 import com.woocommerce.android.databinding.LayoutOrderCreationCustomerInfoBinding
 import com.woocommerce.android.databinding.OrderCreationPaymentSectionBinding
-import com.woocommerce.android.extensions.handleDialogResult
-import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.extensions.*
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.base.BaseFragment
@@ -41,6 +39,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
+import java.math.BigDecimal
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -172,10 +171,6 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         paymentSection.shippingButton.setOnClickListener {
             viewModel.onShippingButtonClicked()
         }
-        paymentSection.feesLayout.isVisible = FeatureFlag.ORDER_CREATION_M2.isEnabled()
-        paymentSection.editFeesButton.setOnClickListener {
-            viewModel.onFeeButtonClicked()
-        }
     }
 
     private fun LayoutOrderCreationCustomerInfoBinding.changeState() {
@@ -211,6 +206,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             }
             new.isUpdatingOrderDraft.takeIfNotEqualTo(old?.isUpdatingOrderDraft) { show ->
                 binding.paymentSection.loadingProgress.isVisible = show
+                binding.paymentSection.feeButton.isEnabled = show.not()
             }
             new.showOrderUpdateSnackbar.takeIfNotEqualTo(old?.showOrderUpdateSnackbar) { show ->
                 showOrHideErrorSnackBar(show)
@@ -221,6 +217,8 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     }
 
     private fun bindPaymentSection(paymentSection: OrderCreationPaymentSectionBinding, newOrderData: Order) {
+        paymentSection.bindFeesSubSection(newOrderData)
+
         paymentSection.root.isVisible = newOrderData.items.isNotEmpty()
         paymentSection.taxLayout.isVisible = FeatureFlag.ORDER_CREATION_M2.isEnabled()
         paymentSection.taxCalculationHint.isVisible = !FeatureFlag.ORDER_CREATION_M2.isEnabled()
@@ -242,6 +240,32 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         paymentSection.productsTotalValue.text = bigDecimalFormatter(newOrderData.productsTotal)
         paymentSection.taxValue.text = bigDecimalFormatter(newOrderData.totalTax)
         paymentSection.orderTotalValue.text = bigDecimalFormatter(newOrderData.total)
+    }
+
+    private fun OrderCreationPaymentSectionBinding.bindFeesSubSection(newOrderData: Order) {
+        FeatureFlag.ORDER_CREATION_M2.isEnabled()
+            .apply { feeLayout.isVisible = this }
+            .also { if (it.not()) return }
+
+        feeButton.setOnClickListener { viewModel.onFeeButtonClicked() }
+
+        val currentFeeTotal = newOrderData.feesLines
+            .firstOrNull { it.name != null }
+            ?.total
+            ?: BigDecimal.ZERO
+
+        val hasFee = currentFeeTotal.isNotEqualTo(BigDecimal.ZERO)
+
+        if (hasFee) {
+            feeButton.setText(R.string.order_creation_payment_fee)
+            feeButton.setIconResource(0)
+            feeValue.isVisible = true
+            feeValue.text = bigDecimalFormatter(currentFeeTotal)
+        } else {
+            feeButton.setText(R.string.order_creation_add_fee)
+            feeButton.setIconResource(R.drawable.ic_add)
+            feeValue.isVisible = false
+        }
     }
 
     private fun bindNotesSection(notesSection: OrderCreationSectionView, customerNote: String) {

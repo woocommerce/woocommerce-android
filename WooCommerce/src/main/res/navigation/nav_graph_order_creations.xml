@@ -55,11 +55,20 @@
             />
         <action
             android:id="@+id/action_orderCreationFragment_to_orderCreationEditFeeFragment"
-            app:destination="@id/orderCreationEditFeeFragment"
+            app:destination="@id/orderCreationFeeFragment"
             app:enterAnim="@anim/activity_slide_in_from_right"
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:popExitAnim="@anim/activity_slide_out_to_right" >
+            <argument
+                android:name="orderTotal"
+                app:argType="java.math.BigDecimal" />
+            <argument
+                android:name="currentFeeValue"
+                app:argType="java.math.BigDecimal"
+                app:nullable="true"
+                android:defaultValue="@null"/>
+        </action>
     </fragment>
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
@@ -148,8 +157,17 @@
             app:argType="com.woocommerce.android.model.Order$ShippingLine" />
     </fragment>
     <fragment
-        android:id="@+id/orderCreationEditFeeFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.fees.OrderCreationEditFeeFragment"
-        android:label="OrderCreationEditFeeFragment"
-        tools:layout="@layout/fragment_order_creation_edit_fee" />
+        android:id="@+id/orderCreationFeeFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.fees.OrderCreationFeeFragment"
+        android:label="OrderCreationFeeFragment"
+        tools:layout="@layout/fragment_order_creation_fee" >
+        <argument
+            android:name="orderTotal"
+            app:argType="java.math.BigDecimal" />
+        <argument
+            android:name="currentFeeValue"
+            app:argType="java.math.BigDecimal"
+            app:nullable="true"
+            android:defaultValue="@null"/>
+    </fragment>
 </navigation>
