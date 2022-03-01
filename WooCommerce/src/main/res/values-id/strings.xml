@@ -88,7 +88,7 @@ Language: id
     <string name="order_creation_new_customer_add_different_shipping_address">Tambahkan alamat pengiriman lain</string>
     <string name="order_creation_product_instock">Tersedia</string>
     <string name="order_creation_product_stock_quantity">%s tersedia</string>
-    <string name="order_creation_new_customer">Pelanggan baru</string>
+    <string name="order_creation_customer_details">Pelanggan baru</string>
     <string name="order_creation_add_products">Tambahkan Produk</string>
     <string name="order_creation_products">Produk</string>
     <string name="order_creation_add_customer">Tambahkan pelanggan</string>

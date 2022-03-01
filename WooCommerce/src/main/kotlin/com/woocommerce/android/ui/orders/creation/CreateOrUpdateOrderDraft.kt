@@ -81,8 +81,16 @@ class CreateOrUpdateOrderDraft @Inject constructor(
                     this.total isEqualTo newLine.total
             }
 
+        val hasSameFeeLines = old.feesLines
+            .filter { it.name != null }
+            .areSameAs(new.feesLines) { newLine ->
+                this.name == newLine.name &&
+                    this.total isEqualTo newLine.total
+            }
+
         return hasSameItems &&
             hasSameShippingLines &&
+            hasSameFeeLines &&
             old.shippingAddress.isSamePhysicalAddress(new.shippingAddress) &&
             old.billingAddress.isSamePhysicalAddress(new.billingAddress)
     }

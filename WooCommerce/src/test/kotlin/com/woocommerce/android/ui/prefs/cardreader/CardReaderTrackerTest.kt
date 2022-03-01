@@ -71,6 +71,38 @@ class CardReaderTrackerTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when onboarding state PluginIsNotSupportedInTheCountry woo, then wcpay_is_not_supported_in_CA tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            cardReaderTracker.trackOnboardingState(
+                CardReaderOnboardingState.PluginIsNotSupportedInTheCountry(
+                    WOOCOMMERCE_PAYMENTS,
+                    "CA"
+                )
+            )
+
+            verify(trackerWrapper).track(
+                eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
+                check { assertThat(it["reason"]).isEqualTo("wcpay_is_not_supported_in_CA") }
+            )
+        }
+
+    @Test
+    fun `when onboarding state PluginIsNotSupportedInTheCountry str, then stripe_extension_is_not_supported_in_US`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            cardReaderTracker.trackOnboardingState(
+                CardReaderOnboardingState.PluginIsNotSupportedInTheCountry(
+                    STRIPE_EXTENSION_GATEWAY,
+                    "US"
+                )
+            )
+
+            verify(trackerWrapper).track(
+                eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
+                check { assertThat(it["reason"]).isEqualTo("stripe_extension_is_not_supported_in_US") }
+            )
+        }
+
+    @Test
     fun `when onboarding state StripeAccountCountryNotSupported, then reason=account_country_not_supported tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             cardReaderTracker.trackOnboardingState(
