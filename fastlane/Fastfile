@@ -67,7 +67,10 @@ platform :android do
   # This lane executes the steps planned on code freeze
   # -----------------------------------------------------------------------------------
   # Usage:
-  # bundle exec fastlane code_freeze codefreeze_version:<version> [update_release_branch_version:<update flag>] [skip_confirm:<skip confirm>]
+  # bundle exec fastlane code_freeze
+  #  codefreeze_version:<version>
+  #  [update_release_branch_version:<update flag>]
+  #  [skip_confirm:<skip confirm>]
   #
   # Example:
   # bundle exec fastlane code_freeze
@@ -501,9 +504,14 @@ platform :android do
                         source_locale: 'en-US',
                         download_path: download_path)
 
-    android_create_xml_release_notes(download_path: download_path, build_number: (options[:build_number]).to_s, locales: SUPPORTED_LOCALES.map do |hsh|
-                                                                                                                           [hsh[:glotpress], hsh[:google_play]]
-                                                                                                                         end)
+    android_create_xml_release_notes(
+      download_path: download_path,
+      build_number: (options[:build_number]).to_s,
+      locales: SUPPORTED_LOCALES.map do |hsh|
+        [hsh[:glotpress], hsh[:google_play]]
+      end
+    )
+
     add_us_release_notes(relese_notes_path: "#{download_path}/release_notes.xml", version_name: options[:version])
     sh("git add #{download_path} && (git diff-index --quiet HEAD || git commit -m \"Update metadata translations for #{options[:version]}\") && git push")
   end
