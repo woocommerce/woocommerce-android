@@ -1,0 +1,14 @@
+AllCops:
+  NewCops: enable
+
+Metrics/BlockLength:
+  Exclude:
+    - fastlane/Fastfile
+
+Style/AsciiComments:
+  Exclude:
+    - fastlane/Fastfile
+
+Naming/VariableNumber:
+  Exclude:
+    - fastlane/Fastfile

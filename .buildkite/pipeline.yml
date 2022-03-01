@@ -57,3 +57,6 @@ steps:
     command: ".buildkite/commands/installable-build.sh"
     if: "build.pull_request.id != null || build.pull_request.draft"
     plugins: *common_plugins
+
+  - label: "Validate Fastfile"
+    command: "bundle install && bundle exec rubocop"
