@@ -36,7 +36,9 @@ class ProductDetailBottomSheetAdapter(
     override fun getItemCount() = options.size
 
     fun setProductDetailBottomSheetOptions(optionList: List<ProductDetailBottomSheetUiItem>) {
-        if (options.isEmpty()) {
+        if (optionList == options) {
+            return
+        } else if (options.isEmpty()) {
             options.addAll(optionList)
             notifyDataSetChanged()
         } else {
