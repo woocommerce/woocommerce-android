@@ -74,7 +74,6 @@ class AppSettingsPresenterTest {
     @Test
     fun `cleanPaymentsData with initialized manager should disconnect reader`() {
         if (FeatureFlag.CARD_READER.isEnabled()) {
-
             coroutinesTestRule.testDispatcher.runBlockingTest {
                 appSettingsPresenter.logout()
 

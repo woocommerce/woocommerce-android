@@ -11,7 +11,6 @@ import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
 class ClearCardReaderDataTest : BaseUnitTest() {
-
     private val cardReaderManager: CardReaderManager = mock()
 
     private val sut = ClearCardReaderData(cardReaderManager)
