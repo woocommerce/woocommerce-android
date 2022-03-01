@@ -11,7 +11,7 @@ interface CardReaderTrackingInfoProvider {
     val trackingInfo: TrackingInfo
 }
 
-interface CardReaderTrackingInfoBuilder {
+interface CardReaderTrackingInfoKeeper {
     fun setCountry(country: String?)
     fun setCurrency(currency: String)
     fun setPaymentMethodType(paymentMethodType: String?)
@@ -19,7 +19,7 @@ interface CardReaderTrackingInfoBuilder {
 }
 
 @Singleton
-class CardReaderTrackingInfoImpl @Inject constructor() : CardReaderTrackingInfoProvider, CardReaderTrackingInfoBuilder {
+class CardReaderTrackingInfoImpl @Inject constructor() : CardReaderTrackingInfoProvider, CardReaderTrackingInfoKeeper {
     @Volatile
     private var trackingInfoInternal = TrackingInfo()
 
@@ -55,7 +55,7 @@ data class TrackingInfo(
 abstract class CardReaderTrackingModule {
     @Singleton
     @Binds
-    abstract fun provideCardReaderTrackingInfoBuilder(impl: CardReaderTrackingInfoImpl): CardReaderTrackingInfoBuilder
+    abstract fun provideCardReaderTrackingInfoBuilder(impl: CardReaderTrackingInfoImpl): CardReaderTrackingInfoKeeper
 
     @Singleton
     @Binds

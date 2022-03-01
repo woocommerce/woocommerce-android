@@ -11,7 +11,7 @@ import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForSup
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.prefs.cardreader.CardReaderTrackingInfoBuilder
+import com.woocommerce.android.ui.prefs.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.prefs.cardreader.InPersonPaymentsCanadaFeatureFlag
 import com.woocommerce.android.ui.prefs.cardreader.StripeExtensionFeatureFlag
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState.*
@@ -54,7 +54,7 @@ class CardReaderOnboardingChecker @Inject constructor(
     private val stripeExtensionFeatureFlag: StripeExtensionFeatureFlag,
     private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag,
     private val cardReaderConfigFactory: CardReaderConfigFactory,
-    private val cardReaderTrackingInfoBuilder: CardReaderTrackingInfoBuilder,
+    private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
 ) {
     private val supportedCountries: List<String>
         get() = if (inPersonPaymentsCanadaFeatureFlag.isEnabled()) {
@@ -81,7 +81,7 @@ class CardReaderOnboardingChecker @Inject constructor(
 
     @Suppress("ReturnCount", "ComplexMethod")
     private suspend fun fetchOnboardingState(): CardReaderOnboardingState {
-        val countryCode = getStoreCountryCode().also { cardReaderTrackingInfoBuilder.setCountry(it) }
+        val countryCode = getStoreCountryCode().also { cardReaderTrackingInfoKeeper.setCountry(it) }
         if (!isCountrySupported(countryCode)) return StoreCountryNotSupported(countryCode)
         val cardReaderConfig = cardReaderConfigFactory.getCardReaderConfigFor(countryCode)
             as CardReaderConfigForSupportedCountry
