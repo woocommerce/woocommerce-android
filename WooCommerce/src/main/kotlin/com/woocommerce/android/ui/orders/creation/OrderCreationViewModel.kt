@@ -83,9 +83,6 @@ class OrderCreationViewModel @Inject constructor(
             items.map { item -> mapItemToProductUiModel(item) }
         }.asLiveData()
 
-    private val currentFee: Order.FeeLine?
-        get() = _orderDraft.value.feesLines.firstOrNull()
-
     private val retryOrderDraftUpdateTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
     val currentDraft
@@ -199,7 +196,9 @@ class OrderCreationViewModel @Inject constructor(
     }
 
     fun onFeeButtonClicked() {
-        triggerEvent(EditFee(_orderDraft.value.total, currentFee?.total))
+        val currentOrderTotal = _orderDraft.value.total
+        val currentFeeTotal = _orderDraft.value.feesLines.firstOrNull()?.total
+        triggerEvent(EditFee(currentOrderTotal, currentFeeTotal))
     }
 
     fun onShippingButtonClicked() {
@@ -309,13 +308,11 @@ class OrderCreationViewModel @Inject constructor(
     }
 
     fun onFeeEdited(feeValue: BigDecimal) {
-        val newFee = Order.FeeLine.EMPTY.copy(
-            name = ORDER_CUSTOM_FEE_NAME,
-            total = feeValue
-        )
+        val newFee = _orderDraft.value.feesLines.firstOrNull { it.name != null }
+            ?: Order.FeeLine.EMPTY
+
         _orderDraft.update { draft ->
-            draft.feesLines.map { it.copy(name = null) }
-                .toMutableList().apply { add(newFee) }
+            listOf(newFee.copy(name = ORDER_CUSTOM_FEE_NAME, total = feeValue))
                 .let { draft.copy(feesLines = it) }
         }
     }

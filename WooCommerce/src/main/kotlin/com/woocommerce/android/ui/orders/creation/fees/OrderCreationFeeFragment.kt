@@ -11,6 +11,7 @@ import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationFeeBinding
+import com.woocommerce.android.extensions.drop
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
@@ -39,11 +40,6 @@ class OrderCreationFeeFragment :
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        editFeeViewModel.start()
-    }
-
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         menu.clear()
@@ -65,7 +61,7 @@ class OrderCreationFeeFragment :
             decimals = editFeeViewModel.currencyDecimals,
             currencyFormatter = currencyFormatter
         )
-        feeAmountEditText.value.observe(viewLifecycleOwner) {
+        feeAmountEditText.value.drop(1).observe(viewLifecycleOwner) {
             editFeeViewModel.onFeeAmountChanged(it)
         }
         feePercentageEditText.setOnTextChangedListener {

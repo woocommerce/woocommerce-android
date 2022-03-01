@@ -88,7 +88,7 @@ Language: ar
     <string name="order_creation_new_customer_add_different_shipping_address">إضافة عنوان شحن مختلف</string>
     <string name="order_creation_product_instock">متوفر في المخزون</string>
     <string name="order_creation_product_stock_quantity">%s متوفر في المخزون</string>
-    <string name="order_creation_new_customer">العميل الجديد</string>
+    <string name="order_creation_customer_details">العميل الجديد</string>
     <string name="order_creation_add_products">إضافة منتج</string>
     <string name="order_creation_products">المنتجات</string>
     <string name="order_creation_add_customer">إضافة عميل</string>

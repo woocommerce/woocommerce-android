@@ -2,7 +2,9 @@ package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
 import androidx.annotation.VisibleForTesting
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus
-import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.*
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_COMPLETED
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_PENDING
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForSupportedCountry
@@ -106,7 +108,7 @@ class CardReaderOnboardingChecker @Inject constructor(
         if (
             preferredPlugin.type == STRIPE_EXTENSION_GATEWAY &&
             !cardReaderConfig.isStripeExtensionSupported
-        ) return StoreCountryNotSupported(countryCode)
+        ) return PluginIsNotSupportedInTheCountry(preferredPlugin.type, countryCode!!)
 
         val fluxCPluginType = preferredPlugin.type.toInPersonPaymentsPluginType()
 
@@ -253,6 +255,14 @@ sealed class CardReaderOnboardingState(
      * Store is not located in one of the supported countries.
      */
     data class StoreCountryNotSupported(val countryCode: String?) : CardReaderOnboardingState()
+
+    /**
+     * Preferred Plugin is not supported in the country
+     */
+    data class PluginIsNotSupportedInTheCountry(
+        override val preferredPlugin: PluginType,
+        val countryCode: String
+    ) : CardReaderOnboardingState()
 
     /**
      * WCPay plugin is not installed on the store.

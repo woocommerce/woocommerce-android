@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products.tags
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.text.HtmlCompat
@@ -12,7 +11,6 @@ import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.tags.ProductTagsAdapter.ProductTagViewHolder
 
 class ProductTagsAdapter(
-    private val context: Context,
     private val loadMoreListener: OnLoadMoreListener,
     private val clickListener: OnProductTagClickListener
 ) : RecyclerView.Adapter<ProductTagViewHolder>() {
@@ -51,16 +49,11 @@ class ProductTagsAdapter(
             return
         }
 
-        if (this.productTags.isEmpty()) {
-            this.productTags.addAll(productsTags)
-            notifyDataSetChanged()
-        } else {
-            val diffResult =
-                DiffUtil.calculateDiff(ProductTagItemDiffUtil(this.productTags, productsTags))
-            this.productTags.clear()
-            this.productTags.addAll(productsTags)
-            diffResult.dispatchUpdatesTo(this)
-        }
+        val diffResult =
+            DiffUtil.calculateDiff(ProductTagItemDiffUtil(this.productTags, productsTags))
+        this.productTags.clear()
+        this.productTags.addAll(productsTags)
+        diffResult.dispatchUpdatesTo(this)
     }
 
     fun hasFilter() = currentFilter.isNotEmpty()
@@ -72,7 +65,6 @@ class ProductTagsAdapter(
     fun setFilter(filter: String) {
         if (filter != currentFilter) {
             currentFilter = filter
-            notifyDataSetChanged()
         }
     }
 
