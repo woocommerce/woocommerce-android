@@ -36,6 +36,8 @@ import javax.inject.Inject
 import kotlin.math.max
 import kotlin.math.pow
 
+private const val DEFAULT_DECIMALS_NUMBER = 2
+
 @AndroidEntryPoint
 class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
     ctx: Context,
@@ -185,7 +187,9 @@ private abstract class CurrencyEditText(context: Context) : TextInputEditText(co
     abstract fun setValue(value: BigDecimal)
 }
 
-private class RegularCurrencyEditText(context: Context) : CurrencyEditText(context) {
+private class RegularCurrencyEditText(context: Context) : CurrencyEditText(context), InputFilter {
+    private var numberOfDecimals: Int = DEFAULT_DECIMALS_NUMBER
+    private lateinit var decimalSeparator: String
     private var isChangingText = false
     private var isInitialized = false
 
@@ -193,8 +197,9 @@ private class RegularCurrencyEditText(context: Context) : CurrencyEditText(conte
         get() = this.inputType and InputType.TYPE_NUMBER_FLAG_SIGNED != 0
         set(value) {
             if (value) {
-                this.inputType =
-                    InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL or InputType.TYPE_NUMBER_FLAG_SIGNED
+                this.inputType = InputType.TYPE_CLASS_NUMBER or
+                    InputType.TYPE_NUMBER_FLAG_DECIMAL or
+                    InputType.TYPE_NUMBER_FLAG_SIGNED
             } else {
                 this.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
             }
@@ -204,41 +209,13 @@ private class RegularCurrencyEditText(context: Context) : CurrencyEditText(conte
     override val value: LiveData<BigDecimal?> = _value
 
     override fun initView(formattingParameters: CurrencyFormattingParameters?) {
-        val decimalSeparator = formattingParameters?.currencyDecimalSeparator
+        decimalSeparator = formattingParameters?.currencyDecimalSeparator
             ?: DecimalFormatSymbols(Locale.getDefault()).decimalSeparator.toString()
-        val numberOfDecimals = formattingParameters?.currencyDecimalNumber ?: 2
+        numberOfDecimals = formattingParameters?.currencyDecimalNumber ?: 2
 
         val acceptedDigits = "0123456789.$decimalSeparator${if (supportsNegativeValues) "-" else ""}"
         keyListener = DigitsKeyListener.getInstance(acceptedDigits)
-        filters = arrayOf(
-            InputFilter { source: CharSequence, start: Int, end: Int, dest: Spanned, dstart: Int, dend: Int ->
-                val newValue = StringBuilder(dest).apply {
-                    replace(dstart, dend, source.subSequence(start, end).toString())
-                }.toString().replace(decimalSeparator, ".")
-
-                return@InputFilter when {
-                    !supportsEmptyState && (newValue.isEmpty() || newValue == "-") -> {
-                        // Prevent clearing the field if supportsEmptyState is false
-                        if (source.isEmpty()) "0" else ""
-                    }
-                    !supportsEmptyState && newValue == "0-" -> {
-                        // Allow entering minus sign at the end of the field if supportsEmptyState is false
-                        // and value is 0, we will fix the text in onTextChanged
-                        source
-                    }
-                    newValue.toBigDecimalOrNull() == null -> {
-                        // Prevent entering non-valid numbers
-                        ""
-                    }
-                    newValue.contains(".") &&
-                        newValue.substringAfterLast(".").length > numberOfDecimals -> {
-                        // Prevent entering more decimals than what allowed
-                        ""
-                    }
-                    else -> source.toString().replace(".", decimalSeparator)
-                }
-            }
-        )
+        filters = arrayOf(this)
 
         isInitialized = true
         if (!supportsEmptyState) {
@@ -251,6 +228,42 @@ private class RegularCurrencyEditText(context: Context) : CurrencyEditText(conte
         setText(value.toPlainString())
     }
 
+    override fun filter(
+        source: CharSequence,
+        start: Int,
+        end: Int,
+        dest: Spanned,
+        dstart: Int,
+        dend: Int
+    ): CharSequence {
+        val newValue = StringBuilder(dest).apply {
+            replace(dstart, dend, source.subSequence(start, end).toString())
+        }.toString().replace(decimalSeparator, ".")
+
+        return when {
+            !supportsEmptyState && (newValue.isEmpty() || newValue == "-") -> {
+                // Prevent clearing the field if supportsEmptyState is false
+                if (source.isEmpty()) "0" else ""
+            }
+            !supportsEmptyState && newValue == "0-" -> {
+                // Allow entering minus sign at the end of the field if supportsEmptyState is false
+                // and value is 0, we will fix the text in onTextChanged
+                source
+            }
+            newValue.toBigDecimalOrNull() == null -> {
+                // Prevent entering non-valid numbers
+                ""
+            }
+            newValue.contains(".") &&
+                newValue.substringAfterLast(".").length > numberOfDecimals -> {
+                // Prevent entering more decimals than what allowed
+                ""
+            }
+            else -> source.toString().replace(".", decimalSeparator)
+        }
+    }
+
+    @Suppress("TooGenericExceptionCaught", "NestedBlockDepth", "SwallowedException")
     override fun onTextChanged(text: CharSequence?, start: Int, lengthBefore: Int, lengthAfter: Int) {
         if (isInitialized && !isChangingText) {
             isChangingText = true
