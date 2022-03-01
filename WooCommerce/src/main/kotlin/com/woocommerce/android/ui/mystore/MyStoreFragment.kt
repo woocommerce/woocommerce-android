@@ -34,7 +34,10 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.NetworkUtils
 import java.util.*
@@ -50,6 +53,8 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         fun newInstance() = MyStoreFragment()
 
         val DEFAULT_STATS_GRANULARITY = StatsGranularity.DAYS
+
+        private const val SCROLL_CHANGE_EVENTS_DEBOUNCE_DURATION = 300L
     }
 
     private val viewModel: MyStoreViewModel by viewModels()
@@ -135,13 +140,8 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         tabLayout.addOnTabSelectedListener(tabSelectedListener)
 
         binding.statsScrollView.scrollChanges()
-            .debounce(300)
-            .onEach {
-                println("shiki: collecting scrollChangeEvents $it")
-            }
-            .onCompletion {
-                println("shiki: completed")
-            }
+            .debounce(SCROLL_CHANGE_EVENTS_DEBOUNCE_DURATION)
+            .onEach { usageTracksEventEmitter.interacted() }
             .launchIn(viewLifecycleOwner.lifecycleScope)
 
         setupStateObservers()
