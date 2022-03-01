@@ -54,7 +54,7 @@ class OrderCreationFeeViewModel @Inject constructor(
             ?: BigDecimal.ZERO
 
     init {
-        viewState = viewState.copy(shouldDisplayPercentageSwitch = navArgs.orderTotal > BigDecimal.ZERO)
+        viewState = viewState.copy(shouldDisplayPercentageSwitch = orderSubtotal > BigDecimal.ZERO)
         navArgs.currentFeeValue?.let {
             viewState = viewState.copy(
                 feeAmount = it,
