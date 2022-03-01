@@ -18,7 +18,6 @@ import androidx.lifecycle.MutableLiveData
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.woocommerce.android.R
-import com.woocommerce.android.R.attr
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -41,7 +40,7 @@ import kotlin.math.pow
 class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
-    @AttrRes defStyleRes: Int = attr.wcMaterialOutlinedCurrencyEditTextViewStyle,
+    @AttrRes defStyleRes: Int = R.attr.wcMaterialOutlinedCurrencyEditTextViewStyle,
     private val usesFullFormatting: Boolean = false
 ) : TextInputLayout(ctx, attrs, defStyleRes) {
     companion object {
@@ -211,21 +210,35 @@ private class RegularCurrencyEditText(context: Context) : CurrencyEditText(conte
 
         val acceptedDigits = "0123456789.$decimalSeparator${if (supportsNegativeValues) "-" else ""}"
         keyListener = DigitsKeyListener.getInstance(acceptedDigits)
-        filters =
-            arrayOf(InputFilter { source: CharSequence, start: Int, end: Int, dest: Spanned, dstart: Int, dend: Int ->
+        filters = arrayOf(
+            InputFilter { source: CharSequence, start: Int, end: Int, dest: Spanned, dstart: Int, dend: Int ->
                 val newValue = StringBuilder(dest).apply {
                     replace(dstart, dend, source.subSequence(start, end).toString())
                 }.toString().replace(decimalSeparator, ".")
+
                 return@InputFilter when {
-                    !supportsEmptyState && newValue.isEmpty() -> {
+                    !supportsEmptyState && (newValue.isEmpty() || newValue == "-") -> {
+                        // Prevent clearing the field if supportsEmptyState is false
                         if (source.isEmpty()) "0" else ""
                     }
-                    newValue.toBigDecimalOrNull() == null -> ""
+                    !supportsEmptyState && newValue == "0-" -> {
+                        // Allow entering minus sign at the end of the field if supportsEmptyState is false
+                        // and value is 0, we will fix the text in onTextChanged
+                        source
+                    }
+                    newValue.toBigDecimalOrNull() == null -> {
+                        // Prevent entering non-valid numbers
+                        ""
+                    }
                     newValue.contains(".") &&
-                        newValue.substringAfterLast(".").length > numberOfDecimals -> ""
+                        newValue.substringAfterLast(".").length > numberOfDecimals -> {
+                        // Prevent entering more decimals than what allowed
+                        ""
+                    }
                     else -> source.toString().replace(".", decimalSeparator)
                 }
-            })
+            }
+        )
 
         isInitialized = true
         if (!supportsEmptyState) {
@@ -242,8 +255,18 @@ private class RegularCurrencyEditText(context: Context) : CurrencyEditText(conte
         if (isInitialized && !isChangingText) {
             isChangingText = true
 
+            val text = if (text.toString() == "0-") {
+                // The filter allows entering minus at the end of the text if supportsEmptyState is false
+                // Here we fix the ordering of the text
+                val updatedText = "-0"
+                setText(updatedText)
+                setSelection(updatedText.length)
+                updatedText
+            } else text
+
             _value.value = text?.toString()?.toBigDecimalOrNull()
             if (text != null) {
+                // Trim any leading unwanted zeros
                 val cleanedText = text.trimStart('-').trimStart('0')
                 if (cleanedText.isNotEmpty()) {
                     val updatedText = "${if (text.startsWith('-')) "-" else ""}$cleanedText"
