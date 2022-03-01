@@ -308,10 +308,13 @@ class OrderCreationViewModel @Inject constructor(
     }
 
     fun onFeeEdited(feeValue: BigDecimal) {
-        val newFee = (_orderDraft.value.feesLines.firstOrNull() ?: Order.FeeLine.EMPTY)
-            .copy(name = ORDER_CUSTOM_FEE_NAME, total = feeValue)
+        val newFee = _orderDraft.value.feesLines.firstOrNull { it.name != null }
+            ?: Order.FeeLine.EMPTY
 
-        _orderDraft.update { it.copy(feesLines = listOf(newFee)) }
+        _orderDraft.update { draft ->
+            listOf(newFee.copy(name = ORDER_CUSTOM_FEE_NAME, total = feeValue))
+                .let { draft.copy(feesLines = it) }
+        }
     }
 
     fun onFeeRemoved() {
