@@ -43,7 +43,7 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
         private const val KEY_SUPER_STATE = "WC-OUTLINED-CURRENCY-VIEW-SUPER-STATE"
     }
 
-    private val currencyEditText: FullFormattingCurrencyEditText = FullFormattingCurrencyEditText(context).apply {
+    private val currencyEditText: CurrencyEditText = FullFormattingCurrencyEditText(context).apply {
         imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI
     }
 
@@ -112,11 +112,7 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
                 RIGHT, RIGHT_SPACE -> suffixText = siteParameters.currencySymbol.orEmpty()
             }
         }
-        currencyEditText.initView(
-            formattingParameters = siteParameters.currencyFormattingParameters,
-            supportsNegativeValues = supportsNegativeValues,
-            supportsEmptyState = supportsEmptyState
-        )
+        currencyEditText.initView(siteParameters.currencyFormattingParameters)
     }
 
     val value: LiveData<BigDecimal?>
@@ -171,11 +167,21 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
     }
 }
 
-private class FullFormattingCurrencyEditText @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = R.attr.editTextStyle
-) : TextInputEditText(context, attrs, defStyleAttr) {
+private abstract class CurrencyEditText(context: Context) : TextInputEditText(context, null, R.attr.editTextStyle) {
+    var supportsEmptyState: Boolean = true
+    abstract var supportsNegativeValues: Boolean
+    abstract val value: LiveData<BigDecimal?>
+
+    abstract fun initView(formattingParameters: CurrencyFormattingParameters?)
+    abstract fun setValue(value: BigDecimal)
+}
+
+/**
+ * A [TextInputEditText] that provides full formatting experience
+ */
+private class FullFormattingCurrencyEditText(
+    context: Context
+) : CurrencyEditText(context) {
     private var isChangingText = false
 
     private val decimals
@@ -185,7 +191,7 @@ private class FullFormattingCurrencyEditText @JvmOverloads constructor(
 
     private var formattingParameters: CurrencyFormattingParameters? = null
 
-    var supportsNegativeValues: Boolean
+    override var supportsNegativeValues: Boolean
         get() = this.inputType and InputType.TYPE_NUMBER_FLAG_SIGNED != 0
         set(value) {
             if (value) {
@@ -195,19 +201,13 @@ private class FullFormattingCurrencyEditText @JvmOverloads constructor(
             }
         }
 
-    var supportsEmptyState: Boolean = true
-
     private val _value = MutableLiveData<BigDecimal?>()
-    val value: LiveData<BigDecimal?> = _value
+    override val value: LiveData<BigDecimal?> = _value
 
-    fun initView(
-        formattingParameters: CurrencyFormattingParameters?,
-        supportsNegativeValues: Boolean,
-        supportsEmptyState: Boolean
+    override fun initView(
+        formattingParameters: CurrencyFormattingParameters?
     ) {
         this.formattingParameters = formattingParameters
-        this.supportsNegativeValues = supportsNegativeValues
-        this.supportsEmptyState = supportsEmptyState
         isInitialized = true
         if (!supportsEmptyState) {
             setValue(BigDecimal.ZERO)
@@ -215,7 +215,7 @@ private class FullFormattingCurrencyEditText @JvmOverloads constructor(
         }
     }
 
-    fun setValue(value: BigDecimal) {
+    override fun setValue(value: BigDecimal) {
         setText(formatValue(value))
     }
 
