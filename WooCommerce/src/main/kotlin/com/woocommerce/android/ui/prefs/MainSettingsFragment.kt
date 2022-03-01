@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.prefs
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.Spannable
@@ -14,7 +13,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
-import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
@@ -190,17 +188,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         super.onDestroyView()
         _binding = null
         presenter.dropView()
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        // if we're returning from the site picker, make sure the new store is shown and the activity
-        // knows it has changed
-        if (requestCode == RequestCodes.SITE_PICKER && resultCode == Activity.RESULT_OK) {
-            updateStoreSettings()
-            presenter.setupJetpackInstallOption()
-        }
     }
 
     /**
