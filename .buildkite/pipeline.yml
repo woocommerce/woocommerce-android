@@ -58,6 +58,10 @@ steps:
       echo "--- 🔬 Testing"
       cp gradle.properties-example gradle.properties
       avdmanager create avd --force --name pixel_xl --package 'system-images;android-30;google_apis_playstore;x86_64' --device "pixel_xl"
+      
+      sudo amazon-linux-extras install epel
+      sudo yum install -y pulseaudio-libs
+
       /usr/local/android/emulator/emulator -avd pixel_xl
       ./gradlew connectedVanillaDebugAndroidTest
 
