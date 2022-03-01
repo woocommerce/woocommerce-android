@@ -36,12 +36,7 @@ class ProductDetailBottomSheetAdapter(
     override fun getItemCount() = options.size
 
     fun setProductDetailBottomSheetOptions(optionList: List<ProductDetailBottomSheetUiItem>) {
-        if (optionList == options) {
-            return
-        } else if (options.isEmpty()) {
-            options.addAll(optionList)
-            notifyDataSetChanged()
-        } else {
+        if (optionList != options) {
             val diffResult =
                 DiffUtil.calculateDiff(
                     ProductDetailBottomSheetItemDiffUtil(options, optionList)
