@@ -58,7 +58,7 @@ steps:
       echo "--- 🔬 Testing"
       cp gradle.properties-example gradle.properties
       avdmanager create avd --force --name pixel_xl --package 'system-images;android-30;google_apis_playstore;x86_64' --device "pixel_xl"
-      /opt/android/emulator/emulator -avd pixel_xl
+      /usr/local/android/emulator/android/emulator/emulator -avd pixel_xl
       ./gradlew connectedVanillaDebugAndroidTest
 
     plugins: *common_plugins
