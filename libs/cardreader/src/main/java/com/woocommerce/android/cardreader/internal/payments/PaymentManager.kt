@@ -78,24 +78,28 @@ internal class PaymentManager(
         if (paymentIntent.status == PaymentIntentStatus.REQUIRES_CONFIRMATION) {
             paymentIntent = processPayment(paymentIntent)
             if (
-                paymentIntent.status != PaymentIntentStatus.REQUIRES_CAPTURE &&
-                (!paymentIntent.getCharges().isNullOrEmpty() &&
-                    paymentIntent.getCharges()[0].paymentMethodDetails?.interacPresentDetails == null)
+                paymentIntent.status != PaymentIntentStatus.REQUIRES_CAPTURE && isNotInteracPayment(paymentIntent)
             ) {
                 return@flow
             }
         }
 
-        if (
-            paymentIntent.status == PaymentIntentStatus.REQUIRES_CAPTURE ||
-            (paymentIntent.status == PaymentIntentStatus.SUCCEEDED &&
-                !paymentIntent.getCharges().isNullOrEmpty() &&
-                paymentIntent.getCharges()[0].paymentMethodDetails?.interacPresentDetails != null)
-        ) {
+        if (paymentIntent.status == PaymentIntentStatus.REQUIRES_CAPTURE || interacPaymentSucceeded(paymentIntent)) {
             retrieveReceiptUrl(paymentIntent)?.let { receiptUrl ->
                 capturePayment(receiptUrl, orderId, cardReaderStore, paymentIntent)
             }
         }
+    }
+
+    private fun isNotInteracPayment(paymentIntent: PaymentIntent): Boolean {
+        return !paymentIntent.getCharges().isNullOrEmpty() &&
+            paymentIntent.getCharges()[0].paymentMethodDetails?.interacPresentDetails == null
+    }
+
+    private fun interacPaymentSucceeded(paymentIntent: PaymentIntent): Boolean {
+        return paymentIntent.status == PaymentIntentStatus.SUCCEEDED &&
+            !paymentIntent.getCharges().isNullOrEmpty() &&
+            paymentIntent.getCharges()[0].paymentMethodDetails?.interacPresentDetails != null
     }
 
     private suspend fun FlowCollector<CardPaymentStatus>.retrieveReceiptUrl(
