@@ -53,7 +53,7 @@ class OrderCreationFeeViewModel @Inject constructor(
             ?.stripTrailingZeros()
             ?: BigDecimal.ZERO
 
-    fun start() {
+    init {
         navArgs.currentFeeValue?.let {
             viewState = viewState.copy(
                 feeAmount = it,
