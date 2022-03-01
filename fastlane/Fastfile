@@ -392,14 +392,14 @@ platform :android do
    # bundle exec fastlane trigger_release_build [branch_to_build:<branch_name>]
    #
    #####################################################################################
-   lane :trigger_release_build do | options |
-    circleci_trigger_job(
-      circle_ci_token: ENV["CIRCLE_CI_AUTH_TOKEN"],
-      repository: REPOSITORY_NAME,
-      organization: GH_ORG_NAME,
-      branch: options[:branch_to_build],
-      job_params: {"release_build" => true}
-    )
+  desc "Tell Buildkite to trigger a release build"
+  lane :trigger_release_build do | options |
+      buildkite_trigger_build(
+        buildkite_organization: 'automattic',
+        buildkite_pipeline: 'woocommerce-android',
+        branch: options[:branch_to_build] || git_branch,
+        pipeline_file: 'release-builds.yml'
+      )
   end
 
   #####################################################################################
