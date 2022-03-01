@@ -14,18 +14,13 @@ import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardi
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
-import com.woocommerce.android.util.CoroutineDispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 class CardReaderTracker @Inject constructor(
     private val trackerWrapper: AnalyticsTrackerWrapper,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val selectedSite: SelectedSite,
-    private val wooStore: WooCommerceStore,
-    private val dispatchers: CoroutineDispatchers,
+    private val cardReaderTrackingInfoProvider: CardReaderTrackingInfoProvider
 ) {
     @VisibleForTesting
     fun track(
@@ -34,22 +29,23 @@ class CardReaderTracker @Inject constructor(
         errorType: String? = null,
         errorDescription: String? = null,
     ) {
-        GlobalScope.launch(context = dispatchers.io) {
-            addPreferredPluginSlugProperty(properties)
-            addStoreCountryCodeProperty(properties)
+        addPreferredPluginSlugProperty(properties)
+        addStoreCountryCodeProperty(properties)
+        addCurrencyProperty(properties)
+        addPaymentMethodTypeProperty(properties)
+        addCardReaderModelProperty(properties)
 
-            val isError = !errorType.isNullOrBlank() || !errorDescription.isNullOrEmpty()
-            if (isError) {
-                trackerWrapper.track(
-                    stat,
-                    properties,
-                    this@CardReaderTracker.javaClass.simpleName,
-                    errorType,
-                    errorDescription
-                )
-            } else {
-                trackerWrapper.track(stat, properties)
-            }
+        val isError = !errorType.isNullOrBlank() || !errorDescription.isNullOrEmpty()
+        if (isError) {
+            trackerWrapper.track(
+                stat,
+                properties,
+                this@CardReaderTracker.javaClass.simpleName,
+                errorType,
+                errorDescription
+            )
+        } else {
+            trackerWrapper.track(stat, properties)
         }
     }
 
@@ -68,16 +64,27 @@ class CardReaderTracker @Inject constructor(
     }
 
     private fun addStoreCountryCodeProperty(properties: MutableMap<String, Any>) {
-        properties["country"] = wooStore.getStoreCountryCode(selectedSite.get()) ?: "unknown"
+        properties["country"] = cardReaderTrackingInfoProvider.trackingInfo.country ?: "unknown"
     }
 
-    fun trackOnboardingLearnMoreTapped() {
-        track(CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED)
+    private fun addCurrencyProperty(properties: MutableMap<String, Any>) {
+        val currency = cardReaderTrackingInfoProvider.trackingInfo.currency
+        if (!currency.isNullOrBlank()) {
+            properties["currency"] = currency
+        }
     }
 
-    fun trackOnboardingState(state: CardReaderOnboardingState) {
-        getOnboardingNotCompletedReason(state)?.let {
-            track(CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mutableMapOf("reason" to it))
+    private fun addPaymentMethodTypeProperty(properties: MutableMap<String, Any>) {
+        val paymentMethodType = cardReaderTrackingInfoProvider.trackingInfo.paymentMethodType
+        if (!paymentMethodType.isNullOrBlank()) {
+            properties["payment_method_type"] = paymentMethodType
+        }
+    }
+
+    private fun addCardReaderModelProperty(properties: MutableMap<String, Any>) {
+        val cardReaderModel = cardReaderTrackingInfoProvider.trackingInfo.cardReaderModel
+        if (!cardReaderModel.isNullOrBlank()) {
+            properties["card_reader_model"] = cardReaderModel
         }
     }
 
@@ -113,6 +120,16 @@ class CardReaderTracker @Inject constructor(
         }
     }
 
+    fun trackOnboardingLearnMoreTapped() {
+        track(CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED)
+    }
+
+    fun trackOnboardingState(state: CardReaderOnboardingState) {
+        getOnboardingNotCompletedReason(state)?.let {
+            track(CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mutableMapOf("reason" to it))
+        }
+    }
+
     fun trackSoftwareUpdateStarted(requiredUpdate: Boolean) {
         trackSoftwareUpdateEvent(CARD_READER_SOFTWARE_UPDATE_STARTED, requiredUpdate)
     }
@@ -137,21 +154,6 @@ class CardReaderTracker @Inject constructor(
             CARD_READER_SOFTWARE_UPDATE_FAILED,
             requiredUpdate,
             "User manually cancelled the flow"
-        )
-    }
-
-    private fun trackSoftwareUpdateEvent(
-        event: AnalyticsEvent,
-        requiredUpdate: Boolean,
-        errorDescription: String? = null,
-    ) {
-        val eventPropertiesMap = hashMapOf<String, Any>(
-            AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to if (requiredUpdate) REQUIRED_UPDATE else OPTIONAL_UPDATE,
-        )
-        track(
-            event,
-            eventPropertiesMap,
-            errorDescription = errorDescription
         )
     }
 
@@ -255,8 +257,23 @@ class CardReaderTracker @Inject constructor(
         track(CARD_READER_DISCONNECT_TAPPED)
     }
 
+    private fun trackSoftwareUpdateEvent(
+        event: AnalyticsEvent,
+        requiredUpdate: Boolean,
+        errorDescription: String? = null,
+    ) {
+        val eventPropertiesMap = hashMapOf<String, Any>(
+            AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to if (requiredUpdate) REQUIRED_UPDATE else OPTIONAL_UPDATE,
+        )
+        track(
+            event,
+            eventPropertiesMap,
+            errorDescription = errorDescription
+        )
+    }
+
     companion object {
-        private const val OPTIONAL_UPDATE: String = "Optional"
-        private const val REQUIRED_UPDATE: String = "Required"
+        private const val OPTIONAL_UPDATE = "Optional"
+        private const val REQUIRED_UPDATE = "Required"
     }
 }
