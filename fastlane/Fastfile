@@ -535,7 +535,6 @@ platform :android do
     # Create the file names
     version = options[:version]
     name = aab_file_name(version)
-    apk_name = universal_apk_name(version)
     aab_file = 'WooCommerce-vanilla-release.aab'
     output_dir = 'WooCommerce/build/outputs/bundle/'
     build_dir = 'artifacts/'
