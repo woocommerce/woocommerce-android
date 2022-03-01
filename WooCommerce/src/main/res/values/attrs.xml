@@ -92,9 +92,11 @@
             <enum name="fill" value="0" />
             <enum name="wrap" value="1" />
         </attr>
-        <attr name="editTextHeight" format="dimension" />
         <attr name="supportsNegativeValues" format="boolean" />
         <attr name="supportsEmptyState" format="boolean" />
+        <!-- Specifies whether the edit text should full format the price, or offers a normal
+             Editing experience, default value is false -->
+        <attr name="usesFullFormatting" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="ShippingLabelItemView">

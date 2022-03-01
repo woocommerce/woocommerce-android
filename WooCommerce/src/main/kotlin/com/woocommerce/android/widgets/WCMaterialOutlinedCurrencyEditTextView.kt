@@ -11,7 +11,6 @@ import android.util.AttributeSet
 import android.util.SparseArray
 import android.util.TypedValue
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
 import androidx.annotation.AttrRes
 import androidx.core.content.res.use
 import androidx.lifecycle.LiveData
@@ -19,6 +18,7 @@ import androidx.lifecycle.MutableLiveData
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.woocommerce.android.R
+import com.woocommerce.android.R.attr
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -41,15 +41,14 @@ import kotlin.math.pow
 class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
-    @AttrRes defStyleRes: Int = R.attr.wcMaterialOutlinedCurrencyEditTextViewStyle
+    @AttrRes defStyleRes: Int = attr.wcMaterialOutlinedCurrencyEditTextViewStyle,
+    private val usesFullFormatting: Boolean = false
 ) : TextInputLayout(ctx, attrs, defStyleRes) {
     companion object {
         private const val KEY_SUPER_STATE = "WC-OUTLINED-CURRENCY-VIEW-SUPER-STATE"
     }
 
-    private val currencyEditText: CurrencyEditText = FullFormattingCurrencyEditText(context).apply {
-        imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI
-    }
+    private lateinit var currencyEditText: CurrencyEditText
 
     val editText: TextInputEditText
         get() = currencyEditText
@@ -72,6 +71,13 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
             attrs,
             R.styleable.WCMaterialOutlinedCurrencyEditTextView
         ).use { a ->
+            val usesFullFormatting = a.getBoolean(
+                R.styleable.WCMaterialOutlinedCurrencyEditTextView_usesFullFormatting, usesFullFormatting
+            )
+            currencyEditText = when (usesFullFormatting) {
+                true -> FullFormattingCurrencyEditText(context)
+                false -> RegularCurrencyEditText(context)
+            }
             val mode = EditTextLayoutMode.values()[
                 a.getInt(R.styleable.WCMaterialOutlinedCurrencyEditTextView_editTextLayoutMode, FILL.ordinal)
             ]
