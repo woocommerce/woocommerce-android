@@ -7,7 +7,6 @@ import org.mockito.kotlin.*
 import org.wordpress.android.util.DateTimeUtils
 
 class MyStoreStatsUsageTracksEventEmitterTest {
-
     private val analyticsTrackerWrapper = mock<AnalyticsTrackerWrapper>()
     private val usageTracksEventEmitter = MyStoreStatsUsageTracksEventEmitter(analyticsTrackerWrapper)
 
