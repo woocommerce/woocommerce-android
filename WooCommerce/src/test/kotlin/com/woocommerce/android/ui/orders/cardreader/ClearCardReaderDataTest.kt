@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.cardreader
 
-
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -37,7 +36,6 @@ class ClearCardReaderDataTest : BaseUnitTest() {
 
             verify(cardReaderManager).disconnectReader()
         }
-
 
     @Test
     fun `Given card reader not initialised, when clearing card reader data, nothing happens`() = testBlocking {
