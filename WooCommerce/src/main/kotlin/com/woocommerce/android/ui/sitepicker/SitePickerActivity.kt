@@ -18,13 +18,11 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
-import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.ActivitySitePickerBinding
@@ -72,12 +70,6 @@ class SitePickerActivity :
             val intent = Intent(context, SitePickerActivity::class.java)
             intent.putExtra(KEY_CALLED_FROM_LOGIN, true)
             context.startActivity(intent)
-        }
-
-        fun showSitePickerForResult(fragment: Fragment) {
-            val intent = Intent(fragment.activity, SitePickerActivity::class.java)
-            intent.putExtra(KEY_CALLED_FROM_LOGIN, false)
-            fragment.startActivityForResult(intent, RequestCodes.SITE_PICKER)
         }
     }
     @Inject lateinit var presenter: SitePickerContract.Presenter

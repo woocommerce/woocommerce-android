@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.prefs
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.Spannable
@@ -14,12 +13,10 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
-import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.databinding.FragmentSettingsMainBinding
-import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.FeatureAnnouncement
@@ -48,7 +45,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
 
     interface AppSettingsListener {
         fun onRequestLogout()
-        fun onSiteChanged()
         fun onProductAddonsOptionChanged(enabled: Boolean)
         fun onOrderCreationOptionChanged(enabled: Boolean)
     }
@@ -68,8 +64,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         } else {
             throw ClassCastException(context.toString() + " must implement AppSettingsListener")
         }
-
-        updateStoreViews()
 
         binding.btnOptionLogout.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_LOGOUT_BUTTON_TAPPED)
@@ -173,27 +167,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_licensesFragment)
         }
 
-        /*
-        Hide "Switch Store" option in Settings, because it is moved to the "More" screen.
-        We temporarily comment out the code instead of deleting, because we might want to restore it later,
-        based on merchants feedbacks.
-
-        TODO: Maybe restore "Switch Store" option in Settings, depending on merchants feedbacks.
-        For more context: https://github.com/woocommerce/woocommerce-android/issues/5586
-
-        if (presenter.hasMultipleStores()) {
-            val storeClickListener = View.OnClickListener {
-                AnalyticsTracker.track(SETTINGS_SELECTED_SITE_TAPPED)
-                SitePickerActivity.showSitePickerForResult(this)
-            }
-            binding.optionStore.setOnClickListener(storeClickListener)
-            binding.optionSwitchStore.setOnClickListener(storeClickListener)
-        } else {
-            binding.optionSwitchStore.hide()
-        }
-        */
-        binding.optionSwitchStore.hide()
-
         binding.optionTheme.optionValue = getString(AppPrefs.getAppTheme().label)
         binding.optionTheme.setOnClickListener {
             // FIXME AMANDA tracks event
@@ -215,19 +188,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         super.onDestroyView()
         _binding = null
         presenter.dropView()
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        // if we're returning from the site picker, make sure the new store is shown and the activity
-        // knows it has changed
-        if (requestCode == RequestCodes.SITE_PICKER && resultCode == Activity.RESULT_OK) {
-            updateStoreViews()
-            updateStoreSettings()
-            settingsListener.onSiteChanged()
-            presenter.setupJetpackInstallOption()
-        }
     }
 
     /**
@@ -274,11 +234,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
                     )
                 )
         }
-    }
-
-    private fun updateStoreViews() {
-        binding.optionStore.optionTitle = presenter.getStoreDomainName()
-        binding.optionStore.optionValue = presenter.getUserDisplayName()
     }
 
     private fun updateStoreSettings() {

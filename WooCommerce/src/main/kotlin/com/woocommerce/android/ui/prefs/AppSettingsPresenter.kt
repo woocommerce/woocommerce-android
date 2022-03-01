@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.prefs
 
-import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.ui.orders.cardreader.ClearCardReaderData
+import com.woocommerce.android.util.FeatureFlag
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -17,9 +18,9 @@ import javax.inject.Inject
 class AppSettingsPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val accountStore: AccountStore,
-    private val cardReaderManager: CardReaderManager,
     @Suppress("unused") // We keep it here to make sure that the store is subscribed to the event bus
-    private val notificationStore: NotificationStore
+    private val notificationStore: NotificationStore,
+    private val clearCardReaderData: ClearCardReaderData
 ) : AppSettingsContract.Presenter {
     private var appSettingsView: AppSettingsContract.View? = null
 
@@ -34,17 +35,10 @@ class AppSettingsPresenter @Inject constructor(
     }
 
     override fun logout() {
+        if (FeatureFlag.CARD_READER.isEnabled())
+            coroutineScope.launch { clearCardReaderData() }
         // First unregister the device for push notifications
         dispatcher.dispatch(NotificationActionBuilder.newUnregisterDeviceAction())
-    }
-
-    override fun clearCardReaderData() {
-        coroutineScope.launch {
-            if (cardReaderManager.initialized) {
-                cardReaderManager.disconnectReader()
-                cardReaderManager.clearCachedCredentials()
-            }
-        }
     }
 
     override fun userIsLoggedIn(): Boolean {
