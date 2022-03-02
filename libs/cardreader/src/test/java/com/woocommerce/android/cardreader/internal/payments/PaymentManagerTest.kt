@@ -321,7 +321,7 @@ class PaymentManagerTest {
         }
 
     @Test
-    fun `given processing payment suc with interact present, when processing, then ProcessingPaymentCompleted emitted`() =
+    fun `given processing payment suc with interact pres, when processing, then ProcessingPaymentCompleted emitted`() =
         runBlockingTest {
             val intent = createPaymentIntent(REQUIRES_CAPTURE)
             val paymentsMethodDetails = mock<PaymentMethodDetails> {
