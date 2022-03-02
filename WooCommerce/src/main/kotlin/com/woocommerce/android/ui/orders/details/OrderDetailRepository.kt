@@ -20,11 +20,9 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.LabelItem
 import org.wordpress.android.fluxc.store.*
 import org.wordpress.android.fluxc.store.WCOrderStore.*
-import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType.GENERIC_ERROR
 import javax.inject.Inject
 
 class OrderDetailRepository @Inject constructor(
@@ -54,11 +52,10 @@ class OrderDetailRepository @Inject constructor(
     }
 
     suspend fun fetchOrderNotes(
-        localOrderId: Int,
-        remoteOrderId: Long
+        orderId: Long,
     ): Boolean = withContext(dispatchers.io) {
         val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
-            orderStore.fetchOrderNotes(localOrderId, remoteOrderId, selectedSite.get())
+            orderStore.fetchOrderNotes(selectedSite.get(), RemoteId(orderId))
         }
         result?.isError == false
     }
@@ -176,8 +173,9 @@ class OrderDetailRepository @Inject constructor(
 
     fun getOrderStatusOptions() = orderStore.getOrderStatusOptionsForSite(selectedSite.get()).map { it.toOrderStatus() }
 
-    fun getOrderNotes(localOrderId: Int) =
-        orderStore.getOrderNotesForOrder(localOrderId).map { it.toAppModel() }
+    suspend fun getOrderNotes(orderId: Long) =
+        orderStore.getOrderNotesForOrder(site = selectedSite.get(), orderId = RemoteId(orderId))
+            .map { it.toAppModel() }
 
     suspend fun fetchProductsByRemoteIds(remoteIds: List<Long>) =
         productStore.fetchProductListSynced(selectedSite.get(), remoteIds)?.map { it.toAppModel() } ?: emptyList()
