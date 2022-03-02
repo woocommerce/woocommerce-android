@@ -2,7 +2,7 @@ package com.woocommerce.android.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.WCOrderNoteModel
+import org.wordpress.android.fluxc.persistence.entity.OrderNoteEntity
 import org.wordpress.android.util.DateTimeUtils
 import java.util.Date
 
@@ -17,7 +17,7 @@ data class OrderNote(
     val note: String
 ) : Parcelable
 
-fun WCOrderNoteModel.toAppModel(): OrderNote {
+fun OrderNoteEntity.toAppModel(): OrderNote {
     return OrderNote(
         remoteNoteId = noteId.value,
         orderId = orderId.value,
