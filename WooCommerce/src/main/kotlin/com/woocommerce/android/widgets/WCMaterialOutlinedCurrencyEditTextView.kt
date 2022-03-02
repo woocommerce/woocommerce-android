@@ -193,18 +193,7 @@ private class RegularCurrencyEditText(context: Context) : CurrencyEditText(conte
     private var isChangingText = false
     private var isInitialized = false
 
-    override var supportsNegativeValues: Boolean
-        get() = this.inputType and InputType.TYPE_NUMBER_FLAG_SIGNED != 0
-        set(value) {
-            if (value) {
-                this.inputType = InputType.TYPE_CLASS_NUMBER or
-                    InputType.TYPE_NUMBER_FLAG_DECIMAL or
-                    InputType.TYPE_NUMBER_FLAG_SIGNED
-            } else {
-                this.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
-            }
-        }
-
+    override var supportsNegativeValues: Boolean = false
     private val _value = MutableLiveData<BigDecimal?>()
     override val value: LiveData<BigDecimal?> = _value
 
@@ -213,6 +202,9 @@ private class RegularCurrencyEditText(context: Context) : CurrencyEditText(conte
             ?: DecimalFormatSymbols(Locale.getDefault()).decimalSeparator.toString()
         numberOfDecimals = formattingParameters?.currencyDecimalNumber ?: 2
 
+        inputType = InputType.TYPE_CLASS_NUMBER or
+            InputType.TYPE_NUMBER_FLAG_DECIMAL or
+            InputType.TYPE_NUMBER_FLAG_SIGNED
         val acceptedDigits = "0123456789.$decimalSeparator${if (supportsNegativeValues) "-" else ""}"
         keyListener = DigitsKeyListener.getInstance(acceptedDigits)
         filters = arrayOf(this)
@@ -245,10 +237,14 @@ private class RegularCurrencyEditText(context: Context) : CurrencyEditText(conte
                 // Prevent clearing the field if supportsEmptyState is false
                 if (source.isEmpty()) "0" else ""
             }
-            !supportsEmptyState && newValue == "0-" -> {
+            !supportsEmptyState && supportsNegativeValues && newValue == "0-" -> {
                 // Allow entering minus sign at the end of the field if supportsEmptyState is false
                 // and value is 0, we will fix the text in onTextChanged
                 source
+            }
+            !supportsNegativeValues && newValue.contains("-") -> {
+                // Prevent negative values if they are not supported
+                ""
             }
             newValue.toBigDecimalOrNull() == null -> {
                 // Prevent entering non-valid numbers
