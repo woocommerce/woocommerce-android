@@ -7,8 +7,9 @@ import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
+import javax.inject.Inject
 
-class ProductTypeBottomSheetBuilder {
+class ProductTypeBottomSheetBuilder @Inject constructor() {
     fun buildBottomSheetList(): List<ProductTypesBottomSheetUiItem> {
         return listOf(
             ProductTypesBottomSheetUiItem(

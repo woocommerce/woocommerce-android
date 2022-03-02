@@ -25,7 +25,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductTypesBottomSheetViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val prefs: AppPrefs
+    private val prefs: AppPrefs,
+    private val productTypeBottomSheetBuilder: ProductTypeBottomSheetBuilder
 ) : ScopedViewModel(savedState) {
     private val navArgs: ProductTypesBottomSheetFragmentArgs by savedState.navArgs()
 
@@ -34,9 +35,9 @@ class ProductTypesBottomSheetViewModel @Inject constructor(
 
     fun loadProductTypes() {
         _productTypesBottomSheetList.value = if (navArgs.isAddProduct) {
-            ProductTypeBottomSheetBuilder().buildBottomSheetList()
+            productTypeBottomSheetBuilder.buildBottomSheetList()
         } else {
-            ProductTypeBottomSheetBuilder().buildBottomSheetList()
+            productTypeBottomSheetBuilder.buildBottomSheetList()
                 .filter {
                     !(it.type == navArgs.currentProductType?.let { nonNullProductType ->
                         ProductType.fromString(
