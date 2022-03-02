@@ -93,7 +93,7 @@ internal class PaymentManager(
 
     private fun isInteracPayment(paymentIntent: PaymentIntent): Boolean {
         return !paymentIntent.getCharges().isNullOrEmpty() &&
-            paymentIntent.getCharges()[0].paymentMethodDetails?.interacPresentDetails != null
+            paymentIntent.getCharges().getOrNull(0)?.paymentMethodDetails?.interacPresentDetails != null
     }
 
     private fun interacPaymentSuccessful(paymentIntent: PaymentIntent): Boolean {
