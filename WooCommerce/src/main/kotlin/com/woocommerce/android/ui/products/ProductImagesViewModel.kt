@@ -156,13 +156,7 @@ class ProductImagesViewModel @Inject constructor(
     }
 
     private fun addSingleImage(image: Image) {
-        if (isMultiSelectionAllowed) {
-            _productImages.value = _productImages.value?.let {
-                it + image
-            } ?: listOf(image)
-        } else {
-            _productImages.value = listOf(image)
-        }
+        addImages(listOf(image))
     }
 
     fun onImageSourceButtonClicked() {
