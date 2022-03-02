@@ -143,8 +143,8 @@ sealed class CardPaymentStatus {
     }
 
     enum class PaymentMethodType(val stringRepresentation: String) {
-        INTERAC_PRESENT("card"),
-        CARD_PRESENT("card_interac"),
+        INTERAC_PRESENT("card_interac"),
+        CARD_PRESENT("card"),
         UNKNOWN("unknown"),
     }
 }
