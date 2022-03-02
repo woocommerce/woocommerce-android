@@ -474,10 +474,9 @@ class IssueRefundViewModel @Inject constructor(
                 AnalyticsTracker.track(ORDER_NOTE_ADD_SUCCESS)
             },
             onFailure = {
-                val error = (it as WooException).error
                 AnalyticsTracker.track(
                     ORDER_NOTE_ADD_FAILED,
-                    prepareTracksEventsDetails(error)
+                    prepareTracksEventsDetails(it as WooException)
                 )
             }
         )
@@ -843,10 +842,10 @@ class IssueRefundViewModel @Inject constructor(
             .add(calculatePartialFeesTaxes(selectedFeeLinesId))
     }
 
-    private fun prepareTracksEventsDetails(error: WooError) = mapOf(
+    private fun prepareTracksEventsDetails(exception: WooException) = mapOf(
         AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-        AnalyticsTracker.KEY_ERROR_TYPE to error.type.toString(),
-        AnalyticsTracker.KEY_ERROR_DESC to error.message
+        AnalyticsTracker.KEY_ERROR_TYPE to exception.error.type.toString(),
+        AnalyticsTracker.KEY_ERROR_DESC to exception.error.message
     )
 
     private enum class InputValidationState {
