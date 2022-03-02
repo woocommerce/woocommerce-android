@@ -2,7 +2,7 @@
 common_params:
   # Common plugin settings to use with the `plugins` key.
   - &common_plugins
-    - automattic/bash-cache#v1.5.0
+    - automattic/bash-cache#2.1.0
 
 steps:
   - label: "checkstyle"
@@ -51,4 +51,9 @@ steps:
       echo "--- ⚒️ Building"
       cp gradle.properties-example gradle.properties
       ./gradlew assembleVanillaDebugAndroidTest
+    plugins: *common_plugins
+
+  - label: "🛠 Installable Build"
+    command: ".buildkite/commands/installable-build.sh"
+    if: "build.pull_request.id != null || build.pull_request.draft"
     plugins: *common_plugins

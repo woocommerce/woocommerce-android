@@ -57,6 +57,7 @@
                 style="@style/Woo.Button.TextButton.Secondary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:contentDescription="@string/order_creation_status_edit_content_description"
                 android:text="@string/edit" />
         </LinearLayout>
     </LinearLayout>
