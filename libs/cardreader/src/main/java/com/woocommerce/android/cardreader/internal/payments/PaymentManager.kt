@@ -76,6 +76,19 @@ internal class PaymentManager(
             paymentIntent = processPayment(paymentIntent)
         }
 
+        /*
+            At this point,
+
+            if this was an Interac payment. The payment has already been captured successfully
+            in the previous step (Processing step). In the next capture step, we will inform the backend about
+            the successful Interac payment transaction that has already happened and it's not the success/failure
+            of the actual Interac payment itself.
+
+            If this was a non-Interac payment. We expect the payment intent's status to be REQUIRES_CAPTURE and in
+            the next step we capture the payment in the backend. Here, the success/failure of the capture step defines
+            the success/failure of the actual payment.
+         */
+
         if (paymentIntent.status == PaymentIntentStatus.REQUIRES_CAPTURE || isInteracPaymentSuccessful(paymentIntent)) {
             retrieveReceiptUrl(paymentIntent)?.let { receiptUrl ->
                 capturePayment(receiptUrl, orderId, cardReaderStore, paymentIntent)
