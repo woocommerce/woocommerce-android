@@ -93,8 +93,8 @@ class ReviewListViewModel @Inject constructor(
                 viewState = viewState.copy(isSkeletonShown = true)
             }
             fetchReviewList(loadMore = false)
+            observeReviewUpdates()
         }
-        observeReviewUpdates()
     }
 
     /**
