@@ -25,8 +25,7 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment() {
         const val KEY_PRODUCT_TYPE_RESULT = "key_product_type_result"
     }
 
-    @Inject
-    internal lateinit var navigator: ProductNavigator
+    @Inject internal lateinit var navigator: ProductNavigator
     val viewModel: ProductTypesBottomSheetViewModel by viewModels()
 
     private lateinit var productTypesBottomSheetAdapter: ProductTypesBottomSheetAdapter
