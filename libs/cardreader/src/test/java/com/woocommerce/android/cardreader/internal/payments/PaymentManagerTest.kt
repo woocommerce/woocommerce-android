@@ -336,10 +336,10 @@ class PaymentManagerTest {
                     }
                 )
 
-            manager
-                .acceptPayment(createPaymentInfo()).toList()
+            val result = manager
+                .acceptPayment(createPaymentInfo()).takeUntil(CapturingPayment::class).toList()
 
-            verify(cardReaderStore).capturePaymentIntent(any(), anyString())
+            assertThat(result.last()).isInstanceOf(CapturingPayment::class.java)
         }
 
     @Test
@@ -364,26 +364,6 @@ class PaymentManagerTest {
 
             assertThat(result).isNotNull // verify the flow did not timeout
             verify(cardReaderStore, never()).capturePaymentIntent(any(), anyString())
-        }
-
-    @Test
-    fun `given non-interac payment, when processing payment finishes successfully, then capture payment is emitted`() =
-        runBlockingTest {
-            whenever(processPaymentAction.processPayment(anyOrNull()))
-                .thenReturn(
-                    flow {
-                        emit(
-                            ProcessPaymentStatus.Success(
-                                createPaymentIntent(REQUIRES_CAPTURE)
-                            )
-                        )
-                    }
-                )
-
-            manager
-                .acceptPayment(createPaymentInfo()).toList()
-
-            verify(cardReaderStore).capturePaymentIntent(any(), anyString())
         }
 
     // END - Processing Payment
