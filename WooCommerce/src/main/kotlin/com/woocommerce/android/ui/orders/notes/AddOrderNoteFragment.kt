@@ -130,13 +130,12 @@ class AddOrderNoteFragment : BaseFragment(R.layout.fragment_add_order_note), Bac
                 }
                 binding.addNoteSwitch.isChecked = it.isCustomerNote
 
-                if (new.showCustomerNoteSwitch) {
-                    binding.addNoteSwitch.isVisible = true
-                    val noteIcon = if (it.isCustomerNote) R.drawable.ic_note_public else R.drawable.ic_note_private
-                    binding.addNoteIcon.setImageResource(noteIcon)
-                } else {
-                    binding.addNoteSwitch.isVisible = false
-                }
+                val noteIcon = if (it.isCustomerNote) R.drawable.ic_note_public else R.drawable.ic_note_private
+                binding.addNoteIcon.setImageResource(noteIcon)
+            }
+
+            new.showCustomerNoteSwitch.takeIfNotEqualTo(old?.showCustomerNoteSwitch) {
+                binding.addNoteSwitch.isVisible = it
             }
 
             new.canAddNote.takeIfNotEqualTo(old?.canAddNote) {
