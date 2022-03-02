@@ -76,7 +76,7 @@ internal class PaymentManager(
             paymentIntent = processPayment(paymentIntent)
         }
 
-        if (paymentIntent.status == PaymentIntentStatus.REQUIRES_CAPTURE || interacPaymentSuccessful(paymentIntent)) {
+        if (paymentIntent.status == PaymentIntentStatus.REQUIRES_CAPTURE || isInteracPaymentSuccessful(paymentIntent)) {
             retrieveReceiptUrl(paymentIntent)?.let { receiptUrl ->
                 capturePayment(receiptUrl, orderId, cardReaderStore, paymentIntent)
             }
@@ -90,7 +90,7 @@ internal class PaymentManager(
             paymentIntent.getCharges().getOrNull(0)?.paymentMethodDetails?.interacPresentDetails != null
     }
 
-    private fun interacPaymentSuccessful(paymentIntent: PaymentIntent): Boolean {
+    private fun isInteracPaymentSuccessful(paymentIntent: PaymentIntent): Boolean {
         return isInteracPayment(paymentIntent) && paymentIntent.status == PaymentIntentStatus.SUCCEEDED
     }
 
