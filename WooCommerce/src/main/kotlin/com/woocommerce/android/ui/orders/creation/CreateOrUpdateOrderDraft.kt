@@ -20,9 +20,8 @@ class CreateOrUpdateOrderDraft @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(changes: Flow<Order>, retryTrigger: Flow<Unit>): Flow<OrderDraftUpdateStatus> {
         return changes
-            .distinctUntilChanged { old, new ->
-                areEquivalent(old, new)
-            }
+            .filter { it.containsPriceModifiers() }
+            .distinctUntilChanged(::areEquivalent)
             .flowOn(dispatchers.computation)
             .flatMapLatest {
                 val debouncedChanges = flow {
@@ -53,6 +52,13 @@ class CreateOrUpdateOrderDraft @Inject constructor(
         data class Succeeded(val order: Order) : OrderDraftUpdateStatus
         object Failed : OrderDraftUpdateStatus
     }
+
+    /**
+     * Anything that can be modified during the Order Creation flow that can affect
+     * the Order total price should be accounted here
+     */
+    private fun Order.containsPriceModifiers() =
+        items.isNotEmpty() || feesLines.isNotEmpty() || shippingLines.isNotEmpty()
 
     private fun areEquivalent(old: Order, new: Order): Boolean {
         // Make sure to update the prices only when items did change
