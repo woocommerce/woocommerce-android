@@ -178,6 +178,8 @@ class CardReaderPaymentViewModel
             InitializingPayment -> viewState.postValue(LoadingDataState)
             CollectingPayment -> viewState.postValue(CollectPaymentState(amountLabel))
             ProcessingPayment -> viewState.postValue(ProcessingPaymentState(amountLabel))
+            is ProcessingPaymentCompleted ->
+                cardReaderTrackingInfoKeeper.setPaymentMethodType(paymentStatus.paymentMethodType.stringRepresentation)
             CapturingPayment -> viewState.postValue(CapturingPaymentState(amountLabel))
             is PaymentCompleted -> {
                 tracker.trackPaymentSucceeded()
@@ -191,7 +193,7 @@ class CardReaderPaymentViewModel
                 tracker.trackPaymentFailed(paymentStatus.errorMessage, paymentStatus.type)
                 emitFailedPaymentState(orderId, billingEmail, paymentStatus, amountLabel)
             }
-        }
+        }.exhaustive
     }
 
     private fun onPaymentCompleted(
@@ -287,7 +289,7 @@ class CardReaderPaymentViewModel
 
     private fun onPrintReceiptClicked(amountWithCurrencyLabel: String, receiptUrl: String, documentName: String) {
         launch {
-            viewState.value = ViewState.PrintingReceiptState(amountWithCurrencyLabel, receiptUrl, documentName)
+            viewState.value = PrintingReceiptState(amountWithCurrencyLabel, receiptUrl, documentName)
             tracker.trackPrintReceiptTapped()
             startPrintingFlow()
         }
