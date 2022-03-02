@@ -220,6 +220,7 @@ private class RegularCurrencyEditText(context: Context) : CurrencyEditText(conte
         setText(value.toPlainString())
     }
 
+    @Suppress("ComplexMethod")
     override fun filter(
         source: CharSequence,
         start: Int,
