@@ -71,23 +71,17 @@ internal class PaymentManager(
 
         if (paymentIntent.status == PaymentIntentStatus.REQUIRES_PAYMENT_METHOD) {
             paymentIntent = collectPayment(paymentIntent)
-            if (paymentIntent.status != PaymentIntentStatus.REQUIRES_CONFIRMATION) {
-                return@flow
-            }
         }
         if (paymentIntent.status == PaymentIntentStatus.REQUIRES_CONFIRMATION) {
             paymentIntent = processPayment(paymentIntent)
-            if (
-                paymentIntent.status != PaymentIntentStatus.REQUIRES_CAPTURE && !isInteracPayment(paymentIntent)
-            ) {
-                return@flow
-            }
         }
 
         if (paymentIntent.status == PaymentIntentStatus.REQUIRES_CAPTURE || interacPaymentSuccessful(paymentIntent)) {
             retrieveReceiptUrl(paymentIntent)?.let { receiptUrl ->
                 capturePayment(receiptUrl, orderId, cardReaderStore, paymentIntent)
             }
+        } else {
+            return@flow
         }
     }
 
