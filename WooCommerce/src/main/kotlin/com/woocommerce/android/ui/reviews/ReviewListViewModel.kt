@@ -1,7 +1,10 @@
 package com.woocommerce.android.ui.reviews
 
 import android.os.Parcelable
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -66,7 +69,6 @@ class ReviewListViewModel @Inject constructor(
     init {
         EventBus.getDefault().register(this)
         dispatcher.register(this)
-        observeReviewUpdates()
     }
 
     override fun onCleared() {
@@ -92,6 +94,7 @@ class ReviewListViewModel @Inject constructor(
             }
             fetchReviewList(loadMore = false)
         }
+        observeReviewUpdates()
     }
 
     /**
@@ -214,7 +217,9 @@ class ReviewListViewModel @Inject constructor(
     private fun observeReviewUpdates() {
         viewModelScope.launch {
             unseenReviewsCountHandler.observeUnseenCount()
-                .collect { forceRefreshReviews() }
+                .collect { unseenCount ->
+                    if (unseenCount != 0) forceRefreshReviews()
+                }
         }
     }
 
