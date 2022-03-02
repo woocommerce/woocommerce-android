@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.notes
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_NOTE_EMAIL_NOTE_TO_CUSTOMER_TOGGLED
@@ -94,20 +95,23 @@ class AddOrderNoteViewModel @Inject constructor(
 
             val note = addOrderNoteViewState.draftNote
 
-            val onOrderChanged = orderDetailRepository.addOrderNote(order.id, note)
-            if (!onOrderChanged.isError) {
-                AnalyticsTracker.track(Stat.ORDER_NOTE_ADD_SUCCESS)
-                addOrderNoteViewState = addOrderNoteViewState.copy(isProgressDialogShown = false)
-                triggerEvent(ShowSnackbar(R.string.add_order_note_added))
-                triggerEvent(ExitWithResult(note))
-            } else {
-                AnalyticsTracker.track(
-                    Stat.ORDER_NOTE_ADD_FAILED,
-                    prepareTracksEventsDetails(onOrderChanged)
+            orderDetailRepository.addOrderNote(order.id, note)
+                .fold(
+                    onSuccess = {
+                        AnalyticsTracker.track(Stat.ORDER_NOTE_ADD_SUCCESS)
+                        addOrderNoteViewState = addOrderNoteViewState.copy(isProgressDialogShown = false)
+                        triggerEvent(ShowSnackbar(R.string.add_order_note_added))
+                        triggerEvent(ExitWithResult(note))
+                    },
+                    onFailure = {
+                        AnalyticsTracker.track(
+                            Stat.ORDER_NOTE_ADD_FAILED,
+                            prepareTracksEventsDetails((it as WooException))
+                        )
+                        addOrderNoteViewState = addOrderNoteViewState.copy(isProgressDialogShown = false)
+                        triggerEvent(ShowSnackbar(R.string.add_order_note_error))
+                    }
                 )
-                addOrderNoteViewState = addOrderNoteViewState.copy(isProgressDialogShown = false)
-                triggerEvent(ShowSnackbar(R.string.add_order_note_error))
-            }
         }
     }
 
@@ -115,6 +119,12 @@ class AddOrderNoteViewModel @Inject constructor(
         AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
         AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
         AnalyticsTracker.KEY_ERROR_DESC to event.error.message
+    )
+
+    private fun prepareTracksEventsDetails(exception: WooException) = mapOf(
+        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+        AnalyticsTracker.KEY_ERROR_TYPE to exception.error.type.toString(),
+        AnalyticsTracker.KEY_ERROR_DESC to exception.error.message
     )
 
     fun onBackPressed() {
