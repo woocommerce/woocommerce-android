@@ -1,13 +1,10 @@
 package com.woocommerce.android.cardreader.internal.payments
 
-import com.stripe.stripeterminal.external.models.Charge
-import com.stripe.stripeterminal.external.models.PaymentIntent
-import com.stripe.stripeterminal.external.models.PaymentIntentStatus
+import com.stripe.stripeterminal.external.models.*
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus.CANCELED
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_CAPTURE
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_CONFIRMATION
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_PAYMENT_METHOD
-import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
@@ -20,24 +17,11 @@ import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymen
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction.ProcessPaymentStatus
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CapturingPayment
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CollectingPayment
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.InitializingPayment
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentCompleted
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentFailed
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPayment
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.*
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentMethodType
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.single
-import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.flow.withIndex
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.withTimeoutOrNull
 import org.assertj.core.api.Assertions.assertThat
@@ -46,13 +30,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.junit.MockitoJUnitRunner
-import org.mockito.kotlin.any
-import org.mockito.kotlin.anyOrNull
-import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
+import org.mockito.kotlin.*
 import java.math.BigDecimal
 import kotlin.reflect.KClass
 
@@ -85,6 +63,7 @@ class PaymentManagerTest {
         InitializingPayment::class,
         CollectingPayment::class,
         ProcessingPayment::class,
+        ProcessingPaymentCompleted::class,
         CapturingPayment::class,
         PaymentCompleted::class
     )
@@ -318,6 +297,59 @@ class PaymentManagerTest {
 
             assertThat(result).isNotNull // verify the flow did not timeout
             verify(cardReaderStore, never()).capturePaymentIntent(any(), anyString())
+        }
+
+    @Test
+    fun `given processing payment suc with card present, when processing, then ProcessingPaymentCompleted emitted`() =
+        runBlockingTest {
+            val intent = createPaymentIntent(REQUIRES_CAPTURE)
+            val paymentsMethodDetails = mock<PaymentMethodDetails> {
+                on { cardPresentDetails }.thenReturn(mock())
+            }
+
+            val charge = mock<Charge> {
+                on { paymentMethodDetails }.thenReturn(paymentsMethodDetails)
+            }
+            val charges = listOf(charge)
+            whenever(intent.getCharges()).thenReturn(charges)
+            whenever(processPaymentAction.processPayment(anyOrNull()))
+                .thenReturn(flow { emit(ProcessPaymentStatus.Success(intent)) })
+
+            val result = manager.acceptPayment(createPaymentInfo()).toList()
+
+            assertThat(result).contains(ProcessingPaymentCompleted(PaymentMethodType.CARD_PRESENT))
+        }
+
+    @Test
+    fun `given processing payment suc with interact present, when processing, then ProcessingPaymentCompleted emitted`() =
+        runBlockingTest {
+            val intent = createPaymentIntent(REQUIRES_CAPTURE)
+            val paymentsMethodDetails = mock<PaymentMethodDetails> {
+                on { interacPresentDetails }.thenReturn(mock())
+            }
+
+            val charge = mock<Charge> {
+                on { paymentMethodDetails }.thenReturn(paymentsMethodDetails)
+            }
+            val charges = listOf(charge)
+            whenever(intent.getCharges()).thenReturn(charges)
+            whenever(processPaymentAction.processPayment(anyOrNull()))
+                .thenReturn(flow { emit(ProcessPaymentStatus.Success(intent)) })
+
+            val result = manager.acceptPayment(createPaymentInfo()).toList()
+
+            assertThat(result).contains(ProcessingPaymentCompleted(PaymentMethodType.INTERAC_PRESENT))
+        }
+
+    @Test
+    fun `given processing payment suc with unknown, when processing, then ProcessingPaymentCompleted emitted`() =
+        runBlockingTest {
+            whenever(processPaymentAction.processPayment(anyOrNull()))
+                .thenReturn(flow { emit(ProcessPaymentStatus.Success(createPaymentIntent(REQUIRES_CAPTURE))) })
+
+            val result = manager.acceptPayment(createPaymentInfo()).toList()
+
+            assertThat(result).contains(ProcessingPaymentCompleted(PaymentMethodType.UNKNOWN))
         }
 
     // END - Processing Payment
