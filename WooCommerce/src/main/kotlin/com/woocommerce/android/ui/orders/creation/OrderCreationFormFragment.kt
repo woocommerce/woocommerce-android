@@ -218,7 +218,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
 
     private fun bindPaymentSection(paymentSection: OrderCreationPaymentSectionBinding, newOrderData: Order) {
         paymentSection.bindFeesSubSection(newOrderData)
-
+        paymentSection.root.isVisible = FeatureFlag.ORDER_CREATION_M2.isEnabled() || newOrderData.items.isNotEmpty()
         paymentSection.taxLayout.isVisible = FeatureFlag.ORDER_CREATION_M2.isEnabled()
         paymentSection.taxCalculationHint.isVisible = !FeatureFlag.ORDER_CREATION_M2.isEnabled()
 
