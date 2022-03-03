@@ -131,9 +131,11 @@ fun InboxNoteRow(note: InboxNoteUi) {
 }
 
 @Composable
+@Suppress("MagicNumber")
 fun InboxSkeleton() {
+    val numberOfInboxSkeletonRows = 4
     LazyColumn {
-        repeat(4) {
+        repeat(numberOfInboxSkeletonRows) {
             item {
                 InboxNoteItemSkeleton(brush = skeletonAnimationBrush())
                 Divider(

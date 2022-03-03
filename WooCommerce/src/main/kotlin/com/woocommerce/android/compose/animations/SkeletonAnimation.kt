@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.colorResource
 import com.woocommerce.android.R
 
+const val SKELETON_ANIMATION_ALPHA = 0.15F
 @Composable
 fun skeletonAnimationBrush(): Brush {
     val transition = rememberInfiniteTransition()
@@ -22,18 +23,13 @@ fun skeletonAnimationBrush(): Brush {
 
     val shimmerColorShades = listOf(
         colorResource(id = R.color.skeleton_color),
-        colorResource(id = R.color.skeleton_color).copy(0.15f),
+        colorResource(id = R.color.skeleton_color).copy(SKELETON_ANIMATION_ALPHA),
         colorResource(id = R.color.skeleton_color)
     )
-    /*
-      Create a gradient using the list of colors
-      Use Linear Gradient for animating in any direction according to requirement
-      start=specifies the position to start with in cartesian like system Offset(10f,10f) means x(10,0) , y(0,10)
-      end = Animate the end position to give the shimmer effect using the transition created above
-    */
+
     return Brush.linearGradient(
         colors = shimmerColorShades,
-        start = Offset(10f, 10f),
+        start = Offset(0f, 0f),
         end = Offset(translateAnim, translateAnim)
     )
 }
