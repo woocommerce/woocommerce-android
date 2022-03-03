@@ -393,7 +393,7 @@ class ProductDetailCardBuilder(
     private fun Product.productType(): ProductProperty {
         val onClickHandler = {
             viewModel.onEditProductCardClicked(
-                ViewProductTypes(false),
+                ViewProductTypes(false, currentProductType = type, isCurrentProductVirtual = isVirtual),
                 Stat.PRODUCT_DETAIL_VIEW_PRODUCT_TYPE_TAPPED
             )
         }

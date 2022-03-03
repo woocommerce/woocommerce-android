@@ -332,6 +332,17 @@
             android:name="isAddProduct"
             android:defaultValue="false"
             app:argType="boolean" />
+        <argument
+            android:name="currentProductType"
+            android:defaultValue="null"
+            app:nullable="true"
+            app:argType="string"
+            />
+        <argument
+            android:name="isCurrentProductVirtual"
+            android:defaultValue="false"
+            app:argType="boolean"
+            />
     </dialog>
     <dialog
         android:id="@+id/featureAnnouncementDialogFragmentOnMain"
