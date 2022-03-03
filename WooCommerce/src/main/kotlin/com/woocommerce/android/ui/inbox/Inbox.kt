@@ -36,7 +36,7 @@ fun Inbox(state: InboxState) {
     when {
         state.isLoading -> InboxSkeleton()
         state.notes.isEmpty() -> InboxEmptyCase()
-        state.notes.isNotEmpty() -> InboxSkeleton()
+        state.notes.isNotEmpty() -> InboxNotes(notes = state.notes)
     }
 }
 
