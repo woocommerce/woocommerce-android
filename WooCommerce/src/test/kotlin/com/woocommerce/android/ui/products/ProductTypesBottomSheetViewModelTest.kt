@@ -44,7 +44,7 @@ class ProductTypesBottomSheetViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when loading product types, then product types is filtered`() {
+    fun `given current type is virtual, when loading product types, then only virtual type is filtered out`() {
         viewModel = ProductTypesBottomSheetViewModel(
             ProductTypesBottomSheetFragmentArgs(
                 isAddProduct = false,
