@@ -34,7 +34,9 @@
                 android:hint="@string/order_creation_fee_amount_hint"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/fee_type_switch" />
+                app:layout_constraintTop_toBottomOf="@+id/fee_type_switch"
+                app:supportsEmptyState="false"
+                app:supportsNegativeValues="false" />
 
             <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
                 android:id="@+id/fee_percentage_edit_text"

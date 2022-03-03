@@ -2,14 +2,12 @@ package com.woocommerce.android.ui.orders.creation.fees
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.math.MathContext
 import java.math.RoundingMode.HALF_UP
@@ -17,12 +15,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OrderCreationFeeViewModel @Inject constructor(
-    savedState: SavedStateHandle,
-    private val selectedSite: SelectedSite,
-    private val wooCommerceStore: WooCommerceStore
+    savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     companion object {
-        private const val DEFAULT_DECIMAL_PRECISION = 2
         private const val DEFAULT_SCALE_QUOTIENT = 4
         private val PERCENTAGE_BASE = BigDecimal(100)
     }
@@ -33,11 +28,6 @@ class OrderCreationFeeViewModel @Inject constructor(
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
-
-    val currencyDecimals: Int
-        get() = wooCommerceStore.getSiteSettings(selectedSite.get())
-            ?.currencyDecimalNumber
-            ?: DEFAULT_DECIMAL_PRECISION
 
     private val activeFeeValue
         get() = when (viewState.isPercentageSelected) {

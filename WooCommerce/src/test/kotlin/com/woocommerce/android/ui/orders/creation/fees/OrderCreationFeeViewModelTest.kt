@@ -10,7 +10,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.mock
 import java.math.BigDecimal
 import java.math.MathContext
 import java.math.RoundingMode.HALF_UP
@@ -28,11 +27,7 @@ class OrderCreationFeeViewModelTest : BaseUnitTest() {
     fun setUp() = initSut()
 
     private fun initSut() {
-        sut = OrderCreationFeeViewModel(
-            savedState,
-            mock(),
-            mock()
-        )
+        sut = OrderCreationFeeViewModel(savedState)
     }
 
     @Test
