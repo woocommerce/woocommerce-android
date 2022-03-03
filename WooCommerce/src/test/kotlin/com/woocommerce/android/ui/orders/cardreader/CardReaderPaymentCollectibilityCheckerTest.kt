@@ -301,6 +301,9 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
             assertThat(isCollectable).isTrue()
         }
 
+    /**
+     * This test is a clone of the previous test (except of the name) and was added just for the documentation purposes.
+     */
     @Test
     fun `given bookings order requires confirmation, when checking collectibility, then it is collectable`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
