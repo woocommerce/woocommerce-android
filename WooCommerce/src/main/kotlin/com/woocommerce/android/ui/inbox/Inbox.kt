@@ -37,7 +37,7 @@ fun Inbox(state: InboxState) {
     when {
         state.isLoading -> InboxSkeleton()
         state.notes.isEmpty() -> InboxEmptyCase()
-        state.notes.isNotEmpty() -> InboxSkeleton()
+        state.notes.isNotEmpty() -> InboxNotes(notes = state.notes)
     }
 }
 
@@ -53,7 +53,8 @@ fun InboxEmptyCase() {
         Text(
             text = stringResource(id = R.string.empty_inbox_title),
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.h6
+            style = MaterialTheme.typography.h6,
+            modifier = Modifier.padding(start = 24.dp, end = 24.dp)
         )
         Spacer(Modifier.size(54.dp))
         Image(
@@ -64,7 +65,8 @@ fun InboxEmptyCase() {
         Text(
             text = stringResource(id = R.string.empty_inbox_description),
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.body1
+            style = MaterialTheme.typography.body1,
+            modifier = Modifier.padding(start = 24.dp, end = 24.dp)
         )
     }
 }
