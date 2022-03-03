@@ -3,7 +3,6 @@ package com.woocommerce.android.model
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.persistence.entity.OrderNoteEntity
-import org.wordpress.android.util.DateTimeUtils
 import java.util.Date
 
 @Parcelize
