@@ -93,8 +93,6 @@ internal class PaymentManager(
             retrieveReceiptUrl(paymentIntent)?.let { receiptUrl ->
                 capturePayment(receiptUrl, orderId, cardReaderStore, paymentIntent)
             }
-        } else {
-            return@flow
         }
     }
 
