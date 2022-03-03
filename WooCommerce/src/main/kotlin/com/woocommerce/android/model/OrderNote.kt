@@ -21,10 +21,10 @@ fun OrderNoteEntity.toAppModel(): OrderNote {
     return OrderNote(
         remoteNoteId = noteId.value,
         orderId = orderId.value,
-        author = author,
-        dateCreated = DateTimeUtils.dateUTCFromIso8601(this.dateCreated) ?: Date(),
+        author = author.orEmpty(),
+        dateCreated = dateCreated ?: Date(),
         isCustomerNote = isCustomerNote,
         isSystemNote = isSystemNote,
-        note = note
+        note = note.orEmpty()
     )
 }
