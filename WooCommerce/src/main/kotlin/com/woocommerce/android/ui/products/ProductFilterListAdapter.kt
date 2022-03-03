@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.FilterListItemBinding
 import com.woocommerce.android.extensions.areSameAs
@@ -13,10 +14,10 @@ class ProductFilterListAdapter(
 ) : RecyclerView.Adapter<ProductFilterViewHolder>() {
     var filterList = listOf<FilterListItemUiModel>()
         set(value) {
-            if (!isSameList(value)) {
-                field = value
-                notifyDataSetChanged()
-            }
+            val diffResult =
+                DiffUtil.calculateDiff(ProductFilterDiffUtil(field, value))
+            field = value
+            diffResult.dispatchUpdatesTo(this)
         }
 
     interface OnProductFilterClickListener {
@@ -57,6 +58,22 @@ class ProductFilterListAdapter(
             viewBinding.filterItemName.text = filter.filterItemName
             viewBinding.filterItemSelection.text =
                 filter.filterOptionListItems.first { it.isSelected }.filterOptionItemName
+        }
+    }
+
+    private class ProductFilterDiffUtil(
+        val oldList: List<FilterListItemUiModel>,
+        val newList: List<FilterListItemUiModel>
+    ) : DiffUtil.Callback() {
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+            oldList[oldItemPosition].filterItemKey == newList[newItemPosition].filterItemKey
+
+        override fun getOldListSize(): Int = oldList.size
+
+        override fun getNewListSize(): Int = newList.size
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition] == newList[newItemPosition]
         }
     }
 }
