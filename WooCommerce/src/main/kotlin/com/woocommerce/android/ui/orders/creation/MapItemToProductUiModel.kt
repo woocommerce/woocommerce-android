@@ -28,7 +28,7 @@ class MapItemToProductUiModel @Inject constructor(
                 imageUrl = imageUrl.orEmpty(),
                 isStockManaged = isStockManaged ?: false,
                 stockQuantity = stockQuantity ?: 0.0,
-                canDecreaseQuantity = quantity >= 2
+                canDecreaseQuantity = quantity > 0
                 // TODO check if we need to disable the plus button depending on stock quantity
             )
         }
