@@ -99,7 +99,13 @@ class OrderCreationViewModel @Inject constructor(
 
     fun onIncreaseProductsQuantity(id: Long) = _orderDraft.update { it.adjustProductQuantity(id, +1) }
 
-    fun onDecreaseProductsQuantity(id: Long) = _orderDraft.update { it.adjustProductQuantity(id, -1) }
+    fun onDecreaseProductsQuantity(id: Long) {
+        _orderDraft.value.items
+            .find { it.productId == id }
+            ?.takeIf { it.quantity == 1F }
+            ?.let { onProductClicked(it) }
+            ?: _orderDraft.update { it.adjustProductQuantity(id, -1) }
+    }
 
     fun onOrderStatusChanged(status: Order.Status) {
         AnalyticsTracker.track(
@@ -340,6 +346,5 @@ data class ProductUIModel(
     val item: Order.Item,
     val imageUrl: String,
     val isStockManaged: Boolean,
-    val stockQuantity: Double,
-    val canDecreaseQuantity: Boolean
+    val stockQuantity: Double
 )
