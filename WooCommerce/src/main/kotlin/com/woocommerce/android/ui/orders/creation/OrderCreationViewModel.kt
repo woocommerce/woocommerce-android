@@ -346,6 +346,5 @@ data class ProductUIModel(
     val item: Order.Item,
     val imageUrl: String,
     val isStockManaged: Boolean,
-    val stockQuantity: Double,
-    val canDecreaseQuantity: Boolean
+    val stockQuantity: Double
 )
