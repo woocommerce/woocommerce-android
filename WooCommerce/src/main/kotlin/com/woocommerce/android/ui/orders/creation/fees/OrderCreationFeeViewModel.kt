@@ -44,6 +44,7 @@ class OrderCreationFeeViewModel @Inject constructor(
             ?: BigDecimal.ZERO
 
     init {
+        viewState = viewState.copy(shouldDisplayPercentageSwitch = orderSubtotal > BigDecimal.ZERO)
         navArgs.currentFeeValue?.let {
             viewState = viewState.copy(
                 feeAmount = it,
@@ -80,7 +81,8 @@ class OrderCreationFeeViewModel @Inject constructor(
         val feeAmount: BigDecimal = BigDecimal.ZERO,
         val feePercentage: BigDecimal = BigDecimal.ZERO,
         val isPercentageSelected: Boolean = false,
-        val shouldDisplayRemoveFeeButton: Boolean = false
+        val shouldDisplayRemoveFeeButton: Boolean = false,
+        val shouldDisplayPercentageSwitch: Boolean = false
     ) : Parcelable
 
     data class UpdateFee(
