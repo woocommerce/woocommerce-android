@@ -123,23 +123,6 @@ object OrderTestUtils {
         )
     }
 
-    fun generateOrderNotes(totalNotes: Int, lOrderId: Int, lSiteId: Int): List<WCOrderNoteModel> {
-        val result = ArrayList<WCOrderNoteModel>()
-
-        for (i in totalNotes downTo 1) {
-            result.add(
-                WCOrderNoteModel(totalNotes).apply {
-                    isCustomerNote = false
-                    dateCreated = "2018-02-02T16:11:13Z"
-                    localOrderId = lOrderId
-                    localSiteId = lSiteId
-                    note = "This is a test note $i"
-                }
-            )
-        }
-        return result
-    }
-
     fun generateOrderShipmentTrackings(totalCount: Int, lOrderId: Int): List<WCOrderShipmentTrackingModel> {
         val result = ArrayList<WCOrderShipmentTrackingModel>()
         for (i in totalCount downTo 1) {
@@ -378,19 +361,18 @@ object OrderTestUtils {
 
     fun generateTestOrderNotes(
         totalNotes: Int,
-        localOrderId: Int = 1,
-        localSiteId: Int = 1
+        orderId: Long = 1,
     ): List<OrderNote> {
         val result = ArrayList<OrderNote>()
         for (i in totalNotes downTo 1) {
             result.add(
-                WCOrderNoteModel(totalNotes).apply {
-                    this.isCustomerNote = false
-                    this.dateCreated = "2018-02-02T16:11:13Z"
-                    this.localOrderId = localOrderId
-                    this.localSiteId = localSiteId
-                    this.note = "This is a test note $i"
-                }.toAppModel()
+                OrderNote(
+                    orderId = orderId,
+                    author = "",
+                    isCustomerNote = false,
+                    dateCreated = DateTimeUtils.dateUTCFromIso8601("2018-02-02T16:11:13Z"),
+                    note = "This is a test note $i"
+                )
             )
         }
         return result

@@ -7,8 +7,8 @@ import android.text.TextUtils
 import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.logInformation
 import com.woocommerce.android.extensions.stateLogInformation
 import com.woocommerce.android.support.HelpActivity.Origin
@@ -132,7 +132,7 @@ class ZendeskHelper(
             .withContactUsButtonVisible(isIdentitySet)
             .withLabelNames(ZendeskConstants.articleLabel)
             .withShowConversationsMenuButton(isIdentitySet)
-        AnalyticsTracker.track(Stat.SUPPORT_HELP_CENTER_VIEWED)
+        AnalyticsTracker.track(AnalyticsEvent.SUPPORT_HELP_CENTER_VIEWED)
         if (isIdentitySet) {
             builder.show(
                 context,

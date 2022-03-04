@@ -9,9 +9,9 @@ import com.google.android.material.snackbar.Snackbar.Callback
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_TRACKING_ADD
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.Item
@@ -199,12 +199,12 @@ class OrderFulfillViewModel @Inject constructor(
                 navArgs.orderLocalId, navArgs.orderId, shipmentTracking.toDataModel()
             )
             if (!onOrderChanged.isError) {
-                AnalyticsTracker.track(Stat.ORDER_TRACKING_DELETE_SUCCESS)
+                AnalyticsTracker.track(AnalyticsEvent.ORDER_TRACKING_DELETE_SUCCESS)
                 viewState = viewState.copy(shouldRefreshShipmentTracking = true)
                 triggerEvent(ShowSnackbar(string.order_shipment_tracking_delete_success))
             } else {
                 AnalyticsTracker.track(
-                    Stat.ORDER_TRACKING_DELETE_FAILED,
+                    AnalyticsEvent.ORDER_TRACKING_DELETE_FAILED,
                     prepareTracksEventsDetails(onOrderChanged)
                 )
                 onDeleteShipmentTrackingReverted(shipmentTracking)

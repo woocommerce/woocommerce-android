@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.Transformations
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.calculateTotals
 import com.woocommerce.android.extensions.isCashPayment
@@ -74,7 +75,7 @@ class RefundDetailViewModel @Inject constructor(
     }
 
     fun onViewOrderedAddonButtonTapped(orderItem: Order.Item) {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.PRODUCT_ADDONS_REFUND_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_ADDONS_REFUND_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED)
         triggerEvent(
             ViewOrderedAddons(
                 navArgs.orderId,

@@ -8,9 +8,9 @@ import androidx.lifecycle.SavedStateHandle
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent.*
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
@@ -517,16 +517,18 @@ final class OrderDetailViewModel @Inject constructor(
     }
 
     private fun loadOrderNotes() {
-        _orderNotes.value = orderDetailRepository.getOrderNotes(order.localId.value)
+        launch {
+            _orderNotes.value = orderDetailRepository.getOrderNotes(navArgs.orderId)
+        }
     }
 
     private fun fetchOrderNotes() {
         launch {
-            if (!orderDetailRepository.fetchOrderNotes(order.localId.value, navArgs.orderId)) {
+            if (!orderDetailRepository.fetchOrderNotes(navArgs.orderId)) {
                 triggerEvent(ShowSnackbar(string.order_error_fetch_notes_generic))
             }
             // fetch order notes from the local db and hide the skeleton view
-            _orderNotes.value = orderDetailRepository.getOrderNotes(order.localId.value)
+            _orderNotes.value = orderDetailRepository.getOrderNotes(navArgs.orderId)
         }
     }
 

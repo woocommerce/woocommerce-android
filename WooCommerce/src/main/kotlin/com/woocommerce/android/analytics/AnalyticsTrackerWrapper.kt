@@ -1,13 +1,12 @@
 package com.woocommerce.android.analytics
 
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import dagger.Reusable
 import javax.inject.Inject
 
 @Reusable
 class AnalyticsTrackerWrapper
 @Inject constructor() {
-    fun track(stat: Stat, properties: Map<String, *> = emptyMap<String, Any>()) {
+    fun track(stat: AnalyticsEvent, properties: Map<String, *> = emptyMap<String, Any>()) {
         AnalyticsTracker.track(stat, properties)
     }
 
@@ -18,7 +17,7 @@ class AnalyticsTrackerWrapper
      * @param errorType The type of error.
      * @param errorDescription The error text or other description.
      */
-    fun track(stat: Stat, errorContext: String?, errorType: String?, errorDescription: String?) {
+    fun track(stat: AnalyticsEvent, errorContext: String?, errorType: String?, errorDescription: String?) {
         AnalyticsTracker.track(stat, errorContext, errorType, errorDescription)
     }
 
@@ -31,7 +30,7 @@ class AnalyticsTrackerWrapper
      * @param errorDescription The error text or other description.
      */
     fun track(
-        stat: Stat,
+        stat: AnalyticsEvent,
         properties: Map<String, Any>,
         errorContext: String?,
         errorType: String?,

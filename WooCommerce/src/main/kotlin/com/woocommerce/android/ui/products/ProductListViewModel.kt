@@ -5,8 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
@@ -137,7 +137,7 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun onFiltersButtonTapped() {
-        AnalyticsTracker.track(Stat.PRODUCT_LIST_VIEW_FILTER_OPTIONS_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_VIEW_FILTER_OPTIONS_TAPPED)
         triggerEvent(
             ShowProductFilterScreen(
                 productFilterOptions[ProductFilterOption.STOCK_STATUS],
@@ -150,18 +150,18 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun onSortButtonTapped() {
-        AnalyticsTracker.track(Stat.PRODUCT_LIST_VIEW_SORTING_OPTIONS_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_VIEW_SORTING_OPTIONS_TAPPED)
         triggerEvent(ShowProductSortingBottomSheet)
     }
 
     fun onRefreshRequested() {
-        AnalyticsTracker.track(Stat.PRODUCT_LIST_PULLED_TO_REFRESH)
+        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_PULLED_TO_REFRESH)
         refreshProducts()
     }
 
     fun onAddProductButtonClicked() {
         launch {
-            AnalyticsTracker.track(Stat.PRODUCT_LIST_ADD_PRODUCT_BUTTON_TAPPED)
+            AnalyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_ADD_PRODUCT_BUTTON_TAPPED)
             triggerEvent(ShowAddProductBottomSheet)
         }
     }
@@ -195,7 +195,7 @@ class ProductListViewModel @Inject constructor(
 
     fun onSearchRequested() {
         AnalyticsTracker.track(
-            Stat.PRODUCT_LIST_SEARCHED,
+            AnalyticsEvent.PRODUCT_LIST_SEARCHED,
             mapOf(AnalyticsTracker.KEY_SEARCH to viewState.query)
         )
         refreshProducts()

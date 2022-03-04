@@ -1,7 +1,8 @@
 package com.woocommerce.android.ui.login
 
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.LOGIN_MAGIC_LINK_OPEN_EMAIL_CLIENT_VIEWED
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.LOGIN_MAGIC_LINK_OPEN_EMAIL_CLIENT_VIEWED
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
@@ -22,9 +23,9 @@ class LoginAnalyticsTracker(
         AnalyticsTracker.refreshMetadata(accountStore.account?.userName)
         val properties = HashMap<String, Boolean>()
         properties["dotcom_user"] = isWpcomLogin
-        AnalyticsTracker.track(AnalyticsTracker.Stat.SIGNED_IN, properties)
+        AnalyticsTracker.track(AnalyticsEvent.SIGNED_IN, properties)
         if (!isWpcomLogin) {
-            AnalyticsTracker.track(AnalyticsTracker.Stat.ADDED_SELF_HOSTED_SITE)
+            AnalyticsTracker.track(AnalyticsEvent.ADDED_SELF_HOSTED_SITE)
         }
     }
 
@@ -33,185 +34,185 @@ class LoginAnalyticsTracker(
     }
 
     override fun trackEmailFormViewed() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_EMAIL_FORM_VIEWED)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_EMAIL_FORM_VIEWED)
         unifiedLoginTracker.track(step = Step.ENTER_EMAIL_ADDRESS)
     }
 
     override fun trackInsertedInvalidUrl() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_INSERTED_INVALID_URL)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_INSERTED_INVALID_URL)
     }
 
     override fun trackLoginAccessed() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_ACCESSED)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_ACCESSED)
     }
 
     override fun trackLoginAutofillCredentialsFilled() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_AUTOFILL_CREDENTIALS_FILLED)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_AUTOFILL_CREDENTIALS_FILLED)
     }
 
     override fun trackLoginAutofillCredentialsUpdated() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_AUTOFILL_CREDENTIALS_UPDATED)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_AUTOFILL_CREDENTIALS_UPDATED)
     }
 
     override fun trackLoginFailed(errorContext: String?, errorType: String?, errorDescription: String?) {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_FAILED, errorContext, errorType, errorDescription)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_FAILED, errorContext, errorType, errorDescription)
     }
 
     override fun trackLoginForgotPasswordClicked() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_FORGOT_PASSWORD_CLICKED)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_FORGOT_PASSWORD_CLICKED)
         unifiedLoginTracker.trackClick(Click.FORGOTTEN_PASSWORD)
     }
 
     override fun trackLoginMagicLinkExited() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_MAGIC_LINK_EXITED)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_MAGIC_LINK_EXITED)
     }
 
     override fun trackLoginMagicLinkOpened() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_MAGIC_LINK_OPENED)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_MAGIC_LINK_OPENED)
     }
 
     override fun trackLoginMagicLinkOpenEmailClientClicked() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_MAGIC_LINK_OPEN_EMAIL_CLIENT_CLICKED)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_MAGIC_LINK_OPEN_EMAIL_CLIENT_CLICKED)
         unifiedLoginTracker.track(step = Step.EMAIL_OPENED)
         unifiedLoginTracker.trackClick(Click.OPEN_EMAIL_CLIENT)
     }
 
     override fun trackLoginMagicLinkSucceeded() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_MAGIC_LINK_SUCCEEDED)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_MAGIC_LINK_SUCCEEDED)
     }
 
     override fun trackLoginSocial2faNeeded() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_SOCIAL_2FA_NEEDED)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_SOCIAL_2FA_NEEDED)
     }
 
     override fun trackLoginSocialSuccess() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_SOCIAL_SUCCESS)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_SOCIAL_SUCCESS)
     }
 
     override fun trackMagicLinkFailed(properties: Map<String, *>) {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_MAGIC_LINK_FAILED, properties)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_MAGIC_LINK_FAILED, properties)
     }
 
     override fun trackMagicLinkRequested() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_MAGIC_LINK_REQUESTED)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_MAGIC_LINK_REQUESTED)
     }
 
     override fun trackMagicLinkRequestFormViewed() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_MAGIC_LINK_REQUEST_FORM_VIEWED)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_MAGIC_LINK_REQUEST_FORM_VIEWED)
         unifiedLoginTracker.track(Flow.LOGIN_MAGIC_LINK, Step.START)
     }
 
     override fun trackPasswordFormViewed(isSocialChallenge: Boolean) {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_PASSWORD_FORM_VIEWED)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_PASSWORD_FORM_VIEWED)
         unifiedLoginTracker.track(Flow.LOGIN_PASSWORD, Step.START)
     }
 
     override fun trackSignupCanceled() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.SIGNUP_CANCELED)
+        AnalyticsTracker.track(AnalyticsEvent.SIGNUP_CANCELED)
     }
 
     override fun trackSignupEmailButtonTapped() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.SIGNUP_EMAIL_BUTTON_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.SIGNUP_EMAIL_BUTTON_TAPPED)
     }
 
     override fun trackSignupEmailToLogin() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.SIGNUP_EMAIL_TO_LOGIN)
+        AnalyticsTracker.track(AnalyticsEvent.SIGNUP_EMAIL_TO_LOGIN)
     }
 
     override fun trackSignupGoogleButtonTapped() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.SIGNUP_GOOGLE_BUTTON_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.SIGNUP_GOOGLE_BUTTON_TAPPED)
     }
 
     override fun trackSignupMagicLinkFailed() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.SIGNUP_MAGIC_LINK_FAILED)
+        AnalyticsTracker.track(AnalyticsEvent.SIGNUP_MAGIC_LINK_FAILED)
     }
 
     override fun trackSignupMagicLinkOpened() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.SIGNUP_MAGIC_LINK_OPENED)
+        AnalyticsTracker.track(AnalyticsEvent.SIGNUP_MAGIC_LINK_OPENED)
     }
 
     override fun trackSignupMagicLinkOpenEmailClientClicked() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.SIGNUP_MAGIC_LINK_OPEN_EMAIL_CLIENT_CLICKED)
+        AnalyticsTracker.track(AnalyticsEvent.SIGNUP_MAGIC_LINK_OPEN_EMAIL_CLIENT_CLICKED)
     }
 
     override fun trackSignupMagicLinkSent() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.SIGNUP_MAGIC_LINK_SENT)
+        AnalyticsTracker.track(AnalyticsEvent.SIGNUP_MAGIC_LINK_SENT)
     }
 
     override fun trackSignupMagicLinkSucceeded() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.SIGNUP_MAGIC_LINK_SUCCEEDED)
+        AnalyticsTracker.track(AnalyticsEvent.SIGNUP_MAGIC_LINK_SUCCEEDED)
     }
 
     override fun trackSignupSocialAccountsNeedConnecting() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.SIGNUP_SOCIAL_ACCOUNTS_NEED_CONNECTING)
+        AnalyticsTracker.track(AnalyticsEvent.SIGNUP_SOCIAL_ACCOUNTS_NEED_CONNECTING)
     }
 
     override fun trackSignupSocialButtonFailure() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.SIGNUP_SOCIAL_BUTTON_FAILURE)
+        AnalyticsTracker.track(AnalyticsEvent.SIGNUP_SOCIAL_BUTTON_FAILURE)
     }
 
     override fun trackSignupSocialToLogin() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.SIGNUP_SOCIAL_TO_LOGIN)
+        AnalyticsTracker.track(AnalyticsEvent.SIGNUP_SOCIAL_TO_LOGIN)
     }
 
     override fun trackSignupTermsOfServiceTapped() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.SIGNUP_TERMS_OF_SERVICE_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.SIGNUP_TERMS_OF_SERVICE_TAPPED)
     }
 
     override fun trackSocialAccountsNeedConnecting() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_SOCIAL_ACCOUNTS_NEED_CONNECTING)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_SOCIAL_ACCOUNTS_NEED_CONNECTING)
     }
 
     override fun trackSocialButtonClick() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_SOCIAL_BUTTON_CLICK)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_SOCIAL_BUTTON_CLICK)
         unifiedLoginTracker.trackClick(Click.LOGIN_WITH_GOOGLE)
     }
 
     override fun trackSocialButtonFailure() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_SOCIAL_BUTTON_FAILURE)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_SOCIAL_BUTTON_FAILURE)
     }
 
     override fun trackSocialConnectFailure() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_SOCIAL_CONNECT_FAILURE)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_SOCIAL_CONNECT_FAILURE)
     }
 
     override fun trackSocialConnectSuccess() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_SOCIAL_CONNECT_SUCCESS)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_SOCIAL_CONNECT_SUCCESS)
     }
 
     override fun trackSocialErrorUnknownUser() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_SOCIAL_ERROR_UNKNOWN_USER)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_SOCIAL_ERROR_UNKNOWN_USER)
     }
 
     override fun trackSocialFailure(errorContext: String?, errorType: String?, errorDescription: String?) {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_SOCIAL_FAILURE, errorContext, errorType, errorDescription)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_SOCIAL_FAILURE, errorContext, errorType, errorDescription)
     }
 
     override fun trackTwoFactorFormViewed() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_TWO_FACTOR_FORM_VIEWED)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_TWO_FACTOR_FORM_VIEWED)
     }
 
     override fun trackUrlFormViewed() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_URL_FORM_VIEWED)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_URL_FORM_VIEWED)
         unifiedLoginTracker.track(Flow.LOGIN_SITE_ADDRESS, Step.START)
     }
 
     override fun trackUrlHelpScreenViewed() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_URL_HELP_SCREEN_VIEWED)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_URL_HELP_SCREEN_VIEWED)
     }
 
     override fun trackUsernamePasswordFormViewed() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_USERNAME_PASSWORD_FORM_VIEWED)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_USERNAME_PASSWORD_FORM_VIEWED)
         unifiedLoginTracker.track(Flow.LOGIN_STORE_CREDS, Step.USERNAME_PASSWORD)
     }
 
     override fun trackWpComBackgroundServiceUpdate(properties: Map<String, *>) {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_WPCOM_BACKGROUND_SERVICE_UPDATE, properties)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_WPCOM_BACKGROUND_SERVICE_UPDATE, properties)
     }
 
     override fun trackConnectedSiteInfoRequested(url: String?) {
         AnalyticsTracker.track(
-            AnalyticsTracker.Stat.LOGIN_CONNECTED_SITE_INFO_REQUESTED,
+            AnalyticsEvent.LOGIN_CONNECTED_SITE_INFO_REQUESTED,
             mapOf(AnalyticsTracker.KEY_URL to url)
         )
     }
@@ -223,7 +224,7 @@ class LoginAnalyticsTracker(
         errorDescription: String?
     ) {
         AnalyticsTracker.track(
-            AnalyticsTracker.Stat.LOGIN_CONNECTED_SITE_INFO_FAILED,
+            AnalyticsEvent.LOGIN_CONNECTED_SITE_INFO_FAILED,
             errorContext,
             errorType,
             errorDescription
@@ -231,7 +232,7 @@ class LoginAnalyticsTracker(
     }
 
     override fun trackConnectedSiteInfoSucceeded(properties: Map<String, *>) {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_CONNECTED_SITE_INFO_SUCCEEDED, properties)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_CONNECTED_SITE_INFO_SUCCEEDED, properties)
     }
 
     override fun trackSignupMagicLinkOpenEmailClientViewed() {
