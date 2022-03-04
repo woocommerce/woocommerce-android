@@ -517,16 +517,18 @@ final class OrderDetailViewModel @Inject constructor(
     }
 
     private fun loadOrderNotes() {
-        _orderNotes.value = orderDetailRepository.getOrderNotes(order.localId.value)
+        launch {
+            _orderNotes.value = orderDetailRepository.getOrderNotes(navArgs.orderId)
+        }
     }
 
     private fun fetchOrderNotes() {
         launch {
-            if (!orderDetailRepository.fetchOrderNotes(order.localId.value, navArgs.orderId)) {
+            if (!orderDetailRepository.fetchOrderNotes(navArgs.orderId)) {
                 triggerEvent(ShowSnackbar(string.order_error_fetch_notes_generic))
             }
             // fetch order notes from the local db and hide the skeleton view
-            _orderNotes.value = orderDetailRepository.getOrderNotes(order.localId.value)
+            _orderNotes.value = orderDetailRepository.getOrderNotes(navArgs.orderId)
         }
     }
 
