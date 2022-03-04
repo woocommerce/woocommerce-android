@@ -3,10 +3,10 @@ package com.woocommerce.android.ui.orders.tracking
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_SHIPMENT_TRACKING_CARRIER_SELECTED
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_SHIPMENT_TRACKING_CUSTOM_PROVIDER_SELECTED
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TRACKING_CARRIER_SELECTED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TRACKING_CUSTOM_PROVIDER_SELECTED
 import com.woocommerce.android.model.OrderShipmentProvider
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -60,7 +60,7 @@ class AddOrderTrackingProviderListViewModel @Inject constructor(
                     triggerEvent(ShowSnackbar(R.string.order_shipment_tracking_provider_list_error_empty_list))
                 }
                 else -> {
-                    AnalyticsTracker.track(Stat.ORDER_TRACKING_PROVIDERS_LOADED)
+                    AnalyticsTracker.track(AnalyticsEvent.ORDER_TRACKING_PROVIDERS_LOADED)
                     providersList = shipmentProviders
                     trackingProviderListViewState = trackingProviderListViewState.copy(
                         providersList = shipmentProviders

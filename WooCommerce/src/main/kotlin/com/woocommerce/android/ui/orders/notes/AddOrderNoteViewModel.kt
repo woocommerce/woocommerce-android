@@ -3,10 +3,10 @@ package com.woocommerce.android.ui.orders.notes
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.ADD_ORDER_NOTE_EMAIL_NOTE_TO_CUSTOMER_TOGGLED
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_NOTE_ADD
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_NOTE_EMAIL_NOTE_TO_CUSTOMER_TOGGLED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
@@ -96,13 +96,13 @@ class AddOrderNoteViewModel @Inject constructor(
 
             val onOrderChanged = orderDetailRepository.addOrderNote(order.id, note)
             if (!onOrderChanged.isError) {
-                AnalyticsTracker.track(Stat.ORDER_NOTE_ADD_SUCCESS)
+                AnalyticsTracker.track(AnalyticsEvent.ORDER_NOTE_ADD_SUCCESS)
                 addOrderNoteViewState = addOrderNoteViewState.copy(isProgressDialogShown = false)
                 triggerEvent(ShowSnackbar(R.string.add_order_note_added))
                 triggerEvent(ExitWithResult(note))
             } else {
                 AnalyticsTracker.track(
-                    Stat.ORDER_NOTE_ADD_FAILED,
+                    AnalyticsEvent.ORDER_NOTE_ADD_FAILED,
                     prepareTracksEventsDetails(onOrderChanged)
                 )
                 addOrderNoteViewState = addOrderNoteViewState.copy(isProgressDialogShown = false)

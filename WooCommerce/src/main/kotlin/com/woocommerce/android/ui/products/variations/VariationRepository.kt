@@ -1,12 +1,12 @@
 package com.woocommerce.android.ui.products.variations
 
 import com.woocommerce.android.AppConstants
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_CREATION_FAILED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_CREATION_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ID
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_CREATION_FAILED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_CREATION_SUCCESS
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.toAppModel
@@ -121,14 +121,14 @@ class VariationRepository @Inject constructor(
             if (event.isError) {
                 loadContinuation.continueWith(false)
                 AnalyticsTracker.track(
-                    Stat.PRODUCT_VARIANTS_LOAD_ERROR,
+                    AnalyticsEvent.PRODUCT_VARIANTS_LOAD_ERROR,
                     this.javaClass.simpleName,
                     event.error.type.toString(),
                     event.error.message
                 )
             } else {
                 canLoadMoreProductVariations = event.canLoadMore
-                AnalyticsTracker.track(Stat.PRODUCT_VARIANTS_LOADED)
+                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_VARIANTS_LOADED)
                 loadContinuation.continueWith(true)
             }
         }

@@ -10,9 +10,9 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.*
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.extensions.*
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.MediaFilesRepository.UploadResult.*
@@ -332,7 +332,7 @@ class ProductDetailViewModel @Inject constructor(
      * Called when the any of the editable sections (such as pricing, shipping, inventory)
      * is selected in Product detail screen
      */
-    fun onEditProductCardClicked(target: ProductNavigationTarget, stat: Stat? = null) {
+    fun onEditProductCardClicked(target: ProductNavigationTarget, stat: AnalyticsEvent? = null) {
         stat?.let { AnalyticsTracker.track(it) }
         triggerEvent(target)
         updateProductBeforeEnteringFragment()
@@ -511,34 +511,34 @@ class ProductDetailViewModel @Inject constructor(
      * Called when the back= button is clicked in a product sub detail screen
      */
     fun onBackButtonClicked(event: ProductExitEvent) {
-        var eventName: Stat? = null
+        var eventName: AnalyticsEvent? = null
         var hasChanges = false
         when (event) {
             is ExitSettings -> {
                 hasChanges = hasSettingsChanges()
             }
             is ExitExternalLink -> {
-                eventName = Stat.EXTERNAL_PRODUCT_LINK_SETTINGS_DONE_BUTTON_TAPPED
+                eventName = AnalyticsEvent.EXTERNAL_PRODUCT_LINK_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasExternalLinkChanges()
             }
             is ExitProductCategories -> {
-                eventName = Stat.PRODUCT_CATEGORY_SETTINGS_DONE_BUTTON_TAPPED
+                eventName = AnalyticsEvent.PRODUCT_CATEGORY_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasCategoryChanges()
             }
             is ExitProductTags -> {
-                eventName = Stat.PRODUCT_TAG_SETTINGS_DONE_BUTTON_TAPPED
+                eventName = AnalyticsEvent.PRODUCT_TAG_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasTagChanges()
             }
             is ExitProductAttributeList -> {
-                eventName = Stat.PRODUCT_VARIATION_EDIT_ATTRIBUTE_DONE_BUTTON_TAPPED
+                eventName = AnalyticsEvent.PRODUCT_VARIATION_EDIT_ATTRIBUTE_DONE_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
             is ExitProductAddAttribute -> {
-                eventName = Stat.PRODUCT_VARIATION_EDIT_ATTRIBUTE_OPTIONS_DONE_BUTTON_TAPPED
+                eventName = AnalyticsEvent.PRODUCT_VARIATION_EDIT_ATTRIBUTE_OPTIONS_DONE_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
             is ExitAttributesAdded -> {
-                eventName = Stat.PRODUCT_VARIATION_ATTRIBUTE_ADDED_BACK_BUTTON_TAPPED
+                eventName = AnalyticsEvent.PRODUCT_VARIATION_ATTRIBUTE_ADDED_BACK_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
         }
@@ -728,7 +728,7 @@ class ProductDetailViewModel @Inject constructor(
         AnalyticsTracker.track(statId, properties)
     }
 
-    private fun trackWithProductId(event: Stat) {
+    private fun trackWithProductId(event: AnalyticsEvent) {
         viewState.storedProduct?.let {
             AnalyticsTracker.track(
                 event,
@@ -1140,7 +1140,7 @@ class ProductDetailViewModel @Inject constructor(
                 updateTermsForAttribute(attributeId, attributeName, mutableTerms)
             }
         }
-        trackWithProductId(Stat.PRODUCT_ATTRIBUTE_OPTIONS_ROW_TAPPED)
+        trackWithProductId(AnalyticsEvent.PRODUCT_ATTRIBUTE_OPTIONS_ROW_TAPPED)
     }
 
     /**
@@ -1190,7 +1190,7 @@ class ProductDetailViewModel @Inject constructor(
             )
 
             updateProductDraft(attributes = updatedAttributes)
-            trackWithProductId(Stat.PRODUCT_ATTRIBUTE_REMOVE_BUTTON_TAPPED)
+            trackWithProductId(AnalyticsEvent.PRODUCT_ATTRIBUTE_REMOVE_BUTTON_TAPPED)
         }
     }
 
@@ -1348,7 +1348,7 @@ class ProductDetailViewModel @Inject constructor(
         }
 
         updateProductDraft(attributes = updatedAttributes)
-        trackWithProductId(Stat.PRODUCT_ATTRIBUTE_OPTIONS_ROW_TAPPED)
+        trackWithProductId(AnalyticsEvent.PRODUCT_ATTRIBUTE_OPTIONS_ROW_TAPPED)
     }
 
     /**
@@ -1358,13 +1358,13 @@ class ProductDetailViewModel @Inject constructor(
         if (hasAttributeChanges() && checkConnection()) {
             launch {
                 viewState.productDraft?.attributes?.let { attributes ->
-                    trackWithProductId(Stat.PRODUCT_ATTRIBUTE_UPDATED)
+                    trackWithProductId(AnalyticsEvent.PRODUCT_ATTRIBUTE_UPDATED)
                     val result = productRepository.updateProductAttributes(getRemoteProductId(), attributes)
                     if (!result) {
                         triggerEvent(ShowSnackbar(string.product_attributes_error_saving))
-                        trackWithProductId(Stat.PRODUCT_ATTRIBUTE_UPDATE_FAILED)
+                        trackWithProductId(AnalyticsEvent.PRODUCT_ATTRIBUTE_UPDATE_FAILED)
                     } else {
-                        trackWithProductId(Stat.PRODUCT_ATTRIBUTE_UPDATE_SUCCESS)
+                        trackWithProductId(AnalyticsEvent.PRODUCT_ATTRIBUTE_UPDATE_SUCCESS)
                     }
                 }
             }
@@ -1390,7 +1390,7 @@ class ProductDetailViewModel @Inject constructor(
      * User tapped "Add attribute" on the attribute list fragment
      */
     fun onAddAttributeButtonClick() {
-        trackWithProductId(Stat.PRODUCT_ATTRIBUTE_ADD_BUTTON_TAPPED)
+        trackWithProductId(AnalyticsEvent.PRODUCT_ATTRIBUTE_ADD_BUTTON_TAPPED)
         triggerEvent(AddProductAttribute())
     }
 
@@ -1398,7 +1398,7 @@ class ProductDetailViewModel @Inject constructor(
      * User tapped "Rename" on the attribute terms fragment
      */
     fun onRenameAttributeButtonClick(attributeName: String) {
-        trackWithProductId(Stat.PRODUCT_ATTRIBUTE_RENAME_BUTTON_TAPPED)
+        trackWithProductId(AnalyticsEvent.PRODUCT_ATTRIBUTE_RENAME_BUTTON_TAPPED)
         triggerEvent(RenameProductAttribute(attributeName))
     }
 
@@ -1645,7 +1645,7 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun onAddCategoryButtonClicked() {
-        AnalyticsTracker.track(Stat.PRODUCT_CATEGORY_SETTINGS_ADD_BUTTON_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_CATEGORY_SETTINGS_ADD_BUTTON_TAPPED)
         triggerEvent(AddProductCategory)
     }
 

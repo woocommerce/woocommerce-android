@@ -9,8 +9,8 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.MyStoreTopPerformersBinding
 import com.woocommerce.android.databinding.TopPerformersListItemBinding
 import com.woocommerce.android.di.GlideApp
@@ -51,7 +51,7 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
 
     private fun trackDateRangeChanged(granularity: StatsGranularity) {
         AnalyticsTracker.track(
-            Stat.DASHBOARD_TOP_PERFORMERS_DATE,
+            AnalyticsEvent.DASHBOARD_TOP_PERFORMERS_DATE,
             mapOf(AnalyticsTracker.KEY_RANGE to granularity.toString().lowercase(Locale.getDefault()))
         )
     }

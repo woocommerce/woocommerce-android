@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.orders.cardreader
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
+import com.woocommerce.android.analytics.AnalyticsEvent.*
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.SelectedSite

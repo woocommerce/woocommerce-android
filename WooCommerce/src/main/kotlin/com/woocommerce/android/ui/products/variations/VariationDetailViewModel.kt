@@ -8,11 +8,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_IMAGE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_VIEW_VARIATION_VISIBILITY_SWITCH_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ID
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_IMAGE_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_VARIATION_VISIBILITY_SWITCH_TAPPED
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.ProductVariation
@@ -120,7 +120,7 @@ class VariationDetailViewModel @Inject constructor(
      * Called when the any of the editable sections (such as pricing, shipping, inventory)
      * is selected in Product variation screen
      */
-    fun onEditVariationCardClicked(target: VariationNavigationTarget, stat: Stat? = null) {
+    fun onEditVariationCardClicked(target: VariationNavigationTarget, stat: AnalyticsEvent? = null) {
         stat?.let { AnalyticsTracker.track(it) }
         triggerEvent(target)
     }
@@ -130,7 +130,7 @@ class VariationDetailViewModel @Inject constructor(
             ShowDialog(
                 positiveBtnAction = { _, _ ->
                     AnalyticsTracker.track(
-                        Stat.PRODUCT_VARIATION_REMOVE_BUTTON_TAPPED,
+                        AnalyticsEvent.PRODUCT_VARIATION_REMOVE_BUTTON_TAPPED,
                         mapOf(KEY_PRODUCT_ID to viewState.parentProduct?.remoteId)
                     )
                     viewState = viewState.copy(isConfirmingDeletion = false)

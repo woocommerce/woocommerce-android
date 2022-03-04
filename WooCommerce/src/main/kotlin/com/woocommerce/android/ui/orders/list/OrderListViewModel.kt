@@ -7,10 +7,10 @@ import androidx.lifecycle.*
 import androidx.paging.PagedList
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TOTAL_DURATION
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.model.RequestResult.SUCCESS
@@ -380,7 +380,7 @@ class OrderListViewModel @Inject constructor(
 
         val totalDurationInSeconds = event.duration.toDouble() / 1_000
         AnalyticsTracker.track(
-            Stat.ORDERS_LIST_LOADED,
+            AnalyticsEvent.ORDERS_LIST_LOADED,
             mapOf(
                 KEY_TOTAL_DURATION to totalDurationInSeconds,
                 KEY_STATUS to event.listDescriptor.statusFilter
@@ -389,7 +389,7 @@ class OrderListViewModel @Inject constructor(
     }
 
     fun onFiltersButtonTapped() {
-        AnalyticsTracker.track(Stat.ORDERS_LIST_VIEW_FILTER_OPTIONS_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.ORDERS_LIST_VIEW_FILTER_OPTIONS_TAPPED)
         triggerEvent(ShowOrderFilters)
     }
 

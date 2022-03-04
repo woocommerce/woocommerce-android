@@ -11,8 +11,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialFadeThrough
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentReviewsListBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ActionStatus
@@ -121,7 +121,7 @@ class ReviewListFragment :
             // Set the scrolling view in the custom SwipeRefreshLayout
             scrollUpChild = binding.reviewsList
             setOnRefreshListener {
-                AnalyticsTracker.track(Stat.REVIEWS_LIST_PULLED_TO_REFRESH)
+                AnalyticsTracker.track(AnalyticsEvent.REVIEWS_LIST_PULLED_TO_REFRESH)
                 viewModel.forceRefreshReviews()
             }
         }
@@ -144,7 +144,7 @@ class ReviewListFragment :
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_mark_all_read -> {
-                AnalyticsTracker.track(Stat.REVIEWS_LIST_MENU_MARK_READ_BUTTON_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.REVIEWS_LIST_MENU_MARK_READ_BUTTON_TAPPED)
                 viewModel.markAllReviewsAsRead()
                 true
             }
@@ -270,7 +270,7 @@ class ReviewListFragment :
 
             // Listener for the UNDO button in the snackbar
             val actionListener = OnClickListener {
-                AnalyticsTracker.track(Stat.SNACK_REVIEW_ACTION_APPLIED_UNDO_BUTTON_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.SNACK_REVIEW_ACTION_APPLIED_UNDO_BUTTON_TAPPED)
 
                 // User canceled the action to change the status
                 changeReviewStatusCanceled = true
@@ -320,7 +320,7 @@ class ReviewListFragment :
     }
 
     private fun revertPendingModerationState() {
-        AnalyticsTracker.track(Stat.REVIEW_ACTION_UNDO)
+        AnalyticsTracker.track(AnalyticsEvent.REVIEW_ACTION_UNDO)
 
         pendingModerationNewStatus?.let {
             val status = ProductReviewStatus.fromString(it)

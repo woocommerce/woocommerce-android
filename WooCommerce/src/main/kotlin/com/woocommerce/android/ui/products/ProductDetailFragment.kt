@@ -24,8 +24,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialContainerTransform
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductDetailBinding
 import com.woocommerce.android.extensions.*
 import com.woocommerce.android.model.Product
@@ -338,7 +338,7 @@ class ProductDetailFragment :
     private fun startAddImageContainer() {
         binding.addImageContainer.show()
         binding.addImageContainer.setOnClickListener {
-            AnalyticsTracker.track(Stat.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
+            AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
             viewModel.onAddImageButtonClicked()
         }
     }
@@ -516,7 +516,7 @@ class ProductDetailFragment :
     }
 
     override fun onGalleryAddImageClicked() {
-        AnalyticsTracker.track(Stat.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
         viewModel.onAddImageButtonClicked()
     }
 

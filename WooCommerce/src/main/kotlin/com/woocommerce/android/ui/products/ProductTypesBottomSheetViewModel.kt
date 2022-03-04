@@ -8,8 +8,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAdd
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -49,7 +49,7 @@ class ProductTypesBottomSheetViewModel @Inject constructor(
     fun onProductTypeSelected(productTypeUiItem: ProductTypesBottomSheetUiItem) {
         if (navArgs.isAddProduct) {
             val properties = mapOf("product_type" to productTypeUiItem.type.value.lowercase(ROOT))
-            AnalyticsTracker.track(Stat.ADD_PRODUCT_PRODUCT_TYPE_SELECTED, properties)
+            AnalyticsTracker.track(AnalyticsEvent.ADD_PRODUCT_PRODUCT_TYPE_SELECTED, properties)
 
             saveUserSelection(productTypeUiItem)
             triggerEvent(ViewProductAdd)
