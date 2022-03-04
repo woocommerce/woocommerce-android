@@ -181,7 +181,7 @@ class CardReaderPaymentViewModel
             is ProcessingPaymentCompleted -> {
                 cardReaderTrackingInfoKeeper.setPaymentMethodType(paymentStatus.paymentMethodType.stringRepresentation)
                 when (paymentStatus.paymentMethodType) {
-                    // Interac payments done in one step, without capturing that's why we track success here
+                    // Interac payments done in one step, without capturing. That's why we track success here
                     PaymentMethodType.INTERAC_PRESENT -> tracker.trackInteracPaymentSucceeded()
                     else -> {}
                 }

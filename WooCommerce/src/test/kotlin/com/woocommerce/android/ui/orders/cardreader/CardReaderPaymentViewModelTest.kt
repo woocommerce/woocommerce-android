@@ -449,6 +449,42 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when processing payment completed with interac present, then track interac success`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(ProcessingPaymentCompleted(PaymentMethodType.INTERAC_PRESENT)) }
+            }
+
+            viewModel.start()
+
+            verify(tracker).trackInteracPaymentSucceeded()
+        }
+
+    @Test
+    fun `when processing payment completed with card present, then do not track interac success`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(ProcessingPaymentCompleted(PaymentMethodType.CARD_PRESENT)) }
+            }
+
+            viewModel.start()
+
+            verify(tracker, never()).trackInteracPaymentSucceeded()
+        }
+
+    @Test
+    fun `when processing payment completed with unknown type, then do not track interac success`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(ProcessingPaymentCompleted(PaymentMethodType.UNKNOWN)) }
+            }
+
+            viewModel.start()
+
+            verify(tracker, never()).trackInteracPaymentSucceeded()
+        }
+
+    @Test
     fun `when processing payment completed with unknown, then tracking keeper stores payment type`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
