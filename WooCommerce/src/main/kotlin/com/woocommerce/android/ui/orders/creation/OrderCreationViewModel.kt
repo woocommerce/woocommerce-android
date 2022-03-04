@@ -30,7 +30,6 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNaviga
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -120,11 +119,7 @@ class OrderCreationViewModel @Inject constructor(
     }
 
     fun onRemoveProduct(item: Order.Item) = _orderDraft.update {
-        if (FeatureFlag.ORDER_CREATION_M2.isEnabled()) {
-            it.adjustProductQuantity(item.uniqueId, -item.quantity.toInt())
-        } else {
-            it.updateItems(it.items - item)
-        }
+        it.adjustProductQuantity(item.uniqueId, -item.quantity.toInt())
     }
 
     fun onProductSelected(remoteProductId: Long, variationId: Long? = null) {
@@ -252,7 +247,6 @@ class OrderCreationViewModel @Inject constructor(
      * Monitor order changes, and update the remote draft to update price totals
      */
     private fun monitorOrderChanges() {
-        if (!FeatureFlag.ORDER_CREATION_M2.isEnabled()) return
         viewModelScope.launch {
             createOrUpdateOrderDraft(_orderDraft, retryOrderDraftUpdateTrigger)
                 .collect { updateStatus ->
