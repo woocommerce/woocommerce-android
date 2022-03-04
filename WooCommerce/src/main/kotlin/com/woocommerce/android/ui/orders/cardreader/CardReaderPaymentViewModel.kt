@@ -178,8 +178,14 @@ class CardReaderPaymentViewModel
             InitializingPayment -> viewState.postValue(LoadingDataState)
             CollectingPayment -> viewState.postValue(CollectPaymentState(amountLabel))
             ProcessingPayment -> viewState.postValue(ProcessingPaymentState(amountLabel))
-            is ProcessingPaymentCompleted ->
+            is ProcessingPaymentCompleted -> {
                 cardReaderTrackingInfoKeeper.setPaymentMethodType(paymentStatus.paymentMethodType.stringRepresentation)
+                when (paymentStatus.paymentMethodType) {
+                    // Interac payments done in one step, without capturing that's why we track success here
+                    PaymentMethodType.INTERAC_PRESENT -> tracker.trackInteracPaymentSucceeded()
+                    else -> {}
+                }
+            }
             CapturingPayment -> viewState.postValue(CapturingPaymentState(amountLabel))
             is PaymentCompleted -> {
                 tracker.trackPaymentSucceeded()
