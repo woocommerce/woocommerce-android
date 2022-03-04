@@ -8,9 +8,9 @@ import androidx.lifecycle.SavedStateHandle
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent.*
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected

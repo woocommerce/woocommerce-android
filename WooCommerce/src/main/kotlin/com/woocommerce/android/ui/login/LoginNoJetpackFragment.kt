@@ -19,8 +19,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentLoginNoJetpackBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.widgets.WooClickableSpan
@@ -115,7 +115,7 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
             val spannable = SpannableString(usernameText)
             spannable.setSpan(
                 WooClickableSpan {
-                    AnalyticsTracker.track(Stat.LOGIN_NO_JETPACK_LOGOUT_LINK_TAPPED)
+                    AnalyticsTracker.track(AnalyticsEvent.LOGIN_NO_JETPACK_LOGOUT_LINK_TAPPED)
                     activity?.setResult(Activity.RESULT_CANCELED)
                     val intent = Intent(activity, LoginActivity::class.java)
                     LoginMode.WOO_LOGIN_MODE.putInto(intent)
@@ -145,14 +145,14 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
         }
 
         noStoresBinding.btnSecondaryAction.setOnClickListener {
-            AnalyticsTracker.track(Stat.LOGIN_NO_JETPACK_WHAT_IS_JETPACK_LINK_TAPPED)
+            AnalyticsTracker.track(AnalyticsEvent.LOGIN_NO_JETPACK_WHAT_IS_JETPACK_LINK_TAPPED)
             jetpackLoginListener?.showWhatIsJetpackDialog()
         }
 
         with(btnBinding.buttonPrimary) {
             text = getString(R.string.login_jetpack_view_setup_instructions)
             setOnClickListener {
-                AnalyticsTracker.track(Stat.LOGIN_NO_JETPACK_VIEW_INSTRUCTIONS_BUTTON_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.LOGIN_NO_JETPACK_VIEW_INSTRUCTIONS_BUTTON_TAPPED)
                 jetpackLoginListener?.showJetpackInstructions()
             }
         }
@@ -161,7 +161,7 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
             visibility = View.VISIBLE
             text = getString(R.string.try_again)
             setOnClickListener {
-                AnalyticsTracker.track(Stat.LOGIN_NO_JETPACK_TRY_AGAIN_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.LOGIN_NO_JETPACK_TRY_AGAIN_TAPPED)
                 if (mCheckJetpackAvailability) {
                     // initiate the CONNECT_SITE_INFO API call
                     siteAddress?.let { viewModel.verifyJetpackAvailable(it) }
@@ -175,7 +175,7 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
 
         with(binding.buttonHelp) {
             setOnClickListener {
-                AnalyticsTracker.track(Stat.LOGIN_NO_JETPACK_MENU_HELP_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.LOGIN_NO_JETPACK_MENU_HELP_TAPPED)
                 loginListener?.helpSiteAddress(siteAddress)
             }
         }
@@ -200,7 +200,7 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-        AnalyticsTracker.track(Stat.LOGIN_NO_JETPACK_SCREEN_VIEWED)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_NO_JETPACK_SCREEN_VIEWED)
     }
 
     private fun initializeViewModel() {

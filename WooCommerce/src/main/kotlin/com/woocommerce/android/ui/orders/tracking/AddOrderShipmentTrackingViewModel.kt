@@ -5,9 +5,9 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_SHIPMENT_TRACKING_ADD_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TRACKING_ADD_BUTTON_TAPPED
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShipmentTrackingProviders
@@ -129,13 +129,13 @@ class AddOrderShipmentTrackingViewModel @Inject constructor(
             val onOrderChanged =
                 orderDetailRepository.addOrderShipmentTracking(navArgs.orderId, navArgs.orderLocalId, shipmentTracking)
             if (!onOrderChanged.isError) {
-                AnalyticsTracker.track(Stat.ORDER_TRACKING_ADD_SUCCESS)
+                AnalyticsTracker.track(AnalyticsEvent.ORDER_TRACKING_ADD_SUCCESS)
                 addOrderShipmentTrackingViewState = addOrderShipmentTrackingViewState.copy(showLoadingProgress = false)
                 triggerEvent(ShowSnackbar(string.order_shipment_tracking_added))
                 triggerEvent(ExitWithResult(shipmentTracking))
             } else {
                 AnalyticsTracker.track(
-                    Stat.ORDER_TRACKING_ADD_FAILED,
+                    AnalyticsEvent.ORDER_TRACKING_ADD_FAILED,
                     prepareTracksEventsDetails(onOrderChanged)
                 )
                 addOrderShipmentTrackingViewState = addOrderShipmentTrackingViewState.copy(showLoadingProgress = false)

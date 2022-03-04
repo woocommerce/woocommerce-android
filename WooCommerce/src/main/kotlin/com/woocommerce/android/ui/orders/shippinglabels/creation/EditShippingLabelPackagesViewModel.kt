@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.*
@@ -176,7 +177,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     }
 
     fun onMoveButtonClicked(item: ShippingLabelPackage.Item, shippingPackage: ShippingLabelPackage) {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.SHIPPING_LABEL_MOVE_ITEM_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.SHIPPING_LABEL_MOVE_ITEM_TAPPED)
         triggerEvent(ShowMoveItemDialog(item, shippingPackage, viewState.packages))
     }
 

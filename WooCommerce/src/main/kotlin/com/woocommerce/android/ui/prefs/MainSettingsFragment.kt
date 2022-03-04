@@ -15,9 +15,9 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.*
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.databinding.FragmentSettingsMainBinding
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
@@ -110,7 +110,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         }
 
         binding.optionHelpAndSupport.setOnClickListener {
-            AnalyticsTracker.track(Stat.MAIN_MENU_CONTACT_SUPPORT_TAPPED)
+            AnalyticsTracker.track(AnalyticsEvent.MAIN_MENU_CONTACT_SUPPORT_TAPPED)
             startActivity(HelpActivity.createIntent(requireActivity(), Origin.SETTINGS, null))
         }
 
@@ -261,7 +261,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         binding.optionWhatsNew.setOnClickListener {
             WooLog.i(T.DEVICE, "Displaying Feature Announcement from Settings menu.")
             AnalyticsTracker.track(
-                Stat.FEATURE_ANNOUNCEMENT_SHOWN,
+                AnalyticsEvent.FEATURE_ANNOUNCEMENT_SHOWN,
                 mapOf(
                     AnalyticsTracker.KEY_ANNOUNCEMENT_VIEW_SOURCE to
                         AnalyticsTracker.VALUE_ANNOUNCEMENT_SOURCE_SETTINGS

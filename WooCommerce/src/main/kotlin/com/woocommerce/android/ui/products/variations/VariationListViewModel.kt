@@ -6,10 +6,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.Transformations
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.track
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED
 import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
@@ -101,12 +101,12 @@ class VariationListViewModel @Inject constructor(
     }
 
     fun onCreateEmptyVariationClick() {
-        trackWithProductId(Stat.PRODUCT_VARIATION_ADD_MORE_TAPPED)
+        trackWithProductId(AnalyticsEvent.PRODUCT_VARIATION_ADD_MORE_TAPPED)
         handleVariationCreation()
     }
 
     fun onCreateFirstVariationRequested() {
-        trackWithProductId(Stat.PRODUCT_VARIATION_ADD_FIRST_TAPPED)
+        trackWithProductId(AnalyticsEvent.PRODUCT_VARIATION_ADD_FIRST_TAPPED)
         viewState.parentProduct
             ?.variationEnabledAttributes
             ?.takeIf { it.isNotEmpty() }
@@ -237,7 +237,7 @@ class VariationListViewModel @Inject constructor(
         return variations
     }
 
-    private fun trackWithProductId(event: Stat) {
+    private fun trackWithProductId(event: AnalyticsEvent) {
         viewState.parentProduct?.let { track(event, mapOf(KEY_PRODUCT_ID to it.remoteId)) }
     }
 

@@ -4,8 +4,8 @@ import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.NetworkStatus
@@ -126,9 +126,9 @@ class OrderEditingViewModel @Inject constructor(
                                 )
                             )
                         }
-                        Stat.ORDER_DETAIL_EDIT_FLOW_FAILED
+                        AnalyticsEvent.ORDER_DETAIL_EDIT_FLOW_FAILED
                     } else {
-                        Stat.ORDER_DETAIL_EDIT_FLOW_COMPLETED
+                        AnalyticsEvent.ORDER_DETAIL_EDIT_FLOW_COMPLETED
                     }
                     AnalyticsTracker.track(
                         stat,

@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.reviews
 
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.model.*
 import com.woocommerce.android.model.RequestResult.ERROR
@@ -69,7 +69,7 @@ class ReviewDetailRepository @Inject constructor(
 
     private fun trackMarkNotificationAsReadStarted(notification: NotificationModel, remoteReviewId: Long) {
         AnalyticsTracker.track(
-            Stat.REVIEW_MARK_READ,
+            AnalyticsEvent.REVIEW_MARK_READ,
             mapOf(
                 AnalyticsTracker.KEY_ID to remoteReviewId,
                 AnalyticsTracker.KEY_NOTE_ID to notification.remoteNoteId
@@ -80,7 +80,7 @@ class ReviewDetailRepository @Inject constructor(
     private fun trackMarkNotificationReadResult(result: OnNotificationChanged) {
         if (result.isError) {
             AnalyticsTracker.track(
-                Stat.REVIEW_MARK_READ_FAILED,
+                AnalyticsEvent.REVIEW_MARK_READ_FAILED,
                 mapOf(
                     AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                     AnalyticsTracker.KEY_ERROR_TYPE to result.error?.type?.toString(),
@@ -94,7 +94,7 @@ class ReviewDetailRepository @Inject constructor(
                     "${result.error?.type} - ${result.error?.message}"
             )
         } else {
-            AnalyticsTracker.track(Stat.REVIEW_MARK_READ_SUCCESS)
+            AnalyticsTracker.track(AnalyticsEvent.REVIEW_MARK_READ_SUCCESS)
         }
     }
 
@@ -104,7 +104,7 @@ class ReviewDetailRepository @Inject constructor(
 
         return if (result.isError) {
             AnalyticsTracker.track(
-                Stat.REVIEW_PRODUCT_LOAD_FAILED,
+                AnalyticsEvent.REVIEW_PRODUCT_LOAD_FAILED,
                 mapOf(
                     AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                     AnalyticsTracker.KEY_ERROR_TYPE to result.error?.type?.toString(),
@@ -120,7 +120,7 @@ class ReviewDetailRepository @Inject constructor(
             false
         } else {
             AnalyticsTracker.track(
-                Stat.REVIEW_PRODUCT_LOADED,
+                AnalyticsEvent.REVIEW_PRODUCT_LOADED,
                 mapOf(
                     AnalyticsTracker.KEY_ID to remoteProductId,
                     AnalyticsTracker.KEY_REVIEW_ID to remoteReviewId
@@ -135,7 +135,7 @@ class ReviewDetailRepository @Inject constructor(
         val result = productStore.fetchSingleProductReview(payload)
         if (result.isError) {
             AnalyticsTracker.track(
-                Stat.REVIEW_LOAD_FAILED,
+                AnalyticsEvent.REVIEW_LOAD_FAILED,
                 mapOf(
                     AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                     AnalyticsTracker.KEY_ERROR_TYPE to result.error?.type?.toString(),
@@ -149,7 +149,7 @@ class ReviewDetailRepository @Inject constructor(
                     "${result.error?.type} - ${result.error?.message}"
             )
         } else {
-            AnalyticsTracker.track(Stat.REVIEW_LOADED, mapOf(AnalyticsTracker.KEY_ID to remoteReviewId))
+            AnalyticsTracker.track(AnalyticsEvent.REVIEW_LOADED, mapOf(AnalyticsTracker.KEY_ID to remoteReviewId))
         }
         return !result.isError
     }

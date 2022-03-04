@@ -2,9 +2,9 @@ package com.woocommerce.android.ui.prefs.cardreader
 
 import androidx.annotation.VisibleForTesting
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.*
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType
@@ -14,33 +14,42 @@ import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardi
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
+import com.woocommerce.android.util.CoroutineDispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 class CardReaderTracker @Inject constructor(
     private val trackerWrapper: AnalyticsTrackerWrapper,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val selectedSite: SelectedSite,
+    private val wooStore: WooCommerceStore,
+    private val dispatchers: CoroutineDispatchers,
 ) {
     @VisibleForTesting
     fun track(
-        stat: Stat,
+        stat: AnalyticsEvent,
         properties: MutableMap<String, Any> = mutableMapOf(),
         errorType: String? = null,
         errorDescription: String? = null,
     ) {
-        addPreferredPluginSlugProperty(properties)
+        GlobalScope.launch(context = dispatchers.io) {
+            addPreferredPluginSlugProperty(properties)
+            addStoreCountryCodeProperty(properties)
 
-        val isError = !errorType.isNullOrBlank() || !errorDescription.isNullOrEmpty()
-        if (isError) {
-            trackerWrapper.track(
-                stat,
-                properties,
-                this.javaClass.simpleName,
-                errorType,
-                errorDescription
-            )
-        } else {
-            trackerWrapper.track(stat, properties)
+            val isError = !errorType.isNullOrBlank() || !errorDescription.isNullOrEmpty()
+            if (isError) {
+                trackerWrapper.track(
+                    stat,
+                    properties,
+                    this@CardReaderTracker.javaClass.simpleName,
+                    errorType,
+                    errorDescription
+                )
+            } else {
+                trackerWrapper.track(stat, properties)
+            }
         }
     }
 
@@ -56,6 +65,10 @@ class CardReaderTracker @Inject constructor(
             STRIPE_EXTENSION_GATEWAY -> "woocommerce-gateway-stripe"
             null -> "unknown"
         }
+    }
+
+    private fun addStoreCountryCodeProperty(properties: MutableMap<String, Any>) {
+        properties["country"] = wooStore.getStoreCountryCode(selectedSite.get()) ?: "unknown"
     }
 
     fun trackOnboardingLearnMoreTapped() {
@@ -95,8 +108,8 @@ class CardReaderTracker @Inject constructor(
 
     private fun getPluginNameReasonPrefix(pluginType: PluginType): String {
         return when (pluginType) {
-            PluginType.WOOCOMMERCE_PAYMENTS -> "wcpay"
-            PluginType.STRIPE_EXTENSION_GATEWAY -> "stripe_extension"
+            WOOCOMMERCE_PAYMENTS -> "wcpay"
+            STRIPE_EXTENSION_GATEWAY -> "stripe_extension"
         }
     }
 
@@ -128,7 +141,7 @@ class CardReaderTracker @Inject constructor(
     }
 
     private fun trackSoftwareUpdateEvent(
-        event: AnalyticsTracker.Stat,
+        event: AnalyticsEvent,
         requiredUpdate: Boolean,
         errorDescription: String? = null,
     ) {

@@ -13,9 +13,9 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_UPDATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_UPDATE_BUTTON_TAPPED
 import com.woocommerce.android.databinding.FragmentVariationDetailBinding
 import com.woocommerce.android.extensions.*
 import com.woocommerce.android.model.Product.Image
@@ -249,7 +249,7 @@ class VariationDetailFragment :
             binding.imageGallery.hide()
             binding.addImageContainer.show()
             binding.addImageContainer.setOnClickListener {
-                AnalyticsTracker.track(Stat.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
                 viewModel.onAddImageButtonClicked()
             }
         } else {

@@ -3,8 +3,8 @@ package com.woocommerce.android.ui.reviews
 import android.os.Parcelable
 import androidx.lifecycle.*
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
@@ -162,7 +162,7 @@ class ReviewListViewModel @Inject constructor(
             dispatcher.dispatch(WCProductActionBuilder.newUpdateProductReviewStatusAction(payload))
 
             AnalyticsTracker.track(
-                Stat.REVIEW_ACTION,
+                AnalyticsEvent.REVIEW_ACTION,
                 mapOf(AnalyticsTracker.KEY_TYPE to newStatus.toString())
             )
 
