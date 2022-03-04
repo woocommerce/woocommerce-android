@@ -3,6 +3,7 @@
 8.7
 -----
 - [*] In-Person Payments: Add support for accepting payments on bookable products
+- [***] Beta Feature: Order Creation is now improved, supporting Fees and Shipping costs.
 
 8.6
 -----
