@@ -9,6 +9,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductPricingViewModel.ViewState
 import com.woocommerce.android.ui.products.ProductTaxStatus.Taxable
+import com.woocommerce.android.ui.products.models.CurrencyFormattingParameters
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -24,7 +25,8 @@ import org.wordpress.android.fluxc.model.WCSettingsModel
 import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.LEFT
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
-import java.util.*
+import java.util.Calendar
+import java.util.Date
 
 @ExperimentalCoroutinesApi
 class ProductPricingViewModelTest : BaseUnitTest() {
@@ -35,7 +37,9 @@ class ProductPricingViewModelTest : BaseUnitTest() {
     private val siteParams = SiteParameters(
         currencyCode = "USD",
         currencySymbol = "$",
-        currencyPosition = LEFT,
+        currencyFormattingParameters = CurrencyFormattingParameters(
+            "", "", 2, LEFT
+        ),
         weightUnit = "kg",
         dimensionUnit = "cm",
         gmtOffset = 0f
@@ -65,7 +69,7 @@ class ProductPricingViewModelTest : BaseUnitTest() {
     )
     private val viewState = ViewState(
         currency = siteParams.currencySymbol,
-        currencyPosition = siteParams.currencyPosition,
+        currencyPosition = siteParams.currencyFormattingParameters?.currencyPosition,
         decimals = 2,
         taxClassList = taxClasses,
         salePriceErrorMessage = null,

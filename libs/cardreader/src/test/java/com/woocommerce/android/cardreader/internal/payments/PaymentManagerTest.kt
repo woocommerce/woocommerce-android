@@ -1,10 +1,7 @@
 package com.woocommerce.android.cardreader.internal.payments
 
 import com.stripe.stripeterminal.external.models.*
-import com.stripe.stripeterminal.external.models.PaymentIntentStatus.CANCELED
-import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_CAPTURE
-import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_CONFIRMATION
-import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_PAYMENT_METHOD
+import com.stripe.stripeterminal.external.models.PaymentIntentStatus.*
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
@@ -97,7 +94,7 @@ class PaymentManagerTest {
 
         whenever(cardReaderStore.capturePaymentIntent(any(), anyString()))
             .thenReturn(CapturePaymentResponse.Successful.Success)
-        whenever(paymentErrorMapper.mapTerminalError(anyOrNull(), anyOrNull<TerminalException>()))
+        whenever(paymentErrorMapper.mapTerminalError(anyOrNull(), anyOrNull()))
             .thenReturn(PaymentFailed(CardPaymentStatusErrorType.Generic, null, ""))
         whenever(paymentErrorMapper.mapCapturePaymentError(anyOrNull(), anyOrNull()))
             .thenReturn(PaymentFailed(CardPaymentStatusErrorType.Generic, null, ""))
@@ -288,6 +285,50 @@ class PaymentManagerTest {
         runBlockingTest {
             whenever(processPaymentAction.processPayment(anyOrNull()))
                 .thenReturn(flow { emit(ProcessPaymentStatus.Success(createPaymentIntent(CANCELED))) })
+
+            val result = withTimeoutOrNull(TIMEOUT) {
+                manager
+                    .acceptPayment(createPaymentInfo())
+                    .toList()
+            }
+
+            assertThat(result).isNotNull // verify the flow did not timeout
+            verify(cardReaderStore, never()).capturePaymentIntent(any(), anyString())
+        }
+
+    @Test
+    fun `given interac payment, when processing payment finishes successfully, then capture payment is emitted`() =
+        runBlockingTest {
+            whenever(processPaymentAction.processPayment(anyOrNull()))
+                .thenReturn(
+                    flow {
+                        emit(
+                            ProcessPaymentStatus.Success(
+                                createPaymentIntent(SUCCEEDED, interacPresentDetails = mock())
+                            )
+                        )
+                    }
+                )
+
+            val result = manager
+                .acceptPayment(createPaymentInfo()).takeUntil(CapturingPayment::class).toList()
+
+            assertThat(result.last()).isInstanceOf(CapturingPayment::class.java)
+        }
+
+    @Test
+    fun `given interac payment, when processing payment finishes with canceled status, then flow terminates`() =
+        runBlockingTest {
+            whenever(processPaymentAction.processPayment(anyOrNull()))
+                .thenReturn(
+                    flow {
+                        emit(
+                            ProcessPaymentStatus.Success(
+                                createPaymentIntent(CANCELED, interacPresentDetails = mock())
+                            )
+                        )
+                    }
+                )
 
             val result = withTimeoutOrNull(TIMEOUT) {
                 manager
@@ -536,12 +577,18 @@ class PaymentManagerTest {
         }
     // END - Cancel
 
-    private fun createPaymentIntent(status: PaymentIntentStatus, receiptUrl: String? = "test url"): PaymentIntent =
+    private fun createPaymentIntent(
+        status: PaymentIntentStatus,
+        receiptUrl: String? = "test url",
+        interacPresentDetails: CardPresentDetails? = null
+    ): PaymentIntent =
         mock<PaymentIntent>().also {
             whenever(it.status).thenReturn(status)
             whenever(it.id).thenReturn("dummyId")
             val charge = mock<Charge>()
             whenever(charge.receiptUrl).thenReturn(receiptUrl)
+            whenever(charge.paymentMethodDetails).thenReturn(mock())
+            whenever(charge.paymentMethodDetails?.interacPresentDetails).thenReturn(interacPresentDetails)
             whenever(it.getCharges()).thenReturn(listOf(charge))
         }
 

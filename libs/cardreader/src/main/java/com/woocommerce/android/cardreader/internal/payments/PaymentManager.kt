@@ -71,22 +71,38 @@ internal class PaymentManager(
 
         if (paymentIntent.status == PaymentIntentStatus.REQUIRES_PAYMENT_METHOD) {
             paymentIntent = collectPayment(paymentIntent)
-            if (paymentIntent.status != PaymentIntentStatus.REQUIRES_CONFIRMATION) {
-                return@flow
-            }
         }
         if (paymentIntent.status == PaymentIntentStatus.REQUIRES_CONFIRMATION) {
             paymentIntent = processPayment(paymentIntent)
-            if (paymentIntent.status != PaymentIntentStatus.REQUIRES_CAPTURE) {
-                return@flow
-            }
         }
 
-        if (paymentIntent.status == PaymentIntentStatus.REQUIRES_CAPTURE) {
+        /*
+            At this point,
+
+            if this was an Interac payment. The payment has already been captured successfully
+            in the previous step (Processing step). In the next capture step, we will inform the backend about
+            the successful Interac payment transaction that has already happened and it's not the success/failure
+            of the actual Interac payment itself.
+
+            If this was a non-Interac payment. We expect the payment intent's status to be REQUIRES_CAPTURE and in
+            the next step we capture the payment in the backend. Here, the success/failure of the capture step defines
+            the success/failure of the actual payment.
+         */
+
+        if (paymentIntent.status == PaymentIntentStatus.REQUIRES_CAPTURE || isInteracPaymentSuccessful(paymentIntent)) {
             retrieveReceiptUrl(paymentIntent)?.let { receiptUrl ->
                 capturePayment(receiptUrl, orderId, cardReaderStore, paymentIntent)
             }
         }
+    }
+
+    private fun isInteracPayment(paymentIntent: PaymentIntent): Boolean {
+        return !paymentIntent.getCharges().isNullOrEmpty() &&
+            paymentIntent.getCharges().getOrNull(0)?.paymentMethodDetails?.interacPresentDetails != null
+    }
+
+    private fun isInteracPaymentSuccessful(paymentIntent: PaymentIntent): Boolean {
+        return isInteracPayment(paymentIntent) && paymentIntent.status == PaymentIntentStatus.SUCCEEDED
     }
 
     private suspend fun FlowCollector<CardPaymentStatus>.retrieveReceiptUrl(

@@ -61,7 +61,7 @@ class ProductPricingViewModel @Inject constructor(
 
         viewState = viewState.copy(
             currency = parameters.currencySymbol,
-            currencyPosition = parameters.currencyPosition,
+            currencyPosition = parameters.currencyFormattingParameters?.currencyPosition,
             decimals = decimals,
             taxClassList = if (isProductPricing) productRepository.getTaxClassesForSite() else null,
             isTaxSectionVisible = isProductPricing

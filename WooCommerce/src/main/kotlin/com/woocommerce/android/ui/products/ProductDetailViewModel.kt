@@ -953,7 +953,7 @@ class ProductDetailViewModel @Inject constructor(
         fetchBottomSheetList()
     }
 
-    fun fetchBottomSheetList() {
+    private fun fetchBottomSheetList() {
         viewState.productDraft?.let {
             launch(dispatchers.computation) {
                 val detailList = productDetailBottomSheetBuilder.buildBottomSheetList(it)

@@ -25,7 +25,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductTypesBottomSheetViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val prefs: AppPrefs
+    private val prefs: AppPrefs,
+    private val productTypeBottomSheetBuilder: ProductTypeBottomSheetBuilder
 ) : ScopedViewModel(savedState) {
     private val navArgs: ProductTypesBottomSheetFragmentArgs by savedState.navArgs()
 
@@ -34,16 +35,20 @@ class ProductTypesBottomSheetViewModel @Inject constructor(
 
     fun loadProductTypes() {
         _productTypesBottomSheetList.value = if (navArgs.isAddProduct) {
-            ProductTypeBottomSheetBuilder().buildBottomSheetList()
-                .filter { it.isEnabledForAddFlow }
+            productTypeBottomSheetBuilder.buildBottomSheetList()
         } else {
-            ProductTypeBottomSheetBuilder().buildBottomSheetList()
+            productTypeBottomSheetBuilder.buildBottomSheetList()
+                .filter {
+                    val currentProductType = navArgs.currentProductType
+                        ?.let { nonNullProductType -> ProductType.fromString(nonNullProductType) }
+                    !(it.type == currentProductType && it.isVirtual == navArgs.isCurrentProductVirtual)
+                }
         }
     }
 
     fun onProductTypeSelected(productTypeUiItem: ProductTypesBottomSheetUiItem) {
         if (navArgs.isAddProduct) {
-            val properties = mapOf("product_type" to productTypeUiItem.type.value.toLowerCase(ROOT))
+            val properties = mapOf("product_type" to productTypeUiItem.type.value.lowercase(ROOT))
             AnalyticsTracker.track(AnalyticsEvent.ADD_PRODUCT_PRODUCT_TYPE_SELECTED, properties)
 
             saveUserSelection(productTypeUiItem)
@@ -75,7 +80,6 @@ class ProductTypesBottomSheetViewModel @Inject constructor(
         @StringRes val titleResource: Int,
         @StringRes val descResource: Int,
         @DrawableRes val iconResource: Int,
-        val isEnabledForAddFlow: Boolean = true,
         val isVirtual: Boolean = false
     ) : Parcelable
 }
