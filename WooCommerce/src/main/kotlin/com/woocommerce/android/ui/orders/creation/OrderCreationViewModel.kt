@@ -296,6 +296,11 @@ class OrderCreationViewModel @Inject constructor(
     }
 
     fun onShippingEdited(amount: BigDecimal, name: String) {
+        AnalyticsTracker.track(
+            AnalyticsEvent.ORDER_SHIPPING_METHOD_ADD,
+            mapOf(KEY_FLOW to VALUE_FLOW_CREATION)
+        )
+
         _orderDraft.update { draft ->
             val shipping = draft.shippingLines.firstOrNull()?.copy(total = amount, methodTitle = name)
                 ?: ShippingLine(methodId = "other", total = amount, methodTitle = name)
@@ -314,6 +319,11 @@ class OrderCreationViewModel @Inject constructor(
     }
 
     fun onFeeEdited(feeValue: BigDecimal) {
+        AnalyticsTracker.track(
+            AnalyticsEvent.ORDER_FEE_ADD,
+            mapOf(KEY_FLOW to VALUE_FLOW_CREATION)
+        )
+
         val newFee = _orderDraft.value.feesLines.firstOrNull { it.name != null }
             ?: Order.FeeLine.EMPTY
 
