@@ -1,5 +1,6 @@
 package com.woocommerce.android.cardreader.internal.payments
 
+import com.stripe.stripeterminal.external.models.CardPresentDetails
 import com.stripe.stripeterminal.external.models.Charge
 import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus
@@ -7,6 +8,7 @@ import com.stripe.stripeterminal.external.models.PaymentIntentStatus.CANCELED
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_CAPTURE
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_CONFIRMATION
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_PAYMENT_METHOD
+import com.stripe.stripeterminal.external.models.PaymentIntentStatus.SUCCEEDED
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
@@ -320,6 +322,50 @@ class PaymentManagerTest {
             verify(cardReaderStore, never()).capturePaymentIntent(any(), anyString())
         }
 
+    @Test
+    fun `given interac payment, when processing payment finishes successfully, then capture payment is emitted`() =
+        runBlockingTest {
+            whenever(processPaymentAction.processPayment(anyOrNull()))
+                .thenReturn(
+                    flow {
+                        emit(
+                            ProcessPaymentStatus.Success(
+                                createPaymentIntent(SUCCEEDED, interacPresentDetails = mock())
+                            )
+                        )
+                    }
+                )
+
+            val result = manager
+                .acceptPayment(createPaymentInfo()).takeUntil(CapturingPayment::class).toList()
+
+            assertThat(result.last()).isInstanceOf(CapturingPayment::class.java)
+        }
+
+    @Test
+    fun `given interac payment, when processing payment finishes with canceled status, then flow terminates`() =
+        runBlockingTest {
+            whenever(processPaymentAction.processPayment(anyOrNull()))
+                .thenReturn(
+                    flow {
+                        emit(
+                            ProcessPaymentStatus.Success(
+                                createPaymentIntent(CANCELED, interacPresentDetails = mock())
+                            )
+                        )
+                    }
+                )
+
+            val result = withTimeoutOrNull(TIMEOUT) {
+                manager
+                    .acceptPayment(createPaymentInfo())
+                    .toList()
+            }
+
+            assertThat(result).isNotNull // verify the flow did not timeout
+            verify(cardReaderStore, never()).capturePaymentIntent(any(), anyString())
+        }
+
     // END - Processing Payment
     // BEGIN - Capturing Payment
     @Test
@@ -504,12 +550,18 @@ class PaymentManagerTest {
         }
     // END - Cancel
 
-    private fun createPaymentIntent(status: PaymentIntentStatus, receiptUrl: String? = "test url"): PaymentIntent =
+    private fun createPaymentIntent(
+        status: PaymentIntentStatus,
+        receiptUrl: String? = "test url",
+        interacPresentDetails: CardPresentDetails? = null
+    ): PaymentIntent =
         mock<PaymentIntent>().also {
             whenever(it.status).thenReturn(status)
             whenever(it.id).thenReturn("dummyId")
             val charge = mock<Charge>()
             whenever(charge.receiptUrl).thenReturn(receiptUrl)
+            whenever(charge.paymentMethodDetails).thenReturn(mock())
+            whenever(charge.paymentMethodDetails?.interacPresentDetails).thenReturn(interacPresentDetails)
             whenever(it.getCharges()).thenReturn(listOf(charge))
         }
 
