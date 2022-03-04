@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-02-15 18:54:03+0000
+Translation-Revision-Date: 2022-03-03 22:42:07+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
@@ -351,6 +351,7 @@ Language: it
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">Sul tuo negozio è installata una versione non aggiornata dell\'estensione WooCommerce Payments. Esegui l\'aggiornamento per accettare Pagamenti di persona.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">Aggiorna WooCommerce Payments</string>
     <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Aggiorna</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">Ci sei quasi! Completa l\'impostazione di WooCommerce Payments per iniziare ad accettare pagamenti di persona.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">Completa la configurazione di WooCommerce Payments nella pagina di amministrazione del negozio</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Ricarica dopo l\'attivazione</string>
     <string name="card_reader_onboarding_wcpay_not_activated_hint">L\'estensione WooCommerce Payments è installata sul tuo negozio, ma non è attivata. Attivala per accettare Pagamenti di persona.</string>

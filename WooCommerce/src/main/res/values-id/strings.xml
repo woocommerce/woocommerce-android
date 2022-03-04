@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-02-15 18:54:03+0000
+Translation-Revision-Date: 2022-03-03 22:41:17+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
@@ -351,6 +351,7 @@ Language: id
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">Versi ekstensi WooCommerce Payments yang terpasang di toko Anda sudah usang. Harap perbarui untuk menerima Pembayaran Langsung.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">Perbarui WooCommerce Payments</string>
     <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Segarkan</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">Hampir jadi! Harap selesaikan penyiapan WooCommerce Payments untuk mulai menerima Pembayaran Langsung.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">Selesaikan pengaturan WooCommerce Payments di admin toko Anda</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Segarkan setelah mengaktifkan</string>
     <string name="card_reader_onboarding_wcpay_not_activated_hint">Ekstensi WooCommerce Payments sudah terpasang di toko Anda tetapi belum diaktifkan. Harap aktifkan terlebih dahulu untuk menerima Pembayaran Langsung.</string>

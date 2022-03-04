@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-02-15 18:54:03+0000
+Translation-Revision-Date: 2022-03-03 22:42:26+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
@@ -351,6 +351,7 @@ Language: zh_CN
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">您的商店中安装的 WooCommerce Payments 扩展程序版本已过时。 请更新，以支持现场付款。</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">更新 WooCommerce Payments</string>
     <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">刷新</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">您即将大功告成！ 请完成 WooCommerce Payments 设置，以支持现场付款。</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">在您的商店管理页面中完成 WooCommerce Payments 设置 </string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">激活后刷新</string>
     <string name="card_reader_onboarding_wcpay_not_activated_hint">您的商店中已安装 WooCommerce Payments 扩展程序，但未激活。 请激活它，以支持现场付款。</string>

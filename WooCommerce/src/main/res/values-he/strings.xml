@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-02-15 18:54:03+0000
+Translation-Revision-Date: 2022-03-03 22:41:55+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
@@ -351,6 +351,7 @@ Language: he_IL
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">בחנות שלך הותקנה גרסה מיושנת של ההרחבה WooCommerce Payments. יש לעדכן אותה כדי לקבל תשלומים באופן אישי.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">עדכון WooCommerce Payments</string>
     <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">רענון</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">כמעט סיימת! על מנת להתחיל לקבל תשלומים באופן אישי, יש לסיים את ההגדרה של WooCommerce Payments.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">השלמת ההגדרה של WooCommerce Payments במנהל המערכת של החנות שלך</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">לרענן לאחר עדכון</string>
     <string name="card_reader_onboarding_wcpay_not_activated_hint">בחנות שלך הותקנה ההרחבה WooCommerce Payments אך היא לא הופעלה. יש להפעיל אותה כדי לקבל תשלומים באופן אישי.</string>

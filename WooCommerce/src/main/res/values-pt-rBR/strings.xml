@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-02-15 18:54:05+0000
+Translation-Revision-Date: 2022-03-03 22:42:58+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
@@ -351,6 +351,7 @@ Language: pt_BR
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">Uma versão desatualizada da extensão do WooCommerce Payments está instalada na sua loja. Atualize-a para aceitar pagamentos presenciais.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">Atualizar WooCommerce Payments</string>
     <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Atualizar</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">Quase pronto! Termine de configurar o WooCommerce Payments para aceitar pagamentos presenciais.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">Termine a configuração do WooCommerce Payments na administração da loja</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Recarregue a página depois de ativar</string>
     <string name="card_reader_onboarding_wcpay_not_activated_hint">A extensão do WooCommerce Payments está instalada na sua loja, mas não está ativada. Ative-a para aceitar pagamentos presenciais.</string>
