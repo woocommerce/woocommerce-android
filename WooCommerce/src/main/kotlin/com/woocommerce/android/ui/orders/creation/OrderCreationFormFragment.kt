@@ -167,7 +167,6 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     }
 
     private fun FragmentOrderCreationFormBinding.initPaymentSection() {
-        paymentSection.shippingLayout.isVisible = FeatureFlag.ORDER_CREATION_M2.isEnabled()
         paymentSection.shippingButton.setOnClickListener {
             viewModel.onShippingButtonClicked()
         }
@@ -218,9 +217,6 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
 
     private fun bindPaymentSection(paymentSection: OrderCreationPaymentSectionBinding, newOrderData: Order) {
         paymentSection.bindFeesSubSection(newOrderData)
-        paymentSection.root.isVisible = FeatureFlag.ORDER_CREATION_M2.isEnabled() || newOrderData.items.isNotEmpty()
-        paymentSection.taxLayout.isVisible = FeatureFlag.ORDER_CREATION_M2.isEnabled()
-        paymentSection.taxCalculationHint.isVisible = !FeatureFlag.ORDER_CREATION_M2.isEnabled()
 
         val currentShipping = newOrderData.shippingLines.firstOrNull { it.methodId != null }
         paymentSection.shippingButton.setText(
@@ -242,10 +238,6 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     }
 
     private fun OrderCreationPaymentSectionBinding.bindFeesSubSection(newOrderData: Order) {
-        FeatureFlag.ORDER_CREATION_M2.isEnabled()
-            .apply { feeLayout.isVisible = this }
-            .also { if (it.not()) return }
-
         feeButton.setOnClickListener { viewModel.onFeeButtonClicked() }
 
         val currentFeeTotal = newOrderData.feesLines
