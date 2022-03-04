@@ -23,6 +23,7 @@ import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.SendReceipt
 import com.woocommerce.android.ui.orders.cardreader.ViewState.*
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.prefs.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.*
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -80,6 +81,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val savedState: SavedStateHandle = CardReaderPaymentDialogFragmentArgs(ORDER_ID).initSavedStateHandle()
 
     private val errorMapper: CardReaderPaymentErrorMapper = mock()
+    private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
 
     @Before
     fun setUp() = coroutinesTestRule.testDispatcher.runBlockingTest {
@@ -95,7 +97,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             currencyFormatter = currencyFormatter,
             errorMapper = errorMapper,
             wooStore = wooStore,
-            dispatchers = coroutinesTestRule.testDispatchers
+            dispatchers = coroutinesTestRule.testDispatchers,
+            cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
         )
 
         val mockedOrder = mock<Order>()
@@ -317,6 +320,14 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given fetching order succeeds, when payment screen shown, then order currency stored `() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            viewModel.start()
+
+            verify(cardReaderTrackingInfoKeeper).setCurrency(("GBP"))
+        }
+
+    @Test
     fun `when payment screen shown, then loading data state is shown`() {
         viewModel.start()
 
@@ -411,6 +422,42 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ProcessingPaymentState::class.java)
+        }
+
+    @Test
+    fun `when processing payment completed with card present, then tracking keeper stores payment type`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(ProcessingPaymentCompleted(PaymentMethodType.CARD_PRESENT)) }
+            }
+
+            viewModel.start()
+
+            verify(cardReaderTrackingInfoKeeper).setPaymentMethodType("card")
+        }
+
+    @Test
+    fun `when processing payment completed with interac present, then tracking keeper stores payment type`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(ProcessingPaymentCompleted(PaymentMethodType.INTERAC_PRESENT)) }
+            }
+
+            viewModel.start()
+
+            verify(cardReaderTrackingInfoKeeper).setPaymentMethodType("card_interac")
+        }
+
+    @Test
+    fun `when processing payment completed with unknown, then tracking keeper stores payment type`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(ProcessingPaymentCompleted(PaymentMethodType.UNKNOWN)) }
+            }
+
+            viewModel.start()
+
+            verify(cardReaderTrackingInfoKeeper).setPaymentMethodType("unknown")
         }
 
     @Test

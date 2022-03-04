@@ -2,8 +2,8 @@ package com.woocommerce.android.ui.media
 
 import android.os.Parcelable
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_IMAGE_UPLOAD_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_IMAGE_UPLOAD_FAILED
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.media.ProductImagesNotificationHandler
 import com.woocommerce.android.media.ProductImagesUploadWorker

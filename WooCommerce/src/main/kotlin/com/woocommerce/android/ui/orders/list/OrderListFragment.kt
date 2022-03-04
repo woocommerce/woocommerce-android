@@ -19,8 +19,8 @@ import androidx.paging.PagedList
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.transition.MaterialFadeThrough
 import com.woocommerce.android.*
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentOrderListBinding
 import com.woocommerce.android.extensions.*
 import com.woocommerce.android.model.FeatureFeedbackSettings
@@ -138,7 +138,7 @@ class OrderListFragment :
             // Set the scrolling view in the custom refresh SwipeRefreshLayout
             scrollUpChild = binding.orderListView.ordersList
             setOnRefreshListener {
-                AnalyticsTracker.track(Stat.ORDERS_LIST_PULLED_TO_REFRESH)
+                AnalyticsTracker.track(AnalyticsEvent.ORDERS_LIST_PULLED_TO_REFRESH)
                 refreshOrders()
             }
         }
@@ -200,7 +200,7 @@ class OrderListFragment :
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_search -> {
-                AnalyticsTracker.track(Stat.ORDERS_LIST_MENU_SEARCH_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.ORDERS_LIST_MENU_SEARCH_TAPPED)
                 enableSearchListeners()
                 true
             }
@@ -322,7 +322,7 @@ class OrderListFragment :
     }
 
     private fun showSimplePaymentsDialog() {
-        AnalyticsTracker.track(Stat.SIMPLE_PAYMENTS_FLOW_STARTED)
+        AnalyticsTracker.track(AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_STARTED)
         findNavController().navigateSafely(R.id.action_orderListFragment_to_simplePayments)
     }
 
@@ -332,7 +332,7 @@ class OrderListFragment :
     }
 
     private fun openOrderCreationFragment() {
-        AnalyticsTracker.track(Stat.ORDER_ADD_NEW)
+        AnalyticsTracker.track(AnalyticsEvent.ORDER_ADD_NEW)
         findNavController().navigateSafely(R.id.action_orderListFragment_to_orderCreationFragment)
     }
 
@@ -358,7 +358,7 @@ class OrderListFragment :
     override fun openOrderDetail(orderId: Long, orderStatus: String, sharedView: View?) {
         // Track user clicked to open an order and the status of that order
         AnalyticsTracker.track(
-            Stat.ORDER_OPEN,
+            AnalyticsEvent.ORDER_OPEN,
             mapOf(
                 AnalyticsTracker.KEY_ID to orderId,
                 AnalyticsTracker.KEY_STATUS to orderStatus
@@ -459,7 +459,7 @@ class OrderListFragment :
      */
     private fun handleNewSearchRequest(query: String) {
         AnalyticsTracker.track(
-            Stat.ORDERS_LIST_SEARCH,
+            AnalyticsEvent.ORDERS_LIST_SEARCH,
             mapOf(AnalyticsTracker.KEY_SEARCH to query)
         )
 
@@ -537,7 +537,7 @@ class OrderListFragment :
 
     private fun onGiveFeedbackClicked() {
         AnalyticsTracker.track(
-            Stat.FEATURE_FEEDBACK_BANNER,
+            AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
             mapOf(
                 AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FEEDBACK,
                 AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
@@ -551,7 +551,7 @@ class OrderListFragment :
 
     private fun onDismissWIPCardClicked() {
         AnalyticsTracker.track(
-            Stat.FEATURE_FEEDBACK_BANNER,
+            AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
             mapOf(
                 AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FEEDBACK,
                 AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED

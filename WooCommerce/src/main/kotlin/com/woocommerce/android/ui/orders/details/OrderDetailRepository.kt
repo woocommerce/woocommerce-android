@@ -2,11 +2,11 @@ package com.woocommerce.android.ui.orders.details
 
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.WooException
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FEEDBACK_ACTION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_API_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_API_SUCCESS
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.*
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -91,7 +91,7 @@ class OrderDetailRepository @Inject constructor(
             val action = if (result.isError) {
                 VALUE_API_FAILED
             } else VALUE_API_SUCCESS
-            AnalyticsTracker.track(Stat.SHIPPING_LABEL_API_REQUEST, mapOf(KEY_FEEDBACK_ACTION to action))
+            AnalyticsTracker.track(AnalyticsEvent.SHIPPING_LABEL_API_REQUEST, mapOf(KEY_FEEDBACK_ACTION to action))
             result.model?.filter { it.status == LabelItem.STATUS_PURCHASED }
                 ?.map { shippingLabelMapper.toAppModel(it) }
                 ?: emptyList()

@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.products.tags
 
 import com.woocommerce.android.AppConstants
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.model.toProductTag
@@ -98,14 +98,14 @@ class ProductTagsRepository @Inject constructor(
                 if (event.isError) {
                     loadContinuation.continueWith(false)
                     AnalyticsTracker.track(
-                        Stat.PRODUCT_TAGS_LOAD_FAILED,
+                        AnalyticsEvent.PRODUCT_TAGS_LOAD_FAILED,
                         this.javaClass.simpleName,
                         event.error.type.toString(),
                         event.error.message
                     )
                 } else {
                     canLoadMoreProductTags = event.canLoadMore
-                    AnalyticsTracker.track(Stat.PRODUCT_TAGS_LOADED)
+                    AnalyticsTracker.track(AnalyticsEvent.PRODUCT_TAGS_LOADED)
                     loadContinuation.continueWith(true)
                 }
             }

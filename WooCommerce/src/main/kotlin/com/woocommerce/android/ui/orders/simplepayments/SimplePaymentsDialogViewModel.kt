@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.simplepayments
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_SOURCE_AMOUNT
@@ -69,7 +70,7 @@ class SimplePaymentsDialogViewModel @Inject constructor(
                 if (result.isError) {
                     WooLog.e(WooLog.T.ORDERS, "${result.error.type.name}: ${result.error.message}")
                     AnalyticsTracker.track(
-                        AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_FAILED,
+                        AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_FAILED,
                         mapOf(KEY_SOURCE to VALUE_SIMPLE_PAYMENTS_SOURCE_AMOUNT)
                     )
                     triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.simple_payments_creation_error))

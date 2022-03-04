@@ -1,13 +1,12 @@
 package com.woocommerce.android.ui.prefs.cardreader
 
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsEvent.*
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -26,6 +25,9 @@ class CardReaderTrackerTest : BaseUnitTest() {
         private const val REQUIRED_UPDATE = "Required"
         private const val OPTIONAL_UPDATE = "Optional"
         private const val COUNTRY_CODE = "US"
+        private const val CURRENCY = "USD"
+        private const val PAYMENT_METHOD_TYPE = "card"
+        private const val CARD_READER_MODEL = "CHIPPER_2X"
     }
 
     private val trackerWrapper: AnalyticsTrackerWrapper = mock()
@@ -35,8 +37,23 @@ class CardReaderTrackerTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock {
         on(it.get()).thenReturn(SiteModel())
     }
+    private val cardReaderTrackingInfoProvider: CardReaderTrackingInfoProvider = mock() {
+        on { trackingInfo }.thenReturn(
+            TrackingInfo(
+                country = COUNTRY_CODE,
+                currency = CURRENCY,
+                paymentMethodType = PAYMENT_METHOD_TYPE,
+                cardReaderModel = CARD_READER_MODEL,
+            )
+        )
+    }
 
-    private val cardReaderTracker = CardReaderTracker(trackerWrapper, appPrefsWrapper, selectedSite)
+    private val cardReaderTracker = CardReaderTracker(
+        trackerWrapper,
+        appPrefsWrapper,
+        selectedSite,
+        cardReaderTrackingInfoProvider
+    )
 
     @Test
     fun `when track learn more invoked, then CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED tracked`() =
@@ -157,7 +174,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     fun `when onboarding PluginUnsupportedVersion Stripe, then reason=stripe_extension_unsupported_version tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             cardReaderTracker.trackOnboardingState(
-                CardReaderOnboardingState.PluginUnsupportedVersion(PluginType.STRIPE_EXTENSION_GATEWAY)
+                CardReaderOnboardingState.PluginUnsupportedVersion(STRIPE_EXTENSION_GATEWAY)
             )
 
             verify(trackerWrapper).track(
@@ -183,7 +200,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     fun `when onboarding state SetupNotCompleted Stripe, then reason=stripe_extension_not_setup tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             cardReaderTracker.trackOnboardingState(
-                CardReaderOnboardingState.SetupNotCompleted(PluginType.STRIPE_EXTENSION_GATEWAY)
+                CardReaderOnboardingState.SetupNotCompleted(STRIPE_EXTENSION_GATEWAY)
             )
 
             verify(trackerWrapper).track(
@@ -295,7 +312,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     fun `when onboarding state OnboardingCompleted Stripe, then event NOT tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             cardReaderTracker.trackOnboardingState(
-                CardReaderOnboardingState.OnboardingCompleted(PluginType.STRIPE_EXTENSION_GATEWAY, COUNTRY_CODE)
+                CardReaderOnboardingState.OnboardingCompleted(STRIPE_EXTENSION_GATEWAY, COUNTRY_CODE)
             )
 
             verify(trackerWrapper, never()).track(any(), any())
@@ -458,6 +475,83 @@ class CardReaderTrackerTest : BaseUnitTest() {
                 eq(dummyErrorMgs)
             )
         }
+
+    @Test
+    fun `given US country, when tracking, then US property tracked`() {
+        val countryCode = "US"
+        whenever(cardReaderTrackingInfoProvider.trackingInfo).thenReturn(TrackingInfo(country = countryCode))
+
+        cardReaderTracker.track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
+
+        val captor = argumentCaptor<Map<String, Any>>()
+        verify(trackerWrapper).track(
+            eq(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS),
+            captor.capture(),
+        )
+        assertThat(captor.firstValue["country"]).isEqualTo(countryCode)
+    }
+
+    @Test
+    fun `given CA country, when tracking, then CA property tracked`() {
+        val countryCode = "CA"
+        whenever(cardReaderTrackingInfoProvider.trackingInfo).thenReturn(TrackingInfo(country = countryCode))
+
+        cardReaderTracker.track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
+
+        val captor = argumentCaptor<Map<String, Any>>()
+        verify(trackerWrapper).track(
+            eq(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS),
+            captor.capture(),
+        )
+        assertThat(captor.firstValue["country"]).isEqualTo(countryCode)
+    }
+
+    @Test
+    fun `given GBR currency, when tracking, then GBR currency property tracked`() {
+        val currency = "GBR"
+        whenever(cardReaderTrackingInfoProvider.trackingInfo).thenReturn(TrackingInfo(currency = currency))
+
+        cardReaderTracker.track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
+
+        val captor = argumentCaptor<Map<String, Any>>()
+        verify(trackerWrapper).track(
+            eq(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS),
+            captor.capture(),
+        )
+        assertThat(captor.firstValue["currency"]).isEqualTo(currency)
+    }
+
+    @Test
+    fun `given card paymentMethodType, when tracking, then card paymentMethodType property tracked`() {
+        val paymentMethodType = "card"
+        whenever(cardReaderTrackingInfoProvider.trackingInfo)
+            .thenReturn(TrackingInfo(paymentMethodType = paymentMethodType))
+
+        cardReaderTracker.track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
+
+        val captor = argumentCaptor<Map<String, Any>>()
+        verify(trackerWrapper).track(
+            eq(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS),
+            captor.capture(),
+        )
+        assertThat(captor.firstValue["payment_method_type"]).isEqualTo(paymentMethodType)
+    }
+
+    @Test
+    fun `given m2 cardReaderModel, when tracking, then m2 cardReaderModel property tracked`() {
+        val cardReaderModel = "M2"
+        whenever(cardReaderTrackingInfoProvider.trackingInfo)
+            .thenReturn(TrackingInfo(cardReaderModel = cardReaderModel))
+
+        cardReaderTracker.track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
+
+        val captor = argumentCaptor<Map<String, Any>>()
+        verify(trackerWrapper).track(
+            eq(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS),
+            captor.capture(),
+        )
+        assertThat(captor.firstValue["card_reader_model"]).isEqualTo(cardReaderModel)
+    }
 
     @Test
     fun `when location fetching succeeds, then CARD_READER_LOCATION_SUCCESS tracked`() =

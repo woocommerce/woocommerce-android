@@ -10,8 +10,8 @@ import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.ActivityAppSettingsBinding
 import com.woocommerce.android.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
@@ -159,7 +159,7 @@ class AppSettingsActivity :
             .setMessage(message)
             .setPositiveButton(R.string.signout) { _, _ ->
                 AnalyticsTracker.track(
-                    Stat.SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT,
+                    AnalyticsEvent.SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT,
                     mapOf(
                         AnalyticsTracker.KEY_RESULT to AnalyticsUtils.getConfirmationResultLabel(true)
                     )
@@ -170,7 +170,7 @@ class AppSettingsActivity :
             }
             .setNegativeButton(R.string.back) { _, _ ->
                 AnalyticsTracker.track(
-                    Stat.SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT,
+                    AnalyticsEvent.SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT,
                     mapOf(
                         AnalyticsTracker.KEY_RESULT to AnalyticsUtils.getConfirmationResultLabel(false)
                     )

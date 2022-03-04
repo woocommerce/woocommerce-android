@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.login
 
 import com.woocommerce.android.AppConstants
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.LOGIN_MAGIC_LINK_FETCH_ACCOUNT_SETTINGS_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.LOGIN_MAGIC_LINK_FETCH_ACCOUNT_SETTINGS_FAILED
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.RequestResult.*
 import com.woocommerce.android.util.ContinuationWrapper
@@ -165,7 +165,7 @@ class MagicLinkInterceptRepository @Inject constructor(
         val result = wooCommerceStore.fetchWooCommerceSites()
         return if (result.isError) {
             AnalyticsTracker.track(
-                Stat.LOGIN_MAGIC_LINK_FETCH_SITES_FAILED,
+                AnalyticsEvent.LOGIN_MAGIC_LINK_FETCH_SITES_FAILED,
                 mapOf(
                     AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                     AnalyticsTracker.KEY_ERROR_TYPE to result.error?.type?.toString(),
@@ -174,7 +174,7 @@ class MagicLinkInterceptRepository @Inject constructor(
             )
             false
         } else {
-            AnalyticsTracker.track(Stat.LOGIN_MAGIC_LINK_FETCH_SITES_SUCCESS)
+            AnalyticsTracker.track(AnalyticsEvent.LOGIN_MAGIC_LINK_FETCH_SITES_SUCCESS)
             true
         }
     }
@@ -185,7 +185,7 @@ class MagicLinkInterceptRepository @Inject constructor(
         if (event.isError) {
             WooLog.e(LOGIN, "onAuthenticationChanged has error: ${event.error?.type} : ${event.error?.message}")
             AnalyticsTracker.track(
-                Stat.LOGIN_MAGIC_LINK_UPDATE_TOKEN_FAILED,
+                AnalyticsEvent.LOGIN_MAGIC_LINK_UPDATE_TOKEN_FAILED,
                 mapOf(
                     AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                     AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
@@ -207,7 +207,8 @@ class MagicLinkInterceptRepository @Inject constructor(
 
             val trackEvent = when {
                 event.causeOfChange == AccountAction.FETCH_SETTINGS -> LOGIN_MAGIC_LINK_FETCH_ACCOUNT_SETTINGS_FAILED
-                event.error?.type == AccountErrorType.ACCOUNT_FETCH_ERROR -> Stat.LOGIN_MAGIC_LINK_FETCH_ACCOUNT_FAILED
+                event.error?.type == AccountErrorType.ACCOUNT_FETCH_ERROR ->
+                    AnalyticsEvent.LOGIN_MAGIC_LINK_FETCH_ACCOUNT_FAILED
                 else -> null
             }
             trackEvent?.let {
@@ -224,12 +225,12 @@ class MagicLinkInterceptRepository @Inject constructor(
             when {
                 event.causeOfChange == AccountAction.FETCH_ACCOUNT -> {
                     // The user's account info has been fetched and stored - next, fetch the user's settings
-                    AnalyticsTracker.track(Stat.LOGIN_MAGIC_LINK_FETCH_ACCOUNT_SUCCESS)
+                    AnalyticsTracker.track(AnalyticsEvent.LOGIN_MAGIC_LINK_FETCH_ACCOUNT_SUCCESS)
                     continuationFetchAccount.continueWith(!event.isError)
                 }
                 event.causeOfChange == AccountAction.FETCH_SETTINGS -> {
                     // The user's account settings have also been fetched and stored - now we can fetch the user's sites
-                    AnalyticsTracker.track(Stat.LOGIN_MAGIC_LINK_FETCH_ACCOUNT_SETTINGS_SUCCESS)
+                    AnalyticsTracker.track(AnalyticsEvent.LOGIN_MAGIC_LINK_FETCH_ACCOUNT_SETTINGS_SUCCESS)
                     continuationFetchAccountSettings.continueWith(!event.isError)
                 }
             }

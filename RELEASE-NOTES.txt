@@ -3,6 +3,7 @@
 8.7
 -----
 - [*] Fixed an issue where on rare cases the app might end up displaying order notes for the wrong note. [https://github.com/woocommerce/woocommerce-android/pull/5971]
+- [*] In-Person Payments: Add support for accepting payments on bookable products
 
 8.6
 -----
