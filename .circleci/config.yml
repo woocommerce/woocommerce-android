@@ -234,7 +234,6 @@ workflows:
       - Lint
       - Dependency Tree Diff
       - Test
-      - Installable Build
       - Ensure Screenshots Tests Build
       - Connected Tests:
           name: UI Tests (Pixel 2 | API 28)
@@ -261,7 +260,3 @@ workflows:
           post-to-slack: true
           name: UI Tests (Pixel 2 | API 28)
           requires: [Hold]
-  Release Build:
-    when: << pipeline.parameters.release_build >>
-    jobs:
-      - Release Build

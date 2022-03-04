@@ -1,0 +1,46 @@
+package com.woocommerce.android.ui.inbox
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.fragment.app.viewModels
+import com.google.android.material.composethemeadapter.MdcTheme
+import com.woocommerce.android.R
+import com.woocommerce.android.databinding.FragmentInboxBinding
+import com.woocommerce.android.ui.base.BaseFragment
+import dagger.hilt.android.AndroidEntryPoint
+
+@AndroidEntryPoint
+class InboxFragment : BaseFragment(R.layout.fragment_inbox) {
+    private var _binding: FragmentInboxBinding? = null
+    private val binding get() = _binding!!
+
+    private val viewModel: InboxViewModel by viewModels()
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentInboxBinding.inflate(inflater, container, false)
+
+        val view = binding.root
+        binding.inboxComposeView.apply {
+            // Dispose of the Composition when the view's LifecycleOwner is destroyed
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                MdcTheme {
+                    Inbox(viewModel = viewModel)
+                }
+            }
+        }
+        return view
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+}

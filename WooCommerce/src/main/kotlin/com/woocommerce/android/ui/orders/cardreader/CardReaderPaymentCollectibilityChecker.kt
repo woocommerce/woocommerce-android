@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.cardreader
 
 import com.woocommerce.android.extensions.CASH_ON_DELIVERY_PAYMENT_TYPE
+import com.woocommerce.android.extensions.WOOCOMMERCE_BOOKINGS_PAYMENT_TYPE
 import com.woocommerce.android.extensions.WOOCOMMERCE_PAYMENTS_PAYMENT_TYPE
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
@@ -23,7 +24,8 @@ class CardReaderPaymentCollectibilityChecker @Inject constructor(
                 (
                     paymentMethod == CASH_ON_DELIVERY_PAYMENT_TYPE ||
                         paymentMethod.isEmpty() ||
-                        paymentMethod == WOOCOMMERCE_PAYMENTS_PAYMENT_TYPE
+                        paymentMethod == WOOCOMMERCE_PAYMENTS_PAYMENT_TYPE ||
+                        paymentMethod == WOOCOMMERCE_BOOKINGS_PAYMENT_TYPE
                     ) &&
                 !orderDetailRepository.hasSubscriptionProducts(order.getProductIds())
         }

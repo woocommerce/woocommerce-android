@@ -73,7 +73,7 @@ class ProductTagsFragment :
 
         val activity = requireActivity()
 
-        productTagsAdapter = ProductTagsAdapter(activity.baseContext, this, this)
+        productTagsAdapter = ProductTagsAdapter(this, this)
         with(binding.productTagsRecycler) {
             layoutManager = LinearLayoutManager(activity)
             adapter = productTagsAdapter

@@ -2,7 +2,7 @@
 
 8.7
 -----
-
+- [*] In-Person Payments: Add support for accepting payments on bookable products
 
 8.6
 -----

@@ -94,6 +94,10 @@ class OrderCreationSectionView @JvmOverloads constructor(
         binding.editButton.setOnClickListener { listener() }
     }
 
+    fun setEditButtonContentDescription(contentDescription: String) {
+        binding.editButton.contentDescription = contentDescription
+    }
+
     data class AddButton(
         val text: CharSequence,
         val onClickListener: () -> Unit

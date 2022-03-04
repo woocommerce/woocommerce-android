@@ -15,15 +15,20 @@ import javax.inject.Singleton
 class UnseenReviewsCountHandler @Inject constructor(
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
     private val notificationStore: NotificationStore,
-    private val selectedSite: SelectedSite
+    selectedSite: SelectedSite
 ) {
     private val unseenReviewsCount: SharedFlow<Int> =
-        selectedSite.observe().flatMapLatest {
-            notificationStore.observeNotificationsForSite(
-                site = selectedSite.get(),
-                filterBySubtype = listOf(STORE_REVIEW.toString())
-            )
-        }
+        selectedSite.observe()
+            .flatMapLatest { site ->
+                if (site != null) {
+                    notificationStore.observeNotificationsForSite(
+                        site = site,
+                        filterBySubtype = listOf(STORE_REVIEW.toString())
+                    )
+                } else {
+                    flowOf(emptyList())
+                }
+            }
             .map { it.count { notification -> !notification.read } }
             .distinctUntilChanged()
             .shareIn(
