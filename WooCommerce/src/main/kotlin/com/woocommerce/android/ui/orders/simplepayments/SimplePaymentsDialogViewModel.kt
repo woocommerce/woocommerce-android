@@ -43,7 +43,7 @@ class SimplePaymentsDialogViewModel @Inject constructor(
 
     init {
         launch(Dispatchers.IO) {
-            setCountryToTracking()
+            saveCountryForTracking()
         }
     }
 
@@ -91,7 +91,7 @@ class SimplePaymentsDialogViewModel @Inject constructor(
         }
     }
 
-    private suspend fun setCountryToTracking() {
+    private suspend fun saveCountryForTracking() {
         cardReaderTrackingInfoKeeper.setCountry(wooStore.getStoreCountryCode(selectedSite.get()))
     }
 
