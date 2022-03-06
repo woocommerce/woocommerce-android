@@ -49,7 +49,7 @@
             app:enterAnim="@anim/activity_fade_in"
             app:exitAnim="@null"
             app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out"/>
+            app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_orderListFragment_to_orderCreationFragment"
             app:destination="@id/nav_graph_order_creations"
@@ -111,7 +111,7 @@
         tools:layout="@layout/fragment_reviews_list">
         <action
             android:id="@+id/action_reviewListFragment_to_reviewDetailFragment"
-            app:destination="@id/reviewDetailFragment"/>
+            app:destination="@id/reviewDetailFragment" />
     </fragment>
     <fragment
         android:id="@+id/analytics"
@@ -120,7 +120,7 @@
         tools:layout="@layout/fragment_analytics">
         <action
             android:id="@+id/action_AnalyticsFragment_to_DateRangeSelector"
-            app:destination="@id/analyticsDateRangeSelectorDialog"/>
+            app:destination="@id/analyticsDateRangeSelectorDialog" />
     </fragment>
     <dialog
         android:id="@+id/analyticsDateRangeSelectorDialog"
@@ -143,7 +143,7 @@
             android:name="title"
             android:defaultValue="@null"
             app:argType="string"
-            app:nullable="true"  />
+            app:nullable="true" />
     </dialog>
     <action
         android:id="@+id/action_global_item_selector_dialog"
@@ -162,6 +162,9 @@
         <action
             android:id="@+id/action_moreMenuFragment_to_reviewDetailFragment"
             app:destination="@id/reviewDetailFragment" />
+        <action
+            android:id="@+id/action_moreMenuFragment_to_inboxFragment"
+            app:destination="@id/inboxFragment" />
     </fragment>
     <fragment
         android:id="@+id/feedbackSurveyFragment"
@@ -204,6 +207,25 @@
         <argument
             android:name="isTrashEnabled"
             android:defaultValue="false"
+            app:argType="boolean" />
+    </action>
+    <action
+        android:id="@+id/action_global_reviewDetailFragment"
+        app:destination="@id/reviewDetailFragment">
+        <argument
+            android:name="remoteReviewId"
+            android:defaultValue="0L"
+            app:argType="long" />
+        <argument
+            android:name="tempStatus"
+            android:defaultValue="null"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="launchedFromNotification"
+            app:argType="boolean" />
+        <argument
+            android:name="enableModeration"
             app:argType="boolean" />
     </action>
     <fragment
@@ -313,6 +335,17 @@
             android:name="isAddProduct"
             android:defaultValue="false"
             app:argType="boolean" />
+        <argument
+            android:name="currentProductType"
+            android:defaultValue="null"
+            app:nullable="true"
+            app:argType="string"
+            />
+        <argument
+            android:name="isCurrentProductVirtual"
+            android:defaultValue="false"
+            app:argType="boolean"
+            />
     </dialog>
     <dialog
         android:id="@+id/featureAnnouncementDialogFragmentOnMain"
@@ -333,11 +366,16 @@
     <dialog
         android:id="@+id/orderCreationBottomSheetFragment"
         android:name="com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment"
-        tools:layout="@layout/dialog_order_creation_bottom_sheet"/>
+        tools:layout="@layout/dialog_order_creation_bottom_sheet" />
     <include app:graph="@navigation/nav_graph_jetpack_install" />
     <activity
         android:id="@+id/appSettingsActivity"
         android:name="com.woocommerce.android.ui.prefs.AppSettingsActivity"
         android:label="AppSettingsActivity" />
+    <fragment
+        android:id="@+id/inboxFragment"
+        android:name="com.woocommerce.android.ui.inbox.InboxFragment"
+        android:label="InboxFragment"
+        tools:layout="@layout/fragment_inbox" />
 
 </navigation>

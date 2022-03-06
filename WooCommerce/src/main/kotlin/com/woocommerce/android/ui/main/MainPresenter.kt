@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.main
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.network.ConnectionChangeReceiver
@@ -63,7 +64,7 @@ class MainPresenter @Inject constructor(
                     siteModel, listOf(PROCESSING.value)
                 ).collect {
                     AnalyticsTracker.track(
-                        AnalyticsTracker.Stat.UNFULFILLED_ORDERS_LOADED,
+                        AnalyticsEvent.UNFULFILLED_ORDERS_LOADED,
                         mapOf(AnalyticsTracker.KEY_HAS_UNFULFILLED_ORDERS to it.size)
                     )
 

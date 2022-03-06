@@ -88,7 +88,7 @@ Language: tr
     <string name="order_creation_new_customer_add_different_shipping_address">Farklı bir gönderim adresi ekle</string>
     <string name="order_creation_product_instock">Stokta</string>
     <string name="order_creation_product_stock_quantity">%s stokta</string>
-    <string name="order_creation_new_customer">Yeni müşteri</string>
+    <string name="order_creation_customer_details">Yeni müşteri</string>
     <string name="order_creation_add_products">Ürün Ekle</string>
     <string name="order_creation_products">Ürünler</string>
     <string name="order_creation_add_customer">Müşteri ekle</string>

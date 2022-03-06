@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 internal class TerminalListenerImpl(
     private val logWrapper: LogWrapper,
 ) : TerminalListener {
-    private val _readerStatus = MutableStateFlow<CardReaderStatus>(CardReaderStatus.NotConnected)
+    private val _readerStatus = MutableStateFlow<CardReaderStatus>(CardReaderStatus.NotConnected())
     val readerStatus: StateFlow<CardReaderStatus> = _readerStatus
 
     fun updateReaderStatus(newStatus: CardReaderStatus) {
@@ -21,7 +21,7 @@ internal class TerminalListenerImpl(
     }
 
     override fun onUnexpectedReaderDisconnect(reader: Reader) {
-        _readerStatus.value = CardReaderStatus.NotConnected
+        _readerStatus.value = CardReaderStatus.NotConnected()
         logWrapper.d(LOG_TAG, "onUnexpectedReaderDisconnect")
     }
 

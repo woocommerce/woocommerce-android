@@ -88,7 +88,7 @@ Language: sv_SE
     <string name="order_creation_new_customer_add_different_shipping_address">Lägg till en annan leveransadress</string>
     <string name="order_creation_product_instock">I lager</string>
     <string name="order_creation_product_stock_quantity">%s i lager</string>
-    <string name="order_creation_new_customer">Ny kund</string>
+    <string name="order_creation_customer_details">Ny kund</string>
     <string name="order_creation_add_products">Lägg till produkt</string>
     <string name="order_creation_products">Produkter</string>
     <string name="order_creation_add_customer">Lägg till kund</string>

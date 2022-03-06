@@ -16,8 +16,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentVariationListBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.handleResult
@@ -118,7 +118,7 @@ class VariationListFragment :
         binding.variationListRefreshLayout.apply {
             scrollUpChild = binding.variationList
             setOnRefreshListener {
-                AnalyticsTracker.track(Stat.PRODUCT_VARIANTS_PULLED_TO_REFRESH)
+                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_VARIANTS_PULLED_TO_REFRESH)
                 viewModel.refreshVariations(navArgs.remoteProductId)
             }
         }

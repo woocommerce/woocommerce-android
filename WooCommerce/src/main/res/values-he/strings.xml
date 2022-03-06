@@ -88,7 +88,7 @@ Language: he_IL
     <string name="order_creation_new_customer_add_different_shipping_address">להוסיף כתובת שונה למשלוח</string>
     <string name="order_creation_product_instock">במלאי</string>
     <string name="order_creation_product_stock_quantity">%s במלאי</string>
-    <string name="order_creation_new_customer">לקוח חדש</string>
+    <string name="order_creation_customer_details">לקוח חדש</string>
     <string name="order_creation_add_products">להוסיף מוצר</string>
     <string name="order_creation_products">מוצרים</string>
     <string name="order_creation_add_customer">להוסיף לקוח</string>

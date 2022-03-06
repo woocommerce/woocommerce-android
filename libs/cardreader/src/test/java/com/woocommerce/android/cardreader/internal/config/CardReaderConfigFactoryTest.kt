@@ -38,7 +38,7 @@ class CardReaderConfigFactoryTest {
     @Test
     fun `given unsupported country code, then unsupported country card reader config is returned`() {
         val countryCode = "invalid country code"
-        val expectedCardReaderConfig = CardReaderConfigForUnSupportedCountry
+        val expectedCardReaderConfig = CardReaderConfigForUnsupportedCountry
 
         val cardReaderConfig = cardReaderConfigFactory.getCardReaderConfigFor(countryCode)
 

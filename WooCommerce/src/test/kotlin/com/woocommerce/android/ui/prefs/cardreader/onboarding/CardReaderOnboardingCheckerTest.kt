@@ -1,12 +1,15 @@
 package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
-import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.*
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_COMPLETED
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_PENDING
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForCanada
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUSA
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.prefs.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.prefs.cardreader.InPersonPaymentsCanadaFeatureFlag
 import com.woocommerce.android.ui.prefs.cardreader.StripeExtensionFeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -38,6 +41,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     private val stripeExtensionFeatureFlag: StripeExtensionFeatureFlag = mock()
     private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag = mock()
     private val cardReaderConfigFactory: CardReaderConfigFactory = mock()
+    private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
 
     private val site = SiteModel()
 
@@ -54,7 +58,8 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             networkStatus,
             stripeExtensionFeatureFlag,
             inPersonPaymentsCanadaFeatureFlag,
-            cardReaderConfigFactory
+            cardReaderConfigFactory,
+            cardReaderTrackingInfoKeeper,
         )
         whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(selectedSite.get()).thenReturn(site)
@@ -899,20 +904,47 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given Canada store, when stripe ext activated, then STORE_COUNTRY_NOT_SUPPORTED returned`() = testBlocking {
-        whenever(wooStore.getStoreCountryCode(site)).thenReturn("CA")
-        whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(true)
-        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-            .thenReturn(buildWCPayPluginInfo(isActive = false))
-        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-            .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
-        whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
-        whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForCanada)
+    fun `given store in UK, when getting onboardign state, then UK stored in tracking keeper`() = testBlocking {
+        whenever(wooStore.getStoreCountryCode(site)).thenReturn("UK")
 
-        val result = checker.getOnboardingState()
+        checker.getOnboardingState()
 
-        assertThat(result).isInstanceOf(CardReaderOnboardingState.StoreCountryNotSupported::class.java)
+        verify(cardReaderTrackingInfoKeeper).setCountry("UK")
     }
+
+    @Test
+    fun `given Canada store, when stripe ext activated, then plugin is not supported in country returned`() =
+        testBlocking {
+            whenever(wooStore.getStoreCountryCode(site)).thenReturn("CA")
+            whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(true)
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+                .thenReturn(buildWCPayPluginInfo(isActive = false))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+                .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
+            whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
+            whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForCanada)
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isInstanceOf(CardReaderOnboardingState.PluginIsNotSupportedInTheCountry::class.java)
+        }
+
+    @Test
+    fun `given US store, when stripe ext activated, then store OnboardingCompleted returned`() =
+        testBlocking {
+            whenever(wooStore.getStoreCountryCode(site)).thenReturn("US")
+            whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(true)
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+                .thenReturn(buildWCPayPluginInfo(isActive = false))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+                .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
+            whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
+            whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForUSA)
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isInstanceOf(CardReaderOnboardingState.OnboardingCompleted::class.java)
+        }
 
     @Test
     fun `given Canada store, when wcpay activated, then onboardingcompleted returned`() = testBlocking {

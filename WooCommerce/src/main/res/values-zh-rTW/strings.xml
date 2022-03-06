@@ -88,7 +88,7 @@ Language: zh_TW
     <string name="order_creation_new_customer_add_different_shipping_address">新增其他運送地址</string>
     <string name="order_creation_product_instock">尚有庫存</string>
     <string name="order_creation_product_stock_quantity">%s 尚有庫存</string>
-    <string name="order_creation_new_customer">新顧客</string>
+    <string name="order_creation_customer_details">新顧客</string>
     <string name="order_creation_add_products">新增商品</string>
     <string name="order_creation_products">商品</string>
     <string name="order_creation_add_customer">新增顧客</string>

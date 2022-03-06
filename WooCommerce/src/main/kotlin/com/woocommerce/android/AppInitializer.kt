@@ -10,8 +10,8 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.push.FCMRegistrationIntentService
@@ -146,7 +146,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     }
 
     override fun onAppComesFromBackground() {
-        AnalyticsTracker.track(Stat.APPLICATION_OPENED)
+        AnalyticsTracker.track(AnalyticsEvent.APPLICATION_OPENED)
 
         if (!connectionReceiverRegistered) {
             connectionReceiverRegistered = true
@@ -188,7 +188,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     }
 
     override fun onAppGoesToBackground() {
-        AnalyticsTracker.track(Stat.APPLICATION_CLOSED)
+        AnalyticsTracker.track(AnalyticsEvent.APPLICATION_CLOSED)
 
         if (connectionReceiverRegistered) {
             connectionReceiverRegistered = false
@@ -229,7 +229,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
         when {
             oldVersionCode == 0 -> {
-                AnalyticsTracker.track(Stat.APPLICATION_INSTALLED)
+                AnalyticsTracker.track(AnalyticsEvent.APPLICATION_INSTALLED)
                 // Store the current app version code to SharedPrefs, even if the value is -1
                 // to prevent duplicate install events being called
                 prefs.setLastAppVersionCode(versionCode)
@@ -238,7 +238,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                 // Track upgrade event only if oldVersionCode is not -1, to prevent
                 // duplicate upgrade events being called
                 if (oldVersionCode > PackageUtils.PACKAGE_VERSION_CODE_DEFAULT) {
-                    AnalyticsTracker.track(Stat.APPLICATION_UPGRADED)
+                    AnalyticsTracker.track(AnalyticsEvent.APPLICATION_UPGRADED)
                 }
 
                 // store the latest version code to SharedPrefs, only if the value
@@ -249,7 +249,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                 // we are not able to read the current app version code
                 // track this event along with the last stored version code
                 AnalyticsTracker.track(
-                    Stat.APPLICATION_VERSION_CHECK_FAILED,
+                    AnalyticsEvent.APPLICATION_VERSION_CHECK_FAILED,
                     mapOf(AnalyticsTracker.KEY_LAST_KNOWN_VERSION_CODE to oldVersionCode)
                 )
             }
@@ -262,7 +262,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         val isLoggedOut = event.causeOfChange == null && event.error == null
         if (!accountStore.hasAccessToken() && isLoggedOut) {
             // Logged out
-            AnalyticsTracker.track(Stat.ACCOUNT_LOGOUT)
+            AnalyticsTracker.track(AnalyticsEvent.ACCOUNT_LOGOUT)
 
             // Reset analytics
             AnalyticsTracker.flush()
@@ -301,7 +301,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                 "protocol" to protocol,
                 "times_retried" to timesRetried.toString()
             )
-            AnalyticsTracker.track(Stat.JETPACK_TUNNEL_TIMEOUT, properties)
+            AnalyticsTracker.track(AnalyticsEvent.JETPACK_TUNNEL_TIMEOUT, properties)
         }
     }
 }

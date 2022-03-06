@@ -23,8 +23,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.ActivitySitePickerBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.push.FCMRegistrationIntentService
@@ -118,7 +118,7 @@ class SitePickerActivity :
             binding.toolbar.toolbar.visibility = View.GONE
             binding.buttonHelp.setOnClickListener {
                 startActivity(HelpActivity.createIntent(this, Origin.LOGIN_EPILOGUE, null))
-                AnalyticsTracker.track(Stat.SITE_PICKER_HELP_BUTTON_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.SITE_PICKER_HELP_BUTTON_TAPPED)
                 if (calledFromLogin) {
                     unifiedLoginTracker.trackClick(Click.SHOW_HELP)
                 }
@@ -339,7 +339,7 @@ class SitePickerActivity :
         }
 
         AnalyticsTracker.track(
-            Stat.SITE_PICKER_STORES_SHOWN,
+            AnalyticsEvent.SITE_PICKER_STORES_SHOWN,
             mapOf(AnalyticsTracker.KEY_NUMBER_OF_STORES to presenter.getWooCommerceSites().size)
         )
 
@@ -401,12 +401,12 @@ class SitePickerActivity :
         )
         if (isAutoLogin) {
             AnalyticsTracker.track(
-                Stat.SITE_PICKER_AUTO_LOGIN_SUBMITTED,
+                AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_SUBMITTED,
                 eventProperties
             )
         } else {
             AnalyticsTracker.track(
-                Stat.SITE_PICKER_CONTINUE_TAPPED,
+                AnalyticsEvent.SITE_PICKER_CONTINUE_TAPPED,
                 eventProperties
             )
         }
@@ -504,7 +504,7 @@ class SitePickerActivity :
         with(binding.noStoresView.btnSecondaryAction) {
             text = getString(R.string.login_jetpack_what_is)
             setOnClickListener {
-                AnalyticsTracker.track(Stat.LOGIN_JETPACK_REQUIRED_WHAT_IS_JETPACK_LINK_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.LOGIN_JETPACK_REQUIRED_WHAT_IS_JETPACK_LINK_TAPPED)
                 LoginWhatIsJetpackDialogFragment().show(supportFragmentManager, LoginWhatIsJetpackDialogFragment.TAG)
             }
             visibility = View.VISIBLE
@@ -514,7 +514,7 @@ class SitePickerActivity :
             text = getString(R.string.login_jetpack_view_instructions_alt)
             isEnabled = true
             setOnClickListener {
-                AnalyticsTracker.track(Stat.LOGIN_JETPACK_REQUIRED_VIEW_INSTRUCTIONS_BUTTON_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.LOGIN_JETPACK_REQUIRED_VIEW_INSTRUCTIONS_BUTTON_TAPPED)
                 ChromeCustomTabUtils.launchUrl(context, AppUrls.JETPACK_INSTRUCTIONS)
             }
         }
@@ -612,7 +612,7 @@ class SitePickerActivity :
      */
     override fun showSiteNotConnectedAccountView(url: String) {
         AnalyticsTracker.track(
-            Stat.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_TO_USER,
+            AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_TO_USER,
             mapOf(AnalyticsTracker.KEY_URL to url, AnalyticsTracker.KEY_HAS_CONNECTED_STORES to hasConnectedStores)
         )
 
@@ -631,7 +631,7 @@ class SitePickerActivity :
         with(binding.noStoresView.btnSecondaryAction) {
             text = getString(R.string.login_need_help_finding_email)
             setOnClickListener {
-                AnalyticsTracker.track(Stat.SITE_PICKER_HELP_FINDING_CONNECTED_EMAIL_LINK_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.SITE_PICKER_HELP_FINDING_CONNECTED_EMAIL_LINK_TAPPED)
                 unifiedLoginTracker.trackClick(Click.HELP_FINDING_CONNECTED_EMAIL)
 
                 LoginEmailHelpDialogFragment().show(supportFragmentManager, LoginEmailHelpDialogFragment.TAG)
@@ -642,7 +642,7 @@ class SitePickerActivity :
         with(binding.loginEpilogueButtonBar.buttonPrimary) {
             text = getString(R.string.login_try_another_account)
             setOnClickListener {
-                AnalyticsTracker.track(Stat.SITE_PICKER_TRY_ANOTHER_ACCOUNT_BUTTON_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.SITE_PICKER_TRY_ANOTHER_ACCOUNT_BUTTON_TAPPED)
                 if (calledFromLogin) {
                     unifiedLoginTracker.trackClick(Click.TRY_ANOTHER_ACCOUNT)
                 }
@@ -655,7 +655,7 @@ class SitePickerActivity :
                 text = getString(R.string.login_view_connected_stores)
 
                 setOnClickListener {
-                    AnalyticsTracker.track(Stat.SITE_PICKER_VIEW_CONNECTED_STORES_BUTTON_TAPPED)
+                    AnalyticsTracker.track(AnalyticsEvent.SITE_PICKER_VIEW_CONNECTED_STORES_BUTTON_TAPPED)
                     if (calledFromLogin) {
                         unifiedLoginTracker.trackClick(Click.VIEW_CONNECTED_STORES)
                     }
@@ -671,7 +671,7 @@ class SitePickerActivity :
 
     override fun showSiteNotConnectedJetpackView(url: String) {
         AnalyticsTracker.track(
-            Stat.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_JETPACK,
+            AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_JETPACK,
             mapOf(AnalyticsTracker.KEY_URL to url)
         )
 
@@ -695,7 +695,7 @@ class SitePickerActivity :
             val spannable = SpannableString(notConnectedText)
             spannable.setSpan(
                 WooClickableSpan {
-                    AnalyticsTracker.track(Stat.SITE_PICKER_NOT_CONNECTED_JETPACK_REFRESH_APP_LINK_TAPPED)
+                    AnalyticsTracker.track(AnalyticsEvent.SITE_PICKER_NOT_CONNECTED_JETPACK_REFRESH_APP_LINK_TAPPED)
                     showProgressDialog(R.string.login_refresh_app_progress_jetpack)
 
                     // Tell the presenter to fetch a fresh list of
@@ -715,7 +715,7 @@ class SitePickerActivity :
         with(binding.noStoresView.btnSecondaryAction) {
             text = getString(R.string.login_jetpack_what_is)
             setOnClickListener {
-                AnalyticsTracker.track(Stat.LOGIN_JETPACK_REQUIRED_WHAT_IS_JETPACK_LINK_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.LOGIN_JETPACK_REQUIRED_WHAT_IS_JETPACK_LINK_TAPPED)
                 LoginWhatIsJetpackDialogFragment().show(supportFragmentManager, LoginWhatIsJetpackDialogFragment.TAG)
             }
             visibility = View.VISIBLE
@@ -724,7 +724,7 @@ class SitePickerActivity :
         with(binding.loginEpilogueButtonBar.buttonPrimary) {
             text = getString(R.string.login_try_another_store)
             setOnClickListener {
-                AnalyticsTracker.track(Stat.SITE_PICKER_TRY_ANOTHER_STORE_BUTTON_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.SITE_PICKER_TRY_ANOTHER_STORE_BUTTON_TAPPED)
                 if (calledFromLogin) {
                     unifiedLoginTracker.trackClick(Click.TRY_ANOTHER_ACCOUNT)
                 }
@@ -737,7 +737,7 @@ class SitePickerActivity :
                 text = getString(R.string.login_view_connected_stores)
 
                 setOnClickListener {
-                    AnalyticsTracker.track(Stat.SITE_PICKER_VIEW_CONNECTED_STORES_BUTTON_TAPPED)
+                    AnalyticsTracker.track(AnalyticsEvent.SITE_PICKER_VIEW_CONNECTED_STORES_BUTTON_TAPPED)
                     if (calledFromLogin) {
                         unifiedLoginTracker.trackClick(Click.VIEW_CONNECTED_STORES)
                     }
@@ -758,7 +758,7 @@ class SitePickerActivity :
     @Suppress("LongMethod")
     override fun showSiteNotWooStore(site: SiteModel) {
         AnalyticsTracker.track(
-            Stat.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_WOO_STORE,
+            AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_WOO_STORE,
             mapOf(
                 AnalyticsTracker.KEY_URL to site.url,
                 AnalyticsTracker.KEY_HAS_CONNECTED_STORES to hasConnectedStores
@@ -785,7 +785,7 @@ class SitePickerActivity :
             val spannable = SpannableString(notWooMessage)
             spannable.setSpan(
                 WooClickableSpan {
-                    AnalyticsTracker.track(Stat.SITE_PICKER_NOT_WOO_STORE_REFRESH_APP_LINK_TAPPED)
+                    AnalyticsTracker.track(AnalyticsEvent.SITE_PICKER_NOT_WOO_STORE_REFRESH_APP_LINK_TAPPED)
                     unifiedLoginTracker.trackClick(Click.REFRESH_APP)
 
                     showProgressDialog(R.string.login_refresh_app_progress)
@@ -804,7 +804,7 @@ class SitePickerActivity :
             text = getString(R.string.login_try_another_account)
 
             setOnClickListener {
-                AnalyticsTracker.track(Stat.SITE_PICKER_TRY_ANOTHER_ACCOUNT_BUTTON_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.SITE_PICKER_TRY_ANOTHER_ACCOUNT_BUTTON_TAPPED)
                 if (calledFromLogin) {
                     unifiedLoginTracker.trackClick(Click.TRY_ANOTHER_ACCOUNT)
                 }
@@ -817,7 +817,7 @@ class SitePickerActivity :
                 text = getString(R.string.login_view_connected_stores)
 
                 setOnClickListener {
-                    AnalyticsTracker.track(Stat.SITE_PICKER_VIEW_CONNECTED_STORES_BUTTON_TAPPED)
+                    AnalyticsTracker.track(AnalyticsEvent.SITE_PICKER_VIEW_CONNECTED_STORES_BUTTON_TAPPED)
                     if (calledFromLogin) {
                         unifiedLoginTracker.trackClick(Click.VIEW_CONNECTED_STORES)
                     }

@@ -270,6 +270,35 @@ platform :android do
   end
 
   #####################################################################################
+  # build_and_upload_google_play
+  # -----------------------------------------------------------------------------------
+  # This lane builds the app for Google Play, and will correctly select which build 
+  # should be produced based on the build number.
+  # -----------------------------------------------------------------------------------
+  # Usage:
+  # bundle exec fastlane build_and_upload_google_play
+  #
+  # Example:
+  # bundle exec fastlane build_and_upload_google_play
+  #####################################################################################
+  desc "Builds and uploads a release to Google Play"
+  lane :build_and_upload_google_play do | options |
+    if is_beta_version(android_get_release_version)
+      build_and_upload_beta(
+        skip_confirm: is_ci,
+        skip_prechecks: true,
+        create_release: true
+      )
+    else
+      build_and_upload_release(
+        skip_confirm: is_ci,
+        skip_prechecks: true,
+        create_release: true
+      )
+    end
+  end
+
+  #####################################################################################
   # build_and_upload_release
   # -----------------------------------------------------------------------------------
   # This lane builds the final release of the app and uploads it
@@ -363,14 +392,14 @@ platform :android do
    # bundle exec fastlane trigger_release_build [branch_to_build:<branch_name>]
    #
    #####################################################################################
-   lane :trigger_release_build do | options |
-    circleci_trigger_job(
-      circle_ci_token: ENV["CIRCLE_CI_AUTH_TOKEN"],
-      repository: REPOSITORY_NAME,
-      organization: GH_ORG_NAME,
-      branch: options[:branch_to_build],
-      job_params: {"release_build" => true}
-    )
+  desc "Tell Buildkite to trigger a release build"
+  lane :trigger_release_build do | options |
+      buildkite_trigger_build(
+        buildkite_organization: 'automattic',
+        buildkite_pipeline: 'woocommerce-android',
+        branch: options[:branch_to_build] || git_branch,
+        pipeline_file: 'release-builds.yml'
+      )
   end
 
   #####################################################################################
@@ -690,6 +719,10 @@ platform :android do
 
   def universal_apk_name(version)
     "wcandroid-#{version["name"]}-universal.apk"
+  end
+
+  def is_beta_version(version)
+    version['name'].include? "-rc-"
   end
 
   # This function is Buildkite-specific

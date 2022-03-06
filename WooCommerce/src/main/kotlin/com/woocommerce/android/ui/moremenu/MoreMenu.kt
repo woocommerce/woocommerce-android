@@ -70,68 +70,24 @@ fun MoreMenu(
     val siteUrl = state.siteUrl
     val userAvatarUrl = state.userAvatarUrl
 
-    Column(Modifier.padding(start = 12.dp, end = 12.dp)) {
+    Column {
         Spacer(modifier = Modifier.height(32.dp))
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 10.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(horizontal = 10.dp)
-                    .fillMaxWidth(fraction = 0.8f)
-            ) {
-                Row {
-                    Column {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        MoreMenuUserAvatar(avatarUrl = userAvatarUrl)
-                    }
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Column {
-                        Text(
-                            text = siteName,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp,
-                            color = colorResource(id = color.color_on_surface)
-                        )
-                        Text(
-                            text = siteUrl,
-                            fontSize = 14.sp,
-                            color = colorResource(id = color.color_on_surface),
-                            modifier = Modifier
-                                .padding(vertical = 4.dp)
-                        )
-                        Text(
-                            text = stringResource(string.settings_switch_store),
-                            color = colorResource(color.color_secondary),
-                            fontSize = 14.sp,
-                            modifier = Modifier
-                                .clickable(
-                                    enabled = true,
-                                    onClickLabel = stringResource(id = string.settings_switch_store),
-                                    role = Role.Button
-                                ) { onSwitchStore() }
-                        )
-                    }
-                }
+            Column(modifier = Modifier.weight(1f)) {
+                MoreMenuMyStoreHeader(userAvatarUrl, siteName, siteUrl, onSwitchStore)
             }
-
-            IconButton(
-                onClick = { onSettingsClick() },
-            ) {
-                Icon(
-                    painter = painterResource(id = drawable.ic_more_screen_settings),
-                    contentDescription = stringResource(id = string.settings),
-                    tint = Color.Unspecified
-                )
-            }
+            SettingsButton(onSettingsClick)
         }
-        Spacer(modifier = Modifier.height(32.dp))
         LazyVerticalGrid(
             cells = Fixed(2),
-            contentPadding = PaddingValues(ButtonDefaults.IconSpacing),
-            horizontalArrangement = Arrangement.spacedBy(ButtonDefaults.IconSpacing),
-            verticalArrangement = Arrangement.spacedBy(ButtonDefaults.IconSpacing)
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 28.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             itemsIndexed(
                 uiButtons.filter { it.isEnabled }
@@ -143,6 +99,63 @@ fun MoreMenu(
                     onClick = item.onClick
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun SettingsButton(onSettingsClick: () -> Unit) {
+    IconButton(
+        onClick = { onSettingsClick() },
+    ) {
+        Icon(
+            painter = painterResource(id = drawable.ic_more_screen_settings),
+            contentDescription = stringResource(id = string.settings),
+            tint = Color.Unspecified
+        )
+    }
+}
+
+@Composable
+private fun MoreMenuMyStoreHeader(
+    userAvatarUrl: String,
+    siteName: String,
+    siteUrl: String,
+    onSwitchStore: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .clickable(
+                enabled = true,
+                onClickLabel = stringResource(id = string.settings_switch_store),
+                role = Role.Button,
+                onClick = onSwitchStore
+            )
+    ) {
+        Column {
+            Spacer(modifier = Modifier.height(8.dp))
+            MoreMenuUserAvatar(avatarUrl = userAvatarUrl)
+        }
+        Spacer(modifier = Modifier.width(16.dp))
+        Column {
+            Text(
+                text = siteName,
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+                color = colorResource(id = color.color_on_surface)
+            )
+            Text(
+                text = siteUrl,
+                fontSize = 14.sp,
+                color = colorResource(id = color.color_on_surface),
+                modifier = Modifier
+                    .padding(vertical = 4.dp)
+            )
+            Text(
+                text = stringResource(string.settings_switch_store),
+                color = colorResource(color.color_secondary),
+                fontSize = 14.sp
+            )
         }
     }
 }

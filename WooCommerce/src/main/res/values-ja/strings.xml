@@ -88,7 +88,7 @@ Language: ja_JP
     <string name="order_creation_new_customer_add_different_shipping_address">別の配送先住所を追加</string>
     <string name="order_creation_product_instock">在庫あり</string>
     <string name="order_creation_product_stock_quantity">在庫%s件</string>
-    <string name="order_creation_new_customer">新規顧客</string>
+    <string name="order_creation_customer_details">新規顧客</string>
     <string name="order_creation_add_products">商品を追加</string>
     <string name="order_creation_products">商品</string>
     <string name="order_creation_add_customer">顧客を追加</string>

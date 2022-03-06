@@ -7,7 +7,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages
@@ -26,6 +25,7 @@ import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.SendReceipt
 import com.woocommerce.android.ui.orders.cardreader.ViewState.*
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.prefs.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult
@@ -45,7 +45,6 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import java.util.*
 import javax.inject.Inject
 
 private const val ARTIFICIAL_RETRY_DELAY = 500L
@@ -65,6 +64,7 @@ class CardReaderPaymentViewModel
     private val errorMapper: CardReaderPaymentErrorMapper,
     private val wooStore: WooCommerceStore,
     private val dispatchers: CoroutineDispatchers,
+    private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderPaymentDialogFragmentArgs by savedState.navArgs()
 
@@ -106,6 +106,8 @@ class CardReaderPaymentViewModel
                 delay(ARTIFICIAL_RETRY_DELAY)
             }
             fetchOrder()?.let { order ->
+                cardReaderTrackingInfoKeeper.setCurrency(order.currency)
+
                 if (!paymentCollectibilityChecker.isCollectable(order)) {
                     exitWithSnackbar(R.string.card_reader_payment_order_paid_payment_cancelled)
                     return@launch
@@ -176,6 +178,8 @@ class CardReaderPaymentViewModel
             InitializingPayment -> viewState.postValue(LoadingDataState)
             CollectingPayment -> viewState.postValue(CollectPaymentState(amountLabel))
             ProcessingPayment -> viewState.postValue(ProcessingPaymentState(amountLabel))
+            is ProcessingPaymentCompleted ->
+                cardReaderTrackingInfoKeeper.setPaymentMethodType(paymentStatus.paymentMethodType.stringRepresentation)
             CapturingPayment -> viewState.postValue(CapturingPaymentState(amountLabel))
             is PaymentCompleted -> {
                 tracker.trackPaymentSucceeded()
@@ -189,7 +193,7 @@ class CardReaderPaymentViewModel
                 tracker.trackPaymentFailed(paymentStatus.errorMessage, paymentStatus.type)
                 emitFailedPaymentState(orderId, billingEmail, paymentStatus, amountLabel)
             }
-        }
+        }.exhaustive
     }
 
     private fun onPaymentCompleted(
@@ -285,7 +289,7 @@ class CardReaderPaymentViewModel
 
     private fun onPrintReceiptClicked(amountWithCurrencyLabel: String, receiptUrl: String, documentName: String) {
         launch {
-            viewState.value = ViewState.PrintingReceiptState(amountWithCurrencyLabel, receiptUrl, documentName)
+            viewState.value = PrintingReceiptState(amountWithCurrencyLabel, receiptUrl, documentName)
             tracker.trackPrintReceiptTapped()
             startPrintingFlow()
         }

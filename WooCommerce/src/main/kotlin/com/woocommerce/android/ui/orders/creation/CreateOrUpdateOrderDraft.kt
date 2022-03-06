@@ -71,14 +71,26 @@ class CreateOrUpdateOrderDraft @Inject constructor(
             }
 
         val hasSameShippingLines = old.shippingLines
+            .filter {
+                // Check only non-removed shipping lines to avoid circular update when removing
+                it.methodId != null
+            }
             .areSameAs(new.shippingLines) { newLine ->
                 this.methodId == newLine.methodId &&
                     this.methodTitle == newLine.methodTitle &&
                     this.total isEqualTo newLine.total
             }
 
+        val hasSameFeeLines = old.feesLines
+            .filter { it.name != null }
+            .areSameAs(new.feesLines) { newLine ->
+                this.name == newLine.name &&
+                    this.total isEqualTo newLine.total
+            }
+
         return hasSameItems &&
             hasSameShippingLines &&
+            hasSameFeeLines &&
             old.shippingAddress.isSamePhysicalAddress(new.shippingAddress) &&
             old.billingAddress.isSamePhysicalAddress(new.billingAddress)
     }
