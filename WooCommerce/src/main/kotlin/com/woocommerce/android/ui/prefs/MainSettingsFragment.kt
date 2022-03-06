@@ -13,9 +13,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.*
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentSettingsMainBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
