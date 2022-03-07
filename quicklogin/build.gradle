@@ -1,0 +1,28 @@
+plugins {
+    id 'com.android.test'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    compileSdkVersion 31
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 31
+
+        missingDimensionStrategy 'buildType', 'vanilla'
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testApplicationId "com.woocommerce.android.test"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    targetProjectPath ':WooCommerce'
+}
