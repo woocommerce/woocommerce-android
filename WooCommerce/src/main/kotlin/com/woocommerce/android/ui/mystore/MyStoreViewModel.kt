@@ -122,7 +122,6 @@ class MyStoreViewModel @Inject constructor(
     }
 
     fun onSwipeToRefresh() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.DASHBOARD_PULLED_TO_REFRESH)
         usageTracksEventEmitter.interacted()
         AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_PULLED_TO_REFRESH)
         resetForceRefresh()
