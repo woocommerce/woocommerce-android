@@ -9,8 +9,8 @@ import androidx.fragment.app.DialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.R.style
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginAnalyticsListener
 import javax.inject.Inject
@@ -40,13 +40,13 @@ class LoginEmailHelpDialogFragment : DialogFragment() {
             .setTitle(R.string.login_email_help_title)
             .setMessage(message)
             .setNeutralButton(R.string.login_site_address_more_help) { dialog, _ ->
-                AnalyticsTracker.track(Stat.LOGIN_FIND_CONNECTED_EMAIL_HELP_SCREEN_NEED_MORE_HELP_LINK_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.LOGIN_FIND_CONNECTED_EMAIL_HELP_SCREEN_NEED_MORE_HELP_LINK_TAPPED)
                 analyticsListener.trackDismissDialog()
                 listener?.onEmailNeedMoreHelpClicked()
                 dialog.dismiss()
             }
             .setPositiveButton(android.R.string.ok) { dialog, _ ->
-                AnalyticsTracker.track(Stat.LOGIN_FIND_CONNECTED_EMAIL_HELP_SCREEN_OK_BUTTON_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.LOGIN_FIND_CONNECTED_EMAIL_HELP_SCREEN_OK_BUTTON_TAPPED)
                 analyticsListener.trackDismissDialog()
                 dialog.dismiss()
             }
@@ -70,6 +70,6 @@ class LoginEmailHelpDialogFragment : DialogFragment() {
 
     override fun onResume() {
         super.onResume()
-        AnalyticsTracker.track(Stat.LOGIN_FIND_CONNECTED_EMAIL_HELP_SCREEN_VIEWED)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_FIND_CONNECTED_EMAIL_HELP_SCREEN_VIEWED)
     }
 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.FeedbackPrefs
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
@@ -199,7 +200,7 @@ class OrderedAddonViewModel @Inject constructor(
 
     private fun trackFeedback(feedbackAction: String) {
         AnalyticsTracker.track(
-            AnalyticsTracker.Stat.FEATURE_FEEDBACK_BANNER,
+            AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
             mapOf(
                 AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCT_ADDONS_FEEDBACK,
                 AnalyticsTracker.KEY_FEEDBACK_ACTION to feedbackAction
@@ -214,7 +215,7 @@ class OrderedAddonViewModel @Inject constructor(
             .joinToString(",")
             .let {
                 AnalyticsTracker.track(
-                    AnalyticsTracker.Stat.PRODUCT_ADDONS_ORDER_ADDONS_VIEWED,
+                    AnalyticsEvent.PRODUCT_ADDONS_ORDER_ADDONS_VIEWED,
                     mapOf(AnalyticsTracker.KEY_ADDONS to it)
                 )
             }

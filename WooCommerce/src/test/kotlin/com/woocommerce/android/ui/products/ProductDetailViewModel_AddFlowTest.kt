@@ -72,7 +72,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     private val siteParams = SiteParameters(
         currencyCode = "USD",
         currencySymbol = "$",
-        currencyPosition = null,
+        currencyFormattingParameters = null,
         weightUnit = "kg",
         dimensionUnit = "cm",
         gmtOffset = 0f

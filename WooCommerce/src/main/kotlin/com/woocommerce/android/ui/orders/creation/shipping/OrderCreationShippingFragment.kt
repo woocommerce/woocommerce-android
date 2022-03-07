@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationShippingBinding
 import com.woocommerce.android.extensions.drop
+import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
@@ -51,14 +52,11 @@ class OrderCreationShippingFragment : BaseFragment(R.layout.fragment_order_creat
     }
 
     private fun FragmentOrderCreationShippingBinding.initUi() {
-        amountEditText.initView(
-            currency = sharedViewModel.currentDraft.currency,
-            decimals = viewModel.currencyDecimals,
-            currencyFormatter = currencyFormatter
-        )
-        amountEditText.value.drop(1).observe(viewLifecycleOwner) {
-            viewModel.onAmountEdited(it)
-        }
+        amountEditText.value.filterNotNull()
+            .drop(1)
+            .observe(viewLifecycleOwner) {
+                viewModel.onAmountEdited(it)
+            }
         nameEditText.setOnTextChangedListener {
             viewModel.onNameEdited(it?.toString().orEmpty())
         }

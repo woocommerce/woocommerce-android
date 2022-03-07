@@ -4,13 +4,13 @@ import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_OPTION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_ADMIN_MENU
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_INBOX
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_REVIEWS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_VIEW_STORE
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.moremenu.MenuButtonType.INBOX
@@ -88,14 +88,14 @@ class MoreMenuViewModel @Inject constructor(
 
     fun onSettingsClick() {
         AnalyticsTracker.track(
-            Stat.HUB_MENU_SETTINGS_TAPPED
+            AnalyticsEvent.HUB_MENU_SETTINGS_TAPPED
         )
         triggerEvent(MoreMenuEvent.NavigateToSettingsEvent)
     }
 
     fun onSwitchStoreClick() {
         AnalyticsTracker.track(
-            Stat.HUB_MENU_SWITCH_STORE_TAPPED
+            AnalyticsEvent.HUB_MENU_SWITCH_STORE_TAPPED
         )
         triggerEvent(MoreMenuEvent.StartSitePickerEvent)
     }
@@ -122,7 +122,7 @@ class MoreMenuViewModel @Inject constructor(
 
     private fun trackMoreMenuOptionSelected(selectedOption: String) {
         AnalyticsTracker.track(
-            Stat.HUB_MENU_OPTION_TAPPED,
+            AnalyticsEvent.HUB_MENU_OPTION_TAPPED,
             mapOf(KEY_OPTION to selectedOption)
         )
     }

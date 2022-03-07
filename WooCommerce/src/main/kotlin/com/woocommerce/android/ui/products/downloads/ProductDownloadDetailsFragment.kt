@@ -11,10 +11,10 @@ import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.DownloadableFileAction
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_DOWNLOADABLE_FILE_ACTION
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductDownloadDetailsBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
@@ -77,7 +77,7 @@ class ProductDownloadDetailsFragment :
 
                 val action = if (navArgs.isEditing) DownloadableFileAction.UPDATED else DownloadableFileAction.ADDED
                 AnalyticsTracker.track(
-                    Stat.PRODUCTS_DOWNLOADABLE_FILE,
+                    AnalyticsEvent.PRODUCTS_DOWNLOADABLE_FILE,
                     mapOf(KEY_DOWNLOADABLE_FILE_ACTION to action.value)
                 )
 
@@ -132,7 +132,7 @@ class ProductDownloadDetailsFragment :
                     parentViewModel.deleteDownloadableFile(event.file)
 
                     AnalyticsTracker.track(
-                        Stat.PRODUCTS_DOWNLOADABLE_FILE,
+                        AnalyticsEvent.PRODUCTS_DOWNLOADABLE_FILE,
                         mapOf(KEY_DOWNLOADABLE_FILE_ACTION to DownloadableFileAction.DELETED.value)
                     )
 

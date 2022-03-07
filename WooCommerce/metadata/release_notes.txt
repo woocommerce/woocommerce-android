@@ -1,3 +1,4 @@
-This release contains a helpful feature for merchants looking to record a quick monetary transaction that we call simple payments. Quickly take an in-person credit card payment or send your customer a payment link to your site!
+- [*] Fixed an issue where on rare cases the app might end up displaying order notes for the wrong note. [https://github.com/woocommerce/woocommerce-android/pull/5971]
+- [*] In-Person Payments: Add support for accepting payments on bookable products
+- [***] Beta Feature: Order Creation is now improved, supporting Fees and Shipping costs.
 
-You’ll also see we changed the tabs a bit and added a “More” tab. Store settings and a few other things were moved there to prepare for more features!

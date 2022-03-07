@@ -17,8 +17,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.transition.MaterialContainerTransform
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentReviewDetailBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.fastStripHtml
@@ -60,7 +60,7 @@ class ReviewDetailFragment :
     private val navArgs: ReviewDetailFragmentArgs by navArgs()
 
     private val moderateListener = OnCheckedChangeListener { _, isChecked ->
-        AnalyticsTracker.track(Stat.REVIEW_DETAIL_APPROVE_BUTTON_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.REVIEW_DETAIL_APPROVE_BUTTON_TAPPED)
         when (isChecked) {
             true -> processReviewModeration(APPROVED)
             false -> processReviewModeration(HOLD)
@@ -171,7 +171,7 @@ class ReviewDetailFragment :
         review.product?.let { product ->
             binding.reviewProductName.text = product.name.fastStripHtml()
             binding.reviewOpenProduct.setOnClickListener {
-                AnalyticsTracker.track(Stat.REVIEW_DETAIL_OPEN_EXTERNAL_BUTTON_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.REVIEW_DETAIL_OPEN_EXTERNAL_BUTTON_TAPPED)
                 ChromeCustomTabUtils.launchUrl(activity as Context, product.externalUrl)
             }
             refreshProductImage(product.remoteProductId)
@@ -249,14 +249,14 @@ class ReviewDetailFragment :
 
             // Configure the spam button
             binding.reviewSpam.setOnClickListener {
-                AnalyticsTracker.track(Stat.REVIEW_DETAIL_SPAM_BUTTON_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.REVIEW_DETAIL_SPAM_BUTTON_TAPPED)
 
                 processReviewModeration(SPAM)
             }
 
             // Configure the trash button
             binding.reviewTrash.setOnClickListener {
-                AnalyticsTracker.track(Stat.REVIEW_DETAIL_TRASH_BUTTON_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.REVIEW_DETAIL_TRASH_BUTTON_TAPPED)
 
                 processReviewModeration(TRASH)
             }

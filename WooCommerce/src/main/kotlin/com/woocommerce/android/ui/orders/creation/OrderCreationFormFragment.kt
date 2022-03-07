@@ -34,7 +34,6 @@ import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatu
 import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Companion.KEY_ORDER_STATUS_RESULT
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.widgets.CustomProgressDialog
@@ -167,7 +166,6 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     }
 
     private fun FragmentOrderCreationFormBinding.initPaymentSection() {
-        paymentSection.shippingLayout.isVisible = FeatureFlag.ORDER_CREATION_M2.isEnabled()
         paymentSection.shippingButton.setOnClickListener {
             viewModel.onShippingButtonClicked()
         }
@@ -219,10 +217,6 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     private fun bindPaymentSection(paymentSection: OrderCreationPaymentSectionBinding, newOrderData: Order) {
         paymentSection.bindFeesSubSection(newOrderData)
 
-        paymentSection.root.isVisible = newOrderData.items.isNotEmpty()
-        paymentSection.taxLayout.isVisible = FeatureFlag.ORDER_CREATION_M2.isEnabled()
-        paymentSection.taxCalculationHint.isVisible = !FeatureFlag.ORDER_CREATION_M2.isEnabled()
-
         val currentShipping = newOrderData.shippingLines.firstOrNull { it.methodId != null }
         paymentSection.shippingButton.setText(
             if (currentShipping != null) R.string.order_creation_edit_shipping
@@ -243,10 +237,6 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     }
 
     private fun OrderCreationPaymentSectionBinding.bindFeesSubSection(newOrderData: Order) {
-        FeatureFlag.ORDER_CREATION_M2.isEnabled()
-            .apply { feeLayout.isVisible = this }
-            .also { if (it.not()) return }
-
         feeButton.setOnClickListener { viewModel.onFeeButtonClicked() }
 
         val currentFeeTotal = newOrderData.feesLines

@@ -1,10 +1,13 @@
 package com.woocommerce.android.ui.reviews
 
 import android.os.Parcelable
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
@@ -26,7 +29,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
@@ -66,7 +69,6 @@ class ReviewListViewModel @Inject constructor(
     init {
         EventBus.getDefault().register(this)
         dispatcher.register(this)
-        observeReviewUpdates()
     }
 
     override fun onCleared() {
@@ -91,6 +93,7 @@ class ReviewListViewModel @Inject constructor(
                 viewState = viewState.copy(isSkeletonShown = true)
             }
             fetchReviewList(loadMore = false)
+            observeReviewUpdates()
         }
     }
 
@@ -162,7 +165,7 @@ class ReviewListViewModel @Inject constructor(
             dispatcher.dispatch(WCProductActionBuilder.newUpdateProductReviewStatusAction(payload))
 
             AnalyticsTracker.track(
-                Stat.REVIEW_ACTION,
+                AnalyticsEvent.REVIEW_ACTION,
                 mapOf(AnalyticsTracker.KEY_TYPE to newStatus.toString())
             )
 
@@ -214,7 +217,7 @@ class ReviewListViewModel @Inject constructor(
     private fun observeReviewUpdates() {
         viewModelScope.launch {
             unseenReviewsCountHandler.observeUnseenCount()
-                .collect { forceRefreshReviews() }
+                .collectLatest { forceRefreshReviews() }
         }
     }
 

@@ -1,7 +1,8 @@
 package com.woocommerce.android.ui.sitepicker
 
+import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
@@ -30,7 +31,8 @@ class SitePickerPresenter
     private val accountStore: AccountStore,
     private val siteStore: SiteStore,
     private val wooCommerceStore: WooCommerceStore,
-    private val userEligibilityFetcher: UserEligibilityFetcher
+    private val userEligibilityFetcher: UserEligibilityFetcher,
+    private val appPrefs: AppPrefs
 ) : SitePickerContract.Presenter {
     private var view: SitePickerContract.View? = null
 
@@ -98,7 +100,7 @@ class SitePickerPresenter
                 view?.showStoreList(result.model!!)
                 if (result.model?.any { it.isJetpackCPConnected } == true) {
                     AnalyticsTracker.track(
-                        stat = Stat.JETPACK_CP_SITES_FETCHED,
+                        stat = AnalyticsEvent.JETPACK_CP_SITES_FETCHED,
                         properties = mapOf(AnalyticsTracker.KEY_FETCH_SITES_DURATION to duration)
                     )
                 }
@@ -142,6 +144,7 @@ class SitePickerPresenter
     }
 
     override fun updateWooSiteSettings(site: SiteModel) {
+        appPrefs.resetSitePreferences()
         dispatcher.dispatch(WCCoreActionBuilder.newFetchSiteSettingsAction(site))
     }
 

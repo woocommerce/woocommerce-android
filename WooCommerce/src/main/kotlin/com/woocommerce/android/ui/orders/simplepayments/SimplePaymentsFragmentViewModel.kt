@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.simplepayments
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STATE_OFF
@@ -102,7 +103,7 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
         } else {
             mapOf(KEY_STATE to VALUE_STATE_OFF)
         }
-        AnalyticsTracker.track(AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_TAXES_TOGGLED, properties)
+        AnalyticsTracker.track(AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_TAXES_TOGGLED, properties)
         updateViewState(chargeTaxes = chargeTaxes)
     }
 
@@ -111,7 +112,7 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
     }
 
     fun onCustomerNoteChanged(customerNote: String) {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_NOTE_ADDED)
+        AnalyticsTracker.track(AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_NOTE_ADDED)
         viewState = viewState.copy(customerNote = customerNote)
     }
 
@@ -121,7 +122,7 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
 
     fun onDoneButtonClicked() {
         if (!networkStatus.isConnected()) {
-            AnalyticsTracker.track(AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_FAILED)
+            AnalyticsTracker.track(AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_FAILED)
             triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
             return
         }
@@ -151,7 +152,7 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
                 is OptimisticUpdateResult -> {
                     if (result.event.isError) {
                         AnalyticsTracker.track(
-                            AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_FAILED,
+                            AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_FAILED,
                             mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_SUMMARY)
                         )
                         result.event.error?.let {
@@ -166,7 +167,7 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
                 is UpdateOrderResult.RemoteUpdateResult -> {
                     if (result.event.isError) {
                         AnalyticsTracker.track(
-                            AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_FAILED,
+                            AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_FAILED,
                             mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_AMOUNT)
                         )
                         result.event.error?.let {

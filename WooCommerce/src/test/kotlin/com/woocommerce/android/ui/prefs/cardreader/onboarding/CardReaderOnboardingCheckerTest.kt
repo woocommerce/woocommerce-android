@@ -9,6 +9,7 @@ import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForCan
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUSA
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.prefs.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.prefs.cardreader.InPersonPaymentsCanadaFeatureFlag
 import com.woocommerce.android.ui.prefs.cardreader.StripeExtensionFeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -40,6 +41,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     private val stripeExtensionFeatureFlag: StripeExtensionFeatureFlag = mock()
     private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag = mock()
     private val cardReaderConfigFactory: CardReaderConfigFactory = mock()
+    private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
 
     private val site = SiteModel()
 
@@ -56,7 +58,8 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             networkStatus,
             stripeExtensionFeatureFlag,
             inPersonPaymentsCanadaFeatureFlag,
-            cardReaderConfigFactory
+            cardReaderConfigFactory,
+            cardReaderTrackingInfoKeeper,
         )
         whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(selectedSite.get()).thenReturn(site)
@@ -898,6 +901,15 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         val result = checker.getOnboardingState()
 
         assertThat(result).isInstanceOf(CardReaderOnboardingState.StoreCountryNotSupported::class.java)
+    }
+
+    @Test
+    fun `given store in UK, when getting onboardign state, then UK stored in tracking keeper`() = testBlocking {
+        whenever(wooStore.getStoreCountryCode(site)).thenReturn("UK")
+
+        checker.getOnboardingState()
+
+        verify(cardReaderTrackingInfoKeeper).setCountry("UK")
     }
 
     @Test

@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationFeeBinding
 import com.woocommerce.android.extensions.drop
+import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
@@ -56,12 +57,7 @@ class OrderCreationFeeFragment :
     override fun getFragmentTitle() = getString(R.string.order_creation_add_fee)
 
     private fun FragmentOrderCreationFeeBinding.bindViews() {
-        feeAmountEditText.initView(
-            currency = sharedViewModel.currentDraft.currency,
-            decimals = editFeeViewModel.currencyDecimals,
-            currencyFormatter = currencyFormatter
-        )
-        feeAmountEditText.value.drop(1).observe(viewLifecycleOwner) {
+        feeAmountEditText.value.filterNotNull().drop(1).observe(viewLifecycleOwner) {
             editFeeViewModel.onFeeAmountChanged(it)
         }
         feePercentageEditText.setOnTextChangedListener {
@@ -91,6 +87,9 @@ class OrderCreationFeeFragment :
             }
             new.shouldDisplayRemoveFeeButton.takeIfNotEqualTo(old?.shouldDisplayRemoveFeeButton) {
                 removeFeeButton.isVisible = it
+            }
+            new.shouldDisplayPercentageSwitch.takeIfNotEqualTo(old?.shouldDisplayPercentageSwitch) {
+                feeTypeSwitch.isVisible = it
             }
         }
     }

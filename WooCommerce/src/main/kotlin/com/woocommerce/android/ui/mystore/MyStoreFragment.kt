@@ -18,8 +18,8 @@ import com.woocommerce.android.FeedbackPrefs.userFeedbackIsDue
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.R.attr
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentMyStoreBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.setClickableText
@@ -201,7 +201,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         }
         if (benefitsBanner.show && !binding.jetpackBenefitsBanner.root.isVisible) {
             AnalyticsTracker.track(
-                stat = Stat.FEATURE_JETPACK_BENEFITS_BANNER,
+                stat = AnalyticsEvent.FEATURE_JETPACK_BENEFITS_BANNER,
                 properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "shown")
             )
         }
@@ -218,7 +218,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         binding.jetpackBenefitsBanner.root.isVisible = false
         binding.jetpackBenefitsBanner.root.setOnClickListener {
             AnalyticsTracker.track(
-                stat = Stat.FEATURE_JETPACK_BENEFITS_BANNER,
+                stat = AnalyticsEvent.FEATURE_JETPACK_BENEFITS_BANNER,
                 properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "tapped")
             )
             findNavController().navigateSafely(MyStoreFragmentDirections.actionMyStoreToJetpackBenefitsDialog())
@@ -415,7 +415,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         if (show) {
             dashboardVisibility = View.GONE
             binding.emptyView.show(EmptyViewType.DASHBOARD) {
-                AnalyticsTracker.track(Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
                 ActivityUtils.shareStoreUrl(requireActivity(), selectedSite.get().url)
             }
         } else {

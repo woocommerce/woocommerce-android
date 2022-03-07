@@ -1,2 +1,0 @@
-8.5:
-Después de que hayas solicitado crear pedidos en la aplicación, estamos encantados de comunicarte que tenemos un anticipo listo para que nos ayudes a probar esta opción. Dirígete a los ajustes de la aplicación y activa la función beta para la Creación de pedidos. En este momento, puedes añadir productos, notas y direcciones, y las futuras versiones tendrán funciones adicionales.
