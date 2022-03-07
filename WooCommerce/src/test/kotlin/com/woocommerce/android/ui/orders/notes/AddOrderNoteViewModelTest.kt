@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.notes
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderNote
@@ -17,17 +18,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.mockito.kotlin.any
-import org.mockito.kotlin.argThat
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
-import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
-import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType.GENERIC_ERROR
+import org.mockito.kotlin.*
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -135,90 +129,80 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `add note successfully`() {
+    fun `add note successfully`() = testBlocking {
         val note = "note"
         val isCustomerNote = false
 
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            doReturn(true).whenever(networkStatus).isConnected()
-            doReturn(testOrder).whenever(repository).getOrderById(ORDER_ID)
-            doReturn(
-                OnOrderChanged()
-            ).whenever(repository).addOrderNote(eq(testOrder.id), any())
+        doReturn(true).whenever(networkStatus).isConnected()
+        doReturn(testOrder).whenever(repository).getOrderById(ORDER_ID)
+        doReturn(Result.success(Unit)).whenever(repository).addOrderNote(eq(testOrder.id), any())
 
-            initViewModel()
+        initViewModel()
 
-            val events = mutableListOf<Event>()
-            viewModel.event.observeForever { new -> events.add(new) }
+        val events = mutableListOf<Event>()
+        viewModel.event.observeForever { new -> events.add(new) }
 
-            viewModel.onOrderTextEntered(note)
-            viewModel.onIsCustomerCheckboxChanged(isCustomerNote)
-            viewModel.pushOrderNote()
+        viewModel.onOrderTextEntered(note)
+        viewModel.onIsCustomerCheckboxChanged(isCustomerNote)
+        viewModel.pushOrderNote()
 
-            verify(repository, times(1)).addOrderNote(
-                eq(testOrder.id),
-                argThat {
-                    this.note == note
-                    this.isCustomerNote == isCustomerNote
-                }
-            )
-            assertThat(events[0]).isInstanceOf(ShowSnackbar::class.java)
-            assertEquals(R.string.add_order_note_added, (events[0] as ShowSnackbar).message)
-            assertThat(events[1]).isInstanceOf(ExitWithResult::class.java)
-            assertEquals(note, (events[1] as ExitWithResult<OrderNote>).data.note)
-            assertEquals(isCustomerNote, (events[1] as ExitWithResult<OrderNote>).data.isCustomerNote)
-        }
+        verify(repository, times(1)).addOrderNote(
+            eq(testOrder.id),
+            argThat {
+                this.note == note && this.isCustomerNote == isCustomerNote
+            }
+        )
+        assertThat(events[0]).isInstanceOf(ShowSnackbar::class.java)
+        assertEquals(R.string.add_order_note_added, (events[0] as ShowSnackbar).message)
+        assertThat(events[1]).isInstanceOf(ExitWithResult::class.java)
+        assertEquals(note, (events[1] as ExitWithResult<OrderNote>).data.note)
+        assertEquals(isCustomerNote, (events[1] as ExitWithResult<OrderNote>).data.isCustomerNote)
     }
 
     @Test
-    fun `doesn't add note if not connected`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            doReturn(false).whenever(networkStatus).isConnected()
+    fun `doesn't add note if not connected`() = testBlocking {
+        doReturn(false).whenever(networkStatus).isConnected()
 
-            initViewModel()
+        initViewModel()
 
-            var event: Event? = null
-            viewModel.event.observeForever { new -> event = new }
+        var event: Event? = null
+        viewModel.event.observeForever { new -> event = new }
 
-            viewModel.onOrderTextEntered("note")
-            viewModel.pushOrderNote()
+        viewModel.onOrderTextEntered("note")
+        viewModel.pushOrderNote()
 
-            verify(repository, times(0)).addOrderNote(any(), any())
-            assertThat(event).isInstanceOf(ShowSnackbar::class.java)
-            assertEquals(R.string.offline_error, (event as ShowSnackbar).message)
-        }
+        verify(repository, times(0)).addOrderNote(any(), any())
+        assertThat(event).isInstanceOf(ShowSnackbar::class.java)
+        assertEquals(R.string.offline_error, (event as ShowSnackbar).message)
     }
 
     @Test
-    fun `add note failure`() {
+    fun `add note failure`() = testBlocking {
         val note = "note"
         val isCustomerNote = false
 
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            doReturn(true).whenever(networkStatus).isConnected()
-            doReturn(testOrder).whenever(repository).getOrderById(ORDER_ID)
-            doReturn(
-                OnOrderChanged().apply { this.error = OrderError(GENERIC_ERROR) }
-            ).whenever(repository).addOrderNote(eq(testOrder.id), any())
+        doReturn(true).whenever(networkStatus).isConnected()
+        doReturn(testOrder).whenever(repository).getOrderById(ORDER_ID)
+        val error = WooError(WooErrorType.GENERIC_ERROR, GenericErrorType.UNKNOWN, "")
+        doReturn(Result.failure<Unit>(WooException(error)))
+            .whenever(repository).addOrderNote(eq(testOrder.id), any())
 
-            initViewModel()
+        initViewModel()
 
-            var event: Event? = null
-            viewModel.event.observeForever { new -> event = new }
+        var event: Event? = null
+        viewModel.event.observeForever { new -> event = new }
 
-            viewModel.onOrderTextEntered(note)
-            viewModel.onIsCustomerCheckboxChanged(isCustomerNote)
-            viewModel.pushOrderNote()
+        viewModel.onOrderTextEntered(note)
+        viewModel.onIsCustomerCheckboxChanged(isCustomerNote)
+        viewModel.pushOrderNote()
 
-            verify(repository, times(1)).addOrderNote(
-                eq(testOrder.id),
-                argThat {
-                    this.note == note
-                    this.isCustomerNote == isCustomerNote
-                }
-            )
-            assertThat(event).isInstanceOf(ShowSnackbar::class.java)
-            assertEquals(R.string.add_order_note_error, (event as ShowSnackbar).message)
-        }
+        verify(repository, times(1)).addOrderNote(
+            eq(testOrder.id),
+            argThat {
+                this.note == note && this.isCustomerNote == isCustomerNote
+            }
+        )
+        assertThat(event).isInstanceOf(ShowSnackbar::class.java)
+        assertEquals(R.string.add_order_note_error, (event as ShowSnackbar).message)
     }
 }

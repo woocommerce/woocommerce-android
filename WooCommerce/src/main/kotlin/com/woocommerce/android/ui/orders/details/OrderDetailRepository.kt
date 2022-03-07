@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.details
 
 import com.woocommerce.android.AppConstants
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FEEDBACK_ACTION
@@ -16,12 +17,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.LabelItem
 import org.wordpress.android.fluxc.store.*
 import org.wordpress.android.fluxc.store.WCOrderStore.*
-import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType.GENERIC_ERROR
 import javax.inject.Inject
 
 class OrderDetailRepository @Inject constructor(
@@ -51,11 +52,10 @@ class OrderDetailRepository @Inject constructor(
     }
 
     suspend fun fetchOrderNotes(
-        localOrderId: Int,
-        remoteOrderId: Long
+        orderId: Long,
     ): Boolean = withContext(dispatchers.io) {
         val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
-            orderStore.fetchOrderNotes(localOrderId, remoteOrderId, selectedSite.get())
+            orderStore.fetchOrderNotes(selectedSite.get(), RemoteId(orderId))
         }
         result?.isError == false
     }
@@ -116,19 +116,16 @@ class OrderDetailRepository @Inject constructor(
     suspend fun addOrderNote(
         orderId: Long,
         noteModel: OrderNote
-    ): OnOrderChanged {
-        val order = orderStore.getOrderByIdAndSite(orderId, selectedSite.get())
-        if (order == null) {
-            WooLog.e(ORDERS, "Can't find order with id $orderId")
-            return OnOrderChanged(
-                orderError = OrderError(GENERIC_ERROR, "Can't find order with id $orderId")
-            )
+    ): Result<Unit> {
+        return orderStore.postOrderNote(
+            site = selectedSite.get(),
+            orderId = RemoteId(orderId),
+            note = noteModel.note,
+            isCustomerNote = noteModel.isCustomerNote
+        ).let {
+            if (it.isError) Result.failure(WooException(it.error))
+            else Result.success(Unit)
         }
-        val dataModel = noteModel.toDataModel()
-        val payload = PostOrderNotePayload(
-            @Suppress("DEPRECATION_ERROR") order.id, orderId, selectedSite.get(), dataModel
-        )
-        return orderStore.postOrderNote(payload)
     }
 
     suspend fun addOrderShipmentTracking(
@@ -176,8 +173,9 @@ class OrderDetailRepository @Inject constructor(
 
     fun getOrderStatusOptions() = orderStore.getOrderStatusOptionsForSite(selectedSite.get()).map { it.toOrderStatus() }
 
-    fun getOrderNotes(localOrderId: Int) =
-        orderStore.getOrderNotesForOrder(localOrderId).map { it.toAppModel() }
+    suspend fun getOrderNotes(orderId: Long) =
+        orderStore.getOrderNotesForOrder(site = selectedSite.get(), orderId = RemoteId(orderId))
+            .map { it.toAppModel() }
 
     suspend fun fetchProductsByRemoteIds(remoteIds: List<Long>) =
         productStore.fetchProductListSynced(selectedSite.get(), remoteIds)?.map { it.toAppModel() } ?: emptyList()
