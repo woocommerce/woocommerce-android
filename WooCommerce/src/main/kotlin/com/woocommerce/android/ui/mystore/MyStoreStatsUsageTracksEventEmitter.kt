@@ -2,10 +2,15 @@ package com.woocommerce.android.ui.mystore
 
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.USED_ANALYTICS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import dagger.hilt.android.scopes.ActivityRetainedScoped
+import com.woocommerce.android.di.AppCoroutineScope
+import com.woocommerce.android.tools.SelectedSite
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.wordpress.android.util.DateTimeUtils
 import java.util.*
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Accepts interaction events from the Analytics / My Store UI and decides whether the group of interactions can be
@@ -25,13 +30,12 @@ import javax.inject.Inject
  * If we ever change the algorithm in the future, we should probably consider renaming the Tracks event to avoid
  * incorrect comparisons with old events. We should also make sure to change the iOS code if we're changing anything
  * in here. Both platforms should have the same algorithm so we are able to compare both.
- *
- * This is scoped as [ActivityRetainedScoped] so that a new instance will only be created when the user
- * switches to a different store or logs back in.
  */
-@ActivityRetainedScoped
+@Singleton
 class MyStoreStatsUsageTracksEventEmitter @Inject constructor(
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
+    private val selectedSite: SelectedSite
 ) {
     private companion object {
         /**
@@ -56,6 +60,13 @@ class MyStoreStatsUsageTracksEventEmitter @Inject constructor(
     private var interactions = 0
     private var firstInteractionTime: Date? = null
     private var lastInteractionTime: Date? = null
+
+    init {
+        // Reset if the user changed to a different site.
+        selectedSite.observe()
+            .onEach { reset() }
+            .launchIn(appCoroutineScope)
+    }
 
     fun interacted(interactionTime: Date = Date()) {
         // Check if they were idle for some time.
