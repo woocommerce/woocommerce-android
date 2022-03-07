@@ -85,7 +85,7 @@ class MyStoreStatsUsageTracksEventEmitterTest : BaseUnitTest() {
     }
 
     @Test
-    fun `test it will not emit an event if the time threshold is not reached`() {
+    fun `given some interactions, when the time threshold is not reached, then it will not emit an event`() {
         // Given
         usageTracksEventEmitter.interacted(
             "2021-11-23T00:00:00Z",
@@ -102,7 +102,7 @@ class MyStoreStatsUsageTracksEventEmitterTest : BaseUnitTest() {
     }
 
     @Test
-    fun `test it will not emit an event when the user idled`() {
+    fun `given some interactions, when the user idled, then it will not emit an event`() {
         // Given
         usageTracksEventEmitter.interacted(
             "2021-11-23T00:00:00Z",
@@ -120,7 +120,7 @@ class MyStoreStatsUsageTracksEventEmitterTest : BaseUnitTest() {
     }
 
     @Test
-    fun `test it can still emit an event later after idling`() {
+    fun `given an idled user, when new interactions reach the thresholds, then it will emit an event`() {
         // Given
         usageTracksEventEmitter.interacted(
             "2021-11-23T00:00:00Z",
@@ -146,7 +146,7 @@ class MyStoreStatsUsageTracksEventEmitterTest : BaseUnitTest() {
     }
 
     @Test
-    fun `test it will not emit an event right away after an event was previously emitted`() {
+    fun `given an event was emitted, when one interaction happens after, then it will not emit an event`() {
         // Given
         usageTracksEventEmitter.interacted(
             "2021-11-23T00:00:00Z",
@@ -166,7 +166,7 @@ class MyStoreStatsUsageTracksEventEmitterTest : BaseUnitTest() {
     }
 
     @Test
-    fun `test it will emit another event if the threshold is reached again`() {
+    fun `given an event was emitted, when the thresholds are reached again, then it will emit another event`() {
         // Given
         usageTracksEventEmitter.interacted(
             "2021-11-23T00:00:00Z",
