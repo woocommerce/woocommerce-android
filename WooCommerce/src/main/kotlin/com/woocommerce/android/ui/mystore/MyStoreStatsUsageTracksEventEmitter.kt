@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.mystore
 
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.USED_ANALYTICS
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.tools.SelectedSite
@@ -91,7 +91,7 @@ class MyStoreStatsUsageTracksEventEmitter @Inject constructor(
             interactions >= INTERACTIONS_THRESHOLD
         ) {
             reset()
-            analyticsTrackerWrapper.track(USED_ANALYTICS)
+            analyticsTrackerWrapper.track(AnalyticsEvent.USED_ANALYTICS)
         }
     }
 
