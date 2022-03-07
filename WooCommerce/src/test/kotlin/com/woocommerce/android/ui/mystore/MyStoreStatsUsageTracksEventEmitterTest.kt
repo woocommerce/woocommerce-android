@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.mystore
 
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.USED_ANALYTICS
+import com.woocommerce.android.analytics.AnalyticsEvent.USED_ANALYTICS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.BaseUnitTest
