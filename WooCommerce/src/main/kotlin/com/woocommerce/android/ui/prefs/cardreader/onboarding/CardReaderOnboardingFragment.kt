@@ -81,7 +81,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                 showNetworkErrorState(layout, state)
             is CardReaderOnboardingViewModel.OnboardingViewState.LoadingState ->
                 showLoadingState(layout, state)
-            is CardReaderOnboardingViewModel.OnboardingViewState.UnsupportedCountryState ->
+            is CardReaderOnboardingViewModel.OnboardingViewState.UnsupportedErrorState ->
                 showCountryNotSupportedState(layout, state)
             is CardReaderOnboardingViewModel.OnboardingViewState.WCPayError ->
                 showWCPayErrorState(layout, state)
@@ -226,9 +226,9 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
 
     private fun showCountryNotSupportedState(
         view: View,
-        state: CardReaderOnboardingViewModel.OnboardingViewState.UnsupportedCountryState
+        state: CardReaderOnboardingViewModel.OnboardingViewState.UnsupportedErrorState
     ) {
-        val binding = FragmentCardReaderOnboardingUnsupportedCountryBinding.bind(view)
+        val binding = FragmentCardReaderOnboardingUnsupportedBinding.bind(view)
         UiHelpers.setTextOrHide(binding.unsupportedCountryHeader, state.headerLabel)
         UiHelpers.setImageOrHideInLandscape(binding.unsupportedCountryIllustration, state.illustration)
         UiHelpers.setTextOrHide(binding.unsupportedCountryHint, state.hintLabel)

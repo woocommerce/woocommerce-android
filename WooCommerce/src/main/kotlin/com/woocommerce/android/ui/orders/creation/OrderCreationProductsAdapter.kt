@@ -65,7 +65,6 @@ class OrderCreationProductsAdapter(
             binding.productName.text = productModel.item.name
             binding.stepperView.apply {
                 value = productModel.item.quantity.toInt()
-                isMinusButtonEnabled = productModel.canDecreaseQuantity
             }
 
             binding.productAttributes.text = buildString {

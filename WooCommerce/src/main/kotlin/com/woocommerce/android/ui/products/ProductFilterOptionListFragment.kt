@@ -9,8 +9,8 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductFilterOptionListBinding
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithResult
@@ -61,7 +61,7 @@ class ProductFilterOptionListFragment :
 
         binding.filterOptionListBtnShowProducts.setOnClickListener {
             AnalyticsTracker.track(
-                Stat.PRODUCT_FILTER_LIST_SHOW_PRODUCTS_BUTTON_TAPPED,
+                AnalyticsEvent.PRODUCT_FILTER_LIST_SHOW_PRODUCTS_BUTTON_TAPPED,
                 mapOf(AnalyticsTracker.KEY_FILTERS to viewModel.getFilterString())
             )
             viewModel.onShowProductsClicked()

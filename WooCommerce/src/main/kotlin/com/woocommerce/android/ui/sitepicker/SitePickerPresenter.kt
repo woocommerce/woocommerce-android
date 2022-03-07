@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.sitepicker
 
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
@@ -98,7 +98,7 @@ class SitePickerPresenter
                 view?.showStoreList(result.model!!)
                 if (result.model?.any { it.isJetpackCPConnected } == true) {
                     AnalyticsTracker.track(
-                        stat = Stat.JETPACK_CP_SITES_FETCHED,
+                        stat = AnalyticsEvent.JETPACK_CP_SITES_FETCHED,
                         properties = mapOf(AnalyticsTracker.KEY_FETCH_SITES_DURATION to duration)
                     )
                 }

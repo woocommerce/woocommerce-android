@@ -79,8 +79,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val orderStatus = OrderStatus(order.status.value, order.status.value)
     private val testOrderNotes = OrderTestUtils.generateTestOrderNotes(
         totalNotes = 5,
-        localOrderId = ORDER_ID.toInt(),
-        localSiteId = ORDER_SITE_ID,
+        orderId = ORDER_ID
     )
     private val testOrderShipmentTrackings = OrderTestUtils.generateTestOrderShipmentTrackings(
         totalCount = 5,
@@ -163,7 +162,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         doReturn(nonRefundedOrder).whenever(repository).getOrderById(any())
 
-        doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+        doReturn(true).whenever(repository).fetchOrderNotes(any())
         doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
 
         doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
@@ -236,7 +235,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any())
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
             // WHEN
@@ -253,7 +252,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(true).whenever(paymentCollectibilityChecker).isCollectable(any())
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
             // WHEN
@@ -270,7 +269,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(order).whenever(repository).fetchOrderById(any())
 
-            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
             doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
             doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
@@ -294,7 +293,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(testOrderRefunds).whenever(repository).getOrderRefunds(any())
 
-            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
             doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
             doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
@@ -315,7 +314,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(mixedOrder).whenever(repository).getOrderById(any())
             doReturn(mixedOrder).whenever(repository).fetchOrderById(any())
 
-            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
             doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
             doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
@@ -355,7 +354,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(repository).fetchOrderById(any())
             doReturn(1).whenever(repository).getProductCountForOrder(ids)
 
-            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
             doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
             doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
@@ -374,7 +373,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(order).whenever(repository).fetchOrderById(any())
 
-            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
 
             doReturn(testOrderRefunds).whenever(repository).fetchOrderRefunds(any())
@@ -408,7 +407,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(order).whenever(repository).fetchOrderById(any())
 
-            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
 
             doReturn(emptyList<Refund>()).whenever(repository).fetchOrderRefunds(any())
@@ -442,7 +441,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(order).whenever(repository).fetchOrderById(any())
 
-            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
 
             doReturn(emptyList<Refund>()).whenever(repository).fetchOrderRefunds(any())
@@ -489,7 +488,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(order).whenever(repository).fetchOrderById(any())
 
-            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
 
             doReturn(emptyList<Refund>()).whenever(repository).fetchOrderRefunds(any())
@@ -537,7 +536,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(order).whenever(repository).fetchOrderById(any())
 
-            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
 
             doReturn(emptyList<Refund>()).whenever(repository).fetchOrderRefunds(any())
@@ -570,7 +569,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(repository).fetchOrderById(any())
             doReturn(true).whenever(paymentCollectibilityChecker).isCollectable(any())
 
-            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
 
             doReturn(emptyList<Refund>()).whenever(repository).fetchOrderRefunds(any())
@@ -671,7 +670,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(order).whenever(repository).fetchOrderById(any())
         doReturn(orderStatus).doReturn(newOrderStatus).doReturn(orderStatus).whenever(repository).getOrderStatus(any())
 
-        doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+        doReturn(true).whenever(repository).fetchOrderNotes(any())
         doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
 
         doReturn(emptyList<Refund>()).whenever(repository).fetchOrderRefunds(any())
@@ -723,7 +722,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(order).whenever(repository).fetchOrderById(any())
         doReturn(orderStatus).doReturn(newOrderStatus).whenever(repository).getOrderStatus(any())
 
-        doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+        doReturn(true).whenever(repository).fetchOrderNotes(any())
         doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
 
         doReturn(emptyList<Refund>()).whenever(repository).fetchOrderRefunds(any())
@@ -787,7 +786,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(order).whenever(repository).getOrderById(any())
         doReturn(order).whenever(repository).fetchOrderById(any())
 
-        doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+        doReturn(true).whenever(repository).fetchOrderNotes(any())
 
         val addedShipmentTrackings = testOrderShipmentTrackings.toMutableList()
         addedShipmentTrackings.add(shipmentTracking)
@@ -821,7 +820,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.id)
         doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.id)
 
-        doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+        doReturn(true).whenever(repository).fetchOrderNotes(any())
         doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
         doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
         doReturn(emptyList<Refund>()).whenever(repository).fetchOrderRefunds(any())
@@ -847,7 +846,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(WooPlugin(isInstalled = true, isActive = true, version = "1.25.10")).whenever(repository)
                 .getWooServicesPluginInfo()
 
-            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any())
             doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
             doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
             doReturn(emptyList<Refund>()).whenever(repository).fetchOrderRefunds(any())
@@ -884,7 +883,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.id)
             doReturn(false).whenever(repository).isOrderEligibleForSLCreation(order.id)
 
-            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any())
             doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
             doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
             doReturn(emptyList<Refund>()).whenever(repository).fetchOrderRefunds(any())
@@ -912,7 +911,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 )
             ).whenever(repository).getWooServicesPluginInfo()
 
-            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any())
             doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
             doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
             doReturn(emptyList<Refund>()).whenever(repository).fetchOrderRefunds(any())
@@ -947,7 +946,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `show order status updated snackbar on updating status from dialog`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             var snackbar: ShowUndoSnackbar? = null
             viewModel.event.observeForever {
@@ -969,7 +968,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `show order status updated snackbar on updating status to completed from dialog`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             var snackbar: ShowUndoSnackbar? = null
             viewModel.event.observeForever {
@@ -991,7 +990,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `show order completed snackbar on updating status to completed from fulfill screen`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             var snackbar: ShowUndoSnackbar? = null
             viewModel.event.observeForever {
@@ -1008,7 +1007,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `show error changing order snackbar if updating status failed`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             whenever(repository.updateOrderStatus(any(), any()))
                 .thenReturn(
@@ -1032,7 +1031,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `do not show error changing order snackbar if updating status failed because of cancellation`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             doReturn(ContinuationWrapper.ContinuationResult.Cancellation<Boolean>(CancellationException())).whenever(
                 repository
@@ -1052,7 +1051,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `do not show error changing order snackbar if updating status did not fail`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(true).whenever(repository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             doReturn(ContinuationWrapper.ContinuationResult.Success(true)).whenever(repository)
                 .updateOrderStatus(any(), any())
@@ -1072,7 +1071,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(false).whenever(repository).fetchOrderNotes(any())
             doReturn("testing url")
                 .whenever(appPrefsWrapper).getReceiptUrl(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
@@ -1089,7 +1088,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             // Given
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(false).whenever(repository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connecting))
             viewModel.start()
@@ -1107,7 +1106,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             // Given
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(false).whenever(repository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connected(mock())))
             viewModel.start()
@@ -1125,9 +1124,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             // Given
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(false).whenever(repository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
-            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected))
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
             viewModel.start()
 
             // When
@@ -1143,9 +1142,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             // Given
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(false).whenever(repository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
-            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected))
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
             whenever(appPrefsWrapper.isCardReaderOnboardingCompleted(anyInt(), anyLong(), anyLong())).thenReturn(false)
             viewModel.start()
 
@@ -1163,7 +1162,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             // Given
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(false).whenever(repository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connected(mock())))
             viewModel.start()
@@ -1181,7 +1180,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             // Given
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(false).whenever(repository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connecting))
             viewModel.start()
@@ -1199,9 +1198,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             // Given
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(false).whenever(repository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
-            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected))
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
             viewModel.start()
 
             // When
@@ -1217,7 +1216,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             // Given
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(false).whenever(repository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             viewModel.start()
 
@@ -1235,7 +1234,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             // Given
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(false).whenever(repository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             viewModel.start()
 
@@ -1253,7 +1252,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             // Given
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(false).whenever(repository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             viewModel.start()
 

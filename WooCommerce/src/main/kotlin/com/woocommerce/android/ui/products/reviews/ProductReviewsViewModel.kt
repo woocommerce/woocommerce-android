@@ -5,9 +5,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_REVIEWS_LOADED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_REVIEWS_LOAD_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_REVIEWS_LOADED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_REVIEWS_LOAD_FAILED
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.util.WooLog

@@ -10,28 +10,31 @@ import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
-import com.woocommerce.android.databinding.FragmentOrderCreationEditFeeBinding
+import com.woocommerce.android.databinding.FragmentOrderCreationFeeBinding
+import com.woocommerce.android.extensions.drop
+import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
-import com.woocommerce.android.ui.orders.creation.fees.OrderCreationEditFeeViewModel.UpdateFee
+import com.woocommerce.android.ui.orders.creation.fees.OrderCreationFeeViewModel.RemoveFee
+import com.woocommerce.android.ui.orders.creation.fees.OrderCreationFeeViewModel.UpdateFee
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class OrderCreationEditFeeFragment :
-    BaseFragment(R.layout.fragment_order_creation_edit_fee) {
+class OrderCreationFeeFragment :
+    BaseFragment(R.layout.fragment_order_creation_fee) {
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
-    private val editFeeViewModel by viewModels<OrderCreationEditFeeViewModel>()
+    private val editFeeViewModel by viewModels<OrderCreationFeeViewModel>()
 
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
-        with(FragmentOrderCreationEditFeeBinding.bind(view)) {
+        with(FragmentOrderCreationFeeBinding.bind(view)) {
             bindViews()
             observeEvents()
             observeViewStateData()
@@ -53,13 +56,8 @@ class OrderCreationEditFeeFragment :
 
     override fun getFragmentTitle() = getString(R.string.order_creation_add_fee)
 
-    private fun FragmentOrderCreationEditFeeBinding.bindViews() {
-        feeAmountEditText.initView(
-            currency = sharedViewModel.currentDraft.currency,
-            decimals = editFeeViewModel.currencyDecimals,
-            currencyFormatter = currencyFormatter
-        )
-        feeAmountEditText.value.observe(viewLifecycleOwner) {
+    private fun FragmentOrderCreationFeeBinding.bindViews() {
+        feeAmountEditText.value.filterNotNull().drop(1).observe(viewLifecycleOwner) {
             editFeeViewModel.onFeeAmountChanged(it)
         }
         feePercentageEditText.setOnTextChangedListener {
@@ -68,15 +66,18 @@ class OrderCreationEditFeeFragment :
         feeTypeSwitch.setOnCheckedChangeListener { _, isChecked ->
             editFeeViewModel.onPercentageSwitchChanged(isChecked)
         }
+        removeFeeButton.setOnClickListener {
+            editFeeViewModel.onRemoveFeeClicked()
+        }
     }
 
-    private fun FragmentOrderCreationEditFeeBinding.observeViewStateData() {
+    private fun FragmentOrderCreationFeeBinding.observeViewStateData() {
         editFeeViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.feeAmount.takeIfNotEqualTo(old?.feeAmount) {
                 feeAmountEditText.setValueIfDifferent(it)
             }
             new.feePercentage.takeIfNotEqualTo(old?.feePercentage) {
-                feePercentageEditText.setTextIfDifferent(it.toString())
+                feePercentageEditText.setTextIfDifferent(it.toPlainString())
             }
             new.isPercentageSelected.takeIfNotEqualTo(old?.isPercentageSelected) { isChecked ->
                 ActivityUtils.hideKeyboard(activity)
@@ -84,17 +85,22 @@ class OrderCreationEditFeeFragment :
                 feeAmountEditText.isVisible = isChecked.not()
                 feeTypeSwitch.isChecked = isChecked
             }
+            new.shouldDisplayRemoveFeeButton.takeIfNotEqualTo(old?.shouldDisplayRemoveFeeButton) {
+                removeFeeButton.isVisible = it
+            }
+            new.shouldDisplayPercentageSwitch.takeIfNotEqualTo(old?.shouldDisplayPercentageSwitch) {
+                feeTypeSwitch.isVisible = it
+            }
         }
     }
 
     private fun observeEvents() {
         editFeeViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is UpdateFee -> {
-                    sharedViewModel.onFeeEdited(event.amount, event.feeType)
-                    findNavController().navigateUp()
-                }
+                is UpdateFee -> sharedViewModel.onFeeEdited(event.amount)
+                is RemoveFee -> sharedViewModel.onFeeRemoved()
             }
+            findNavController().navigateUp()
         }
     }
 }

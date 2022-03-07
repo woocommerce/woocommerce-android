@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.moremenu
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,8 +14,8 @@ import com.woocommerce.android.databinding.FragmentMoreMenuBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.*
-import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -90,8 +89,7 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
     }
 
     private fun startSitePicker() {
-        val sitePickerIntent = Intent(context, SitePickerActivity::class.java)
-        requireActivity().startActivity(sitePickerIntent)
+        (requireActivity() as MainActivity).startSitePicker()
     }
 
     private fun openInBrowser(url: String) {

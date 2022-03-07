@@ -53,7 +53,6 @@ class ProductDetailBottomSheetFragment : BottomSheetDialogFragment() {
         }
 
         setupObservers()
-        viewModel.fetchBottomSheetList()
     }
 
     private fun setupObservers() {

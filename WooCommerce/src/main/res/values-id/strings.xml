@@ -1,18 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-02-02 09:54:03+0000
+Translation-Revision-Date: 2022-02-15 18:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="card_reader_onboarding_both_plugins_activated_refresh_button">Segarkan setelah memperbarui</string>
+    <string name="card_reader_onboarding_both_plugins_activated_open_store_admin_label">Kelola Plugin</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_two">Pembayaran WooCommerce</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_one">WooCommerce Stripe Gateway</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">Pembayaran Langsung hanya akan berfungsi jika salah satu plugin berikut diaktifkan. Hubungi administrator situs untuk menonaktifkan salah satu plugin berikut untuk melanjutkan:</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_admin">Pembayaran Langsung hanya akan berfungsi jika salah satu plugin berikut diaktifkan. Harap nonaktifkan salah satu plugin berikut untuk melanjutkan:</string>
+    <string name="card_reader_onboarding_both_plugins_activated_header">Konflik plugin pembayaran terdeteksi</string>
+    <string name="card_reader_wisepad_3_manual_card_reader">Panduan Pembaca Kartu WisePad 3</string>
+    <string name="order_creation_price_calculation_failed">Tidak dapat memperbarui harga</string>
+    <string name="order_creation_payment_tax">Pajak</string>
+    <string name="order_creation_payment_tax_hint">Pajak akan dihitung otomatis berdasarkan pengaturan toko Anda.</string>
+    <string name="exclusive_or">atau</string>
     <string name="settings_install_jetpack">Menginstal Jetpack</string>
     <string name="card_reader_onboarding_account_rejected_header">Pembayaran Langsung saat ini tidak tersedia</string>
     <string name="order_creation_success_snackbar">Pesanan dibuat</string>
     <string name="order_creation_failure_snackbar">Pesanan gagal dibuat</string>
     <string name="order_creation_loading_dialog_message">Harap tunggu…</string>
     <string name="order_creation_loading_dialog_title">Membuat pesanan Anda</string>
-    <string name="order_creation_payment_tax_hint">Total belum termasuk pajak. Pajak akan dihitung otomatis berdasarkan pengaturan toko Anda.</string>
     <string name="order_creation_payment_order_total">Total Pesanan</string>
     <string name="order_creation_payment_products_total">Total Produk</string>
     <string name="order_creation_payment">Pembayaran</string>
@@ -77,7 +88,7 @@ Language: id
     <string name="order_creation_new_customer_add_different_shipping_address">Tambahkan alamat pengiriman lain</string>
     <string name="order_creation_product_instock">Tersedia</string>
     <string name="order_creation_product_stock_quantity">%s tersedia</string>
-    <string name="order_creation_new_customer">Pelanggan baru</string>
+    <string name="order_creation_customer_details">Pelanggan baru</string>
     <string name="order_creation_add_products">Tambahkan Produk</string>
     <string name="order_creation_products">Produk</string>
     <string name="order_creation_add_customer">Tambahkan pelanggan</string>

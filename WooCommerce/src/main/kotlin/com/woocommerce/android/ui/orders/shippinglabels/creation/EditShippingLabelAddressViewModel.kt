@@ -4,8 +4,8 @@ import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.*
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
@@ -88,7 +88,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
     }
 
     fun onDoneButtonClicked() {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_ADDRESS_DONE_BUTTON_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.SHIPPING_LABEL_EDIT_ADDRESS_DONE_BUTTON_TAPPED)
         viewState = viewState.validateAllFields()
         val address = viewState.getAddress()
         if (viewState.areAllRequiredFieldsValid) {
@@ -186,7 +186,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
     }
 
     fun onUseAddressAsIsButtonClicked() {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_ADDRESS_USE_ADDRESS_AS_IS_BUTTON_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.SHIPPING_LABEL_EDIT_ADDRESS_USE_ADDRESS_AS_IS_BUTTON_TAPPED)
         // Clear remote validation error of `address1`
         viewState = viewState.copy(address1Field = viewState.address1Field.copy(validationError = null))
         // Validate fields locally
@@ -207,13 +207,13 @@ class EditShippingLabelAddressViewModel @Inject constructor(
     }
 
     fun onOpenMapTapped() {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_ADDRESS_OPEN_MAP_BUTTON_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.SHIPPING_LABEL_EDIT_ADDRESS_OPEN_MAP_BUTTON_TAPPED)
 
         triggerEvent(OpenMapWithAddress(viewState.getAddress()))
     }
 
     fun onContactCustomerTapped() {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_ADDRESS_CONTACT_CUSTOMER_BUTTON_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.SHIPPING_LABEL_EDIT_ADDRESS_CONTACT_CUSTOMER_BUTTON_TAPPED)
 
         triggerEvent(DialPhoneNumber(viewState.phoneField.content))
     }

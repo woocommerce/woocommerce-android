@@ -143,7 +143,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `when view model init with not connected state should emit not connected view state`() {
         // GIVEN
-        val status = MutableStateFlow(CardReaderStatus.NotConnected)
+        val status = MutableStateFlow(CardReaderStatus.NotConnected())
         whenever(cardReaderManager.readerStatus).thenReturn(status)
 
         // WHEN
@@ -156,7 +156,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `when view model init with not connected state should emit correct values not connected state`() {
         // GIVEN
-        val status = MutableStateFlow(CardReaderStatus.NotConnected)
+        val status = MutableStateFlow(CardReaderStatus.NotConnected())
         whenever(cardReaderManager.readerStatus).thenReturn(status)
 
         // WHEN
@@ -345,7 +345,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     fun `when connect button clicked should track event`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            val status = MutableStateFlow(CardReaderStatus.NotConnected)
+            val status = MutableStateFlow(CardReaderStatus.NotConnected())
             whenever(cardReaderManager.readerStatus).thenReturn(status)
             val viewModel = createViewModel()
 
@@ -375,7 +375,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     fun `when card reader disconnected successfully, then trigger accessibility announcement`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            val status = MutableStateFlow(CardReaderStatus.NotConnected)
+            val status = MutableStateFlow(CardReaderStatus.NotConnected())
             whenever(cardReaderManager.readerStatus).thenReturn(status)
 
             // WHEN
@@ -443,7 +443,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     fun `given wcpay active and reader not connected, when user taps on learn more, then show wcpay docs`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            val status = MutableStateFlow(CardReaderStatus.NotConnected)
+            val status = MutableStateFlow(CardReaderStatus.NotConnected())
             whenever(cardReaderManager.readerStatus).thenReturn(status)
             whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any())).thenReturn(WOOCOMMERCE_PAYMENTS)
             val viewModel = createViewModel()
@@ -476,7 +476,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     fun `given stripe active and reader not connected, when user taps on learn more, then show stripe docs`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            val status = MutableStateFlow(CardReaderStatus.NotConnected)
+            val status = MutableStateFlow(CardReaderStatus.NotConnected())
             whenever(cardReaderManager.readerStatus).thenReturn(status)
             whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
                 .thenReturn(STRIPE_EXTENSION_GATEWAY)

@@ -5,11 +5,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.ConnectedProductsListAction
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CONNECTED_PRODUCTS_LIST_ACTION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CONNECTED_PRODUCTS_LIST_CONTEXT
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSelectionList
@@ -146,7 +146,7 @@ class GroupedProductListViewModel @Inject constructor(
 
     private fun track(action: ConnectedProductsListAction) {
         AnalyticsTracker.track(
-            Stat.CONNECTED_PRODUCTS_LIST,
+            AnalyticsEvent.CONNECTED_PRODUCTS_LIST,
             mapOf(
                 KEY_CONNECTED_PRODUCTS_LIST_CONTEXT to groupedProductListType.statContext.value,
                 KEY_CONNECTED_PRODUCTS_LIST_ACTION to action.value

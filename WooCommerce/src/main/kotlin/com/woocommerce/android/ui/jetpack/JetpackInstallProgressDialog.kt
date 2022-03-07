@@ -11,8 +11,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.DialogJetpackInstallProgressBinding
 import com.woocommerce.android.extensions.*
 import com.woocommerce.android.support.HelpActivity
@@ -84,7 +84,7 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
 
         binding.contactButton.setOnClickListener {
             activity?.startHelpActivity(HelpActivity.Origin.JETPACK_INSTALLATION)
-            AnalyticsTracker.track(Stat.JETPACK_INSTALL_CONTACT_SUPPORT_BUTTON_TAPPED)
+            AnalyticsTracker.track(AnalyticsEvent.JETPACK_INSTALL_CONTACT_SUPPORT_BUTTON_TAPPED)
         }
 
         setupObservers(binding)
@@ -246,7 +246,7 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
                     ChromeCustomTabUtils.launchUrl(requireContext(), installJetpackInWpAdminUrl)
 
                     AnalyticsTracker.track(
-                        stat = Stat.JETPACK_INSTALL_IN_WPADMIN_BUTTON_TAPPED,
+                        stat = AnalyticsEvent.JETPACK_INSTALL_IN_WPADMIN_BUTTON_TAPPED,
                         properties = mapOf(AnalyticsTracker.KEY_JETPACK_INSTALLATION_SOURCE to "benefits_modal")
                     )
                 }

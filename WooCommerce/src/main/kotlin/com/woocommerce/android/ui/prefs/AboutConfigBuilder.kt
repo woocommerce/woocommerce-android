@@ -6,7 +6,7 @@ import com.automattic.about.model.*
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_ABOUT_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_ABOUT_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import javax.inject.Inject
 

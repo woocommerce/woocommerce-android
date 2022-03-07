@@ -12,9 +12,8 @@ import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.textfield.TextInputLayout
 import com.woocommerce.android.R
-import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.extensions.filterNotNull
 import org.wordpress.android.util.ActivityUtils
 import java.math.BigDecimal
 
@@ -28,8 +27,7 @@ open class CurrencyAmountDialog : DialogFragment(), DialogInterface.OnClickListe
     }
 
     private lateinit var headerText: TextView
-    private lateinit var inputLayout: TextInputLayout
-    private lateinit var amountText: CurrencyEditText
+    private lateinit var currencyEditTextLayout: WCMaterialOutlinedCurrencyEditTextView
     private lateinit var messageText: TextView
 
     private var currentValue: BigDecimal = BigDecimal.ZERO
@@ -42,9 +40,8 @@ open class CurrencyAmountDialog : DialogFragment(), DialogInterface.OnClickListe
         val view = View.inflate(activity, R.layout.currency_amount_dialog, null)
 
         headerText = view.findViewById(R.id.currencyAmount_header)
-        amountText = view.findViewById(R.id.currencyAmount_refundAmount)
         messageText = view.findViewById(R.id.currencyAmount_message)
-        inputLayout = view.findViewById(R.id.currencyAmount_refundAmountInputLayout)
+        currencyEditTextLayout = view.findViewById(R.id.currencyAmount_refundAmountInputLayout)
 
         val args = arguments
         if (args != null) {
@@ -55,7 +52,7 @@ open class CurrencyAmountDialog : DialogFragment(), DialogInterface.OnClickListe
             messageText.text = args.getString(MESSAGE_KEY, "")
         }
 
-        amountText.setValue(currentValue)
+        currencyEditTextLayout.setValue(currentValue)
 
         // hide empty text views
         if (TextUtils.isEmpty(headerText.text)) {
@@ -70,7 +67,7 @@ open class CurrencyAmountDialog : DialogFragment(), DialogInterface.OnClickListe
         builder.setNegativeButton(R.string.cancel, this)
         builder.setView(view)
 
-        amountText.value.observe(
+        currencyEditTextLayout.value.filterNotNull().observe(
             this,
             Observer {
                 currentValue = if (it > maxValue) maxValue else it
@@ -80,8 +77,8 @@ open class CurrencyAmountDialog : DialogFragment(), DialogInterface.OnClickListe
 
         Handler().postDelayed(
             {
-                amountText.requestFocus()
-                ActivityUtils.showKeyboard(amountText)
+                currencyEditTextLayout.requestFocus()
+                ActivityUtils.showKeyboard(currencyEditTextLayout)
             },
             200
         )
@@ -89,22 +86,18 @@ open class CurrencyAmountDialog : DialogFragment(), DialogInterface.OnClickListe
         return builder.create()
     }
 
-    fun initializeCurrencyEditText(currency: String, decimals: Int, currencyFormatter: CurrencyFormatter) {
-        amountText.initView(currency, decimals, currencyFormatter)
-    }
-
     private fun isAmountValid(amount: BigDecimal): Boolean {
         return when {
             amount > maxValue -> {
-                inputLayout.error = getString(R.string.order_refunds_refund_high_error)
+                currencyEditTextLayout.error = getString(R.string.order_refunds_refund_high_error)
                 false
             }
             amount < minValue -> {
-                inputLayout.error = getString(R.string.order_refunds_refund_zero_error)
+                currencyEditTextLayout.error = getString(R.string.order_refunds_refund_zero_error)
                 false
             }
             else -> {
-                inputLayout.error = null
+                currencyEditTextLayout.error = null
                 true
             }
         }

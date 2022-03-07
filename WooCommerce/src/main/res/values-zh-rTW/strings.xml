@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-01-19 08:54:07+0000
+Translation-Revision-Date: 2022-02-15 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="card_reader_onboarding_both_plugins_activated_refresh_button">在更新後重新整理</string>
+    <string name="card_reader_onboarding_both_plugins_activated_open_store_admin_label">管理外掛程式</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_two">WooCommerce Payments</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_one">WooCommerce Stripe 閘道</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">啟用下列其中一個外掛程式後，才可使用親自收款功能。 若要繼續，請聯絡網站管理員以停用其中一個外掛程式：</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_admin">啟用下列其中一個外掛程式後，才可使用親自收款功能。 若要繼續，請停用其中一個外掛程式：</string>
+    <string name="card_reader_onboarding_both_plugins_activated_header">已偵測到衝突的付款外掛程式</string>
+    <string name="card_reader_wisepad_3_manual_card_reader">WisePad 3 讀卡機手冊</string>
+    <string name="order_creation_price_calculation_failed">無法更新價格</string>
+    <string name="order_creation_payment_tax">稅金</string>
+    <string name="order_creation_payment_tax_hint">稅金會根據你的商店設定自動計算。</string>
+    <string name="exclusive_or">或</string>
+    <string name="settings_install_jetpack">安裝 Jetpack</string>
+    <string name="card_reader_onboarding_account_rejected_header">目前無法親自收款</string>
+    <string name="order_creation_success_snackbar">訂單已建立</string>
+    <string name="order_creation_failure_snackbar">建立訂單失敗</string>
+    <string name="order_creation_loading_dialog_message">請稍候…</string>
+    <string name="order_creation_loading_dialog_title">正在建立你的訂單</string>
+    <string name="order_creation_payment_order_total">訂單總數</string>
+    <string name="order_creation_payment_products_total">商品總額</string>
+    <string name="order_creation_payment">付款</string>
+    <string name="dashboard_top_performers_net_sales">淨銷售額：%s</string>
+    <string name="dashboard_top_performers_items_sold">售出的商品</string>
+    <string name="dashboard_stats_conversion">轉換</string>
+    <string name="create">建立</string>
     <string name="about_automattic_app_icon_description">應用程式圖示</string>
     <string name="about_automattic_back_icon_description">返回圖示</string>
     <string name="about_automattic_logo_description">Automattic 標誌</string>
@@ -63,7 +88,7 @@ Language: zh_TW
     <string name="order_creation_new_customer_add_different_shipping_address">新增其他運送地址</string>
     <string name="order_creation_product_instock">尚有庫存</string>
     <string name="order_creation_product_stock_quantity">%s 尚有庫存</string>
-    <string name="order_creation_new_customer">新顧客</string>
+    <string name="order_creation_customer_details">新顧客</string>
     <string name="order_creation_add_products">新增商品</string>
     <string name="order_creation_products">商品</string>
     <string name="order_creation_add_customer">新增顧客</string>
@@ -316,6 +341,7 @@ Language: zh_TW
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">測試模式下無法親自收款。 請關閉測試模式以繼續。</string>
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">目前無法親自收款</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">你的帳號中有待處理的要求。 請在 %1$s 前完成這些要求，以便繼續使用親自收款功能。</string>
+    <string name="card_reader_onboarding_account_pending_requirements_header">你的帳號有待處理的要求</string>
     <string name="card_reader_onboarding_account_overdue_requirements_hint">你的帳號中有至少一個逾期要求。 請處理該要求以繼續使用親自收款功能</string>
     <string name="card_reader_onboarding_account_overdue_requirements_header">目前無法親自收款</string>
     <string name="card_reader_onboarding_account_under_review_hint">我們審核完你的帳號後，你即可隨即開始親自收款。</string>

@@ -26,8 +26,8 @@ import com.github.mikephil.charting.listener.ChartTouchListener.ChartGesture
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.MyStoreStatsBinding
 import com.woocommerce.android.extensions.*
 import com.woocommerce.android.tools.SelectedSite
@@ -127,7 +127,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         this.activeGranularity = granularity
         // Track range change
         AnalyticsTracker.track(
-            Stat.DASHBOARD_MAIN_STATS_DATE,
+            AnalyticsEvent.DASHBOARD_MAIN_STATS_DATE,
             mapOf(AnalyticsTracker.KEY_RANGE to granularity.toString().lowercase())
         )
         isRequestingStats = true

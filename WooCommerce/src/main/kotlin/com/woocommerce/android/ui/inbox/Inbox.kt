@@ -19,6 +19,9 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.compose.animations.skeletonAnimationBrush
@@ -220,4 +223,44 @@ private fun InboxNoteButtonsSkeleton(brush: Brush) {
                 .background(brush = brush)
         )
     }
+}
+
+@Preview
+@Composable
+fun InboxPreview(@PreviewParameter(SampleInboxProvider::class, 1) state: InboxState) {
+    Inbox(state)
+}
+
+class SampleInboxProvider : PreviewParameterProvider<InboxState> {
+    override val values = sequenceOf(
+        InboxState(
+            isLoading = false,
+            notes = listOf(
+                InboxNoteUi(
+                    id = "1",
+                    title = "Install the Facebook free extension",
+                    description = "Now that your store is set up, you’re ready to begin marketing it. " +
+                        "Head over to the WooCommerce marketing panel to get started.",
+                    updatedTime = "5h ago",
+                    callToActionText = "Learn more",
+                    onCallToActionClick = {},
+                    dismissText = "Dismiss",
+                    onDismissNote = {},
+                    isRead = false
+                ),
+                InboxNoteUi(
+                    id = "2",
+                    title = "Connect with your audience",
+                    description = "Grow your customer base and increase your sales with marketing tools " +
+                        "built for WooCommerce.",
+                    updatedTime = "22 minutes ago",
+                    callToActionText = "Learn more",
+                    onCallToActionClick = {},
+                    dismissText = "Dismiss",
+                    onDismissNote = {},
+                    isRead = false
+                )
+            )
+        )
+    )
 }
