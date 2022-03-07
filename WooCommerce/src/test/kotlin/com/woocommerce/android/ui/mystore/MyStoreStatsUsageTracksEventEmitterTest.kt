@@ -27,7 +27,7 @@ class MyStoreStatsUsageTracksEventEmitterTest : BaseUnitTest() {
     )
 
     @Test
-    fun `test it will emit an event when the time and interaction thresholds are reached`() {
+    fun `given some interactions, when time and interaction thresholds are reached, it will emit an event`() {
         // Given
         usageTracksEventEmitter.interacted(
             "2021-11-23T00:00:00Z",
@@ -46,7 +46,7 @@ class MyStoreStatsUsageTracksEventEmitterTest : BaseUnitTest() {
     }
 
     @Test
-    fun `test it will not emit an event if the interaction threshold is not reached`() {
+    fun `given some interactions, when the interactions threshold is not reached, then it will not emit an event`() {
         // Given
         usageTracksEventEmitter.interacted(
             "2021-11-23T00:00:00Z",
