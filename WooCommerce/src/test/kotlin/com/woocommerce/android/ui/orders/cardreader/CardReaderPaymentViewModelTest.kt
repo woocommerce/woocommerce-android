@@ -438,7 +438,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given billing not email, when payment completed, then ui updated to payment successful receipt sent state`() =
+    fun `given billing not empty, when payment completed, then ui updated to payment successful receipt sent state`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(mockedAddress.email).thenReturn("nonemptyemail")
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
