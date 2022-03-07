@@ -258,15 +258,34 @@ class CardReaderPaymentViewModel
                 ?: throw IllegalStateException("Order URL not available.")
             val amountLabel = order.getAmountLabel()
             val receiptUrl = getReceiptUrl(order.id)
+            val onPrintReceiptClicked = {
+                onPrintReceiptClicked(amountLabel, receiptUrl, order.getReceiptDocumentName())
+            }
+            val onSaveUserClicked = {
+                onSaveForLaterClicked()
+            }
+            val onSendReceiptClicked = {
+                onSendReceiptClicked(receiptUrl, order.billingAddress.email)
+            }
 
-            viewState.postValue(
-                PaymentSuccessfulState(
-                    order.getAmountLabel(),
-                    { onPrintReceiptClicked(amountLabel, receiptUrl, order.getReceiptDocumentName()) },
-                    { onSendReceiptClicked(receiptUrl, order.billingAddress.email) },
-                    { onSaveForLaterClicked() }
+            if (order.billingAddress.email.isBlank()) {
+                viewState.postValue(
+                    PaymentSuccessfulState(
+                        amountLabel, onPrintReceiptClicked, onSendReceiptClicked, onSaveUserClicked
+                    )
                 )
-            )
+            } else {
+                val receiptSentHint = UiStringRes(
+                    R.string.card_reader_payment_reader_receipt_sent,
+                    listOf(UiStringText(order.billingAddress.email)),
+                    true
+                )
+                viewState.postValue(
+                    PaymentSuccessfulReceiptSentAutomaticallyState(
+                        amountLabel, receiptSentHint, onPrintReceiptClicked, onSaveUserClicked
+                    )
+                )
+            }
         }
     }
 
