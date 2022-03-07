@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-02-15 18:54:07+0000
+Translation-Revision-Date: 2022-03-03 22:43:05+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
@@ -351,6 +351,7 @@ Language: ar
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">تم تثبيت إصدار قديم من إضافة مدفوعات WooCommerce على مخزنك. يرجى تحديثه لقبول المدفوعات الشخصية.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">تحديث مدفوعات WooCommerce</string>
     <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">تجديد</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">لقد أوشكت على الانتهاء! يرجى الانتهاء من إعداد مدفوعات WooCommerce لبدء قبول المدفوعات الشخصية.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">يرجى الانتهاء من إعداد مدفوعات WooCommerce في مسؤول مخزنك</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">التنشيط بعد التفعيل</string>
     <string name="card_reader_onboarding_wcpay_not_activated_hint">تم تثبيت إضافة مدفوعات WooCommerce على مخزنك ولكن لم يتم تفعيلها. يرجى تفعيلها لقبول المدفوعات الشخصية.</string>
