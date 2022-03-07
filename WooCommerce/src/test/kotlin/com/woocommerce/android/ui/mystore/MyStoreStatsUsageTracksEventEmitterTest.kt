@@ -46,6 +46,29 @@ class MyStoreStatsUsageTracksEventEmitterTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given some interactions, when the site is changed, then it will not emit an event`() = runBlockingTest {
+        // Given
+        usageTracksEventEmitter.interacted(
+            "2021-11-23T00:00:00Z",
+            "2021-11-23T00:00:01Z",
+            "2021-11-23T00:00:02Z",
+            "2021-11-23T00:00:10Z",
+        )
+
+        verifyNoInteractions(analyticsTrackerWrapper)
+
+        // When
+        // This should cause a reset()
+        siteFlow.emit(SiteModel())
+
+        // Since reset() was called above, this will not cause an event to be triggered.
+        usageTracksEventEmitter.interacted("2021-11-23T00:00:11Z")
+
+        // Then
+        verifyNoInteractions(analyticsTrackerWrapper)
+    }
+
+    @Test
     fun `given some interactions, when the interactions threshold is not reached, then it will not emit an event`() {
         // Given
         usageTracksEventEmitter.interacted(
