@@ -66,6 +66,11 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
             field = value
             currencyEditText.supportsEmptyState = value
         }
+    var imeOptions: Int = 0
+        set(value) {
+            field = value
+            currencyEditText.imeOptions = value
+        }
 
     init {
         context.obtainStyledAttributes(
@@ -113,7 +118,7 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
             supportsEmptyState = a.getBoolean(
                 R.styleable.WCMaterialOutlinedCurrencyEditTextView_supportsEmptyState, supportsEmptyState
             )
-            currencyEditText.imeOptions = a.getInt(
+            imeOptions = a.getInt(
                 R.styleable.WCMaterialOutlinedCurrencyEditTextView_android_imeOptions, 0
             )
         }
