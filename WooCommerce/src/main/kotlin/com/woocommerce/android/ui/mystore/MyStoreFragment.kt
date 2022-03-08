@@ -30,8 +30,11 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.ui.mystore.MyStoreViewModel.*
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenTopPerformer
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.OrderState
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.TopPerformersViewState
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.VisitorStatsViewState
 import com.woocommerce.android.util.*
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.WooClickableSpan
@@ -119,7 +122,8 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
             selectedSite,
             dateUtils,
             currencyFormatter,
-            usageTracksEventEmitter
+            usageTracksEventEmitter,
+            viewLifecycleOwner.lifecycleScope
         )
 
         binding.myStoreTopPerformers.initView(selectedSite)
