@@ -33,7 +33,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/fee_type_switch"
                 app:supportsEmptyState="false"
-                app:supportsNegativeValues="false" />
+                app:supportsNegativeValues="true" />
 
             <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
                 android:id="@+id/fee_percentage_edit_text"
@@ -42,7 +42,7 @@
                 android:layout_marginTop="@dimen/major_75"
                 android:hint="@string/order_creation_fee_percentage_hint"
                 android:visibility="gone"
-                android:inputType="numberDecimal"
+                android:inputType="numberDecimal|numberSigned"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/fee_type_switch" />

@@ -178,8 +178,14 @@ class CardReaderPaymentViewModel
             InitializingPayment -> viewState.postValue(LoadingDataState)
             CollectingPayment -> viewState.postValue(CollectPaymentState(amountLabel))
             ProcessingPayment -> viewState.postValue(ProcessingPaymentState(amountLabel))
-            is ProcessingPaymentCompleted ->
+            is ProcessingPaymentCompleted -> {
                 cardReaderTrackingInfoKeeper.setPaymentMethodType(paymentStatus.paymentMethodType.stringRepresentation)
+                when (paymentStatus.paymentMethodType) {
+                    // Interac payments done in one step, without capturing. That's why we track success here
+                    PaymentMethodType.INTERAC_PRESENT -> tracker.trackInteracPaymentSucceeded()
+                    else -> {}
+                }
+            }
             CapturingPayment -> viewState.postValue(CapturingPaymentState(amountLabel))
             is PaymentCompleted -> {
                 tracker.trackPaymentSucceeded()
@@ -252,15 +258,34 @@ class CardReaderPaymentViewModel
                 ?: throw IllegalStateException("Order URL not available.")
             val amountLabel = order.getAmountLabel()
             val receiptUrl = getReceiptUrl(order.id)
+            val onPrintReceiptClicked = {
+                onPrintReceiptClicked(amountLabel, receiptUrl, order.getReceiptDocumentName())
+            }
+            val onSaveUserClicked = {
+                onSaveForLaterClicked()
+            }
+            val onSendReceiptClicked = {
+                onSendReceiptClicked(receiptUrl, order.billingAddress.email)
+            }
 
-            viewState.postValue(
-                PaymentSuccessfulState(
-                    order.getAmountLabel(),
-                    { onPrintReceiptClicked(amountLabel, receiptUrl, order.getReceiptDocumentName()) },
-                    { onSendReceiptClicked(receiptUrl, order.billingAddress.email) },
-                    { onSaveForLaterClicked() }
+            if (order.billingAddress.email.isBlank()) {
+                viewState.postValue(
+                    PaymentSuccessfulState(
+                        amountLabel, onPrintReceiptClicked, onSendReceiptClicked, onSaveUserClicked
+                    )
                 )
-            )
+            } else {
+                val receiptSentHint = UiStringRes(
+                    R.string.card_reader_payment_reader_receipt_sent,
+                    listOf(UiStringText(order.billingAddress.email)),
+                    true
+                )
+                viewState.postValue(
+                    PaymentSuccessfulReceiptSentAutomaticallyState(
+                        amountLabel, receiptSentHint, onPrintReceiptClicked, onSaveUserClicked
+                    )
+                )
+            }
         }
     }
 

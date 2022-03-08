@@ -12,6 +12,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.prefs.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -22,6 +23,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.OrderUpdateStore
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -32,10 +34,18 @@ class SimplePaymentsDialogViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val orderUpdateStore: OrderUpdateStore,
     private val networkStatus: NetworkStatus,
-    private val orderMapper: OrderMapper
+    private val orderMapper: OrderMapper,
+    private val wooStore: WooCommerceStore,
+    private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
 ) : ScopedViewModel(savedState) {
     final val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     internal var viewState by viewStateLiveData
+
+    init {
+        launch(Dispatchers.IO) {
+            saveCountryForTracking()
+        }
+    }
 
     var currentPrice: BigDecimal
         get() = viewState.currentPrice
@@ -79,6 +89,10 @@ class SimplePaymentsDialogViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private suspend fun saveCountryForTracking() {
+        cardReaderTrackingInfoKeeper.setCountry(wooStore.getStoreCountryCode(selectedSite.get()))
     }
 
     @Parcelize

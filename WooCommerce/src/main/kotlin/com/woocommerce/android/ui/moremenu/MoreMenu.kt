@@ -89,7 +89,9 @@ fun MoreMenu(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            itemsIndexed(uiButtons) { _, item ->
+            itemsIndexed(
+                uiButtons.filter { it.isEnabled }
+            ) { _, item ->
                 MoreMenuButton(
                     text = item.text,
                     iconDrawable = item.icon,

@@ -60,6 +60,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: CardReaderPaymentViewModel
     private val cardReaderManager: CardReaderManager = mock()
     private val orderRepository: OrderDetailRepository = mock()
+    private val mockedOrder = mock<Order>()
+    private val mockedAddress = mock<Address>()
     private var resourceProvider: ResourceProvider = mock()
     private val selectedSite: SelectedSite = mock()
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
@@ -101,17 +103,15 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
         )
 
-        val mockedOrder = mock<Order>()
         whenever(orderRepository.getOrderById(any())).thenReturn(mockedOrder)
         whenever(mockedOrder.total).thenReturn(DUMMY_TOTAL)
         whenever(mockedOrder.currency).thenReturn("GBP")
         whenever(currencyFormatter.formatAmountWithCurrency("GBP", DUMMY_TOTAL.toDouble()))
             .thenReturn("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
-        val address = mock<Address>()
-        whenever(mockedOrder.billingAddress).thenReturn(address)
-        whenever(address.email).thenReturn("test@test.test")
-        whenever(address.firstName).thenReturn("Tester")
-        whenever(address.lastName).thenReturn("Test")
+        whenever(mockedOrder.billingAddress).thenReturn(mockedAddress)
+        whenever(mockedAddress.email).thenReturn("")
+        whenever(mockedAddress.firstName).thenReturn("Tester")
+        whenever(mockedAddress.lastName).thenReturn("Test")
         whenever(mockedOrder.orderKey).thenReturn("wc_order_j0LMK3bFhalEL")
         whenever(mockedOrder.number).thenReturn(DUMMY_ORDER_NUMBER)
         whenever(mockedOrder.id).thenReturn(ORDER_ID)
@@ -449,6 +449,42 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when processing payment completed with interac present, then track interac success`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(ProcessingPaymentCompleted(PaymentMethodType.INTERAC_PRESENT)) }
+            }
+
+            viewModel.start()
+
+            verify(tracker).trackInteracPaymentSucceeded()
+        }
+
+    @Test
+    fun `when processing payment completed with card present, then do not track interac success`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(ProcessingPaymentCompleted(PaymentMethodType.CARD_PRESENT)) }
+            }
+
+            viewModel.start()
+
+            verify(tracker, never()).trackInteracPaymentSucceeded()
+        }
+
+    @Test
+    fun `when processing payment completed with unknown type, then do not track interac success`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(ProcessingPaymentCompleted(PaymentMethodType.UNKNOWN)) }
+            }
+
+            viewModel.start()
+
+            verify(tracker, never()).trackInteracPaymentSucceeded()
+        }
+
+    @Test
     fun `when processing payment completed with unknown, then tracking keeper stores payment type`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
@@ -473,7 +509,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when payment completed, then ui updated to payment successful state`() =
+    fun `given billing email empty, when payment completed, then ui updated to payment successful state`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(PaymentCompleted("")) }
@@ -482,6 +518,21 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(PaymentSuccessfulState::class.java)
+        }
+
+    @Test
+    fun `given billing not empty, when payment completed, then ui updated to payment successful receipt sent state`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(mockedAddress.email).thenReturn("nonemptyemail")
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+
+            viewModel.start()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(
+                PaymentSuccessfulReceiptSentAutomaticallyState::class.java
+            )
         }
 
     @Test
@@ -1069,7 +1120,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when user clicks on print receipt button, then PrintReceipt event emitted`() =
+    fun `given billing email empty, when user clicks on print receipt button, then PrintReceipt event emitted`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(PaymentCompleted("")) }
@@ -1082,7 +1133,22 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when user clicks on print receipt button, then printing receipt state shown`() =
+    fun `given billing email not empty, when user clicks on print receipt button, then PrintReceipt event emitted`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(mockedAddress.email).thenReturn("nonemptyemail")
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            viewModel.start()
+
+            (viewModel.viewStateData.value as PaymentSuccessfulReceiptSentAutomaticallyState)
+                .onPrimaryActionClicked.invoke()
+
+            assertThat(viewModel.event.value).isInstanceOf(PrintReceipt::class.java)
+        }
+
+    @Test
+    fun `given billing email empty, when user clicks on print receipt button, then printing receipt state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(PaymentCompleted("")) }
@@ -1096,7 +1162,23 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when print result received, then payment successful state shown`() =
+    fun `given billing email not empty, when user clicks on print receipt button, then printing receipt state shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(mockedAddress.email).thenReturn("nonemptyemail")
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            viewModel.start()
+
+            (viewModel.viewStateData.value as PaymentSuccessfulReceiptSentAutomaticallyState)
+                .onPrimaryActionClicked.invoke()
+
+            assertThat(viewModel.viewStateData.value)
+                .isInstanceOf(PrintingReceiptState::class.java)
+        }
+
+    @Test
+    fun `given billing email empty, when print result received, then payment successful state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(PaymentCompleted("")) }
@@ -1107,6 +1189,23 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.onPrintResult(CANCELLED)
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(PaymentSuccessfulState::class.java)
+        }
+
+    @Test
+    fun `given billing email not empty, when print result received, then payment success receipt sent state shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(mockedAddress.email).thenReturn("nonemptyemail")
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            viewModel.start()
+            (viewModel.viewStateData.value as PaymentSuccessfulReceiptSentAutomaticallyState)
+                .onPrimaryActionClicked.invoke()
+
+            viewModel.onPrintResult(CANCELLED)
+
+            assertThat(viewModel.viewStateData.value)
+                .isInstanceOf(PaymentSuccessfulReceiptSentAutomaticallyState::class.java)
         }
 
     @Test
@@ -1139,7 +1238,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when user clicks on print receipt button, then event tracked`() =
+    fun `given billing email empty, when user clicks on print receipt button, then event tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(PaymentCompleted("")) }
@@ -1147,6 +1246,21 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             (viewModel.viewStateData.value as PaymentSuccessfulState).onPrimaryActionClicked.invoke()
+
+            verify(tracker).trackPrintReceiptTapped()
+        }
+
+    @Test
+    fun `given billing email not empty, when user clicks on print receipt button, then event tracked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(mockedAddress.email).thenReturn("nonemptyemail")
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            viewModel.start()
+
+            (viewModel.viewStateData.value as PaymentSuccessfulReceiptSentAutomaticallyState)
+                .onPrimaryActionClicked.invoke()
 
             verify(tracker).trackPrintReceiptTapped()
         }
@@ -1199,7 +1313,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when user clicks on save for later button, then Exit event emitted`() =
+    fun `given billing email empty, when user clicks on save for later button, then Exit event emitted`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(PaymentCompleted("")) }
@@ -1207,6 +1321,21 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             (viewModel.viewStateData.value as PaymentSuccessfulState).onTertiaryActionClicked.invoke()
+
+            assertThat(viewModel.event.value).isInstanceOf(Exit::class.java)
+        }
+
+    @Test
+    fun `given billing email not empty, when user clicks on save for later button, then Exit event emitted`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(mockedAddress.email).thenReturn("nonemptyemail")
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            viewModel.start()
+
+            (viewModel.viewStateData.value as PaymentSuccessfulReceiptSentAutomaticallyState)
+                .onTertiaryActionClicked.invoke()
 
             assertThat(viewModel.event.value).isInstanceOf(Exit::class.java)
         }
