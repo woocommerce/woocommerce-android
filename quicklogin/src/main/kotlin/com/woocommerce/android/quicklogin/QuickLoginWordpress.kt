@@ -1,5 +1,6 @@
-package com.woocommerce.android.quickloginhelper
+package com.woocommerce.android.quicklogin
 
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
@@ -12,13 +13,15 @@ import com.woocommerce.android.AppPrefs
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.lang.IllegalStateException
 
 private const val DEBUG_PACKAGE_NAME = "com.woocommerce.android.prealpha"
 private const val TIMEOUT = 5000L
+private const val LONG_TIMEOUT = 60000L
+
+private const val SECOND_FACTOR_LENGTH = 6
 
 @RunWith(AndroidJUnit4::class)
-class QuickLoginHelperWordpress {
+class QuickLoginWordpress {
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val device = UiDevice.getInstance(instrumentation)
     private val context = ApplicationProvider.getApplicationContext<Context>()
@@ -30,10 +33,20 @@ class QuickLoginHelperWordpress {
 
     @Test
     fun loginWithWordpress() {
+        verifyEmailAndPassword()
         startTheApp()
         chooseWpComLogin()
         enterEmail()
         enterPassword()
+        enterSecondFactorIfNeeded()
+    }
+
+    private fun verifyEmailAndPassword() {
+        if (BuildConfig.QUICK_LOGIN_WP_EMAIL.isNullOrBlank() ||
+            BuildConfig.QUICK_LOGIN_WP_PASSWORD.isNullOrBlank()
+        ) {
+            exitFlowWithMessage("WP Email or password is not set. Look into quicklogin/woo_login.sh-example")
+        }
     }
 
     private fun startTheApp() {
@@ -67,7 +80,7 @@ class QuickLoginHelperWordpress {
         val continueButton = device
             .wait(Until.findObject(By.res(DEBUG_PACKAGE_NAME, "login_continue_button")), TIMEOUT)
 
-        emailInputField.text = ""
+        emailInputField.text = BuildConfig.QUICK_LOGIN_WP_EMAIL
         continueButton.click()
     }
 
@@ -79,8 +92,32 @@ class QuickLoginHelperWordpress {
 
         if (passwordInputField == null) exitFlowWithMessage("Check used email address")
 
-        passwordInputField.text = ""
+        passwordInputField.text = BuildConfig.QUICK_LOGIN_WP_PASSWORD
         continueButton.click()
+    }
+
+    private fun enterSecondFactorIfNeeded() {
+        device
+            .wait(Until.findObject(By.res(DEBUG_PACKAGE_NAME, "login_otp_button")), TIMEOUT)
+            ?: return
+
+        val secondFactorInputField = device
+            .wait(Until.findObject(By.res(DEBUG_PACKAGE_NAME, "input")), TIMEOUT)
+
+        val continueButton = device
+            .wait(Until.findObject(By.res(DEBUG_PACKAGE_NAME, "bottom_button")), TIMEOUT)
+
+        instrumentation.runOnMainSync {
+            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            if (clipboard.hasPrimaryClip() &&
+                clipboard.primaryClip!!.getItemAt(0).text.length == SECOND_FACTOR_LENGTH
+            ) {
+                secondFactorInputField.text = clipboard.primaryClip!!.getItemAt(0).text.toString()
+            }
+        }
+        continueButton.click()
+
+        device.wait(Until.findObject(By.res(DEBUG_PACKAGE_NAME, "site_list_container")), LONG_TIMEOUT)
     }
 
     private fun exitFlowWithMessage(message: String) {
