@@ -1,0 +1,16 @@
+#!/bin/bash -eu
+
+# Make copy of this file, rename it "woo_login.sh"
+# Replace YOUR_EMAIL and YOUR_PASSWORD
+
+### MAKE SURE THAT THE NEW FILE IS NOT ADDED TO GIT ###
+
+~/Library/Android/sdk/platform-tools/adb shell pm clear com.woocommerce.android.prealpha
+
+./gradlew installJalapenoDebug
+./gradlew :quicklogin:installDebug \
+-PquickLoginWpEmail="YOUR_EMAIL" \
+-PquickLoginWpPassword="YOUR_PASSWORD"
+
+~/Library/Android/sdk/platform-tools/adb shell am instrument -w -r -e debug false -e class 'com.woocommerce.android.quicklogin.QuickLoginWordpress' com.woocommerce.android.prealpha.quicklogin/androidx.test.runner.AndroidJUnitRunner
+~/Library/Android/sdk/platform-tools/adb shell am start -n com.woocommerce.android.prealpha/com.woocommerce.android.ui.main.MainActivity
