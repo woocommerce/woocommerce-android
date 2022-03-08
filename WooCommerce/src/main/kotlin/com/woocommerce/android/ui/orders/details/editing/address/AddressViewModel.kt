@@ -49,7 +49,8 @@ class AddressViewModel @Inject constructor(
     private var initialState = emptyMap<AddressType, Address>()
 
     val isAnyAddressEdited: LiveData<Boolean> = viewStateData.liveData.map { viewState ->
-        viewState.addressSelectionStates.mapValues { it.value.address } != initialState
+        viewState.addressSelectionStates.isNotEmpty() &&
+            viewState.addressSelectionStates.mapValues { it.value.address } != initialState
     }
 
     private val _isDifferentShippingAddressChecked = MutableLiveData<Boolean>()
@@ -62,7 +63,7 @@ class AddressViewModel @Inject constructor(
         val isDifferentShippingAddressDisabled =
             isDifferentShippingAddressChecked == false && (shippingAddress != Address.EMPTY)
 
-        (isAnyAddressEdited == true || isDifferentShippingAddressDisabled) && !viewState.isLoading
+        isAnyAddressEdited == true || isDifferentShippingAddressDisabled
     }
 
     /**
