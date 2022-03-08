@@ -62,7 +62,7 @@ class AddressViewModel @Inject constructor(
         val isDifferentShippingAddressDisabled =
             isDifferentShippingAddressChecked == false && (shippingAddress != Address.EMPTY)
 
-        isAnyAddressEdited == true || isDifferentShippingAddressDisabled
+        (isAnyAddressEdited == true || isDifferentShippingAddressDisabled) && !viewState.isLoading
     }
 
     /**

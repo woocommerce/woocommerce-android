@@ -241,7 +241,7 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
         menu.clear()
         inflater.inflate(R.menu.menu_done, menu)
         doneMenuItem = menu.findItem(R.id.menu_done).apply {
-            isVisible = addressViewModel.isAnyAddressEdited.value ?: false
+            isVisible = addressViewModel.shouldShowDoneButton.value ?: false
         }
     }
 
