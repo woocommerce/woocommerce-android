@@ -78,6 +78,10 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
                     text = it
                 }
 
+                binding.editText.imeOptions = a.getInt(
+                    R.styleable.WCMaterialOutlinedEditTextView_android_imeOptions, 0
+                )
+
                 isEnabled = a.getBoolean(R.styleable.WCMaterialOutlinedCurrencyEditTextView_android_enabled, true)
             } finally {
                 a.recycle()
