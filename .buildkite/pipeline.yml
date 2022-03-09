@@ -35,7 +35,6 @@ steps:
   - label: "Test WooCommerce"
     command: |
       echo "--- 🧪 Testing"
-      git status
       cp gradle.properties-example gradle.properties
       ./gradlew testVanillaRelease --rerun-tasks
     plugins: *common_plugins
