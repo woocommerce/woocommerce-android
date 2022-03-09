@@ -65,21 +65,22 @@ fun MoreMenu(
     onSwitchStore: () -> Unit,
     onSettingsClick: () -> Unit
 ) {
-    val uiButtons = state.moreMenuItems
-    val siteName = state.siteName
-    val siteUrl = state.siteUrl
-    val userAvatarUrl = state.userAvatarUrl
 
     Column {
         Spacer(modifier = Modifier.height(32.dp))
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, end = 10.dp),
+                .padding(start = 10.dp, end = 10.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                MoreMenuMyStoreHeader(userAvatarUrl, siteName, siteUrl, onSwitchStore)
+                MoreMenuMyStoreHeader(
+                    state.userAvatarUrl,
+                    state.siteName,
+                    state.siteUrl,
+                    onSwitchStore
+                )
             }
             SettingsButton(onSettingsClick)
         }
@@ -90,7 +91,7 @@ fun MoreMenu(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             itemsIndexed(
-                uiButtons.filter { it.isEnabled }
+                state.moreMenuItems.filter { it.isEnabled }
             ) { _, item ->
                 MoreMenuButton(
                     text = item.text,
@@ -131,6 +132,7 @@ private fun MoreMenuMyStoreHeader(
                 role = Role.Button,
                 onClick = onSwitchStore
             )
+            .padding(start = 6.dp, end = 6.dp, top = 6.dp, bottom = 6.dp)
     ) {
         Column {
             Spacer(modifier = Modifier.height(8.dp))
@@ -141,20 +143,17 @@ private fun MoreMenuMyStoreHeader(
             Text(
                 text = siteName,
                 fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
-                color = colorResource(id = color.color_on_surface)
+                style = MaterialTheme.typography.h6,
             )
             Text(
                 text = siteUrl,
-                fontSize = 14.sp,
-                color = colorResource(id = color.color_on_surface),
-                modifier = Modifier
-                    .padding(vertical = 4.dp)
+                style = MaterialTheme.typography.body2,
+                modifier = Modifier.padding(vertical = 4.dp)
             )
             Text(
                 text = stringResource(string.settings_switch_store),
                 color = colorResource(color.color_secondary),
-                fontSize = 14.sp
+                style = MaterialTheme.typography.body2,
             )
         }
     }
