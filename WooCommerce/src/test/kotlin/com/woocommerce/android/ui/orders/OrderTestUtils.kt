@@ -37,7 +37,7 @@ object OrderTestUtils {
                     trackingNumber = "$i"
                     dateShipped = SimpleDateFormat("yyyy-MM-dd").format(Date())
                     trackingLink = "www.somelink$i.com"
-                    localOrderId = lOrderId
+                    orderId = lOrderId.toLong()
                 }
             )
         }
