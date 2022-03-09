@@ -176,7 +176,7 @@ class AddressViewModel @Inject constructor(
     }
 
     fun onDoneSelected(addDifferentShippingChecked: Boolean? = null) {
-        // order creation/update will fail if email address is invalid
+        // order creation/editing will fail if billing email address is invalid
         viewState.addressSelectionStates.get(AddressType.BILLING)?.address?.email?.let { billingEmail ->
             if (billingEmail.isNotEmpty() && !StringUtils.isValidEmail(billingEmail)) {
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.email_invalid))
