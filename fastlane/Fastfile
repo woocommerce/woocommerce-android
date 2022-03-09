@@ -272,7 +272,7 @@ platform :android do
   #####################################################################################
   # build_and_upload_google_play
   # -----------------------------------------------------------------------------------
-  # This lane builds the app for Google Play, and will correctly select which build
+  # This lane builds the app for Google Play, and will correctly select which build 
   # should be produced based on the build number.
   # -----------------------------------------------------------------------------------
   # Usage:
@@ -577,7 +577,7 @@ platform :android do
         map { |locale|  locale[:google_play] }
     end
 
-    # Override the locales array with one locale until
+    # Override the locales array with one locale until 
     # https://github.com/fastlane/fastlane/issues/19521
     # is fixed:
     locales = ["en-EN"]
@@ -619,7 +619,7 @@ platform :android do
           launch_arguments: ["theme light"]
         }
       )
-    )
+    )    
   end
 
   #####################################################################################
@@ -638,8 +638,7 @@ platform :android do
     gradle(
       task: "assemble",
       flavor: "Jalapeno",
-      build_type: "Release",
-      flags: "--rerun-tasks"
+      build_type: "Release"
     )
 
     upload_path = upload_to_s3(
