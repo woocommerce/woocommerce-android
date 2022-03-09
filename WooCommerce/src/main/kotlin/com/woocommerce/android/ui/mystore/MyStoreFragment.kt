@@ -34,7 +34,6 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -54,8 +53,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         fun newInstance() = MyStoreFragment()
 
         val DEFAULT_STATS_GRANULARITY = StatsGranularity.DAYS
-
-        private const val SCROLL_CHANGE_EVENTS_DEBOUNCE_DURATION = 1000L
     }
 
     private val viewModel: MyStoreViewModel by viewModels()
@@ -94,7 +91,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         override fun onTabReselected(tab: TabLayout.Tab) {}
     }
 
-    @OptIn(FlowPreview::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
