@@ -1,9 +1,11 @@
 package com.woocommerce.android.extensions
 
 import android.graphics.Rect
+import android.view.MotionEvent
 import android.view.TouchDelegate
 import android.view.View
 import android.view.View.MeasureSpec
+import android.view.View.OnTouchListener
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.Transformation
@@ -17,6 +19,9 @@ import androidx.transition.ChangeBounds
 import androidx.transition.Transition
 import androidx.transition.TransitionListenerAdapter
 import androidx.transition.TransitionManager
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.*
 
 fun View.show() {
     this.visibility = View.VISIBLE
@@ -140,4 +145,32 @@ fun ViewGroup.setEnabledRecursive(enabled: Boolean) {
         it.isEnabled = enabled
         if (it is ViewGroup) it.setEnabledRecursive(enabled)
     }
+}
+
+/**
+ * Return a Flow of events matching what an [OnTouchListener] would return.
+ *
+ * @param handled defines what the [OnTouchListener.onTouch] returns, defaults to returning false
+ */
+@ExperimentalCoroutinesApi
+fun View.touchEvents(
+    handled: (MotionEvent) -> Boolean = { false }
+): Flow<MotionEvent> = callbackFlow {
+    val listener = OnTouchListener { _, motionEvent ->
+        trySend(motionEvent)
+        return@OnTouchListener handled(motionEvent)
+    }
+
+    setOnTouchListener(listener)
+
+    awaitClose { setOnTouchListener(null) }
+}
+
+@ExperimentalCoroutinesApi
+fun View.scrollStartEvents(): Flow<Unit> {
+    return touchEvents()
+        .map { it.action }
+        .distinctUntilChanged()
+        .filter { it == MotionEvent.ACTION_MOVE }
+        .map { }
 }

@@ -33,17 +33,18 @@ import com.woocommerce.android.util.*
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.NetworkUtils
-import java.util.*
+import java.util.Calendar
 import javax.inject.Inject
 import kotlin.math.abs
 
+@ExperimentalCoroutinesApi
 @AndroidEntryPoint
 @Suppress("ForbiddenComment")
 class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
@@ -139,8 +140,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
 
         tabLayout.addOnTabSelectedListener(tabSelectedListener)
 
-        binding.statsScrollView.scrollChanges()
-            .debounce(SCROLL_CHANGE_EVENTS_DEBOUNCE_DURATION)
+        binding.statsScrollView.scrollStartEvents()
             .onEach { usageTracksEventEmitter.interacted() }
             .launchIn(viewLifecycleOwner.lifecycleScope)
 
