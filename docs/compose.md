@@ -1,17 +1,18 @@
-# Android Compose Guidelines
+<h1 align="center"><img src="https://user-images.githubusercontent.com/2663464/157550609-1b8b4781-409c-432a-a5e8-aca134c4913a.png" width="500"><br>Guidelines for WooCommerce Android</h1>
 
-Disclaimer: This guide is not a tutorial on how to work with Compose and assumes some basic understanding of the framework. 
 
-##Content
+⚠️ **Disclaimer:** This guide is not a tutorial on how to work with Compose and assumes some basic understanding of the framework. 
+
+## Content
 
 1. [Code style](#code-style)
-2. [Theming and Styling](#)
+2. [Theming and Styling](#theming-and-styling)
 3. [File Structure](#file-structure)
 4. [Managing state](#managing-state)
-5. [Navigation](#navitation)
+5. [Navigation](#navigation)
 6. [Accessibility](#accessibility)
 
-#Code Style
+ # Code Style
 
 For **Compose App development** we will follow the official styling guidelines that can be found [here](https://github.com/androidx/androidx/blob/androidx-main/compose/docs/compose-api-guidelines.md#api-guidelines-for-jetpack-compose). Note that the guidelines differentiate between 3 levels of restriction:
 * Compose Framework Development
@@ -34,13 +35,25 @@ A few things to **highlight** from the Compose official guidelines:
 * Any @composable function that internally `remember {}`s and returns a mutable object should add the prefix `remember`.
 * @Composable functions should either emit content into the composition or return a value, but not both. [Why](https://github.com/androidx/androidx/blob/androidx-main/compose/docs/compose-api-guidelines.md#why-6)
 
-#Theming and Styling
+# Theming and Styling
 
-We currently have 
+Compose enables to define your own set of `colors`, `typography` and `shapes`. Currently we are going to make use of [MDC-Android Compose Adapter](https://material-components.github.io/material-components-android-compose-theme-adapter/) in order to bridge/reuse the current colors and textAppearances we have defined in our `type.xml` and `colors.xml` files. Inside `com.woocommerce.android.ui.compose.theme` package you'll finde the defined `WooTheme`. Using it is as simple as wrapping your compose content with the theme like for example in `MoreMenuFragment.kt`: 
 
-#File Structure
+```kotlin
+setContent {
+    WooTheme {
+        MoreMenu(viewModel)
+    }
+}
+```
 
-#Managing State
+# File Structure
+
+
+
+Compose UI files should follow 
+
+# Managing State
 
 Managing state properly in Compose is key to updating the UI as expected and making composable functions as reusable as possible. Some key take to managing state properly: 
 
@@ -56,8 +69,10 @@ Managing state properly in Compose is key to updating the UI as expected and mak
 
 Use  `var quantity: Int by remember/rememberSaveable{ MutableState<Int> = mutableStateOf(1) } to remember state across configuration changes you
 
-#Navigation
+# Navigation
 
-At the moment we are not using Compose navigation as we are using Compose through 
+//TODO
 
-#Accessibility
+# Accessibility
+
+//TODO
