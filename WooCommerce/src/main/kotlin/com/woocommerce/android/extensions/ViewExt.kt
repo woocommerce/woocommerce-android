@@ -166,6 +166,9 @@ fun View.touchEvents(
     awaitClose { setOnTouchListener(null) }
 }
 
+/**
+ * Returns a Flow of events that are triggered when a scroll is started on a view.
+ */
 @ExperimentalCoroutinesApi
 fun View.scrollStartEvents(): Flow<Unit> {
     return touchEvents()
