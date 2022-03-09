@@ -13,27 +13,24 @@ import android.widget.CompoundButton.OnCheckedChangeListener
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.transition.MaterialContainerTransform
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentReviewDetailBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.fastStripHtml
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductReview
-import com.woocommerce.android.push.NotificationMessageHandler
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.reviews.ProductReviewStatus.APPROVED
-import com.woocommerce.android.ui.reviews.ProductReviewStatus.HOLD
-import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
-import com.woocommerce.android.ui.reviews.ProductReviewStatus.TRASH
-import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.MarkNotificationAsRead
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.reviews.ProductReviewStatus.*
+import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.NavigateBackFromNotification
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
@@ -41,18 +38,15 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.util.DateTimeUtils
-import org.wordpress.android.util.DisplayUtils
-import org.wordpress.android.util.HtmlUtils
-import org.wordpress.android.util.PhotonUtils
-import org.wordpress.android.util.UrlUtils
+import org.wordpress.android.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ReviewDetailFragment : BaseFragment(R.layout.fragment_review_detail) {
+class ReviewDetailFragment :
+    BaseFragment(R.layout.fragment_review_detail),
+    BackPressListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var productImageMap: ProductImageMap
-    @Inject lateinit var notificationMessageHandler: NotificationMessageHandler
 
     private val viewModel: ReviewDetailViewModel by viewModels()
 
@@ -66,7 +60,7 @@ class ReviewDetailFragment : BaseFragment(R.layout.fragment_review_detail) {
     private val navArgs: ReviewDetailFragmentArgs by navArgs()
 
     private val moderateListener = OnCheckedChangeListener { _, isChecked ->
-        AnalyticsTracker.track(Stat.REVIEW_DETAIL_APPROVE_BUTTON_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.REVIEW_DETAIL_APPROVE_BUTTON_TAPPED)
         when (isChecked) {
             true -> processReviewModeration(APPROVED)
             false -> processReviewModeration(HOLD)
@@ -142,19 +136,18 @@ class ReviewDetailFragment : BaseFragment(R.layout.fragment_review_detail) {
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
         }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    is MarkNotificationAsRead -> {
-                        notificationMessageHandler.removeNotificationByRemoteIdFromSystemsBar(
-                            event.remoteNoteId
-                        )
-                    }
-                    is Exit -> exitDetailView()
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is Exit -> exitDetailView()
+                is NavigateBackFromNotification -> exitReviewDetailOpenedFromNotification()
             }
+        }
+    }
+
+    private fun exitReviewDetailOpenedFromNotification() {
+        findNavController().navigateSafely(
+            ReviewDetailFragmentDirections.actionReviewDetailFromNotificationToReviewListFragment()
         )
     }
 
@@ -178,7 +171,7 @@ class ReviewDetailFragment : BaseFragment(R.layout.fragment_review_detail) {
         review.product?.let { product ->
             binding.reviewProductName.text = product.name.fastStripHtml()
             binding.reviewOpenProduct.setOnClickListener {
-                AnalyticsTracker.track(Stat.REVIEW_DETAIL_OPEN_EXTERNAL_BUTTON_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.REVIEW_DETAIL_OPEN_EXTERNAL_BUTTON_TAPPED)
                 ChromeCustomTabUtils.launchUrl(activity as Context, product.externalUrl)
             }
             refreshProductImage(product.remoteProductId)
@@ -256,14 +249,14 @@ class ReviewDetailFragment : BaseFragment(R.layout.fragment_review_detail) {
 
             // Configure the spam button
             binding.reviewSpam.setOnClickListener {
-                AnalyticsTracker.track(Stat.REVIEW_DETAIL_SPAM_BUTTON_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.REVIEW_DETAIL_SPAM_BUTTON_TAPPED)
 
                 processReviewModeration(SPAM)
             }
 
             // Configure the trash button
             binding.reviewTrash.setOnClickListener {
-                AnalyticsTracker.track(Stat.REVIEW_DETAIL_TRASH_BUTTON_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.REVIEW_DETAIL_TRASH_BUTTON_TAPPED)
 
                 processReviewModeration(TRASH)
             }
@@ -273,4 +266,6 @@ class ReviewDetailFragment : BaseFragment(R.layout.fragment_review_detail) {
     private fun processReviewModeration(newStatus: ProductReviewStatus) {
         viewModel.moderateReview(newStatus)
     }
+
+    override fun onRequestAllowBackPress(): Boolean = viewModel.onBackPressed()
 }

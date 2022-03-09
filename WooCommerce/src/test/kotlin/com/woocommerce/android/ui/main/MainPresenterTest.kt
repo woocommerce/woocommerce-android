@@ -1,9 +1,10 @@
 package com.woocommerce.android.ui.main
 
-import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
+import com.woocommerce.android.ui.orders.cardreader.ClearCardReaderData
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -22,11 +23,13 @@ import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
-import org.wordpress.android.fluxc.store.*
+import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
+import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersCountPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -37,9 +40,7 @@ class MainPresenterTest : BaseUnitTest() {
 
     private val dispatcher: Dispatcher = mock()
     private val accountStore: AccountStore = mock()
-    private val siteStore: SiteStore = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
-    private val notificationStore: NotificationStore = mock()
     private val selectedSite: SelectedSite = mock {
         val siteModel = SiteModel()
         on { get() } doReturn siteModel
@@ -47,7 +48,8 @@ class MainPresenterTest : BaseUnitTest() {
         on { exists() } doReturn true
     }
     private val productImageMap: ProductImageMap = mock()
-    private val appPrefs: AppPrefs = mock()
+    private val appPrefs: AppPrefsWrapper = mock()
+    private val clearCardReaderData: ClearCardReaderData = mock()
 
     private val wcOrderStore: WCOrderStore = mock {
         on { observeOrdersForSite(any(), any()) } doReturn emptyFlow()
@@ -63,16 +65,14 @@ class MainPresenterTest : BaseUnitTest() {
             MainPresenter(
                 dispatcher,
                 accountStore,
-                siteStore,
                 wooCommerceStore,
-                notificationStore,
                 selectedSite,
                 productImageMap,
                 appPrefs,
-                wcOrderStore
+                wcOrderStore,
+                clearCardReaderData
             )
         )
-        mainPresenter.takeView(mainContractView)
         actionCaptor = argumentCaptor()
     }
 
@@ -86,6 +86,7 @@ class MainPresenterTest : BaseUnitTest() {
 
     @Test
     fun `Handles token from magic link correctly`() {
+        mainPresenter.takeView(mainContractView)
         // Storing a token with the presenter should trigger a dispatch
         mainPresenter.storeMagicLinkToken("a-token")
         verify(dispatcher, times(1)).dispatch(actionCaptor.capture())
@@ -102,6 +103,8 @@ class MainPresenterTest : BaseUnitTest() {
     @Test
     fun `Triggers a selected site update after site info fetch`() = testBlocking {
         whenever(wooCommerceStore.fetchWooCommerceSites()).thenReturn(WooResult())
+
+        mainPresenter.takeView(mainContractView)
 
         // Magic link login requires the presenter to fetch account and site info
         // Trigger the beginning of magic link flow to put the presenter in 'magic link' mode
@@ -197,9 +200,18 @@ class MainPresenterTest : BaseUnitTest() {
         }
     }
 
+    @Test
+    fun `When selected site changes, then card reader data is cleared`() = testBlocking {
+        if (FeatureFlag.CARD_READER.isEnabled()) {
+            mainPresenter.selectedSiteChanged(site = selectedSite.get())
+
+            verify(clearCardReaderData).invoke()
+        }
+    }
+
     private fun generateFakeOrders(size: Int): List<OrderEntity> {
         return mutableListOf<OrderEntity>().also { list ->
-            repeat(size) { repeatCount ->
+            repeat(size) {
                 list.add(OrderTestUtils.generateOrder())
             }
         }

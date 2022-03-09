@@ -1,10 +1,9 @@
 package com.woocommerce.android.ui.prefs.cardreader.detail
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
@@ -12,12 +11,14 @@ import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailab
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
-import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.CardReaderDetailEvent.CardReaderConnected
-import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.CardReaderDetailEvent.CardReaderDisconnected
-import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.CardReaderDetailEvent.CopyReadersNameToClipboard
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.CardReaderDetailEvent.*
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.ConnectedState
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.Loading
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.NotConnectedState
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -26,9 +27,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.SiteModel
 
 private const val DUMMY_FIRMWARE_VERSION = "1.0.0.123-abcd-test-3000"
 
@@ -38,8 +41,11 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         onBlocking { readerStatus }.thenReturn(MutableStateFlow(CardReaderStatus.Connecting))
     }
 
-    private val tracker: AnalyticsTrackerWrapper = mock()
-    private val appPrefs: AppPrefs = mock()
+    private val tracker: CardReaderTracker = mock()
+    private val appPrefsWrapper: AppPrefsWrapper = mock()
+    private val selectedSite: SelectedSite = mock {
+        on(it.get()).thenReturn(SiteModel())
+    }
 
     @Test
     fun `when view model init with connected state should emit loading view state`() {
@@ -137,7 +143,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `when view model init with not connected state should emit not connected view state`() {
         // GIVEN
-        val status = MutableStateFlow(CardReaderStatus.NotConnected)
+        val status = MutableStateFlow(CardReaderStatus.NotConnected())
         whenever(cardReaderManager.readerStatus).thenReturn(status)
 
         // WHEN
@@ -150,7 +156,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `when view model init with not connected state should emit correct values not connected state`() {
         // GIVEN
-        val status = MutableStateFlow(CardReaderStatus.NotConnected)
+        val status = MutableStateFlow(CardReaderStatus.NotConnected())
         whenever(cardReaderManager.readerStatus).thenReturn(status)
 
         // WHEN
@@ -339,7 +345,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     fun `when connect button clicked should track event`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            val status = MutableStateFlow(CardReaderStatus.NotConnected)
+            val status = MutableStateFlow(CardReaderStatus.NotConnected())
             whenever(cardReaderManager.readerStatus).thenReturn(status)
             val viewModel = createViewModel()
 
@@ -347,7 +353,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as NotConnectedState).onPrimaryActionClicked.invoke()
 
             // THEN
-            verify(tracker).track(AnalyticsTracker.Stat.CARD_READER_DISCOVERY_TAPPED)
+            verify(tracker).trackDiscoveryTapped()
         }
 
     @Test
@@ -362,14 +368,14 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as ConnectedState).primaryButtonState!!.onActionClicked()
 
             // THEN
-            verify(tracker).track(AnalyticsTracker.Stat.CARD_READER_DISCONNECT_TAPPED)
+            verify(tracker).trackDisconnectTapped()
         }
 
     @Test
     fun `when card reader disconnected successfully, then trigger accessibility announcement`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
-            val status = MutableStateFlow(CardReaderStatus.NotConnected)
+            val status = MutableStateFlow(CardReaderStatus.NotConnected())
             whenever(cardReaderManager.readerStatus).thenReturn(status)
 
             // WHEN
@@ -431,6 +437,74 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
                 .isNotEqualTo(
                     CardReaderConnected(R.string.card_reader_accessibility_reader_is_connected)
                 )
+        }
+
+    @Test
+    fun `given wcpay active and reader not connected, when user taps on learn more, then show wcpay docs`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val status = MutableStateFlow(CardReaderStatus.NotConnected())
+            whenever(cardReaderManager.readerStatus).thenReturn(status)
+            whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any())).thenReturn(WOOCOMMERCE_PAYMENTS)
+            val viewModel = createViewModel()
+
+            // WHEN
+            (viewModel.viewStateData.value as NotConnectedState).onLearnMoreClicked.invoke()
+
+            // THEN
+            assertThat((viewModel.event.value as NavigateToUrlInGenericWebView).url)
+                .isEqualTo(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
+        }
+
+    @Test
+    fun `given wcpay active and reader connected, when user taps on learn more, then show wcpay docs`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            initConnectedState()
+            whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any())).thenReturn(WOOCOMMERCE_PAYMENTS)
+            val viewModel = createViewModel()
+
+            // WHEN
+            (viewModel.viewStateData.value as ConnectedState).onLearnMoreClicked.invoke()
+
+            // THEN
+            assertThat((viewModel.event.value as NavigateToUrlInGenericWebView).url)
+                .isEqualTo(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
+        }
+
+    @Test
+    fun `given stripe active and reader not connected, when user taps on learn more, then show stripe docs`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val status = MutableStateFlow(CardReaderStatus.NotConnected())
+            whenever(cardReaderManager.readerStatus).thenReturn(status)
+            whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
+                .thenReturn(STRIPE_EXTENSION_GATEWAY)
+            val viewModel = createViewModel()
+
+            // WHEN
+            (viewModel.viewStateData.value as NotConnectedState).onLearnMoreClicked.invoke()
+
+            // THEN
+            assertThat((viewModel.event.value as NavigateToUrlInGenericWebView).url)
+                .isEqualTo(AppUrls.STRIPE_LEARN_MORE_ABOUT_PAYMENTS)
+        }
+
+    @Test
+    fun `given stripe active and reader connected, when user taps on learn more, then show stripe docs`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            initConnectedState()
+            whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
+                .thenReturn(STRIPE_EXTENSION_GATEWAY)
+            val viewModel = createViewModel()
+
+            // WHEN
+            (viewModel.viewStateData.value as ConnectedState).onLearnMoreClicked.invoke()
+
+            // THEN
+            assertThat((viewModel.event.value as NavigateToUrlInGenericWebView).url)
+                .isEqualTo(AppUrls.STRIPE_LEARN_MORE_ABOUT_PAYMENTS)
         }
 
     private fun verifyNotConnectedState(viewModel: CardReaderDetailViewModel) {
@@ -500,7 +574,8 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     private fun createViewModel() = CardReaderDetailViewModel(
         cardReaderManager,
         tracker,
-        appPrefs,
+        appPrefsWrapper,
+        selectedSite,
         SavedStateHandle(),
     )
 

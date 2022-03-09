@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.prefs
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.Spannable
@@ -14,18 +13,15 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
-import com.woocommerce.android.RequestCodes
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.*
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.databinding.FragmentSettingsMainBinding
-import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
-import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.*
 import com.woocommerce.android.util.FeatureFlag.CARD_READER
 import com.woocommerce.android.util.WooLog.T
@@ -49,14 +45,13 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
 
     interface AppSettingsListener {
         fun onRequestLogout()
-        fun onSiteChanged()
         fun onProductAddonsOptionChanged(enabled: Boolean)
-        fun onSimplePaymentsOptionChanged(enabled: Boolean)
         fun onOrderCreationOptionChanged(enabled: Boolean)
     }
 
     private lateinit var settingsListener: AppSettingsListener
 
+    @Suppress("ForbiddenComment", "LongMethod")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -69,8 +64,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         } else {
             throw ClassCastException(context.toString() + " must implement AppSettingsListener")
         }
-
-        updateStoreViews()
 
         binding.btnOptionLogout.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_LOGOUT_BUTTON_TAPPED)
@@ -111,7 +104,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         }
 
         binding.optionHelpAndSupport.setOnClickListener {
-            AnalyticsTracker.track(Stat.MAIN_MENU_CONTACT_SUPPORT_TAPPED)
+            AnalyticsTracker.track(AnalyticsEvent.MAIN_MENU_CONTACT_SUPPORT_TAPPED)
             startActivity(HelpActivity.createIntent(requireActivity(), Origin.SETTINGS, null))
         }
 
@@ -150,9 +143,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
 
         binding.optionBetaFeatures.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_BETA_FEATURES_BUTTON_TAPPED)
-            val action = MainSettingsFragmentDirections.actionMainSettingsFragmentToBetaFeaturesFragment(
-                isCardReaderOnboardingCompleted = presenter.isCardReaderOnboardingCompleted()
-            )
+            val action = MainSettingsFragmentDirections.actionMainSettingsFragmentToBetaFeaturesFragment()
             findNavController().navigateSafely(action)
         }
 
@@ -176,17 +167,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_licensesFragment)
         }
 
-        if (presenter.hasMultipleStores()) {
-            val storeClickListener = View.OnClickListener {
-                AnalyticsTracker.track(SETTINGS_SELECTED_SITE_TAPPED)
-                SitePickerActivity.showSitePickerForResult(this)
-            }
-            binding.optionStore.setOnClickListener(storeClickListener)
-            binding.optionSwitchStore.setOnClickListener(storeClickListener)
-        } else {
-            binding.optionSwitchStore.hide()
-        }
-
         binding.optionTheme.optionValue = getString(AppPrefs.getAppTheme().label)
         binding.optionTheme.setOnClickListener {
             // FIXME AMANDA tracks event
@@ -208,19 +188,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         super.onDestroyView()
         _binding = null
         presenter.dropView()
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        // if we're returning from the site picker, make sure the new store is shown and the activity
-        // knows it has changed
-        if (requestCode == RequestCodes.SITE_PICKER && resultCode == Activity.RESULT_OK) {
-            updateStoreViews()
-            updateStoreSettings()
-            settingsListener.onSiteChanged()
-            presenter.setupJetpackInstallOption()
-        }
     }
 
     /**
@@ -254,7 +221,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         binding.optionWhatsNew.setOnClickListener {
             WooLog.i(T.DEVICE, "Displaying Feature Announcement from Settings menu.")
             AnalyticsTracker.track(
-                Stat.FEATURE_ANNOUNCEMENT_SHOWN,
+                AnalyticsEvent.FEATURE_ANNOUNCEMENT_SHOWN,
                 mapOf(
                     AnalyticsTracker.KEY_ANNOUNCEMENT_VIEW_SOURCE to
                         AnalyticsTracker.VALUE_ANNOUNCEMENT_SOURCE_SETTINGS
@@ -267,11 +234,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
                     )
                 )
         }
-    }
-
-    private fun updateStoreViews() {
-        binding.optionStore.optionTitle = presenter.getStoreDomainName()
-        binding.optionStore.optionValue = presenter.getUserDisplayName()
     }
 
     private fun updateStoreSettings() {
@@ -288,9 +250,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         mutableListOf<String>().apply {
             add(getString(R.string.beta_features_add_ons))
             add(getString(R.string.beta_features_order_creation))
-            if (presenter.isCardReaderOnboardingCompleted()) {
-                add(getString(R.string.beta_features_simple_payments))
-            }
         }
 
     /**

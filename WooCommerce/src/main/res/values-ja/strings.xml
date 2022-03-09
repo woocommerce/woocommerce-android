@@ -1,18 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-02-02 09:54:03+0000
+Translation-Revision-Date: 2022-03-03 22:42:48+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="card_reader_onboarding_both_plugins_activated_refresh_button">更新後に再読み込みする</string>
+    <string name="card_reader_onboarding_both_plugins_activated_open_store_admin_label">「プラグイン」を管理</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_two">WooCommerce Payments</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_one">WooCommerce Stripe Gateway</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">「オフラインでの支払い」は、次のプラグインのいずれかが有効化済みの場合にのみ機能します。 続行するには、サイト管理者に連絡して、次のプラグインのいずれかを無効化してください。</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_admin">「オフラインでの支払い」は、次のプラグインのいずれかが有効化済みの場合にのみ機能します。 続行するには、次のプラグインのいずれかを無効化してください。</string>
+    <string name="card_reader_onboarding_both_plugins_activated_header">支払いプラグインが複数検出されました</string>
+    <string name="card_reader_wisepad_3_manual_card_reader">WisePad 3カードリーダーマニュアル</string>
+    <string name="order_creation_price_calculation_failed">価格を更新できませんでした</string>
+    <string name="order_creation_payment_tax">税金</string>
+    <string name="order_creation_payment_tax_hint">税金は店舗の設定に基づいて自動的に計算されます。</string>
+    <string name="exclusive_or">または</string>
     <string name="settings_install_jetpack">Jetpack をインストール</string>
     <string name="card_reader_onboarding_account_rejected_header">オフラインでの支払いは現在利用できません</string>
     <string name="order_creation_success_snackbar">注文作成済み</string>
     <string name="order_creation_failure_snackbar">注文作成に失敗しました</string>
     <string name="order_creation_loading_dialog_message">しばらくお待ちください…</string>
     <string name="order_creation_loading_dialog_title">注文を作成しています</string>
-    <string name="order_creation_payment_tax_hint">総額に税金は含まれていません。 税金は店舗の設定に基づいて自動的に計算されます。</string>
     <string name="order_creation_payment_order_total">注文合計</string>
     <string name="order_creation_payment_products_total">商品の合計</string>
     <string name="order_creation_payment">支払い</string>
@@ -77,7 +88,7 @@ Language: ja_JP
     <string name="order_creation_new_customer_add_different_shipping_address">別の配送先住所を追加</string>
     <string name="order_creation_product_instock">在庫あり</string>
     <string name="order_creation_product_stock_quantity">在庫%s件</string>
-    <string name="order_creation_new_customer">新規顧客</string>
+    <string name="order_creation_customer_details">新規顧客</string>
     <string name="order_creation_add_products">商品を追加</string>
     <string name="order_creation_products">商品</string>
     <string name="order_creation_add_customer">顧客を追加</string>
@@ -340,6 +351,7 @@ Language: ja_JP
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">ご使用のストアには、古いバージョンの WooCommerce Payments 拡張機能がインストールされています。 オフラインでの支払いを受け取るには、この拡張機能を更新してください。</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">WooCommerce Payments を更新する</string>
     <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">再読み込み</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">あともう少しです。 オフラインでの支払いを開始するには、WooCommerce Payments のセットアップを完了させてください。</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">ストア管理で WooCommerce Payments のセットアップを完了させる</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">有効化後に再読み込みする</string>
     <string name="card_reader_onboarding_wcpay_not_activated_hint">ご使用のストアには WooCommerce Payments 拡張機能はインストールされていますが、有効化されていません。 オフラインでの支払いを受け取るには、この拡張機能を有効化してください。</string>

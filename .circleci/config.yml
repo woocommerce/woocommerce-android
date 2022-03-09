@@ -1,4 +1,9 @@
 commands:
+  update-gradle-memory:
+    steps:
+      - run:
+          name: Update default gradle memory
+          command: sed -i "s/org.gradle.jvmargs=.*/org.gradle.jvmargs=-Xmx2048m/" gradle.properties
   copy-gradle-properties:
     steps:
       - run:
@@ -7,15 +12,7 @@ commands:
       - run:
           name: Enable build time reporting
           command: sed -i "s/tracksEnabled = false/tracksEnabled = true/" gradle.properties
-  update-gradle-memory:
-      parameters:
-        jvmargs:
-          type: string
-          default: "Xmx2048m"
-      steps:
-        - run:
-            name: Update memory setting
-            command: sed -i "s/org.gradle.jvmargs=.*/org.gradle.jvmargs=-<< parameters.jvmargs >>/" gradle.properties
+      - update-gradle-memory
 
 orbs:
   # Using 1.0 of our Orbs means it will use the latest 1.0.x version from https://github.com/wordpress-mobile/circleci-orbs
@@ -126,8 +123,6 @@ jobs:
       - git/shallow-checkout
       - android/restore-gradle-cache
       - copy-gradle-properties
-      - update-gradle-memory:
-          jvmargs: "Xmx2048m"
       - run:
           name: Build
           command: ./gradlew WooCommerce:assembleVanillaDebug --stacktrace
@@ -239,7 +234,6 @@ workflows:
       - Lint
       - Dependency Tree Diff
       - Test
-      - Installable Build
       - Ensure Screenshots Tests Build
       - Connected Tests:
           name: UI Tests (Pixel 2 | API 28)
@@ -266,7 +260,3 @@ workflows:
           post-to-slack: true
           name: UI Tests (Pixel 2 | API 28)
           requires: [Hold]
-  Release Build:
-    when: << pipeline.parameters.release_build >>
-    jobs:
-      - Release Build

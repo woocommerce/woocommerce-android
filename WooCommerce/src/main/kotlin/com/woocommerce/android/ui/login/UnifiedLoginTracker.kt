@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.login
 
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Source.DEFAULT
 import com.woocommerce.android.util.WooLog
@@ -35,7 +35,7 @@ class UnifiedLoginTracker
         currentStep = step
         if (currentFlow != null && currentStep != null) {
             analyticsTracker.track(
-                stat = Stat.UNIFIED_LOGIN_STEP,
+                stat = AnalyticsEvent.UNIFIED_LOGIN_STEP,
                 properties = buildDefaultParams()
             )
         } else {
@@ -47,7 +47,7 @@ class UnifiedLoginTracker
         if (currentFlow != null && currentStep != null) {
             currentFlow.let {
                 analyticsTracker.track(
-                    stat = Stat.UNIFIED_LOGIN_FAILURE,
+                    stat = AnalyticsEvent.UNIFIED_LOGIN_FAILURE,
                     properties = buildDefaultParams().apply {
                         error?.let {
                             put(FAILURE, error)
@@ -64,7 +64,7 @@ class UnifiedLoginTracker
         if (currentFlow != null && currentStep != null) {
             currentFlow.let {
                 analyticsTracker.track(
-                    stat = Stat.UNIFIED_LOGIN_INTERACTION,
+                    stat = AnalyticsEvent.UNIFIED_LOGIN_INTERACTION,
                     properties = buildDefaultParams().apply {
                         put(CLICK, click.value)
                     }

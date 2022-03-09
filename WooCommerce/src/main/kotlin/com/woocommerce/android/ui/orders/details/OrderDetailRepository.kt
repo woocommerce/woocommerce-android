@@ -1,11 +1,12 @@
 package com.woocommerce.android.ui.orders.details
 
 import com.woocommerce.android.AppConstants
+import com.woocommerce.android.WooException
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FEEDBACK_ACTION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_API_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_API_SUCCESS
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.*
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -20,7 +21,6 @@ import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.LabelItem
 import org.wordpress.android.fluxc.store.*
 import org.wordpress.android.fluxc.store.WCOrderStore.*
-import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType.GENERIC_ERROR
 import javax.inject.Inject
 
 class OrderDetailRepository @Inject constructor(
@@ -49,9 +49,11 @@ class OrderDetailRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchOrderNotes(orderId: Long): Boolean = withContext(dispatchers.io) {
+    suspend fun fetchOrderNotes(
+        orderId: Long,
+    ): Boolean = withContext(dispatchers.io) {
         val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
-            orderStore.fetchOrderNotes(orderId, selectedSite.get())
+            orderStore.fetchOrderNotes(selectedSite.get(), orderId)
         }
         result?.isError == false
     }
@@ -84,7 +86,7 @@ class OrderDetailRepository @Inject constructor(
             val action = if (result.isError) {
                 VALUE_API_FAILED
             } else VALUE_API_SUCCESS
-            AnalyticsTracker.track(Stat.SHIPPING_LABEL_API_REQUEST, mapOf(KEY_FEEDBACK_ACTION to action))
+            AnalyticsTracker.track(AnalyticsEvent.SHIPPING_LABEL_API_REQUEST, mapOf(KEY_FEEDBACK_ACTION to action))
             result.model?.filter { it.status == LabelItem.STATUS_PURCHASED }
                 ?.map { shippingLabelMapper.toAppModel(it) }
                 ?: emptyList()
@@ -109,19 +111,16 @@ class OrderDetailRepository @Inject constructor(
     suspend fun addOrderNote(
         orderId: Long,
         noteModel: OrderNote
-    ): OnOrderChanged {
-        val order = orderStore.getOrderByIdAndSite(orderId, selectedSite.get())
-        if (order == null) {
-            WooLog.e(ORDERS, "Can't find order with id $orderId")
-            return OnOrderChanged(
-                orderError = OrderError(GENERIC_ERROR, "Can't find order with id $orderId")
-            )
+    ): Result<Unit> {
+        return orderStore.postOrderNote(
+            site = selectedSite.get(),
+            orderId = orderId,
+            note = noteModel.note,
+            isCustomerNote = noteModel.isCustomerNote
+        ).let {
+            if (it.isError) Result.failure(WooException(it.error))
+            else Result.success(Unit)
         }
-        val dataModel = noteModel.toDataModel()
-        val payload = PostOrderNotePayload(
-            orderId, selectedSite.get(), dataModel
-        )
-        return orderStore.postOrderNote(payload)
     }
 
     suspend fun addOrderShipmentTracking(
@@ -166,8 +165,9 @@ class OrderDetailRepository @Inject constructor(
 
     fun getOrderStatusOptions() = orderStore.getOrderStatusOptionsForSite(selectedSite.get()).map { it.toOrderStatus() }
 
-    fun getOrderNotes(orderId: Long) =
-        orderStore.getOrderNotesForOrder(orderId).map { it.toAppModel() }
+    suspend fun getOrderNotes(orderId: Long) =
+        orderStore.getOrderNotesForOrder(site = selectedSite.get(), orderId = orderId)
+            .map { it.toAppModel() }
 
     suspend fun fetchProductsByRemoteIds(remoteIds: List<Long>) =
         productStore.fetchProductListSynced(selectedSite.get(), remoteIds)?.map { it.toAppModel() } ?: emptyList()

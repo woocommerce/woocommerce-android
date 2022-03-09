@@ -8,9 +8,9 @@ import androidx.lifecycle.SavedStateHandle
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent.*
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
@@ -44,6 +44,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
@@ -488,23 +489,36 @@ final class OrderDetailViewModel @Inject constructor(
     }
 
     private fun updateOrderState() {
-        val orderStatus = orderDetailRepository.getOrderStatus(order.status.value)
-        viewState = viewState.copy(
-            orderInfo = OrderInfo(
-                order = order,
-                isPaymentCollectableWithCardReader = paymentCollectibilityChecker
-                    .isCollectable(order),
-                isReceiptButtonsVisible = FeatureFlag.CARD_READER.isEnabled() && !loadReceiptUrl().isNullOrEmpty()
-            ),
-            orderStatus = orderStatus,
-            toolbarTitle = resourceProvider.getString(
-                string.orderdetail_orderstatus_ordernum, order.number
-            )
-        )
+        launch {
+            val isPaymentCollectable = isPaymentCollectable(order)
+            withContext(coroutineDispatchers.main) {
+                val orderStatus = orderDetailRepository.getOrderStatus(order.status.value)
+                viewState = viewState.copy(
+                    orderInfo = OrderInfo(
+                        order = order,
+                        isPaymentCollectableWithCardReader = isPaymentCollectable,
+                        isReceiptButtonsVisible = FeatureFlag.CARD_READER.isEnabled() &&
+                            !loadReceiptUrl().isNullOrEmpty()
+                    ),
+                    orderStatus = orderStatus,
+                    toolbarTitle = resourceProvider.getString(
+                        string.orderdetail_orderstatus_ordernum, order.number
+                    )
+                )
+            }
+        }
+    }
+
+    private suspend fun isPaymentCollectable(order: Order): Boolean {
+        return async {
+            paymentCollectibilityChecker.isCollectable(order)
+        }.await()
     }
 
     private fun loadOrderNotes() {
-        _orderNotes.value = orderDetailRepository.getOrderNotes(order.id)
+        launch {
+            _orderNotes.value = orderDetailRepository.getOrderNotes(navArgs.orderId)
+        }
     }
 
     private fun fetchOrderNotes() {
@@ -513,7 +527,7 @@ final class OrderDetailViewModel @Inject constructor(
                 triggerEvent(ShowSnackbar(string.order_error_fetch_notes_generic))
             }
             // fetch order notes from the local db and hide the skeleton view
-            _orderNotes.value = orderDetailRepository.getOrderNotes(order.id)
+            _orderNotes.value = orderDetailRepository.getOrderNotes(navArgs.orderId)
         }
     }
 

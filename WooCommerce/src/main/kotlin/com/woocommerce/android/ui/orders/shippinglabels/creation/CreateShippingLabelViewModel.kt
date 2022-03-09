@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_AMOUNT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FULFILL_ORDER
@@ -26,7 +27,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PURCHA
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PURCHASE_READY
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PURCHASE_SUCCEEDED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STARTED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.*
@@ -34,23 +34,32 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.*
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.UiState.*
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.UiState.Failed
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.UiState.Loading
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.UiState.WaitingForInput
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.DESTINATION
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.*
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.*
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.AddressValidationError
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.DataLoadingError
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.PackagesLoadingError
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.PurchaseError
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.*
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.*
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.*
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.DONE
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.NOT_READY
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.READY
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -204,14 +213,14 @@ class CreateShippingLabelViewModel @Inject constructor(
     }
 
     private fun trackFlowStart() = AnalyticsTracker.track(
-        Stat.SHIPPING_LABEL_PURCHASE_FLOW,
+        AnalyticsEvent.SHIPPING_LABEL_PURCHASE_FLOW,
         mapOf(KEY_STATE to VALUE_STARTED)
     )
 
     private fun trackPurchaseInitiated(data: List<ShippingRate>, fulfillOrder: Boolean) {
         val amount = data.sumByBigDecimal { it.price }
         AnalyticsTracker.track(
-            Stat.SHIPPING_LABEL_PURCHASE_FLOW,
+            AnalyticsEvent.SHIPPING_LABEL_PURCHASE_FLOW,
             mapOf(
                 KEY_STATE to VALUE_PURCHASE_INITIATED,
                 KEY_AMOUNT to amount.toPlainString(),
@@ -229,7 +238,7 @@ class CreateShippingLabelViewModel @Inject constructor(
             is CustomsStep -> VALUE_CUSTOMS_COMPLETE
             is PaymentsStep -> VALUE_PAYMENT_METHOD_SELECTED
         }
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_PURCHASE_FLOW, mapOf(KEY_STATE to action))
+        AnalyticsTracker.track(AnalyticsEvent.SHIPPING_LABEL_PURCHASE_FLOW, mapOf(KEY_STATE to action))
     }
 
     private fun trackStartedStep(step: FlowStep) {
@@ -241,7 +250,7 @@ class CreateShippingLabelViewModel @Inject constructor(
             FlowStep.CARRIER -> VALUE_CARRIER_RATES_STARTED
             FlowStep.PAYMENT -> VALUE_PAYMENT_METHOD_STARTED
         }
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_PURCHASE_FLOW, mapOf(KEY_STATE to action))
+        AnalyticsTracker.track(AnalyticsEvent.SHIPPING_LABEL_PURCHASE_FLOW, mapOf(KEY_STATE to action))
     }
 
     private suspend fun handleResult(
@@ -338,7 +347,10 @@ class CreateShippingLabelViewModel @Inject constructor(
                 paymentsStep.status == DONE
             if (!isVisible) return OrderSummaryState()
 
-            AnalyticsTracker.track(Stat.SHIPPING_LABEL_PURCHASE_FLOW, mapOf(KEY_STATE to VALUE_PURCHASE_READY))
+            AnalyticsTracker.track(
+                AnalyticsEvent.SHIPPING_LABEL_PURCHASE_FLOW,
+                mapOf(KEY_STATE to VALUE_PURCHASE_READY)
+            )
 
             with(stateMachineData.stepsState.carrierStep.data) {
                 val price = sumByBigDecimal { it.price }
@@ -456,7 +468,7 @@ class CreateShippingLabelViewModel @Inject constructor(
 
         return if (result.isError) {
             AnalyticsTracker.track(
-                Stat.SHIPPING_LABEL_PURCHASE_FLOW,
+                AnalyticsEvent.SHIPPING_LABEL_PURCHASE_FLOW,
                 mapOf(
                     KEY_STATE to VALUE_PURCHASE_FAILED,
                     KEY_TOTAL_DURATION to duration
@@ -475,17 +487,17 @@ class CreateShippingLabelViewModel @Inject constructor(
                         }
                         is RemoteUpdateResult -> {
                             if (result.event.isError) {
-                                AnalyticsTracker.track(Stat.SHIPPING_LABEL_ORDER_FULFILL_FAILED)
+                                AnalyticsTracker.track(AnalyticsEvent.SHIPPING_LABEL_ORDER_FULFILL_FAILED)
                                 triggerEvent(ShowSnackbar(string.shipping_label_create_purchase_fulfill_error))
                             } else {
-                                AnalyticsTracker.track(Stat.SHIPPING_LABEL_ORDER_FULFILL_SUCCEEDED)
+                                AnalyticsTracker.track(AnalyticsEvent.SHIPPING_LABEL_ORDER_FULFILL_SUCCEEDED)
                             }
                         }
                     }
                 }
             }
             AnalyticsTracker.track(
-                Stat.SHIPPING_LABEL_PURCHASE_FLOW,
+                AnalyticsEvent.SHIPPING_LABEL_PURCHASE_FLOW,
                 mapOf(
                     KEY_STATE to VALUE_PURCHASE_SUCCEEDED,
                     KEY_TOTAL_DURATION to duration
@@ -632,7 +644,7 @@ class CreateShippingLabelViewModel @Inject constructor(
     }
 
     fun onWooDiscountInfoClicked() {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_DISCOUNT_INFO_BUTTON_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.SHIPPING_LABEL_DISCOUNT_INFO_BUTTON_TAPPED)
         triggerEvent(ShowWooDiscountBottomSheet)
     }
 

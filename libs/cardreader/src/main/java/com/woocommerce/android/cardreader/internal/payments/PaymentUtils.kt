@@ -1,9 +1,9 @@
 package com.woocommerce.android.cardreader.internal.payments
 
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForSupportedCountry
 import java.math.BigDecimal
 import java.math.RoundingMode
 
-private const val USD_CURRENCY = "usd"
 internal const val USD_TO_CENTS_DECIMAL_PLACES = 2
 
 internal class PaymentUtils {
@@ -17,6 +17,10 @@ internal class PaymentUtils {
             .longValueExact()
     }
 
-    // TODO Add Support for other currencies
-    fun isSupportedCurrency(currency: String): Boolean = currency.equals(USD_CURRENCY, ignoreCase = true)
+    fun isSupportedCurrency(
+        currency: String,
+        cardReaderConfigFor: CardReaderConfigForSupportedCountry
+    ): Boolean = currency.equals(
+        cardReaderConfigFor.currency, ignoreCase = true
+    )
 }

@@ -11,6 +11,14 @@ before_all do |lane|
 end
 
 ########################################################################
+# Constants
+########################################################################
+PROJECT_ROOT_FOLDER = File.dirname(File.expand_path(__dir__))
+BUILD_PRODUCTS_PATH = File.join(PROJECT_ROOT_FOLDER, 'artifacts')
+INSTALLABLE_BUILD_DOMAIN = 'https://d2twmm2nzpx3bg.cloudfront.net'
+RELEASE_NOTES_PATH = File.join(PROJECT_ROOT_FOLDER, 'WooCommerce', 'metadata', 'release_notes.txt')
+
+########################################################################
 # Environment
 ########################################################################
 Dotenv.load('~/.wcandroid-env.default')
@@ -42,6 +50,8 @@ SUPPORTED_LOCALES = [
   { glotpress: "zh-tw", android: "zh-rTW", google_play: "zh-TW",  promo_config: {} },
 ].freeze
 
+SCREENSHOT_DIRECTORY = File.join(Dir.pwd, 'screenshots')
+
 main_strings_path = "./WooCommerce/src/main/res/values/strings.xml"
 update_strings_path = "./fastlane/resources/values/"
 
@@ -69,9 +79,11 @@ platform :android do
     android_bump_version_release()
     new_version = android_get_app_version()
 
-    extract_release_notes_for_version(version: new_version,
-      release_notes_file_path:"#{ENV["PROJECT_ROOT_FOLDER"]}RELEASE-NOTES.txt",
-      extracted_notes_file_path:release_notes_path)
+    extract_release_notes_for_version(
+      version: new_version,
+      release_notes_file_path:"#{PROJECT_ROOT_FOLDER}/RELEASE-NOTES.txt",
+      extracted_notes_file_path:RELEASE_NOTES_PATH
+    )
     android_update_release_notes(new_version: new_version)
     setbranchprotection(repository:GHHELPER_REPO, branch: "release/#{new_version}")
     setfrozentag(repository:GHHELPER_REPO, milestone: new_version)
@@ -258,6 +270,35 @@ platform :android do
   end
 
   #####################################################################################
+  # build_and_upload_google_play
+  # -----------------------------------------------------------------------------------
+  # This lane builds the app for Google Play, and will correctly select which build 
+  # should be produced based on the build number.
+  # -----------------------------------------------------------------------------------
+  # Usage:
+  # bundle exec fastlane build_and_upload_google_play
+  #
+  # Example:
+  # bundle exec fastlane build_and_upload_google_play
+  #####################################################################################
+  desc "Builds and uploads a release to Google Play"
+  lane :build_and_upload_google_play do | options |
+    if is_beta_version(android_get_release_version)
+      build_and_upload_beta(
+        skip_confirm: is_ci,
+        skip_prechecks: true,
+        create_release: true
+      )
+    else
+      build_and_upload_release(
+        skip_confirm: is_ci,
+        skip_prechecks: true,
+        create_release: true
+      )
+    end
+  end
+
+  #####################################################################################
   # build_and_upload_release
   # -----------------------------------------------------------------------------------
   # This lane builds the final release of the app and uploads it
@@ -282,8 +323,7 @@ platform :android do
     version = android_get_release_version()
     build_bundle(version: version, flavor:"Vanilla")
 
-    project_root = File.dirname(File.expand_path(File.dirname(__FILE__)))
-    aab_file_path = File.join(project_root, "artifacts", aab_file_name(version))
+    aab_file_path = File.join(PROJECT_ROOT_FOLDER, "artifacts", aab_file_name(version))
 
     UI.error("Unable to find a build artifact at #{aab_file_path}") unless File.exist? aab_file_path
 
@@ -325,9 +365,7 @@ platform :android do
     version = android_get_release_version()
     build_bundle(version: version, flavor:"Vanilla")
 
-    project_root = File.dirname(File.expand_path(File.dirname(__FILE__)))
-    aab_file_path = File.join(project_root, "artifacts", aab_file_name(version))
-
+    aab_file_path = File.join(PROJECT_ROOT_FOLDER, "artifacts", aab_file_name(version))
     UI.error("Unable to find a build artifact at #{aab_file_path}") unless File.exist? aab_file_path
 
     upload_to_play_store(
@@ -354,14 +392,14 @@ platform :android do
    # bundle exec fastlane trigger_release_build [branch_to_build:<branch_name>]
    #
    #####################################################################################
-   lane :trigger_release_build do | options |
-    circleci_trigger_job(
-      circle_ci_token: ENV["CIRCLE_CI_AUTH_TOKEN"],
-      repository: REPOSITORY_NAME,
-      organization: GH_ORG_NAME,
-      branch: options[:branch_to_build],
-      job_params: {"release_build" => true}
-    )
+  desc "Tell Buildkite to trigger a release build"
+  lane :trigger_release_build do | options |
+      buildkite_trigger_build(
+        buildkite_organization: 'automattic',
+        buildkite_pipeline: 'woocommerce-android',
+        branch: options[:branch_to_build] || git_branch,
+        pipeline_file: 'release-builds.yml'
+      )
   end
 
   #####################################################################################
@@ -511,6 +549,115 @@ platform :android do
     end
     "#{build_dir}#{name}"
   end
+  #####################################################################################
+  # screenshots
+  # -----------------------------------------------------------------------------------
+  # This lane creates screenshots for light and dark modes
+  # -----------------------------------------------------------------------------------
+  # Usage:
+  # fastlane take_screenshots
+  #
+  # Example:
+  # fastlane take_screenshots
+  #####################################################################################
+  desc "Create raw screenshots"
+  lane :take_screenshots do |options|
+    # Build the app and test targets
+    gradle(task: "assembleVanillaDebug assembleVanillaDebugAndroidTest")
+
+    if options[:locales]
+      locales = options[:locales].split(',')
+    else
+      locales = SUPPORTED_LOCALES.
+        # Depending on how automated this is, possibly on whether we wipe the
+        # emulator before running or not, the zh-CN locale might break due to
+        # Pinwin Keyboard wanting contacts access. If that's the case, you can
+        # skip it by uncommeting the following line.
+        #reject { |locale| locale[:glotpress] == 'zh-cn' }.
+        map { |locale|  locale[:google_play] }
+    end
+
+    # Override the locales array with one locale until 
+    # https://github.com/fastlane/fastlane/issues/19521
+    # is fixed:
+    locales = ["en-EN"]
+
+    UI.message("Attempting screenshots for locales: #{locales}")
+
+    screenshot_options = {
+      output_directory: SCREENSHOT_DIRECTORY,
+      app_package_name: "com.woocommerce.android",
+      app_apk_path: "WooCommerce/build/outputs/apk/vanilla/debug/WooCommerce-vanilla-debug.apk",
+      tests_apk_path: "WooCommerce/build/outputs/apk/androidTest/vanilla/debug/WooCommerce-vanilla-debug-androidTest.apk",
+      use_tests_in_classes: "com.woocommerce.android.screenshots.ScreenshotTest",
+      reinstall_app: false,
+      # By default, don't clear previous because we differentiate between light
+      # and dark mode
+      clear_previous_screenshots: options.fetch(:clear_previous_screenshots, false),
+      # Needs to be root to save screenshots consistently
+      use_adb_root: true,
+      locales: locales,
+      use_timestamp_suffix: false,
+      test_instrumentation_runner: "com.woocommerce.android.WooCommerceTestRunner",
+      # Don't care about the .html summary
+      skip_open_summary: true
+    }
+
+    UI.message("Taking screenshots for Dark theme...")
+    screengrab(
+      screenshot_options.merge(
+        {
+          launch_arguments: ["theme dark"]
+        }
+      )
+    )
+
+    UI.message("Taking screenshots for Light theme...")
+    screengrab(
+      screenshot_options.merge(
+        {
+          launch_arguments: ["theme light"]
+        }
+      )
+    )    
+  end
+
+  #####################################################################################
+  # build_apk
+  # -----------------------------------------------------------------------------------
+  # This lane builds an apk
+  # -----------------------------------------------------------------------------------
+  # Usage:
+  # bundle exec fastlane build_apk
+  #####################################################################################
+  desc "Builds an APK"
+  lane :build_and_upload_installable_build do | options |
+
+    UI.user_error!("'BUILDKITE_ARTIFACTS_S3_BUCKET' must be defined as an environment variable.") unless ENV['BUILDKITE_ARTIFACTS_S3_BUCKET']
+
+    gradle(
+      task: "assemble",
+      flavor: "Jalapeno",
+      build_type: "Release"
+    )
+
+    upload_path = upload_to_s3(
+      bucket: 'a8c-apps-public-artifacts',
+      key: "woocommerce-installable-build-#{generate_installable_build_number}.apk",
+      file: lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH]
+    )
+
+    install_url = "#{INSTALLABLE_BUILD_DOMAIN}/#{upload_path}"
+    qr_code_url = "https://chart.googleapis.com/chart?chs=500x500&cht=qr&chl=#{URI::encode( install_url )}&choe=UTF-8"
+    comment_body = "You can test the changes on this Pull Request by <a href='#{install_url}'>downloading an installable build</a>, or scanning this QR code:<br><a href='#{install_url}'><img src='#{qr_code_url}' width='250' height='250' /></a>"
+
+    comment_on_pr(
+      project: 'woocommerce/woocommerce-android',
+      pr_number: Integer(ENV['BUILDKITE_PULL_REQUEST']),
+      reuse_identifier: 'installable-build-link',
+      body: comment_body
+    ) unless ENV['BUILDKITE_PULL_REQUEST'].nil?
+  end
 
   #####################################################################################
   # Private lanes
@@ -542,18 +689,16 @@ platform :android do
     version = options[:version]
     prerelease = options[:prerelease] || false
 
-    project_root = File.dirname(File.expand_path(File.dirname(__FILE__)))
-
     # APKs built on CI are not signed with master key, which means Google Sign-In won't work with those.
     # So don't attach them to the release, as this ends up being confusing for beta-testers.
-    apk_file_path = File.join(project_root, 'artifacts', universal_apk_name(version)) unless is_ci
-    aab_file_path = File.join(project_root, 'artifacts', aab_file_name(version))
+    apk_file_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', universal_apk_name(version)) unless is_ci
+    aab_file_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', aab_file_name(version))
     release_assets = [apk_file_path, aab_file_path].compact
 
     create_release(
       repository: GHHELPER_REPO,
       version: version["name"],
-      release_notes_file_path: release_notes_path,
+      release_notes_file_path: RELEASE_NOTES_PATH,
       prerelease: prerelease,
       release_assets: release_assets.join(',')
     )
@@ -568,15 +713,33 @@ platform :android do
   #####################################################################################
   # Utils
   #####################################################################################
-  def release_notes_path
-    "#{ENV["PROJECT_ROOT_FOLDER"]}WooCommerce/metadata/release_notes.txt"
-  end
-
   def aab_file_name(version)
     "wcandroid-#{version["name"]}.aab"
   end
 
   def universal_apk_name(version)
     "wcandroid-#{version["name"]}-universal.apk"
+  end
+
+  def is_beta_version(version)
+    version['name'].include? "-rc-"
+  end
+
+  # This function is Buildkite-specific
+  def generate_installable_build_number
+
+    if ENV['BUILDKITE']
+      commit = ENV['BUILDKITE_COMMIT'][0,7]
+      branch = ENV['BUILDKITE_BRANCH'].parameterize
+      pr_num = ENV['BUILDKITE_PULL_REQUEST']
+
+      return pr_num == 'false' ? "#{branch}-#{commit}" : "pr#{pr_num}-#{commit}"
+    else
+      repo = Git.open(PROJECT_ROOT_FOLDER)
+      commit = repo.current_branch.parameterize
+      branch = repo.revparse('HEAD')[0, 7]
+
+      return "#{branch}-#{commit}"
+    end
   end
 end

@@ -1,25 +1,90 @@
 package com.woocommerce.android.ui.prefs.cardreader
 
+import androidx.annotation.VisibleForTesting
+import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.*
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Generic
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import javax.inject.Inject
 
 class CardReaderTracker @Inject constructor(
     private val trackerWrapper: AnalyticsTrackerWrapper,
+    private val appPrefsWrapper: AppPrefsWrapper,
+    private val selectedSite: SelectedSite,
+    private val cardReaderTrackingInfoProvider: CardReaderTrackingInfoProvider
 ) {
-    fun trackOnboardingLearnMoreTapped() {
-        trackerWrapper.track(CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED)
+    @VisibleForTesting
+    fun track(
+        stat: AnalyticsEvent,
+        properties: MutableMap<String, Any> = mutableMapOf(),
+        errorType: String? = null,
+        errorDescription: String? = null,
+    ) {
+        addPreferredPluginSlugProperty(properties)
+        addStoreCountryCodeProperty(properties)
+        addCurrencyProperty(properties)
+        addPaymentMethodTypeProperty(properties)
+        addCardReaderModelProperty(properties)
+
+        val isError = !errorType.isNullOrBlank() || !errorDescription.isNullOrEmpty()
+        if (isError) {
+            trackerWrapper.track(
+                stat,
+                properties,
+                this@CardReaderTracker.javaClass.simpleName,
+                errorType,
+                errorDescription
+            )
+        } else {
+            trackerWrapper.track(stat, properties)
+        }
     }
 
-    fun trackOnboardingState(state: CardReaderOnboardingState) {
-        getOnboardingNotCompletedReason(state)?.let {
-            trackerWrapper.track(CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mapOf("reason" to it))
+    private fun addPreferredPluginSlugProperty(properties: MutableMap<String, Any>) {
+        val site = selectedSite.get()
+        val preferredPlugin = appPrefsWrapper.getCardReaderPreferredPlugin(
+            localSiteId = site.id,
+            remoteSiteId = site.siteId,
+            selfHostedSiteId = site.selfHostedSiteId
+        )
+        properties["plugin_slug"] = when (preferredPlugin) {
+            WOOCOMMERCE_PAYMENTS -> "woocommerce-payments"
+            STRIPE_EXTENSION_GATEWAY -> "woocommerce-gateway-stripe"
+            null -> "unknown"
+        }
+    }
+
+    private fun addStoreCountryCodeProperty(properties: MutableMap<String, Any>) {
+        properties["country"] = cardReaderTrackingInfoProvider.trackingInfo.country ?: "unknown"
+    }
+
+    private fun addCurrencyProperty(properties: MutableMap<String, Any>) {
+        val currency = cardReaderTrackingInfoProvider.trackingInfo.currency
+        if (!currency.isNullOrBlank()) {
+            properties["currency"] = currency
+        }
+    }
+
+    private fun addPaymentMethodTypeProperty(properties: MutableMap<String, Any>) {
+        val paymentMethodType = cardReaderTrackingInfoProvider.trackingInfo.paymentMethodType
+        if (!paymentMethodType.isNullOrBlank()) {
+            properties["payment_method_type"] = paymentMethodType
+        }
+    }
+
+    private fun addCardReaderModelProperty(properties: MutableMap<String, Any>) {
+        val cardReaderModel = cardReaderTrackingInfoProvider.trackingInfo.cardReaderModel
+        if (!cardReaderModel.isNullOrBlank()) {
+            properties["card_reader_model"] = cardReaderModel
         }
     }
 
@@ -28,27 +93,40 @@ class CardReaderTracker @Inject constructor(
         when (state) {
             is CardReaderOnboardingState.OnboardingCompleted -> null
             is CardReaderOnboardingState.StoreCountryNotSupported -> "country_not_supported"
-            CardReaderOnboardingState.StripeAccountOverdueRequirement -> "account_overdue_requirements"
+            is CardReaderOnboardingState.PluginIsNotSupportedInTheCountry ->
+                "${getPluginNameReasonPrefix(state.preferredPlugin)}_is_not_supported_in_${state.countryCode}"
+            is CardReaderOnboardingState.StripeAccountOverdueRequirement -> "account_overdue_requirements"
             is CardReaderOnboardingState.StripeAccountPendingRequirement -> "account_pending_requirements"
-            CardReaderOnboardingState.StripeAccountRejected -> "account_rejected"
-            CardReaderOnboardingState.StripeAccountUnderReview -> "account_under_review"
+            is CardReaderOnboardingState.StripeAccountRejected -> "account_rejected"
+            is CardReaderOnboardingState.StripeAccountUnderReview -> "account_under_review"
             is CardReaderOnboardingState.StripeAccountCountryNotSupported -> "account_country_not_supported"
-            CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount -> "wcpay_in_test_mode_with_live_account"
-            CardReaderOnboardingState.WcpayNotActivated -> "wcpay_not_activated"
-            CardReaderOnboardingState.WcpayNotInstalled -> "wcpay_not_installed"
+            is CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount ->
+                "${getPluginNameReasonPrefix(state.preferredPlugin)}_in_test_mode_with_live_account"
+            is CardReaderOnboardingState.WcpayNotActivated -> "wcpay_not_activated"
+            is CardReaderOnboardingState.WcpayNotInstalled -> "wcpay_not_installed"
             is CardReaderOnboardingState.SetupNotCompleted ->
-                "${getPluginNameReasonPrefix(state.pluginType)}_not_setup"
+                "${getPluginNameReasonPrefix(state.preferredPlugin)}_not_setup"
             is CardReaderOnboardingState.PluginUnsupportedVersion ->
-                "${getPluginNameReasonPrefix(state.pluginType)}_unsupported_version"
-            CardReaderOnboardingState.GenericError -> "generic_error"
-            CardReaderOnboardingState.NoConnectionError -> "no_connection_error"
-            CardReaderOnboardingState.WcpayAndStripeActivated -> "wcpay_and_stripe_installed_and_activated"
+                "${getPluginNameReasonPrefix(state.preferredPlugin)}_unsupported_version"
+            is CardReaderOnboardingState.GenericError -> "generic_error"
+            is CardReaderOnboardingState.NoConnectionError -> "no_connection_error"
+            is CardReaderOnboardingState.WcpayAndStripeActivated -> "wcpay_and_stripe_installed_and_activated"
         }
 
     private fun getPluginNameReasonPrefix(pluginType: PluginType): String {
         return when (pluginType) {
-            PluginType.WOOCOMMERCE_PAYMENTS -> "wcpay"
-            PluginType.STRIPE_EXTENSION_GATEWAY -> "stripe_extension"
+            WOOCOMMERCE_PAYMENTS -> "wcpay"
+            STRIPE_EXTENSION_GATEWAY -> "stripe_extension"
+        }
+    }
+
+    fun trackOnboardingLearnMoreTapped() {
+        track(CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED)
+    }
+
+    fun trackOnboardingState(state: CardReaderOnboardingState) {
+        getOnboardingNotCompletedReason(state)?.let {
+            track(CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mutableMapOf("reason" to it))
         }
     }
 
@@ -57,11 +135,9 @@ class CardReaderTracker @Inject constructor(
     }
 
     fun trackSoftwareUpdateUnknownStatus() {
-        trackerWrapper.track(
+        track(
             CARD_READER_SOFTWARE_UPDATE_FAILED,
-            this.javaClass.simpleName,
-            null,
-            "Unknown software update status"
+            errorDescription = "Unknown software update status"
         )
     }
 
@@ -81,129 +157,127 @@ class CardReaderTracker @Inject constructor(
         )
     }
 
-    private fun trackSoftwareUpdateEvent(
-        event: AnalyticsTracker.Stat,
-        requiredUpdate: Boolean,
-        errorDescription: String? = null,
-    ) {
-        val eventPropertiesMap = errorDescription?.let { description ->
-            hashMapOf(
-                AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to if (requiredUpdate) REQUIRED_UPDATE else OPTIONAL_UPDATE,
-                AnalyticsTracker.KEY_ERROR_CONTEXT to this.javaClass.simpleName,
-                AnalyticsTracker.KEY_ERROR_DESC to description
-            )
-        } ?: run {
-            hashMapOf(
-                AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to if (requiredUpdate) REQUIRED_UPDATE else OPTIONAL_UPDATE
-            )
-        }
-        trackerWrapper.track(
-            event,
-            eventPropertiesMap
-        )
-    }
-
     fun trackReadersDiscovered(count: Int) {
-        trackerWrapper.track(
-            AnalyticsTracker.Stat.CARD_READER_DISCOVERY_READER_DISCOVERED,
-            mapOf("reader_count" to count)
+        track(
+            CARD_READER_DISCOVERY_READER_DISCOVERED,
+            mutableMapOf("reader_count" to count)
         )
     }
 
     fun trackReaderDiscoveryFailed(errorMessage: String) {
-        trackerWrapper.track(
+        track(
             CARD_READER_DISCOVERY_FAILED,
-            this.javaClass.simpleName,
-            null,
-            errorMessage
+            errorDescription = errorMessage
         )
     }
 
+    fun trackDiscoveryTapped() {
+        track(CARD_READER_DISCOVERY_TAPPED)
+    }
+
     fun trackAutoConnectionStarted() {
-        trackerWrapper.track(CARD_READER_AUTO_CONNECTION_STARTED)
+        track(CARD_READER_AUTO_CONNECTION_STARTED)
     }
 
     fun trackOnConnectTapped() {
-        trackerWrapper.track(CARD_READER_CONNECTION_TAPPED)
+        track(CARD_READER_CONNECTION_TAPPED)
     }
 
     fun trackFetchingLocationSucceeded() {
-        trackerWrapper.track(CARD_READER_LOCATION_SUCCESS)
+        track(CARD_READER_LOCATION_SUCCESS)
     }
 
     fun trackFetchingLocationFailed(errorDescription: String?) {
-        trackerWrapper.track(
+        track(
             CARD_READER_LOCATION_FAILURE,
-            this.javaClass.simpleName,
-            null,
-            errorDescription,
+            errorDescription = errorDescription,
         )
     }
 
     fun trackMissingLocationTapped() {
-        trackerWrapper.track(CARD_READER_LOCATION_MISSING_TAPPED)
+        track(CARD_READER_LOCATION_MISSING_TAPPED)
     }
 
     fun trackConnectionFailed() {
-        trackerWrapper.track(CARD_READER_CONNECTION_FAILED)
+        track(CARD_READER_CONNECTION_FAILED)
     }
 
     fun trackConnectionSucceeded() {
-        trackerWrapper.track(CARD_READER_CONNECTION_SUCCESS)
+        track(CARD_READER_CONNECTION_SUCCESS)
     }
 
     fun trackPaymentFailed(errorMessage: String, errorType: CardPaymentStatusErrorType = Generic) {
-        trackerWrapper.track(
+        track(
             CARD_PRESENT_COLLECT_PAYMENT_FAILED,
-            this.javaClass.simpleName,
-            errorType.toString(),
-            errorMessage
+            errorType = errorType.toString(),
+            errorDescription = errorMessage
         )
     }
 
     fun trackPaymentSucceeded() {
-        trackerWrapper.track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
+        track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
+    }
+
+    fun trackInteracPaymentSucceeded() {
+        track(CARD_INTERAC_COLLECT_PAYMENT_SUCCESS)
     }
 
     fun trackPrintReceiptTapped() {
-        trackerWrapper.track(RECEIPT_PRINT_TAPPED)
+        track(RECEIPT_PRINT_TAPPED)
     }
 
     fun trackEmailReceiptTapped() {
-        trackerWrapper.track(RECEIPT_EMAIL_TAPPED)
+        track(RECEIPT_EMAIL_TAPPED)
     }
 
     fun trackEmailReceiptFailed() {
-        trackerWrapper.track(RECEIPT_EMAIL_FAILED)
+        track(RECEIPT_EMAIL_FAILED)
     }
 
     fun trackPrintReceiptCancelled() {
-        trackerWrapper.track(RECEIPT_PRINT_CANCELED)
+        track(RECEIPT_PRINT_CANCELED)
     }
 
     fun trackPrintReceiptFailed() {
-        trackerWrapper.track(RECEIPT_PRINT_FAILED)
+        track(RECEIPT_PRINT_FAILED)
     }
 
     fun trackPrintReceiptSucceeded() {
-        trackerWrapper.track(RECEIPT_PRINT_SUCCESS)
+        track(RECEIPT_PRINT_SUCCESS)
     }
 
     fun trackPaymentCancelled(currentPaymentState: String?) {
-        trackerWrapper.track(
+        track(
             CARD_PRESENT_COLLECT_PAYMENT_CANCELLED,
-            this.javaClass.simpleName,
-            null,
-            "User manually cancelled the payment during state $currentPaymentState"
+            errorDescription = "User manually cancelled the payment during state $currentPaymentState"
         )
     }
 
     fun trackCollectPaymentTapped() {
-        trackerWrapper.track(CARD_PRESENT_COLLECT_PAYMENT_TAPPED)
+        track(CARD_PRESENT_COLLECT_PAYMENT_TAPPED)
+    }
+
+    fun trackDisconnectTapped() {
+        track(CARD_READER_DISCONNECT_TAPPED)
+    }
+
+    private fun trackSoftwareUpdateEvent(
+        event: AnalyticsEvent,
+        requiredUpdate: Boolean,
+        errorDescription: String? = null,
+    ) {
+        val eventPropertiesMap = hashMapOf<String, Any>(
+            AnalyticsTracker.KEY_SOFTWARE_UPDATE_TYPE to if (requiredUpdate) REQUIRED_UPDATE else OPTIONAL_UPDATE,
+        )
+        track(
+            event,
+            eventPropertiesMap,
+            errorDescription = errorDescription
+        )
     }
 
     companion object {
-        private const val OPTIONAL_UPDATE: String = "Optional"
-        private const val REQUIRED_UPDATE: String = "Required"
+        private const val OPTIONAL_UPDATE = "Optional"
+        private const val REQUIRED_UPDATE = "Required"
     }
 }

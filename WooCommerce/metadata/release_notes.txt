@@ -1,3 +1,4 @@
-- [***] Beta Feature: It's now possible to create Orders from the app. For now only including products, customer notes, shipping and billing addresses.
-- [***] Store admins can now access sites with plugins that have Jetpack Connection Package (e.g. WooCommerce Payments, Jetpack Backup) in the app. These sites do not require Jetpack-the-plugin to connect anymore. Store admins can still install Jetpack-the-plugin from the app through settings or a Jetpack banner. [https://github.com/woocommerce/woocommerce-android/pull/5771]
+- [*] Fixed an issue where on rare cases the app might end up displaying order notes for the wrong note. [https://github.com/woocommerce/woocommerce-android/pull/5971]
+- [*] In-Person Payments: Add support for accepting payments on bookable products
+- [***] Beta Feature: Order Creation is now improved, supporting Fees and Shipping costs.
 

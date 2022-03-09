@@ -28,6 +28,22 @@ object OrderTestUtils {
         )
     }
 
+    fun generateOrderShipmentTrackings(totalCount: Int, lOrderId: Int): List<WCOrderShipmentTrackingModel> {
+        val result = ArrayList<WCOrderShipmentTrackingModel>()
+        for (i in totalCount downTo 1) {
+            result.add(
+                WCOrderShipmentTrackingModel(totalCount).apply {
+                    trackingProvider = "TNT Express $i"
+                    trackingNumber = "$i"
+                    dateShipped = SimpleDateFormat("yyyy-MM-dd").format(Date())
+                    trackingLink = "www.somelink$i.com"
+                    localOrderId = lOrderId
+                }
+            )
+        }
+        return result
+    }
+
     fun generateOrderShipmentProviders(): List<WCOrderShipmentProviderModel> {
         val result = ArrayList<WCOrderShipmentProviderModel>()
         result.add(
@@ -245,18 +261,17 @@ object OrderTestUtils {
     fun generateTestOrderNotes(
         totalNotes: Int,
         orderId: Long = 1,
-        localSiteId: Int = 1
     ): List<OrderNote> {
         val result = ArrayList<OrderNote>()
         for (i in totalNotes downTo 1) {
             result.add(
-                WCOrderNoteModel(totalNotes).apply {
-                    this.isCustomerNote = false
-                    this.dateCreated = "2018-02-02T16:11:13Z"
-                    this.orderId = orderId
-                    this.localSiteId = localSiteId
-                    this.note = "This is a test note $i"
-                }.toAppModel()
+                OrderNote(
+                    orderId = orderId,
+                    author = "",
+                    isCustomerNote = false,
+                    dateCreated = DateTimeUtils.dateUTCFromIso8601("2018-02-02T16:11:13Z"),
+                    note = "This is a test note $i"
+                )
             )
         }
         return result

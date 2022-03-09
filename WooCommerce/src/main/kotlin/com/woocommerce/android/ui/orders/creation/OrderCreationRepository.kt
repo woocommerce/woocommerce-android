@@ -4,6 +4,7 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -19,6 +20,8 @@ import org.wordpress.android.fluxc.store.OrderUpdateStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
+import org.wordpress.android.fluxc.model.order.FeeLine as WCFeeLine
+import org.wordpress.android.fluxc.model.order.ShippingLine as WCShippingLine
 
 private const val AUTO_DRAFT_SUPPORTED_VERSION = "6.3.0"
 private const val AUTO_DRAFT = "auto-draft"
@@ -55,9 +58,10 @@ class OrderCreationRepository @Inject constructor(
                     quantity = item.quantity
                 )
             },
-            shippingAddress = order.shippingAddress.toShippingAddressModel(),
-            billingAddress = order.billingAddress.toBillingAddressModel(),
-            customerNote = order.customerNote
+            shippingAddress = order.shippingAddress.takeIf { it != Address.EMPTY }?.toShippingAddressModel(),
+            billingAddress = order.billingAddress.takeIf { it != Address.EMPTY }?.toBillingAddressModel(),
+            customerNote = order.customerNote,
+            shippingLines = order.shippingLines.map { it.toDataModel() }
         )
         val result = if (order.id == 0L) {
             orderUpdateStore.createOrder(selectedSite.get(), request)
@@ -92,7 +96,9 @@ class OrderCreationRepository @Inject constructor(
             },
             shippingAddress = order.shippingAddress.takeIf { it != Address.EMPTY }?.toShippingAddressModel(),
             billingAddress = order.billingAddress.takeIf { it != Address.EMPTY }?.toBillingAddressModel(),
-            customerNote = order.customerNote
+            customerNote = order.customerNote,
+            shippingLines = order.shippingLines.map { it.toDataModel() },
+            feeLines = order.feesLines.map { it.toDataModel() }
         )
 
         val result = if (order.id == 0L) {
@@ -122,5 +128,18 @@ class OrderCreationRepository @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun ShippingLine.toDataModel() = WCShippingLine(
+        id = itemId.takeIf { it != 0L },
+        methodId = methodId,
+        methodTitle = methodTitle.takeIf { it.isNotEmpty() },
+        total = total.toPlainString()
+    )
+
+    private fun Order.FeeLine.toDataModel() = WCFeeLine().also {
+        it.id = id
+        it.name = name
+        it.total = total.toPlainString()
     }
 }

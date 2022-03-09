@@ -1,2 +1,0 @@
-8.4 :
-Nous sommes en train de relooker l’application ! Vous remarquerez quelques changements visuels intéressants dans le graphique des ventes dans Ma boutique, ainsi qu’un calcul de conversion revu et corrigé. Par ailleurs, nous n’arrondissons plus les totaux des ventes pour plus de clarté. Ce n’est pas tout : d’autres mises à jour sont à venir dans les prochaines semaines !

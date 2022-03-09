@@ -11,7 +11,6 @@ import com.woocommerce.android.model.sortCategories
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductStockStatus.Companion.fromString
 import com.woocommerce.android.ui.products.ProductType.OTHER
-import com.woocommerce.android.ui.products.ProductType.VIRTUAL
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -282,7 +281,7 @@ class ProductFilterListViewModel @Inject constructor(
                 TYPE,
                 resourceProvider.getString(string.product_type),
                 addDefaultFilterOption(
-                    ProductType.values().filterNot { it == OTHER || it == VIRTUAL }.map {
+                    ProductType.values().filterNot { it == OTHER }.map {
                         FilterListOptionItemUiModel(
                             resourceProvider.getString(it.stringResource),
                             filterOptionItemValue = it.value,

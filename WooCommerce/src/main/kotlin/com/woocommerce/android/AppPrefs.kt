@@ -7,11 +7,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
 import androidx.preference.PreferenceManager
-import com.woocommerce.android.AppPrefs.CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_COMPLETED_WITH_STRIPE_EXTENSION
-import com.woocommerce.android.AppPrefs.CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_COMPLETED_WITH_WCPAY
-import com.woocommerce.android.AppPrefs.CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
-import com.woocommerce.android.AppPrefs.CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_PENDING_REQUIREMENTS_WITH_STRIPE_EXTENSION
-import com.woocommerce.android.AppPrefs.CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_PENDING_REQUIREMENTS_WITH_WCPAY
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.*
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.*
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
@@ -45,7 +41,6 @@ object AppPrefs {
         DATABASE_DOWNGRADED,
         IS_PRODUCTS_FEATURE_ENABLED,
         IS_PRODUCT_ADDONS_ENABLED,
-        IS_SIMPLE_PAYMENTS_ENABLED,
         IS_ORDER_CREATION_ENABLED,
         LOGIN_USER_BYPASSED_JETPACK_REQUIRED,
         SELECTED_ORDER_LIST_TAB_POSITION,
@@ -58,7 +53,8 @@ object AppPrefs {
         IS_USER_ELIGIBLE,
         USER_EMAIL,
         RECEIPT_PREFIX,
-        CARD_READER_ONBOARDING_COMPLETED_STATUS,
+        CARD_READER_ONBOARDING_COMPLETED_STATUS_V2,
+        CARD_READER_PREFERRED_PLUGIN,
         CARD_READER_STATEMENT_DESCRIPTOR,
         ORDER_FILTER_PREFIX,
         ORDER_FILTER_CUSTOM_DATE_RANGE_START,
@@ -155,10 +151,6 @@ object AppPrefs {
     var isProductAddonsEnabled: Boolean
         get() = getBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, false)
         set(value) = setBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, value)
-
-    var isSimplePaymentsEnabled: Boolean
-        get() = getBoolean(DeletablePrefKey.IS_SIMPLE_PAYMENTS_ENABLED, false)
-        set(value) = setBoolean(DeletablePrefKey.IS_SIMPLE_PAYMENTS_ENABLED, value)
 
     var isOrderCreationEnabled: Boolean
         get() = getBoolean(DeletablePrefKey.IS_ORDER_CREATION_ENABLED, false)
@@ -290,12 +282,6 @@ object AppPrefs {
         setBoolean(UndeletablePrefKey.NOTIFS_ORDERS_CHA_CHING_ENABLED, enabled)
     }
 
-    fun getHasUnseenReviews() = getBoolean(DeletablePrefKey.HAS_UNSEEN_REVIEWS, false)
-
-    fun setHasUnseenReviews(hasUnseen: Boolean) {
-        setBoolean(DeletablePrefKey.HAS_UNSEEN_REVIEWS, hasUnseen)
-    }
-
     fun getNumTimesMarkAllReadSnackShown(): Int =
         getInt(UndeletablePrefKey.NUM_TIMES_MARK_ALL_NOTIFS_READ_SNACK_SHOWN, 0)
 
@@ -418,15 +404,15 @@ object AppPrefs {
         setString(DeletablePrefKey.UNIFIED_LOGIN_LAST_ACTIVE_FLOW, flow)
     }
 
-    fun getCardReaderOnboardingCompletedStatus(
+    fun getCardReaderOnboardingStatus(
         localSiteId: Int,
         remoteSiteId: Long,
         selfHostedSiteId: Long
-    ): CardReaderOnboardingCompletedStatus {
-        return CardReaderOnboardingCompletedStatus.valueOf(
+    ): CardReaderOnboardingStatus {
+        return CardReaderOnboardingStatus.valueOf(
             PreferenceUtils.getString(
                 getPreferences(),
-                getCardReaderOnboardingCompletedKey(
+                getCardReaderOnboardingKey(
                     localSiteId,
                     remoteSiteId,
                     selfHostedSiteId
@@ -437,70 +423,61 @@ object AppPrefs {
     }
 
     fun isCardReaderOnboardingCompleted(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long): Boolean {
-        val completedStatus = getCardReaderOnboardingCompletedStatus(
+        val completedStatus = getCardReaderOnboardingStatus(
             localSiteId,
             remoteSiteId,
             selfHostedSiteId
         )
-        return completedStatus == CARD_READER_ONBOARDING_COMPLETED_WITH_WCPAY ||
-            completedStatus == CARD_READER_ONBOARDING_COMPLETED_WITH_STRIPE_EXTENSION
+        return completedStatus == CARD_READER_ONBOARDING_COMPLETED
     }
 
-    @Throws(IllegalStateException::class)
-    fun getPaymentPluginType(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long): PluginType {
-        return when (getCardReaderOnboardingCompletedStatus(localSiteId, remoteSiteId, selfHostedSiteId)) {
-            CARD_READER_ONBOARDING_COMPLETED_WITH_WCPAY,
-            CARD_READER_ONBOARDING_PENDING_REQUIREMENTS_WITH_WCPAY ->
-                PluginType.WOOCOMMERCE_PAYMENTS
-            CARD_READER_ONBOARDING_COMPLETED_WITH_STRIPE_EXTENSION,
-            CARD_READER_ONBOARDING_PENDING_REQUIREMENTS_WITH_STRIPE_EXTENSION ->
-                PluginType.STRIPE_EXTENSION_GATEWAY
-            CARD_READER_ONBOARDING_NOT_COMPLETED ->
-                throw IllegalStateException("Onboarding not completed. Plugin Type is null")
-        }
-    }
-
-    fun setCardReaderOnboardingCompleted(
-        localSiteId: Int,
-        remoteSiteId: Long,
-        selfHostedSiteId: Long,
-        pluginType: PluginType?
-    ) {
-        val pluginName = when (pluginType) {
-            PluginType.WOOCOMMERCE_PAYMENTS -> CARD_READER_ONBOARDING_COMPLETED_WITH_WCPAY
-            PluginType.STRIPE_EXTENSION_GATEWAY -> CARD_READER_ONBOARDING_COMPLETED_WITH_STRIPE_EXTENSION
-            null -> CARD_READER_ONBOARDING_NOT_COMPLETED
-        }
-        PreferenceUtils.setString(
-            getPreferences(),
-            getCardReaderOnboardingCompletedKey(localSiteId, remoteSiteId, selfHostedSiteId),
-            pluginName.name
-        )
-    }
-
-    fun setCardReaderOnboardingPending(
-        localSiteId: Int,
-        remoteSiteId: Long,
-        selfHostedSiteId: Long,
-        pluginType: PluginType?
-    ) {
-        val pluginName = when (pluginType) {
-            PluginType.WOOCOMMERCE_PAYMENTS -> CARD_READER_ONBOARDING_PENDING_REQUIREMENTS_WITH_WCPAY
-            PluginType.STRIPE_EXTENSION_GATEWAY -> CARD_READER_ONBOARDING_PENDING_REQUIREMENTS_WITH_STRIPE_EXTENSION
-            null -> CARD_READER_ONBOARDING_NOT_COMPLETED
-        }
-        PreferenceUtils.setString(
-            getPreferences(),
-            getCardReaderOnboardingCompletedKey(localSiteId, remoteSiteId, selfHostedSiteId),
-            pluginName.name
-        )
-    }
-
-    private fun getCardReaderOnboardingCompletedKey(
+    fun getCardReaderPreferredPlugin(
         localSiteId: Int,
         remoteSiteId: Long,
         selfHostedSiteId: Long
-    ) = "$CARD_READER_ONBOARDING_COMPLETED_STATUS:$localSiteId:$remoteSiteId:$selfHostedSiteId"
+    ): PluginType? {
+        val storedValue = PreferenceUtils.getString(
+            getPreferences(),
+            getCardReaderPreferredPluginKey(
+                localSiteId,
+                remoteSiteId,
+                selfHostedSiteId
+            ),
+            null
+        )
+        return storedValue?.let { PluginType.valueOf(it) }
+    }
+
+    fun setCardReaderOnboardingStatusAndPreferredPlugin(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long,
+        status: CardReaderOnboardingStatus,
+        preferredPlugin: PluginType?,
+    ) {
+        PreferenceUtils.setString(
+            getPreferences(),
+            getCardReaderOnboardingKey(localSiteId, remoteSiteId, selfHostedSiteId),
+            status.toString()
+        )
+        PreferenceUtils.setString(
+            getPreferences(),
+            getCardReaderPreferredPluginKey(localSiteId, remoteSiteId, selfHostedSiteId),
+            preferredPlugin?.toString()
+        )
+    }
+
+    private fun getCardReaderOnboardingKey(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = "$CARD_READER_ONBOARDING_COMPLETED_STATUS_V2:$localSiteId:$remoteSiteId:$selfHostedSiteId"
+
+    private fun getCardReaderPreferredPluginKey(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = "$CARD_READER_PREFERRED_PLUGIN:$localSiteId:$remoteSiteId:$selfHostedSiteId"
 
     fun setCardReaderStatementDescriptor(
         statementDescriptor: String?,
@@ -699,11 +676,9 @@ object AppPrefs {
         }
     }
 
-    enum class CardReaderOnboardingCompletedStatus {
-        CARD_READER_ONBOARDING_COMPLETED_WITH_WCPAY,
-        CARD_READER_ONBOARDING_COMPLETED_WITH_STRIPE_EXTENSION,
-        CARD_READER_ONBOARDING_PENDING_REQUIREMENTS_WITH_WCPAY,
-        CARD_READER_ONBOARDING_PENDING_REQUIREMENTS_WITH_STRIPE_EXTENSION,
+    enum class CardReaderOnboardingStatus {
+        CARD_READER_ONBOARDING_COMPLETED,
+        CARD_READER_ONBOARDING_PENDING,
         CARD_READER_ONBOARDING_NOT_COMPLETED,
     }
 }

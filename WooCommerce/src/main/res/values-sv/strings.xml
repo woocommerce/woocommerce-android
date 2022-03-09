@@ -1,18 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-02-02 11:54:03+0000
+Translation-Revision-Date: 2022-02-15 18:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="card_reader_onboarding_both_plugins_activated_refresh_button">Uppdatera efter uppdatering</string>
+    <string name="card_reader_onboarding_both_plugins_activated_open_store_admin_label">Hantera tillägg</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_two">WooCommerce Payments</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_one">WooCommerce Stripe Gateway</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">Personliga betalningar fungerar endast med ett av följande tillägg aktiverat. Kontakta en webbplatsadministratör för att inaktivera ett av dessa tillägg och fortsätta:</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_admin">Personliga betalningar fungerar endast med ett av följande tillägg aktiverat. Inaktivera ett av dessa tillägg för att fortsätta.</string>
+    <string name="card_reader_onboarding_both_plugins_activated_header">Konflikt mellan betalningstillägg upptäckt</string>
+    <string name="card_reader_wisepad_3_manual_card_reader">WisePad 3-kortläsarmanual</string>
+    <string name="order_creation_price_calculation_failed">Kunde inte uppdatera priser</string>
+    <string name="order_creation_payment_tax">Momsen</string>
+    <string name="order_creation_payment_tax_hint">Momsen kommer att beräknas automatiskt baserat på dina butiksinställningar.</string>
+    <string name="exclusive_or">eller</string>
     <string name="settings_install_jetpack">Installera Jetpack</string>
     <string name="card_reader_onboarding_account_rejected_header">Personliga betalningar är för närvarande inte tillgängliga</string>
     <string name="order_creation_success_snackbar">Beställning skapad</string>
     <string name="order_creation_failure_snackbar">Misslyckades att skapa beställning</string>
     <string name="order_creation_loading_dialog_message">Vänta …</string>
     <string name="order_creation_loading_dialog_title">Skapar din beställning</string>
-    <string name="order_creation_payment_tax_hint">Totalbelopp exklusive moms. Moms beräknas automatiskt baserat på dina butiksinställningar.</string>
     <string name="order_creation_payment_order_total">Beställningens totalsumma</string>
     <string name="order_creation_payment_products_total">Produktbelopp</string>
     <string name="order_creation_payment">Betalning</string>
@@ -77,7 +88,7 @@ Language: sv_SE
     <string name="order_creation_new_customer_add_different_shipping_address">Lägg till en annan leveransadress</string>
     <string name="order_creation_product_instock">I lager</string>
     <string name="order_creation_product_stock_quantity">%s i lager</string>
-    <string name="order_creation_new_customer">Ny kund</string>
+    <string name="order_creation_customer_details">Ny kund</string>
     <string name="order_creation_add_products">Lägg till produkt</string>
     <string name="order_creation_products">Produkter</string>
     <string name="order_creation_add_customer">Lägg till kund</string>

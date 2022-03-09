@@ -19,13 +19,20 @@ import java.util.Date
 @ExperimentalCoroutinesApi
 class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
     private val repository: OrderDetailRepository = mock()
-    private val checker: CardReaderPaymentCollectibilityChecker = CardReaderPaymentCollectibilityChecker(repository)
+    private val cardReaderPaymentCurrencySupportedChecker: CardReaderPaymentCurrencySupportedChecker = mock()
+    private val checker: CardReaderPaymentCollectibilityChecker = CardReaderPaymentCollectibilityChecker(
+        repository,
+        cardReaderPaymentCurrencySupportedChecker,
+    )
 
     private val generatedOrder = OrderTestUtils.generateTestOrder()
 
     @Before
     fun setUp() {
         doReturn(false).whenever(repository).hasSubscriptionProducts(any())
+        runBlockingTest {
+            whenever(cardReaderPaymentCurrencySupportedChecker.isCurrencySupported(any())).thenReturn(true)
+        }
     }
 
     @Test
@@ -72,7 +79,6 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
     fun `when total amount greater than zero, then show collect button`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val order = getOrder(total = BigDecimal(2))
-
             val isCollectable = checker.isCollectable(order)
 
             assertThat(isCollectable).isTrue()
@@ -96,6 +102,45 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
             val isCollectable = checker.isCollectable(order)
 
             assertThat(isCollectable).isTrue()
+        }
+
+    @Test
+    fun `when order in not supported country then it is not collectable`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val order = getOrder(currency = "INR")
+            whenever(
+                cardReaderPaymentCurrencySupportedChecker.isCurrencySupported("INR")
+            ).thenReturn(false)
+
+            val isCollectable = checker.isCollectable(order)
+
+            assertThat(isCollectable).isFalse()
+        }
+
+    @Test
+    fun `given Canada flag is enabled, when order in Canada, then it is collectable`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val order = getOrder(currency = "CAD")
+            whenever(
+                cardReaderPaymentCurrencySupportedChecker.isCurrencySupported("CAD")
+            ).thenReturn(true)
+
+            val isCollectable = checker.isCollectable(order)
+
+            assertThat(isCollectable).isTrue()
+        }
+
+    @Test
+    fun `given Canada IPP flag is disabled, when order in Canada, then it is not collectable`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val order = getOrder(currency = "CAD")
+            whenever(
+                cardReaderPaymentCurrencySupportedChecker.isCurrencySupported("CAD")
+            ).thenReturn(false)
+
+            val isCollectable = checker.isCollectable(order)
+
+            assertThat(isCollectable).isFalse()
         }
 
     @Test
@@ -231,10 +276,39 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when order has "woocommerce_payments" payment method then it is collectable`() =
+    fun `when order has "woocommerce_payments" payment method, then it is collectable`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val order = getOrder(paymentMethod = "woocommerce_payments")
+
+            // WHEN
+            val isCollectable = checker.isCollectable(order)
+
+            // THEN
+            assertThat(isCollectable).isTrue()
+        }
+
+    @Test
+    fun `when order has "wc-booking-gateway" payment method, then it is collectable`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val order = getOrder(paymentMethod = "wc-booking-gateway")
+
+            // WHEN
+            val isCollectable = checker.isCollectable(order)
+
+            // THEN
+            assertThat(isCollectable).isTrue()
+        }
+
+    /**
+     * This test is a clone of the previous test (except of the name) and was added just for the documentation purposes.
+     */
+    @Test
+    fun `given bookings order requires confirmation, when checking collectibility, then it is collectable`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val order = getOrder(paymentMethod = "wc-booking-gateway")
 
             // WHEN
             val isCollectable = checker.isCollectable(order)

@@ -1,26 +1,20 @@
 package com.woocommerce.android.ui.reviews
 
 import com.woocommerce.android.AppConstants
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.getCommentId
-import com.woocommerce.android.model.ProductReview
-import com.woocommerce.android.model.ProductReviewProduct
-import com.woocommerce.android.model.RequestResult
+import com.woocommerce.android.model.*
 import com.woocommerce.android.model.RequestResult.ERROR
 import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
 import com.woocommerce.android.model.RequestResult.SUCCESS
-import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
@@ -135,13 +129,13 @@ class ReviewListRepository @Inject constructor(
     }
 
     private fun trackMarkAllProductReviewsAsReadStarted() {
-        AnalyticsTracker.track(Stat.REVIEWS_MARK_ALL_READ)
+        AnalyticsTracker.track(AnalyticsEvent.REVIEWS_MARK_ALL_READ)
     }
 
     private fun trackMarkAllProductReviewsAsReadResult(result: OnNotificationChanged) {
         if (result.isError) {
             AnalyticsTracker.track(
-                Stat.REVIEWS_MARK_ALL_READ_FAILED,
+                AnalyticsEvent.REVIEWS_MARK_ALL_READ_FAILED,
                 mapOf(
                     AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                     AnalyticsTracker.KEY_ERROR_TYPE to result.error?.type?.toString(),
@@ -155,7 +149,7 @@ class ReviewListRepository @Inject constructor(
                     "${result.error?.type} - ${result.error?.message}"
             )
         } else {
-            AnalyticsTracker.track(Stat.REVIEWS_MARK_ALL_READ_SUCCESS)
+            AnalyticsTracker.track(AnalyticsEvent.REVIEWS_MARK_ALL_READ_SUCCESS)
         }
     }
 
@@ -237,7 +231,7 @@ class ReviewListRepository @Inject constructor(
         isFetchingProductReviews = false
         if (result.isError) {
             AnalyticsTracker.track(
-                Stat.REVIEWS_LOAD_FAILED,
+                AnalyticsEvent.REVIEWS_LOAD_FAILED,
                 mapOf(
                     AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                     AnalyticsTracker.KEY_ERROR_TYPE to result.error?.type?.toString(),
@@ -252,7 +246,7 @@ class ReviewListRepository @Inject constructor(
             )
         } else {
             AnalyticsTracker.track(
-                Stat.REVIEWS_LOADED,
+                AnalyticsEvent.REVIEWS_LOADED,
                 mapOf(
                     AnalyticsTracker.KEY_IS_LOADING_MORE to loadMore
                 )
@@ -312,7 +306,7 @@ class ReviewListRepository @Inject constructor(
         if (event.causeOfChange == FETCH_PRODUCTS) {
             if (event.isError) {
                 AnalyticsTracker.track(
-                    Stat.REVIEWS_PRODUCTS_LOAD_FAILED,
+                    AnalyticsEvent.REVIEWS_PRODUCTS_LOAD_FAILED,
                     mapOf(
                         AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                         AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
@@ -327,7 +321,7 @@ class ReviewListRepository @Inject constructor(
                 )
                 continuationProduct.continueWith(false)
             } else {
-                AnalyticsTracker.track(Stat.REVIEWS_PRODUCTS_LOADED)
+                AnalyticsTracker.track(AnalyticsEvent.REVIEWS_PRODUCTS_LOADED)
                 continuationProduct.continueWith(true)
             }
         }
@@ -339,7 +333,7 @@ class ReviewListRepository @Inject constructor(
         if (event.causeOfChange == UPDATE_PRODUCT_REVIEW_STATUS) {
             if (event.isError) {
                 AnalyticsTracker.track(
-                    Stat.REVIEW_ACTION_FAILED,
+                    AnalyticsEvent.REVIEW_ACTION_FAILED,
                     mapOf(
                         AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                         AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
@@ -353,7 +347,7 @@ class ReviewListRepository @Inject constructor(
                         "changes to server!: ${event.error?.type} - ${event.error?.message}"
                 )
             } else {
-                AnalyticsTracker.track(Stat.REVIEW_ACTION_SUCCESS)
+                AnalyticsTracker.track(AnalyticsEvent.REVIEW_ACTION_SUCCESS)
             }
         }
     }
@@ -364,7 +358,7 @@ class ReviewListRepository @Inject constructor(
         if (event.causeOfChange == FETCH_NOTIFICATIONS) {
             if (event.isError) {
                 AnalyticsTracker.track(
-                    Stat.NOTIFICATIONS_LOAD_FAILED,
+                    AnalyticsEvent.NOTIFICATIONS_LOAD_FAILED,
                     mapOf(
                         AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                         AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
@@ -379,7 +373,7 @@ class ReviewListRepository @Inject constructor(
                 )
                 continuationNotification.continueWith(false)
             } else {
-                AnalyticsTracker.track(Stat.NOTIFICATIONS_LOADED)
+                AnalyticsTracker.track(AnalyticsEvent.NOTIFICATIONS_LOADED)
 
                 continuationNotification.continueWith(true)
             }

@@ -19,9 +19,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationFormBinding
 import com.woocommerce.android.databinding.LayoutOrderCreationCustomerInfoBinding
 import com.woocommerce.android.databinding.OrderCreationPaymentSectionBinding
-import com.woocommerce.android.extensions.handleDialogResult
-import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.extensions.*
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.base.BaseFragment
@@ -36,13 +34,11 @@ import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatu
 import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Companion.KEY_ORDER_STATUS_RESULT
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
+import java.math.BigDecimal
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -97,6 +93,14 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     }
 
     private fun FragmentOrderCreationFormBinding.initView() {
+        initOrderStatusView()
+        initNotesSection()
+        initCustomerSection()
+        initProductsSection()
+        initPaymentSection()
+    }
+
+    private fun FragmentOrderCreationFormBinding.initOrderStatusView() {
         orderStatusView.initView(
             mode = OrderDetailOrderStatusView.Mode.OrderCreation,
             editOrderStatusClickListener = {
@@ -104,6 +108,12 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                     viewModel.onEditOrderStatusClicked(it)
                 }
             }
+        )
+    }
+
+    private fun FragmentOrderCreationFormBinding.initNotesSection() {
+        notesSection.setEditButtonContentDescription(
+            contentDescription = getString(R.string.order_creation_customer_note_edit_content_description)
         )
         notesSection.setAddButtons(
             listOf(
@@ -118,6 +128,12 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         notesSection.setOnEditButtonClicked {
             viewModel.onCustomerNoteClicked()
         }
+        notesSection.setEditButtonContentDescription(
+            contentDescription = getString(R.string.order_creation_customer_note_edit_content_description)
+        )
+    }
+
+    private fun FragmentOrderCreationFormBinding.initCustomerSection() {
         customerSection.setAddButtons(
             listOf(
                 AddButton(
@@ -131,6 +147,12 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         customerSection.setOnEditButtonClicked {
             viewModel.onCustomerClicked()
         }
+        customerSection.setEditButtonContentDescription(
+            contentDescription = getString(R.string.order_creation_customer_edit_content_description)
+        )
+    }
+
+    private fun FragmentOrderCreationFormBinding.initProductsSection() {
         productsSection.setAddButtons(
             listOf(
                 AddButton(
@@ -141,6 +163,12 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                 )
             )
         )
+    }
+
+    private fun FragmentOrderCreationFormBinding.initPaymentSection() {
+        paymentSection.shippingButton.setOnClickListener {
+            viewModel.onShippingButtonClicked()
+        }
     }
 
     private fun LayoutOrderCreationCustomerInfoBinding.changeState() {
@@ -176,6 +204,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             }
             new.isUpdatingOrderDraft.takeIfNotEqualTo(old?.isUpdatingOrderDraft) { show ->
                 binding.paymentSection.loadingProgress.isVisible = show
+                binding.paymentSection.feeButton.isEnabled = show.not()
             }
             new.showOrderUpdateSnackbar.takeIfNotEqualTo(old?.showOrderUpdateSnackbar) { show ->
                 showOrHideErrorSnackBar(show)
@@ -186,13 +215,47 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     }
 
     private fun bindPaymentSection(paymentSection: OrderCreationPaymentSectionBinding, newOrderData: Order) {
-        paymentSection.root.isVisible = newOrderData.items.isNotEmpty()
-        paymentSection.taxLayout.isVisible = FeatureFlag.ORDER_CREATION_M2.isEnabled()
-        paymentSection.taxCalculationHint.isVisible = !FeatureFlag.ORDER_CREATION_M2.isEnabled()
+        paymentSection.bindFeesSubSection(newOrderData)
+
+        val currentShipping = newOrderData.shippingLines.firstOrNull { it.methodId != null }
+        paymentSection.shippingButton.setText(
+            if (currentShipping != null) R.string.order_creation_edit_shipping
+            else R.string.order_creation_add_shipping
+        )
+        paymentSection.shippingButton.setIconResource(
+            if (currentShipping != null) 0
+            else R.drawable.ic_add
+        )
+        paymentSection.shippingValue.isVisible = currentShipping != null
+        currentShipping?.let {
+            paymentSection.shippingValue.text = bigDecimalFormatter(it.total)
+        }
 
         paymentSection.productsTotalValue.text = bigDecimalFormatter(newOrderData.productsTotal)
         paymentSection.taxValue.text = bigDecimalFormatter(newOrderData.totalTax)
         paymentSection.orderTotalValue.text = bigDecimalFormatter(newOrderData.total)
+    }
+
+    private fun OrderCreationPaymentSectionBinding.bindFeesSubSection(newOrderData: Order) {
+        feeButton.setOnClickListener { viewModel.onFeeButtonClicked() }
+
+        val currentFeeTotal = newOrderData.feesLines
+            .firstOrNull { it.name != null }
+            ?.total
+            ?: BigDecimal.ZERO
+
+        val hasFee = currentFeeTotal.isNotEqualTo(BigDecimal.ZERO)
+
+        if (hasFee) {
+            feeButton.setText(R.string.order_creation_payment_fee)
+            feeButton.setIconResource(0)
+            feeValue.isVisible = true
+            feeValue.text = bigDecimalFormatter(currentFeeTotal)
+        } else {
+            feeButton.setText(R.string.order_creation_add_fee)
+            feeButton.setIconResource(R.drawable.ic_add)
+            feeValue.isVisible = false
+        }
     }
 
     private fun bindNotesSection(notesSection: OrderCreationSectionView, customerNote: String) {

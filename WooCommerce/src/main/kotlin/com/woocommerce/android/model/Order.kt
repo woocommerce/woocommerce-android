@@ -1,8 +1,8 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
-import com.woocommerce.android.extensions.*
-import com.woocommerce.android.model.Order.*
+import com.woocommerce.android.extensions.sumByFloat
+import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.util.AddressUtils
 import kotlinx.parcelize.IgnoredOnParcel
@@ -10,7 +10,8 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import java.math.BigDecimal
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 @Parcelize
 data class Order(
@@ -173,19 +174,14 @@ data class Order(
     @Parcelize
     data class ShippingLine(
         val itemId: Long,
-        val methodId: String,
+        val methodId: String?,
         val methodTitle: String,
         val totalTax: BigDecimal,
         val total: BigDecimal
-    ) : Parcelable
-
-    @Parcelize
-    data class FeeLine(
-        val id: Long,
-        val name: String,
-        val total: BigDecimal,
-        val totalTax: BigDecimal,
-    ) : Parcelable
+    ) : Parcelable {
+        constructor(methodId: String, methodTitle: String, total: BigDecimal) :
+            this(0L, methodId, methodTitle, BigDecimal.ZERO, total)
+    }
 
     @Parcelize
     data class TaxLine(
@@ -194,6 +190,23 @@ data class Order(
         val taxTotal: String,
         val ratePercent: Float
     ) : Parcelable
+
+    @Parcelize
+    data class FeeLine(
+        val id: Long,
+        val name: String?,
+        val total: BigDecimal,
+        val totalTax: BigDecimal,
+    ) : Parcelable {
+        companion object {
+            val EMPTY = FeeLine(
+                id = 0,
+                name = "",
+                total = BigDecimal.ZERO,
+                totalTax = BigDecimal.ZERO
+            )
+        }
+    }
 
     fun getBillingName(defaultValue: String): String {
         return when {

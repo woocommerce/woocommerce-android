@@ -103,6 +103,7 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
                 UiHelpers.setTextOrHide(binding.primaryActionBtn, viewState.primaryActionLabel)
                 UiHelpers.setTextOrHide(binding.secondaryActionBtn, viewState.secondaryActionLabel)
                 UiHelpers.setTextOrHide(binding.tertiaryActionBtn, viewState.tertiaryActionLabel)
+                UiHelpers.setTextOrHide(binding.receiptSentLabel, viewState.receiptSentAutomaticallyHint)
                 UiHelpers.updateVisibility(binding.progressBarWrapper, viewState.isProgressVisible)
                 binding.primaryActionBtn.setOnClickListener {
                     viewState.onPrimaryActionClicked?.invoke()
@@ -130,7 +131,9 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
 
     private fun announceForAccessibility(binding: CardReaderPaymentDialogBinding, viewState: ViewState) {
         with(binding) {
-            if (viewState is ViewState.PaymentSuccessfulState) {
+            if (viewState is ViewState.PaymentSuccessfulState ||
+                viewState is ViewState.PaymentSuccessfulReceiptSentAutomaticallyState
+            ) {
                 viewState.headerLabel?.let {
                     headerLabel.announceForAccessibility(getString(it) + viewState.amountWithCurrencyLabel)
                 }

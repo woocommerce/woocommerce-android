@@ -79,8 +79,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val orderStatus = OrderStatus(order.status.value, order.status.value)
     private val testOrderNotes = OrderTestUtils.generateTestOrderNotes(
         totalNotes = 5,
-        orderId = ORDER_ID,
-        localSiteId = ORDER_SITE_ID,
+        orderId = ORDER_ID
     )
     private val testOrderShipmentTrackings = OrderTestUtils.generateTestOrderShipmentTrackings(
         totalCount = 5,
@@ -118,6 +117,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
         doReturn(site).whenever(selectedSite).getIfExists()
         doReturn(site).whenever(selectedSite).get()
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any())
+        }
 
         viewModel = spy(
             OrderDetailViewModel(
@@ -155,6 +157,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         val nonRefundedOrder = order.copy(refundTotal = BigDecimal.ZERO)
 
         val expectedViewState = orderWithParameters.copy(orderInfo = orderInfo.copy(order = nonRefundedOrder))
+
+        doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any())
 
         doReturn(nonRefundedOrder).whenever(repository).getOrderById(any())
 
@@ -1122,7 +1126,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(repository).fetchOrderById(any())
             doReturn(false).whenever(repository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
-            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected))
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
             viewModel.start()
 
             // When
@@ -1140,7 +1144,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(repository).fetchOrderById(any())
             doReturn(false).whenever(repository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
-            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected))
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
             whenever(appPrefsWrapper.isCardReaderOnboardingCompleted(anyInt(), anyLong(), anyLong())).thenReturn(false)
             viewModel.start()
 
@@ -1196,7 +1200,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(repository).fetchOrderById(any())
             doReturn(false).whenever(repository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
-            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected))
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
             viewModel.start()
 
             // When

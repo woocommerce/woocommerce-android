@@ -12,6 +12,8 @@ import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
@@ -28,8 +30,8 @@ import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.appbar.AppBarLayout
 import com.woocommerce.android.*
 import com.woocommerce.android.R.dimen
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.ActivityMainBinding
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.extensions.collapse
@@ -45,6 +47,7 @@ import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.*
 import com.woocommerce.android.ui.main.MainActivityViewModel.*
+import com.woocommerce.android.ui.moremenu.MoreMenuFragmentDirections
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
@@ -114,6 +117,10 @@ class MainActivity :
     private lateinit var binding: ActivityMainBinding
     private lateinit var toolbar: Toolbar
 
+    private val sitePickerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        handleSitePickerResult(it)
+    }
+
     private val appBarOffsetListener by lazy {
         AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset ->
             binding.toolbarSubtitle.alpha = ((1.0f - abs((verticalOffset / appBarLayout.totalScrollRange.toFloat()))))
@@ -181,7 +188,7 @@ class MainActivity :
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         this.menu = menu
         return super.onCreateOptionsMenu(menu)
     }
@@ -202,13 +209,13 @@ class MainActivity :
         setSupportActionBar(toolbar)
         toolbar.navigationIcon = null
 
-        presenter.takeView(this)
-
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
         navController = navHostFragment.navController
         navController.addOnDestinationChangedListener(this@MainActivity)
         navHostFragment.childFragmentManager.registerFragmentLifecycleCallbacks(fragmentLifecycleObserver, false)
         binding.bottomNav.init(navController, this)
+
+        presenter.takeView(this)
 
         // fetch the site list if the database has been downgraded - otherwise the site picker will be displayed,
         // which we don't want in this situation
@@ -256,7 +263,6 @@ class MainActivity :
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
 
-        updateReviewsBadge()
         updateOrderBadge(false)
 
         checkConnection()
@@ -335,7 +341,7 @@ class MainActivity :
             currentDestinationId == R.id.dashboard ||
                 currentDestinationId == R.id.orders ||
                 currentDestinationId == R.id.products ||
-                currentDestinationId == R.id.reviews ||
+                currentDestinationId == R.id.moreMenu ||
                 currentDestinationId == R.id.analytics
         } else {
             true
@@ -448,14 +454,10 @@ class MainActivity :
             // the image viewers should be shown full screen
             if (isFullScreenFragment) {
                 window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-                restoreToolbarHeight = binding.collapsingToolbar.layoutParams.height
-                binding.collapsingToolbar.layoutParams.height = 0
+                hideToolbar()
             } else {
                 window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-                if (restoreToolbarHeight > 0) {
-                    binding.collapsingToolbar.layoutParams.height = restoreToolbarHeight
-                    restoreToolbarHeight = 0
-                }
+                showToolbar()
             }
         }
 
@@ -467,6 +469,18 @@ class MainActivity :
         }
 
         previousDestinationId = destination.id
+    }
+
+    private fun showToolbar() {
+        if (restoreToolbarHeight > 0) {
+            binding.collapsingToolbar.layoutParams.height = restoreToolbarHeight
+            restoreToolbarHeight = 0
+        }
+    }
+
+    fun hideToolbar() {
+        restoreToolbarHeight = binding.collapsingToolbar.layoutParams.height
+        binding.collapsingToolbar.layoutParams.height = 0
     }
 
     override fun setTitle(title: CharSequence?) {
@@ -552,12 +566,6 @@ class MainActivity :
                 return
             }
             RequestCodes.SETTINGS -> {
-                // restart the activity if the user returned from settings and they switched sites
-                if (resultCode == AppSettingsActivity.RESULT_CODE_SITE_CHANGED) {
-                    presenter.selectedSiteChanged(selectedSite.get())
-                    restart()
-                }
-
                 // beta features have changed. Restart activity for changes to take effect
                 if (resultCode == AppSettingsActivity.RESULT_CODE_BETA_OPTIONS_CHANGED) {
                     restart()
@@ -595,7 +603,7 @@ class MainActivity :
     }
 
     override fun showSettingsScreen() {
-        AnalyticsTracker.track(Stat.MAIN_MENU_SETTINGS_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.MAIN_MENU_SETTINGS_TAPPED)
         val intent = Intent(this, AppSettingsActivity::class.java)
         startActivityForResult(intent, RequestCodes.SETTINGS)
     }
@@ -611,6 +619,18 @@ class MainActivity :
         // Complete UI initialization
         binding.bottomNav.init(navController, this)
         initFragment(null)
+    }
+
+    fun startSitePicker() {
+        val sitePickerIntent = Intent(this, SitePickerActivity::class.java)
+        sitePickerLauncher.launch(sitePickerIntent)
+    }
+
+    private fun handleSitePickerResult(activityResult: ActivityResult) {
+        if (activityResult.resultCode == RESULT_OK) {
+            presenter.selectedSiteChanged(selectedSite.get())
+            restart()
+        }
     }
 
     /**
@@ -634,24 +654,6 @@ class MainActivity :
         return Intent.ACTION_VIEW == action && host.contains(MAGIC_LOGIN)
     }
 
-    // region Bottom Navigation
-    override fun updateReviewsBadge() {
-        if (AppPrefs.getHasUnseenReviews()) {
-            showReviewsBadge()
-        } else {
-            hideReviewsBadge()
-        }
-    }
-
-    override fun hideReviewsBadge() {
-        binding.bottomNav.showReviewsBadge(false)
-        viewModel.removeReviewNotifications()
-    }
-
-    override fun showReviewsBadge() {
-        binding.bottomNav.showReviewsBadge(true)
-    }
-
     override fun updateOrderBadge(hideCountUntilComplete: Boolean) {
         if (hideCountUntilComplete) {
             binding.bottomNav.clearOrderBadgeCount()
@@ -669,30 +671,32 @@ class MainActivity :
         binding.bottomNav.setOrderBadgeCount(0)
     }
 
+    private fun showMoreMenuBadge(show: Boolean) {
+        binding.bottomNav.showMoreMenuBadge(show)
+    }
+
     override fun onNavItemSelected(navPos: BottomNavigationPosition) {
         val stat = when (navPos) {
-            MY_STORE -> Stat.MAIN_TAB_DASHBOARD_SELECTED
-            ANALYTICS -> Stat.MAIN_TAB_ANALYTICS_SELECTED
-            ORDERS -> Stat.MAIN_TAB_ORDERS_SELECTED
-            PRODUCTS -> Stat.MAIN_TAB_PRODUCTS_SELECTED
-            REVIEWS -> Stat.MAIN_TAB_NOTIFICATIONS_SELECTED
+            MY_STORE -> AnalyticsEvent.MAIN_TAB_DASHBOARD_SELECTED
+            ANALYTICS -> AnalyticsEvent.MAIN_TAB_ANALYTICS_SELECTED
+            ORDERS -> AnalyticsEvent.MAIN_TAB_ORDERS_SELECTED
+            PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_SELECTED
+            MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_SELECTED
         }
         AnalyticsTracker.track(stat)
 
-        if (navPos == REVIEWS) {
-            viewModel.removeReviewNotifications()
-        } else if (navPos == ORDERS) {
+        if (navPos == ORDERS) {
             viewModel.removeOrderNotifications()
         }
     }
 
     override fun onNavItemReselected(navPos: BottomNavigationPosition) {
         val stat = when (navPos) {
-            MY_STORE -> Stat.MAIN_TAB_DASHBOARD_RESELECTED
-            ANALYTICS -> Stat.MAIN_TAB_ANALYTICS_RESELECTED
-            ORDERS -> Stat.MAIN_TAB_ORDERS_RESELECTED
-            PRODUCTS -> Stat.MAIN_TAB_PRODUCTS_RESELECTED
-            REVIEWS -> Stat.MAIN_TAB_NOTIFICATIONS_RESELECTED
+            MY_STORE -> AnalyticsEvent.MAIN_TAB_DASHBOARD_RESELECTED
+            ANALYTICS -> AnalyticsEvent.MAIN_TAB_ANALYTICS_RESELECTED
+            ORDERS -> AnalyticsEvent.MAIN_TAB_ORDERS_RESELECTED
+            PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_RESELECTED
+            MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_RESELECTED
         }
         AnalyticsTracker.track(stat)
 
@@ -734,41 +738,42 @@ class MainActivity :
     // endregion
 
     private fun setupObservers() {
-        viewModel.event.observe(
-            this,
-            { event ->
-                when (event) {
-                    is ViewMyStoreStats -> binding.bottomNav.currentPosition = MY_STORE
-                    is ViewOrderList -> binding.bottomNav.currentPosition = ORDERS
-                    is ViewReviewList -> binding.bottomNav.currentPosition = REVIEWS
-                    is ViewZendeskTickets -> {
-                        binding.bottomNav.currentPosition = MY_STORE
-                        startActivity(HelpActivity.createIntent(this, Origin.ZENDESK_NOTIFICATION, null))
-                    }
-                    is ViewOrderDetail -> {
-                        showOrderDetail(
-                            orderId = event.uniqueId,
-                            remoteNoteId = event.remoteNoteId,
-                            launchedFromNotification = true
-                        )
-                    }
-                    is ViewReviewDetail -> {
-                        showReviewDetail(event.uniqueId, launchedFromNotification = true, enableModeration = true)
-                    }
-                    is RestartActivityForNotification -> {
-                        // Add flags for handling the push notification after restart
-                        intent.putExtra(FIELD_OPENED_FROM_PUSH, true)
-                        intent.putExtra(FIELD_REMOTE_NOTIFICATION, event.notification)
-                        intent.putExtra(FIELD_PUSH_ID, event.pushId)
-                        restart()
-                    }
-                    is ShowFeatureAnnouncement -> {
-                        val action = NavGraphMainDirections.actionOpenWhatsnewFromMain(event.announcement)
-                        navController.navigateSafely(action)
-                    }
+        viewModel.event.observe(this) { event ->
+            when (event) {
+                is ViewMyStoreStats -> binding.bottomNav.currentPosition = MY_STORE
+                is ViewOrderList -> binding.bottomNav.currentPosition = ORDERS
+                is ViewZendeskTickets -> {
+                    binding.bottomNav.currentPosition = MY_STORE
+                    startActivity(HelpActivity.createIntent(this, Origin.ZENDESK_NOTIFICATION, null))
+                }
+                is ViewOrderDetail -> {
+                    showOrderDetail(
+                        orderId = event.uniqueId,
+                        remoteNoteId = event.remoteNoteId,
+                        launchedFromNotification = true
+                    )
+                }
+                is ViewReviewDetail -> {
+                    showReviewDetail(event.uniqueId, launchedFromNotification = true, enableModeration = true)
+                }
+                is ViewReviewList -> showReviewList()
+                is RestartActivityForNotification -> {
+                    // Add flags for handling the push notification after restart
+                    intent.putExtra(FIELD_OPENED_FROM_PUSH, true)
+                    intent.putExtra(FIELD_REMOTE_NOTIFICATION, event.notification)
+                    intent.putExtra(FIELD_PUSH_ID, event.pushId)
+                    restart()
+                }
+                is ShowFeatureAnnouncement -> {
+                    val action = NavGraphMainDirections.actionOpenWhatsnewFromMain(event.announcement)
+                    navController.navigateSafely(action)
                 }
             }
-        )
+        }
+
+        viewModel.unseenReviewsCount.observe(this) { count ->
+            showMoreMenuBadge(count > 0)
+        }
     }
 
     override fun showProductDetail(remoteProductId: Long, enableTrash: Boolean) {
@@ -804,20 +809,26 @@ class MainActivity :
         navController.navigateSafely(action)
     }
 
+    private fun showReviewList() {
+        showBottomNav()
+        binding.bottomNav.currentPosition = MORE
+        binding.bottomNav.active(MORE.position)
+        val action = MoreMenuFragmentDirections.actionMoreMenuToReviewList()
+        navController.navigateSafely(action)
+    }
+
     override fun showReviewDetail(
         remoteReviewId: Long,
         launchedFromNotification: Boolean,
         enableModeration: Boolean,
         tempStatus: String?
     ) {
-        // make sure the review tab is active if the user came here from a notification
         if (launchedFromNotification) {
-            showBottomNav()
-            binding.bottomNav.currentPosition = REVIEWS
-            binding.bottomNav.active(REVIEWS.position)
+            binding.bottomNav.currentPosition = MORE
+            binding.bottomNav.active(MORE.position)
         }
 
-        val action = ReviewListFragmentDirections.actionReviewListFragmentToReviewDetailFragment(
+        val action = NavGraphMainDirections.actionGlobalReviewDetailFragment(
             remoteReviewId = remoteReviewId,
             tempStatus = tempStatus,
             launchedFromNotification = launchedFromNotification,
@@ -867,7 +878,6 @@ class MainActivity :
         launchedFromNotification: Boolean
     ) {
         if (launchedFromNotification) {
-            showBottomNav()
             binding.bottomNav.currentPosition = ORDERS
             binding.bottomNav.active(ORDERS.position)
         }

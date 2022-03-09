@@ -1,11 +1,15 @@
 package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_COMPLETED
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_PENDING
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForCanada
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUSA
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.prefs.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.prefs.cardreader.InPersonPaymentsCanadaFeatureFlag
 import com.woocommerce.android.ui.prefs.cardreader.StripeExtensionFeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -37,6 +41,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     private val stripeExtensionFeatureFlag: StripeExtensionFeatureFlag = mock()
     private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag = mock()
     private val cardReaderConfigFactory: CardReaderConfigFactory = mock()
+    private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
 
     private val site = SiteModel()
 
@@ -53,7 +58,8 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             networkStatus,
             stripeExtensionFeatureFlag,
             inPersonPaymentsCanadaFeatureFlag,
-            cardReaderConfigFactory
+            cardReaderConfigFactory,
+            cardReaderTrackingInfoKeeper,
         )
         whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(selectedSite.get()).thenReturn(site)
@@ -459,7 +465,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isEqualTo(CardReaderOnboardingState.StripeAccountUnderReview)
+            assertThat(result).isInstanceOf(CardReaderOnboardingState.StripeAccountUnderReview::class.java)
         }
 
     @Test
@@ -507,7 +513,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isEqualTo(CardReaderOnboardingState.StripeAccountOverdueRequirement)
+            assertThat(result).isInstanceOf(CardReaderOnboardingState.StripeAccountOverdueRequirement::class.java)
         }
 
     @Test
@@ -523,7 +529,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isEqualTo(CardReaderOnboardingState.StripeAccountOverdueRequirement)
+            assertThat(result).isInstanceOf(CardReaderOnboardingState.StripeAccountOverdueRequirement::class.java)
         }
 
     @Test
@@ -537,7 +543,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isEqualTo(CardReaderOnboardingState.StripeAccountRejected)
+            assertThat(result).isInstanceOf(CardReaderOnboardingState.StripeAccountRejected::class.java)
         }
 
     @Test
@@ -551,7 +557,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isEqualTo(CardReaderOnboardingState.StripeAccountRejected)
+            assertThat(result).isInstanceOf(CardReaderOnboardingState.StripeAccountRejected::class.java)
         }
 
     @Test
@@ -565,7 +571,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isEqualTo(CardReaderOnboardingState.StripeAccountRejected)
+            assertThat(result).isInstanceOf(CardReaderOnboardingState.StripeAccountRejected::class.java)
         }
 
     @Test
@@ -579,7 +585,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isEqualTo(CardReaderOnboardingState.StripeAccountRejected)
+            assertThat(result).isInstanceOf(CardReaderOnboardingState.StripeAccountRejected::class.java)
         }
 
     @Test
@@ -591,7 +597,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isEqualTo(CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount)
+            assertThat(result).isInstanceOf(CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount::class.java)
         }
 
     @Test
@@ -603,7 +609,8 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isNotEqualTo(CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount)
+            assertThat(result)
+                .isNotInstanceOf(CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount::class.java)
         }
 
     @Test
@@ -615,7 +622,8 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isNotEqualTo(CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount)
+            assertThat(result)
+                .isNotInstanceOf(CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount::class.java)
         }
 
     @Test
@@ -627,7 +635,8 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isNotEqualTo(CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount)
+            assertThat(result)
+                .isNotInstanceOf(CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount::class.java)
         }
 
     @Test
@@ -639,7 +648,8 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isNotEqualTo(CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount)
+            assertThat(result)
+                .isNotInstanceOf(CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount::class.java)
         }
 
     @Test
@@ -653,11 +663,12 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
         checker.getOnboardingState()
 
-        verify(appPrefsWrapper).setCardReaderOnboardingCompleted(
+        verify(appPrefsWrapper).setCardReaderOnboardingStatusAndPreferredPlugin(
             anyInt(),
             anyLong(),
             anyLong(),
-            eq(PluginType.WOOCOMMERCE_PAYMENTS)
+            eq(CARD_READER_ONBOARDING_COMPLETED),
+            anyOrNull(),
         )
     }
 
@@ -678,11 +689,12 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
         checker.getOnboardingState()
 
-        verify(appPrefsWrapper).setCardReaderOnboardingPending(
+        verify(appPrefsWrapper).setCardReaderOnboardingStatusAndPreferredPlugin(
             anyInt(),
             anyLong(),
             anyLong(),
-            eq(PluginType.WOOCOMMERCE_PAYMENTS)
+            eq(CARD_READER_ONBOARDING_PENDING),
+            anyOrNull(),
         )
     }
 
@@ -697,11 +709,12 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
         checker.getOnboardingState()
 
-        verify(appPrefsWrapper).setCardReaderOnboardingCompleted(
+        verify(appPrefsWrapper).setCardReaderOnboardingStatusAndPreferredPlugin(
             anyInt(),
             anyLong(),
             anyLong(),
-            eq(PluginType.STRIPE_EXTENSION_GATEWAY)
+            eq(CARD_READER_ONBOARDING_COMPLETED),
+            anyOrNull(),
         )
     }
 
@@ -722,11 +735,12 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
         checker.getOnboardingState()
 
-        verify(appPrefsWrapper).setCardReaderOnboardingPending(
+        verify(appPrefsWrapper).setCardReaderOnboardingStatusAndPreferredPlugin(
             anyInt(),
             anyLong(),
             anyLong(),
-            eq(PluginType.STRIPE_EXTENSION_GATEWAY)
+            eq(CARD_READER_ONBOARDING_PENDING),
+            anyOrNull(),
         )
     }
 
@@ -755,16 +769,17 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         )
         checker.getOnboardingState()
 
-        verify(appPrefsWrapper, never()).setCardReaderOnboardingCompleted(
+        verify(appPrefsWrapper).setCardReaderOnboardingStatusAndPreferredPlugin(
             anyInt(),
             anyLong(),
             anyLong(),
+            eq(CARD_READER_ONBOARDING_NOT_COMPLETED),
             any()
         )
     }
 
     @Test
-    fun `when onboarding completed using wcpay, then onboarding completed plugin type saved`() = testBlocking {
+    fun `when onboarding completed using wcpay, then wcpay plugin type saved`() = testBlocking {
         whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
         whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
             .thenReturn(null)
@@ -774,11 +789,12 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
         checker.getOnboardingState()
 
-        verify(appPrefsWrapper).setCardReaderOnboardingCompleted(
+        verify(appPrefsWrapper).setCardReaderOnboardingStatusAndPreferredPlugin(
             anyInt(),
             anyLong(),
             anyLong(),
-            eq(PluginType.WOOCOMMERCE_PAYMENTS)
+            any(),
+            eq(PluginType.WOOCOMMERCE_PAYMENTS),
         )
     }
 
@@ -809,7 +825,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when onboarding completed using stripe, then onboarding completed plugin type saved`() = testBlocking {
+    fun `when onboarding completed using stripe, then onboarding completed saved`() = testBlocking {
         whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
         whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
             .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
@@ -819,16 +835,37 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
         checker.getOnboardingState()
 
-        verify(appPrefsWrapper).setCardReaderOnboardingCompleted(
+        verify(appPrefsWrapper).setCardReaderOnboardingStatusAndPreferredPlugin(
             anyInt(),
             anyLong(),
             anyLong(),
-            eq(PluginType.STRIPE_EXTENSION_GATEWAY)
+            eq(CARD_READER_ONBOARDING_COMPLETED),
+            any(),
         )
     }
 
     @Test
-    fun `when onboarding failed due to error, then onboarding completed plugin type is reset`() = testBlocking {
+    fun `when onboarding completed using stripe, then stripe plugin type saved`() = testBlocking {
+        whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+            .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
+        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+            .thenReturn(null)
+        whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
+
+        checker.getOnboardingState()
+
+        verify(appPrefsWrapper).setCardReaderOnboardingStatusAndPreferredPlugin(
+            anyInt(),
+            anyLong(),
+            anyLong(),
+            any(),
+            eq(PluginType.STRIPE_EXTENSION_GATEWAY),
+        )
+    }
+
+    @Test
+    fun `when onboarding failed due to error, then onboarding not completed is saved`() = testBlocking {
         whenever(wcInPersonPaymentsStore.loadAccount(any(), any())).thenReturn(
             buildPaymentAccountResult(
                 WCPaymentAccountResult.WCPaymentAccountStatus.REJECTED_OTHER,
@@ -837,11 +874,12 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
         checker.getOnboardingState()
 
-        verify(appPrefsWrapper).setCardReaderOnboardingCompleted(
+        verify(appPrefsWrapper).setCardReaderOnboardingStatusAndPreferredPlugin(
             anyInt(),
             anyLong(),
             anyLong(),
-            eq(null)
+            eq(CARD_READER_ONBOARDING_NOT_COMPLETED),
+            anyOrNull(),
         )
     }
 
@@ -859,7 +897,6 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     fun `given Canada flag false, when store is Canada, then STORE_COUNTRY_NOT_SUPPORTED returned`() = testBlocking {
         whenever(wooStore.getStoreCountryCode(site)).thenReturn("CA")
         whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(false)
-        whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForCanada)
 
         val result = checker.getOnboardingState()
 
@@ -867,20 +904,47 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given Canada store, when stripe ext activated, then STORE_COUNTRY_NOT_SUPPORTED returned`() = testBlocking {
-        whenever(wooStore.getStoreCountryCode(site)).thenReturn("CA")
-        whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(true)
-        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-            .thenReturn(buildWCPayPluginInfo(isActive = false))
-        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-            .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
-        whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
-        whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForCanada)
+    fun `given store in UK, when getting onboardign state, then UK stored in tracking keeper`() = testBlocking {
+        whenever(wooStore.getStoreCountryCode(site)).thenReturn("UK")
 
-        val result = checker.getOnboardingState()
+        checker.getOnboardingState()
 
-        assertThat(result).isInstanceOf(CardReaderOnboardingState.StoreCountryNotSupported::class.java)
+        verify(cardReaderTrackingInfoKeeper).setCountry("UK")
     }
+
+    @Test
+    fun `given Canada store, when stripe ext activated, then plugin is not supported in country returned`() =
+        testBlocking {
+            whenever(wooStore.getStoreCountryCode(site)).thenReturn("CA")
+            whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(true)
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+                .thenReturn(buildWCPayPluginInfo(isActive = false))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+                .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
+            whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
+            whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForCanada)
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isInstanceOf(CardReaderOnboardingState.PluginIsNotSupportedInTheCountry::class.java)
+        }
+
+    @Test
+    fun `given US store, when stripe ext activated, then store OnboardingCompleted returned`() =
+        testBlocking {
+            whenever(wooStore.getStoreCountryCode(site)).thenReturn("US")
+            whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(true)
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+                .thenReturn(buildWCPayPluginInfo(isActive = false))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+                .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
+            whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
+            whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForUSA)
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isInstanceOf(CardReaderOnboardingState.OnboardingCompleted::class.java)
+        }
 
     @Test
     fun `given Canada store, when wcpay activated, then onboardingcompleted returned`() = testBlocking {
