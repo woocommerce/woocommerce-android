@@ -44,7 +44,9 @@ data class Order(
     val shippingLines: List<ShippingLine>,
     val feesLines: List<FeeLine>,
     val taxLines: List<TaxLine>,
-    val metaData: List<MetaData<String>>
+    val chargeId: String,
+    val shippingPhone: String,
+//    val metaData: List<MetaData<String>>
 ) : Parcelable {
     @IgnoredOnParcel
     val isOrderPaid = datePaid != null
@@ -55,10 +57,6 @@ data class Order(
 
     @IgnoredOnParcel
     val isRefundAvailable = refundTotal < total && availableRefundQuantity > 0
-
-    @IgnoredOnParcel
-    val chargeId
-        get() = metaData.firstOrNull { it.key == "_charge_id" }?.value
 
     @Parcelize
     data class ShippingMethod(
@@ -315,9 +313,10 @@ data class Order(
                 shippingMethods = emptyList(),
                 items = emptyList(),
                 shippingLines = emptyList(),
-                metaData = emptyList(),
+                chargeId = "",
                 feesLines = emptyList(),
-                taxLines = emptyList()
+                taxLines = emptyList(),
+                shippingPhone = "",
             )
         }
     }
