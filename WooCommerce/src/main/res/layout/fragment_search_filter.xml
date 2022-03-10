@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <FrameLayout
         android:id="@+id/searchViewContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/color_surface">
+        android:background="@color/color_surface"
+        android:layout_alignParentTop="true">
 
         <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/searchEditText"
@@ -27,15 +27,17 @@
     <com.woocommerce.android.widgets.WCEmptyView
         android:id="@+id/emptyView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/major_100"
         android:visibility="gone"
-        tools:visibility="visible" />
+        tools:visibility="visible"
+        android:layout_below="@id/searchViewContainer"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/searchItemsList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/color_surface"/>
+        android:background="@color/color_surface"
+        android:layout_below="@id/searchViewContainer"/>
 
-</LinearLayout>
+</RelativeLayout>
