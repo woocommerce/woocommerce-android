@@ -61,6 +61,8 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     companion object {
         private const val LINE_CHART_DOT_OFFSET = -5
+
+        private const val EVENT_EMITTER_INTERACTION_DEBOUNCE = 1000L
     }
 
     private lateinit var activeGranularity: StatsGranularity
@@ -140,7 +142,7 @@ class MyStoreStatsView @JvmOverloads constructor(
 
         coroutineScope.launch {
             chartUserInteractions
-                .debounce(1000)
+                .debounce(EVENT_EMITTER_INTERACTION_DEBOUNCE)
                 .collect {
                     Log.i("EMITTER", "interacted")
                     usageTracksEventEmitter.interacted()
