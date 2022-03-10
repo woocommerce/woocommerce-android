@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -50,7 +49,7 @@ import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.DisplayUtils
 import java.text.DecimalFormat
-import java.util.Locale
+import java.util.*
 import kotlin.math.round
 
 @FlowPreview
