@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     app:layoutDescription="@xml/layout_order_creation_customer_info_scene">
 
-    <LinearLayout
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/name_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -32,7 +32,7 @@
             app:layout_constraintStart_toStartOf="@id/name"
             app:layout_constraintTop_toBottomOf="@id/name"
             tools:text="george@woo.com" />
-    </LinearLayout>
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
     <View
         android:id="@+id/name_divider"
