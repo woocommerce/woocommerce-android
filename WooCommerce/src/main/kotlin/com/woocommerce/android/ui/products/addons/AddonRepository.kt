@@ -49,7 +49,7 @@ class AddonRepository @Inject constructor(
 
     private fun OrderEntity.findOrderAttributesWith(orderItemID: Long) =
         getLineItemList().find { it.id == orderItemID }
-            ?.getAttributeList()
+            ?.attributeList
             ?.map { Attribute(it.key.orEmpty(), it.value.orEmpty()) }
             ?.filter { it.isNotInternalAttributeData }
 
