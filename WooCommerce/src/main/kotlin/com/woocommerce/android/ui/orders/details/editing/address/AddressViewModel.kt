@@ -5,9 +5,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.map
+import com.woocommerce.android.R
 import com.woocommerce.android.model.*
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.StateSpinnerStatus.*
+import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -175,6 +177,14 @@ class AddressViewModel @Inject constructor(
     }
 
     fun onDoneSelected(addDifferentShippingChecked: Boolean? = null) {
+        // order creation/editing will fail if billing email address is invalid
+        viewState.addressSelectionStates.get(AddressType.BILLING)?.address?.email?.let { billingEmail ->
+            if (billingEmail.isNotEmpty() && !StringUtils.isValidEmail(billingEmail)) {
+                triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.email_invalid))
+                return
+            }
+        }
+
         triggerEvent(
             Exit(
                 viewState.addressSelectionStates.mapValues { statePair ->
