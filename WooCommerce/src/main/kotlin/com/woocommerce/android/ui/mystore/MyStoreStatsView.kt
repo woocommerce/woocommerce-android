@@ -41,6 +41,7 @@ import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.util.roundToTheNextPowerOfTen
 import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collect
@@ -52,6 +53,7 @@ import java.text.DecimalFormat
 import java.util.Locale
 import kotlin.math.round
 
+@FlowPreview
 class MyStoreStatsView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
@@ -148,7 +150,6 @@ class MyStoreStatsView @JvmOverloads constructor(
                     usageTracksEventEmitter.interacted()
                 }
         }
-
     }
 
     override fun onDetachedFromWindow() {
