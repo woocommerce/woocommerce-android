@@ -12,7 +12,7 @@
 5. [Navigation](#navigation)
 6. [Accessibility](#accessibility)
 
- # Code Style
+# Code Style ✍️
 
 For **Compose App development** we will follow the official styling guidelines that can be found [here](https://github.com/androidx/androidx/blob/androidx-main/compose/docs/compose-api-guidelines.md#api-guidelines-for-jetpack-compose). Note that the guidelines differentiate between 3 levels of restriction:
 * Compose Framework Development
@@ -35,7 +35,7 @@ A few things to **highlight** from the Compose official guidelines:
 * Any @composable function that internally `remember {}`s and returns a mutable object should add the prefix `remember`.
 * @Composable functions should either emit content into the composition or return a value, but not both. [Why](https://github.com/androidx/androidx/blob/androidx-main/compose/docs/compose-api-guidelines.md#why-6)
 
-# Theming and Styling
+# Theming and Styling 🎨
 
 Compose enables to define your own set of `colors`, `typography` and `shapes`. Currently we are going to make use of [MDC-Android Compose Adapter](https://material-components.github.io/material-components-android-compose-theme-adapter/) in order to bridge/reuse the current colors and textAppearances we have defined in our `type.xml` and `colors.xml` files. Inside `com.woocommerce.android.ui.compose.theme` package you'll finde the defined `WooTheme`. Using it is as simple as wrapping your compose content with the theme like for example in `MoreMenuFragment.kt`: 
 
@@ -47,32 +47,38 @@ setContent {
 }
 ```
 
-# File Structure
+# File Structure 🗃
+
+The file structure for Compose code should not differ much from how we organice files currently in the project. 
+
+- `ui/compose/components`: common/generic components used by the entire app.
+- `ui/compose/theme`: classes related to themes, colors, shapes.
+- `ui/compose/animations`: common/generic animations that can be reused across multiple features.
+
+In essence, anything inside `ui/compose` package should be compose code that is reused across multiple feature. Just common sense 🙂
+Inside a specific feature we can follow the same structure `ui/[feature]/compoents`, etc. 
 
 
+# Managing State 👩‍💻
 
-Compose UI files should follow 
-
-# Managing State
-
-Managing state properly in Compose is key to updating the UI as expected and making composable functions as reusable as possible. Some key take to managing state properly: 
+Managing state properly in Compose is key to updating the UI as expected and making composable functions as reusable as possible. Some key takes to managing state properly: 
 
 - Recommended talk on Compose [state](https://www.youtube.com/watch?v=rmv2ug-wW4U&ab_channel=AndroidDevelopers)
-- Key points: 
-	- Use property delegates `by` to avoid having to access the `foo.value` all the time. 
-	- Mutate state outside the composable function scope
-	- Pass immutable val to composable function to respect the single source of truth. Only modify data in one place. 
-	- State hoisting -> move the private state out of composable functions to make composable functions stateless, the idea is composable. Delegate data manipulation to the viewModel
+- Best practices on handling state in `@Composable` functions: 
+	- Apply State Hoisting as much as possible. State hoisting is essentially 
+	- When using mutable state inside a composable function use property delegates such `by` to avoid having to access the `mutableState.value` all the time. For example: `var foo : Int by rememberSaveable {mutableStateOf(1)}`
+	- State hoisting -> move private state out of composable functions to make composable functions stateless. Delegate data manipulation to the viewModel or at least to the parent function that is calling the composable function
+	- Pass immutable values to composable functions to respect the single source of truth.
+	- Always mutate state outside the composable function scope.
+
+//TODO add side effects principles
 
 	Side effects in Compose: https://developer.android.com/jetpack/compose/side-effects
 	
-
-Use  `var quantity: Int by remember/rememberSaveable{ MutableState<Int> = mutableStateOf(1) } to remember state across configuration changes you
-
-# Navigation
+# Navigation 🗺
 
 //TODO
 
-# Accessibility
+# Accessibility ♿️
 
 //TODO
