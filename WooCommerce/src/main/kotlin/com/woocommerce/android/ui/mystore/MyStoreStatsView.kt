@@ -145,10 +145,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         coroutineScope.launch {
             chartUserInteractions
                 .debounce(EVENT_EMITTER_INTERACTION_DEBOUNCE)
-                .collect {
-                    Log.i("EMITTER", "interacted")
-                    usageTracksEventEmitter.interacted()
-                }
+                .collect { usageTracksEventEmitter.interacted() }
         }
     }
 
