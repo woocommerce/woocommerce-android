@@ -303,8 +303,8 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         order.takeIf { it.billingAddress != Address.EMPTY }
             ?.let {
                 val view = LayoutOrderCreationCustomerInfoBinding.inflate(layoutInflater)
-                view.name.text =
-                    "${order.billingAddress.firstName} ${order.billingAddress.lastName}\n${order.billingAddress.email}"
+                view.name.text = "${order.billingAddress.firstName} ${order.billingAddress.lastName}"
+                view.email.text = order.billingAddress.email
                 view.shippingAddressDetails.text =
                     if (order.shippingAddress != Address.EMPTY) {
                         order.formatShippingInformationForDisplay()
