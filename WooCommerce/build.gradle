@@ -133,6 +133,13 @@ android {
     }
 
     buildTypes {
+
+        benchmark {
+            initWith buildTypes.release
+            signingConfig signingConfigs.debug
+            debuggable false
+            matchingFallbacks = ['release']
+        }
         release {
             // Proguard is used to shrink our apk, and reduce the number of methods in our final apk,
             // but we don't obfuscate the bytecode.
@@ -149,6 +156,7 @@ android {
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
         release.java.srcDirs += 'src/release/kotlin'
+        benchmark.java.srcDirs += 'src/release/kotlin'
         debug.java.srcDirs += 'src/debug/kotlin'
         test.java.srcDirs += 'src/test/kotlin'
         androidTest.java.srcDirs += 'src/androidTest/kotlin'
@@ -338,6 +346,10 @@ dependencies {
     implementation "com.google.android.material:compose-theme-adapter:$composeVersion"
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$composeVersion"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$composeVersion"
+
+    // Macrobenchmark
+    implementation("androidx.profileinstaller:profileinstaller:1.2.0-alpha02")
+    implementation 'androidx.tracing:tracing-ktx:1.1.0-beta01'
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {

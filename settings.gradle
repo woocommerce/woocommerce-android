@@ -25,6 +25,7 @@ pluginManagement {
         id 'org.jetbrains.kotlin.plugin.allopen' version gradle.ext.kotlinVersion
         id 'org.jetbrains.kotlin.plugin.parcelize' version gradle.ext.kotlinVersion
         id 'se.bjurr.violations.violation-comments-to-github-gradle-plugin' version '1.68.3'
+        id 'com.android.test' version '7.0.0'
     }
 
     resolutionStrategy {
@@ -47,6 +48,7 @@ plugins {
 
 include ':libs:cardreader'
 include ':WooCommerce'
+include ':macrobenchmark'
 
 gradle.ext.fluxCBinaryPath = "org.wordpress:fluxc"
 gradle.ext.fluxCWooCommercePluginBinaryPath = "org.wordpress.fluxc.plugins:woocommerce"
