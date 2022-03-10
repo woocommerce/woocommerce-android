@@ -83,7 +83,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     )
     private val testOrderShipmentTrackings = OrderTestUtils.generateTestOrderShipmentTrackings(
         totalCount = 5,
-        localOrderId = ORDER_ID.toInt(),
+        orderId = ORDER_ID,
         localSiteId = ORDER_SITE_ID,
     )
     private val orderShippingLabels = OrderTestUtils.generateShippingLabels(totalCount = 5)
@@ -165,7 +165,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(true).whenever(repository).fetchOrderNotes(any())
         doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
 
-        doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+        doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any())
         doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
 
         doReturn(emptyList<Refund>()).whenever(repository).getOrderRefunds(any())
@@ -271,7 +271,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(true).whenever(repository).fetchOrderNotes(any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any())
             doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
             doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
             doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
@@ -316,7 +316,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(true).whenever(repository).fetchOrderNotes(any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any())
             doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
             doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
             doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
@@ -356,7 +356,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(true).whenever(repository).fetchOrderNotes(any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any())
             doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
             doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
             doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
@@ -379,7 +379,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(testOrderRefunds).whenever(repository).fetchOrderRefunds(any())
             doReturn(testOrderRefunds).whenever(repository).getOrderRefunds(any())
 
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any())
             doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
 
             doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
@@ -413,7 +413,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(emptyList<Refund>()).whenever(repository).fetchOrderRefunds(any())
             doReturn(emptyList<Refund>()).whenever(repository).getOrderRefunds(any())
 
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any())
             doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
 
             doReturn(orderShippingLabels).whenever(repository).getOrderShippingLabels(any())
@@ -447,7 +447,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(emptyList<Refund>()).whenever(repository).fetchOrderRefunds(any())
             doReturn(emptyList<Refund>()).whenever(repository).getOrderRefunds(any())
 
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any())
             doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
 
             doReturn(orderShippingLabels).whenever(repository).getOrderShippingLabels(any())
@@ -494,7 +494,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(emptyList<Refund>()).whenever(repository).fetchOrderRefunds(any())
             doReturn(emptyList<Refund>()).whenever(repository).getOrderRefunds(any())
 
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any())
             doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
 
             doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
@@ -542,7 +542,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(emptyList<Refund>()).whenever(repository).fetchOrderRefunds(any())
             doReturn(emptyList<Refund>()).whenever(repository).getOrderRefunds(any())
 
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any())
             doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
 
             doReturn(orderShippingLabels).whenever(repository).getOrderShippingLabels(any())
@@ -575,7 +575,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(emptyList<Refund>()).whenever(repository).fetchOrderRefunds(any())
             doReturn(emptyList<Refund>()).whenever(repository).getOrderRefunds(any())
 
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any())
             doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
 
             doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
@@ -676,7 +676,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(emptyList<Refund>()).whenever(repository).fetchOrderRefunds(any())
         doReturn(emptyList<Refund>()).whenever(repository).getOrderRefunds(any())
 
-        doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+        doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any())
         doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
 
         doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
@@ -728,7 +728,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(emptyList<Refund>()).whenever(repository).fetchOrderRefunds(any())
         doReturn(emptyList<Refund>()).whenever(repository).getOrderRefunds(any())
 
-        doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+        doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(),)
         doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
 
         doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
@@ -790,7 +790,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         val addedShipmentTrackings = testOrderShipmentTrackings.toMutableList()
         addedShipmentTrackings.add(shipmentTracking)
-        doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+        doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any())
         doReturn(testOrderShipmentTrackings).doReturn(addedShipmentTrackings)
             .whenever(repository).getOrderShipmentTrackings(any())
 
@@ -821,7 +821,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.id)
 
         doReturn(true).whenever(repository).fetchOrderNotes(any())
-        doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+        doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any())
         doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
         doReturn(emptyList<Refund>()).whenever(repository).fetchOrderRefunds(any())
         doReturn(emptyList<Product>()).whenever(repository).fetchProductsByRemoteIds(any())
@@ -847,7 +847,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 .getWooServicesPluginInfo()
 
             doReturn(true).whenever(repository).fetchOrderNotes(any())
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any())
             doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
             doReturn(emptyList<Refund>()).whenever(repository).fetchOrderRefunds(any())
             doReturn(emptyList<Product>()).whenever(repository).fetchProductsByRemoteIds(any())
@@ -884,7 +884,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(false).whenever(repository).isOrderEligibleForSLCreation(order.id)
 
             doReturn(true).whenever(repository).fetchOrderNotes(any())
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any())
             doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
             doReturn(emptyList<Refund>()).whenever(repository).fetchOrderRefunds(any())
             doReturn(emptyList<Product>()).whenever(repository).fetchProductsByRemoteIds(any())
@@ -912,7 +912,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             ).whenever(repository).getWooServicesPluginInfo()
 
             doReturn(true).whenever(repository).fetchOrderNotes(any())
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any())
             doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
             doReturn(emptyList<Refund>()).whenever(repository).fetchOrderRefunds(any())
             doReturn(emptyList<Product>()).whenever(repository).fetchProductsByRemoteIds(any())

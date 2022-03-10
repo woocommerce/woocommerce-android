@@ -26,7 +26,6 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore
 import java.math.BigDecimal
@@ -164,7 +163,7 @@ class TakePaymentViewModel @Inject constructor(
         }
 
         orderStore.updateOrderStatus(
-            LocalOrRemoteId.RemoteId(navArgs.order.id),
+            navArgs.order.id,
             selectedSite.get(),
             status
         ).collect { result ->
