@@ -1,5 +1,6 @@
 package com.woocommerce.android.extensions
 
+import android.annotation.SuppressLint
 import android.graphics.Rect
 import android.view.MotionEvent
 import android.view.TouchDelegate
@@ -152,6 +153,7 @@ fun ViewGroup.setEnabledRecursive(enabled: Boolean) {
  *
  * @param handled defines what the [OnTouchListener.onTouch] returns, defaults to returning false
  */
+@SuppressLint("ClickableViewAccessibility")
 @ExperimentalCoroutinesApi
 fun View.touchEvents(
     handled: (MotionEvent) -> Boolean = { false }
