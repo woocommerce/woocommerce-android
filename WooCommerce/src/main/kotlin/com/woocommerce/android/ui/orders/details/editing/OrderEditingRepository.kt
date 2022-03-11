@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.orders.details.editing
 import com.woocommerce.android.tools.SelectedSite
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.Flow
-import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.order.OrderAddress
 import org.wordpress.android.fluxc.store.OrderUpdateStore
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -16,22 +15,22 @@ class OrderEditingRepository @Inject constructor(
     private val selectedSite: SelectedSite
 ) {
     suspend fun updateCustomerOrderNote(
-        remoteOrderId: Long,
+        orderId: Long,
         customerOrderNote: String
     ): Flow<WCOrderStore.UpdateOrderResult> {
         return orderUpdateStore.updateCustomerOrderNote(
-            LocalOrRemoteId.RemoteId(remoteOrderId),
+            orderId,
             selectedSite.get(),
             customerOrderNote
         )
     }
 
     suspend fun updateOrderAddress(
-        remoteOrderId: Long,
+        orderId: Long,
         orderAddress: OrderAddress
     ): Flow<WCOrderStore.UpdateOrderResult> {
         return orderUpdateStore.updateOrderAddress(
-            LocalOrRemoteId.RemoteId(remoteOrderId),
+            orderId,
             selectedSite.get().localId(),
             orderAddress
         )
@@ -43,7 +42,7 @@ class OrderEditingRepository @Inject constructor(
         billingAddress: OrderAddress.Billing
     ): Flow<WCOrderStore.UpdateOrderResult> {
         return orderUpdateStore.updateBothOrderAddresses(
-            LocalOrRemoteId.RemoteId(remoteOrderId),
+            remoteOrderId,
             selectedSite.get().localId(),
             shippingAddress,
             billingAddress

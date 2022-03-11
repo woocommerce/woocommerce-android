@@ -54,6 +54,12 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
         get() = binding.editText.text.toString()
         set(value) = binding.editText.setText(value)
 
+    var imeOptions: Int = 0
+        set(value) {
+            field = value
+            binding.editText.imeOptions = value
+        }
+
     init {
         if (attrs != null) {
             val a = context.obtainStyledAttributes(
@@ -77,6 +83,10 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
                 a.getString(R.styleable.WCMaterialOutlinedSpinnerView_android_text)?.let {
                     text = it
                 }
+
+                imeOptions = a.getInt(
+                    R.styleable.WCMaterialOutlinedEditTextView_android_imeOptions, 0
+                )
 
                 isEnabled = a.getBoolean(R.styleable.WCMaterialOutlinedCurrencyEditTextView_android_enabled, true)
             } finally {

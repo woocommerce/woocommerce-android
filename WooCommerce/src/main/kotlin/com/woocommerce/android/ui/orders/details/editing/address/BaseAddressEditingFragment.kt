@@ -23,6 +23,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.details.editing.BaseOrderEditingFragment
 import com.woocommerce.android.ui.searchfilter.SearchFilterItem
 import com.woocommerce.android.util.UiHelpers.getPxOfUiDimen
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.combineWith
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
@@ -179,6 +180,9 @@ abstract class BaseAddressEditingFragment :
             when (event) {
                 is AddressViewModel.ShowStateSelector -> showStateSearchScreen(event.states)
                 is AddressViewModel.ShowCountrySelector -> showCountrySearchScreen(event.countries)
+                is MultiLiveEvent.Event.ShowSnackbar -> {
+                    uiMessageResolver.showSnack(event.message)
+                }
                 is AddressViewModel.Exit -> {
                     saveChanges()
                     navigateUp()

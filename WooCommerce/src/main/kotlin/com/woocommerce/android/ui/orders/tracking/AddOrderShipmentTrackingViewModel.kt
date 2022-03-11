@@ -127,7 +127,7 @@ class AddOrderShipmentTrackingViewModel @Inject constructor(
             )
 
             val onOrderChanged =
-                orderDetailRepository.addOrderShipmentTracking(navArgs.orderId, navArgs.orderLocalId, shipmentTracking)
+                orderDetailRepository.addOrderShipmentTracking(navArgs.orderId, shipmentTracking)
             if (!onOrderChanged.isError) {
                 AnalyticsTracker.track(AnalyticsEvent.ORDER_TRACKING_ADD_SUCCESS)
                 addOrderShipmentTrackingViewState = addOrderShipmentTrackingViewState.copy(showLoadingProgress = false)
