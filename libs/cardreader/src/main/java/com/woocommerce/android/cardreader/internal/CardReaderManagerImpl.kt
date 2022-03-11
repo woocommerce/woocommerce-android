@@ -16,8 +16,10 @@ import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManage
 import com.woocommerce.android.cardreader.internal.payments.PaymentManager
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
+import com.woocommerce.android.cardreader.payments.CardRefundStatus
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
+import com.woocommerce.android.cardreader.payments.RefundParams
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -97,6 +99,11 @@ internal class CardReaderManagerImpl(
     override suspend fun collectPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus> {
         resetBluetoothDisplayMessage()
         return paymentManager.acceptPayment(paymentInfo)
+    }
+
+    override suspend fun refundPayment(refundParameters: RefundParams): Flow<CardRefundStatus> {
+        resetBluetoothDisplayMessage()
+        return paymentManager.refundPayment(refundParameters)
     }
 
     private fun resetBluetoothDisplayMessage() {
