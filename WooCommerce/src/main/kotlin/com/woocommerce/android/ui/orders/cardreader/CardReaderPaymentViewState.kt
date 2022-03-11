@@ -28,6 +28,13 @@ sealed class ViewState(
         isProgressVisible = true
     )
 
+    object RefundLoadingDataState : ViewState(
+        headerLabel = R.string.card_reader_payment_refund_payment_loading_header,
+        hintLabel = R.string.card_reader_payment_collect_payment_loading_hint,
+        paymentStateLabel = R.string.card_reader_payment_collect_payment_loading_payment_state,
+        isProgressVisible = true
+    )
+
     data class FailedPaymentState(
         private val errorType: PaymentFlowError,
         override val amountWithCurrencyLabel: String?,
