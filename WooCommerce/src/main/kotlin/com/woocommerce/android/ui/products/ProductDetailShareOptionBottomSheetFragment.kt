@@ -10,8 +10,11 @@ import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentProductDetailShareOptionBinding
+import javax.inject.Inject
 
 class ProductDetailShareOptionBottomSheetFragment : BottomSheetDialogFragment() {
+    @Inject lateinit var navigator: ProductNavigator
+
     val viewModel: ProductDetailViewModel by hiltNavGraphViewModels(R.id.nav_graph_products)
 
     private var _binding: FragmentProductDetailShareOptionBinding? = null
@@ -32,6 +35,20 @@ class ProductDetailShareOptionBottomSheetFragment : BottomSheetDialogFragment() 
         }
 
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupObservers(viewModel)
+    }
+
+    private fun setupObservers(viewModel: ProductDetailViewModel) {
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ProductNavigationTarget -> navigator.navigate(this, event)
+                else -> event.isHandled = false
+            }
+        }
     }
 
     override fun onDestroyView() {

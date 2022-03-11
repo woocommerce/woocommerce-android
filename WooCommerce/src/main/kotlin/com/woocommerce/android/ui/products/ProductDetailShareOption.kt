@@ -30,11 +30,17 @@ import com.woocommerce.android.R
 @Composable
 fun ProductDetailShareOption(viewModel: ProductDetailViewModel) {
     val productState = viewModel.productDetailViewStateData.liveData.observeAsState()
-    ProductDetailShareOption(productState)
+    ProductDetailShareOption(
+        productState,
+        viewModel::onShareProductPageClicked
+    )
 }
 
 @Composable
-fun ProductDetailShareOption(state: State<ProductDetailViewModel.ProductDetailViewState?>) {
+fun ProductDetailShareOption(
+    state: State<ProductDetailViewModel.ProductDetailViewState?>,
+    onShareProductPageClick: () -> Unit
+) {
     Column {
         state.value?.productDraft?.let { product ->
             Text(
@@ -63,7 +69,7 @@ fun ProductDetailShareOption(state: State<ProductDetailViewModel.ProductDetailVi
             }
 
             OutlinedButton(
-                onClick = { /* To-do share Product URL */ },
+                onClick = { onShareProductPageClick() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 16.dp),
@@ -108,8 +114,7 @@ private fun ProductDetailShareImage(imageUrl: String) {
             Image(
                 bitmap = it.asImageBitmap(),
                 contentDescription = stringResource(id = R.string.more_menu_avatar),
-                contentScale = ContentScale.Crop
-
+                contentScale = ContentScale.Crop,
             )
         } ?: Image(
             painter = painterResource(id = R.drawable.img_gravatar_placeholder),

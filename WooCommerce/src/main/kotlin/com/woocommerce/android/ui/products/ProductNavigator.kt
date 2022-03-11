@@ -1,9 +1,11 @@
 package com.woocommerce.android.ui.products
 
+import android.content.Intent
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.NavGraphProductsDirections
+import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Product.Image
@@ -15,6 +17,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDow
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.RenameProductAttribute
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProductPage
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewMediaUploadErrors
@@ -68,6 +71,17 @@ class ProductNavigator @Inject constructor() {
                 val action = ProductDetailFragmentDirections
                     .actionProductDetailFragmentToProductDetailShareOptionBottomSheetFragment()
                 fragment.findNavController().navigateSafely(action)
+            }
+
+            is ShareProductPage -> {
+                val shareIntent: Intent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_SUBJECT, target.title)
+                    putExtra(Intent.EXTRA_TEXT, target.url)
+                    type = "text/plain"
+                }
+                val title = fragment.resources.getText(R.string.product_share_dialog_title)
+                fragment.startActivity(Intent.createChooser(shareIntent, title))
             }
 
             is ViewProductVariations -> {

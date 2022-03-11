@@ -269,6 +269,12 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
+    fun onShareProductPageClicked() {
+        viewState.productDraft?.let {
+            triggerEvent(ShareProductPage(it.permalink, it.name))
+        }
+    }
+
     /**
      * Called when the Trash menu item is clicked in Product detail screen
      */
