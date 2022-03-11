@@ -108,7 +108,7 @@ data class Order(
          */
         val attributesDescription
             get() = attributesList.filter {
-                it.value.isNotEmpty() && it.key.isNotEmpty() && it.isNotInternalAttributeData
+                it.value.isNotEmpty() && it.key.isNotEmpty()
             }.joinToString {
                 it.value.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
             }
@@ -160,11 +160,6 @@ data class Order(
             val asAddonPrice = keyAsAddonRegexGroup
                 ?.last()
                 .orEmpty()
-
-            // Don't include empty or the "_reduced_stock" key
-            // skipping "_reduced_stock" is a temporary workaround until "type" is added to the response.
-            val isNotInternalAttributeData
-                get() = key.first().toString() != "_"
         }
     }
 

@@ -51,7 +51,6 @@ class AddonRepository @Inject constructor(
         getLineItemList().find { it.id == orderItemID }
             ?.getAttributeList()
             ?.map { Attribute(it.key.orEmpty(), it.value.orEmpty()) }
-            ?.filter { it.isNotInternalAttributeData }
 
     private suspend fun List<Attribute>.joinWithAddonsFrom(productID: Long) =
         getAddonsFrom(productID)
