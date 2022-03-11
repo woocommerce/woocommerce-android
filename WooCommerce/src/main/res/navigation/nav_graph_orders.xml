@@ -493,7 +493,16 @@
     <fragment
         android:id="@+id/cardReaderOnboardingFragment"
         android:name="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingFragment"
-        android:label="CardReaderOnboardingFragment" />
+        android:label="CardReaderOnboardingFragment" >
+        <action
+            android:id="@+id/action_cardReaderOnboardingFragment_to_cardReaderHubFragment"
+            app:destination="@id/cardReaderHubFragment" >
+            <argument
+                android:name="storeCountryCode"
+                app:nullable="false"
+                app:argType="string" />
+        </action>
+    </fragment>
     <fragment
         android:id="@+id/receiptPreviewFragment"
         android:name="com.woocommerce.android.ui.orders.cardreader.ReceiptPreviewFragment"
