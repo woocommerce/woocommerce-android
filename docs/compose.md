@@ -65,16 +65,12 @@ Managing state properly in Compose is key to updating the UI as expected and mak
 
 - Recommended talk on Compose [state](https://www.youtube.com/watch?v=rmv2ug-wW4U&ab_channel=AndroidDevelopers)
 - Best practices on handling state in `@Composable` functions: 
-	- Apply State Hoisting as much as possible. State hoisting is essentially 
-	- When using mutable state inside a composable function use property delegates such `by` to avoid having to access the `mutableState.value` all the time. For example: `var foo : Int by rememberSaveable {mutableStateOf(1)}`
-	- State hoisting -> move private state out of composable functions to make composable functions stateless. Delegate data manipulation to the viewModel or at least to the parent function that is calling the composable function
-	- Pass immutable values to composable functions to respect the single source of truth.
+	- Apply state hoisting whenever possible. State hoisting -> move private state out of composable functions to make composable functions stateless. Delegate data manipulation to the viewModel or at least to the parent function that is calling the composable function.
+	- When using state inside a composable functions prefer to use property delegates such `by` to avoid having to access the `mutableState.value` all the time. For example: `var foo : Int by rememberSaveable {mutableStateOf(1)}`
 	- Always mutate state outside the composable function scope.
+	- Pass immutable values to composable functions to respect the single source of truth.
+	- Composable functions should be side effect free. However, when they're necessary to mutate the state of the app, they should be called from a controlled environment that is aware of the lifecycle of the composable. More on that in the [Compose side effects guides](https://developer.android.com/jetpack/compose/side-effects#state-effect-use-cases)
 
-//TODO add side effects principles
-
-	Side effects in Compose: https://developer.android.com/jetpack/compose/side-effects
-	
 # Navigation 🗺
 
 //TODO
