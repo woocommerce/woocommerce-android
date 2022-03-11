@@ -6,10 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentProductDetailShareOptionBinding
 
 class ProductDetailShareOptionBottomSheetFragment : BottomSheetDialogFragment() {
+    val viewModel: ProductDetailViewModel by hiltNavGraphViewModels(R.id.nav_graph_products)
+
     private var _binding: FragmentProductDetailShareOptionBinding? = null
     private val binding get() = _binding!!
 
@@ -22,7 +26,7 @@ class ProductDetailShareOptionBottomSheetFragment : BottomSheetDialogFragment() 
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MaterialTheme {
-                    ProductDetailShareOption()
+                    ProductDetailShareOption(viewModel)
                 }
             }
         }
