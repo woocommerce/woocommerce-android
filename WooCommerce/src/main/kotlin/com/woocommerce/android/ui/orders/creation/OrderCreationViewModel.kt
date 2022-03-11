@@ -102,7 +102,7 @@ class OrderCreationViewModel @Inject constructor(
 
     fun onDecreaseProductsQuantity(id: Long) {
         _orderDraft.value.items
-            .find { it.productId == id }
+            .find { it.productId == id || it.variationId == id }
             ?.takeIf { it.quantity == 1F }
             ?.let { onProductClicked(it) }
             ?: _orderDraft.update { it.adjustProductQuantity(id, -1) }
