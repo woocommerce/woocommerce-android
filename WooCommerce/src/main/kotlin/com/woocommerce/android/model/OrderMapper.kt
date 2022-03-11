@@ -106,7 +106,7 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
                     it.totalTax?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
                     it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
                     it.variationId ?: 0,
-                    it.attributeList.map { attribute ->
+                    it.getAttributeList().map { attribute ->
                         Item.Attribute(attribute.key.orEmpty(), attribute.value.orEmpty())
                     }
                 )
