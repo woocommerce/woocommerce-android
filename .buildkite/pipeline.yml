@@ -27,7 +27,7 @@ steps:
     command: |
       echo "--- 🧹 Linting"
       cp gradle.properties-example gradle.properties
-      ./gradlew --no-build-cache lintVanillaRelease
+      ./gradlew lintVanillaRelease
     plugins: *common_plugins
     artifact_paths:
       - "**/build/reports/lint-results*.*"
@@ -36,7 +36,7 @@ steps:
     command: |
       echo "--- 🧪 Testing"
       cp gradle.properties-example gradle.properties
-      ./gradlew --no-build-cache testVanillaRelease
+      ./gradlew testVanillaRelease
     plugins: *common_plugins
 
   - label: "Test CardReaderModule"
