@@ -53,12 +53,18 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
             shippingLines = databaseEntity.getShippingLineList().mapShippingLines(),
             feesLines = databaseEntity.getFeeLineList().mapFeesLines(),
             taxLines = databaseEntity.getTaxLineList().mapTaxLines(),
-            chargeId = metaDataList.getOrEmpty(CHARGE_ID_KEY),
+            chargeId = metaDataList.getOrNull(CHARGE_ID_KEY),
             shippingPhone = metaDataList.getOrEmpty(SHIPPING_PHONE_KEY),
         )
     }
 
-    private fun List<WCMetaData>.getOrEmpty(key: String) = find {
+    private fun List<WCMetaData>.getOrNull(key: String): String? = firstOrNull {
+        it.key == key
+    }.let {
+        it?.value?.toString()
+    }
+
+    private fun List<WCMetaData>.getOrEmpty(key: String): String = find {
         it.key == key
     }.let {
         it?.value?.toString().orEmpty()

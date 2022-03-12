@@ -44,7 +44,7 @@ data class Order(
     val shippingLines: List<ShippingLine>,
     val feesLines: List<FeeLine>,
     val taxLines: List<TaxLine>,
-    val chargeId: String,
+    val chargeId: String?,
     val shippingPhone: String,
 ) : Parcelable {
     @IgnoredOnParcel
