@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import android.graphics.Bitmap
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
@@ -18,6 +19,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 sealed class ProductNavigationTarget : Event() {
     data class ShareProduct(val url: String, val title: String) : ProductNavigationTarget()
     data class ShareProductPage(val url: String, val title: String) : ProductNavigationTarget()
+    data class ShareProductImage(val image: Bitmap) : ProductNavigationTarget()
     data class ViewProductVariations(
         val remoteId: Long
     ) : ProductNavigationTarget()

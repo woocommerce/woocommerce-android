@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import android.content.DialogInterface
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Parcelable
 import androidx.core.net.toUri
@@ -272,6 +273,12 @@ class ProductDetailViewModel @Inject constructor(
     fun onShareProductPageClicked() {
         viewState.productDraft?.let {
             triggerEvent(ShareProductPage(it.permalink, it.name))
+        }
+    }
+
+    fun onShareProductImageClicked(image: Bitmap?) {
+        image?.let {
+            triggerEvent(ShareProductImage(it))
         }
     }
 

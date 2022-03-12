@@ -6,4 +6,7 @@
     <files-path
         name="internal_files"
         path="." />
+    <cache-path
+        name="shared_images"
+        path="images/" />
 </paths>

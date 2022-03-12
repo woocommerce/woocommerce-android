@@ -1,58 +1,24 @@
 package com.woocommerce.android.ui.products
 
 import android.content.Intent
+import android.graphics.Bitmap
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.NavGraphMainDirections
-import com.woocommerce.android.NavGraphProductsDirections
-import com.woocommerce.android.R
-import com.woocommerce.android.RequestCodes
+import com.woocommerce.android.*
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.products.GroupedProductListType.GROUPED
-import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttribute
-import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttributeTerms
-import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
-import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
-import com.woocommerce.android.ui.products.ProductNavigationTarget.RenameProductAttribute
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProductPage
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewMediaUploadErrors
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAdd
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAddonsDetails
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAttributes
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadDetails
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloads
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadsSettings
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductExternalLink
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageGallery
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductInventory
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductMenuOrder
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPurchaseNoteEditor
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductReviews
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSelectionList
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTags
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTypes
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
+import com.woocommerce.android.ui.products.ProductNavigationTarget.*
 import com.woocommerce.android.ui.products.categories.ProductCategoriesFragmentDirections
 import com.woocommerce.android.ui.products.downloads.ProductDownloadsFragmentDirections
 import com.woocommerce.android.ui.products.settings.ProductSettingsFragmentDirections
 import com.woocommerce.android.ui.products.variations.attributes.AddAttributeTermsFragmentDirections
 import com.woocommerce.android.ui.products.variations.attributes.AttributeListFragmentDirections
+import com.woocommerce.android.util.WooLog
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -65,6 +31,12 @@ import javax.inject.Singleton
  */
 @Singleton
 class ProductNavigator @Inject constructor() {
+    companion object {
+        const val IMAGE_PNG_QUALITY = 80
+        const val SHARE_IMAGE_NAME = "image.png"
+        const val SHARE_IMAGE_FOLDER = "images"
+    }
+
     fun navigate(fragment: Fragment, target: ProductNavigationTarget) {
         when (target) {
             is ShareProduct -> {
@@ -82,6 +54,32 @@ class ProductNavigator @Inject constructor() {
                 }
                 val title = fragment.resources.getText(R.string.product_share_dialog_title)
                 fragment.startActivity(Intent.createChooser(shareIntent, title))
+            }
+
+            is ShareProductImage -> {
+                val cachePath = File(fragment.requireContext().cacheDir, SHARE_IMAGE_FOLDER)
+
+                try {
+                    cachePath.mkdir()
+                    val stream = FileOutputStream("$cachePath/$SHARE_IMAGE_NAME")
+                    target.image.compress(Bitmap.CompressFormat.PNG, IMAGE_PNG_QUALITY, stream)
+                    stream.close()
+                } catch (ex: IOException) {
+                    WooLog.e(WooLog.T.UTILS, ex)
+                }
+
+                val newImageFile = File(cachePath, SHARE_IMAGE_NAME)
+                val authority = BuildConfig.APPLICATION_ID + ".provider"
+                val uriToImage = FileProvider.getUriForFile(fragment.requireContext(), authority, newImageFile)
+                if (uriToImage != null) {
+                    val intent = Intent()
+                    intent.action = Intent.ACTION_SEND
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    intent.type = "image/*"
+                    intent.putExtra(Intent.EXTRA_STREAM, uriToImage)
+                    val chooseTitle = fragment.resources.getText(R.string.product_share_dialog_choose_app)
+                    fragment.startActivity(Intent.createChooser(intent, chooseTitle))
+                }
             }
 
             is ViewProductVariations -> {

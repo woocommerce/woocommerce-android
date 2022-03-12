@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -19,6 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -32,19 +34,21 @@ fun ProductDetailShareOption(viewModel: ProductDetailViewModel) {
     val productState = viewModel.productDetailViewStateData.liveData.observeAsState()
     ProductDetailShareOption(
         productState,
-        viewModel::onShareProductPageClicked
+        viewModel::onShareProductPageClicked,
+        viewModel::onShareProductImageClicked
     )
 }
 
 @Composable
 fun ProductDetailShareOption(
     state: State<ProductDetailViewModel.ProductDetailViewState?>,
-    onShareProductPageClick: () -> Unit
+    onShareProductPageClick: () -> Unit,
+    onShareProductImageClick: (image: Bitmap?) -> Unit
 ) {
     Column {
         state.value?.productDraft?.let { product ->
             Text(
-                text = "Share Product",
+                text = stringResource(id = R.string.product_share_dialog_title),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
@@ -53,7 +57,7 @@ fun ProductDetailShareOption(
 
             if (product.images.isNotEmpty()) {
                 Text(
-                    text = "Share Image:",
+                    text = stringResource(id = R.string.product_share_dialog_image),
                     fontSize = 14.sp,
                     modifier = Modifier
                         .padding(16.dp, 8.dp)
@@ -63,7 +67,10 @@ fun ProductDetailShareOption(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(product.images) { image ->
-                        ProductDetailShareImage(imageUrl = image.source)
+                        ProductDetailShareImage(
+                            imageUrl = image.source,
+                            onShareProductImageClick
+                        )
                     }
                 }
             }
@@ -75,7 +82,7 @@ fun ProductDetailShareOption(
                     .padding(horizontal = 16.dp, vertical = 16.dp),
             ) {
                 Text(
-                    text = "Share Product Page",
+                    text = stringResource(id = R.string.product_share_dialog_page_button),
                     color = colorResource(id = R.color.color_primary)
                 )
             }
@@ -84,7 +91,10 @@ fun ProductDetailShareOption(
 }
 
 @Composable
-private fun ProductDetailShareImage(imageUrl: String) {
+private fun ProductDetailShareImage(
+    imageUrl: String,
+    onImageClick: (image: Bitmap?) -> Unit
+) {
     val bitmapState = remember { mutableStateOf<Bitmap?>(null) }
 
     if (imageUrl.isNotEmpty()) {
@@ -107,18 +117,23 @@ private fun ProductDetailShareImage(imageUrl: String) {
     Card(
         modifier = Modifier
             .width(200.dp)
-            .height(125.dp),
+            .height(125.dp)
+            .clickable(
+                enabled = true,
+                role = Role.Button,
+                onClick = { onImageClick(bitmapState.value) }
+            ),
         elevation = 1.dp
     ) {
         bitmapState.value?.let {
             Image(
                 bitmap = it.asImageBitmap(),
-                contentDescription = stringResource(id = R.string.more_menu_avatar),
+                contentDescription = stringResource(id = R.string.product_share_dialog_image_label),
                 contentScale = ContentScale.Crop,
             )
         } ?: Image(
-            painter = painterResource(id = R.drawable.img_gravatar_placeholder),
-            contentDescription = stringResource(id = R.string.more_menu_avatar),
+            painter = painterResource(id = R.drawable.ic_gridicons_image),
+            contentDescription = stringResource(id = R.string.product_share_dialog_image_label),
             contentScale = ContentScale.Crop
         )
     }
