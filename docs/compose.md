@@ -13,7 +13,7 @@
 6. [Accessibility](#accessibility)
 7. [UI Tests in Compose](#ui-tests-in-compose)
 
-# Code Style ✍️
+# Code Style ✍️ <a name="code-style"></a>
 
 For **Compose App development** we will follow the official styling guidelines that can be found [here](https://github.com/androidx/androidx/blob/androidx-main/compose/docs/compose-api-guidelines.md#api-guidelines-for-jetpack-compose). Note that the guidelines differentiate between 3 levels of restriction:
 * Compose Framework Development
@@ -36,7 +36,7 @@ A few things to **highlight** from the Compose official guidelines:
 * Any @composable function that internally `remember {}`s and returns a mutable object should add the prefix `remember`.
 * @Composable functions should either emit content into the composition or return a value, but not both. [Why](https://github.com/androidx/androidx/blob/androidx-main/compose/docs/compose-api-guidelines.md#why-6)
 
-# Theming and Styling 🎨
+# Theming and Styling 🎨 <a name="theming-and-styling"></a>
 
 Compose enables to define your own set of `colors`, `typography` and `shapes`. Currently we are going to make use of [MDC-Android Compose Adapter](https://material-components.github.io/material-components-android-compose-theme-adapter/) in order to bridge/reuse the current colors and textAppearances we have defined in our `type.xml` and `colors.xml` files. Inside `com.woocommerce.android.ui.compose.theme` package you'll finde the defined `WooTheme`. Using it is as simple as wrapping your compose content with the theme like for example in `MoreMenuFragment.kt`: 
 
@@ -48,7 +48,7 @@ setContent {
 }
 ```
 
-# File Structure 🗃
+# File Structure 🗃 <a name="file-structure"></a>
 
 The file structure for Compose code should not differ much from how we organice files currently in the project. 
 
@@ -60,7 +60,7 @@ In essence, anything inside `ui/compose` package should be compose code that is 
 Inside a specific feature we can follow the same structure `ui/[feature]/compoents`, etc. 
 
 
-# Managing State 👩‍💻
+# Managing State 👩‍💻 <a name="managing-state"></a>
 
 Managing state properly in Compose is key to updating the UI as expected and making composable functions as reusable as possible. Some key takes to managing state properly: 
 
@@ -72,7 +72,7 @@ Managing state properly in Compose is key to updating the UI as expected and mak
 	- Pass immutable values to composable functions to respect the single source of truth.
 	- Composable functions should be side effect free. However, when they're necessary to mutate the state of the app, they should be called from a controlled environment that is aware of the lifecycle of the composable. More on that in the [Compose side effects guides](https://developer.android.com/jetpack/compose/side-effects#state-effect-use-cases)
 
-# Navigation 🗺
+# Navigation 🗺 <a name="navigation"></a>
 
 Currently we are using Compose through `ComposeView` nested inside a `Fragment` as the root in a 1:1 relationship. For this kind of usage, Navigation implementation remains the same, we can keep using the existing navitation_graphs.xml. 
 There is one thing to keep in mind when using this `ComposeView` approach. Compose views involve ongoing work and registering the composition with external event sources. These registrations can cause the composition to remain live and ineligible for garbage collection for long after the host View may have been abandoned. To avoid any leaks Android provides [ViewCompositionStrategy](https://developer.android.com/reference/kotlin/androidx/compose/ui/platform/ViewCompositionStrategy)  for disposing the composition automatically at an appropriate time. The recommended strategy for the `Fragment` <--> `ComposeView` approach is [DisposeOnViewTreeLifecycleDestroyed](https://developer.android.com/reference/kotlin/androidx/compose/ui/platform/ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -80,7 +80,7 @@ There is one thing to keep in mind when using this `ComposeView` approach. Compo
 //TODO Add guidelines to best practices when navigating between Composables. 
 
 
-# Accessibility ♿️
+# Accessibility ♿️ <a name="accessibility"></a>
 
 Most of the rules that apply for Android's view system apply for Compose UI. But is worth to highlight a few concepts here. 
 
@@ -103,6 +103,6 @@ val semanticsModifier =
 ```
 
 
-# UI Test in Compose
+# UI Tests in Compose 🧪 <a name="ui-tests-in-compose"></a>
 
 //TODO
