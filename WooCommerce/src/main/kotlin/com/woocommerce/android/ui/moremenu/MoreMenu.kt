@@ -65,7 +65,6 @@ fun MoreMenu(
     onSwitchStore: () -> Unit,
     onSettingsClick: () -> Unit
 ) {
-
     Column {
         Spacer(modifier = Modifier.height(32.dp))
         Row(
