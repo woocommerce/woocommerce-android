@@ -11,6 +11,7 @@
 4. [Managing state](#managing-state)
 5. [Navigation](#navigation)
 6. [Accessibility](#accessibility)
+7. [UI Tests in Compose](#ui-tests-in-compose)
 
 # Code Style ✍️
 
@@ -25,7 +26,7 @@ Many of the rules from official guidelines are already integrated with Lint, so 
 
 Any exception to those code style guidelines should be described here: 
 
-* Currently there are no exceptions. 
+* Guidelines suggest to use `PascalCase` for constant values, Enums, etc. We are currently using `All caps snake_case` for this. There is no major reason for using `PascalCase` in Compose code and have different styles. So, we will keep using `All caps snake_case`. 
 
 A few things to **highlight** from the Compose official guidelines: 
 
@@ -73,8 +74,35 @@ Managing state properly in Compose is key to updating the UI as expected and mak
 
 # Navigation 🗺
 
-//TODO
+Currently we are using Compose through `ComposeView` nested inside a `Fragment` as the root in a 1:1 relationship. For this kind of usage, Navigation implementation remains the same, we can keep using the existing navitation_graphs.xml. 
+There is one thing to keep in mind when using this `ComposeView` approach. Compose views involve ongoing work and registering the composition with external event sources. These registrations can cause the composition to remain live and ineligible for garbage collection for long after the host View may have been abandoned. To avoid any leaks Android provides [ViewCompositionStrategy](https://developer.android.com/reference/kotlin/androidx/compose/ui/platform/ViewCompositionStrategy)  for disposing the composition automatically at an appropriate time. The recommended strategy for the `Fragment` <--> `ComposeView` approach is [DisposeOnViewTreeLifecycleDestroyed](https://developer.android.com/reference/kotlin/androidx/compose/ui/platform/ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+
+//TODO Add guidelines to best practices when navigating between Composables. 
+
 
 # Accessibility ♿️
+
+Most of the rules that apply for Android's view system apply for Compose UI. But is worth to highlight a few concepts here. 
+
+The key idea to make Composable components accessible is [Semantics](https://developer.android.com/jetpack/compose/semantics). Accessibility services use the `Semantics tree` to provide information to the people using the services (like talkback), and the UI testing framework uses it to make assertions. Few key takes to keep your Composable UI accessible: 
+- For composables and modifiers from the Compose foundation and material library, the Semantics tree is automatically filled and generated for you
+- When adding custom low-level composables, you will have to manually provide its semantics
+- Set `contentDescriptions` for relevant icons and images. Describe the meaning of the icon, not what it is. 
+- Use `Modifier.semantics(mergeDescendants = true)` to group content and facilitate navigating through UI components with "TalkBack" tool.
+-  Accessibility services such as TalkBack provide navigation shortcuts. One of those is jumping between headers to skip to the content the user is interested in. You can inform accessibility services that something is a header using `Modifier.semantics { heading() }`
+-  You can also add state descriptions to inform if an item is at a certain state. For example selected or unselected: 
+```kotlin 
+val semanticsModifier =
+  Modifier.semantics(mergeDescendants = true) {
+    stateDescription = if (item.selected) {
+      selectedDescription
+    } else {
+      unselectedDescription
+    }
+  }
+```
+
+
+# UI Test in Compose
 
 //TODO
