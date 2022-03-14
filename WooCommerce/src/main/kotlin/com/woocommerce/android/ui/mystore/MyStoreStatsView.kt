@@ -39,13 +39,10 @@ import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.util.roundToTheNextPowerOfTen
 import com.woocommerce.android.widgets.SkeletonView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.DisplayUtils
 import java.text.DecimalFormat
@@ -115,6 +112,7 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     private lateinit var coroutineScope: CoroutineScope
     private val chartUserInteractions = MutableSharedFlow<Unit>()
+    private lateinit var chartUserInteractionsJob: Job
 
     fun initView(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
@@ -141,7 +139,7 @@ class MyStoreStatsView @JvmOverloads constructor(
             updateConversionRate()
         }
 
-        coroutineScope.launch {
+        chartUserInteractionsJob = coroutineScope.launch {
             chartUserInteractions
                 .debounce(EVENT_EMITTER_INTERACTION_DEBOUNCE)
                 .collect { usageTracksEventEmitter.interacted() }
@@ -150,7 +148,7 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        coroutineScope.cancel()
+        chartUserInteractionsJob.cancel()
     }
 
     fun loadDashboardStats(granularity: StatsGranularity) {
