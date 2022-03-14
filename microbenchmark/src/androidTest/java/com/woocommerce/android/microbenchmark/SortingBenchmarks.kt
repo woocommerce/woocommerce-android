@@ -13,7 +13,6 @@ import kotlin.random.Random
 
 @RunWith(AndroidJUnit4::class)
 class SortingBenchmarks {
-
     @get:Rule
     val benchmarkRule = BenchmarkRule()
 

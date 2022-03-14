@@ -13,7 +13,6 @@ import com.woocommerce.android.benchmarkable.R
 
 @RunWith(AndroidJUnit4::class)
 class ViewInflateBenchmark {
-
     @get:Rule
     val benchmarkRule = BenchmarkRule()
 

@@ -4,7 +4,6 @@ package com.woocommerce.android.benchmarkable
  * Some trivial sorting algorithms for benchmarks
  */
 object SortingAlgorithms {
-
     fun bubbleSort(array: IntArray) {
         for (i in 0..array.lastIndex) {
             for (j in 0 until array.lastIndex) {
