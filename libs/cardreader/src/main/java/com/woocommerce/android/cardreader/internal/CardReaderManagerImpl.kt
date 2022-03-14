@@ -102,6 +102,7 @@ internal class CardReaderManagerImpl(
     }
 
     override suspend fun refundInteracPayment(refundParams: RefundParams): Flow<CardInteracRefundStatus> {
+        if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
         resetBluetoothDisplayMessage()
         return paymentManager.refundInteracPayment(refundParams)
     }

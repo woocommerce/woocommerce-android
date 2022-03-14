@@ -40,7 +40,7 @@ internal class PaymentManager(
     private val processPaymentAction: ProcessPaymentAction,
     private val cancelPaymentAction: CancelPaymentAction,
     private val collectInteracRefundAction: CollectInteracRefundAction,
-    private val processRefundAction: ProcessInteracRefundAction,
+    private val processInteracRefundAction: ProcessInteracRefundAction,
     private val paymentUtils: PaymentUtils,
     private val errorMapper: PaymentErrorMapper,
     private val cardReaderConfigFactory: CardReaderConfigFactory,
@@ -102,7 +102,7 @@ internal class PaymentManager(
 
     private suspend fun FlowCollector<CardInteracRefundStatus>.processInteracRefund() {
         emit(CardInteracRefundStatus.ProcessingInteracRefund)
-        processRefundAction.processRefund().collect { status ->
+        processInteracRefundAction.processRefund().collect { status ->
             when (status) {
                 is ProcessInteracRefundAction.ProcessRefundStatus.Success -> {
                     emit(CardInteracRefundStatus.InteracRefundSuccess)

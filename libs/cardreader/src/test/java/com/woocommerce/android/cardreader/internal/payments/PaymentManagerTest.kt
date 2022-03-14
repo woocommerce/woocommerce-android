@@ -15,10 +15,12 @@ import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.internal.payments.actions.CancelPaymentAction
+import com.woocommerce.android.cardreader.internal.payments.actions.CollectInteracRefundAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus
+import com.woocommerce.android.cardreader.internal.payments.actions.ProcessInteracRefundAction
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction.ProcessPaymentStatus
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
@@ -79,6 +81,8 @@ class PaymentManagerTest {
     private val collectPaymentAction: CollectPaymentAction = mock()
     private val processPaymentAction: ProcessPaymentAction = mock()
     private val cancelPaymentAction: CancelPaymentAction = mock()
+    private val collectInteracRefundAction: CollectInteracRefundAction = mock()
+    private val processInteracRefundAction: ProcessInteracRefundAction = mock()
     private val paymentErrorMapper: PaymentErrorMapper = mock()
     private val paymentUtils: PaymentUtils = mock()
     private val cardReaderConfigFactory: CardReaderConfigFactory = mock()
@@ -100,6 +104,8 @@ class PaymentManagerTest {
             collectPaymentAction,
             processPaymentAction,
             cancelPaymentAction,
+            collectInteracRefundAction,
+            processInteracRefundAction,
             paymentUtils,
             paymentErrorMapper,
             cardReaderConfigFactory,
