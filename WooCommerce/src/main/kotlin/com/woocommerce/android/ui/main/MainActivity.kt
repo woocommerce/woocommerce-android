@@ -7,7 +7,10 @@ import android.content.Intent
 import android.content.res.Resources.Theme
 import android.net.Uri
 import android.os.Bundle
-import android.view.*
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -27,10 +30,13 @@ import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.appbar.AppBarLayout
 import com.woocommerce.android.*
 import com.woocommerce.android.R.dimen
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.ActivityMainBinding
-import com.woocommerce.android.extensions.*
+import com.woocommerce.android.extensions.active
+import com.woocommerce.android.extensions.collapse
+import com.woocommerce.android.extensions.expand
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
@@ -560,12 +566,6 @@ class MainActivity :
                 return
             }
             RequestCodes.SETTINGS -> {
-                // restart the activity if the user returned from settings and they switched sites
-                if (resultCode == AppSettingsActivity.RESULT_CODE_SITE_CHANGED) {
-                    presenter.selectedSiteChanged(selectedSite.get())
-                    restart()
-                }
-
                 // beta features have changed. Restart activity for changes to take effect
                 if (resultCode == AppSettingsActivity.RESULT_CODE_BETA_OPTIONS_CHANGED) {
                     restart()
@@ -603,7 +603,7 @@ class MainActivity :
     }
 
     override fun showSettingsScreen() {
-        AnalyticsTracker.track(Stat.MAIN_MENU_SETTINGS_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.MAIN_MENU_SETTINGS_TAPPED)
         val intent = Intent(this, AppSettingsActivity::class.java)
         startActivityForResult(intent, RequestCodes.SETTINGS)
     }
@@ -677,11 +677,11 @@ class MainActivity :
 
     override fun onNavItemSelected(navPos: BottomNavigationPosition) {
         val stat = when (navPos) {
-            MY_STORE -> Stat.MAIN_TAB_DASHBOARD_SELECTED
-            ANALYTICS -> Stat.MAIN_TAB_ANALYTICS_SELECTED
-            ORDERS -> Stat.MAIN_TAB_ORDERS_SELECTED
-            PRODUCTS -> Stat.MAIN_TAB_PRODUCTS_SELECTED
-            MORE -> Stat.MAIN_TAB_HUB_MENU_SELECTED
+            MY_STORE -> AnalyticsEvent.MAIN_TAB_DASHBOARD_SELECTED
+            ANALYTICS -> AnalyticsEvent.MAIN_TAB_ANALYTICS_SELECTED
+            ORDERS -> AnalyticsEvent.MAIN_TAB_ORDERS_SELECTED
+            PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_SELECTED
+            MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_SELECTED
         }
         AnalyticsTracker.track(stat)
 
@@ -692,11 +692,11 @@ class MainActivity :
 
     override fun onNavItemReselected(navPos: BottomNavigationPosition) {
         val stat = when (navPos) {
-            MY_STORE -> Stat.MAIN_TAB_DASHBOARD_RESELECTED
-            ANALYTICS -> Stat.MAIN_TAB_ANALYTICS_RESELECTED
-            ORDERS -> Stat.MAIN_TAB_ORDERS_RESELECTED
-            PRODUCTS -> Stat.MAIN_TAB_PRODUCTS_RESELECTED
-            MORE -> Stat.MAIN_TAB_HUB_MENU_RESELECTED
+            MY_STORE -> AnalyticsEvent.MAIN_TAB_DASHBOARD_RESELECTED
+            ANALYTICS -> AnalyticsEvent.MAIN_TAB_ANALYTICS_RESELECTED
+            ORDERS -> AnalyticsEvent.MAIN_TAB_ORDERS_RESELECTED
+            PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_RESELECTED
+            MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_RESELECTED
         }
         AnalyticsTracker.track(stat)
 

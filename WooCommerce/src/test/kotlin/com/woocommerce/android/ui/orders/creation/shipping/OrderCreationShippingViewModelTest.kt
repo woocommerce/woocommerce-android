@@ -1,21 +1,16 @@
 package com.woocommerce.android.ui.orders.creation.shipping
 
 import com.woocommerce.android.model.Order.ShippingLine
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.shipping.OrderCreationShippingViewModel.RemoveShipping
 import com.woocommerce.android.ui.orders.creation.shipping.OrderCreationShippingViewModel.UpdateShipping
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.mockito.kotlin.mock
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 
 class OrderCreationShippingViewModelTest : BaseUnitTest() {
     lateinit var viewModel: OrderCreationShippingViewModel
-    private val selectedSite: SelectedSite = mock()
-    private val wooCommerceStore: WooCommerceStore = mock()
 
     private val creationArgs
         get() = OrderCreationShippingFragmentArgs(null)
@@ -31,9 +26,7 @@ class OrderCreationShippingViewModelTest : BaseUnitTest() {
 
     fun setup(args: OrderCreationShippingFragmentArgs) {
         viewModel = OrderCreationShippingViewModel(
-            savedStateHandle = args.toSavedStateHandle(),
-            selectedSite = selectedSite,
-            wooCommerceStore = wooCommerceStore
+            savedStateHandle = args.toSavedStateHandle()
         )
     }
 

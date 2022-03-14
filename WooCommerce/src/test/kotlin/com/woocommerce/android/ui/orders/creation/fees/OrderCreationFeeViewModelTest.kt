@@ -10,7 +10,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.mock
 import java.math.BigDecimal
 import java.math.MathContext
 import java.math.RoundingMode.HALF_UP
@@ -28,11 +27,7 @@ class OrderCreationFeeViewModelTest : BaseUnitTest() {
     fun setUp() = initSut()
 
     private fun initSut() {
-        sut = OrderCreationFeeViewModel(
-            savedState,
-            mock(),
-            mock()
-        )
+        sut = OrderCreationFeeViewModel(savedState)
     }
 
     @Test
@@ -263,5 +258,47 @@ class OrderCreationFeeViewModelTest : BaseUnitTest() {
         }
 
         assertThat(lastReceivedChange).isFalse
+    }
+
+    @Test
+    fun `when order total is zero, then set shouldDisplayPercentageSwitch to false`() {
+        var lastReceivedChange: Boolean? = null
+        savedState = OrderCreationFeeFragmentArgs(BigDecimal.ZERO)
+            .initSavedStateHandle()
+        initSut()
+
+        sut.viewStateData.observeForever { _, viewState ->
+            lastReceivedChange = viewState.shouldDisplayPercentageSwitch
+        }
+
+        assertThat(lastReceivedChange).isFalse
+    }
+
+    @Test
+    fun `when order total contains only the fee value itself, then set shouldDisplayPercentageSwitch to false`() {
+        var lastReceivedChange: Boolean? = null
+        savedState = OrderCreationFeeFragmentArgs(DEFAULT_FEE_VALUE, DEFAULT_FEE_VALUE)
+            .initSavedStateHandle()
+        initSut()
+
+        sut.viewStateData.observeForever { _, viewState ->
+            lastReceivedChange = viewState.shouldDisplayPercentageSwitch
+        }
+
+        assertThat(lastReceivedChange).isFalse
+    }
+
+    @Test
+    fun `when order total is not zero, then set shouldDisplayPercentageSwitch to true`() {
+        var lastReceivedChange: Boolean? = null
+        savedState = OrderCreationFeeFragmentArgs(DEFAULT_ORDER_TOTAL)
+            .initSavedStateHandle()
+        initSut()
+
+        sut.viewStateData.observeForever { _, viewState ->
+            lastReceivedChange = viewState.shouldDisplayPercentageSwitch
+        }
+
+        assertThat(lastReceivedChange).isTrue
     }
 }

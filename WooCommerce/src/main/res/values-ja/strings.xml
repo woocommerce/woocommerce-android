@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-02-16 09:54:03+0000
+Translation-Revision-Date: 2022-03-03 22:42:48+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
@@ -351,6 +351,7 @@ Language: ja_JP
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">ご使用のストアには、古いバージョンの WooCommerce Payments 拡張機能がインストールされています。 オフラインでの支払いを受け取るには、この拡張機能を更新してください。</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">WooCommerce Payments を更新する</string>
     <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">再読み込み</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">あともう少しです。 オフラインでの支払いを開始するには、WooCommerce Payments のセットアップを完了させてください。</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">ストア管理で WooCommerce Payments のセットアップを完了させる</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">有効化後に再読み込みする</string>
     <string name="card_reader_onboarding_wcpay_not_activated_hint">ご使用のストアには WooCommerce Payments 拡張機能はインストールされていますが、有効化されていません。 オフラインでの支払いを受け取るには、この拡張機能を有効化してください。</string>

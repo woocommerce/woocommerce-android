@@ -1,17 +1,33 @@
 package com.woocommerce.android.ui.mystore
 
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.USED_ANALYTICS
+import com.woocommerce.android.analytics.AnalyticsEvent.USED_ANALYTICS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 import org.mockito.kotlin.*
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.util.DateTimeUtils
 
-class MyStoreStatsUsageTracksEventEmitterTest {
+@ExperimentalCoroutinesApi
+class MyStoreStatsUsageTracksEventEmitterTest : BaseUnitTest() {
     private val analyticsTrackerWrapper = mock<AnalyticsTrackerWrapper>()
-    private val usageTracksEventEmitter = MyStoreStatsUsageTracksEventEmitter(analyticsTrackerWrapper)
+    private val siteFlow = MutableSharedFlow<SiteModel>()
+    private val selectedSite: SelectedSite = mock {
+        on { observe() } doReturn siteFlow
+    }
+    private val usageTracksEventEmitter = MyStoreStatsUsageTracksEventEmitter(
+        analyticsTrackerWrapper = analyticsTrackerWrapper,
+        appCoroutineScope = TestCoroutineScope(coroutinesTestRule.testDispatcher),
+        selectedSite = selectedSite
+    )
 
     @Test
-    fun `test it will emit an event when the time and interaction thresholds are reached`() {
+    fun `given some interactions, when time and interaction thresholds are reached, it will emit an event`() {
         // Given
         usageTracksEventEmitter.interacted(
             "2021-11-23T00:00:00Z",
@@ -30,7 +46,30 @@ class MyStoreStatsUsageTracksEventEmitterTest {
     }
 
     @Test
-    fun `test it will not emit an event if the interaction threshold is not reached`() {
+    fun `given some interactions, when the site is changed, then it will not emit an event`() = runBlockingTest {
+        // Given
+        usageTracksEventEmitter.interacted(
+            "2021-11-23T00:00:00Z",
+            "2021-11-23T00:00:01Z",
+            "2021-11-23T00:00:02Z",
+            "2021-11-23T00:00:10Z",
+        )
+
+        verifyNoInteractions(analyticsTrackerWrapper)
+
+        // When
+        // This should cause a reset()
+        siteFlow.emit(SiteModel())
+
+        // Since reset() was called above, this will not cause an event to be triggered.
+        usageTracksEventEmitter.interacted("2021-11-23T00:00:11Z")
+
+        // Then
+        verifyNoInteractions(analyticsTrackerWrapper)
+    }
+
+    @Test
+    fun `given some interactions, when the interactions threshold is not reached, then it will not emit an event`() {
         // Given
         usageTracksEventEmitter.interacted(
             "2021-11-23T00:00:00Z",
@@ -46,7 +85,7 @@ class MyStoreStatsUsageTracksEventEmitterTest {
     }
 
     @Test
-    fun `test it will not emit an event if the time threshold is not reached`() {
+    fun `given some interactions, when the time threshold is not reached, then it will not emit an event`() {
         // Given
         usageTracksEventEmitter.interacted(
             "2021-11-23T00:00:00Z",
@@ -63,7 +102,7 @@ class MyStoreStatsUsageTracksEventEmitterTest {
     }
 
     @Test
-    fun `test it will not emit an event when the user idled`() {
+    fun `given some interactions, when the user idled, then it will not emit an event`() {
         // Given
         usageTracksEventEmitter.interacted(
             "2021-11-23T00:00:00Z",
@@ -81,7 +120,7 @@ class MyStoreStatsUsageTracksEventEmitterTest {
     }
 
     @Test
-    fun `test it can still emit an event later after idling`() {
+    fun `given an idled user, when new interactions reach the thresholds, then it will emit an event`() {
         // Given
         usageTracksEventEmitter.interacted(
             "2021-11-23T00:00:00Z",
@@ -107,7 +146,7 @@ class MyStoreStatsUsageTracksEventEmitterTest {
     }
 
     @Test
-    fun `test it will not emit an event right away after an event was previously emitted`() {
+    fun `given an event was emitted, when one interaction happens after, then it will not emit an event`() {
         // Given
         usageTracksEventEmitter.interacted(
             "2021-11-23T00:00:00Z",
@@ -127,7 +166,7 @@ class MyStoreStatsUsageTracksEventEmitterTest {
     }
 
     @Test
-    fun `test it will emit another event if the threshold is reached again`() {
+    fun `given an event was emitted, when the thresholds are reached again, then it will emit another event`() {
         // Given
         usageTracksEventEmitter.interacted(
             "2021-11-23T00:00:00Z",

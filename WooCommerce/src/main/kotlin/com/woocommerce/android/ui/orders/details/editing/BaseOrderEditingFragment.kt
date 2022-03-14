@@ -11,6 +11,7 @@ import androidx.annotation.LayoutRes
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -148,7 +149,7 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
 
     private fun trackEventStarted() {
         AnalyticsTracker.track(
-            AnalyticsTracker.Stat.ORDER_DETAIL_EDIT_FLOW_STARTED,
+            AnalyticsEvent.ORDER_DETAIL_EDIT_FLOW_STARTED,
             mapOf(
                 AnalyticsTracker.KEY_SUBJECT to analyticsValue
             )
@@ -157,7 +158,7 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
 
     private fun trackEventCanceled() {
         AnalyticsTracker.track(
-            AnalyticsTracker.Stat.ORDER_DETAIL_EDIT_FLOW_CANCELED,
+            AnalyticsEvent.ORDER_DETAIL_EDIT_FLOW_CANCELED,
             mapOf(
                 AnalyticsTracker.KEY_SUBJECT to analyticsValue
             )

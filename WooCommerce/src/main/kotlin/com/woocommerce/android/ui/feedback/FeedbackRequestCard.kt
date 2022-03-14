@@ -3,12 +3,12 @@ package com.woocommerce.android.ui.feedback
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import com.woocommerce.android.analytics.AnalyticsEvent.APP_FEEDBACK_PROMPT
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FEEDBACK_ACTION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_LIKED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_NOT_LIKED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_SHOWN
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.APP_FEEDBACK_PROMPT
 import com.woocommerce.android.databinding.FeedbackRequestCardBinding
 import com.woocommerce.android.widgets.WCElevatedConstraintLayout
 

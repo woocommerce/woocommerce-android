@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.AppConstants
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_LOADED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_LOAD_ERROR
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_LIST_LOADED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_LIST_LOAD_ERROR
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
