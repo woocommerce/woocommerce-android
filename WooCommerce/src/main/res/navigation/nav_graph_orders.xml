@@ -450,6 +450,9 @@
         <argument
             android:name="orderId"
             app:argType="long" />
+        <argument
+            android:name="isRefund"
+            app:argType="boolean" />
     </dialog>
     <dialog
         android:id="@+id/cardReaderConnectDialogFragment"

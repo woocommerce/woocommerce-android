@@ -52,6 +52,9 @@
         <argument
             android:name="orderId"
             app:argType="long" />
+        <argument
+            android:name="isRefund"
+            app:argType="boolean" />
     </dialog>
     <fragment
         android:id="@+id/simplePaymentsFragment"
