@@ -916,6 +916,10 @@
             Card Reader Interac refund
         -->
     <string name="card_reader_payment_refund_payment_loading_header">Getting ready to refund payment</string>
+    <string name="card_reader_payment_refund_failed_header">Refund failed</string>
+    <string name="card_reader_payment_refund_payment">Refund payment</string>
+    <string name="card_reader_payment_processing_refund_state">Processing refund</string>
+    <string name="card_reader_payment_completed_refund_header">Refund successful</string>
     <!--
         Card Reader Payments
     -->
