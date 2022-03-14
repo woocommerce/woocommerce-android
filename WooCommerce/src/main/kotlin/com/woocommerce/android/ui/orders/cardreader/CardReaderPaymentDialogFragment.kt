@@ -79,6 +79,7 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
                         event.receiptUrl,
                         event.documentName
                     )
+                    CardReaderPaymentViewModel.InteracRefundSuccessful -> navigateBackWithNotice("Interac_success")
                     is SendReceipt -> composeEmail(event.address, event.subject, event.content)
                     is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                     is ShowSnackbarInDialog -> Snackbar.make(
