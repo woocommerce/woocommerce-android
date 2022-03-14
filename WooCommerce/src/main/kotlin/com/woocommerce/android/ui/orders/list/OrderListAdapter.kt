@@ -190,6 +190,7 @@ class OrderListAdapter(
         RecyclerView.ViewHolder(viewBinding.getRoot()) {
         fun onBind(header: SectionHeader) {
             viewBinding.orderListHeader.setText(TimeGroup.valueOf(header.title.name).labelRes)
+            ViewCompat.setAccessibilityHeading(viewBinding.orderListHeader, true)
         }
     }
 }

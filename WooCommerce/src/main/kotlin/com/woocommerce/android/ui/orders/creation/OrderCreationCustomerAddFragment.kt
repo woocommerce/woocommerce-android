@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
@@ -44,13 +45,13 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
     private var fragmentViewBinding: FragmentCreationEditCustomerAddressBinding? = null
     private var shippingBinding: LayoutAddressFormBinding? = null
     private var billingBinding: LayoutAddressFormBinding? = null
+    private var customerInfoBinding: LayoutAddressFormBinding? = null
     private var showShippingAddressFormSwitch: LayoutAddressSwitchBinding? = null
     private var doneMenuItem: MenuItem? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
-
         inflateLayout(view)
         setupLocationHandling()
         observeEvents()
@@ -117,7 +118,13 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
     }
 
     private fun inflateLayout(view: View) {
+        customerInfoBinding = LayoutAddressFormBinding.inflate(layoutInflater).apply {
+            ViewCompat.setAccessibilityHeading(cardHeader, true)
+            cardHeader.setText(R.string.details)
+        }
+
         billingBinding = LayoutAddressFormBinding.inflate(layoutInflater).apply {
+            ViewCompat.setAccessibilityHeading(addressSectionHeader, true)
             addressSectionHeader.setText(R.string.order_detail_billing_address_section)
             countrySpinner.setClickListener {
                 addressViewModel.onCountrySpinnerClicked(BILLING)
@@ -128,6 +135,7 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
         }
 
         shippingBinding = LayoutAddressFormBinding.inflate(layoutInflater).apply {
+            ViewCompat.setAccessibilityHeading(addressSectionHeader, true)
             addressSectionHeader.setText(R.string.order_detail_shipping_address_section)
             email.visibility = View.GONE
             countrySpinner.setClickListener {
@@ -146,6 +154,7 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
                 addView(billingBinding?.root)
                 addView(showShippingAddressFormSwitch?.root)
                 addView(shippingBinding?.root)
+                addView(customerInfoBinding?.root)
             }
         }
 

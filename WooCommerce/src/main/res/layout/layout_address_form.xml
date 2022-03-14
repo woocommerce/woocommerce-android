@@ -12,6 +12,7 @@
         android:orientation="vertical">
 
         <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/card_header"
             style="@style/Woo.Card.Header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
