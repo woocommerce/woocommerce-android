@@ -16,6 +16,7 @@ import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactor
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.internal.payments.actions.CancelPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectInteracRefundAction
+import com.woocommerce.android.cardreader.internal.payments.actions.CollectInteracRefundAction.CollectInteracRefundStatus.*
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction
@@ -24,6 +25,11 @@ import com.woocommerce.android.cardreader.internal.payments.actions.ProcessInter
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction.ProcessPaymentStatus
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
+import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.CollectingInteracRefund
+import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.InitializingInteracRefund
+import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.InteracRefundFailure
+import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.InteracRefundSuccess
+import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.ProcessingInteracRefund
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CapturingPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CollectingPayment
@@ -32,6 +38,7 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentComp
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentFailed
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPayment
 import com.woocommerce.android.cardreader.payments.PaymentInfo
+import com.woocommerce.android.cardreader.payments.RefundParams
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -70,6 +77,7 @@ private const val DUMMY_EMAIL = "test@test.test"
 private const val DUMMY_CUSTOMER_NAME = "Tester"
 private const val DUMMY_SITE_URL = "www.test.test/test"
 private const val DUMMY_STORE_NAME = "Test store"
+private const val DUMMY_CHARGE_ID = "ch_abcdefgh"
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
@@ -93,6 +101,13 @@ class PaymentManagerTest {
         ProcessingPayment::class,
         CapturingPayment::class,
         PaymentCompleted::class
+    )
+
+    private val expectedInteracRefundSequence = listOf(
+        InitializingInteracRefund::class,
+        CollectingInteracRefund::class,
+        ProcessingInteracRefund::class,
+        InteracRefundSuccess::class
     )
 
     @Before
@@ -556,6 +571,68 @@ class PaymentManagerTest {
         }
     // END - Cancel
 
+
+    // BEGIN - Interac Refund
+    @Test
+    fun `when interac refund starts, then InitializingInteracRefund is emitted`() = runBlockingTest {
+        val result = manager.refundInteracPayment(createRefundParams())
+            .takeUntilForInteracRefund(InitializingInteracRefund::class).toList()
+
+        assertThat(result.last()).isInstanceOf(InitializingInteracRefund::class.java)
+    }
+
+    @Test
+    fun `when interac refund starts, then CollectingInteracRefund is emitted`() = runBlockingTest {
+        val result = manager.refundInteracPayment(createRefundParams())
+            .takeUntilForInteracRefund(CollectingInteracRefund::class).toList()
+
+        assertThat(result.last()).isInstanceOf(CollectingInteracRefund::class.java)
+    }
+
+    @Test
+    fun `given collect interac refund success, when refund starts, then ProcessingInteracRefund is emitted`() =
+        runBlockingTest {
+            whenever(collectInteracRefundAction.collectRefund(anyOrNull()))
+                .thenReturn(flow { emit(Success) })
+            val result = manager.refundInteracPayment(createRefundParams())
+                .takeUntilForInteracRefund(ProcessingInteracRefund::class).toList()
+
+            assertThat(result.last()).isInstanceOf(ProcessingInteracRefund::class.java)
+        }
+
+    @Test
+    fun `given collect interac refund failure, when refund starts, then ProcessingInteracRefund is NOT emitted`() =
+        runBlockingTest {
+            whenever(collectInteracRefundAction.collectRefund(anyOrNull()))
+                .thenReturn(flow { emit(Failure(mock())) })
+            val result = manager.refundInteracPayment(createRefundParams()).toList()
+
+            assertThat(result.last()).isNotInstanceOf(ProcessingInteracRefund::class.java)
+            verify(processInteracRefundAction, never()).processRefund()
+        }
+
+    @Test
+    fun `given collect interac refund failure, when refund starts, then failure is emitted`() =
+        runBlockingTest {
+            whenever(collectInteracRefundAction.collectRefund(anyOrNull()))
+                .thenReturn(flow { emit(Failure(mock())) })
+            val result = manager.refundInteracPayment(createRefundParams()).toList()
+
+            assertThat(result.last()).isInstanceOf(InteracRefundFailure::class.java)
+        }
+
+    @Test
+    fun `given collect interac refund failure, when refund starts, then flow terminates`() =
+        runBlockingTest {
+            whenever(collectInteracRefundAction.collectRefund(anyOrNull()))
+                .thenReturn(flow { emit(Failure(mock())) })
+            val result = withTimeoutOrNull(TIMEOUT) {
+                manager.refundInteracPayment(createRefundParams()).toList()
+            }
+
+            assertThat(result).isNotNull // verify the flow did not timeout
+        }
+
     private fun createPaymentIntent(
         status: PaymentIntentStatus,
         receiptUrl: String? = "test url",
@@ -577,6 +654,20 @@ class PaymentManagerTest {
             .withIndex()
             .onEach {
                 if (expectedSequence[it.index] != it.value!!::class) {
+                    throw IllegalStateException(
+                        "`PaymentManagerTest.expectedSequence` does not match received " +
+                            "events. Please verify that `PaymentManagerTest.expectedSequence` is defined correctly."
+                    )
+                }
+            }
+            .map { it.value }
+
+    private fun <T> Flow<T>.takeUntilForInteracRefund(untilStatus: KClass<*>): Flow<T> =
+        this.take(expectedInteracRefundSequence.indexOf(untilStatus) + 1)
+            // the below lines are here just as a safeguard to verify that the expectedInteracRefundSequence is defined correctly
+            .withIndex()
+            .onEach {
+                if (expectedInteracRefundSequence[it.index] != it.value!!::class) {
                     throw IllegalStateException(
                         "`PaymentManagerTest.expectedSequence` does not match received " +
                             "events. Please verify that `PaymentManagerTest.expectedSequence` is defined correctly."
@@ -612,5 +703,16 @@ class PaymentManagerTest {
             orderKey = orderKey,
             statementDescriptor = statementDescriptor,
             countryCode = countryCode,
+        )
+
+    private fun createRefundParams(
+        chargeId: String = DUMMY_CHARGE_ID,
+        amount: BigDecimal = DUMMY_AMOUNT,
+        currency: String = USD_CURRENCY
+    ): RefundParams =
+        RefundParams(
+            chargeId = chargeId,
+            amount = amount,
+            currency = currency
         )
 }

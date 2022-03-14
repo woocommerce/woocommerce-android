@@ -12,6 +12,7 @@ import com.woocommerce.android.cardreader.internal.payments.actions.CancelPaymen
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectInteracRefundAction
+import com.woocommerce.android.cardreader.internal.payments.actions.CollectInteracRefundAction.CollectInteracRefundStatus
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus.Failure
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus.Success
@@ -72,32 +73,33 @@ internal class PaymentManager(
     fun refundInteracPayment(refundParameters: RefundParams): Flow<CardInteracRefundStatus> = flow {
         emit(CardInteracRefundStatus.InitializingInteracRefund)
         val collectRefundStatus = collectInteracRefund(refundParameters)
-        if (collectRefundStatus == CollectInteracRefundAction.CollectInteracRefundStatus.Success) {
+        if (collectRefundStatus == CollectInteracRefundStatus.Success) {
             processInteracRefund()
         }
     }
 
     private suspend fun FlowCollector<CardInteracRefundStatus>.collectInteracRefund(
         refundParameters: RefundParams
-    ) : CollectInteracRefundAction.CollectInteracRefundStatus {
-        var collectInteracInteracRefundStatus: CollectInteracRefundAction.CollectInteracRefundStatus =
-            CollectInteracRefundAction.CollectInteracRefundStatus.Success
+    ) : CollectInteracRefundStatus {
+        var collectInteracRefundStatus: CollectInteracRefundStatus =
+            CollectInteracRefundStatus.Success
         emit(CardInteracRefundStatus.CollectingInteracRefund)
         collectInteracRefundAction.collectRefund(RefundParameters.Builder(
             chargeId = refundParameters.chargeId,
             amount = refundParameters.amount.toLong(),
             currency = refundParameters.currency
         ).build()).collect { refundStatus ->
-            collectInteracInteracRefundStatus = when (refundStatus) {
-                CollectInteracRefundAction.CollectInteracRefundStatus.Success -> {
-                    CollectInteracRefundAction.CollectInteracRefundStatus.Success
+            collectInteracRefundStatus = when (refundStatus) {
+                CollectInteracRefundStatus.Success -> {
+                    CollectInteracRefundStatus.Success
                 }
-                is CollectInteracRefundAction.CollectInteracRefundStatus.Failure -> {
-                    CollectInteracRefundAction.CollectInteracRefundStatus.Failure(refundStatus.exception)
+                is CollectInteracRefundStatus.Failure -> {
+                    emit(CardInteracRefundStatus.InteracRefundFailure(refundStatus.exception))
+                    CollectInteracRefundStatus.Failure(refundStatus.exception)
                 }
             }
         }
-        return collectInteracInteracRefundStatus
+        return collectInteracRefundStatus
     }
 
     private suspend fun FlowCollector<CardInteracRefundStatus>.processInteracRefund() {
