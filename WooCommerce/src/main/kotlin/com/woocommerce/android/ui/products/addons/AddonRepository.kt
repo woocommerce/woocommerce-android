@@ -6,7 +6,7 @@ import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import org.wordpress.android.fluxc.domain.Addon
-import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.store.WCAddonsStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCProductStore
@@ -47,7 +47,7 @@ class AddonRepository @Inject constructor(
     private suspend fun getOrder(orderID: Long) =
         orderStore.getOrderByIdAndSite(orderID, selectedSite.get())
 
-    private fun WCOrderModel.findOrderAttributesWith(orderItemID: Long) =
+    private fun OrderEntity.findOrderAttributesWith(orderItemID: Long) =
         getLineItemList().find { it.id == orderItemID }
             ?.getAttributeList()
             ?.map { Attribute(it.key.orEmpty(), it.value.orEmpty()) }

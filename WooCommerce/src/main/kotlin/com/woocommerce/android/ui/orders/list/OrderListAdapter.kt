@@ -150,13 +150,13 @@ class OrderListAdapter(
                 viewBinding.root,
                 String.format(
                     ctx.getString(R.string.order_card_transition_name),
-                    orderItemUI.localOrderId
+                    orderItemUI.orderId
                 )
             )
 
             this.itemView.setOnClickListener {
                 listener.openOrderDetail(
-                    orderId = orderItemUI.remoteOrderId.value,
+                    orderId = orderItemUI.orderId,
                     orderStatus = orderItemUI.status,
                     sharedView = viewBinding.root
                 )
@@ -200,13 +200,13 @@ private val OrderListDiffItemCallback = object : DiffUtil.ItemCallback<OrderList
             return oldItem.title == newItem.title
         }
         if (oldItem is LoadingItem && newItem is LoadingItem) {
-            return oldItem.remoteId == newItem.remoteId
+            return oldItem.orderId == newItem.orderId
         }
         if (oldItem is OrderListItemUI && newItem is OrderListItemUI) {
-            return oldItem.remoteOrderId == newItem.remoteOrderId
+            return oldItem.orderId == newItem.orderId
         }
         if (oldItem is LoadingItem && newItem is OrderListItemUI) {
-            return oldItem.remoteId == newItem.remoteOrderId
+            return oldItem.orderId == newItem.orderId
         }
         return false
     }

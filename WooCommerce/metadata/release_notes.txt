@@ -1,4 +1,3 @@
-- [*] Fixed an issue where on rare cases the app might end up displaying order notes for the wrong note. [https://github.com/woocommerce/woocommerce-android/pull/5971]
-- [*] In-Person Payments: Add support for accepting payments on bookable products
-- [***] Beta Feature: Order Creation is now improved, supporting Fees and Shipping costs.
+Did you know we’ve released a beta feature for creating orders? Head to the Menu tab, tap the settings icon, and scroll to beta features. We just added fees and shipping costs!
 
+We fixed a rare issue where sometimes the notes for an order appeared incorrectly. Thanks for letting us know!

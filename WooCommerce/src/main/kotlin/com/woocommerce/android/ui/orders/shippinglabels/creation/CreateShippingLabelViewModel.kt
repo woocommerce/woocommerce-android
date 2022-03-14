@@ -478,7 +478,7 @@ class CreateShippingLabelViewModel @Inject constructor(
         } else {
             if (fulfillOrder) {
                 orderDetailRepository.updateOrderStatus(
-                    remoteOrderId = data.order.id,
+                    orderId = data.order.id,
                     newStatus = CoreOrderStatus.COMPLETED.value
                 ).collect { result ->
                     when (result) {
