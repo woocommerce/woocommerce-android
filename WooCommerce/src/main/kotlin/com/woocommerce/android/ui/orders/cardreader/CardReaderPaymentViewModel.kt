@@ -13,8 +13,15 @@ import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMe
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.*
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.*
+import com.woocommerce.android.cardreader.payments.CardRefundStatus
+import com.woocommerce.android.cardreader.payments.CardRefundStatus.CollectingRefund
+import com.woocommerce.android.cardreader.payments.CardRefundStatus.InitializingRefund
+import com.woocommerce.android.cardreader.payments.CardRefundStatus.ProcessingRefund
+import com.woocommerce.android.cardreader.payments.CardRefundStatus.RefundFailure
+import com.woocommerce.android.cardreader.payments.CardRefundStatus.RefundSuccess
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
+import com.woocommerce.android.cardreader.payments.RefundParams
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -72,13 +79,18 @@ class CardReaderPaymentViewModel
     val viewStateData: LiveData<ViewState> = viewState
 
     private var paymentFlowJob: Job? = null
+    private var refundFlowJob: Job? = null
     private var paymentDataForRetry: PaymentData? = null
 
     private var refetchOrderJob: Job? = null
 
     fun start() {
         if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected && paymentFlowJob == null) {
-            initPaymentFlow(isRetry = false)
+            if (arguments.isRefund) {
+                initRefundFlow()
+            } else {
+                initPaymentFlow(isRetry = false)
+            }
         } else {
             exitWithSnackbar(R.string.card_reader_payment_reader_not_connected)
         }
@@ -124,6 +136,20 @@ class CardReaderPaymentViewModel
                         onPrimaryActionClicked = { initPaymentFlow(isRetry = true) }
                     )
                 )
+            }
+        }
+    }
+
+    private fun initRefundFlow() {
+        refundFlowJob = launch {
+            viewState.postValue((RefundLoadingDataState))
+            fetchOrder()?.let { order ->
+                launch {
+                    refundPaymentFlow(cardReaderManager, order)
+                }
+                launch {
+                    listenForBluetoothCardReaderMessages()
+                }
             }
         }
     }
@@ -187,6 +213,39 @@ class CardReaderPaymentViewModel
                 paymentDataForRetry = paymentStatus.paymentDataForRetry
                 tracker.trackPaymentFailed(paymentStatus.errorMessage, paymentStatus.type)
                 emitFailedPaymentState(orderId, billingEmail, paymentStatus, amountLabel)
+            }
+        }
+    }
+
+    private suspend fun refundPaymentFlow(cardReaderManager: CardReaderManager, order: Order) {
+        order.chargeId?.let { chargeId ->
+            cardReaderManager.refundPayment(
+                RefundParams(
+                    chargeId = chargeId,
+                    amount = order.total,
+                    currency = order.currency
+                )
+            ).collect { refundStatus ->
+                onRefundStatusChanged(refundStatus, order.getAmountLabel())
+            }
+        }
+    }
+
+    private fun onRefundStatusChanged(
+        refundStatus: CardRefundStatus,
+        amountLabel: String
+    ) {
+        when (refundStatus) {
+            InitializingRefund -> viewState.postValue(RefundLoadingDataState)
+            CollectingRefund -> viewState.postValue(CollectRefundState(amountLabel))
+            ProcessingRefund -> viewState.postValue(ProcessingRefundState(amountLabel))
+            is RefundSuccess -> {
+                viewState.postValue(RefundSuccessfulState(amountLabel))
+                triggerEvent(InteracRefundSuccessful)
+            }
+            is RefundFailure -> viewState.postValue(FailedRefundState(amountLabel, onPrimaryActionClicked = { onBackPressed() }))
+            CardRefundStatus.WaitingForInput -> {
+                // noop
             }
         }
     }
@@ -424,4 +483,6 @@ class CardReaderPaymentViewModel
     class ShowSnackbarInDialog(@StringRes val message: Int) : Event()
 
     object PlayChaChing : MultiLiveEvent.Event()
+
+    object InteracRefundSuccessful : MultiLiveEvent.Event()
 }
