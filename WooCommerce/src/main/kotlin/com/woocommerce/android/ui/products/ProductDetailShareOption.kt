@@ -50,6 +50,7 @@ fun ProductDetailShareOption(
             Text(
                 text = stringResource(id = R.string.product_share_dialog_title),
                 fontSize = 18.sp,
+                color = colorResource(id = R.color.color_on_surface),
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
                     .padding(16.dp)
@@ -59,6 +60,7 @@ fun ProductDetailShareOption(
                 Text(
                     text = stringResource(id = R.string.product_share_dialog_image),
                     fontSize = 14.sp,
+                    color = colorResource(id = R.color.color_on_surface),
                     modifier = Modifier
                         .padding(16.dp, 8.dp)
                 )
