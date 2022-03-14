@@ -101,9 +101,9 @@ internal class CardReaderManagerImpl(
         return paymentManager.acceptPayment(paymentInfo)
     }
 
-    override suspend fun refundPayment(refundParameters: RefundParams): Flow<CardRefundStatus> {
+    override suspend fun refundPayment(refundParams: RefundParams): Flow<CardRefundStatus> {
         resetBluetoothDisplayMessage()
-        return paymentManager.refundPayment(refundParameters)
+        return paymentManager.refundPayment(refundParams)
     }
 
     private fun resetBluetoothDisplayMessage() {
