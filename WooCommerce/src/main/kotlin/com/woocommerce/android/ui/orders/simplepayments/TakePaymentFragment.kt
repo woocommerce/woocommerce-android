@@ -73,7 +73,8 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
                     }
                     is OrderNavigationTarget.StartCardReaderPaymentFlow -> {
                         val action = TakePaymentFragmentDirections.actionTakePaymentFragmentToCardReaderPaymentDialog(
-                            orderId = event.orderId
+                            orderId = event.orderId,
+                            false
                         )
                         findNavController().navigateSafely(action)
                     }
