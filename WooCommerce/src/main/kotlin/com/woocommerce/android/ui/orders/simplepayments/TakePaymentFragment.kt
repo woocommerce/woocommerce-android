@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.simplepayments
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
@@ -66,16 +67,16 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
                         findNavController().navigateSafely(R.id.orders)
                     }
                     is OrderNavigationTarget.StartCardReaderConnectFlow -> {
-                        val action = TakePaymentFragmentDirections.actionTakePaymentFragmentToCardReaderConnectDialog(
-                            skipOnboarding = event.skipOnboarding
+                        findNavController().navigateSafely(
+                            R.id.action_global_CardReaderConnectDialogFragment,
+                            bundleOf("skipOnboarding" to event.skipOnboarding)
                         )
-                        findNavController().navigateSafely(action)
                     }
                     is OrderNavigationTarget.StartCardReaderPaymentFlow -> {
-                        val action = TakePaymentFragmentDirections.actionTakePaymentFragmentToCardReaderPaymentDialog(
-                            orderId = event.orderId
+                        findNavController().navigateSafely(
+                            R.id.action_global_CardReaderPaymentDialogFragment,
+                            bundleOf("orderId" to event.orderId)
                         )
-                        findNavController().navigateSafely(action)
                     }
                 }
             }

@@ -57,8 +57,14 @@ class CardReaderOnboardingViewModel @Inject constructor(
             val state = cardReaderChecker.getOnboardingState()
             cardReaderTracker.trackOnboardingState(state)
             when (state) {
-                is CardReaderOnboardingState.OnboardingCompleted ->
-                    triggerEvent(OnboardingEvent.Continue(state.countryCode))
+                is CardReaderOnboardingState.OnboardingCompleted -> {
+                    val site = selectedSite.get()
+                    if (!appPrefsWrapper.isCardReaderOnboardingCompleted(site.id, site.siteId, site.selfHostedSiteId)) {
+                        triggerEvent(OnboardingEvent.ShowCardReaderWelcomeDialog)
+                    } else {
+                        triggerEvent(OnboardingEvent.Continue(state.countryCode))
+                    }
+                }
                 is CardReaderOnboardingState.StoreCountryNotSupported ->
                     viewState.value = OnboardingViewState.UnsupportedErrorState.Country(
                         convertCountryCodeToCountry(state.countryCode),
@@ -224,6 +230,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
         data class NavigateToUrlInGenericWebView(val url: String) : Event()
 
         data class Continue(val storeCountryCode: String) : Event()
+        object ShowCardReaderWelcomeDialog : Event()
     }
 
     sealed class OnboardingViewState(@LayoutRes val layoutRes: Int) {

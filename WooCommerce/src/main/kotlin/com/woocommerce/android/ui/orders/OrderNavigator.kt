@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders
 
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.NavGraphMainDirections
@@ -12,7 +13,6 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderConnectFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderPaymentFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabelCreationFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
@@ -147,19 +147,12 @@ class OrderNavigator @Inject constructor() {
                     .actionOrderDetailFragmentToCreateShippingLabelFragment(target.orderId)
                 fragment.findNavController().navigateSafely(action)
             }
-            is OrderNavigationTarget.ShowCardReaderWelcomeDialog -> {
-                val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToCardReaderWelcomeDialog()
-                fragment.findNavController().navigateSafely(action)
-            }
-            is StartCardReaderConnectFlow -> {
-                val action = OrderDetailFragmentDirections
-                    .actionOrderDetailFragmentToCardReaderConnectDialog(target.skipOnboarding)
-                fragment.findNavController().navigateSafely(action)
-            }
             is StartCardReaderPaymentFlow -> {
-                val action = OrderDetailFragmentDirections
-                    .actionOrderDetailFragmentToCardReaderPaymentDialog(target.orderId)
-                fragment.findNavController().navigateSafely(action)
+                val action = OrderDetailFragmentDirections.actionOnboa
+                fragment.findNavController().navigateSafely(
+                    R.id.action_global_CardReaderPaymentDialogFragment,
+                    bundleOf("orderId" to target.orderId)
+                )
             }
             is ViewPrintingInstructions -> {
                 val action = OrderDetailFragmentDirections

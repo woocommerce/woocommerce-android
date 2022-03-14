@@ -300,9 +300,6 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         handleNotice(PrintShippingLabelFragment.KEY_LABEL_PURCHASED) {
             viewModel.onShippingLabelsPurchased()
         }
-        handleNotice(CardReaderOnboardingFragment.KEY_READER_ONBOARDING_SUCCESS) {
-            viewModel.onOnboardingSuccess()
-        }
     }
 
     private fun showOrderDetail(

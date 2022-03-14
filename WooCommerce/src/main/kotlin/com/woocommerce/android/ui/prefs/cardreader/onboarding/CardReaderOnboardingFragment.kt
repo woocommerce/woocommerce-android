@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.viewModels
@@ -17,6 +18,7 @@ import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.parcelize.Parcelize
 
 @AndroidEntryPoint
 class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_onboarding) {
@@ -247,4 +249,11 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
     companion object {
         const val KEY_READER_ONBOARDING_SUCCESS = "key_reader_onboarding_success"
     }
+}
+
+sealed class CardReaderFlowParam : Parcelable {
+    @Parcelize
+    object OnboardingCheckOnly: CardReaderFlowParam()
+    @Parcelize
+    data class ConnectAndAcceptPayment(val orderId: Long): CardReaderFlowParam()
 }

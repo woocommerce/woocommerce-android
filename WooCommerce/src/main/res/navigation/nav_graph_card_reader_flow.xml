@@ -1,0 +1,117 @@
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardReaderFlow"
+    app:startDestination="@id/cardReaderOnboardingFragment">
+
+    <!-- Onboarding flow -->
+    <fragment
+        android:id="@+id/cardReaderOnboardingFragment"
+        android:name="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingFragment"
+        android:label="CardReaderOnboardingFragment">
+        <argument
+            android:name="cardReaderFlowParam"
+            app:argType="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam"
+            app:nullable="false" />
+        <action
+            android:id="@+id/action_cardReaderOnboardingFragment_to_cardReaderHubFragment"
+            app:destination="@id/cardReaderHubFragment">
+            <argument
+                android:name="storeCountryCode"
+                app:argType="string"
+                app:nullable="false" />
+        </action>
+    </fragment>
+    <fragment
+        android:id="@+id/cardReaderHubFragment"
+        android:name="com.woocommerce.android.ui.prefs.cardreader.hub.CardReaderHubFragment"
+        android:label="CardReaderHubFragment">
+        <action
+            android:id="@+id/action_cardReaderHubFragment_to_cardReaderDetailFragment"
+            app:destination="@id/cardReaderDetailFragment" />
+        <argument
+            android:name="storeCountryCode"
+            app:argType="string"
+            app:nullable="false" />
+    </fragment>
+    <fragment
+        android:id="@+id/cardReaderDetailFragment"
+        android:name="com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailFragment"
+        android:label="CardReaderDetailFragment">
+        <action
+            android:id="@+id/action_cardReaderDetailFragment_to_cardReaderConnectFragment"
+            app:destination="@id/cardReaderConnectDialogFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_cardReaderDetailFragment_to_cardReaderUpdateDialogFragment"
+            app:destination="@id/cardReaderUpdateDialogFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@anim/activity_fade_out" />
+    </fragment>
+
+    <!-- Connection flow -->
+    <dialog
+        android:id="@+id/cardReaderWelcomeDialog"
+        android:name="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderWelcomeDialog"
+        android:label="CardReaderWelcomeDialog">
+        <action
+            android:id="@+id/action_cardReaderWelcomeFragment_to_cardReaderOnboardingFragment"
+            app:destination="@id/cardReaderOnboardingFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
+    </dialog>
+    <dialog
+        android:id="@+id/cardReaderConnectDialogFragment"
+        android:name="com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectDialogFragment"
+        android:label="CardReaderConnectDialogFragment">
+        <argument
+            android:name="orderId"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_cardReaderConnectDialogFragment_to_cardReaderTutorialDialogFragment"
+            app:destination="@id/cardReaderTutorialDialogFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_cardReaderConnectDialogFragment_to_cardReaderUpdateDialogFragment"
+            app:destination="@id/cardReaderUpdateDialogFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_cardReaderConnectDialogFragment_to_cardReaderOnboardingFragment"
+            app:destination="@id/cardReaderOnboardingFragment" />
+    </dialog>
+    <dialog
+        android:id="@+id/cardReaderUpdateDialogFragment"
+        android:name="com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateDialogFragment"
+        android:label="CardReaderUpdateDialogFragment">
+        <argument
+            android:name="requiredUpdate"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </dialog>
+    <dialog
+        android:id="@+id/cardReaderTutorialDialogFragment"
+        android:name="com.woocommerce.android.ui.prefs.cardreader.tutorial.CardReaderTutorialDialogFragment"
+        android:label="CardReaderTutorialDialogFragment" />
+
+    <!-- Payment flow -->
+    <dialog
+        android:id="@+id/cardReaderPaymentDialogFragment"
+        android:name="com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialogFragment"
+        android:label="CardReaderPaymentDialogFragment">
+        <argument
+            android:name="orderId"
+            app:argType="long" />
+    </dialog>
+</navigation>
