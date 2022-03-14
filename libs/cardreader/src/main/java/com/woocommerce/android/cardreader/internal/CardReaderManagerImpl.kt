@@ -16,7 +16,7 @@ import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManage
 import com.woocommerce.android.cardreader.internal.payments.PaymentManager
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
-import com.woocommerce.android.cardreader.payments.CardRefundStatus
+import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.RefundParams
@@ -101,9 +101,9 @@ internal class CardReaderManagerImpl(
         return paymentManager.acceptPayment(paymentInfo)
     }
 
-    override suspend fun refundPayment(refundParams: RefundParams): Flow<CardRefundStatus> {
+    override suspend fun refundInteracPayment(refundParams: RefundParams): Flow<CardInteracRefundStatus> {
         resetBluetoothDisplayMessage()
-        return paymentManager.refundPayment(refundParams)
+        return paymentManager.refundInteracPayment(refundParams)
     }
 
     private fun resetBluetoothDisplayMessage() {
