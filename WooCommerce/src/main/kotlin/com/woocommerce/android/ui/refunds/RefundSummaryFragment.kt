@@ -9,6 +9,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentRefundSummaryBinding
+import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateSafely
@@ -62,6 +63,14 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.getSnack(event.message, *event.args).show()
                 is Exit -> navigateBackWithNotice(REFUND_ORDER_NOTICE_KEY, R.id.orderDetailFragment)
+                is IssueRefundViewModel.IssueRefundEvent.CardReaderPaymentScreen -> {
+                    val action =
+                        RefundSummaryFragmentDirections.actionRefundSummaryFragmentToCardReaderPaymentDialog(
+                            orderId = event.orderId,
+                            isRefund = event.isRefund
+                        )
+                    findNavController().navigateSafely(action)
+                }
                 is ShowRefundConfirmation -> {
                     val action =
                         RefundSummaryFragmentDirections.actionRefundSummaryFragmentToRefundConfirmationDialog(
@@ -98,6 +107,10 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
                 } else {
                     binding.refundSummaryMethodDescription.hide()
                 }
+            }
+            handleDialogNotice<String>("Interac_success",
+                entryId = R.id.refundSummaryFragment) {
+                viewModel.notifyRefundBackend()
             }
         }
     }
