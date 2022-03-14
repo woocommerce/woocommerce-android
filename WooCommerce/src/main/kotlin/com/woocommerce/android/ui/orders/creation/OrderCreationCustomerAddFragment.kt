@@ -45,7 +45,6 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
     private var fragmentViewBinding: FragmentCreationEditCustomerAddressBinding? = null
     private var shippingBinding: LayoutAddressFormBinding? = null
     private var billingBinding: LayoutAddressFormBinding? = null
-    private var customerInfoBinding: LayoutAddressFormBinding? = null
     private var showShippingAddressFormSwitch: LayoutAddressSwitchBinding? = null
     private var doneMenuItem: MenuItem? = null
 
@@ -118,12 +117,9 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
     }
 
     private fun inflateLayout(view: View) {
-        customerInfoBinding = LayoutAddressFormBinding.inflate(layoutInflater).apply {
+        billingBinding = LayoutAddressFormBinding.inflate(layoutInflater).apply {
             ViewCompat.setAccessibilityHeading(cardHeader, true)
             cardHeader.setText(R.string.details)
-        }
-
-        billingBinding = LayoutAddressFormBinding.inflate(layoutInflater).apply {
             ViewCompat.setAccessibilityHeading(addressSectionHeader, true)
             addressSectionHeader.setText(R.string.order_detail_billing_address_section)
             countrySpinner.setClickListener {
@@ -154,7 +150,6 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
                 addView(billingBinding?.root)
                 addView(showShippingAddressFormSwitch?.root)
                 addView(shippingBinding?.root)
-                addView(customerInfoBinding?.root)
             }
         }
 
