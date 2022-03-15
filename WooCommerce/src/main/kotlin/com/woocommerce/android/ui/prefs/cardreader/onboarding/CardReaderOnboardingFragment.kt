@@ -45,21 +45,23 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                 is CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInGenericWebView -> {
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 }
-                is CardReaderOnboardingViewModel.OnboardingEvent.ContinueToHub ->
-                        findNavController().navigate(
-                            CardReaderOnboardingFragmentDirections
-                                .actionCardReaderOnboardingFragmentToCardReaderHubFragment(
-                                    event.cardReaderFlowParam,
-                                    event.storeCountryCode
-                                )
-                        )
-                is CardReaderOnboardingViewModel.OnboardingEvent.ContinueToPayment ->
+                is CardReaderOnboardingViewModel.OnboardingEvent.ContinueToHub -> {
+                    findNavController().navigate(
+                        CardReaderOnboardingFragmentDirections
+                            .actionCardReaderOnboardingFragmentToCardReaderHubFragment(
+                                event.cardReaderFlowParam,
+                                event.storeCountryCode
+                            )
+                    )
+                }
+                is CardReaderOnboardingViewModel.OnboardingEvent.ContinueToPayment -> {
                     findNavController().navigate(
                         CardReaderOnboardingFragmentDirections
                             .actionCardReaderOnboardingFragmentToCardReaderConnectDialogFragment(
                                 event.cardReaderFlowParam
                             )
                     )
+                }
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
                 else -> event.isHandled = false
             }
@@ -252,7 +254,8 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
 
 sealed class CardReaderFlowParam : Parcelable {
     @Parcelize
-    object CardReadersHub: CardReaderFlowParam()
+    object CardReadersHub : CardReaderFlowParam()
+
     @Parcelize
-    data class ConnectAndAcceptPayment(val orderId: Long): CardReaderFlowParam()
+    data class ConnectAndAcceptPayment(val orderId: Long) : CardReaderFlowParam()
 }

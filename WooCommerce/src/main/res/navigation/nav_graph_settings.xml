@@ -11,7 +11,12 @@
         android:label="MainSettingsFragment">
         <action
             android:id="@+id/action_mainSettingsFragment_to_cardReaderFlow"
-            app:destination="@id/cardReaderFlow" />
+            app:destination="@id/cardReaderFlow" >
+            <argument
+                android:name="cardReaderFlowParam"
+                app:argType="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam"
+                app:nullable="false" />
+        </action>
         <action
             android:id="@+id/action_mainSettingsFragment_to_privacySettingsFragment"
             app:destination="@id/privacySettingsFragment" />

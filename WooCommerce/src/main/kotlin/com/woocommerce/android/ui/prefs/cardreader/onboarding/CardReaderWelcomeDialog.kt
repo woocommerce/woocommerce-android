@@ -44,14 +44,17 @@ class CardReaderWelcomeDialog : DialogFragment(R.layout.card_reader_welcome_dial
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is NavigateToOnboardingFlow ->
+                is NavigateToOnboardingFlow -> {
                     findNavController()
                         .navigateSafely(
                             CardReaderWelcomeDialogDirections
                                 .actionCardReaderWelcomeFragmentToCardReaderOnboardingFragment(
                                     event.cardReaderFlowParam
-                                )
+                                ),
+                            skipThrottling = true
                         )
+                    dismiss()
+                }
             }
         }
     }

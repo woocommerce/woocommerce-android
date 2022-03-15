@@ -37,7 +37,9 @@
             app:nullable="false" />
         <action
             android:id="@+id/action_cardReaderOnboardingFragment_to_cardReaderHubFragment"
-            app:destination="@id/cardReaderHubFragment">
+            app:destination="@id/cardReaderHubFragment"
+            app:popUpTo="@+id/mainSettingsFragment"
+            app:popUpToInclusive="false">
             <argument
                 android:name="cardReaderFlowParam"
                 app:argType="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam"
@@ -49,7 +51,9 @@
         </action>
         <action
             android:id="@+id/action_cardReaderOnboardingFragment_to_cardReaderConnectDialogFragment"
-            app:destination="@id/cardReaderConnectDialogFragment">
+            app:destination="@id/cardReaderConnectDialogFragment"
+            app:popUpTo="@+id/cardReaderWelcomeDialog"
+            app:popUpToInclusive="false">
             <argument
                 android:name="cardReaderFlowParam"
                 app:argType="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam"
@@ -121,7 +125,12 @@
             app:enterAnim="@anim/activity_fade_in"
             app:exitAnim="@null"
             app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out" />
+            app:popExitAnim="@anim/activity_fade_out">
+            <argument
+                android:name="cardReaderFlowParam"
+                app:argType="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam"
+                app:nullable="false" />
+        </action>
         <action
             android:id="@+id/action_cardReaderConnectDialogFragment_to_cardReaderUpdateDialogFragment"
             app:destination="@id/cardReaderUpdateDialogFragment"
@@ -143,9 +152,17 @@
         android:id="@+id/cardReaderTutorialDialogFragment"
         android:name="com.woocommerce.android.ui.prefs.cardreader.tutorial.CardReaderTutorialDialogFragment"
         android:label="CardReaderTutorialDialogFragment">
+        <argument
+            android:name="cardReaderFlowParam"
+            app:argType="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam"
+            app:nullable="false" />
         <action
             android:id="@+id/action_cardReaderTutorialDialogFragment_to_cardReaderPaymentDialogFragment"
-            app:destination="@id/cardReaderPaymentDialogFragment" />
+            app:destination="@id/cardReaderPaymentDialogFragment">
+            <argument
+                android:name="orderId"
+                app:argType="long" />
+        </action>
     </dialog>
 
     <!-- Payment flow -->

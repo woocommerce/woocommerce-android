@@ -30,7 +30,6 @@ import com.woocommerce.android.viewmodel.SingleLiveEvent
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
@@ -401,26 +400,15 @@ class CardReaderConnectViewModel @Inject constructor(
         WooLog.e(WooLog.T.CARD_READER, "Connecting to reader succeeded.")
         storeConnectedReader(cardReader)
 
-        // show the tutorial if this is the first time the user has connected a reader, otherwise we're done
-        if (appPrefs.getShowCardReaderConnectedTutorial()) {
-            triggerEvent(ShowCardReaderTutorial)
-            appPrefs.setShowCardReaderConnectedTutorial(false)
-        } else {
-            exitFlow(connected = true)
-        }
-    }
-
-    fun onTutorialClosed() {
-        launch {
-            // this workaround needs to be here since the navigation component hasn't finished the previous
-            // transaction when a result is received
-            delay(1)
-            exitFlow(connected = true)
-        }
+        exitFlow(connected = true)
     }
 
     private fun exitFlow(connected: Boolean) {
-        triggerEvent(ExitWithResult(connected))
+        if (!connected) {
+            triggerEvent(ExitWithResult(false))
+        } else {
+            triggerEvent(ShowCardReaderTutorial(arguments.cardReaderFlowParam))
+        }
     }
 
     private fun storeConnectedReader(cardReader: CardReader) {

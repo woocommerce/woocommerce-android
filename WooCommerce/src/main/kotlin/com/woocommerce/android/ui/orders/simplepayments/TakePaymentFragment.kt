@@ -18,7 +18,6 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialogFragment
-import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectDialogFragment
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -69,7 +68,7 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
                     findNavController().navigateSafely(R.id.orders)
                 }
                 is OrderNavigationTarget.StartCardReaderPaymentFlow -> {
-                    val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToCardReaderFlow(
+                    val action = TakePaymentFragmentDirections.actionTakePaymentFragmentToCardReaderFlow(
                         CardReaderFlowParam.ConnectAndAcceptPayment(event.orderId)
                     )
                     findNavController().navigateSafely(action)

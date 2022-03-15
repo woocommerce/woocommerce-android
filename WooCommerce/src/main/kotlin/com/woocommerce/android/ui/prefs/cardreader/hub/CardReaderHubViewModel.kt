@@ -10,6 +10,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.InPersonPaymentsCanadaFeatureFlag
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -87,7 +88,7 @@ class CardReaderHubViewModel @Inject constructor(
     val viewStateData: LiveData<CardReaderHubViewState> = viewState
 
     private fun onManageCardReaderClicked() {
-        triggerEvent(CardReaderHubEvents.NavigateToCardReaderDetail)
+        triggerEvent(CardReaderHubEvents.NavigateToCardReaderDetail(arguments.cardReaderFlowParam))
     }
 
     private fun onPurchaseCardReaderClicked() {
@@ -107,7 +108,7 @@ class CardReaderHubViewModel @Inject constructor(
     }
 
     sealed class CardReaderHubEvents : MultiLiveEvent.Event() {
-        object NavigateToCardReaderDetail : CardReaderHubEvents()
+        data class NavigateToCardReaderDetail(val cardReaderFlowParam: CardReaderFlowParam) : CardReaderHubEvents()
         data class NavigateToPurchaseCardReaderFlow(val url: String) : CardReaderHubEvents()
         data class NavigateToManualCardReaderFlow(val url: String) : CardReaderHubEvents()
     }

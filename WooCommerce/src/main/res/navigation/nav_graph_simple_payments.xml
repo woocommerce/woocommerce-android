@@ -56,19 +56,13 @@
             app:argType="com.woocommerce.android.model.Order"
             app:nullable="false" />
         <action
-            android:id="@+id/action_takePaymentFragment_to_cardReaderConnect_Dialog"
-            app:destination="@+id/cardReaderConnectDialog"
-            app:enterAnim="@anim/activity_fade_in"
-            app:exitAnim="@null"
-            app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out" />
-        <action
-            android:id="@+id/action_takePaymentFragment_to_cardReaderPayment_Dialog"
-            app:destination="@+id/cardReaderPaymentDialog"
-            app:enterAnim="@anim/activity_fade_in"
-            app:exitAnim="@null"
-            app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out" />
+            android:id="@+id/action_takePaymentFragment_to_cardReaderFlow"
+            app:destination="@id/cardReaderFlow">
+            <argument
+                android:name="cardReaderFlowParam"
+                app:argType="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam"
+                app:nullable="false" />
+        </action>
     </fragment>
     <include app:graph="@navigation/nav_graph_card_reader_flow" />
 </navigation>
