@@ -253,7 +253,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
 
 sealed class CardReaderFlowParam : Parcelable {
     @Parcelize
-    object OnboardingCheckOnly: CardReaderFlowParam()
+    object CardReadersHub: CardReaderFlowParam()
     @Parcelize
     data class ConnectAndAcceptPayment(val orderId: Long): CardReaderFlowParam()
 }

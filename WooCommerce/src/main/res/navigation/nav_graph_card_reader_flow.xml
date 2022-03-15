@@ -1,9 +1,27 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/cardReaderFlow"
-    app:startDestination="@id/cardReaderOnboardingFragment">
+    app:startDestination="@id/cardReaderWelcomeDialog">
 
     <!-- Onboarding flow -->
+    <dialog
+        android:id="@+id/cardReaderWelcomeDialog"
+        android:name="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderWelcomeDialog"
+        android:label="CardReaderWelcomeDialog">
+        <argument
+            android:name="cardReaderFlowParam"
+            app:argType="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam"
+            app:nullable="false" />
+
+        <action
+            android:id="@+id/action_cardReaderWelcomeFragment_to_cardReaderOnboardingFragment"
+            app:destination="@id/cardReaderOnboardingFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
+    </dialog>
+
     <fragment
         android:id="@+id/cardReaderOnboardingFragment"
         android:name="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingFragment"
@@ -20,6 +38,9 @@
                 app:argType="string"
                 app:nullable="false" />
         </action>
+        <action
+            android:id="@+id/action_cardReaderOnboardingFragment_to_cardReaderConnectDialogFragment"
+            app:destination="@id/cardReaderConnectDialogFragment" />
     </fragment>
     <fragment
         android:id="@+id/cardReaderHubFragment"
@@ -55,18 +76,6 @@
 
     <!-- Connection flow -->
     <dialog
-        android:id="@+id/cardReaderWelcomeDialog"
-        android:name="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderWelcomeDialog"
-        android:label="CardReaderWelcomeDialog">
-        <action
-            android:id="@+id/action_cardReaderWelcomeFragment_to_cardReaderOnboardingFragment"
-            app:destination="@id/cardReaderOnboardingFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
-    </dialog>
-    <dialog
         android:id="@+id/cardReaderConnectDialogFragment"
         android:name="com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectDialogFragment"
         android:label="CardReaderConnectDialogFragment">
@@ -87,9 +96,6 @@
             app:exitAnim="@null"
             app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
-        <action
-            android:id="@+id/action_cardReaderConnectDialogFragment_to_cardReaderOnboardingFragment"
-            app:destination="@id/cardReaderOnboardingFragment" />
     </dialog>
     <dialog
         android:id="@+id/cardReaderUpdateDialogFragment"
@@ -103,7 +109,11 @@
     <dialog
         android:id="@+id/cardReaderTutorialDialogFragment"
         android:name="com.woocommerce.android.ui.prefs.cardreader.tutorial.CardReaderTutorialDialogFragment"
-        android:label="CardReaderTutorialDialogFragment" />
+        android:label="CardReaderTutorialDialogFragment" >
+        <action
+            android:id="@+id/action_cardReaderTutorialDialogFragment_to_cardReaderPaymentDialogFragment"
+            app:destination="@id/cardReaderPaymentDialogFragment" />
+    </dialog>
 
     <!-- Payment flow -->
     <dialog
