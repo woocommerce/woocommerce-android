@@ -58,7 +58,7 @@ class InteracRefundManagerTest {
     @Test
     fun `when interac refund starts, then InitializingInteracRefund is emitted`() = runBlockingTest {
         val result = manager.refundInteracPayment(createRefundParams())
-            .takeUntilForInteracRefund(CardInteracRefundStatus.InitializingInteracRefund::class).toList()
+            .takeUntil(CardInteracRefundStatus.InitializingInteracRefund::class).toList()
 
         assertThat(result.last()).isInstanceOf(CardInteracRefundStatus.InitializingInteracRefund::class.java)
     }
@@ -66,7 +66,7 @@ class InteracRefundManagerTest {
     @Test
     fun `when interac refund starts, then CollectingInteracRefund is emitted`() = runBlockingTest {
         val result = manager.refundInteracPayment(createRefundParams())
-            .takeUntilForInteracRefund(CardInteracRefundStatus.CollectingInteracRefund::class).toList()
+            .takeUntil(CardInteracRefundStatus.CollectingInteracRefund::class).toList()
 
         assertThat(result.last()).isInstanceOf(CardInteracRefundStatus.CollectingInteracRefund::class.java)
     }
@@ -77,7 +77,7 @@ class InteracRefundManagerTest {
             whenever(collectInteracRefundAction.collectRefund(anyOrNull()))
                 .thenReturn(flow { emit(CollectInteracRefundAction.CollectInteracRefundStatus.Success) })
             val result = manager.refundInteracPayment(createRefundParams())
-                .takeUntilForInteracRefund(CardInteracRefundStatus.ProcessingInteracRefund::class).toList()
+                .takeUntil(CardInteracRefundStatus.ProcessingInteracRefund::class).toList()
 
             assertThat(result.last()).isInstanceOf(CardInteracRefundStatus.ProcessingInteracRefund::class.java)
         }
@@ -115,7 +115,7 @@ class InteracRefundManagerTest {
             assertThat(result).isNotNull // verify the flow did not timeout
         }
 
-    private fun <T> Flow<T>.takeUntilForInteracRefund(untilStatus: KClass<*>): Flow<T> =
+    private fun <T> Flow<T>.takeUntil(untilStatus: KClass<*>): Flow<T> =
         this.take(expectedInteracRefundSequence.indexOf(untilStatus) + 1)
             // the below lines are here just as a safeguard to verify that the expectedInteracRefundSequence is defined correctly
             .withIndex()
