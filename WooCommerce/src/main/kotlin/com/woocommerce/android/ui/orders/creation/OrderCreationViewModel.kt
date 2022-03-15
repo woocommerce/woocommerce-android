@@ -129,18 +129,10 @@ class OrderCreationViewModel @Inject constructor(
             AnalyticsEvent.ORDER_PRODUCT_ADD,
             mapOf(KEY_FLOW to VALUE_FLOW_CREATION)
         )
-        val uniqueId = variationId ?: remoteProductId
+
         viewModelScope.launch {
             _orderDraft.value.items.toMutableList().apply {
-                val index = indexOfFirst { it.uniqueId == uniqueId }
-                if (index != -1) {
-                    val item = get(index)
-                    set(index, item.copy(quantity = item.quantity + 1))
-                    return@apply
-                }
-                // Create a new item
-                val item = createOrderItem(remoteProductId, variationId)
-                add(item)
+                add(createOrderItem(remoteProductId, variationId))
             }.let { items -> _orderDraft.update { it.updateItems(items) } }
         }
     }
