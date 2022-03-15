@@ -121,7 +121,7 @@ class OrderCreationViewModel @Inject constructor(
     }
 
     fun onRemoveProduct(item: Order.Item) = _orderDraft.update {
-        it.adjustProductQuantity(item.uniqueId, -item.quantity.toInt())
+        it.adjustProductQuantity(item.itemId, -item.quantity.toInt())
     }
 
     fun onProductSelected(remoteProductId: Long, variationId: Long? = null) {
