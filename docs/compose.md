@@ -1,7 +1,7 @@
 <h1 align="center"><img src="https://user-images.githubusercontent.com/2663464/157550609-1b8b4781-409c-432a-a5e8-aca134c4913a.png" width="500"><br>Guidelines for WooCommerce Android</h1>
 
 
-⚠️ **Disclaimer:** This guide is not a tutorial on how to work with Compose and assumes some basic understanding of the framework. 
+⚠️ **Disclaimer:** This guide is not a tutorial on how to work with Compose and assumes some basic knowledge of the framework. 
 
 ## Content
 
@@ -20,13 +20,13 @@ For **Compose App development** we will follow the official styling guidelines t
 * Compose Library Development
 * Compose App development
 
-We will apply the **App development** guidelines which are more flexible. 
+We will apply the **App development** guidelines which are more flexible unless we are developing a Compose specific library, in which case Library development level should be applied. 
 
 Many of the rules from official guidelines are already integrated with Lint, so it will be easier to comply with them. 
 
 Any exception to those code style guidelines should be described here: 
 
-* Guidelines suggest to use `PascalCase` for constant values, Enums, etc. We are currently using `All caps snake_case` for this. There is no major reason for using `PascalCase` in Compose code and have different styles. So, we will keep using `All caps snake_case`. 
+* Guidelines suggest to use `PascalCase` for constant values, Enums, etc. We are currently using `All caps snake_case` for this. There is no major reason for using `PascalCase` in Compose code and have different styles across the app. So, we will keep using `All caps snake_case` for Compose code. 
 
 A few things to **highlight** from the Compose official guidelines: 
 
@@ -57,7 +57,7 @@ The file structure for Compose code should not differ much from how we organice 
 - `ui/compose/animations`: common/generic animations that can be reused across multiple features.
 
 In essence, anything inside `ui/compose` package should be compose code that is reused across multiple feature. Just common sense 🙂
-Inside a specific feature we can follow the same structure `ui/[feature]/compoents`, etc. 
+Inside a specific feature we can follow the same structure `ui/[feature]/components`, etc. 
 
 
 # Managing State 👩‍💻 <a name="managing-state"></a>
@@ -74,7 +74,7 @@ Managing state properly in Compose is key to updating the UI as expected and mak
 
 # Navigation 🗺 <a name="navigation"></a>
 
-Currently we are using Compose through `ComposeView` nested inside a `Fragment` as the root in a 1:1 relationship. For this kind of usage, Navigation implementation remains the same, we can keep using the existing navitation_graphs.xml. 
+Currently, we are using Compose through `ComposeView` nested inside a `Fragment` as the root in a 1:1 relationship. For this kind of usage, Navigation implementation remains the same, we can keep using the existing navitation_graphs.xml. 
 There is one thing to keep in mind when using this `ComposeView` approach. Compose views involve ongoing work and registering the composition with external event sources. These registrations can cause the composition to remain live and ineligible for garbage collection for long after the host View may have been abandoned. To avoid any leaks Android provides [ViewCompositionStrategy](https://developer.android.com/reference/kotlin/androidx/compose/ui/platform/ViewCompositionStrategy)  for disposing the composition automatically at an appropriate time. The recommended strategy for the `Fragment` <--> `ComposeView` approach is [DisposeOnViewTreeLifecycleDestroyed](https://developer.android.com/reference/kotlin/androidx/compose/ui/platform/ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
 //TODO Add guidelines to best practices when navigating between Composables. 
@@ -82,7 +82,7 @@ There is one thing to keep in mind when using this `ComposeView` approach. Compo
 
 # Accessibility ♿️ <a name="accessibility"></a>
 
-Most of the rules that apply for Android's view system apply for Compose UI. But is worth to highlight a few concepts here. 
+Most of the rules that apply for Android's view system apply for Compose UI. But is worth to highlight a few concepts and tools to handle accessibility nicely. 
 
 The key idea to make Composable components accessible is [Semantics](https://developer.android.com/jetpack/compose/semantics). Accessibility services use the `Semantics tree` to provide information to the people using the services (like talkback), and the UI testing framework uses it to make assertions. Few key takes to keep your Composable UI accessible: 
 - For composables and modifiers from the Compose foundation and material library, the Semantics tree is automatically filled and generated for you
