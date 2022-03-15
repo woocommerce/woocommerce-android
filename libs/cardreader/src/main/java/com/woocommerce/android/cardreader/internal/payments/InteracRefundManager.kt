@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 
-internal class RefundManager(
+internal class InteracRefundManager(
     private val collectInteracRefundAction: CollectInteracRefundAction,
     private val processInteracRefundAction: ProcessInteracRefundAction,
 ) {

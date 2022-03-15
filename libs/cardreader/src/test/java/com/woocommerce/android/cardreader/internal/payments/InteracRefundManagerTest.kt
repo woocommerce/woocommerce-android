@@ -34,8 +34,8 @@ private const val TIMEOUT = 1000L
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
-class RefundManagerTest {
-    private lateinit var manager: RefundManager
+class InteracRefundManagerTest {
+    private lateinit var manager: InteracRefundManager
 
     private val collectInteracRefundAction: CollectInteracRefundAction = mock()
     private val processInteracRefundAction: ProcessInteracRefundAction = mock()
@@ -49,7 +49,7 @@ class RefundManagerTest {
 
     @Before
     fun setUp() = runBlockingTest {
-        manager = RefundManager(
+        manager = InteracRefundManager(
             collectInteracRefundAction,
             processInteracRefundAction
         )
