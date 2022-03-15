@@ -30,8 +30,11 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.ui.mystore.MyStoreViewModel.*
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenTopPerformer
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.OrderState
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.TopPerformersViewState
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.VisitorStatsViewState
 import com.woocommerce.android.util.*
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.WooClickableSpan
@@ -60,6 +63,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var dateUtils: DateUtils
+    @Inject lateinit var usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter
 
     private var _binding: FragmentMyStoreBinding? = null
     private val binding get() = _binding!!
@@ -77,6 +81,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         get() = activity as? MainNavigationRouter
 
     private var isEmptyViewVisible: Boolean = false
+    private var wasPreviouslyStopped = false
 
     private val tabSelectedListener = object : TabLayout.OnTabSelectedListener {
         override fun onTabSelected(tab: TabLayout.Tab) {
@@ -116,7 +121,9 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
             viewModel.activeStatsGranularity.value ?: DEFAULT_STATS_GRANULARITY,
             selectedSite,
             dateUtils,
-            currencyFormatter
+            currencyFormatter,
+            usageTracksEventEmitter,
+            viewLifecycleOwner.lifecycleScope
         )
 
         binding.myStoreTopPerformers.initView(selectedSite)
@@ -244,9 +251,16 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         super.onResume()
         handleFeedbackRequestCardState()
         AnalyticsTracker.trackViewShown(this)
+
+        // Avoid executing interacted() on first load. Only when the user navigated away from the fragment.
+        if (wasPreviouslyStopped) {
+            usageTracksEventEmitter.interacted()
+            wasPreviouslyStopped = false
+        }
     }
 
     override fun onStop() {
+        wasPreviouslyStopped = true
         errorSnackbar?.dismiss()
         super.onStop()
     }
