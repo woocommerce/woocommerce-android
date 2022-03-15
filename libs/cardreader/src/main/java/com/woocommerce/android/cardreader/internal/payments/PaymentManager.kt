@@ -40,8 +40,6 @@ internal class PaymentManager(
     private val collectPaymentAction: CollectPaymentAction,
     private val processPaymentAction: ProcessPaymentAction,
     private val cancelPaymentAction: CancelPaymentAction,
-    private val collectInteracRefundAction: CollectInteracRefundAction,
-    private val processInteracRefundAction: ProcessInteracRefundAction,
     private val paymentUtils: PaymentUtils,
     private val errorMapper: PaymentErrorMapper,
     private val cardReaderConfigFactory: CardReaderConfigFactory,
@@ -67,52 +65,6 @@ internal class PaymentManager(
             paymentIntent.status == PaymentIntentStatus.REQUIRES_CONFIRMATION
         ) {
             cancelPaymentAction.cancelPayment(paymentIntent)
-        }
-    }
-
-    fun refundInteracPayment(refundParameters: RefundParams): Flow<CardInteracRefundStatus> = flow {
-        emit(CardInteracRefundStatus.InitializingInteracRefund)
-        val collectRefundStatus = collectInteracRefund(refundParameters)
-        if (collectRefundStatus == CollectInteracRefundStatus.Success) {
-            processInteracRefund()
-        }
-    }
-
-    private suspend fun FlowCollector<CardInteracRefundStatus>.collectInteracRefund(
-        refundParameters: RefundParams
-    ) : CollectInteracRefundStatus {
-        var collectInteracRefundStatus: CollectInteracRefundStatus =
-            CollectInteracRefundStatus.Success
-        emit(CardInteracRefundStatus.CollectingInteracRefund)
-        collectInteracRefundAction.collectRefund(RefundParameters.Builder(
-            chargeId = refundParameters.chargeId,
-            amount = refundParameters.amount.toLong(),
-            currency = refundParameters.currency
-        ).build()).collect { refundStatus ->
-            collectInteracRefundStatus = when (refundStatus) {
-                CollectInteracRefundStatus.Success -> {
-                    CollectInteracRefundStatus.Success
-                }
-                is CollectInteracRefundStatus.Failure -> {
-                    emit(CardInteracRefundStatus.InteracRefundFailure(refundStatus.exception))
-                    CollectInteracRefundStatus.Failure(refundStatus.exception)
-                }
-            }
-        }
-        return collectInteracRefundStatus
-    }
-
-    private suspend fun FlowCollector<CardInteracRefundStatus>.processInteracRefund() {
-        emit(CardInteracRefundStatus.ProcessingInteracRefund)
-        processInteracRefundAction.processRefund().collect { status ->
-            when (status) {
-                is ProcessInteracRefundAction.ProcessRefundStatus.Success -> {
-                    emit(CardInteracRefundStatus.InteracRefundSuccess)
-                }
-                is ProcessInteracRefundAction.ProcessRefundStatus.Failure -> {
-                    emit(CardInteracRefundStatus.InteracRefundFailure(status.exception))
-                }
-            }
         }
     }
 

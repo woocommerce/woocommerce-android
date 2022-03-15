@@ -8,6 +8,7 @@ import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
 import com.woocommerce.android.cardreader.internal.connection.TerminalListenerImpl
 import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManager
 import com.woocommerce.android.cardreader.internal.payments.PaymentManager
+import com.woocommerce.android.cardreader.internal.payments.RefundManager
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalApplicationDelegateWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import com.woocommerce.android.cardreader.payments.RefundParams
@@ -40,6 +41,7 @@ class CardReaderManagerImplTest {
     private val application: Application = mock()
     private val logWrapper: LogWrapper = mock()
     private val paymentManager: PaymentManager = mock()
+    private val refundManager: RefundManager = mock()
     private val connectionManager: ConnectionManager = mock()
     private val softwareUpdateManager: SoftwareUpdateManager = mock()
     private val terminalListener: TerminalListenerImpl = mock()
@@ -57,6 +59,7 @@ class CardReaderManagerImplTest {
             tokenProvider,
             logWrapper,
             paymentManager,
+            refundManager,
             connectionManager,
             softwareUpdateManager,
             terminalListener,
@@ -234,7 +237,7 @@ class CardReaderManagerImplTest {
 
             cardReaderManager.refundInteracPayment(refundParams)
 
-            verify(paymentManager).refundInteracPayment(captor.capture())
+            verify(refundManager).refundInteracPayment(captor.capture())
             assertThat(captor.firstValue).isEqualTo(refundParams)
         }
 }

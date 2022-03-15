@@ -77,7 +77,6 @@ private const val DUMMY_EMAIL = "test@test.test"
 private const val DUMMY_CUSTOMER_NAME = "Tester"
 private const val DUMMY_SITE_URL = "www.test.test/test"
 private const val DUMMY_STORE_NAME = "Test store"
-private const val DUMMY_CHARGE_ID = "ch_abcdefgh"
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
@@ -89,8 +88,6 @@ class PaymentManagerTest {
     private val collectPaymentAction: CollectPaymentAction = mock()
     private val processPaymentAction: ProcessPaymentAction = mock()
     private val cancelPaymentAction: CancelPaymentAction = mock()
-    private val collectInteracRefundAction: CollectInteracRefundAction = mock()
-    private val processInteracRefundAction: ProcessInteracRefundAction = mock()
     private val paymentErrorMapper: PaymentErrorMapper = mock()
     private val paymentUtils: PaymentUtils = mock()
     private val cardReaderConfigFactory: CardReaderConfigFactory = mock()
@@ -103,13 +100,6 @@ class PaymentManagerTest {
         PaymentCompleted::class
     )
 
-    private val expectedInteracRefundSequence = listOf(
-        InitializingInteracRefund::class,
-        CollectingInteracRefund::class,
-        ProcessingInteracRefund::class,
-        InteracRefundSuccess::class
-    )
-
     @Before
     fun setUp() = runBlockingTest {
         manager = PaymentManager(
@@ -119,8 +109,6 @@ class PaymentManagerTest {
             collectPaymentAction,
             processPaymentAction,
             cancelPaymentAction,
-            collectInteracRefundAction,
-            processInteracRefundAction,
             paymentUtils,
             paymentErrorMapper,
             cardReaderConfigFactory,
@@ -573,65 +561,7 @@ class PaymentManagerTest {
 
 
     // BEGIN - Interac Refund
-    @Test
-    fun `when interac refund starts, then InitializingInteracRefund is emitted`() = runBlockingTest {
-        val result = manager.refundInteracPayment(createRefundParams())
-            .takeUntilForInteracRefund(InitializingInteracRefund::class).toList()
 
-        assertThat(result.last()).isInstanceOf(InitializingInteracRefund::class.java)
-    }
-
-    @Test
-    fun `when interac refund starts, then CollectingInteracRefund is emitted`() = runBlockingTest {
-        val result = manager.refundInteracPayment(createRefundParams())
-            .takeUntilForInteracRefund(CollectingInteracRefund::class).toList()
-
-        assertThat(result.last()).isInstanceOf(CollectingInteracRefund::class.java)
-    }
-
-    @Test
-    fun `given collect interac refund success, when refund starts, then ProcessingInteracRefund is emitted`() =
-        runBlockingTest {
-            whenever(collectInteracRefundAction.collectRefund(anyOrNull()))
-                .thenReturn(flow { emit(Success) })
-            val result = manager.refundInteracPayment(createRefundParams())
-                .takeUntilForInteracRefund(ProcessingInteracRefund::class).toList()
-
-            assertThat(result.last()).isInstanceOf(ProcessingInteracRefund::class.java)
-        }
-
-    @Test
-    fun `given collect interac refund failure, when refund starts, then ProcessingInteracRefund is NOT emitted`() =
-        runBlockingTest {
-            whenever(collectInteracRefundAction.collectRefund(anyOrNull()))
-                .thenReturn(flow { emit(Failure(mock())) })
-            val result = manager.refundInteracPayment(createRefundParams()).toList()
-
-            assertThat(result.last()).isNotInstanceOf(ProcessingInteracRefund::class.java)
-            verify(processInteracRefundAction, never()).processRefund()
-        }
-
-    @Test
-    fun `given collect interac refund failure, when refund starts, then failure is emitted`() =
-        runBlockingTest {
-            whenever(collectInteracRefundAction.collectRefund(anyOrNull()))
-                .thenReturn(flow { emit(Failure(mock())) })
-            val result = manager.refundInteracPayment(createRefundParams()).toList()
-
-            assertThat(result.last()).isInstanceOf(InteracRefundFailure::class.java)
-        }
-
-    @Test
-    fun `given collect interac refund failure, when refund starts, then flow terminates`() =
-        runBlockingTest {
-            whenever(collectInteracRefundAction.collectRefund(anyOrNull()))
-                .thenReturn(flow { emit(Failure(mock())) })
-            val result = withTimeoutOrNull(TIMEOUT) {
-                manager.refundInteracPayment(createRefundParams()).toList()
-            }
-
-            assertThat(result).isNotNull // verify the flow did not timeout
-        }
 
     private fun createPaymentIntent(
         status: PaymentIntentStatus,
@@ -662,19 +592,7 @@ class PaymentManagerTest {
             }
             .map { it.value }
 
-    private fun <T> Flow<T>.takeUntilForInteracRefund(untilStatus: KClass<*>): Flow<T> =
-        this.take(expectedInteracRefundSequence.indexOf(untilStatus) + 1)
-            // the below lines are here just as a safeguard to verify that the expectedInteracRefundSequence is defined correctly
-            .withIndex()
-            .onEach {
-                if (expectedInteracRefundSequence[it.index] != it.value!!::class) {
-                    throw IllegalStateException(
-                        "`PaymentManagerTest.expectedSequence` does not match received " +
-                            "events. Please verify that `PaymentManagerTest.expectedSequence` is defined correctly."
-                    )
-                }
-            }
-            .map { it.value }
+
 
     private fun createPaymentInfo(
         paymentDescription: String = DUMMY_PAYMENT_DESCRIPTION,
@@ -703,16 +621,5 @@ class PaymentManagerTest {
             orderKey = orderKey,
             statementDescriptor = statementDescriptor,
             countryCode = countryCode,
-        )
-
-    private fun createRefundParams(
-        chargeId: String = DUMMY_CHARGE_ID,
-        amount: BigDecimal = DUMMY_AMOUNT,
-        currency: String = USD_CURRENCY
-    ): RefundParams =
-        RefundParams(
-            chargeId = chargeId,
-            amount = amount,
-            currency = currency
         )
 }
