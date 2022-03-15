@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.WOOCOMM
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
+import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.user.WCUserRole.ADMINISTRATOR
@@ -40,6 +41,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
 ) : ScopedViewModel(savedState) {
+    private val arguments: CardReaderOnboardingFragmentArgs by savedState.navArgs()
+
     override val _event = SingleLiveEvent<Event>()
     override val event: LiveData<Event> = _event
 
@@ -58,12 +61,18 @@ class CardReaderOnboardingViewModel @Inject constructor(
             cardReaderTracker.trackOnboardingState(state)
             when (state) {
                 is CardReaderOnboardingState.OnboardingCompleted -> {
-                    val site = selectedSite.get()
-                    if (!appPrefsWrapper.isCardReaderOnboardingCompleted(site.id, site.siteId, site.selfHostedSiteId)) {
-                        triggerEvent(OnboardingEvent.ShowCardReaderWelcomeDialog)
-                    } else {
-                        triggerEvent(OnboardingEvent.Continue(state.countryCode))
-                    }
+                    when (arguments.cardReaderFlowParam) {
+                        CardReaderFlowParam.CardReadersHub -> {
+                            triggerEvent(
+                                OnboardingEvent.ContinueToHub(arguments.cardReaderFlowParam, state.countryCode)
+                            )
+                        }
+                        is CardReaderFlowParam.ConnectAndAcceptPayment -> {
+                            triggerEvent(
+                                OnboardingEvent.ContinueToPayment(arguments.cardReaderFlowParam)
+                            )
+                        }
+                    }.exhaustive
                 }
                 is CardReaderOnboardingState.StoreCountryNotSupported ->
                     viewState.value = OnboardingViewState.UnsupportedErrorState.Country(
@@ -214,7 +223,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
     }
 
     private fun onSkipPendingRequirementsClicked(storeCountryCode: String) {
-        triggerEvent(OnboardingEvent.Continue(storeCountryCode))
+        triggerEvent(OnboardingEvent.ContinueToHub(arguments.cardReaderFlowParam, storeCountryCode))
     }
 
     private fun convertCountryCodeToCountry(countryCode: String?) =
@@ -229,8 +238,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
         data class NavigateToUrlInWPComWebView(val url: String) : Event()
         data class NavigateToUrlInGenericWebView(val url: String) : Event()
 
-        data class Continue(val storeCountryCode: String) : Event()
-        object ShowCardReaderWelcomeDialog : Event()
+        data class ContinueToHub(val cardReaderFlowParam: CardReaderFlowParam, val storeCountryCode: String) : Event()
+        data class ContinueToPayment(val cardReaderFlowParam: CardReaderFlowParam) : Event()
     }
 
     sealed class OnboardingViewState(@LayoutRes val layoutRes: Int) {

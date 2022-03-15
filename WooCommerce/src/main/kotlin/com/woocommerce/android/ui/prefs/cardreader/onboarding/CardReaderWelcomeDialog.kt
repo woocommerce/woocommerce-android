@@ -48,7 +48,9 @@ class CardReaderWelcomeDialog : DialogFragment(R.layout.card_reader_welcome_dial
                     findNavController()
                         .navigateSafely(
                             CardReaderWelcomeDialogDirections
-                                .actionCardReaderWelcomeFragmentToCardReaderOnboardingFragment()
+                                .actionCardReaderWelcomeFragmentToCardReaderOnboardingFragment(
+                                    event.cardReaderFlowParam
+                                )
                         )
             }
         }

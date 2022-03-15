@@ -100,7 +100,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
 
         updateStoreSettings()
         binding.optionCardReaderPayments.setOnClickListener {
-            findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_cardReaderOnboardingFragment)
+            findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_cardReaderFlow)
         }
 
         binding.optionHelpAndSupport.setOnClickListener {

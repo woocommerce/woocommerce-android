@@ -207,14 +207,9 @@ final class OrderDetailViewModel @Inject constructor(
         triggerEvent(IssueOrderRefund(remoteOrderId = order.id))
     }
 
-    fun onAcceptCardPresentPaymentClicked(cardReaderManager: CardReaderManager) {
+    fun onAcceptCardPresentPaymentClicked() {
         cardReaderTracker.trackCollectPaymentTapped()
-        triggerEvent(
-            StartCardReaderPaymentFlow(
-                skipOnboarding = false,
-                orderId = order.id
-            )
-        )
+        triggerEvent(StartCardReaderPaymentFlow(orderId = order.id))
     }
 
     fun onSeeReceiptClicked() {
@@ -245,17 +240,6 @@ final class OrderDetailViewModel @Inject constructor(
     private fun loadReceiptUrl(): String? {
         return selectedSite.getIfExists()?.let {
             appPrefs.getReceiptUrl(it.id, it.siteId, it.selfHostedSiteId, order.id)
-        }
-    }
-
-    fun onConnectToReaderResultReceived(connected: Boolean) {
-        launch {
-            // this dummy delay needs to be here since the navigation component hasn't finished the previous
-            // transaction when a result is received
-            delay(1)
-            if (connected) {
-                triggerEvent()
-            }
         }
     }
 

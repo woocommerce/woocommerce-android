@@ -10,7 +10,6 @@ import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.*
 import com.woocommerce.android.extensions.exhaustive
-import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.ui.base.BaseFragment
@@ -46,17 +45,21 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                 is CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInGenericWebView -> {
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 }
-                is CardReaderOnboardingViewModel.OnboardingEvent.Continue -> {
-                    val inSettingsGraph = findNavController().graph.id == R.id.nav_graph_settings
-                    if (inSettingsGraph) {
+                is CardReaderOnboardingViewModel.OnboardingEvent.ContinueToHub ->
                         findNavController().navigate(
                             CardReaderOnboardingFragmentDirections
-                                .actionCardReaderOnboardingFragmentToCardReaderHubFragment(event.storeCountryCode)
+                                .actionCardReaderOnboardingFragmentToCardReaderHubFragment(
+                                    event.cardReaderFlowParam,
+                                    event.storeCountryCode
+                                )
                         )
-                    } else {
-                        navigateBackWithNotice(KEY_READER_ONBOARDING_SUCCESS)
-                    }
-                }
+                is CardReaderOnboardingViewModel.OnboardingEvent.ContinueToPayment ->
+                    findNavController().navigate(
+                        CardReaderOnboardingFragmentDirections
+                            .actionCardReaderOnboardingFragmentToCardReaderConnectDialogFragment(
+                                event.cardReaderFlowParam
+                            )
+                    )
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
                 else -> event.isHandled = false
             }
@@ -245,10 +248,6 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
     }
 
     override fun getFragmentTitle() = resources.getString(R.string.card_reader_onboarding_title)
-
-    companion object {
-        const val KEY_READER_ONBOARDING_SUCCESS = "key_reader_onboarding_success"
-    }
 }
 
 sealed class CardReaderFlowParam : Parcelable {

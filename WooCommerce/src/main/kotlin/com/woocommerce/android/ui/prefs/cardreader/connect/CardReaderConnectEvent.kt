@@ -34,8 +34,6 @@ sealed class CardReaderConnectEvent : MultiLiveEvent.Event() {
 
     object ShowUpdateInProgress : CardReaderConnectEvent()
 
-    object NavigateToOnboardingFlow : CardReaderConnectEvent()
-
     data class ShowToast(@StringRes val message: Int) : CardReaderConnectEvent()
 
     data class ShowToastString(val message: String) : CardReaderConnectEvent()

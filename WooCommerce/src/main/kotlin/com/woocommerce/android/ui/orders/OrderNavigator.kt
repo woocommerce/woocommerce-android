@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders
 
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.NavGraphMainDirections
@@ -29,6 +28,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabel
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragmentDirections
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragmentDirections
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -148,11 +148,10 @@ class OrderNavigator @Inject constructor() {
                 fragment.findNavController().navigateSafely(action)
             }
             is StartCardReaderPaymentFlow -> {
-                val action = OrderDetailFragmentDirections.actionOnboa
-                fragment.findNavController().navigateSafely(
-                    R.id.action_global_CardReaderPaymentDialogFragment,
-                    bundleOf("orderId" to target.orderId)
+                val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToCardReaderFlow(
+                    CardReaderFlowParam.ConnectAndAcceptPayment(target.orderId)
                 )
+                fragment.findNavController().navigateSafely(action)
             }
             is ViewPrintingInstructions -> {
                 val action = OrderDetailFragmentDirections

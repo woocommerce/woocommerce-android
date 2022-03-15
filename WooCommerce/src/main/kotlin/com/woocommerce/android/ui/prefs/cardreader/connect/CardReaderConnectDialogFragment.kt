@@ -230,10 +230,6 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
                             )
                     )
                 }
-                is CardReaderConnectEvent.NavigateToOnboardingFlow -> {
-                    findNavController()
-                        .navigateSafely(R.id.action_cardReaderConnectDialogFragment_to_cardReaderOnboardingFragment)
-                }
                 is ExitWithResult<*> -> {
                     navigateToParentWithResult(
                         key = KEY_CONNECT_TO_READER_RESULT,

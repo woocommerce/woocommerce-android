@@ -19,7 +19,12 @@
             app:enterAnim="@anim/activity_slide_in_from_right"
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:popExitAnim="@anim/activity_slide_out_to_right">
+            <argument
+                android:name="cardReaderFlowParam"
+                app:argType="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam"
+                app:nullable="false" />
+        </action>
     </dialog>
 
     <fragment
@@ -34,21 +39,39 @@
             android:id="@+id/action_cardReaderOnboardingFragment_to_cardReaderHubFragment"
             app:destination="@id/cardReaderHubFragment">
             <argument
+                android:name="cardReaderFlowParam"
+                app:argType="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam"
+                app:nullable="false" />
+            <argument
                 android:name="storeCountryCode"
                 app:argType="string"
                 app:nullable="false" />
         </action>
         <action
             android:id="@+id/action_cardReaderOnboardingFragment_to_cardReaderConnectDialogFragment"
-            app:destination="@id/cardReaderConnectDialogFragment" />
+            app:destination="@id/cardReaderConnectDialogFragment">
+            <argument
+                android:name="cardReaderFlowParam"
+                app:argType="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam"
+                app:nullable="false" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/cardReaderHubFragment"
         android:name="com.woocommerce.android.ui.prefs.cardreader.hub.CardReaderHubFragment"
         android:label="CardReaderHubFragment">
+        <argument
+            android:name="cardReaderFlowParam"
+            app:argType="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam"
+            app:nullable="false" />
         <action
             android:id="@+id/action_cardReaderHubFragment_to_cardReaderDetailFragment"
-            app:destination="@id/cardReaderDetailFragment" />
+            app:destination="@id/cardReaderDetailFragment">
+            <argument
+                android:name="cardReaderFlowParam"
+                app:argType="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam"
+                app:nullable="false" />
+        </action>
         <argument
             android:name="storeCountryCode"
             app:argType="string"
@@ -58,13 +81,22 @@
         android:id="@+id/cardReaderDetailFragment"
         android:name="com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailFragment"
         android:label="CardReaderDetailFragment">
+        <argument
+            android:name="cardReaderFlowParam"
+            app:argType="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam"
+            app:nullable="false" />
         <action
             android:id="@+id/action_cardReaderDetailFragment_to_cardReaderConnectFragment"
             app:destination="@id/cardReaderConnectDialogFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:exitAnim="@null"
             app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out" />
+            app:popExitAnim="@anim/activity_fade_out">
+            <argument
+                android:name="cardReaderFlowParam"
+                app:argType="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam"
+                app:nullable="false" />
+        </action>
         <action
             android:id="@+id/action_cardReaderDetailFragment_to_cardReaderUpdateDialogFragment"
             app:destination="@id/cardReaderUpdateDialogFragment"
@@ -80,8 +112,9 @@
         android:name="com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectDialogFragment"
         android:label="CardReaderConnectDialogFragment">
         <argument
-            android:name="orderId"
-            app:argType="long" />
+            android:name="cardReaderFlowParam"
+            app:argType="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam"
+            app:nullable="false" />
         <action
             android:id="@+id/action_cardReaderConnectDialogFragment_to_cardReaderTutorialDialogFragment"
             app:destination="@id/cardReaderTutorialDialogFragment"
@@ -109,7 +142,7 @@
     <dialog
         android:id="@+id/cardReaderTutorialDialogFragment"
         android:name="com.woocommerce.android.ui.prefs.cardreader.tutorial.CardReaderTutorialDialogFragment"
-        android:label="CardReaderTutorialDialogFragment" >
+        android:label="CardReaderTutorialDialogFragment">
         <action
             android:id="@+id/action_cardReaderTutorialDialogFragment_to_cardReaderPaymentDialogFragment"
             app:destination="@id/cardReaderPaymentDialogFragment" />

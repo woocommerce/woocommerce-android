@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders.simplepayments
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
@@ -19,7 +18,9 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialogFragment
+import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectDialogFragment
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -29,7 +30,8 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
     private val viewModel: TakePaymentViewModel by viewModels()
     private val sharedViewModel by hiltNavGraphViewModels<SimplePaymentsSharedViewModel>(R.id.nav_graph_main)
 
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -54,33 +56,26 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
         }
 
         viewModel.event.observe(
-            viewLifecycleOwner,
-            { event ->
-                when (event) {
-                    is MultiLiveEvent.Event.ShowDialog -> {
-                        event.showDialog()
-                    }
-                    is MultiLiveEvent.Event.ShowSnackbar -> {
-                        uiMessageResolver.showSnack(event.message)
-                    }
-                    is MultiLiveEvent.Event.Exit -> {
-                        findNavController().navigateSafely(R.id.orders)
-                    }
-                    is OrderNavigationTarget.StartCardReaderConnectFlow -> {
-                        findNavController().navigateSafely(
-                            R.id.action_global_CardReaderConnectDialogFragment,
-                            bundleOf("skipOnboarding" to event.skipOnboarding)
-                        )
-                    }
-                    is OrderNavigationTarget.StartCardReaderPaymentFlow -> {
-                        findNavController().navigateSafely(
-                            R.id.action_global_CardReaderPaymentDialogFragment,
-                            bundleOf("orderId" to event.orderId)
-                        )
-                    }
+            viewLifecycleOwner
+        ) { event ->
+            when (event) {
+                is MultiLiveEvent.Event.ShowDialog -> {
+                    event.showDialog()
+                }
+                is MultiLiveEvent.Event.ShowSnackbar -> {
+                    uiMessageResolver.showSnack(event.message)
+                }
+                is MultiLiveEvent.Event.Exit -> {
+                    findNavController().navigateSafely(R.id.orders)
+                }
+                is OrderNavigationTarget.StartCardReaderPaymentFlow -> {
+                    val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToCardReaderFlow(
+                        CardReaderFlowParam.ConnectAndAcceptPayment(event.orderId)
+                    )
+                    findNavController().navigateSafely(action)
                 }
             }
-        )
+        }
     }
 
     private fun setupResultHandlers() {

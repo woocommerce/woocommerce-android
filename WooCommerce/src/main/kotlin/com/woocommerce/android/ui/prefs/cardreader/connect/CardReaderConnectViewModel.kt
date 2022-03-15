@@ -19,8 +19,6 @@ import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.*
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.*
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingChecker
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -44,7 +42,6 @@ class CardReaderConnectViewModel @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val tracker: CardReaderTracker,
     private val appPrefs: AppPrefs,
-    private val onboardingChecker: CardReaderOnboardingChecker,
     private val locationRepository: CardReaderLocationRepository,
     private val selectedSite: SelectedSite,
     private val cardReaderManager: CardReaderManager,
@@ -79,11 +76,7 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun startFlow() {
         viewState.value = ScanningState(::onCancelClicked)
-        if (arguments.skipOnboarding) {
-            triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
-        } else {
-            checkOnboardingState()
-        }
+        triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
     }
 
     private fun restartFlow() {
@@ -195,21 +188,6 @@ class CardReaderConnectViewModel @Inject constructor(
         }
         launch {
             startScanningIfNotStarted()
-        }
-    }
-
-    private fun checkOnboardingState() {
-        launch {
-            when (onboardingChecker.getOnboardingState()) {
-                is CardReaderOnboardingState.GenericError,
-                is CardReaderOnboardingState.NoConnectionError -> {
-                    viewState.value = ScanningFailedState(::restartFlow, ::onCancelClicked)
-                }
-                is CardReaderOnboardingState.OnboardingCompleted -> {
-                    triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
-                }
-                else -> triggerEvent(NavigateToOnboardingFlow)
-            }
         }
     }
 

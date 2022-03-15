@@ -57,7 +57,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             val viewModel = createVM()
 
             assertThat(viewModel.event.value)
-                .isInstanceOf(OnboardingEvent.Continue::class.java)
+                .isInstanceOf(OnboardingEvent.ContinueToHub::class.java)
         }
 
     @Test

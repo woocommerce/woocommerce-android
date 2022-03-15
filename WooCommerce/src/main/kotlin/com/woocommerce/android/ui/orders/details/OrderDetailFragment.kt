@@ -281,11 +281,6 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         handleResult<Boolean>(OrderFulfillViewModel.KEY_REFRESH_SHIPMENT_TRACKING_RESULT) {
             viewModel.refreshShipmentTracking()
         }
-        handleResult<Boolean>(CardReaderConnectDialogFragment.KEY_CONNECT_TO_READER_RESULT) { connected ->
-            if (FeatureFlag.CARD_READER.isEnabled()) {
-                viewModel.onConnectToReaderResultReceived(connected)
-            }
-        }
         handleDialogNotice<String>(
             key = CardReaderPaymentDialogFragment.KEY_CARD_PAYMENT_RESULT,
             entryId = R.id.orderDetailFragment
@@ -328,7 +323,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             onCollectCardPresentPaymentClickListener = {
                 if (FeatureFlag.CARD_READER.isEnabled()) {
                     cardReaderManager.let {
-                        viewModel.onAcceptCardPresentPaymentClicked(it)
+                        viewModel.onAcceptCardPresentPaymentClicked()
                     }
                 }
             },
