@@ -67,7 +67,7 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
             Mode.OrderEdit -> {
                 binding.orderStatusEditButton.isVisible = false
                 binding.orderStatusEditImage.isVisible = true
-                with(binding.orderStatusEdit) {
+                with(binding.orderStatusContainer) {
                     isClickable = true
                     isFocusable = true
                     setOnClickListener(editOrderStatusClickListener)
@@ -78,7 +78,7 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
                 with(binding.orderStatusEditButton) {
                     isVisible = true
                     text = context.getString(R.string.edit)
-                    // setOnClickListener(editOrderStatusClickListener)
+                    setOnClickListener(editOrderStatusClickListener)
                 }
             }
         }
