@@ -4,8 +4,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
-import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.*
@@ -28,14 +26,11 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers.anyInt
-import org.mockito.ArgumentMatchers.anyLong
 import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
@@ -55,14 +50,12 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val appPrefsWrapper: AppPrefs = mock {
         on(it.isTrackingExtensionAvailable()).thenAnswer { true }
-        on(it.isCardReaderOnboardingCompleted(anyInt(), anyLong(), anyLong())).thenAnswer { true }
     }
     private val editor = mock<SharedPreferences.Editor>()
     private val preferences = mock<SharedPreferences> { whenever(it.edit()).thenReturn(editor) }
     private val selectedSite: SelectedSite = mock()
     private val repository: OrderDetailRepository = mock()
     private val addonsRepository: AddonRepository = mock()
-    private val cardReaderManager: CardReaderManager = mock()
     private val cardReaderTracker: CardReaderTracker = mock()
     private val resources: ResourceProvider = mock {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
@@ -116,7 +109,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             it
         }
         doReturn(site).whenever(selectedSite).getIfExists()
-        doReturn(site).whenever(selectedSite).get()
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any())
         }
@@ -1090,7 +1082,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(repository).fetchOrderById(any())
             doReturn(false).whenever(repository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
-            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connecting))
             viewModel.start()
 
             // When
@@ -1108,7 +1099,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(repository).fetchOrderById(any())
             doReturn(false).whenever(repository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
-            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connected(mock())))
             viewModel.start()
 
             // When
@@ -1126,7 +1116,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(repository).fetchOrderById(any())
             doReturn(false).whenever(repository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
-            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
             viewModel.start()
 
             // When
@@ -1144,7 +1133,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(repository).fetchOrderById(any())
             doReturn(false).whenever(repository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
-            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connected(mock())))
             viewModel.start()
 
             // When
@@ -1158,7 +1146,10 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `when user presses collect payment button, then event tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
-            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(mock()))
+            doReturn(order).whenever(repository).getOrderById(any())
+            doReturn(order).whenever(repository).fetchOrderById(any())
+            viewModel.start()
+
             // When
             viewModel.onAcceptCardPresentPaymentClicked()
 
