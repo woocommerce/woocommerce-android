@@ -69,9 +69,9 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
         val tagView = TagView(context)
         tagView.tag = orderTag
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            tagView.isFocusableInTouchMode = true
+            tagView.isFocusableInTouchMode = false
         } else {
-            tagView.focusable = View.FOCUSABLE
+            tagView.focusable = View.NOT_FOCUSABLE
         }
         return tagView
     }

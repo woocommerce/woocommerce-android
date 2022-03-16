@@ -30,8 +30,7 @@
             android:id="@+id/orderStatus_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
-            android:contentDescription="@string/orderdetail_change_order_status"
+            android:focusable="false"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -41,7 +40,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_weight="1"
-                android:contentDescription="@string/orderstatus_contentDesc" />
+                android:contentDescription="@string/orderstatus_contentDesc"
+                tools:text="Pending payment"/>
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/orderStatus_editImage"
