@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.reviews
 
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ActionStatus.*
@@ -61,30 +63,17 @@ class ReviewModerationHandler @Inject constructor(
             _pendingModerationStatus.emit(status)
             delay(5000)
 
+            AnalyticsTracker.track(
+                AnalyticsEvent.REVIEW_ACTION,
+                mapOf(AnalyticsTracker.KEY_TYPE to request.review.toString())
+            )
+
             _pendingModerationStatus.emit(status.copy(actionStatus = SUBMITTED))
             WooLog.d(
                 T.REVIEWS,
                 "Submit API call to moderate review ${request.review.remoteId} to status: ${request.newStatus}"
             )
-            val remoteOperationResult = productStore.updateProductReviewStatus(
-                siteModel,
-                reviewId = request.review.remoteId,
-                newStatus = request.newStatus.toString()
-            )
-            if (remoteOperationResult.isError) {
-                WooLog.w(
-                    T.REVIEWS,
-                    "Changing review status failed because of ${remoteOperationResult.error.type}"
-                )
-                _pendingModerationStatus.emit(status.copy(actionStatus = ERROR))
-            } else {
-                val updatedReview = remoteOperationResult.model!!
-                WooLog.w(
-                    T.REVIEWS,
-                    "Review status updated, id: ${updatedReview.remoteProductReviewId}, status:${updatedReview.status}"
-                )
-                _pendingModerationStatus.emit(status.copy(actionStatus = SUCCESS))
-            }
+            submitReviewStatusToTheApi(request)
         } catch (e: CancellationException) {
             WooLog.d(
                 T.REVIEWS,
@@ -98,7 +87,41 @@ class ReviewModerationHandler @Inject constructor(
                 )
             )
         } finally {
+            // Clear the status cache to avoid resubmitting completed operations
             _pendingModerationStatus.resetReplayCache()
+        }
+    }
+
+    private suspend fun submitReviewStatusToTheApi(request: ReviewModerationRequest) {
+        val remoteOperationResult = productStore.updateProductReviewStatus(
+            siteModel,
+            reviewId = request.review.remoteId,
+            newStatus = request.newStatus.toString()
+        )
+        if (remoteOperationResult.isError) {
+            WooLog.e(
+                T.REVIEWS,
+                "Error pushing product review status " +
+                    "changes to server!: " +
+                    "${remoteOperationResult.error?.type} - ${remoteOperationResult.error?.message}"
+            )
+            AnalyticsTracker.track(
+                AnalyticsEvent.REVIEW_ACTION_FAILED,
+                mapOf(
+                    AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                    AnalyticsTracker.KEY_ERROR_TYPE to remoteOperationResult.error?.type?.toString(),
+                    AnalyticsTracker.KEY_ERROR_DESC to remoteOperationResult.error?.message
+                )
+            )
+            _pendingModerationStatus.emit(ReviewModerationStatus(request, actionStatus = ERROR))
+        } else {
+            val updatedReview = remoteOperationResult.model!!
+            WooLog.w(
+                T.REVIEWS,
+                "Review status updated, id: ${updatedReview.remoteProductReviewId}, status:${updatedReview.status}"
+            )
+            AnalyticsTracker.track(AnalyticsEvent.REVIEW_ACTION_SUCCESS)
+            _pendingModerationStatus.emit(ReviewModerationStatus(request, actionStatus = SUCCESS))
         }
     }
 }
@@ -113,5 +136,9 @@ data class ReviewModerationStatus(
     val newStatus: ProductReviewStatus,
     val actionStatus: ActionStatus
 ) {
-    constructor(request: ReviewModerationRequest) : this(request.review, request.newStatus, PENDING)
+    constructor(request: ReviewModerationRequest, actionStatus: ActionStatus = PENDING) : this(
+        request.review,
+        request.newStatus,
+        actionStatus
+    )
 }
