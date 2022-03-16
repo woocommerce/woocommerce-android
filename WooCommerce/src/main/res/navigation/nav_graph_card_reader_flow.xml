@@ -19,7 +19,9 @@
             app:enterAnim="@anim/activity_slide_in_from_right"
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right">
+            app:popExitAnim="@anim/activity_slide_out_to_right"
+            app:popUpTo="@+id/cardReaderWelcomeDialog"
+            app:popUpToInclusive="true">
             <argument
                 android:name="cardReaderFlowParam"
                 app:argType="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam"
@@ -52,8 +54,8 @@
         <action
             android:id="@+id/action_cardReaderOnboardingFragment_to_cardReaderConnectDialogFragment"
             app:destination="@id/cardReaderConnectDialogFragment"
-            app:popUpTo="@+id/cardReaderWelcomeDialog"
-            app:popUpToInclusive="false">
+            app:popUpTo="@+id/cardReaderOnboardingFragment"
+            app:popUpToInclusive="true">
             <argument
                 android:name="cardReaderFlowParam"
                 app:argType="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam"
@@ -125,7 +127,9 @@
             app:enterAnim="@anim/activity_fade_in"
             app:exitAnim="@null"
             app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out">
+            app:popExitAnim="@anim/activity_fade_out"
+            app:popUpTo="@+id/cardReaderConnectDialogFragment"
+            app:popUpToInclusive="true">
             <argument
                 android:name="cardReaderFlowParam"
                 app:argType="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam"
@@ -137,7 +141,9 @@
             app:enterAnim="@anim/activity_fade_in"
             app:exitAnim="@null"
             app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out" />
+            app:popExitAnim="@anim/activity_fade_out"
+            app:popUpTo="@+id/cardReaderWelcomeDialog"
+            app:popUpToInclusive="true" />
     </dialog>
     <dialog
         android:id="@+id/cardReaderUpdateDialogFragment"
@@ -158,7 +164,9 @@
             app:nullable="false" />
         <action
             android:id="@+id/action_cardReaderTutorialDialogFragment_to_cardReaderPaymentDialogFragment"
-            app:destination="@id/cardReaderPaymentDialogFragment">
+            app:destination="@id/cardReaderPaymentDialogFragment"
+            app:popUpTo="@+id/cardReaderTutorialDialogFragment"
+            app:popUpToInclusive="true">
             <argument
                 android:name="orderId"
                 app:argType="long" />

@@ -11,7 +11,6 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.CardReaderWelcomeDialogBinding
-import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderWelcomeViewModel.CardReaderWelcomeDialogEvent.NavigateToOnboardingFlow
 import com.woocommerce.android.util.UiHelpers
 import dagger.hilt.android.AndroidEntryPoint
@@ -46,14 +45,12 @@ class CardReaderWelcomeDialog : DialogFragment(R.layout.card_reader_welcome_dial
             when (event) {
                 is NavigateToOnboardingFlow -> {
                     findNavController()
-                        .navigateSafely(
+                        .navigate(
                             CardReaderWelcomeDialogDirections
                                 .actionCardReaderWelcomeFragmentToCardReaderOnboardingFragment(
                                     event.cardReaderFlowParam
-                                ),
-                            skipThrottling = true
+                                )
                         )
-                    dismiss()
                 }
             }
         }
