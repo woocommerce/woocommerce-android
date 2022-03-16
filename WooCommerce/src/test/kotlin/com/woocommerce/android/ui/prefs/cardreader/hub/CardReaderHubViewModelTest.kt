@@ -161,7 +161,9 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
         assertThat(viewModel.event.value)
             .isEqualTo(
-                CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderDetail(CardReaderFlowParam.CardReadersHub)
+                CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderDetail(
+                    CardReaderFlowParam.CardReadersHub
+                )
             )
     }
 
