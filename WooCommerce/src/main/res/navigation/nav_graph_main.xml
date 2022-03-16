@@ -209,6 +209,25 @@
             android:defaultValue="false"
             app:argType="boolean" />
     </action>
+    <action
+        android:id="@+id/action_global_reviewDetailFragment"
+        app:destination="@id/reviewDetailFragment">
+        <argument
+            android:name="remoteReviewId"
+            android:defaultValue="0L"
+            app:argType="long" />
+        <argument
+            android:name="tempStatus"
+            android:defaultValue="null"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="launchedFromNotification"
+            app:argType="boolean" />
+        <argument
+            android:name="enableModeration"
+            app:argType="boolean" />
+    </action>
     <fragment
         android:id="@+id/reviewDetailFragment"
         android:name="com.woocommerce.android.ui.reviews.ReviewDetailFragment"
@@ -316,6 +335,17 @@
             android:name="isAddProduct"
             android:defaultValue="false"
             app:argType="boolean" />
+        <argument
+            android:name="currentProductType"
+            android:defaultValue="null"
+            app:nullable="true"
+            app:argType="string"
+            />
+        <argument
+            android:name="isCurrentProductVirtual"
+            android:defaultValue="false"
+            app:argType="boolean"
+            />
     </dialog>
     <dialog
         android:id="@+id/featureAnnouncementDialogFragmentOnMain"

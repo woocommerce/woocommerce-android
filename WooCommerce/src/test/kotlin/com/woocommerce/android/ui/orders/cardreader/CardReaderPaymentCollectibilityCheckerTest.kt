@@ -276,10 +276,39 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when order has "woocommerce_payments" payment method then it is collectable`() =
+    fun `when order has "woocommerce_payments" payment method, then it is collectable`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val order = getOrder(paymentMethod = "woocommerce_payments")
+
+            // WHEN
+            val isCollectable = checker.isCollectable(order)
+
+            // THEN
+            assertThat(isCollectable).isTrue()
+        }
+
+    @Test
+    fun `when order has "wc-booking-gateway" payment method, then it is collectable`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val order = getOrder(paymentMethod = "wc-booking-gateway")
+
+            // WHEN
+            val isCollectable = checker.isCollectable(order)
+
+            // THEN
+            assertThat(isCollectable).isTrue()
+        }
+
+    /**
+     * This test is a clone of the previous test (except of the name) and was added just for the documentation purposes.
+     */
+    @Test
+    fun `given bookings order requires confirmation, when checking collectibility, then it is collectable`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val order = getOrder(paymentMethod = "wc-booking-gateway")
 
             // WHEN
             val isCollectable = checker.isCollectable(order)

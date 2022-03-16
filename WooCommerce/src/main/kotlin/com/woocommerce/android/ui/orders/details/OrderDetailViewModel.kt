@@ -8,9 +8,9 @@ import androidx.lifecycle.SavedStateHandle
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent.*
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.*
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
@@ -300,7 +300,6 @@ final class OrderDetailViewModel @Inject constructor(
         triggerEvent(
             AddOrderShipmentTracking(
                 orderId = order.id,
-                orderLocalId = order.rawLocalOrderId,
                 orderTrackingProvider = appPrefs.getSelectedShipmentTrackingProviderName(),
                 isCustomProvider = appPrefs.getIsSelectedShipmentTrackingProviderCustom()
             )
@@ -320,7 +319,7 @@ final class OrderDetailViewModel @Inject constructor(
     }
 
     fun refreshShipmentTracking() {
-        _shipmentTrackings.value = orderDetailRepository.getOrderShipmentTrackings(order.localId.value)
+        _shipmentTrackings.value = orderDetailRepository.getOrderShipmentTrackings(order.id)
     }
 
     fun onShippingLabelRefunded() {
@@ -382,7 +381,7 @@ final class OrderDetailViewModel @Inject constructor(
     fun onDeleteShipmentTrackingClicked(trackingNumber: String) {
         if (networkStatus.isConnected()) {
             orderDetailRepository.getOrderShipmentTrackingByTrackingNumber(
-                order.localId.value, trackingNumber
+                order.id, trackingNumber
             )?.let { deletedShipmentTracking ->
                 deletedOrderShipmentTrackingSet.add(trackingNumber)
 
@@ -421,7 +420,7 @@ final class OrderDetailViewModel @Inject constructor(
     private fun deleteOrderShipmentTracking(shipmentTracking: OrderShipmentTracking) {
         launch {
             val onOrderChanged = orderDetailRepository.deleteOrderShipmentTracking(
-                order.localId.value, navArgs.orderId, shipmentTracking.toDataModel()
+                navArgs.orderId, shipmentTracking.toDataModel()
             )
             if (!onOrderChanged.isError) {
                 AnalyticsTracker.track(ORDER_TRACKING_DELETE_SUCCESS)
@@ -475,7 +474,7 @@ final class OrderDetailViewModel @Inject constructor(
 
     fun onMarkOrderCompleteButtonTapped() {
         AnalyticsTracker.track(ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED)
-        triggerEvent(ViewOrderFulfillInfo(order.id, order.rawLocalOrderId))
+        triggerEvent(ViewOrderFulfillInfo(order.id))
     }
 
     fun onViewOrderedAddonButtonTapped(orderItem: Order.Item) {
@@ -517,16 +516,18 @@ final class OrderDetailViewModel @Inject constructor(
     }
 
     private fun loadOrderNotes() {
-        _orderNotes.value = orderDetailRepository.getOrderNotes(order.localId.value)
+        launch {
+            _orderNotes.value = orderDetailRepository.getOrderNotes(navArgs.orderId)
+        }
     }
 
     private fun fetchOrderNotes() {
         launch {
-            if (!orderDetailRepository.fetchOrderNotes(order.localId.value, navArgs.orderId)) {
+            if (!orderDetailRepository.fetchOrderNotes(navArgs.orderId)) {
                 triggerEvent(ShowSnackbar(string.order_error_fetch_notes_generic))
             }
             // fetch order notes from the local db and hide the skeleton view
-            _orderNotes.value = orderDetailRepository.getOrderNotes(order.localId.value)
+            _orderNotes.value = orderDetailRepository.getOrderNotes(navArgs.orderId)
         }
     }
 
@@ -564,7 +565,7 @@ final class OrderDetailViewModel @Inject constructor(
     }
 
     private fun loadShipmentTracking(shippingLabels: ListInfo<ShippingLabel>): ListInfo<OrderShipmentTracking> {
-        val trackingList = orderDetailRepository.getOrderShipmentTrackings(order.localId.value)
+        val trackingList = orderDetailRepository.getOrderShipmentTrackings(order.id)
         return if (!appPrefs.isTrackingExtensionAvailable() || shippingLabels.isVisible || hasVirtualProductsOnly()) {
             ListInfo(isVisible = false)
         } else {
@@ -577,7 +578,7 @@ final class OrderDetailViewModel @Inject constructor(
     }
 
     private fun fetchShipmentTrackingAsync() = async {
-        val result = orderDetailRepository.fetchOrderShipmentTrackingList(order.localId.value, navArgs.orderId)
+        val result = orderDetailRepository.fetchOrderShipmentTrackingList(navArgs.orderId)
         appPrefs.setTrackingExtensionAvailable(result == SUCCESS)
     }
 

@@ -2,10 +2,10 @@ package com.woocommerce.android.ui.prefs
 
 import android.content.Context
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.analytics.AnalyticsEvent.SETTING_CHANGE
+import com.woocommerce.android.analytics.AnalyticsEvent.SETTING_CHANGE_FAILED
+import com.woocommerce.android.analytics.AnalyticsEvent.SETTING_CHANGE_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE_FAILED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE_SUCCESS
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher

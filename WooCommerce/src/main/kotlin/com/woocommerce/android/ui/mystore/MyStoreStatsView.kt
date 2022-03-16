@@ -13,6 +13,7 @@ import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
+import androidx.lifecycle.LifecycleCoroutineScope
 import com.github.mikephil.charting.charts.Chart
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.MarkerImage
@@ -26,8 +27,8 @@ import com.github.mikephil.charting.listener.ChartTouchListener.ChartGesture
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.MyStoreStatsBinding
 import com.woocommerce.android.extensions.*
 import com.woocommerce.android.tools.SelectedSite
@@ -38,12 +39,20 @@ import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.util.roundToTheNextPowerOfTen
 import com.woocommerce.android.widgets.SkeletonView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.DisplayUtils
 import java.text.DecimalFormat
-import java.util.Locale
+import java.util.*
 import kotlin.math.round
 
+@FlowPreview
 class MyStoreStatsView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
@@ -53,6 +62,8 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     companion object {
         private const val LINE_CHART_DOT_OFFSET = -5
+
+        private const val EVENT_EMITTER_INTERACTION_DEBOUNCE = 1000L
     }
 
     private lateinit var activeGranularity: StatsGranularity
@@ -60,6 +71,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     private lateinit var selectedSite: SelectedSite
     private lateinit var dateUtils: DateUtils
     private lateinit var currencyFormatter: CurrencyFormatter
+    private lateinit var usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter
 
     private var revenueStatsModel: RevenueStatsUiModel? = null
     private var chartRevenueStats = mapOf<String, Double>()
@@ -101,16 +113,24 @@ class MyStoreStatsView @JvmOverloads constructor(
     private val conversionValue
         get() = binding.statsViewRow.conversionValueTextView
 
+    private lateinit var coroutineScope: CoroutineScope
+    private val chartUserInteractions = MutableSharedFlow<Unit>()
+    private lateinit var chartUserInteractionsJob: Job
+
     fun initView(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
         selectedSite: SelectedSite,
         dateUtils: DateUtils,
-        currencyFormatter: CurrencyFormatter
+        currencyFormatter: CurrencyFormatter,
+        usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter,
+        lifecycleScope: LifecycleCoroutineScope
     ) {
         this.selectedSite = selectedSite
         this.activeGranularity = period
         this.dateUtils = dateUtils
         this.currencyFormatter = currencyFormatter
+        this.usageTracksEventEmitter = usageTracksEventEmitter
+        this.coroutineScope = lifecycleScope
 
         initChart()
 
@@ -121,13 +141,24 @@ class MyStoreStatsView @JvmOverloads constructor(
         ordersValue.addTextChangedListener {
             updateConversionRate()
         }
+
+        chartUserInteractionsJob = coroutineScope.launch {
+            chartUserInteractions
+                .debounce(EVENT_EMITTER_INTERACTION_DEBOUNCE)
+                .collect { usageTracksEventEmitter.interacted() }
+        }
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        chartUserInteractionsJob.cancel()
     }
 
     fun loadDashboardStats(granularity: StatsGranularity) {
         this.activeGranularity = granularity
         // Track range change
         AnalyticsTracker.track(
-            Stat.DASHBOARD_MAIN_STATS_DATE,
+            AnalyticsEvent.DASHBOARD_MAIN_STATS_DATE,
             mapOf(AnalyticsTracker.KEY_RANGE to granularity.toString().lowercase())
         )
         isRequestingStats = true
@@ -214,6 +245,13 @@ class MyStoreStatsView @JvmOverloads constructor(
         fadeInLabelValue(visitorsValue, chartVisitorStats.values.sum().toString())
         updateDate(revenueStatsModel, activeGranularity)
         updateColorForStatsHeaderValues(R.color.color_on_surface_high)
+        onUserInteractionWithChart()
+    }
+
+    private fun onUserInteractionWithChart() {
+        coroutineScope.launch {
+            chartUserInteractions.emit(Unit)
+        }
     }
 
     private fun updateColorForStatsHeaderValues(@ColorRes colorRes: Int) {
@@ -291,6 +329,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         updateConversionRate()
         updateDateOnScrubbing(date, activeGranularity)
         updateColorForStatsHeaderValues(R.color.color_secondary)
+        onUserInteractionWithChart()
     }
 
     private fun updateVisitorsValue(date: String) {

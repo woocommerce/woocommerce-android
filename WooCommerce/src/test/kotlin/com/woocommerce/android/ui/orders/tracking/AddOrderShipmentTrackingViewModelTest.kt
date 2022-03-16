@@ -31,16 +31,12 @@ import kotlin.test.assertEquals
 class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
     companion object {
         private const val ORDER_ID = 1L
-        private const val ORDER_LOCAL_ID = 1
     }
 
     private val networkStatus: NetworkStatus = mock()
     private val repository: OrderDetailRepository = mock()
 
-    private val savedState = AddOrderShipmentTrackingFragmentArgs(
-        orderId = ORDER_ID,
-        orderLocalId = ORDER_LOCAL_ID
-    ).initSavedStateHandle()
+    private val savedState = AddOrderShipmentTrackingFragmentArgs(orderId = ORDER_ID).initSavedStateHandle()
 
     private lateinit var viewModel: AddOrderShipmentTrackingViewModel
 
@@ -56,7 +52,7 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Add order shipment tracking when network is available - success`() = runBlockingTest {
-        doReturn(OnOrderChanged()).whenever(repository).addOrderShipmentTracking(any(), any(), any())
+        doReturn(OnOrderChanged()).whenever(repository).addOrderShipmentTracking(any(), any())
 
         val events = mutableListOf<Event>()
         viewModel.event.observeForever { events.add(it) }
@@ -67,7 +63,6 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
         verify(repository, times(1))
             .addOrderShipmentTracking(
                 orderId = eq(ORDER_ID),
-                orderLocalId = eq(ORDER_LOCAL_ID),
                 shipmentTrackingModel = argThat {
                     trackingProvider == "test" &&
                         trackingNumber == "123456" && !isCustomProvider
@@ -82,7 +77,7 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
     @Test
     fun `Add order shipment tracking fails`() = runBlockingTest {
         doReturn(OnOrderChanged().also { it.error = OrderError(type = GENERIC_ERROR, message = "") })
-            .whenever(repository).addOrderShipmentTracking(any(), any(), any())
+            .whenever(repository).addOrderShipmentTracking(any(), any())
 
         val events = mutableListOf<Event>()
         viewModel.event.observeForever { events.add(it) }
@@ -93,7 +88,6 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
         verify(repository, times(1))
             .addOrderShipmentTracking(
                 orderId = eq(ORDER_ID),
-                orderLocalId = eq(ORDER_LOCAL_ID),
                 shipmentTrackingModel = argThat {
                     trackingProvider == "test" &&
                         trackingNumber == "123456" && !isCustomProvider
@@ -114,7 +108,7 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
         viewModel.onTrackingNumberEntered("123456")
         viewModel.onAddButtonTapped()
 
-        verify(repository, times(0)).addOrderShipmentTracking(any(), any(), any())
+        verify(repository, times(0)).addOrderShipmentTracking(any(), any())
         assertEquals(R.string.offline_error, (event as ShowSnackbar).message)
     }
 }

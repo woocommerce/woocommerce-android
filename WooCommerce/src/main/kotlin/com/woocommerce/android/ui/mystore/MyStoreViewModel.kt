@@ -8,6 +8,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
@@ -50,7 +51,8 @@ class MyStoreViewModel @Inject constructor(
     private val getTopPerformers: GetTopPerformers,
     private val currencyFormatter: CurrencyFormatter,
     private val selectedSite: SelectedSite,
-    private val appPrefsWrapper: AppPrefsWrapper
+    private val appPrefsWrapper: AppPrefsWrapper,
+    private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter
 ) : ScopedViewModel(savedState) {
     private companion object {
         const val NUM_TOP_PERFORMERS = 5
@@ -114,12 +116,14 @@ class MyStoreViewModel @Inject constructor(
     }
 
     fun onStatsGranularityChanged(granularity: StatsGranularity) {
+        usageTracksEventEmitter.interacted()
         _activeStatsGranularity.update { granularity }
         savedState[ACTIVE_STATS_GRANULARITY_KEY] = granularity
     }
 
     fun onSwipeToRefresh() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.DASHBOARD_PULLED_TO_REFRESH)
+        usageTracksEventEmitter.interacted()
+        AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_PULLED_TO_REFRESH)
         resetForceRefresh()
         refreshTrigger.tryEmit(Unit)
     }
@@ -169,7 +173,7 @@ class MyStoreViewModel @Inject constructor(
             selectedGranularity
         )
         AnalyticsTracker.track(
-            AnalyticsTracker.Stat.DASHBOARD_MAIN_STATS_LOADED,
+            AnalyticsEvent.DASHBOARD_MAIN_STATS_LOADED,
             mapOf(AnalyticsTracker.KEY_RANGE to selectedGranularity.name.lowercase())
         )
     }
@@ -187,7 +191,7 @@ class MyStoreViewModel @Inject constructor(
                         VisitorStatsViewState.JetpackCpConnected(BenefitsBannerUiModel(show = false))
                     appPrefsWrapper.recordJetpackBenefitsDismissal()
                     AnalyticsTracker.track(
-                        stat = AnalyticsTracker.Stat.FEATURE_JETPACK_BENEFITS_BANNER,
+                        stat = AnalyticsEvent.FEATURE_JETPACK_BENEFITS_BANNER,
                         properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "dismissed")
                     )
                 }
@@ -231,7 +235,7 @@ class MyStoreViewModel @Inject constructor(
                                 granularity
                             )
                         AnalyticsTracker.track(
-                            AnalyticsTracker.Stat.DASHBOARD_TOP_PERFORMERS_LOADED,
+                            AnalyticsEvent.DASHBOARD_TOP_PERFORMERS_LOADED,
                             mapOf(AnalyticsTracker.KEY_RANGE to granularity.name.lowercase())
                         )
                     }
@@ -251,7 +255,8 @@ class MyStoreViewModel @Inject constructor(
 
     private fun onTopPerformerSelected(productId: Long) {
         triggerEvent(MyStoreEvent.OpenTopPerformer(productId))
-        AnalyticsTracker.track(AnalyticsTracker.Stat.TOP_EARNER_PRODUCT_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.TOP_EARNER_PRODUCT_TAPPED)
+        usageTracksEventEmitter.interacted()
     }
 
     private fun WCRevenueStatsModel.toStoreStatsUiModel(): RevenueStatsUiModel {

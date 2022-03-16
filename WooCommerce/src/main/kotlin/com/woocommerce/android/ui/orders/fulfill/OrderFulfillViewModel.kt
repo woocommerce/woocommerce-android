@@ -9,9 +9,9 @@ import com.google.android.material.snackbar.Snackbar.Callback
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_TRACKING_ADD
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.Item
@@ -106,7 +106,7 @@ class OrderFulfillViewModel @Inject constructor(
             !hasVirtualProductsOnly() && !isShippingLabelAvailable
         viewState = viewState.copy(isShipmentTrackingAvailable = trackingAvailable)
         if (trackingAvailable) {
-            _shipmentTrackings.value = repository.getOrderShipmentTrackings(navArgs.orderLocalId)
+            _shipmentTrackings.value = repository.getOrderShipmentTrackings(navArgs.orderId)
         }
     }
 
@@ -134,7 +134,6 @@ class OrderFulfillViewModel @Inject constructor(
         triggerEvent(
             AddOrderShipmentTracking(
                 orderId = order.id,
-                orderLocalId = order.rawLocalOrderId,
                 orderTrackingProvider = appPrefs.getSelectedShipmentTrackingProviderName(),
                 isCustomProvider = appPrefs.getIsSelectedShipmentTrackingProviderCustom()
             )
@@ -151,13 +150,13 @@ class OrderFulfillViewModel @Inject constructor(
             )
         )
         viewState = viewState.copy(shouldRefreshShipmentTracking = true)
-        _shipmentTrackings.value = repository.getOrderShipmentTrackings(navArgs.orderLocalId)
+        _shipmentTrackings.value = repository.getOrderShipmentTrackings(navArgs.orderId)
     }
 
     fun onDeleteShipmentTrackingClicked(trackingNumber: String) {
         if (networkStatus.isConnected()) {
             repository.getOrderShipmentTrackingByTrackingNumber(
-                navArgs.orderLocalId, trackingNumber
+                navArgs.orderId, trackingNumber
             )?.let { deletedShipmentTracking ->
                 deletedOrderShipmentTrackingSet.add(trackingNumber)
 
@@ -196,15 +195,15 @@ class OrderFulfillViewModel @Inject constructor(
     private fun deleteOrderShipmentTracking(shipmentTracking: OrderShipmentTracking) {
         launch {
             val onOrderChanged = repository.deleteOrderShipmentTracking(
-                navArgs.orderLocalId, navArgs.orderId, shipmentTracking.toDataModel()
+                navArgs.orderId, shipmentTracking.toDataModel()
             )
             if (!onOrderChanged.isError) {
-                AnalyticsTracker.track(Stat.ORDER_TRACKING_DELETE_SUCCESS)
+                AnalyticsTracker.track(AnalyticsEvent.ORDER_TRACKING_DELETE_SUCCESS)
                 viewState = viewState.copy(shouldRefreshShipmentTracking = true)
                 triggerEvent(ShowSnackbar(string.order_shipment_tracking_delete_success))
             } else {
                 AnalyticsTracker.track(
-                    Stat.ORDER_TRACKING_DELETE_FAILED,
+                    AnalyticsEvent.ORDER_TRACKING_DELETE_FAILED,
                     prepareTracksEventsDetails(onOrderChanged)
                 )
                 onDeleteShipmentTrackingReverted(shipmentTracking)

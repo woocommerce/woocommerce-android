@@ -18,7 +18,10 @@ object OrderCreationNavigator {
             is AddProduct ->
                 OrderCreationFormFragmentDirections.actionOrderCreationFragmentToOrderCreationProductSelectionFragment()
             is EditFee ->
-                OrderCreationFormFragmentDirections.actionOrderCreationFragmentToOrderCreationEditFeeFragment()
+                OrderCreationFormFragmentDirections.actionOrderCreationFragmentToOrderCreationEditFeeFragment(
+                    orderTotal = target.orderTotal,
+                    currentFeeValue = target.currentFeeValue
+                )
             is ShowProductDetails ->
                 OrderCreationFormFragmentDirections
                     .actionOrderCreationFragmentToOrderCreationProductDetailsFragment(target.item)
@@ -32,7 +35,7 @@ object OrderCreationNavigator {
                     .actionOrderCreationFragmentToOrderDetailFragment(target.orderId)
             is EditShipping ->
                 OrderCreationFormFragmentDirections
-                    .actionOrderCreationFragmentToOrderCreationShippingFragment()
+                    .actionOrderCreationFragmentToOrderCreationShippingFragment(target.currentShippingLine)
         }
 
         navController.navigate(action)

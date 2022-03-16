@@ -3,8 +3,8 @@ package com.woocommerce.android.ui.reviews
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.RequestResult.ERROR
 import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
@@ -69,7 +69,7 @@ class ReviewDetailViewModel @Inject constructor(
                 if (launchedFromNotification) {
                     // Send the track event that a product review notification was opened
                     AnalyticsTracker.track(
-                        Stat.NOTIFICATION_OPEN,
+                        AnalyticsEvent.NOTIFICATION_OPEN,
                         mapOf(
                             AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_REVIEW,
                             AnalyticsTracker.KEY_ALREADY_READ to it.read

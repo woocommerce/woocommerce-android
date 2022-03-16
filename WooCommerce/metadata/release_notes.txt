@@ -1,1 +1,3 @@
-You’ve been asking to create orders in the app. We’re happy to say we have a sneak peek ready if you want to help us test it out! Head over to settings in the app and turn on the beta feature for Order Creation. Right now, you can add products, notes, and addresses, and future releases will have additional functionality.
+Did you know we’ve released a beta feature for creating orders? Head to the Menu tab, tap the settings icon, and scroll to beta features. We just added fees and shipping costs!
+
+We fixed a rare issue where sometimes the notes for an order appeared incorrectly. Thanks for letting us know!

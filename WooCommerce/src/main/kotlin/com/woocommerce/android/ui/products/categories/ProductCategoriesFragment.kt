@@ -8,8 +8,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductCategoriesListBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -79,7 +79,7 @@ class ProductCategoriesFragment :
         binding.productCategoriesLayout.apply {
             scrollUpChild = binding.productCategoriesRecycler
             setOnRefreshListener {
-                AnalyticsTracker.track(Stat.PRODUCT_CATEGORIES_PULLED_TO_REFRESH)
+                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_CATEGORIES_PULLED_TO_REFRESH)
                 viewModel.refreshProductCategories()
             }
         }

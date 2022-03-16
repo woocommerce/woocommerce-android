@@ -18,31 +18,35 @@ import com.woocommerce.android.FeedbackPrefs.userFeedbackIsDue
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.R.attr
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentMyStoreBinding
-import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.setClickableText
-import com.woocommerce.android.extensions.startHelpActivity
-import com.woocommerce.android.extensions.verticalOffsetChanges
+import com.woocommerce.android.extensions.*
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.ui.mystore.MyStoreViewModel.*
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenTopPerformer
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.OrderState
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.TopPerformersViewState
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.VisitorStatsViewState
 import com.woocommerce.android.util.*
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.NetworkUtils
-import java.util.Calendar
+import java.util.*
 import javax.inject.Inject
 import kotlin.math.abs
 
+@ExperimentalCoroutinesApi
 @AndroidEntryPoint
 @Suppress("ForbiddenComment")
 class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
@@ -60,6 +64,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var dateUtils: DateUtils
+    @Inject lateinit var usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter
 
     private var _binding: FragmentMyStoreBinding? = null
     private val binding get() = _binding!!
@@ -77,6 +82,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         get() = activity as? MainNavigationRouter
 
     private var isEmptyViewVisible: Boolean = false
+    private var wasPreviouslyStopped = false
 
     private val tabSelectedListener = object : TabLayout.OnTabSelectedListener {
         override fun onTabSelected(tab: TabLayout.Tab) {
@@ -116,7 +122,9 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
             viewModel.activeStatsGranularity.value ?: DEFAULT_STATS_GRANULARITY,
             selectedSite,
             dateUtils,
-            currencyFormatter
+            currencyFormatter,
+            usageTracksEventEmitter,
+            viewLifecycleOwner.lifecycleScope
         )
 
         binding.myStoreTopPerformers.initView(selectedSite)
@@ -131,6 +139,10 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         prepareJetpackBenefitsBanner()
 
         tabLayout.addOnTabSelectedListener(tabSelectedListener)
+
+        binding.statsScrollView.scrollStartEvents()
+            .onEach { usageTracksEventEmitter.interacted() }
+            .launchIn(viewLifecycleOwner.lifecycleScope)
 
         setupStateObservers()
     }
@@ -198,7 +210,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         }
         if (benefitsBanner.show && !binding.jetpackBenefitsBanner.root.isVisible) {
             AnalyticsTracker.track(
-                stat = Stat.FEATURE_JETPACK_BENEFITS_BANNER,
+                stat = AnalyticsEvent.FEATURE_JETPACK_BENEFITS_BANNER,
                 properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "shown")
             )
         }
@@ -215,7 +227,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         binding.jetpackBenefitsBanner.root.isVisible = false
         binding.jetpackBenefitsBanner.root.setOnClickListener {
             AnalyticsTracker.track(
-                stat = Stat.FEATURE_JETPACK_BENEFITS_BANNER,
+                stat = AnalyticsEvent.FEATURE_JETPACK_BENEFITS_BANNER,
                 properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "tapped")
             )
             findNavController().navigateSafely(MyStoreFragmentDirections.actionMyStoreToJetpackBenefitsDialog())
@@ -244,9 +256,16 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         super.onResume()
         handleFeedbackRequestCardState()
         AnalyticsTracker.trackViewShown(this)
+
+        // Avoid executing interacted() on first load. Only when the user navigated away from the fragment.
+        if (wasPreviouslyStopped) {
+            usageTracksEventEmitter.interacted()
+            wasPreviouslyStopped = false
+        }
     }
 
     override fun onStop() {
+        wasPreviouslyStopped = true
         errorSnackbar?.dismiss()
         super.onStop()
     }
@@ -405,7 +424,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         if (show) {
             dashboardVisibility = View.GONE
             binding.emptyView.show(EmptyViewType.DASHBOARD) {
-                AnalyticsTracker.track(Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
                 ActivityUtils.shareStoreUrl(requireActivity(), selectedSite.get().url)
             }
         } else {

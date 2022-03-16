@@ -6,12 +6,12 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.PRIVACY_SETTINGS_COLLECT_INFO_TOGGLED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRIVACY_SETTINGS_CRASH_REPORTING_TOGGLED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRIVACY_SETTINGS_PRIVACY_POLICY_LINK_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRIVACY_SETTINGS_SHARE_INFO_LINK_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRIVACY_SETTINGS_THIRD_PARTY_TRACKING_INFO_LINK_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRIVACY_SETTINGS_COLLECT_INFO_TOGGLED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRIVACY_SETTINGS_CRASH_REPORTING_TOGGLED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRIVACY_SETTINGS_PRIVACY_POLICY_LINK_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRIVACY_SETTINGS_SHARE_INFO_LINK_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRIVACY_SETTINGS_THIRD_PARTY_TRACKING_INFO_LINK_TAPPED
 import com.woocommerce.android.databinding.FragmentSettingsPrivacyBinding
 import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils

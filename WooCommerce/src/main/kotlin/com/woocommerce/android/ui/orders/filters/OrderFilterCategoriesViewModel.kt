@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.map
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
@@ -211,7 +212,7 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     private fun trackFilterSelection() {
         if (_categories.list.isAnyFilterSelected()) {
             AnalyticsTracker.track(
-                AnalyticsTracker.Stat.ORDERS_LIST_FILTER,
+                AnalyticsEvent.ORDERS_LIST_FILTER,
                 getTrackingForFilterSelection()
             )
         }

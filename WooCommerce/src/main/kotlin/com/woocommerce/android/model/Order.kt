@@ -7,7 +7,6 @@ import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.util.AddressUtils
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import java.math.BigDecimal
@@ -17,8 +16,6 @@ import java.util.Locale
 @Parcelize
 data class Order(
     val id: Long,
-    @Deprecated(replaceWith = ReplaceWith("id"), message = "Use id to identify order.")
-    val rawLocalOrderId: Int,
     val number: String,
     val dateCreated: Date,
     val dateModified: Date,
@@ -49,10 +46,6 @@ data class Order(
     val taxLines: List<TaxLine>,
     val metaData: List<MetaData<String>>
 ) : Parcelable {
-    @Deprecated(replaceWith = ReplaceWith("id"), message = "Use id to identify order.")
-    val localId
-        get() = LocalOrRemoteId.LocalId(this.rawLocalOrderId)
-
     @IgnoredOnParcel
     val isOrderPaid = datePaid != null
 
@@ -181,7 +174,7 @@ data class Order(
     @Parcelize
     data class ShippingLine(
         val itemId: Long,
-        val methodId: String,
+        val methodId: String?,
         val methodTitle: String,
         val totalTax: BigDecimal,
         val total: BigDecimal
@@ -191,20 +184,29 @@ data class Order(
     }
 
     @Parcelize
-    data class FeeLine(
-        val id: Long,
-        val name: String,
-        val total: BigDecimal,
-        val totalTax: BigDecimal,
-    ) : Parcelable
-
-    @Parcelize
     data class TaxLine(
         val id: Long,
         val compound: Boolean,
         val taxTotal: String,
         val ratePercent: Float
     ) : Parcelable
+
+    @Parcelize
+    data class FeeLine(
+        val id: Long,
+        val name: String?,
+        val total: BigDecimal,
+        val totalTax: BigDecimal,
+    ) : Parcelable {
+        companion object {
+            val EMPTY = FeeLine(
+                id = 0,
+                name = "",
+                total = BigDecimal.ZERO,
+                totalTax = BigDecimal.ZERO
+            )
+        }
+    }
 
     fun getBillingName(defaultValue: String): String {
         return when {
@@ -287,7 +289,6 @@ data class Order(
         val EMPTY by lazy {
             Order(
                 id = 0,
-                rawLocalOrderId = 0,
                 number = "",
                 dateCreated = Date(),
                 dateModified = Date(),
