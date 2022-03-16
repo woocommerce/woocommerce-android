@@ -21,7 +21,7 @@
             android:inputType="textFilter"
             android:drawableStart="@drawable/ic_search_24dp"
             android:drawablePadding="@dimen/major_100"
-            android:imeOptions="flagNoExtractUi" />
+            android:imeOptions="flagNoExtractUi|actionSearch" />
 
     </FrameLayout>
 
