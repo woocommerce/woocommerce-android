@@ -27,6 +27,8 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
     private var mode: Mode = Mode.OrderEdit
 
     fun updateStatus(orderStatus: OrderStatus) {
+        binding.orderStatusOrderTags.contentDescription =
+            context.getString(R.string.orderstatus_contentDesc_withStatus, orderStatus.label)
         binding.orderStatusOrderTags.tag = OrderStatusTag(orderStatus)
     }
 
@@ -77,7 +79,6 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
                 binding.orderStatusEditImage.isVisible = false
                 with(binding.orderStatusEditButton) {
                     isVisible = true
-                    text = context.getString(R.string.edit)
                     setOnClickListener(editOrderStatusClickListener)
                 }
             }
