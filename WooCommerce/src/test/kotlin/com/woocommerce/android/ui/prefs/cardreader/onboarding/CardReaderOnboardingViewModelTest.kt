@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
@@ -48,7 +49,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when onboarding completed, then navigates to card reader hub screen`() =
+    fun `given hub flow, when onboarding completed, then navigates to card reader hub screen`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
                 CardReaderOnboardingState.OnboardingCompleted(WOOCOMMERCE_PAYMENTS, countryCode)
@@ -58,6 +59,23 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             assertThat(viewModel.event.value)
                 .isInstanceOf(OnboardingEvent.ContinueToHub::class.java)
+        }
+
+    @Test
+    fun `given payment flow, when onboarding completed, then navigates to card reader payment screen`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.OnboardingCompleted(WOOCOMMERCE_PAYMENTS, countryCode)
+            )
+
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    cardReaderFlowParam = CardReaderFlowParam.ConnectAndAcceptPayment(1)
+                ).initSavedStateHandle()
+            )
+
+            assertThat(viewModel.event.value)
+                .isInstanceOf(OnboardingEvent.ContinueToPayment::class.java)
         }
 
     @Test
@@ -727,9 +745,13 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
     // Tracking End
 
-    private fun createVM() =
+    private fun createVM(
+        savedState: SavedStateHandle = CardReaderOnboardingFragmentArgs(
+            cardReaderFlowParam = CardReaderFlowParam.CardReadersHub
+        ).initSavedStateHandle()
+    ) =
         CardReaderOnboardingViewModel(
-            SavedStateHandle(),
+            savedState,
             onboardingChecker,
             tracker,
             userEligibilityFetcher,
