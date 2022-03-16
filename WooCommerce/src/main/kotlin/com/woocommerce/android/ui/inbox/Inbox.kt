@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -19,6 +20,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -78,6 +81,7 @@ fun InboxEmptyCase() {
 @Composable
 fun InboxNotes(notes: List<InboxNoteUi>) {
     LazyColumn(
+        Modifier.padding(top = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         itemsIndexed(notes) { index, note ->
@@ -96,7 +100,7 @@ fun InboxNoteRow(note: InboxNoteUi) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
@@ -106,18 +110,22 @@ fun InboxNoteRow(note: InboxNoteUi) {
         )
         Text(
             text = note.title,
+            fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.subtitle1
         )
         Text(
             text = note.description,
             style = MaterialTheme.typography.body2
         )
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            itemsIndexed(note.actions) { index, action ->
-                InboxNoteAction(inboxAction = action)
-            }
+        InboxNoteActionsRow(note.actions)
+    }
+}
+
+@Composable
+private fun InboxNoteActionsRow(actions: List<InboxNoteActionUi>) {
+    LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+        items(actions) { action ->
+            InboxNoteAction(inboxAction = action)
         }
     }
 }
@@ -125,14 +133,15 @@ fun InboxNoteRow(note: InboxNoteUi) {
 @Composable
 @Suppress
 fun InboxNoteAction(inboxAction: InboxNoteActionUi) {
-
     TextButton(
         onClick = { inboxAction.onClick(inboxAction.url) },
-        Modifier.padding(start = 16.dp)
     ) {
         Text(
-            text = inboxAction.label,
-            color = colorResource(id = R.color.color_surface_variant)
+            text = inboxAction.label.uppercase(),
+            color = colorResource(
+                id = if (inboxAction.primary) R.color.color_secondary
+                else R.color.color_surface_variant
+            )
         )
     }
 }
@@ -243,8 +252,10 @@ class SampleInboxProvider : PreviewParameterProvider<InboxState> {
                 InboxNoteUi(
                     id = 1,
                     title = "Install the Facebook free extension",
-                    description = "Now that your store is set up, you’re ready to begin marketing it. " +
-                        "Head over to the WooCommerce marketing panel to get started.",
+                    description = buildAnnotatedString {
+                        "Now that your store is set up, you’re ready to begin marketing it. " +
+                            "Head over to the WooCommerce marketing panel to get started."
+                    },
                     updatedTime = "5h ago",
                     actions = listOf(
                         InboxNoteActionUi(
@@ -266,8 +277,10 @@ class SampleInboxProvider : PreviewParameterProvider<InboxState> {
                 InboxNoteUi(
                     id = 2,
                     title = "Connect with your audience",
-                    description = "Grow your customer base and increase your sales with marketing tools " +
-                        "built for WooCommerce.",
+                    description = buildAnnotatedString {
+                        "Grow your customer base and increase your sales with marketing tools " +
+                            "built for WooCommerce."
+                    },
                     updatedTime = "22 minutes ago",
                     actions = listOf(
                         InboxNoteActionUi(

@@ -1,8 +1,12 @@
 package com.woocommerce.android.ui.inbox
 
+import android.os.Build
+import android.text.Html
+import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.compose.utils.toAnnotatedString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -10,6 +14,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.inbox.InboxNoteActionDto
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.inbox.InboxNoteDto
 import org.wordpress.android.fluxc.store.WCInboxStore
 import org.wordpress.android.util.DateTimeUtils
@@ -41,10 +46,26 @@ class InboxViewModel @Inject constructor(
         InboxNoteUi(
             id = id,
             title = title!!,
-            description = content!!,
+            description = getContentFromHtml(content!!),
             updatedTime = getRelativeDateToCurrentDate(dateCreated!!),
-            actions = emptyList(),
+            actions = actions.map { it.toInboxActionUi() },
         )
+
+    private fun InboxNoteActionDto.toInboxActionUi() =
+        InboxNoteActionUi(
+            id = id,
+            label = label!!,
+            primary = primary,
+            url = url!!,
+            onClick = {}
+        )
+
+    private fun getContentFromHtml(htmlContent: String): AnnotatedString =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Html.fromHtml(htmlContent, Html.FROM_HTML_MODE_COMPACT)
+        } else {
+            Html.fromHtml(htmlContent)
+        }.toAnnotatedString()
 
     @SuppressWarnings("MagicNumber", "ReturnCount")
     private fun getRelativeDateToCurrentDate(createdDate: String): String {
@@ -80,7 +101,7 @@ class InboxViewModel @Inject constructor(
     data class InboxNoteUi(
         val id: Long,
         val title: String,
-        val description: String,
+        val description: AnnotatedString,
         val updatedTime: String,
         val actions: List<InboxNoteActionUi>
     )
@@ -89,7 +110,7 @@ class InboxViewModel @Inject constructor(
         val id: Long,
         val label: String,
         val primary: Boolean = false,
-        val onClick: (String) -> Unit,
-        val url: String
+        val url: String,
+        val onClick: (String) -> Unit
     )
 }
