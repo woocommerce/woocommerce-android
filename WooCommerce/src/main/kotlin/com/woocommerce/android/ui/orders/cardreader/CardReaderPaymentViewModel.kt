@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.SendReceipt
 import com.woocommerce.android.ui.orders.cardreader.ViewState.*
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.prefs.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult
@@ -44,7 +45,6 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import java.util.*
 import javax.inject.Inject
 
 private const val ARTIFICIAL_RETRY_DELAY = 500L
@@ -64,6 +64,7 @@ class CardReaderPaymentViewModel
     private val errorMapper: CardReaderPaymentErrorMapper,
     private val wooStore: WooCommerceStore,
     private val dispatchers: CoroutineDispatchers,
+    private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderPaymentDialogFragmentArgs by savedState.navArgs()
 
@@ -105,6 +106,8 @@ class CardReaderPaymentViewModel
                 delay(ARTIFICIAL_RETRY_DELAY)
             }
             fetchOrder()?.let { order ->
+                cardReaderTrackingInfoKeeper.setCurrency(order.currency)
+
                 if (!paymentCollectibilityChecker.isCollectable(order)) {
                     exitWithSnackbar(R.string.card_reader_payment_order_paid_payment_cancelled)
                     return@launch
@@ -175,6 +178,14 @@ class CardReaderPaymentViewModel
             InitializingPayment -> viewState.postValue(LoadingDataState)
             CollectingPayment -> viewState.postValue(CollectPaymentState(amountLabel))
             ProcessingPayment -> viewState.postValue(ProcessingPaymentState(amountLabel))
+            is ProcessingPaymentCompleted -> {
+                cardReaderTrackingInfoKeeper.setPaymentMethodType(paymentStatus.paymentMethodType.stringRepresentation)
+                when (paymentStatus.paymentMethodType) {
+                    // Interac payments done in one step, without capturing. That's why we track success here
+                    PaymentMethodType.INTERAC_PRESENT -> tracker.trackInteracPaymentSucceeded()
+                    else -> {}
+                }
+            }
             CapturingPayment -> viewState.postValue(CapturingPaymentState(amountLabel))
             is PaymentCompleted -> {
                 tracker.trackPaymentSucceeded()
@@ -188,7 +199,7 @@ class CardReaderPaymentViewModel
                 tracker.trackPaymentFailed(paymentStatus.errorMessage, paymentStatus.type)
                 emitFailedPaymentState(orderId, billingEmail, paymentStatus, amountLabel)
             }
-        }
+        }.exhaustive
     }
 
     private fun onPaymentCompleted(
@@ -247,15 +258,34 @@ class CardReaderPaymentViewModel
                 ?: throw IllegalStateException("Order URL not available.")
             val amountLabel = order.getAmountLabel()
             val receiptUrl = getReceiptUrl(order.id)
+            val onPrintReceiptClicked = {
+                onPrintReceiptClicked(amountLabel, receiptUrl, order.getReceiptDocumentName())
+            }
+            val onSaveUserClicked = {
+                onSaveForLaterClicked()
+            }
+            val onSendReceiptClicked = {
+                onSendReceiptClicked(receiptUrl, order.billingAddress.email)
+            }
 
-            viewState.postValue(
-                PaymentSuccessfulState(
-                    order.getAmountLabel(),
-                    { onPrintReceiptClicked(amountLabel, receiptUrl, order.getReceiptDocumentName()) },
-                    { onSendReceiptClicked(receiptUrl, order.billingAddress.email) },
-                    { onSaveForLaterClicked() }
+            if (order.billingAddress.email.isBlank()) {
+                viewState.postValue(
+                    PaymentSuccessfulState(
+                        amountLabel, onPrintReceiptClicked, onSendReceiptClicked, onSaveUserClicked
+                    )
                 )
-            )
+            } else {
+                val receiptSentHint = UiStringRes(
+                    R.string.card_reader_payment_reader_receipt_sent,
+                    listOf(UiStringText(order.billingAddress.email)),
+                    true
+                )
+                viewState.postValue(
+                    PaymentSuccessfulReceiptSentAutomaticallyState(
+                        amountLabel, receiptSentHint, onPrintReceiptClicked, onSaveUserClicked
+                    )
+                )
+            }
         }
     }
 
@@ -284,7 +314,7 @@ class CardReaderPaymentViewModel
 
     private fun onPrintReceiptClicked(amountWithCurrencyLabel: String, receiptUrl: String, documentName: String) {
         launch {
-            viewState.value = ViewState.PrintingReceiptState(amountWithCurrencyLabel, receiptUrl, documentName)
+            viewState.value = PrintingReceiptState(amountWithCurrencyLabel, receiptUrl, documentName)
             tracker.trackPrintReceiptTapped()
             startPrintingFlow()
         }
