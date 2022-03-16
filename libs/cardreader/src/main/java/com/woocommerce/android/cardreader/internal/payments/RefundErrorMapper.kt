@@ -6,9 +6,11 @@ import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.Refun
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.RefundStatusErrorType.DeclinedByBackendError
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.RefundStatusErrorType.Generic
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.RefundStatusErrorType.NoNetwork
+import com.woocommerce.android.cardreader.payments.RefundParams
 
 class RefundErrorMapper {
     fun mapTerminalError(
+        refundParams: RefundParams,
         exception: TerminalException
     ): InteracRefundFailure {
         val type = when (exception.errorCode) {
@@ -20,7 +22,7 @@ class RefundErrorMapper {
             TerminalException.TerminalErrorCode.CANCELED -> Cancelled
             else -> Generic
         }
-        return InteracRefundFailure(type, exception.errorMessage)
+        return InteracRefundFailure(type, exception.errorMessage, refundParams)
     }
 
     @Suppress("ComplexMethod")

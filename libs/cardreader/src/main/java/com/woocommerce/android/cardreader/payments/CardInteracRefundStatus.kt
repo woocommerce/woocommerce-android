@@ -8,7 +8,8 @@ sealed class CardInteracRefundStatus {
     object InteracRefundSuccess : CardInteracRefundStatus()
     data class InteracRefundFailure(
         val type: RefundStatusErrorType,
-        val errorMessage: String
+        val errorMessage: String,
+        val refundParams: RefundParams
         ) : CardInteracRefundStatus()
 
     sealed class RefundStatusErrorType {

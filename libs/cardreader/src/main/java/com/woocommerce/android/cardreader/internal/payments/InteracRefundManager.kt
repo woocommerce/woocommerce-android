@@ -19,7 +19,7 @@ internal class InteracRefundManager(
         emit(CardInteracRefundStatus.InitializingInteracRefund)
         val collectRefundStatus = collectInteracRefund(refundParameters)
         if (collectRefundStatus == CollectInteracRefundAction.CollectInteracRefundStatus.Success) {
-            processInteracRefund()
+            processInteracRefund(refundParameters)
         }
     }
 
@@ -29,6 +29,7 @@ internal class InteracRefundManager(
         var collectInteracRefundStatus: CollectInteracRefundAction.CollectInteracRefundStatus =
             CollectInteracRefundAction.CollectInteracRefundStatus.Success
         emit(CardInteracRefundStatus.CollectingInteracRefund)
+        val refundParameters =
         collectInteracRefundAction.collectRefund(
             RefundParameters.Builder(
             chargeId = refundParameters.chargeId,
@@ -40,7 +41,7 @@ internal class InteracRefundManager(
                     CollectInteracRefundAction.CollectInteracRefundStatus.Success
                 }
                 is CollectInteracRefundAction.CollectInteracRefundStatus.Failure -> {
-                    emit(refundErrorMapper.mapTerminalError(refundStatus.exception))
+                    emit(refundErrorMapper.mapTerminalError(refundParameters, refundStatus.exception))
                     CollectInteracRefundAction.CollectInteracRefundStatus.Failure(refundStatus.exception)
                 }
             }
@@ -48,7 +49,7 @@ internal class InteracRefundManager(
         return collectInteracRefundStatus
     }
 
-    private suspend fun FlowCollector<CardInteracRefundStatus>.processInteracRefund() {
+    private suspend fun FlowCollector<CardInteracRefundStatus>.processInteracRefund(refundParameters: RefundParams) {
         emit(CardInteracRefundStatus.ProcessingInteracRefund)
         processInteracRefundAction.processRefund().collect { status ->
             when (status) {
@@ -56,7 +57,7 @@ internal class InteracRefundManager(
                     emit(CardInteracRefundStatus.InteracRefundSuccess)
                 }
                 is ProcessInteracRefundAction.ProcessRefundStatus.Failure -> {
-                    emit(refundErrorMapper.mapTerminalError(status.exception))
+                    emit(refundErrorMapper.mapTerminalError(refundParameters, status.exception))
                 }
             }
         }
