@@ -116,12 +116,19 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
         }
     }
 
+    /*
+   Set the announceForAccessibility function to the heading containers to allow the use of the
+   explore by touch option.
+   */
     private fun inflateLayout(view: View) {
         billingBinding = LayoutAddressFormBinding.inflate(layoutInflater).apply {
-            ViewCompat.setAccessibilityHeading(cardHeader, true)
-            cardHeader.setText(R.string.details)
-            ViewCompat.setAccessibilityHeading(addressSectionHeader, true)
-            addressSectionHeader.setText(R.string.order_detail_billing_address_section)
+            detailsHeaderContainer.announceForAccessibility(R.string.details.toString())
+            ViewCompat.setAccessibilityHeading(detailsHeaderContainer, true)
+
+            addressHeaderContainer.announceForAccessibility(R.string.order_detail_billing_address_section.toString())
+            addressSectionHeader.setText(R.string.order_detail_add_billing_address)
+            ViewCompat.setAccessibilityHeading(addressHeaderContainer, true)
+
             countrySpinner.setClickListener {
                 addressViewModel.onCountrySpinnerClicked(BILLING)
             }
@@ -131,8 +138,13 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
         }
 
         shippingBinding = LayoutAddressFormBinding.inflate(layoutInflater).apply {
-            ViewCompat.setAccessibilityHeading(addressSectionHeader, true)
-            addressSectionHeader.setText(R.string.order_detail_shipping_address_section)
+            detailsHeaderContainer.announceForAccessibility(R.string.details.toString())
+            ViewCompat.setAccessibilityHeading(detailsHeaderContainer, true)
+
+            addressHeaderContainer.announceForAccessibility(R.string.order_detail_shipping_address_section.toString())
+            addressSectionHeader.setText(R.string.order_detail_add_shipping_address)
+            ViewCompat.setAccessibilityHeading(addressHeaderContainer, true)
+
             email.visibility = View.GONE
             countrySpinner.setClickListener {
                 addressViewModel.onCountrySpinnerClicked(SHIPPING)
