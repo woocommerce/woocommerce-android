@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectView
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ListItemViewState.ScanningInProgressListItem
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.*
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.*
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
@@ -70,36 +71,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given onboarding not completed, when flow started, then app starts onboarding flow`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            val vm = initVM(
-                CardReaderOnboardingState.SetupNotCompleted(
-                    PluginType.WOOCOMMERCE_PAYMENTS
-                ),
-                skipOnboarding = false
-            )
-
-            assertThat(vm.event.value)
-                .isInstanceOf(NavigateToOnboardingFlow::class.java)
-        }
-
-    @Test
-    fun `when skip onboarding flag is true, then onboarding state ignored`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            val vm = initVM(
-                CardReaderOnboardingState.SetupNotCompleted(
-                    PluginType.WOOCOMMERCE_PAYMENTS
-                ),
-                skipOnboarding = true
-            )
-
-            assertThat(vm.event.value).isNotInstanceOf(NavigateToOnboardingFlow::class.java)
-        }
-
-    @Test
     fun `given onboarding check fails, when flow started, then scanning failed state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            val vm = initVM(CardReaderOnboardingState.GenericError, skipOnboarding = false)
+            val vm = initVM(CardReaderOnboardingState.GenericError)
 
             assertThat(vm.viewStateData.value).isInstanceOf(ScanningFailedState::class.java)
         }
@@ -107,7 +81,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given connection not available, when flow started, then scanning failed state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            val vm = initVM(CardReaderOnboardingState.GenericError, skipOnboarding = false)
+            val vm = initVM(CardReaderOnboardingState.GenericError)
 
             assertThat(vm.viewStateData.value).isInstanceOf(ScanningFailedState::class.java)
         }
@@ -1362,16 +1336,15 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
     private suspend fun initVM(
         onboardingState: CardReaderOnboardingState,
-        skipOnboarding: Boolean = false
+        cardReaderFlowParam: CardReaderFlowParam = CardReaderFlowParam.CardReadersHub
     ): CardReaderConnectViewModel {
-        val savedState = CardReaderConnectDialogFragmentArgs(skipOnboarding = skipOnboarding).initSavedStateHandle()
+        val savedState = CardReaderConnectDialogFragmentArgs(cardReaderFlowParam).initSavedStateHandle()
         whenever(onboardingChecker.getOnboardingState()).thenReturn(onboardingState)
         return CardReaderConnectViewModel(
             savedState,
             coroutinesTestRule.testDispatchers,
             tracker,
             appPrefs,
-            onboardingChecker,
             locationRepository,
             selectedSite,
             cardReaderManager,
