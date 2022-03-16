@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.prefs.cardreader.detail
 
-import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
@@ -8,6 +7,7 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewMo
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.ConnectedState
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.Loading
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.NotConnectedState
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult
@@ -342,7 +343,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when connect button clicked should track event`() =
+    fun `given not connected state, when connect button clicked should track event`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // GIVEN
             val status = MutableStateFlow(CardReaderStatus.NotConnected())
@@ -576,7 +577,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         tracker,
         appPrefsWrapper,
         selectedSite,
-        SavedStateHandle(),
+        CardReaderDetailFragmentArgs(cardReaderFlowParam = CardReaderFlowParam.CardReadersHub).initSavedStateHandle(),
     )
 
     private companion object {

@@ -26,8 +26,7 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
     private val viewModel: TakePaymentViewModel by viewModels()
     private val sharedViewModel by hiltNavGraphViewModels<SimplePaymentsSharedViewModel>(R.id.nav_graph_main)
 
-    @Inject
-    lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
