@@ -2,9 +2,14 @@ package com.woocommerce.android.ui.reviews
 
 import android.content.Context
 import android.os.Bundle
-import android.view.*
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
 import android.view.View.OnClickListener
-import androidx.core.view.*
+import androidx.core.view.ViewGroupCompat
+import androidx.core.view.doOnPreDraw
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
@@ -26,7 +31,9 @@ import com.woocommerce.android.ui.reviews.ProductReviewStatus.TRASH
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.widgets.*
+import com.woocommerce.android.widgets.AppRatingDialog
+import com.woocommerce.android.widgets.SkeletonView
+import com.woocommerce.android.widgets.UnreadItemDecoration
 import com.woocommerce.android.widgets.UnreadItemDecoration.ItemDecorationListener
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter
@@ -202,6 +209,12 @@ class ReviewListFragment :
                 pendingModerationRequest = null
             }
         }
+
+        observeModerationStatus(
+            status = viewModel.pendingReviewModerationStatus,
+            uiMessageResolver = uiMessageResolver,
+            undoAction = viewModel::undoModerationRequest
+        )
     }
 
     private fun handleMarkAllAsReadEvent(status: ActionStatus) {
@@ -257,6 +270,30 @@ class ReviewListFragment :
             }
             ActionStatus.ERROR -> revertPendingModerationState()
             else -> { /* do nothing */
+            }
+        }
+    }
+
+    private fun handleModerationStatus(status: ReviewModerationStatus) {
+        changeReviewStatusSnackbar?.dismiss()
+        when (status.actionStatus) {
+            ActionStatus.PENDING -> {
+                changeReviewStatusSnackbar = uiMessageResolver.getIndefiniteActionSnack(
+                    R.string.review_moderation_undo,
+                    ProductReviewStatus.getLocalizedLabel(context, status.newStatus)
+                        .lowercase(),
+                    actionText = getString(R.string.undo),
+                    actionListener = { viewModel.undoModerationRequest() }
+                ).also {
+                    it.show()
+                }
+            }
+            ActionStatus.ERROR -> {
+                uiMessageResolver.getSnack(R.string.wc_moderate_review_error)
+                    .also { it.show() }
+            }
+            else -> {
+                // NO-OP
             }
         }
     }

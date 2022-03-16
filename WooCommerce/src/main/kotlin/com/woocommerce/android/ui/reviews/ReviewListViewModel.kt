@@ -1,10 +1,7 @@
 package com.woocommerce.android.ui.reviews
 
 import android.os.Parcelable
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -28,8 +25,12 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
+import com.woocommerce.android.viewmodel.combineWith
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
@@ -51,7 +52,8 @@ class ReviewListViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val reviewRepository: ReviewListRepository,
     private val markAllReviewsAsSeen: MarkAllReviewsAsSeen,
-    private val unseenReviewsCountHandler: UnseenReviewsCountHandler
+    private val unseenReviewsCountHandler: UnseenReviewsCountHandler,
+    private val reviewModerationHandler: ReviewModerationHandler
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val TAG = "ReviewListViewModel"
@@ -60,8 +62,22 @@ class ReviewListViewModel @Inject constructor(
     private val _moderateProductReview = SingleLiveEvent<ProductReviewModerationRequest?>()
     val moderateProductReview: LiveData<ProductReviewModerationRequest?> = _moderateProductReview
 
+    final val pendingReviewModerationStatus = reviewModerationHandler.pendingModerationStatus.asLiveData()
+
     private val _reviewList = MutableLiveData<List<ProductReview>>()
     val reviewList: LiveData<List<ProductReview>> = _reviewList
+        .combineWith(pendingReviewModerationStatus) { list, status ->
+            if (status == null) return@combineWith list.orEmpty()
+            list?.map {
+                if (it.remoteId == status.review.remoteId) {
+                    it.copy(status = status.newStatus.toString())
+                } else {
+                    it
+                }
+            }?.filter {
+                it.status != ProductReviewStatus.TRASH.toString() && it.status != ProductReviewStatus.SPAM.toString()
+            }.orEmpty()
+        }
 
     final val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
@@ -69,6 +85,11 @@ class ReviewListViewModel @Inject constructor(
     init {
         EventBus.getDefault().register(this)
         dispatcher.register(this)
+        launch {
+            reviewModerationHandler.pendingModerationStatus.filter { it.actionStatus == ActionStatus.SUCCESS }
+                .collect { forceRefreshReviews() }
+        }
+        observeReviewUpdates()
     }
 
     override fun onCleared() {
@@ -93,7 +114,6 @@ class ReviewListViewModel @Inject constructor(
                 viewState = viewState.copy(isSkeletonShown = true)
             }
             fetchReviewList(loadMore = false)
-            observeReviewUpdates()
         }
     }
 
@@ -177,6 +197,10 @@ class ReviewListViewModel @Inject constructor(
         }
     }
 
+    fun undoModerationRequest() {
+        reviewModerationHandler.undoLastOperation()
+    }
+
     private fun sendReviewModerationUpdate(newRequestStatus: ActionStatus) {
         _moderateProductReview.value = _moderateProductReview.value?.apply { actionStatus = newRequestStatus }
 
@@ -217,6 +241,7 @@ class ReviewListViewModel @Inject constructor(
     private fun observeReviewUpdates() {
         viewModelScope.launch {
             unseenReviewsCountHandler.observeUnseenCount()
+                .distinctUntilChanged()
                 .collectLatest { forceRefreshReviews() }
         }
     }
