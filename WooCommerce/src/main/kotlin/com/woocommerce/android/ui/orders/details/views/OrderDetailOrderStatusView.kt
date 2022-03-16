@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.details.views
 
 import android.content.Context
-import android.os.Build
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +14,6 @@ import com.woocommerce.android.extensions.isToday
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.ui.orders.OrderStatusTag
-import com.woocommerce.android.widgets.tags.TagView
 
 typealias EditStatusClickListener = (View) -> Unit
 
@@ -29,8 +27,7 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
     private var mode: Mode = Mode.OrderEdit
 
     fun updateStatus(orderStatus: OrderStatus) {
-        binding.orderStatusOrderTags.removeAllViews()
-        binding.orderStatusOrderTags.addView(getTagView(orderStatus))
+        binding.orderStatusOrderTags.tag = OrderStatusTag(orderStatus)
     }
 
     fun updateOrder(order: Order) {
@@ -64,18 +61,6 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
         }
     }
 
-    private fun getTagView(orderStatus: OrderStatus): TagView {
-        val orderTag = OrderStatusTag(orderStatus)
-        val tagView = TagView(context)
-        tagView.tag = orderTag
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            tagView.isFocusableInTouchMode = false
-        } else {
-            tagView.focusable = View.NOT_FOCUSABLE
-        }
-        return tagView
-    }
-
     fun initView(mode: Mode, editOrderStatusClickListener: EditStatusClickListener) {
         this.mode = mode
         when (mode) {
@@ -93,7 +78,7 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
                 with(binding.orderStatusEditButton) {
                     isVisible = true
                     text = context.getString(R.string.edit)
-                    setOnClickListener(editOrderStatusClickListener)
+                    // setOnClickListener(editOrderStatusClickListener)
                 }
             }
         }
