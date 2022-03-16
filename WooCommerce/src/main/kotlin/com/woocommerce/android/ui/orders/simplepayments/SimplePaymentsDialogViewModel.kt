@@ -41,12 +41,6 @@ class SimplePaymentsDialogViewModel @Inject constructor(
     final val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     internal var viewState by viewStateLiveData
 
-    init {
-        launch(Dispatchers.IO) {
-            saveCountryForTracking()
-        }
-    }
-
     var currentPrice: BigDecimal
         get() = viewState.currentPrice
         set(value) {
@@ -89,10 +83,6 @@ class SimplePaymentsDialogViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    private suspend fun saveCountryForTracking() {
-        cardReaderTrackingInfoKeeper.setCountry(wooStore.getStoreCountryCode(selectedSite.get()))
     }
 
     @Parcelize
