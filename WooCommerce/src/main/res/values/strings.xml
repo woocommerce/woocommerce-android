@@ -131,8 +131,8 @@
     <string name="generic_string" translatable="false">%s</string>
     <string name="error_required_field">Required field</string>
     <string name="analytics">Analytics</string>
-    <string name="minus">Minus</string>
-    <string name="plus">Plus</string>
+    <string name="minus_one">Minus one</string>
+    <string name="plus_one">Plus one</string>
     <string name="card">Card</string>
     <string name="cash">Cash</string>
     <string name="create">Create</string>
