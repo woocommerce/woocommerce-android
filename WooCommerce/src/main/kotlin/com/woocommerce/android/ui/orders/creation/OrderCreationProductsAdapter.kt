@@ -87,8 +87,14 @@ class OrderCreationProductsAdapter(
                 append(currencyFormatter(productModel.item.total).replace(" ", "\u00A0"))
             }
 
-            binding.productSku.text =
-                context.getString(R.string.orderdetail_product_lineitem_sku_value, productModel.item.sku)
+            binding.productSku.apply {
+                text = context.getString(R.string.orderdetail_product_lineitem_sku_value, productModel.item.sku)
+                contentDescription = if (productModel.item.sku.isNotEmpty()) {
+                    text
+                } else {
+                    context.getString(R.string.no_sku)
+                }
+            }
 
             val imageSize = context.resources.getDimensionPixelSize(R.dimen.image_major_50)
             PhotonUtils.getPhotonImageUrl(productModel.imageUrl, imageSize, imageSize)?.let { imageUrl ->
