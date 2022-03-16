@@ -29,7 +29,6 @@ internal class InteracRefundManager(
         var collectInteracRefundStatus: CollectInteracRefundAction.CollectInteracRefundStatus =
             CollectInteracRefundAction.CollectInteracRefundStatus.Success
         emit(CardInteracRefundStatus.CollectingInteracRefund)
-        val refundParameters =
         collectInteracRefundAction.collectRefund(
             RefundParameters.Builder(
             chargeId = refundParameters.chargeId,
