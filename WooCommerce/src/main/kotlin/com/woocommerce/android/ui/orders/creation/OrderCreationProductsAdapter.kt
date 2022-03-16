@@ -65,6 +65,7 @@ class OrderCreationProductsAdapter(
             binding.productName.text = productModel.item.name
             binding.stepperView.apply {
                 value = productModel.item.quantity.toInt()
+                contentDescription = context.getString(R.string.count, value.toString())
             }
 
             binding.productAttributes.text = buildString {

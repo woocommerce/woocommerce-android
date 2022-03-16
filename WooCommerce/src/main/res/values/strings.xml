@@ -137,6 +137,7 @@
     <string name="cash">Cash</string>
     <string name="create">Create</string>
     <string name="exclusive_or">or</string>
+    <string name="count">Count: %s</string>
 
     <!--
         Date/Time Labels
