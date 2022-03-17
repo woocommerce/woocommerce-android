@@ -19,16 +19,12 @@ import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.widgets.UnreadItemDecoration.ItemType
-import com.woocommerce.android.widgets.sectionedrecyclerview.Section
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionParameters
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter
 import com.woocommerce.android.widgets.sectionedrecyclerview.StatelessSection
 
 class ReviewListAdapter(private val clickListener: OnReviewClickListener) : SectionedRecyclerViewAdapter() {
     private val reviewList = mutableListOf<ProductReview>()
-
-    // List of all remote note IDs the user has removed this session
-    private val removedRemoteIds = HashSet<Long>()
 
     interface OnReviewClickListener {
         fun onReviewClick(review: ProductReview, sharedView: View? = null) {}
@@ -173,59 +169,6 @@ class ReviewListAdapter(private val clickListener: OnReviewClickListener) : Sect
     }
 
     fun isEmpty() = reviewList.isEmpty()
-    // endregion
-
-    // region Private methods
-    /**
-     * Return the item position relative to the section.
-     *
-     * @param position position of the item in the original backing list
-     * @return position of the item in the section
-     */
-    private fun getPositionInSectionByListPos(position: Int): Int {
-        var currentPos = 0
-
-        sectionsMap.entries.forEach {
-            val section = it.value
-            val sectionTotal = section.getContentItemsTotal()
-
-            // check if position is in this section
-            if (position >= currentPos && position <= currentPos + sectionTotal - 1) {
-                return position - currentPos
-            }
-
-            currentPos += sectionTotal
-        }
-
-        // position not found, fail fast
-        throw IndexOutOfBoundsException("Unable to find matching position $position in section")
-    }
-
-    /**
-     * Returns the Section object for a position in the backing list.
-     *
-     * @param position position in the original list
-     * @return Section object for that position or null if not found
-     */
-    private fun getSectionForListItemPosition(position: Int): Section? {
-        var currentPos = 0
-
-        sectionsMap.entries.forEach {
-            val section = it.value
-            val sectionTotal = section.getContentItemsTotal()
-
-            // check if position is in this section
-            if (position >= currentPos && position <= currentPos + sectionTotal - 1) {
-                return section
-            }
-
-            currentPos += sectionTotal
-        }
-
-        // position not found, fail fast
-        WooLog.w(T.REVIEWS, "Unable to find matching section for position $position")
-        return null
-    }
     // endregion
 
     private inner class ReviewListSection(

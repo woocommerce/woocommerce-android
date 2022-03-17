@@ -59,9 +59,6 @@ class ReviewListFragment :
     private val skeletonView = SkeletonView()
     private var menuMarkAllRead: MenuItem? = null
 
-    private var pendingModerationRequest: ProductReviewModerationRequest? = null
-    private var pendingModerationRemoteReviewId: Long? = null
-    private var pendingModerationNewStatus: String? = null
     private var changeReviewStatusSnackbar: Snackbar? = null
 
     private var _binding: FragmentReviewsListBinding? = null
@@ -254,14 +251,14 @@ class ReviewListFragment :
                     review.remoteId,
                     launchedFromNotification = false,
                     enableModeration = true,
-                    tempStatus = pendingModerationNewStatus
+                    tempStatus = review.status
                 )
             } else {
                 router.showReviewDetailWithSharedTransition(
                     review.remoteId,
                     launchedFromNotification = false,
                     enableModeration = true,
-                    tempStatus = pendingModerationNewStatus,
+                    tempStatus = review.status,
                     sharedView = sharedView
                 )
             }
