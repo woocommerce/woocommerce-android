@@ -815,6 +815,7 @@ class ProductDetailViewModel @Inject constructor(
     /**
      * Update all product fields that are edited by the user
      */
+    @Suppress("LongMethod", "ComplexMethod")
     fun updateProductDraft(
         description: String? = null,
         shortDescription: String? = null,
