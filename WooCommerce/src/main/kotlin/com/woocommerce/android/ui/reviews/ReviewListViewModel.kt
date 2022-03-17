@@ -74,8 +74,9 @@ class ReviewListViewModel @Inject constructor(
         EventBus.getDefault().register(this)
         dispatcher.register(this)
         launch {
-            reviewModerationHandler.pendingModerationStatus.filter { it.actionStatus == ActionStatus.SUCCESS }
-                .collect { forceRefreshReviews() }
+            reviewModerationHandler.pendingModerationStatus
+                .filter { it.actionStatus == ActionStatus.SUCCESS }
+                .collect { reloadReviewsFromCache() }
         }
         observeReviewUpdates()
     }
