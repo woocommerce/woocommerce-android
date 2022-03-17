@@ -11,18 +11,19 @@ import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForSup
 import com.woocommerce.android.cardreader.internal.payments.actions.CancelPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus
-import com.woocommerce.android.cardreader.internal.payments.actions.CollectRefundAction
+import com.woocommerce.android.cardreader.internal.payments.actions.CollectInteracRefundAction
+import com.woocommerce.android.cardreader.internal.payments.actions.CollectInteracRefundAction.CollectInteracRefundStatus
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus.Failure
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus.Success
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction.ProcessPaymentStatus
-import com.woocommerce.android.cardreader.internal.payments.actions.ProcessRefundAction
+import com.woocommerce.android.cardreader.internal.payments.actions.ProcessInteracRefundAction
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.*
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Generic
-import com.woocommerce.android.cardreader.payments.CardRefundStatus
+import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.RefundParams
@@ -39,8 +40,6 @@ internal class PaymentManager(
     private val collectPaymentAction: CollectPaymentAction,
     private val processPaymentAction: ProcessPaymentAction,
     private val cancelPaymentAction: CancelPaymentAction,
-    private val collectRefundAction: CollectRefundAction,
-    private val processRefundAction: ProcessRefundAction,
     private val paymentUtils: PaymentUtils,
     private val errorMapper: PaymentErrorMapper,
     private val cardReaderConfigFactory: CardReaderConfigFactory,
@@ -66,51 +65,6 @@ internal class PaymentManager(
             paymentIntent.status == PaymentIntentStatus.REQUIRES_CONFIRMATION
         ) {
             cancelPaymentAction.cancelPayment(paymentIntent)
-        }
-    }
-
-    fun refundPayment(refundParameters: RefundParams): Flow<CardRefundStatus> = flow {
-        emit(CardRefundStatus.InitializingRefund)
-        val collectRefundStatus = collectRefund(refundParameters)
-        if (collectRefundStatus == CollectRefundAction.CollectRefundStatus.Success) {
-            processRefund()
-        }
-    }
-
-    private suspend fun FlowCollector<CardRefundStatus>.collectRefund(
-        refundParameters: RefundParams
-    ) : CollectRefundAction.CollectRefundStatus {
-        var collectRefundStatus: CollectRefundAction.CollectRefundStatus =
-            CollectRefundAction.CollectRefundStatus.Success
-        emit(CardRefundStatus.CollectingRefund)
-        collectRefundAction.collectRefund(RefundParameters.Builder(
-            chargeId = refundParameters.chargeId,
-            amount = refundParameters.amount.toLong(),
-            currency = refundParameters.currency
-        ).build()).collect { refundStatus ->
-            collectRefundStatus = when (refundStatus) {
-                CollectRefundAction.CollectRefundStatus.Success -> {
-                    CollectRefundAction.CollectRefundStatus.Success
-                }
-                is CollectRefundAction.CollectRefundStatus.Failure -> {
-                    CollectRefundAction.CollectRefundStatus.Failure(refundStatus.exception)
-                }
-            }
-        }
-        return collectRefundStatus
-    }
-
-    private suspend fun FlowCollector<CardRefundStatus>.processRefund() {
-        emit(CardRefundStatus.ProcessingRefund)
-        processRefundAction.processRefund().collect { status ->
-            when (status) {
-                is ProcessRefundAction.ProcessRefundStatus.Success -> {
-                    emit(CardRefundStatus.RefundSuccess)
-                }
-                is ProcessRefundAction.ProcessRefundStatus.Failure -> {
-                    emit(CardRefundStatus.RefundFailure(status.exception))
-                }
-            }
         }
     }
 

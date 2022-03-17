@@ -15,13 +15,21 @@ import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.internal.payments.actions.CancelPaymentAction
+import com.woocommerce.android.cardreader.internal.payments.actions.CollectInteracRefundAction
+import com.woocommerce.android.cardreader.internal.payments.actions.CollectInteracRefundAction.CollectInteracRefundStatus.*
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus
+import com.woocommerce.android.cardreader.internal.payments.actions.ProcessInteracRefundAction
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction.ProcessPaymentStatus
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
+import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.CollectingInteracRefund
+import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.InitializingInteracRefund
+import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.InteracRefundFailure
+import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.InteracRefundSuccess
+import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.ProcessingInteracRefund
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CapturingPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CollectingPayment
@@ -30,6 +38,7 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentComp
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentFailed
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPayment
 import com.woocommerce.android.cardreader.payments.PaymentInfo
+import com.woocommerce.android.cardreader.payments.RefundParams
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -550,6 +559,10 @@ class PaymentManagerTest {
         }
     // END - Cancel
 
+
+    // BEGIN - Interac Refund
+
+
     private fun createPaymentIntent(
         status: PaymentIntentStatus,
         receiptUrl: String? = "test url",
@@ -578,6 +591,8 @@ class PaymentManagerTest {
                 }
             }
             .map { it.value }
+
+
 
     private fun createPaymentInfo(
         paymentDescription: String = DUMMY_PAYMENT_DESCRIPTION,

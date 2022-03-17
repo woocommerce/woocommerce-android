@@ -8,24 +8,24 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 
-internal class CollectRefundAction(private val terminal: TerminalWrapper) {
-    sealed class CollectRefundStatus {
-        object Success : CollectRefundStatus()
-        data class Failure(val exception: TerminalException) : CollectRefundStatus()
+internal class CollectInteracRefundAction(private val terminal: TerminalWrapper) {
+    sealed class CollectInteracRefundStatus {
+        object Success : CollectInteracRefundStatus()
+        data class Failure(val exception: TerminalException) : CollectInteracRefundStatus()
     }
 
-    fun collectRefund(refundParameters: RefundParameters): Flow<CollectRefundStatus> {
+    fun collectRefund(refundParameters: RefundParameters): Flow<CollectInteracRefundStatus> {
         return callbackFlow {
             val cancelable = terminal.refundPayment(
                 refundParameters,
                 object : Callback {
                     override fun onSuccess() {
-                        trySend(CollectRefundStatus.Success)
+                        trySend(CollectInteracRefundStatus.Success)
                         close()
                     }
 
                     override fun onFailure(e: TerminalException) {
-                        trySend(CollectRefundStatus.Failure(e))
+                        trySend(CollectInteracRefundStatus.Failure(e))
                         close()
                     }
                 }

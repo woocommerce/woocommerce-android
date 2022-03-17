@@ -8,7 +8,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 
-internal class ProcessRefundAction(private val terminal: TerminalWrapper) {
+internal class ProcessInteracRefundAction(private val terminal: TerminalWrapper) {
 
     sealed class ProcessRefundStatus {
         data class Success(val refund: Refund) : ProcessRefundStatus()
