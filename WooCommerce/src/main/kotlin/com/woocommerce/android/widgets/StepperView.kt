@@ -15,10 +15,13 @@ class StepperView @JvmOverloads constructor(
 ) : LinearLayoutCompat(context, attrs, defStyleAttr) {
     private val binding = ViewStepperBinding.inflate(LayoutInflater.from(context), this)
 
-    var value: Int
+    var value: Int = 0
         get() = binding.valueText.text.toString().toIntOrNull() ?: 0
         set(value) {
-            binding.valueText.text = value.toString()
+            if (value != field) {
+                field = value
+                binding.valueText.text = value.toString()
+            }
         }
 
     var isPlusButtonEnabled: Boolean
