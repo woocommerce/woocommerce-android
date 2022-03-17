@@ -155,7 +155,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         isHighlighted = true
     )
 
-    private val savedState = CreateShippingLabelFragmentArgs(order.remoteOrderId.value).initSavedStateHandle()
+    private val savedState = CreateShippingLabelFragmentArgs(order.orderId).initSavedStateHandle()
 
     private lateinit var viewModel: CreateShippingLabelViewModel
 
