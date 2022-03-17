@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
+import com.woocommerce.android.ui.reviews.ReviewModerationConsumer.Companion.reviewList
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.SkeletonView
@@ -190,7 +191,7 @@ class ReviewListFragment :
         }
 
         observeModerationStatus(
-            status = viewModel.pendingReviewModerationStatus,
+            consumer = viewModel,
             uiMessageResolver = uiMessageResolver,
             undoAction = viewModel::undoModerationRequest
         )

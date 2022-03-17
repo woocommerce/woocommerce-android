@@ -3,20 +3,19 @@ package com.woocommerce.android.ui.reviews
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.ui.base.UIMessageResolver
 
 fun Fragment.observeModerationStatus(
-    status: LiveData<ReviewModerationStatus>,
+    consumer: ReviewModerationConsumer,
     uiMessageResolver: UIMessageResolver,
     undoAction: () -> Unit
 ) {
     var changeReviewStatusSnackbar: Snackbar? = null
 
-    status.observe(viewLifecycleOwner) { status ->
+    consumer.pendingReviewModerationStatus.observe(viewLifecycleOwner) { status ->
         changeReviewStatusSnackbar?.dismiss()
         when (status.actionStatus) {
             ActionStatus.PENDING -> {
