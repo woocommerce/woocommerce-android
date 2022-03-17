@@ -876,8 +876,16 @@ class ProductDetailViewModel @Inject constructor(
                 backorderStatus = backorderStatus ?: product.backorderStatus,
                 stockQuantity = stockQuantity ?: product.stockQuantity,
                 images = images ?: product.images,
-                regularPrice = regularPrice ?: product.regularPrice,
-                salePrice = salePrice ?: product.salePrice,
+                regularPrice = if (regularPrice isNotEqualTo product.regularPrice) {
+                    regularPrice
+                } else {
+                    product.regularPrice
+                },
+                salePrice = if (salePrice isNotEqualTo product.salePrice) {
+                    salePrice
+                } else {
+                    product.salePrice
+                },
                 isVirtual = isVirtual ?: product.isVirtual,
                 taxStatus = taxStatus ?: product.taxStatus,
                 taxClass = taxClass ?: product.taxClass,
