@@ -46,7 +46,7 @@ class InboxViewModel @Inject constructor(
             id = id,
             title = title!!,
             description = getContentFromHtml(content!!),
-            updatedTime = getRelativeDateToCurrentDate(dateCreated!!),
+            updatedTime = formatNoteCreationDate(dateCreated!!),
             actions = actions.map { it.toInboxActionUi() },
         )
 
@@ -67,7 +67,7 @@ class InboxViewModel @Inject constructor(
         }.toAnnotatedString()
 
     @SuppressWarnings("MagicNumber", "ReturnCount")
-    private fun getRelativeDateToCurrentDate(createdDate: String): String {
+    private fun formatNoteCreationDate(createdDate: String): String {
         val creationDate = dateutils.getDateFromIso8601String(createdDate)
         val now = Date()
 
