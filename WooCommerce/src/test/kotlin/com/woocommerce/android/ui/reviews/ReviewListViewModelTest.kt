@@ -9,7 +9,6 @@ import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
-import com.woocommerce.android.ui.reviews.ReviewModerationConsumer.Companion.reviewList
 import com.woocommerce.android.ui.reviews.domain.MarkAllReviewsAsSeen
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
