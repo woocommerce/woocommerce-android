@@ -293,7 +293,7 @@ class ProductDetailFragment :
             binding.imageGallery.showProductImages(product.images, this)
         }
 
-        // show status badge for unpublished products
+        // show status badge for draft products
         product.status?.let { status ->
             if (status == ProductStatus.DRAFT) {
                 binding.frameStatusBadge.show()
