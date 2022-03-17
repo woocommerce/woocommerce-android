@@ -13,6 +13,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_M
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_VIEW_STORE
 import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.moremenu.MenuButtonType.COUPONS
 import com.woocommerce.android.ui.moremenu.MenuButtonType.INBOX
 import com.woocommerce.android.ui.moremenu.MenuButtonType.PRODUCT_REVIEWS
 import com.woocommerce.android.ui.moremenu.MenuButtonType.VIEW_ADMIN
@@ -62,6 +63,13 @@ class MoreMenuViewModel @Inject constructor(
                 onClick = ::onViewStoreButtonClick
             ),
             MenuUiButton(
+                type = COUPONS,
+                text = R.string.more_menu_button_coupons,
+                icon = R.drawable.ic_more_menu_coupons,
+                isEnabled = FeatureFlag.MORE_MENU_COUPONS.isEnabled(),
+                onClick = ::onCouponsButtonClick
+            ),
+            MenuUiButton(
                 type = PRODUCT_REVIEWS,
                 text = R.string.more_menu_button_reviews,
                 icon = R.drawable.ic_more_menu_reviews,
@@ -108,6 +116,10 @@ class MoreMenuViewModel @Inject constructor(
     private fun onViewStoreButtonClick() {
         trackMoreMenuOptionSelected(VALUE_MORE_MENU_VIEW_STORE)
         triggerEvent(MoreMenuEvent.ViewStoreEvent(selectedSite.get().url))
+    }
+
+    private fun onCouponsButtonClick() {
+        // Todo
     }
 
     private fun onReviewsButtonClick() {
