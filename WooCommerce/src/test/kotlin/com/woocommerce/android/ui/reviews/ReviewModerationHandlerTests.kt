@@ -68,12 +68,14 @@ class ReviewModerationHandlerTests : BaseUnitTest() {
     @Test
     fun `given moderating a review, when the undo delay is passed, then submit status to the API`() = testBlocking {
         setup {
-            whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(WooResult(
-                WCProductReviewModel(0).apply {
-                    remoteProductReviewId = this@ReviewModerationHandlerTests.review.remoteId
-                    status = HOLD.toString()
-                }
-            ))
+            whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(
+                WooResult(
+                    WCProductReviewModel(0).apply {
+                        remoteProductReviewId = this@ReviewModerationHandlerTests.review.remoteId
+                        status = HOLD.toString()
+                    }
+                )
+            )
         }
 
         val latestStatus = runTestAndReadStatus {

@@ -46,7 +46,8 @@ interface ReviewModerationConsumer {
                         it
                     }
                 }?.filter {
-                    it.status != ProductReviewStatus.TRASH.toString() && it.status != ProductReviewStatus.SPAM.toString()
+                    it.status != ProductReviewStatus.TRASH.toString() &&
+                        it.status != ProductReviewStatus.SPAM.toString()
                 }.orEmpty()
             }
         }
