@@ -91,6 +91,7 @@
     <string name="more_menu_button_analytics">Analytics</string>
     <string name="more_menu_button_inbox">Inbox</string>
     <string name="more_menu_button_store">View Store</string>
+    <string name="more_menu_button_coupons">Coupons</string>
     <string name="more_menu_button_reviews">Reviews</string>
     <string name="more_menu_avatar">User profile picture</string>
     <string name="version_with_name_param">Version %s</string>
