@@ -169,7 +169,7 @@ class ProductDetailViewModel @Inject constructor(
     private val isProductPublishedOrPrivate: Boolean
         get() = viewState.productDraft?.let { it.status == PUBLISH || it.status == PRIVATE } ?: false
 
-    private val isDraftUnderCreation:Boolean
+    private val isDraftUnderCreation: Boolean
         get() = isProductUnderCreation && viewState.productDraft?.status == DRAFT
 
     val isSaveOptionNeeded: Boolean
