@@ -23,6 +23,10 @@ class ReviewModerationHandler @Inject constructor(
     private val productStore: WCProductStore,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) {
+    companion object {
+        const val UNDO_DELAY = 2750L
+    }
+
     private val _queue = MutableSharedFlow<ReviewModerationRequest>(extraBufferCapacity = Int.MAX_VALUE)
 
     private val _pendingModerationStatus = MutableSharedFlow<ReviewModerationStatus>(replay = 1)
@@ -62,7 +66,7 @@ class ReviewModerationHandler @Inject constructor(
             )
             val status = ReviewModerationStatus(request)
             _pendingModerationStatus.emit(status)
-            delay(5000)
+            delay(UNDO_DELAY)
 
             AnalyticsTracker.track(
                 AnalyticsEvent.REVIEW_ACTION,
