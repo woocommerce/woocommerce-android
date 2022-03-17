@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.cardreader
+package com.woocommerce.android.ui.orders.cardreader.receipt
 
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event

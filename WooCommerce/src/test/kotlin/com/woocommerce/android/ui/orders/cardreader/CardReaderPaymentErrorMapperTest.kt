@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.orders.cardreader
 
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType
+import com.woocommerce.android.ui.orders.cardreader.payment.CardReaderPaymentErrorMapper
+import com.woocommerce.android.ui.orders.cardreader.payment.PaymentFlowError
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 

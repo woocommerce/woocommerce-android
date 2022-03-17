@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.cardreader
+package com.woocommerce.android.ui.orders.cardreader.payment
 
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError.*

@@ -11,7 +11,7 @@ import com.woocommerce.android.push.NotificationChannelType.NEW_ORDER
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SelectedSite.SelectedSiteChangedEvent
-import com.woocommerce.android.ui.orders.cardreader.ClearCardReaderData
+import com.woocommerce.android.ui.orders.cardreader.ClearCardReaderDataAction
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.collect
@@ -46,7 +46,7 @@ class MainPresenter @Inject constructor(
     private val productImageMap: ProductImageMap,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val wcOrderStore: WCOrderStore,
-    private val clearCardReaderData: ClearCardReaderData
+    private val clearCardReaderDataAction: ClearCardReaderDataAction
 ) : MainContract.Presenter {
     private var mainView: MainContract.View? = null
 
@@ -105,7 +105,7 @@ class MainPresenter @Inject constructor(
                 .newFetchOrderStatusOptionsAction(FetchOrderStatusOptionsPayload(site))
         )
         if (FeatureFlag.CARD_READER.isEnabled()) {
-            coroutineScope.launch { clearCardReaderData() }
+            coroutineScope.launch { clearCardReaderDataAction() }
         }
     }
 

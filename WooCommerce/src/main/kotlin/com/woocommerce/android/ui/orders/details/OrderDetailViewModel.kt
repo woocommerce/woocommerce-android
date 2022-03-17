@@ -23,7 +23,7 @@ import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.ProductImageMap.OnProductFetchedListener
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.*
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentCollectibilityChecker
+import com.woocommerce.android.ui.orders.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.CoroutineDispatchers

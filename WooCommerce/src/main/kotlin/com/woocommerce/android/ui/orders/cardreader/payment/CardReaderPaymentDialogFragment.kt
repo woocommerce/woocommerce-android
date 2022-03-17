@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.cardreader
+package com.woocommerce.android.ui.orders.cardreader.payment
 
 import android.app.Dialog
 import android.content.ContentResolver
@@ -20,9 +20,9 @@ import com.woocommerce.android.databinding.CardReaderPaymentDialogBinding
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ShowSnackbarInDialog
-import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.PrintReceipt
-import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.SendReceipt
+import com.woocommerce.android.ui.orders.cardreader.payment.CardReaderPaymentViewModel.ShowSnackbarInDialog
+import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptEvent.PrintReceipt
+import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptEvent.SendReceipt
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.PrintHtmlHelper
 import com.woocommerce.android.util.UiHelpers

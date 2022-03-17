@@ -4,7 +4,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
-import com.woocommerce.android.ui.orders.cardreader.ClearCardReaderData
+import com.woocommerce.android.ui.orders.cardreader.ClearCardReaderDataAction
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -49,7 +49,7 @@ class MainPresenterTest : BaseUnitTest() {
     }
     private val productImageMap: ProductImageMap = mock()
     private val appPrefs: AppPrefsWrapper = mock()
-    private val clearCardReaderData: ClearCardReaderData = mock()
+    private val clearCardReaderDataAction: ClearCardReaderDataAction = mock()
 
     private val wcOrderStore: WCOrderStore = mock {
         on { observeOrdersForSite(any(), any()) } doReturn emptyFlow()
@@ -70,7 +70,7 @@ class MainPresenterTest : BaseUnitTest() {
                 productImageMap,
                 appPrefs,
                 wcOrderStore,
-                clearCardReaderData
+                clearCardReaderDataAction
             )
         )
         actionCaptor = argumentCaptor()
@@ -205,7 +205,7 @@ class MainPresenterTest : BaseUnitTest() {
         if (FeatureFlag.CARD_READER.isEnabled()) {
             mainPresenter.selectedSiteChanged(site = selectedSite.get())
 
-            verify(clearCardReaderData).invoke()
+            verify(clearCardReaderDataAction).invoke()
         }
     }
 

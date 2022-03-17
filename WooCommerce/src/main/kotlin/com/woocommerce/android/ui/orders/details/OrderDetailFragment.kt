@@ -49,7 +49,7 @@ import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialogFragment
+import com.woocommerce.android.ui.orders.cardreader.payment.CardReaderPaymentDialogFragment
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.details.editing.OrderEditingViewModel

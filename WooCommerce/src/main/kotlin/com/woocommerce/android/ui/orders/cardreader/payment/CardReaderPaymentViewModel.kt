@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.cardreader
+package com.woocommerce.android.ui.orders.cardreader.payment
 
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
@@ -20,9 +20,9 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.PrintReceipt
-import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.SendReceipt
-import com.woocommerce.android.ui.orders.cardreader.ViewState.*
+import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptEvent.PrintReceipt
+import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptEvent.SendReceipt
+import com.woocommerce.android.ui.orders.cardreader.payment.ViewState.*
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderTrackingInfoKeeper

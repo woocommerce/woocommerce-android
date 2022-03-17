@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.cardreader
+package com.woocommerce.android.ui.orders.cardreader.payment
 
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForSupportedCountry

@@ -13,7 +13,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentCollectibilityChecker
+import com.woocommerce.android.ui.orders.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel

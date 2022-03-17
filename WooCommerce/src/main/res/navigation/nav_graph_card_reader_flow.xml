@@ -176,7 +176,7 @@
     <!-- Payment flow -->
     <dialog
         android:id="@+id/cardReaderPaymentDialogFragment"
-        android:name="com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialogFragment"
+        android:name="com.woocommerce.android.ui.orders.cardreader.payment.CardReaderPaymentDialogFragment"
         android:label="CardReaderPaymentDialogFragment">
         <argument
             android:name="orderId"
