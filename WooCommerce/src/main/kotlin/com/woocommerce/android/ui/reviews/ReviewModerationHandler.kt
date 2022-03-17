@@ -8,7 +8,6 @@ import com.woocommerce.android.model.ActionStatus.*
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
-import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -17,8 +16,9 @@ import kotlinx.coroutines.flow.collect
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
+import javax.inject.Singleton
 
-@ActivityRetainedScoped
+@Singleton
 class ReviewModerationHandler @Inject constructor(
     private val siteModel: SiteModel,
     private val productStore: WCProductStore,
