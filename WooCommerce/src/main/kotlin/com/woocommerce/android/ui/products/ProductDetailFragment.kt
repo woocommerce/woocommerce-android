@@ -295,7 +295,7 @@ class ProductDetailFragment :
 
         // show status badge for unpublished products
         product.status?.let { status ->
-            if (status != ProductStatus.PUBLISH && viewModel.isAddFlowEntryPoint.not()) {
+            if (status != ProductStatus.PUBLISH) {
                 binding.frameStatusBadge.show()
                 binding.textStatusBadge.text = status.toLocalizedString(requireActivity())
             } else {
