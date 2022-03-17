@@ -3,8 +3,6 @@ package com.woocommerce.android.ui.reviews
 import android.os.Parcelable
 import androidx.lifecycle.*
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
@@ -24,7 +22,6 @@ import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import com.woocommerce.android.viewmodel.SingleLiveEvent
 import com.woocommerce.android.viewmodel.combineWith
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
@@ -37,10 +34,6 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.WCProductAction.UPDATE_PRODUCT_REVIEW_STATUS
-import org.wordpress.android.fluxc.generated.WCProductActionBuilder
-import org.wordpress.android.fluxc.store.WCProductStore.OnProductReviewChanged
-import org.wordpress.android.fluxc.store.WCProductStore.UpdateProductReviewStatusPayload
 import javax.inject.Inject
 
 @OpenClassOnDebug
@@ -58,9 +51,6 @@ class ReviewListViewModel @Inject constructor(
     companion object {
         private const val TAG = "ReviewListViewModel"
     }
-
-    private val _moderateProductReview = SingleLiveEvent<ProductReviewModerationRequest?>()
-    val moderateProductReview: LiveData<ProductReviewModerationRequest?> = _moderateProductReview
 
     final val pendingReviewModerationStatus = reviewModerationHandler.pendingModerationStatus.asLiveData()
 
@@ -174,42 +164,9 @@ class ReviewListViewModel @Inject constructor(
         }
     }
 
-    // region Review Moderation
-    fun submitReviewStatusChange(review: ProductReview, newStatus: ProductReviewStatus) {
-        if (networkStatus.isConnected()) {
-            val payload = UpdateProductReviewStatusPayload(
-                selectedSite.get(),
-                review.remoteId,
-                newStatus.toString()
-            )
-            dispatcher.dispatch(WCProductActionBuilder.newUpdateProductReviewStatusAction(payload))
-
-            AnalyticsTracker.track(
-                AnalyticsEvent.REVIEW_ACTION,
-                mapOf(AnalyticsTracker.KEY_TYPE to newStatus.toString())
-            )
-
-            sendReviewModerationUpdate(ActionStatus.SUBMITTED)
-        } else {
-            // Network is not connected
-            showOfflineSnack()
-            sendReviewModerationUpdate(ActionStatus.ERROR)
-        }
-    }
-
     fun undoModerationRequest() {
         reviewModerationHandler.undoLastOperation()
     }
-
-    private fun sendReviewModerationUpdate(newRequestStatus: ActionStatus) {
-        _moderateProductReview.value = _moderateProductReview.value?.apply { actionStatus = newRequestStatus }
-
-        // If the request has been completed, set the event to null to prevent issues later.
-        if (newRequestStatus.isComplete()) {
-            _moderateProductReview.value = null
-        }
-    }
-    // endregion
 
     private suspend fun fetchReviewList(loadMore: Boolean) {
         if (networkStatus.isConnected()) {
@@ -252,34 +209,6 @@ class ReviewListViewModel @Inject constructor(
         if (event.isConnected) {
             // Refresh data now that a connection is active if needed
             forceRefreshReviews()
-        }
-    }
-
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: OnRequestModerateReviewEvent) {
-        if (networkStatus.isConnected()) {
-            // Send the request to the UI to show the UNDO snackbar
-            viewState = viewState.copy(isRefreshing = true)
-            _moderateProductReview.value = event.request
-        } else {
-            // Network not connected
-            showOfflineSnack()
-        }
-    }
-
-    @SuppressWarnings("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onProductReviewChanged(event: OnProductReviewChanged) {
-        if (event.causeOfChange == UPDATE_PRODUCT_REVIEW_STATUS) {
-            if (event.isError) {
-                // Show an error in the UI and reload the view
-                triggerEvent(ShowSnackbar(R.string.wc_moderate_review_error))
-                sendReviewModerationUpdate(ActionStatus.ERROR)
-            } else {
-                sendReviewModerationUpdate(ActionStatus.SUCCESS)
-                reloadReviewsFromCache()
-            }
         }
     }
 

@@ -27,9 +27,6 @@ import com.woocommerce.android.widgets.sectionedrecyclerview.StatelessSection
 class ReviewListAdapter(private val clickListener: OnReviewClickListener) : SectionedRecyclerViewAdapter() {
     private val reviewList = mutableListOf<ProductReview>()
 
-    // Copy of current review manually removed from the list so the action may be undone.
-    private var pendingRemovalReview: Triple<ProductReview, ReviewListSection, Int>? = null
-
     // List of all remote note IDs the user has removed this session
     private val removedRemoteIds = HashSet<Long>()
 
@@ -94,9 +91,6 @@ class ReviewListAdapter(private val clickListener: OnReviewClickListener) : Sect
         reviewList.clear()
         reviewList.addAll(reviews)
 
-        // remove any items temporarily being hidden
-        pendingRemovalReview?.first?.remoteId?.let { hideReviewWithId(it, notifyDataChanged = false) }
-
         notifyDataSetChanged()
     }
 
@@ -125,52 +119,6 @@ class ReviewListAdapter(private val clickListener: OnReviewClickListener) : Sect
         }
 
         return true
-    }
-
-    /**
-     * Locates and removes the review from the appropriate section, but keeps a reference to
-     * it so it may be be restored if needed. This temporary object will get cleared either manually
-     * by reverting the action, or by loading a fresh list of product reviews.
-     *
-     * If we've hidden this item already, but have since received fresh data, set [notifyDataChanged] as false to
-     * suppress the dataChanged notifications and prevent the UI from jumping.
-     *
-     * @param remoteId The remote Id of the product review
-     * @param notifyDataChanged If true, notify the UI of changes to the underlying data set. Default true.
-     */
-    fun hideReviewWithId(remoteId: Long, notifyDataChanged: Boolean = true) {
-        val posInList = reviewList.indexOfFirst { it.remoteId == remoteId }
-        if (posInList == -1) {
-            WooLog.w(T.REVIEWS, "Unable to hide product review, position is -1")
-            pendingRemovalReview = null
-            removedRemoteIds.remove(remoteId)
-            return
-        }
-
-        getSectionForListItemPosition(posInList)?.let {
-            val section = it as ReviewListSection
-            val posInSection = getPositionInSectionByListPos(posInList)
-            pendingRemovalReview = Triple(reviewList[posInList], section, posInSection)
-
-            // remove from the section list
-            section.list.removeAt(posInSection)
-
-            if (!removedRemoteIds.contains(remoteId)) {
-                removedRemoteIds.add(remoteId)
-            }
-
-            if (notifyDataChanged) {
-                notifyItemRemovedFromSection(section, posInSection)
-            }
-
-            if (section.list.size == 0) {
-                val sectionPos = getSectionPosition(section)
-                section.isVisible = false
-                if (sectionPos != INVALID_POSITION && notifyDataChanged) {
-                    notifySectionChangedToInvisible(section, sectionPos)
-                }
-            }
-        }
     }
 
     /**
@@ -222,53 +170,6 @@ class ReviewListAdapter(private val clickListener: OnReviewClickListener) : Sect
 
         WooLog.w(T.REVIEWS, "Failed to get item type at review recycler position $position")
         return ItemType.READ
-    }
-
-    /**
-     * Inserts the previously removed review and notifies the recycler view.
-     * @return The position in the adapter the item was added to
-     */
-    fun revertHiddenReviewAndReturnPos(): Int {
-        return pendingRemovalReview?.let { (review, section, pos) ->
-            if (!section.isVisible) {
-                section.isVisible = true
-                notifySectionChangedToVisible(section)
-            }
-
-            with(section.list) {
-                if (pos < size) {
-                    add(pos, review)
-                } else {
-                    add(review)
-                }
-            }
-
-            removedRemoteIds.remove(review.remoteId)
-            pendingRemovalReview = null
-
-            notifyItemInsertedInSection(section, pos)
-            getPositionInAdapter(section, pos)
-        } ?: INVALID_POSITION
-    }
-
-    /**
-     * Removes the previously hidden review from the main list so changes from the
-     * database will be properly applied.
-     */
-    fun removeHiddenReviewFromList() {
-        pendingRemovalReview?.let { (review, _, _) ->
-            reviewList.remove(review)
-
-            removedRemoteIds.remove(review.remoteId)
-            pendingRemovalReview = null
-        }
-    }
-
-    /**
-     * Resets any pending review moderation state
-     */
-    fun resetPendingModerationState() {
-        pendingRemovalReview = null
     }
 
     fun isEmpty() = reviewList.isEmpty()

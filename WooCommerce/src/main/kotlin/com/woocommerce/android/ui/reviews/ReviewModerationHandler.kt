@@ -50,6 +50,7 @@ class ReviewModerationHandler @Inject constructor(
     }
 
     fun undoLastOperation() {
+        AnalyticsTracker.track(AnalyticsEvent.REVIEW_ACTION_UNDO)
         moderationRequestJob?.cancel()
     }
 
