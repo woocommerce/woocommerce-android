@@ -41,7 +41,10 @@ import com.bumptech.glide.request.transition.Transition
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
-import com.woocommerce.android.ui.moremenu.MenuButtonType.*
+import com.woocommerce.android.ui.moremenu.MenuButtonType.COUPONS
+import com.woocommerce.android.ui.moremenu.MenuButtonType.PRODUCT_REVIEWS
+import com.woocommerce.android.ui.moremenu.MenuButtonType.VIEW_ADMIN
+import com.woocommerce.android.ui.moremenu.MenuButtonType.VIEW_STORE
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuViewState
 
 @ExperimentalFoundationApi
@@ -149,7 +152,7 @@ private fun MoreMenuMyStoreHeader(
             )
             Text(
                 text = stringResource(string.settings_switch_store),
-                color = colorResource(color.color_secondary),
+                color = MaterialTheme.colors.secondary,
                 style = MaterialTheme.typography.body2,
             )
         }
@@ -237,7 +240,6 @@ private fun MoreMenuButton(
                     text = stringResource(id = text),
                     fontSize = 13.sp,
                     textAlign = TextAlign.Center,
-                    color = colorResource(id = color.color_on_surface)
                 )
             }
         }
@@ -255,7 +257,7 @@ fun MoreMenuBadge(badgeCount: Int) {
                 modifier = Modifier
                     .size(24.dp)
                     .clip(CircleShape)
-                    .background(colorResource(id = color.color_primary))
+                    .background(MaterialTheme.colors.primary)
             ) {
                 Text(
                     text = badgeCount.toString(),

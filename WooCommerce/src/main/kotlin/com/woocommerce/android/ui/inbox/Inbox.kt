@@ -116,7 +116,7 @@ fun InboxNoteRow(note: InboxNoteUi) {
             ) {
                 Text(
                     text = note.callToActionText.uppercase(),
-                    color = colorResource(id = R.color.color_secondary)
+                    color = MaterialTheme.colors.secondary
                 )
             }
 
