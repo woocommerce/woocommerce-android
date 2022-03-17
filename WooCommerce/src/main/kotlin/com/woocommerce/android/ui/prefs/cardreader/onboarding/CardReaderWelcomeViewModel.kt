@@ -19,7 +19,7 @@ class CardReaderWelcomeViewModel @Inject constructor(
     selectedSite: SelectedSite,
     appPrefsWrapper: AppPrefsWrapper,
 ) : ScopedViewModel(savedState) {
-    private val arguments: CardReaderWelcomeDialogArgs by savedState.navArgs()
+    private val arguments: CardReaderWelcomeDialogFragmentArgs by savedState.navArgs()
 
     private val _viewState = MutableLiveData(ViewState(::onButtonClick))
     val viewState: LiveData<ViewState> = _viewState

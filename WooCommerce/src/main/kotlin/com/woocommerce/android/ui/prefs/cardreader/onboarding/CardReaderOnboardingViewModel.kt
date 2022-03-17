@@ -61,18 +61,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
             cardReaderTracker.trackOnboardingState(state)
             when (state) {
                 is CardReaderOnboardingState.OnboardingCompleted -> {
-                    when (arguments.cardReaderFlowParam) {
-                        CardReaderFlowParam.CardReadersHub -> {
-                            triggerEvent(
-                                OnboardingEvent.ContinueToHub(arguments.cardReaderFlowParam, state.countryCode)
-                            )
-                        }
-                        is CardReaderFlowParam.ConnectAndAcceptPayment -> {
-                            triggerEvent(
-                                OnboardingEvent.ContinueToPayment(arguments.cardReaderFlowParam)
-                            )
-                        }
-                    }.exhaustive
+                    triggerEvent(OnboardingEvent.ContinueToHub(arguments.cardReaderFlowParam, state.countryCode))
                 }
                 is CardReaderOnboardingState.StoreCountryNotSupported ->
                     viewState.value = OnboardingViewState.UnsupportedErrorState.Country(
@@ -239,7 +228,6 @@ class CardReaderOnboardingViewModel @Inject constructor(
         data class NavigateToUrlInGenericWebView(val url: String) : Event()
 
         data class ContinueToHub(val cardReaderFlowParam: CardReaderFlowParam, val storeCountryCode: String) : Event()
-        data class ContinueToPayment(val cardReaderFlowParam: CardReaderFlowParam) : Event()
     }
 
     sealed class OnboardingViewState(@LayoutRes val layoutRes: Int) {

@@ -16,7 +16,7 @@ import com.woocommerce.android.util.UiHelpers
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CardReaderWelcomeDialog : DialogFragment(R.layout.card_reader_welcome_dialog) {
+class CardReaderWelcomeDialogFragment : DialogFragment(R.layout.card_reader_welcome_dialog) {
     val viewModel: CardReaderWelcomeViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -46,8 +46,8 @@ class CardReaderWelcomeDialog : DialogFragment(R.layout.card_reader_welcome_dial
                 is NavigateToOnboardingFlow -> {
                     findNavController()
                         .navigate(
-                            CardReaderWelcomeDialogDirections
-                                .actionCardReaderWelcomeFragmentToCardReaderOnboardingFragment(
+                            CardReaderWelcomeDialogFragmentDirections
+                                .actionCardReaderWelcomeDialogFragmentToCardReaderConnectDialogFragment(
                                     event.cardReaderFlowParam
                                 )
                         )
