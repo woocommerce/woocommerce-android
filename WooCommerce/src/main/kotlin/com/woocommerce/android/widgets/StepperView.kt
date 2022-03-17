@@ -16,7 +16,7 @@ class StepperView @JvmOverloads constructor(
     private val binding = ViewStepperBinding.inflate(LayoutInflater.from(context), this)
 
     var value: Int = 0
-        get() = binding.valueText.text.toString().toIntOrNull() ?: 0
+        get() = field
         set(value) {
             if (value != field) {
                 field = value
