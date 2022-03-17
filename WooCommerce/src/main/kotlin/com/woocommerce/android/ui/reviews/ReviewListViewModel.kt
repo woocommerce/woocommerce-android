@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.reviews
 import android.os.Parcelable
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.ActionStatus
@@ -13,7 +14,6 @@ import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChange
 import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
-import com.woocommerce.android.ui.reviews.ReviewModerationConsumer.Companion.observeModerationEvents
 import com.woocommerce.android.ui.reviews.domain.MarkAllReviewsAsSeen
 import com.woocommerce.android.ui.reviews.domain.MarkAllReviewsAsSeen.Fail
 import com.woocommerce.android.ui.reviews.domain.MarkAllReviewsAsSeen.Success
@@ -24,7 +24,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -44,29 +43,26 @@ class ReviewListViewModel @Inject constructor(
     private val markAllReviewsAsSeen: MarkAllReviewsAsSeen,
     private val unseenReviewsCountHandler: UnseenReviewsCountHandler,
     private val reviewModerationHandler: ReviewModerationHandler
-) : ScopedViewModel(savedState), ReviewModerationConsumer {
+) : ScopedViewModel(savedState) {
     companion object {
         private const val TAG = "ReviewListViewModel"
     }
 
-    override val ReviewModerationConsumer.coroutineScope: CoroutineScope
-        get() = viewModelScope
-
-    override val ReviewModerationConsumer.reviewModerationHandler: ReviewModerationHandler
-        get() = (this as ReviewListViewModel).reviewModerationHandler
+    val pendingReviewModerationStatus = reviewModerationHandler.pendingModerationStatus.asLiveData()
 
     private val _reviewList = MutableLiveData<List<ProductReview>>()
-    override val ReviewModerationConsumer.mutableReviewList
-        get() = _reviewList
+    val reviewList = _reviewList.combineWithModerationStatus(pendingReviewModerationStatus)
 
-    final val viewStateData = LiveDataDelegate(savedState, ViewState())
+    val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
     init {
         EventBus.getDefault().register(this)
         dispatcher.register(this)
-        observeModerationEvents()
         observeReviewUpdates()
+        observeModerationEvents(reviewModerationHandler) {
+            reloadReviewsFromCache()
+        }
     }
 
     override fun onCleared() {
@@ -98,9 +94,9 @@ class ReviewListViewModel @Inject constructor(
      * Reload reviews from the database. Useful when a change happens on the backend
      * when the list view was not visible.
      */
-    override fun ReviewModerationConsumer.reloadReviewsFromCache() {
+    fun reloadReviewsFromCache() {
         launch {
-            mutableReviewList.value = reviewRepository.getCachedProductReviews()
+            _reviewList.value = reviewRepository.getCachedProductReviews()
         }
     }
 
