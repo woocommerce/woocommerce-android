@@ -10,6 +10,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collect
@@ -30,7 +31,7 @@ class ReviewModerationHandler @Inject constructor(
     private val _queue = MutableSharedFlow<ReviewModerationRequest>(extraBufferCapacity = Int.MAX_VALUE)
 
     private val _pendingModerationStatus = MutableSharedFlow<ReviewModerationStatus>(replay = 1)
-    val pendingModerationStatus = _pendingModerationStatus.asSharedFlow()
+    val pendingModerationStatus: Flow<ReviewModerationStatus> = _pendingModerationStatus.asSharedFlow()
 
     private var moderationRequestJob: Job? = null
 
