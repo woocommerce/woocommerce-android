@@ -5,6 +5,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.model.ActionStatus.*
 import com.woocommerce.android.model.ProductReview
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import kotlinx.coroutines.*
@@ -12,14 +13,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collect
-import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class ReviewModerationHandler @Inject constructor(
-    private val siteModel: SiteModel,
+    private val selectedSite: SelectedSite,
     private val productStore: WCProductStore,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) {
@@ -99,7 +99,7 @@ class ReviewModerationHandler @Inject constructor(
 
     private suspend fun submitReviewStatusToTheApi(request: ReviewModerationRequest) {
         val remoteOperationResult = productStore.updateProductReviewStatus(
-            siteModel,
+            site = selectedSite.get(),
             reviewId = request.review.remoteId,
             newStatus = request.newStatus.toString()
         )
