@@ -40,7 +40,7 @@ private fun BaseWooTheme(
 }
 
 @Composable
-internal fun AboutThemePreview(
+internal fun WooThemePreview(
     lightColors: Colors? = lightColors(),
     darkColors: Colors? = darkColors(),
     typography: Typography? = null,
