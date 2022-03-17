@@ -97,8 +97,8 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
                 }
             }
         }
-        addressViewModel.shouldShowDoneButton.observe(viewLifecycleOwner) { shouldShowDoneButton: Boolean ->
-            doneMenuItem?.isVisible = shouldShowDoneButton
+        addressViewModel.shouldEnableDoneButton.observe(viewLifecycleOwner) { shouldShowDoneButton: Boolean ->
+            doneMenuItem?.isEnabled = shouldShowDoneButton
         }
         addressViewModel.isDifferentShippingAddressChecked.observe(viewLifecycleOwner) { checked ->
             updateShippingBindingVisibility(checked)
@@ -247,7 +247,7 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
         menu.clear()
         inflater.inflate(R.menu.menu_done, menu)
         doneMenuItem = menu.findItem(R.id.menu_done).apply {
-            isVisible = addressViewModel.shouldShowDoneButton.value ?: false
+            isEnabled = addressViewModel.shouldEnableDoneButton.value ?: false
         }
     }
 
