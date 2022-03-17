@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
@@ -36,7 +35,6 @@ import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import javax.inject.Inject
 
-@OpenClassOnDebug
 @HiltViewModel
 class ReviewListViewModel @Inject constructor(
     savedState: SavedStateHandle,
