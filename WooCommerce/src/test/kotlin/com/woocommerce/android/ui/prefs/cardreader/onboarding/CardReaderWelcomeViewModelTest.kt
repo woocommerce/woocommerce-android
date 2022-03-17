@@ -21,7 +21,7 @@ class CardReaderWelcomeViewModelTest : BaseUnitTest() {
     }
     private val appPrefsWrapper: AppPrefsWrapper = mock()
 
-    private val savedState = CardReaderWelcomeDialogArgs(
+    private val savedState = CardReaderWelcomeDialogFragmentArgs(
         cardReaderFlowParam = CardReaderFlowParam.CardReadersHub
     ).initSavedStateHandle()
 

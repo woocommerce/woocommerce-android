@@ -12,13 +12,11 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalI
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.*
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.cardreader.payment.CardReaderPaymentCollectibilityChecker
-import com.woocommerce.android.ui.orders.cardreader.payment.CardReaderPaymentErrorMapper
-import com.woocommerce.android.ui.orders.cardreader.payment.CardReaderPaymentViewModel
-import com.woocommerce.android.ui.orders.cardreader.payment.PaymentFlowError
+import com.woocommerce.android.ui.orders.cardreader.payment.*
 import com.woocommerce.android.ui.orders.cardreader.payment.PaymentFlowError.AmountTooSmall
 import com.woocommerce.android.ui.orders.cardreader.payment.PaymentFlowError.Unknown
 import com.woocommerce.android.ui.orders.cardreader.payment.ViewState.*
