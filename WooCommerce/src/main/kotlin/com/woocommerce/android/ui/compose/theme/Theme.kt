@@ -20,7 +20,7 @@ fun WooTheme(
         colors = colors,
         typography = typography,
         shapes = shapes,
-        content = content,
+        content = { SurfacedContent(content) },
     )
 }
 
@@ -35,8 +35,17 @@ private fun BaseWooTheme(
         colors = colors ?: MaterialTheme.colors,
         typography = typography ?: MaterialTheme.typography,
         shapes = shapes ?: MaterialTheme.shapes,
-        content = content,
+        content = content
     )
+}
+
+@Composable
+private fun SurfacedContent(
+    content: @Composable () -> Unit
+) {
+    Surface(color = MaterialTheme.colors.background) {
+        content()
+    }
 }
 
 @Composable
