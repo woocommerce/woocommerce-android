@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.reviews
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.AppCoroutineScope
-import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ActionStatus.*
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.util.WooLog
@@ -130,21 +129,4 @@ class ReviewModerationHandler @Inject constructor(
             _pendingModerationStatus.emit(ReviewModerationStatus(request, actionStatus = SUCCESS))
         }
     }
-}
-
-data class ReviewModerationRequest(
-    val review: ProductReview,
-    val newStatus: ProductReviewStatus
-)
-
-data class ReviewModerationStatus(
-    val review: ProductReview,
-    val newStatus: ProductReviewStatus,
-    val actionStatus: ActionStatus
-) {
-    constructor(request: ReviewModerationRequest, actionStatus: ActionStatus = PENDING) : this(
-        request.review,
-        request.newStatus,
-        actionStatus
-    )
 }
