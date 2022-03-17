@@ -131,7 +131,6 @@ private fun InboxNoteActionsRow(actions: List<InboxNoteActionUi>) {
 }
 
 @Composable
-@Suppress
 fun InboxNoteAction(inboxAction: InboxNoteActionUi) {
     TextButton(
         onClick = { inboxAction.onClick(inboxAction.url) },

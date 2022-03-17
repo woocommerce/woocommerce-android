@@ -31,7 +31,6 @@ class InboxViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     val inboxState = loadInboxNotes().asLiveData()
 
-    @Suppress("MagicNumber", "LongMethod")
     private fun loadInboxNotes(): Flow<InboxState> = flow {
         emit(InboxState(isLoading = true))
         val result = inboxStore.fetchNotes(selectedSite.get())
