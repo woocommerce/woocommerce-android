@@ -42,15 +42,12 @@ class CardReaderStatusCheckerViewModel
                 if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected) {
                     triggerEvent(StatusCheckerEvent.NavigateToPayment(param))
                 } else {
-                    val state = cardReaderChecker.getOnboardingState()
-                    when (state) {
+                    when (val state = cardReaderChecker.getOnboardingState()) {
                         is CardReaderOnboardingState.OnboardingCompleted -> {
                             cardReaderTracker.trackOnboardingState(state)
                             triggerEvent(StatusCheckerEvent.NavigateToWelcome(param))
                         }
-                        else -> {
-                            triggerEvent(StatusCheckerEvent.NavigateToOnboarding(param))
-                        }
+                        else -> triggerEvent(StatusCheckerEvent.NavigateToOnboarding(param))
                     }
                 }
             }
