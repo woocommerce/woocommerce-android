@@ -26,7 +26,7 @@ Many of the rules from official guidelines are already integrated with Lint, so 
 
 Any exception to those code style guidelines should be described here: 
 
-* Guidelines suggest to use `PascalCase` for constant values, Enums, etc. We are currently using `All caps snake_case` for this. There is no major reason for using `PascalCase` in Compose code and have different styles across the app. So, we will keep using `All caps snake_case` for Compose code. 
+* Guidelines suggest using `PascalCase` for constant values and enums, etc. We are currently using `UPPER_SNAKE_CASE` for this. There is no major reason for using `PascalCase` in Compose code and having different styles between Compose and non Compose code. We will keep using `UPPER_SNAKE_CASE `.  
 
 A few things to **highlight** from the Compose official guidelines: 
 
@@ -38,11 +38,20 @@ A few things to **highlight** from the Compose official guidelines:
 
 # Theming and Styling 🎨 <a name="theming-and-styling"></a>
 
-Compose enables to define your own set of `colors`, `typography` and `shapes`. Currently we are going to make use of [MDC-Android Compose Adapter](https://material-components.github.io/material-components-android-compose-theme-adapter/) in order to bridge/reuse the current colors and textAppearances we have defined in our `type.xml` and `colors.xml` files. Inside `com.woocommerce.android.ui.compose.theme` package you'll finde the defined `WooTheme`. Using it is as simple as wrapping your compose content with the theme like for example in `MoreMenuFragment.kt`: 
+Compose enables you to define your own set of `colors`, `typography`, and `shapes`. Currently, we are using [MDC-Android Compose Adapter](https://material-components.github.io/material-components-android-compose-theme-adapter/) in order to bridge/reuse the current colors and text appearances we have defined in our `type.xml` and `colors.xml` files. Inside `com.woocommerce.android.ui.compose.theme` package you'll find the defined `WooTheme`. Using it is as simple as wrapping your compose content with the theme: 
+
+```kotlin
+    WooTheme {
+        MoreMenu(viewModel)
+    }
+```
+
+One important thing to keep in mind when setting the theme is to properly support light/dark modes. If the composable root function of the tree
+does not support the use of `contentColor` then use `WooThemeWithBackground` to support light/dark colors out of the box. An example of this is `MoreMenuFragment.kt`: 
 
 ```kotlin
 setContent {
-    WooTheme {
+    WooThemeWithBackground {
         MoreMenu(viewModel)
     }
 }
@@ -50,27 +59,27 @@ setContent {
 
 # File Structure 🗃 <a name="file-structure"></a>
 
-The file structure for Compose code should not differ much from how we organice files currently in the project. 
+The file structure for Compose code should not differ much from how we organize files currently in the project. 
 
 - `ui/compose/components`: common/generic components used by the entire app.
 - `ui/compose/theme`: classes related to themes, colors, shapes.
 - `ui/compose/animations`: common/generic animations that can be reused across multiple features.
 
-In essence, anything inside `ui/compose` package should be compose code that is reused across multiple feature. Just common sense 🙂
-Inside a specific feature we can follow the same structure `ui/[feature]/components`, etc. 
+In essence, anything inside `ui/compose` package should be Compose code that is reused across multiple features. Just common sense 🙂
+Inside a specific feature, we can follow the same structure `ui/[feature]/components`, etc. 
 
 
 # Managing State 👩‍💻 <a name="managing-state"></a>
 
-Managing state properly in Compose is key to updating the UI as expected and making composable functions as reusable as possible. Some key takes to managing state properly: 
+Managing state properly in Compose is key to updating the UI as expected and making composable functions as reusable as possible. Some key takes to managing state: 
 
 - Recommended talk on Compose [state](https://www.youtube.com/watch?v=rmv2ug-wW4U&ab_channel=AndroidDevelopers)
 - Best practices on handling state in `@Composable` functions: 
-	- Apply state hoisting whenever possible. State hoisting -> move private state out of composable functions to make composable functions stateless. Delegate data manipulation to the viewModel or at least to the parent function that is calling the composable function.
-	- When using state inside a composable functions prefer to use property delegates such `by` to avoid having to access the `mutableState.value` all the time. For example: `var foo : Int by rememberSaveable {mutableStateOf(1)}`
-	- Always mutate state outside the composable function scope.
+	- Apply state hoisting whenever possible. State hoisting is basically moving all private state out of the @Composable functions to make composable functions stateless. Ideally, delegate data manipulation to the viewModel or at least to the parent function that is calling the @Composable function.
+	- When using state inside a composable function prefer to use property delegates such `by` to avoid having to access the `mutableState.value` all the time. For example: `var foo : Int by rememberSaveable {mutableStateOf(1)}`
+	- Always mutate state outside the composable function scope. Like for example onClick{} lambdas passed as parameter.
 	- Pass immutable values to composable functions to respect the single source of truth.
-	- Composable functions should be side effect free. However, when they're necessary to mutate the state of the app, they should be called from a controlled environment that is aware of the lifecycle of the composable. More on that in the [Compose side effects guides](https://developer.android.com/jetpack/compose/side-effects#state-effect-use-cases)
+	- Composable functions should be side effect free. However, when they need to mutate the state of the app, they should be called from a controlled environment that is aware of the lifecycle of the composable. More on that in the [Compose side effects guides](https://developer.android.com/jetpack/compose/side-effects#state-effect-use-cases)
 
 # Navigation 🗺 <a name="navigation"></a>
 
