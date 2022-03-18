@@ -20,7 +20,7 @@ fun WooTheme(
         colors = colors,
         typography = typography,
         shapes = shapes,
-        content = { SurfacedContent(content) },
+        content = content,
     )
 }
 
@@ -36,6 +36,28 @@ private fun BaseWooTheme(
         typography = typography ?: MaterialTheme.typography,
         shapes = shapes ?: MaterialTheme.shapes,
         content = content
+    )
+}
+
+/**
+ * This theme should be used to support light/dark colors if the composable root of the view tree
+ * does not support the use of contentColor.
+ * @see <a href="https://developer.android.com/jetpack/compose/themes/material#content-color</a> for more details
+ */
+@Composable
+fun WooThemeWithBackground(
+    content: @Composable () -> Unit
+) {
+    val (colors, typography, shapes) = createMdcTheme(
+        context = LocalContext.current,
+        layoutDirection = LocalLayoutDirection.current
+    )
+
+    BaseWooTheme(
+        colors = colors,
+        typography = typography,
+        shapes = shapes,
+        content = { SurfacedContent(content) },
     )
 }
 
