@@ -10,15 +10,15 @@ import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages
+import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus
+import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.CollectingInteracRefund
+import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.InitializingInteracRefund
+import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.InteracRefundFailure
+import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.InteracRefundSuccess
+import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.ProcessingInteracRefund
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.*
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.*
-import com.woocommerce.android.cardreader.payments.CardRefundStatus
-import com.woocommerce.android.cardreader.payments.CardRefundStatus.CollectingRefund
-import com.woocommerce.android.cardreader.payments.CardRefundStatus.InitializingRefund
-import com.woocommerce.android.cardreader.payments.CardRefundStatus.ProcessingRefund
-import com.woocommerce.android.cardreader.payments.CardRefundStatus.RefundFailure
-import com.woocommerce.android.cardreader.payments.CardRefundStatus.RefundSuccess
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.RefundParams
@@ -142,7 +142,7 @@ class CardReaderPaymentViewModel
 
     private fun initRefundFlow() {
         refundFlowJob = launch {
-            viewState.postValue((RefundLoadingDataState))
+            viewState.postValue((InteracRefund.RefundLoadingDataState))
             fetchOrder()?.let { order ->
                 launch {
                     refundPaymentFlow(cardReaderManager, order)
@@ -219,7 +219,7 @@ class CardReaderPaymentViewModel
 
     private suspend fun refundPaymentFlow(cardReaderManager: CardReaderManager, order: Order) {
         order.chargeId?.let { chargeId ->
-            cardReaderManager.refundPayment(
+            cardReaderManager.refundInteracPayment(
                 RefundParams(
                     chargeId = chargeId,
                     amount = order.total,
@@ -232,19 +232,23 @@ class CardReaderPaymentViewModel
     }
 
     private fun onRefundStatusChanged(
-        refundStatus: CardRefundStatus,
+        refundStatus: CardInteracRefundStatus,
         amountLabel: String
     ) {
         when (refundStatus) {
-            InitializingRefund -> viewState.postValue(RefundLoadingDataState)
-            CollectingRefund -> viewState.postValue(CollectRefundState(amountLabel))
-            ProcessingRefund -> viewState.postValue(ProcessingRefundState(amountLabel))
-            is RefundSuccess -> {
-                viewState.postValue(RefundSuccessfulState(amountLabel))
+            InitializingInteracRefund -> viewState.postValue(InteracRefund.RefundLoadingDataState)
+            CollectingInteracRefund -> viewState.postValue(InteracRefund.CollectRefundState(amountLabel))
+            ProcessingInteracRefund -> viewState.postValue(InteracRefund.ProcessingRefundState(amountLabel))
+            is InteracRefundSuccess -> {
+                viewState.postValue(InteracRefund.RefundSuccessfulState(amountLabel))
                 triggerEvent(InteracRefundSuccessful)
             }
-            is RefundFailure -> viewState.postValue(FailedRefundState(amountLabel, onPrimaryActionClicked = { onBackPressed() }))
-            CardRefundStatus.WaitingForInput -> {
+            is InteracRefundFailure -> viewState.postValue(
+                InteracRefund.FailedRefundState(
+                    amountLabel,
+                    onPrimaryActionClicked = { onBackPressed() })
+            )
+            CardInteracRefundStatus.WaitingForInput -> {
                 // noop
             }
         }
