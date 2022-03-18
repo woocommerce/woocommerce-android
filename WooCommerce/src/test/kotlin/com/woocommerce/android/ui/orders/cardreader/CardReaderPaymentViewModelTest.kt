@@ -145,6 +145,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
     }
 
+    //region - Payments tests
+
     @Test
     fun `given collect payment shown, when RETRY message received, then collect payment hint updated`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
@@ -336,15 +338,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given interac refund, when payment screen shown, then loading data state is shown`() {
-        setupViewModelForInteracRefund()
-
-        viewModel.start()
-
-        assertThat(viewModel.viewStateData.value).isInstanceOf(InteracRefund.RefundLoadingDataState::class.java)
-    }
-
-    @Test
     fun `when payment not collectable, then flow terminated and snackbar shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(false)
@@ -410,20 +403,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value).isInstanceOf(LoadingDataState::class.java)
         }
 
-
-    @Test
-    fun `when initializing interac refund, then ui updated to initializing refund state `() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            setupViewModelForInteracRefund()
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
-                flow { emit(CardInteracRefundStatus.InitializingInteracRefund) }
-            }
-
-            viewModel.start()
-
-            assertThat(viewModel.viewStateData.value).isInstanceOf(InteracRefund.RefundLoadingDataState::class.java)
-        }
-
     @Test
     fun `when collecting payment, then ui updated to collecting payment state`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
@@ -437,19 +416,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when collecting interac refund, then ui updated to collecting refund state`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            setupViewModelForInteracRefund()
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
-                flow { emit(CardInteracRefundStatus.CollectingInteracRefund) }
-            }
-
-            viewModel.start()
-
-            assertThat(viewModel.viewStateData.value).isInstanceOf(InteracRefund.CollectRefundState::class.java)
-        }
-
-    @Test
     fun `when processing payment, then ui updated to processing payment state`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
@@ -459,19 +425,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ProcessingPaymentState::class.java)
-        }
-
-    @Test
-    fun `when processing interac refund, then ui updated to processing refund state`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            setupViewModelForInteracRefund()
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
-                flow { emit(CardInteracRefundStatus.ProcessingInteracRefund) }
-            }
-
-            viewModel.start()
-
-            assertThat(viewModel.viewStateData.value).isInstanceOf(InteracRefund.ProcessingRefundState::class.java)
         }
 
     @Test
@@ -496,19 +449,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(PaymentSuccessfulState::class.java)
-        }
-
-    @Test
-    fun `when interac refund completed, then ui updated to refund successful state`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            setupViewModelForInteracRefund()
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
-                flow { emit(CardInteracRefundStatus.InteracRefundSuccess) }
-            }
-
-            viewModel.start()
-
-            assertThat(viewModel.viewStateData.value).isInstanceOf(InteracRefund.RefundSuccessfulState::class.java)
         }
 
     @Test
@@ -551,40 +491,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(FailedPaymentState::class.java)
-        }
-
-    @Test
-    fun `when interac refund fails, then ui updated to refund failed state`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            setupViewModelForInteracRefund()
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
-                flow { emit(
-                    CardInteracRefundStatus.InteracRefundFailure(
-                        CardInteracRefundStatus.RefundStatusErrorType.Generic,
-                        "",
-                        RefundParams(
-                            amount = BigDecimal.TEN,
-                            chargeId = "",
-                            currency = "USD"
-                        )
-                    )
-                ) }
-            }
-
-            viewModel.start()
-
-            assertThat(viewModel.viewStateData.value).isInstanceOf(InteracRefund.FailedRefundState::class.java)
-        }
-
-    @Test
-    fun `given chargeId is null, when interac refund initiated, then show snackbar event is triggered`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            setupViewModelForInteracRefund()
-            whenever(mockedOrder.chargeId).thenReturn(null)
-
-            viewModel.start()
-
-            assertThat(viewModel.event.value).isInstanceOf(ShowSnackbar::class.java)
         }
 
     @Test
@@ -883,6 +789,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel").isNull()
             assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel").isNull()
         }
+
 
     @Test
     fun `when collecting payment, then correct labels and illustration is shown`() =
@@ -1708,6 +1615,289 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             verify(cardReaderManager).collectPayment(captor.capture())
             assertThat(captor.firstValue.orderKey).isEqualTo("wc_order_j0LMK3bFhalEL")
         }
+
+    //endregion - Payments tests
+
+    //region - Interac Refund tests
+
+    @Test
+    fun `given interac refund, when payment screen shown, then loading data state is shown`() {
+        setupViewModelForInteracRefund()
+
+        viewModel.start()
+
+        assertThat(viewModel.viewStateData.value).isInstanceOf(InteracRefund.RefundLoadingDataState::class.java)
+    }
+
+    @Test
+    fun `when initializing interac refund, then ui updated to initializing refund state `() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow { emit(CardInteracRefundStatus.InitializingInteracRefund) }
+            }
+
+            viewModel.start()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(InteracRefund.RefundLoadingDataState::class.java)
+        }
+
+    @Test
+    fun `when collecting interac refund, then ui updated to collecting refund state`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow { emit(CardInteracRefundStatus.CollectingInteracRefund) }
+            }
+
+            viewModel.start()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(InteracRefund.CollectRefundState::class.java)
+        }
+
+    @Test
+    fun `when processing interac refund, then ui updated to processing refund state`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow { emit(CardInteracRefundStatus.ProcessingInteracRefund) }
+            }
+
+            viewModel.start()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(InteracRefund.ProcessingRefundState::class.java)
+        }
+
+    @Test
+    fun `when interac refund completed, then ui updated to refund successful state`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow { emit(CardInteracRefundStatus.InteracRefundSuccess) }
+            }
+
+            viewModel.start()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(InteracRefund.RefundSuccessfulState::class.java)
+        }
+
+    @Test
+    fun `when interac refund fails, then ui updated to refund failed state`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow { emit(
+                    CardInteracRefundStatus.InteracRefundFailure(
+                        CardInteracRefundStatus.RefundStatusErrorType.Generic,
+                        "",
+                        RefundParams(
+                            amount = BigDecimal.TEN,
+                            chargeId = "",
+                            currency = "USD"
+                        )
+                    )
+                ) }
+            }
+
+            viewModel.start()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(InteracRefund.FailedRefundState::class.java)
+        }
+
+    @Test
+    fun `given chargeId is null, when interac refund initiated, then show snackbar event is triggered`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(mockedOrder.chargeId).thenReturn(null)
+
+            viewModel.start()
+
+            assertThat(viewModel.event.value).isInstanceOf(ShowSnackbar::class.java)
+        }
+
+    @Test
+    fun `when collecting interac refund, then progress and buttons are hidden`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow { emit(CardInteracRefundStatus.CollectingInteracRefund) }
+            }
+
+            viewModel.start()
+            val viewState = viewModel.viewStateData.value!!
+
+            assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse
+            assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel").isNull()
+            assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel").isNull()
+        }
+
+    @Test
+    fun `when collecting interac refund, then correct labels and illustration is shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow { emit(CardInteracRefundStatus.CollectingInteracRefund) }
+            }
+
+            viewModel.start()
+            val viewState = viewModel.viewStateData.value!!
+
+            assertThat(viewState.headerLabel).describedAs("headerLabel")
+                .isEqualTo(R.string.card_reader_payment_refund_payment)
+            assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
+                .isEqualTo("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
+            assertThat(viewState.illustration).describedAs("illustration")
+                .isEqualTo(R.drawable.img_card_reader_available)
+            assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
+                .isEqualTo(R.string.card_reader_payment_collect_payment_state)
+            assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
+                .isEqualTo(R.dimen.major_275)
+            assertThat(viewState.hintLabel).describedAs("hintLabel")
+                .isEqualTo(R.string.card_reader_payment_collect_payment_hint)
+        }
+
+    @Test
+    fun `when processing interac refund, then progress and buttons are hidden`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow { emit(CardInteracRefundStatus.ProcessingInteracRefund) }
+            }
+
+            viewModel.start()
+            val viewState = viewModel.viewStateData.value!!
+
+            assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse
+            assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel").isNull()
+            assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel").isNull()
+        }
+
+    @Test
+    fun `when processing interac refund, then correct labels and illustration is shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow { emit(CardInteracRefundStatus.ProcessingInteracRefund) }
+            }
+
+            viewModel.start()
+            val viewState = viewModel.viewStateData.value!!
+
+            assertThat(viewState.headerLabel).describedAs("headerLabel")
+                .isEqualTo(R.string.card_reader_payment_refund_payment)
+            assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
+                .isEqualTo("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
+            assertThat(viewState.illustration).describedAs("illustration")
+                .isEqualTo(R.drawable.img_card_reader_available)
+            assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
+                .isEqualTo(R.string.card_reader_payment_processing_refund_state)
+            assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
+                .isEqualTo(R.dimen.major_275)
+            assertThat(viewState.hintLabel).describedAs("hintLabel")
+                .isEqualTo(R.string.card_reader_payment_processing_payment_hint)
+        }
+
+    @Test
+    fun `when interac refund fails, then progress and secondary button are hidden`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow { emit(
+                    CardInteracRefundStatus.InteracRefundFailure(
+                        CardInteracRefundStatus.RefundStatusErrorType.Generic,
+                        "",
+                        RefundParams(
+                            amount = BigDecimal.TEN,
+                            chargeId = "",
+                            currency = "USD"
+                        )
+                    )
+                )
+                }
+            }
+
+            viewModel.start()
+            val viewState = viewModel.viewStateData.value!!
+
+            assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse
+            assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel").isNull()
+        }
+
+    @Test
+    fun `when interac refund fails, then correct labels, illustration and button are shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow { emit(
+                    CardInteracRefundStatus.InteracRefundFailure(
+                        CardInteracRefundStatus.RefundStatusErrorType.Generic,
+                        "",
+                        RefundParams(
+                            amount = BigDecimal.TEN,
+                            chargeId = "",
+                            currency = "USD"
+                        )
+                    )
+                )
+                }
+            }
+            viewModel.start()
+            val viewState = viewModel.viewStateData.value!!
+
+            assertThat(viewState.headerLabel).describedAs("headerLabel")
+                .isEqualTo(R.string.card_reader_payment_refund_failed_header)
+            assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
+                .isEqualTo("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
+            assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.img_products_error)
+            assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
+                .isEqualTo(R.string.card_reader_payment_refund_failed_header)
+            assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
+                .isEqualTo(R.dimen.major_100)
+            assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()
+            assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel")
+                .isEqualTo(R.string.try_again)
+        }
+
+    @Test
+    fun `when interac refund succeeds, then correct labels, illustration and buttons are shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow { emit(CardInteracRefundStatus.InteracRefundSuccess) }
+            }
+
+            viewModel.start()
+            val viewState = viewModel.viewStateData.value!!
+
+            assertThat(viewState.headerLabel).describedAs("headerLabel")
+                .isEqualTo(R.string.card_reader_payment_completed_refund_header)
+            assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
+                .isEqualTo("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
+            assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.img_celebration)
+            assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel").isNull()
+            assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
+                .isEqualTo(R.dimen.major_275)
+            assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()
+        }
+
+    @Test
+    fun `given interac refund flow already started, when start() is invoked, then flow is not restarted`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow<CardInteracRefundStatus> {}
+            }
+
+            viewModel.start()
+            viewModel.start()
+            viewModel.start()
+            viewModel.start()
+
+            verify(cardReaderManager, times(1))
+                .refundInteracPayment(anyOrNull())
+        }
+
+    //endregion - Interac Refund tests
 
     private suspend fun simulateFetchOrderJobState(inProgress: Boolean) {
         if (inProgress) {

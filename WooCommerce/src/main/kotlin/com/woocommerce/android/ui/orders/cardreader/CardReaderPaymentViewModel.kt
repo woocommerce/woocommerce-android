@@ -85,10 +85,10 @@ class CardReaderPaymentViewModel
     private var refetchOrderJob: Job? = null
 
     fun start() {
-        if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected && paymentFlowJob == null) {
-            if (arguments.isRefund) {
+        if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected) {
+            if (arguments.isRefund && refundFlowJob == null) {
                 initRefundFlow(isRetry = false)
-            } else {
+            } else if (paymentFlowJob == null) {
                 initPaymentFlow(isRetry = false)
             }
         } else {
