@@ -87,7 +87,7 @@ class CardReaderPaymentViewModel
     fun start() {
         if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected && paymentFlowJob == null) {
             if (arguments.isRefund) {
-                initRefundFlow()
+                initRefundFlow(isRetry = false)
             } else {
                 initPaymentFlow(isRetry = false)
             }
@@ -140,9 +140,12 @@ class CardReaderPaymentViewModel
         }
     }
 
-    private fun initRefundFlow() {
+    private fun initRefundFlow(isRetry: Boolean) {
         refundFlowJob = launch {
             viewState.postValue((InteracRefund.RefundLoadingDataState))
+            if (isRetry) {
+                delay(ARTIFICIAL_RETRY_DELAY)
+            }
             fetchOrder()?.let { order ->
                 launch {
                     refundPaymentFlow(cardReaderManager, order)
@@ -162,6 +165,10 @@ class CardReaderPaymentViewModel
                 onPaymentStatusChanged(orderId, billingEmail, paymentStatus, amountLabel)
             }
         }
+    }
+
+    fun retryInteracRefund() {
+        initRefundFlow(isRetry = true)
     }
 
     private suspend fun collectPaymentFlow(cardReaderManager: CardReaderManager, order: Order) {
@@ -217,7 +224,10 @@ class CardReaderPaymentViewModel
         }
     }
 
-    private suspend fun refundPaymentFlow(cardReaderManager: CardReaderManager, order: Order) {
+    private suspend fun refundPaymentFlow(
+        cardReaderManager: CardReaderManager,
+        order: Order
+    ) {
         order.chargeId?.let { chargeId ->
             cardReaderManager.refundInteracPayment(
                 RefundParams(
@@ -228,7 +238,7 @@ class CardReaderPaymentViewModel
             ).collect { refundStatus ->
                 onRefundStatusChanged(refundStatus, order.getAmountLabel())
             }
-        }
+        } ?: triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_error))
     }
 
     private fun onRefundStatusChanged(
@@ -243,10 +253,8 @@ class CardReaderPaymentViewModel
                 viewState.postValue(InteracRefund.RefundSuccessfulState(amountLabel))
                 triggerEvent(InteracRefundSuccessful)
             }
-            is InteracRefundFailure -> viewState.postValue(
-                InteracRefund.FailedRefundState(
-                    amountLabel,
-                    onPrimaryActionClicked = { onBackPressed() })
+            is InteracRefundFailure -> emitFailedInteracRefundState(
+                amountLabel
             )
             CardInteracRefundStatus.WaitingForInput -> {
                 // noop
@@ -276,6 +284,18 @@ class CardReaderPaymentViewModel
 
     private suspend fun fetchOrder(): Order? {
         return orderRepository.fetchOrderById(arguments.orderId)
+    }
+
+    private fun emitFailedInteracRefundState(
+        amountLabel: String
+    ) {
+        WooLog.e(WooLog.T.CARD_READER, "Refund failed")
+        val onRetryClicked = { retryInteracRefund() }
+        viewState.postValue(
+            InteracRefund.FailedRefundState(
+                amountLabel,
+                onPrimaryActionClicked = onRetryClicked)
+        )
     }
 
     private fun emitFailedPaymentState(orderId: Long, billingEmail: String, error: PaymentFailed, amountLabel: String) {

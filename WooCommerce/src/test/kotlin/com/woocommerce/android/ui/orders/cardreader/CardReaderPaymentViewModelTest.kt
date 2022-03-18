@@ -6,12 +6,14 @@ import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages
+import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.*
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.*
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.*
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
+import com.woocommerce.android.cardreader.payments.RefundParams
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
@@ -77,9 +79,19 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         DeclinedByBackendError.AmountTooSmall, mock(), "dummy msg"
     )
 
-    private val savedState: SavedStateHandle = CardReaderPaymentDialogFragmentArgs(ORDER_ID).initSavedStateHandle()
+    private val savedState: SavedStateHandle = CardReaderPaymentDialogFragmentArgs(
+        ORDER_ID,
+        isRefund = false
+    ).initSavedStateHandle()
+
+    private val interacRefundSavedState: SavedStateHandle = CardReaderPaymentDialogFragmentArgs(
+        ORDER_ID,
+        isRefund = true
+    ).initSavedStateHandle()
 
     private val errorMapper: CardReaderPaymentErrorMapper = mock()
+
+    private val mockedOrder = mock<Order>()
 
     @Before
     fun setUp() = coroutinesTestRule.testDispatcher.runBlockingTest {
@@ -98,7 +110,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             dispatchers = coroutinesTestRule.testDispatchers
         )
 
-        val mockedOrder = mock<Order>()
         whenever(orderRepository.getOrderById(any())).thenReturn(mockedOrder)
         whenever(mockedOrder.total).thenReturn(DUMMY_TOTAL)
         whenever(mockedOrder.currency).thenReturn("GBP")
@@ -112,6 +123,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(mockedOrder.orderKey).thenReturn("wc_order_j0LMK3bFhalEL")
         whenever(mockedOrder.number).thenReturn(DUMMY_ORDER_NUMBER)
         whenever(mockedOrder.id).thenReturn(ORDER_ID)
+        whenever(mockedOrder.chargeId).thenReturn("chargeId")
         whenever(orderRepository.fetchOrderById(ORDER_ID)).thenReturn(mockedOrder)
         whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connected(mock())))
         whenever(cardReaderManager.collectPayment(any())).thenAnswer {
@@ -324,6 +336,15 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given interac refund, when payment screen shown, then loading data state is shown`() {
+        setupViewModelForInteracRefund()
+
+        viewModel.start()
+
+        assertThat(viewModel.viewStateData.value).isInstanceOf(InteracRefund.RefundLoadingDataState::class.java)
+    }
+
+    @Test
     fun `when payment not collectable, then flow terminated and snackbar shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(false)
@@ -389,6 +410,20 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value).isInstanceOf(LoadingDataState::class.java)
         }
 
+
+    @Test
+    fun `when initializing interac refund, then ui updated to initializing refund state `() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow { emit(CardInteracRefundStatus.InitializingInteracRefund) }
+            }
+
+            viewModel.start()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(InteracRefund.RefundLoadingDataState::class.java)
+        }
+
     @Test
     fun `when collecting payment, then ui updated to collecting payment state`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
@@ -402,6 +437,19 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when collecting interac refund, then ui updated to collecting refund state`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow { emit(CardInteracRefundStatus.CollectingInteracRefund) }
+            }
+
+            viewModel.start()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(InteracRefund.CollectRefundState::class.java)
+        }
+
+    @Test
     fun `when processing payment, then ui updated to processing payment state`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
@@ -411,6 +459,19 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ProcessingPaymentState::class.java)
+        }
+
+    @Test
+    fun `when processing interac refund, then ui updated to processing refund state`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow { emit(CardInteracRefundStatus.ProcessingInteracRefund) }
+            }
+
+            viewModel.start()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(InteracRefund.ProcessingRefundState::class.java)
         }
 
     @Test
@@ -435,6 +496,19 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(PaymentSuccessfulState::class.java)
+        }
+
+    @Test
+    fun `when interac refund completed, then ui updated to refund successful state`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow { emit(CardInteracRefundStatus.InteracRefundSuccess) }
+            }
+
+            viewModel.start()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(InteracRefund.RefundSuccessfulState::class.java)
         }
 
     @Test
@@ -477,6 +551,40 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(FailedPaymentState::class.java)
+        }
+
+    @Test
+    fun `when interac refund fails, then ui updated to refund failed state`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow { emit(
+                    CardInteracRefundStatus.InteracRefundFailure(
+                        CardInteracRefundStatus.RefundStatusErrorType.Generic,
+                        "",
+                        RefundParams(
+                            amount = BigDecimal.TEN,
+                            chargeId = "",
+                            currency = "USD"
+                        )
+                    )
+                ) }
+            }
+
+            viewModel.start()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(InteracRefund.FailedRefundState::class.java)
+        }
+
+    @Test
+    fun `given chargeId is null, when interac refund initiated, then show snackbar event is triggered`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(mockedOrder.chargeId).thenReturn(null)
+
+            viewModel.start()
+
+            assertThat(viewModel.event.value).isInstanceOf(ShowSnackbar::class.java)
         }
 
     @Test
@@ -1611,5 +1719,22 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             whenever(orderRepository.fetchOrderById(any())).doReturn(mock())
         }
         viewModel.reFetchOrder()
+    }
+
+    private fun setupViewModelForInteracRefund() {
+        viewModel = CardReaderPaymentViewModel(
+            interacRefundSavedState,
+            cardReaderManager = cardReaderManager,
+            orderRepository = orderRepository,
+            resourceProvider = resourceProvider,
+            selectedSite = selectedSite,
+            paymentCollectibilityChecker = paymentCollectibilityChecker,
+            tracker = tracker,
+            appPrefsWrapper = appPrefsWrapper,
+            currencyFormatter = currencyFormatter,
+            errorMapper = errorMapper,
+            wooStore = wooStore,
+            dispatchers = coroutinesTestRule.testDispatchers
+        )
     }
 }
