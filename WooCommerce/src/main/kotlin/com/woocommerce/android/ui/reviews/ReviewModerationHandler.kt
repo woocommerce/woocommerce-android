@@ -26,8 +26,10 @@ class ReviewModerationHandler @Inject constructor(
         const val UNDO_DELAY = 2750L
         @VisibleForTesting
         const val ERROR_SNACKBAR_DELAY = 1000L
+
+        /** This is needed to allow clients to refresh reviews list after success */
         @VisibleForTesting
-        const val DELAY_FOR_REFRESHING = 100L
+        const val SUCCESS_DELAY = 100L
     }
 
     private val _queue = MutableSharedFlow<ReviewModerationRequest>(extraBufferCapacity = Int.MAX_VALUE)
@@ -50,10 +52,12 @@ class ReviewModerationHandler @Inject constructor(
                             "${request.review.remoteId} to status: ${request.newStatus}"
                     )
 
+                    _pendingModerationStatus.update { it + ReviewModerationStatus(request) }
+
+                    // Skip delay for the previous request if there is any
                     if (_skipDelayTrigger.subscriptionCount.value > 0) {
                         _skipDelayTrigger.emit(Unit)
                     }
-                    _pendingModerationStatus.update { it + ReviewModerationStatus(request) }
                 }
                 .launchIn(appCoroutineScope)
 
@@ -164,7 +168,7 @@ class ReviewModerationHandler @Inject constructor(
             updateStatus(ReviewModerationStatus(request, actionStatus = SUCCESS))
 
             // Wait a bit to give clients a chance to reload reviews from DB
-            delay(DELAY_FOR_REFRESHING)
+            delay(SUCCESS_DELAY)
         }
     }
 }
