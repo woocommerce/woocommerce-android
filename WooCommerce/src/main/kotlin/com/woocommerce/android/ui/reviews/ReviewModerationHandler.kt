@@ -97,7 +97,7 @@ class ReviewModerationHandler @Inject constructor(
                 "Submit API call to moderate review ${request.review.remoteId} to status: ${request.newStatus}"
             )
             submitReviewStatusToTheApi(request)
-        } catch (e: CancellationException) {
+        } catch (@Suppress("SwallowedException") e: CancellationException) {
             WooLog.d(
                 T.REVIEWS,
                 "Moderation request is cancelled, revert to previous status"
