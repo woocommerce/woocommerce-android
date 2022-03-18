@@ -29,6 +29,23 @@ android {
                 "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
         ]
     }
+
+    testOptions {
+        unitTests.all {
+            if (name == "testDebugUnitTest") {
+                kover {
+                    disabled = false
+//                    binaryReportFile.set(file("$buildDir/custom/debug-report.bin"))
+//                    includes = ['com.example.*']
+//                    excludes = ['com.example.subpackage.*']
+                }
+            } else {
+                kover{
+                    disabled = true
+                }
+            }
+        }
+    }
 }
 
 dependencies {

@@ -10,12 +10,18 @@ plugins {
     id 'dagger.hilt.android.plugin' apply false
     id 'androidx.navigation.safeargs.kotlin' apply false
     id 'com.google.gms.google-services' apply false
+    id("org.jetbrains.kotlinx.kover") version "0.5.0"
 }
 
 tracks {
     automatticProject.set(TracksExtension.AutomatticProject.WooCommerce)
     enabled.set((findProperty('tracksEnabled') ?: false).toBoolean())
     username.set(findProperty('tracksUsername'))
+}
+
+kover {
+    coverageEngine.set(kotlinx.kover.api.CoverageEngine.JACOCO)
+    jacocoEngineVersion.set("0.8.7")        // change version of JaCoCo agent and reporter
 }
 
 allprojects {
