@@ -46,7 +46,7 @@ class ReviewModerationHandler @Inject constructor(
                 .onEach { request ->
                     WooLog.d(
                         T.REVIEWS,
-                        "Queue moderation request for review " +
+                        "Enqueue moderation request for review " +
                             "${request.review.remoteId} to status: ${request.newStatus}"
                     )
 

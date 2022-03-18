@@ -4,9 +4,10 @@ import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.HOLD
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestCoroutineScope
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -111,22 +112,28 @@ class ReviewModerationHandlerTests : BaseUnitTest() {
         val latestStatus = runTestAndReadStatus {
             handler.postModerationRequest(review, HOLD)
             advanceTimeBy(ReviewModerationHandler.UNDO_DELAY / 2)
-            handler.undoLastOperation()
+            handler.undoOperation(review)
         }
 
         assertThat(latestStatus?.actionStatus).isEqualTo(ActionStatus.SUCCESS)
         assertThat(latestStatus?.review?.status).isEqualTo(review.status)
     }
 
-    private suspend fun CoroutineScope.runTestAndReadStatus(operation: suspend () -> Unit): ReviewModerationStatus? {
-        var latestStatus: ReviewModerationStatus? = null
-        val job = handler.pendingModerationStatus
-            .onEach { latestStatus = it }
-            .launchIn(this)
+    private suspend fun runTestAndReadStatus(operation: suspend () -> Unit) =
+        runTestAndReadStatuses(operation).lastOrNull()
 
-        operation()
+    private suspend fun runTestAndReadStatuses(operation: suspend () -> Unit): List<ReviewModerationStatus> =
+        coroutineScope {
+            val statuses = mutableListOf<ReviewModerationStatus>()
+            val job = handler.pendingModerationStatus
+                .onEach { statuses.addAll(it) }
+                .launchIn(this)
 
-        job.cancel()
-        return latestStatus
-    }
+            launch {
+                operation()
+            }
+
+            job.cancel()
+            return@coroutineScope statuses
+        }
 }
