@@ -16,7 +16,7 @@ sealed class InteracRefund {
         override val onPrimaryActionClicked: (() -> Unit)
     ) : ViewState(
         headerLabel = R.string.card_reader_payment_refund_failed_header,
-        paymentStateLabel = R.string.order_error_fetch_generic,
+        paymentStateLabel = R.string.card_reader_payment_refund_failed_header,
         paymentStateLabelTopMargin = R.dimen.major_100,
         primaryActionLabel = primaryLabel,
         illustration = R.drawable.img_products_error
