@@ -18,26 +18,24 @@ fun ReviewModerationUi.observeModerationStatus(
 
     var changeReviewStatusSnackbar: Snackbar? = null
 
-    reviewModerationViewModel.pendingReviewModerationStatus.observe(viewLifecycleOwner) { status ->
+    reviewModerationViewModel.pendingReviewModerationStatus.observe(viewLifecycleOwner) { statuses ->
         changeReviewStatusSnackbar?.dismiss()
-        when (status.actionStatus) {
-            ActionStatus.PENDING -> {
+        when {
+            statuses.any { it.actionStatus == ActionStatus.ERROR } -> {
+                uiMessageResolver.showSnack(R.string.wc_moderate_review_error)
+                return@observe
+            }
+            statuses.any { it.actionStatus == ActionStatus.PENDING } -> {
+                val status = statuses.first { it.actionStatus == ActionStatus.PENDING }
                 changeReviewStatusSnackbar = uiMessageResolver.getIndefiniteActionSnack(
                     R.string.review_moderation_undo,
                     ProductReviewStatus.getLocalizedLabel(context, status.newStatus)
                         .lowercase(),
                     actionText = getString(R.string.undo),
-                    actionListener = { reviewModerationViewModel.undoModerationRequest() }
+                    actionListener = { reviewModerationViewModel.undoModerationRequest(status.review) }
                 ).also {
                     it.show()
                 }
-            }
-            ActionStatus.ERROR -> {
-                uiMessageResolver.getSnack(R.string.wc_moderate_review_error)
-                    .also { it.show() }
-            }
-            else -> {
-                // NO-OP
             }
         }
     }
