@@ -231,10 +231,9 @@ class ReviewModerationHandlerTests : BaseUnitTest() {
         assertThat(statusList).isSorted
     }
 
-    private suspend fun runTestAndCollectLastStatus(operation: suspend () -> Unit) =
-        runTestAndCollectAllStatuses(operation).last()
-
-    private suspend fun runTestAndReturnLastEmittedStatusList(operation: suspend () -> Unit): List<ReviewModerationStatus>? {
+    private suspend fun runTestAndReturnLastEmittedStatusList(
+        operation: suspend () -> Unit
+    ): List<ReviewModerationStatus>? {
         return coroutineScope {
             var statuses: List<ReviewModerationStatus>? = null
             val job = handler.pendingModerationStatus
@@ -249,6 +248,9 @@ class ReviewModerationHandlerTests : BaseUnitTest() {
             return@coroutineScope statuses
         }
     }
+
+    private suspend fun runTestAndCollectLastStatus(operation: suspend () -> Unit) =
+        runTestAndCollectAllStatuses(operation).last()
 
     private suspend fun runTestAndCollectAllStatuses(operation: suspend () -> Unit): List<ReviewModerationStatus> =
         coroutineScope {
