@@ -46,7 +46,7 @@ fun Fragment.observeModerationStatus(
         }
     }
 
-    lifecycle.addObserver(object : DefaultLifecycleObserver {
+    viewLifecycleOwner.lifecycle.addObserver(object : DefaultLifecycleObserver {
         override fun onDestroy(owner: LifecycleOwner) {
             changeReviewStatusSnackbar?.dismiss()
             changeReviewStatusSnackbar = null
