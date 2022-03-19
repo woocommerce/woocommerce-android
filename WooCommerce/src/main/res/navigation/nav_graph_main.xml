@@ -165,6 +165,9 @@
         <action
             android:id="@+id/action_moreMenuFragment_to_inboxFragment"
             app:destination="@id/inboxFragment" />
+        <action
+            android:id="@+id/action_moreMenu_to_couponListFragment"
+            app:destination="@id/couponListFragment" />
     </fragment>
     <fragment
         android:id="@+id/feedbackSurveyFragment"
@@ -377,5 +380,9 @@
         android:name="com.woocommerce.android.ui.inbox.InboxFragment"
         android:label="InboxFragment"
         tools:layout="@layout/fragment_inbox" />
+    <fragment
+        android:id="@+id/couponListFragment"
+        android:name="com.woocommerce.android.ui.coupons.CouponListFragment"
+        android:label="CouponListFragment" />
 
 </navigation>
