@@ -2,23 +2,28 @@ package com.woocommerce.android.ui.coupons
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import javax.inject.Inject
 
 @HiltViewModel
 class CouponListViewModel @Inject constructor(
-    savedState: SavedStateHandle
+    savedState: SavedStateHandle,
+    private val wooCommerceStore: WooCommerceStore,
+    private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedState) {
     val couponsState = loadCoupons().asLiveData()
 
-    @Suppress("MagicNumber", "UnusedPrivateMember")
-    private fun loadCoupons(): Flow<CouponsState> = flow {
+    @Suppress("MagicNumber")
+    private fun loadCoupons(): Flow<CouponListState> = flow {
         emit(
-            CouponsState(
+            CouponListState(
+                currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode,
                 coupons = listOf(
                     CouponUi(
                         id = 1,
@@ -42,14 +47,13 @@ class CouponListViewModel @Inject constructor(
                         amount = BigDecimal(5),
                         discountType = "fixed_product"
                     ),
-
                 )
             )
         )
     }
-    data class CouponsState(
+    data class CouponListState(
+        val currencyCode: String? = null,
         val isLoading: Boolean = false,
-        val isFeedbackFormDismissed: Boolean = false,
         val coupons: List<CouponUi> = emptyList()
     )
 
