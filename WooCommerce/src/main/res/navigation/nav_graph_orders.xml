@@ -129,9 +129,6 @@
         <argument
             android:name="orderId"
             app:argType="long" />
-        <argument
-            android:name="orderLocalId"
-            app:argType="integer" />
     </fragment>
     <include app:graph="@navigation/nav_graph_refunds" />
     <dialog
@@ -347,9 +344,6 @@
         <argument
             android:name="orderId"
             app:argType="long" />
-        <argument
-            android:name="orderLocalId"
-            app:argType="integer" />
         <argument
             android:name="orderTrackingProvider"
             android:defaultValue="null"

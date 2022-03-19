@@ -32,6 +32,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
     private val currencyFormatter: CurrencyFormatter = mock()
     private val selectedSite: SelectedSite = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
+    private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter = mock()
 
     private lateinit var sut: MyStoreViewModel
 
@@ -339,7 +340,8 @@ class MyStoreViewModelTest : BaseUnitTest() {
             getTopPerformers,
             currencyFormatter,
             selectedSite,
-            appPrefsWrapper
+            appPrefsWrapper,
+            usageTracksEventEmitter
         )
     }
 
