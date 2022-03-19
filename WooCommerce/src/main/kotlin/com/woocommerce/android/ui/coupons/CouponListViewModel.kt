@@ -10,7 +10,7 @@ import java.math.BigDecimal
 import javax.inject.Inject
 
 @HiltViewModel
-class CouponsViewModel @Inject constructor(
+class CouponListViewModel @Inject constructor(
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     val couponsState = loadCoupons().asLiveData()

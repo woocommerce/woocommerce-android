@@ -6,12 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.woocommerce.android.R
-import com.woocommerce.android.databinding.FragmentCouponsBinding
+import com.woocommerce.android.databinding.FragmentCouponListBinding
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
-class CouponsFragment : BaseFragment(R.layout.fragment_coupons) {
-    private var _binding: FragmentCouponsBinding? = null
+class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
+    private var _binding: FragmentCouponListBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -19,7 +19,7 @@ class CouponsFragment : BaseFragment(R.layout.fragment_coupons) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentCouponsBinding.inflate(inflater, container, false)
+        _binding = FragmentCouponListBinding.inflate(inflater, container, false)
 
         val view = binding.root
         binding.couponsComposeView.apply {
