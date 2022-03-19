@@ -19,7 +19,7 @@ class CouponListViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     val couponsState = loadCoupons().asLiveData()
 
-    @Suppress("MagicNumber")
+    @Suppress("MagicNumber", "LongMethod")
     private fun loadCoupons(): Flow<CouponListState> = flow {
         emit(
             CouponListState(
@@ -43,6 +43,52 @@ class CouponListViewModel @Inject constructor(
 
                     CouponUi(
                         id = 3,
+                        code = "BlackFriday",
+                        amount = BigDecimal(5),
+                        discountType = "fixed_product"
+                    ),
+
+                    CouponUi(
+                        id = 4,
+                        code = "FGHIJ",
+                        amount = BigDecimal(25),
+                        discountType = "percent",
+                        includedProductsCount = 5,
+                        includedCategoryCount = 4
+                    ),
+
+                    CouponUi(
+                        id = 5,
+                        code = "20off",
+                        amount = BigDecimal(20),
+                        discountType = "fixed_cart"
+                    ),
+
+                    CouponUi(
+                        id = 6,
+                        code = "BlackFriday",
+                        amount = BigDecimal(5),
+                        discountType = "fixed_product"
+                    ),
+
+                    CouponUi(
+                        id = 7,
+                        code = "KLMNO",
+                        amount = BigDecimal(25),
+                        discountType = "percent",
+                        includedProductsCount = 5,
+                        includedCategoryCount = 4
+                    ),
+
+                    CouponUi(
+                        id = 8,
+                        code = "30off",
+                        amount = BigDecimal(30),
+                        discountType = "fixed_cart"
+                    ),
+
+                    CouponUi(
+                        id = 9,
                         code = "BlackFriday",
                         amount = BigDecimal(5),
                         discountType = "fixed_product"
