@@ -5,10 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import com.google.android.material.composethemeadapter.MdcTheme
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCouponsBinding
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 class CouponsFragment : BaseFragment(R.layout.fragment_coupons) {
     private var _binding: FragmentCouponsBinding? = null
@@ -26,7 +26,7 @@ class CouponsFragment : BaseFragment(R.layout.fragment_coupons) {
             // Dispose of the Composition when the view's LifecycleOwner is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                MdcTheme {
+                WooThemeWithBackground {
                     // todo call coupons component
                 }
             }
