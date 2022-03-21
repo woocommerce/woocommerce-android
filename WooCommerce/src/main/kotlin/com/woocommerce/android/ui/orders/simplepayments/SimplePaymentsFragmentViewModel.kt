@@ -47,21 +47,9 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
     val orderDraft
         get() = order.copy(
             total = viewState.orderTotal,
-            totalTax = viewState.orderTotalTax,
+            taxLines = viewState.orderTaxes,
             customerNote = viewState.customerNote
         )
-
-    // it was decided that both Android and iOS would determine the tax rate by looking at the
-    // first tax line item because there was nowhere else to get the tax rate, and we didn't
-    // want to calculate the tax percentage on the client. although it's possible that there will
-    // be multiple tax lines, the team assumed the first rate would be the one to show (this may
-    // be revisited)
-    val taxRatePercent
-        get() = if (order.taxLines.isNotEmpty() && viewState.chargeTaxes) {
-            order.taxLines[0].ratePercent.toString()
-        } else {
-            EMPTY_TAX_RATE
-        }
 
     // accessing feesLines[0] should be safe to do since a fee line is passed by FluxC when creating the order, but we
     // check for an empty list here to simplify our test. note the single fee line is the only way to get the price w/o
@@ -84,14 +72,14 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
             viewState = viewState.copy(
                 chargeTaxes = true,
                 orderSubtotal = feeLineTotal,
-                orderTotalTax = order.totalTax,
+                orderTaxes = order.taxLines,
                 orderTotal = order.total
             )
         } else {
             viewState = viewState.copy(
                 chargeTaxes = false,
                 orderSubtotal = feeLineTotal,
-                orderTotalTax = BigDecimal.ZERO,
+                orderTaxes = emptyList(),
                 orderTotal = feeLineTotal
             )
         }
@@ -186,7 +174,7 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
     data class ViewState(
         val chargeTaxes: Boolean = false,
         val orderSubtotal: BigDecimal = BigDecimal.ZERO,
-        val orderTotalTax: BigDecimal = BigDecimal.ZERO,
+        val orderTaxes: List<Order.TaxLine> = emptyList(),
         val orderTotal: BigDecimal = BigDecimal.ZERO,
         val customerNote: String = "",
         val billingEmail: String = "",
