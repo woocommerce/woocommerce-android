@@ -16,6 +16,8 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 @Module
 class ExperimentationModule {
+    //Suppress can be removed after the first Experiment is added
+    @Suppress("UnusedPrivateMember")
     @Provides
     @Singleton
     fun provideExperiments(exPlat: ExPlat): Set<Experiment> = setOf()
