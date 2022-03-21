@@ -16,7 +16,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 @Module
 class ExperimentationModule {
-    //Suppress can be removed after the first Experiment is added
+    // TODO Suppress can be removed after the first Experiment is added
     @Suppress("UnusedPrivateMember")
     @Provides
     @Singleton
@@ -36,6 +36,5 @@ class ExperimentationModule {
         appLogWrapper = appLogWrapper,
         coroutineScope = appCoroutineScope,
         isDebug = BuildConfig.DEBUG
-
     )
 }
