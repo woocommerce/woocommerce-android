@@ -7,6 +7,7 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus
+import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.RefundStatusErrorType.DeclinedByBackendError.CardDeclined
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.*
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.*
@@ -90,6 +91,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     ).initSavedStateHandle()
 
     private val errorMapper: CardReaderPaymentErrorMapper = mock()
+    private val interacRefundErrorMapper: CardReaderInteracRefundErrorMapper = mock()
 
     private val mockedOrder = mock<Order>()
 
@@ -106,6 +108,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             appPrefsWrapper = appPrefsWrapper,
             currencyFormatter = currencyFormatter,
             errorMapper = errorMapper,
+            interacRefundErrorMapper = interacRefundErrorMapper,
             wooStore = wooStore,
             dispatchers = coroutinesTestRule.testDispatchers
         )
@@ -1621,6 +1624,186 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     //region - Interac Refund tests
 
     @Test
+    fun `given interac refund shown, when RETRY message received, then refund payment hint updated`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
+                flow {
+                    emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(RETRY_CARD))
+                }
+            }
+
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow { emit(CardInteracRefundStatus.CollectingInteracRefund) }
+            }
+
+            viewModel.start()
+
+            assertThat((viewModel.viewStateData.value as InteracRefund.CollectRefundState).hintLabel)
+                .isEqualTo(R.string.card_reader_payment_retry_card_prompt)
+        }
+
+    @Test
+    fun `given interac refund shown, when INSERT_CARD received, then refund payment hint updated`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
+                flow {
+                    emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(INSERT_CARD))
+                }
+            }
+
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow { emit(CardInteracRefundStatus.CollectingInteracRefund) }
+            }
+
+            viewModel.start()
+
+            assertThat((viewModel.viewStateData.value as InteracRefund.CollectRefundState).hintLabel)
+                .isEqualTo(R.string.card_reader_payment_collect_payment_hint)
+        }
+
+    @Test
+    fun `given interac refund shown, when INSERT_OR_SWIPE_CARD received, then refund payment hint updated`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
+                flow {
+                    emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(INSERT_OR_SWIPE_CARD))
+                }
+            }
+
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow { emit(CardInteracRefundStatus.CollectingInteracRefund) }
+            }
+
+            viewModel.start()
+
+            assertThat((viewModel.viewStateData.value as InteracRefund.CollectRefundState).hintLabel)
+                .isEqualTo(R.string.card_reader_payment_collect_payment_hint)
+        }
+
+    @Test
+    fun `given interac refund shown, when SWIPE_CARD received, then refund payment hint updated`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
+                flow {
+                    emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(SWIPE_CARD))
+                }
+            }
+
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow { emit(CardInteracRefundStatus.CollectingInteracRefund) }
+            }
+
+            viewModel.start()
+
+            assertThat((viewModel.viewStateData.value as InteracRefund.CollectRefundState).hintLabel)
+                .isEqualTo(R.string.card_reader_payment_collect_payment_hint)
+        }
+
+    @Test
+    fun `given interac refund shown, when REMOVE_CARD received, then refund payment hint updated`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
+                flow {
+                    emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(REMOVE_CARD))
+                }
+            }
+
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow { emit(CardInteracRefundStatus.CollectingInteracRefund) }
+            }
+
+            viewModel.start()
+
+            assertThat((viewModel.viewStateData.value as InteracRefund.CollectRefundState).hintLabel)
+                .isEqualTo(R.string.card_reader_payment_remove_card_prompt)
+        }
+
+    @Test
+    fun `given interac refund, when MULTIPLE_CONTACTLESS_CARDS_DETECTED received, then refund payment hint updated`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
+                flow {
+                    emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(MULTIPLE_CONTACTLESS_CARDS_DETECTED))
+                }
+            }
+
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow { emit(CardInteracRefundStatus.CollectingInteracRefund) }
+            }
+
+            viewModel.start()
+
+            assertThat((viewModel.viewStateData.value as InteracRefund.CollectRefundState).hintLabel)
+                .isEqualTo(R.string.card_reader_payment_multiple_contactless_cards_detected_prompt)
+        }
+
+    @Test
+    fun `given interac refund shown, when TRY_ANOTHER_READ_METHOD received, then refund payment hint updated`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
+                flow {
+                    emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(TRY_ANOTHER_READ_METHOD))
+                }
+            }
+
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow { emit(CardInteracRefundStatus.CollectingInteracRefund) }
+            }
+
+            viewModel.start()
+
+            assertThat((viewModel.viewStateData.value as InteracRefund.CollectRefundState).hintLabel)
+                .isEqualTo(R.string.card_reader_payment_try_another_read_method_prompt)
+        }
+
+    @Test
+    fun `given interac refund, when TRY_ANOTHER_CARD received, then refund payment hint updated`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
+                flow {
+                    emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(TRY_ANOTHER_CARD))
+                }
+            }
+
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow { emit(CardInteracRefundStatus.CollectingInteracRefund) }
+            }
+
+            viewModel.start()
+
+            assertThat((viewModel.viewStateData.value as InteracRefund.CollectRefundState).hintLabel)
+                .isEqualTo(R.string.card_reader_payment_try_another_card_prompt)
+        }
+
+    @Test
+    fun `given interac refund, when CHECK_MOBILE_DEVICE received, then refund payment hint updated`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
+                flow {
+                    emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(CHECK_MOBILE_DEVICE))
+                }
+            }
+
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow { emit(CardInteracRefundStatus.CollectingInteracRefund) }
+            }
+
+            viewModel.start()
+
+            assertThat((viewModel.viewStateData.value as InteracRefund.CollectRefundState).hintLabel)
+                .isEqualTo(R.string.card_reader_payment_check_mobile_device_prompt)
+        }
+
+    @Test
     fun `given interac refund, when payment screen shown, then loading data state is shown`() {
         setupViewModelForInteracRefund()
 
@@ -1841,6 +2024,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 )
                 }
             }
+
             viewModel.start()
             val viewState = viewModel.viewStateData.value!!
 
@@ -1856,6 +2040,46 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()
             assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel")
                 .isEqualTo(R.string.try_again)
+        }
+
+    @Test
+    fun `when interac refund fails of non retryable error, then correct labels, illustration and button are shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val nonRetryableError = CardDeclined.InvalidAccount
+            setupViewModelForInteracRefund()
+            whenever(
+                interacRefundErrorMapper.mapPaymentErrorToUiError(CardDeclined.InvalidAccount)
+            ).thenReturn(InteracRefundFlowError.Declined.InvalidAmount)
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow { emit(
+                    CardInteracRefundStatus.InteracRefundFailure(
+                        nonRetryableError,
+                        "",
+                        RefundParams(
+                            amount = BigDecimal.TEN,
+                            chargeId = "",
+                            currency = "CAD"
+                        )
+                    )
+                )
+                }
+            }
+
+            viewModel.start()
+            val viewState = viewModel.viewStateData.value!!
+
+            assertThat(viewState.headerLabel).describedAs("headerLabel")
+                .isEqualTo(R.string.card_reader_payment_refund_failed_header)
+            assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
+                .isEqualTo("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
+            assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.img_products_error)
+            assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
+                .isEqualTo(R.string.card_reader_payment_refund_failed_header)
+            assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
+                .isEqualTo(R.dimen.major_100)
+            assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()
+            assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel")
+                .isEqualTo(R.string.card_reader_refund_failed_ok)
         }
 
     @Test
@@ -1897,6 +2121,38 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 .refundInteracPayment(anyOrNull())
         }
 
+    @Test
+    fun `given user clicks on retry, when interac refund fails, then refundInteracPayment invoked`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(
+                interacRefundErrorMapper.mapPaymentErrorToUiError(
+                    CardInteracRefundStatus.RefundStatusErrorType.Generic
+                )
+            ).thenReturn(InteracRefundFlowError.Generic)
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow { emit(
+                    CardInteracRefundStatus.InteracRefundFailure(
+                        CardInteracRefundStatus.RefundStatusErrorType.Generic,
+                        "",
+                        RefundParams(
+                            amount = BigDecimal.TEN,
+                            chargeId = "",
+                            currency = "CAD"
+                        )
+                    )
+                ) }
+            }
+            viewModel.start()
+
+            (viewModel.viewStateData.value as InteracRefund.FailedRefundState).onPrimaryActionClicked.invoke()
+            advanceUntilIdle()
+
+            // Times 2 because, refundInteracPayment() method gets called when refund is initiated
+            // as well as when the refund is retried.
+            verify(cardReaderManager, times(2)).refundInteracPayment(any())
+        }
+
     //endregion - Interac Refund tests
 
     private suspend fun simulateFetchOrderJobState(inProgress: Boolean) {
@@ -1923,6 +2179,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             appPrefsWrapper = appPrefsWrapper,
             currencyFormatter = currencyFormatter,
             errorMapper = errorMapper,
+            interacRefundErrorMapper = interacRefundErrorMapper,
             wooStore = wooStore,
             dispatchers = coroutinesTestRule.testDispatchers
         )

@@ -69,6 +69,7 @@ class CardReaderPaymentViewModel
     private val tracker: CardReaderTracker,
     private val currencyFormatter: CurrencyFormatter,
     private val errorMapper: CardReaderPaymentErrorMapper,
+    private val interacRefundErrorMapper: CardReaderInteracRefundErrorMapper,
     private val wooStore: WooCommerceStore,
     private val dispatchers: CoroutineDispatchers,
 ) : ScopedViewModel(savedState) {
@@ -100,7 +101,14 @@ class CardReaderPaymentViewModel
         cardReaderManager.displayBluetoothCardReaderMessages.collect { message ->
             when (message) {
                 is BluetoothCardReaderMessages.CardReaderDisplayMessage -> {
-                    handleAdditionalInfo(message.message)
+                    when (arguments.isRefund) {
+                        true -> {
+                            handleAdditionalInfoForInteracRefund(message.message)
+                        }
+                        false -> {
+                            handleAdditionalInfo(message.message)
+                        }
+                    }
                 }
                 is BluetoothCardReaderMessages.CardReaderInputMessage -> { /* no-op*/
                 }
@@ -254,7 +262,8 @@ class CardReaderPaymentViewModel
                 triggerEvent(InteracRefundSuccessful)
             }
             is InteracRefundFailure -> emitFailedInteracRefundState(
-                amountLabel
+                amountLabel,
+                refundStatus.type
             )
             CardInteracRefundStatus.WaitingForInput -> {
                 // noop
@@ -287,15 +296,28 @@ class CardReaderPaymentViewModel
     }
 
     private fun emitFailedInteracRefundState(
-        amountLabel: String
+        amountLabel: String,
+        type: CardInteracRefundStatus.RefundStatusErrorType
     ) {
         WooLog.e(WooLog.T.CARD_READER, "Refund failed")
         val onRetryClicked = { retryInteracRefund() }
-        viewState.postValue(
-            InteracRefund.FailedRefundState(
-                amountLabel,
-                onPrimaryActionClicked = onRetryClicked)
-        )
+        val errorType = interacRefundErrorMapper.mapPaymentErrorToUiError(type)
+        if (errorType is InteracRefundFlowError.NonRetryableError) {
+            viewState.postValue(
+                InteracRefund.FailedRefundState(
+                    amountLabel,
+                    R.string.card_reader_refund_failed_ok,
+                    onPrimaryActionClicked = { onBackPressed() }
+                )
+            )
+        } else {
+            viewState.postValue(
+                InteracRefund.FailedRefundState(
+                    amountLabel,
+                    onPrimaryActionClicked = onRetryClicked
+                )
+            )
+        }
     }
 
     private fun emitFailedPaymentState(orderId: Long, billingEmail: String, error: PaymentFailed, amountLabel: String) {
@@ -345,6 +367,25 @@ class CardReaderPaymentViewModel
     private fun handleAdditionalInfo(type: AdditionalInfoType) {
         (viewState.value as? CollectPaymentState)?.let { collectPaymentState ->
             viewState.value = collectPaymentState.copy(
+                hintLabel = when (type) {
+                    RETRY_CARD -> R.string.card_reader_payment_retry_card_prompt
+                    INSERT_CARD, INSERT_OR_SWIPE_CARD, SWIPE_CARD -> R.string.card_reader_payment_collect_payment_hint
+                    REMOVE_CARD -> R.string.card_reader_payment_remove_card_prompt
+                    MULTIPLE_CONTACTLESS_CARDS_DETECTED ->
+                        R.string.card_reader_payment_multiple_contactless_cards_detected_prompt
+                    TRY_ANOTHER_READ_METHOD -> R.string.card_reader_payment_try_another_read_method_prompt
+                    TRY_ANOTHER_CARD -> R.string.card_reader_payment_try_another_card_prompt
+                    CHECK_MOBILE_DEVICE -> R.string.card_reader_payment_check_mobile_device_prompt
+                }
+            )
+        } ?: run {
+            WooLog.e(WooLog.T.CARD_READER, "Got SDK message when cardReaderPaymentViewModel is in ${viewState.value}")
+        }
+    }
+
+    private fun handleAdditionalInfoForInteracRefund(type: AdditionalInfoType) {
+        (viewState.value as? InteracRefund.CollectRefundState)?.let { collectRefundState ->
+            viewState.value = collectRefundState.copy(
                 hintLabel = when (type) {
                     RETRY_CARD -> R.string.card_reader_payment_retry_card_prompt
                     INSERT_CARD, INSERT_OR_SWIPE_CARD, SWIPE_CARD -> R.string.card_reader_payment_collect_payment_hint
