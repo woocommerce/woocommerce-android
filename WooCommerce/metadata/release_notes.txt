@@ -1,3 +1,3 @@
-This release contains a helpful feature for merchants looking to record a quick monetary transaction that we call simple payments. Quickly take an in-person credit card payment or send your customer a payment link to your site!
+Did you know we’ve released a beta feature for creating orders? Head to the Menu tab, tap the settings icon, and scroll to beta features. We just added fees and shipping costs!
 
-You’ll also see we changed the tabs a bit and added a “More” tab. Store settings and a few other things were moved there to prepare for more features!
+We fixed a rare issue where sometimes the notes for an order appeared incorrectly. Thanks for letting us know!

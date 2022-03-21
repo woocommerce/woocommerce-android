@@ -1,2 +1,0 @@
-8.5:
-Uygulamada sipariş oluşturmak istediniz. Test etmemize yardımcı olmak isterseniz, bir ön incelemeye hazır olduğumuzu söylemekten memnuniyet duyuyoruz! Uygulamada ayarlara gidin ve Sipariş Oluşturma için beta özelliğini açın. Şu anda ürün, not ve adres ekleyebilirsiniz; gelecekteki sürümlerde ise ek işlevler olacaktır.

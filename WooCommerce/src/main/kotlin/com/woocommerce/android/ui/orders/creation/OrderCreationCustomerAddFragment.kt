@@ -18,6 +18,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.creation.views.bindEditFields
 import com.woocommerce.android.ui.orders.creation.views.update
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
@@ -27,7 +28,9 @@ import com.woocommerce.android.ui.orders.details.editing.address.AddressViewMode
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.AddressType.SHIPPING
 import com.woocommerce.android.ui.orders.details.editing.address.LocationCode
 import com.woocommerce.android.ui.searchfilter.SearchFilterItem
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation_edit_customer_address) {
@@ -46,6 +49,8 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
     private var billingBinding: LayoutAddressFormBinding? = null
     private var showShippingAddressFormSwitch: LayoutAddressSwitchBinding? = null
     private var doneMenuItem: MenuItem? = null
+
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -92,8 +97,8 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
                 }
             }
         }
-        addressViewModel.shouldShowDoneButton.observe(viewLifecycleOwner) { shouldShowDoneButton: Boolean ->
-            doneMenuItem?.isVisible = shouldShowDoneButton
+        addressViewModel.shouldEnableDoneButton.observe(viewLifecycleOwner) { shouldShowDoneButton: Boolean ->
+            doneMenuItem?.isEnabled = shouldShowDoneButton
         }
         addressViewModel.isDifferentShippingAddressChecked.observe(viewLifecycleOwner) { checked ->
             updateShippingBindingVisibility(checked)
@@ -105,6 +110,7 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
             when (event) {
                 is ShowStateSelector -> showStateSearchScreen(event.type, event.states)
                 is ShowCountrySelector -> showCountrySearchScreen(event.type, event.countries)
+                is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is Exit -> {
                     sharedViewModel.onCustomerAddressEdited(
                         billingAddress = event.addresses.getValue(BILLING),
@@ -241,7 +247,7 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
         menu.clear()
         inflater.inflate(R.menu.menu_done, menu)
         doneMenuItem = menu.findItem(R.id.menu_done).apply {
-            isVisible = addressViewModel.isAnyAddressEdited.value ?: false
+            isEnabled = addressViewModel.shouldEnableDoneButton.value ?: false
         }
     }
 

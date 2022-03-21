@@ -9,36 +9,29 @@ import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_CA
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_CONFIRMATION
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_PAYMENT_METHOD
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus.SUCCEEDED
-import com.stripe.stripeterminal.external.models.TerminalException
+import com.stripe.stripeterminal.external.models.PaymentMethodDetails
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.internal.payments.actions.CancelPaymentAction
-import com.woocommerce.android.cardreader.internal.payments.actions.CollectInteracRefundAction
-import com.woocommerce.android.cardreader.internal.payments.actions.CollectInteracRefundAction.CollectInteracRefundStatus.*
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus
-import com.woocommerce.android.cardreader.internal.payments.actions.ProcessInteracRefundAction
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction.ProcessPaymentStatus
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
-import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.CollectingInteracRefund
-import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.InitializingInteracRefund
-import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.InteracRefundFailure
-import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.InteracRefundSuccess
-import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.ProcessingInteracRefund
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CapturingPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CollectingPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.InitializingPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentCompleted
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentFailed
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentMethodType
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPayment
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPaymentCompleted
 import com.woocommerce.android.cardreader.payments.PaymentInfo
-import com.woocommerce.android.cardreader.payments.RefundParams
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -96,6 +89,7 @@ class PaymentManagerTest {
         InitializingPayment::class,
         CollectingPayment::class,
         ProcessingPayment::class,
+        ProcessingPaymentCompleted::class,
         CapturingPayment::class,
         PaymentCompleted::class
     )
@@ -129,7 +123,7 @@ class PaymentManagerTest {
 
         whenever(cardReaderStore.capturePaymentIntent(any(), anyString()))
             .thenReturn(CapturePaymentResponse.Successful.Success)
-        whenever(paymentErrorMapper.mapTerminalError(anyOrNull(), anyOrNull<TerminalException>()))
+        whenever(paymentErrorMapper.mapTerminalError(anyOrNull(), anyOrNull()))
             .thenReturn(PaymentFailed(CardPaymentStatusErrorType.Generic, null, ""))
         whenever(paymentErrorMapper.mapCapturePaymentError(anyOrNull(), anyOrNull()))
             .thenReturn(PaymentFailed(CardPaymentStatusErrorType.Generic, null, ""))
@@ -375,6 +369,59 @@ class PaymentManagerTest {
             verify(cardReaderStore, never()).capturePaymentIntent(any(), anyString())
         }
 
+    @Test
+    fun `given processing payment suc with card present, when processing, then ProcessingPaymentCompleted emitted`() =
+        runBlockingTest {
+            val intent = createPaymentIntent(REQUIRES_CAPTURE)
+            val paymentsMethodDetails = mock<PaymentMethodDetails> {
+                on { cardPresentDetails }.thenReturn(mock())
+            }
+
+            val charge = mock<Charge> {
+                on { paymentMethodDetails }.thenReturn(paymentsMethodDetails)
+            }
+            val charges = listOf(charge)
+            whenever(intent.getCharges()).thenReturn(charges)
+            whenever(processPaymentAction.processPayment(anyOrNull()))
+                .thenReturn(flow { emit(ProcessPaymentStatus.Success(intent)) })
+
+            val result = manager.acceptPayment(createPaymentInfo()).toList()
+
+            assertThat(result).contains(ProcessingPaymentCompleted(PaymentMethodType.CARD_PRESENT))
+        }
+
+    @Test
+    fun `given processing payment suc with interact pres, when processing, then ProcessingPaymentCompleted emitted`() =
+        runBlockingTest {
+            val intent = createPaymentIntent(REQUIRES_CAPTURE)
+            val paymentsMethodDetails = mock<PaymentMethodDetails> {
+                on { interacPresentDetails }.thenReturn(mock())
+            }
+
+            val charge = mock<Charge> {
+                on { paymentMethodDetails }.thenReturn(paymentsMethodDetails)
+            }
+            val charges = listOf(charge)
+            whenever(intent.getCharges()).thenReturn(charges)
+            whenever(processPaymentAction.processPayment(anyOrNull()))
+                .thenReturn(flow { emit(ProcessPaymentStatus.Success(intent)) })
+
+            val result = manager.acceptPayment(createPaymentInfo()).toList()
+
+            assertThat(result).contains(ProcessingPaymentCompleted(PaymentMethodType.INTERAC_PRESENT))
+        }
+
+    @Test
+    fun `given processing payment suc with unknown, when processing, then ProcessingPaymentCompleted emitted`() =
+        runBlockingTest {
+            whenever(processPaymentAction.processPayment(anyOrNull()))
+                .thenReturn(flow { emit(ProcessPaymentStatus.Success(createPaymentIntent(REQUIRES_CAPTURE))) })
+
+            val result = manager.acceptPayment(createPaymentInfo()).toList()
+
+            assertThat(result).contains(ProcessingPaymentCompleted(PaymentMethodType.UNKNOWN))
+        }
+
     // END - Processing Payment
     // BEGIN - Capturing Payment
     @Test
@@ -559,10 +606,6 @@ class PaymentManagerTest {
         }
     // END - Cancel
 
-
-    // BEGIN - Interac Refund
-
-
     private fun createPaymentIntent(
         status: PaymentIntentStatus,
         receiptUrl: String? = "test url",
@@ -591,8 +634,6 @@ class PaymentManagerTest {
                 }
             }
             .map { it.value }
-
-
 
     private fun createPaymentInfo(
         paymentDescription: String = DUMMY_PAYMENT_DESCRIPTION,

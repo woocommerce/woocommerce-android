@@ -20,14 +20,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/order_creation_shipping_amount"
+                android:imeOptions="flagNoFullscreen"
                 app:supportsEmptyState="false"
-                app:supportsNegativeValues="false" />
+                app:supportsNegativeValues="true" />
 
             <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
                 android:id="@+id/nameEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/order_creation_shipping_name"
+                android:imeOptions="flagNoFullscreen"
                 android:inputType="text" />
         </com.woocommerce.android.widgets.WCElevatedLinearLayout>
 

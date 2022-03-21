@@ -10,28 +10,6 @@
     <View style="@style/Woo.Divider" />
 
     <!--
-        Primary store
-    -->
-    <com.woocommerce.android.ui.prefs.WCSettingsCategoryHeaderView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/settings_selected_store" />
-
-    <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-        android:id="@+id/option_store"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:optionTitle="testwooshop.mystagingwebsite.com"
-        tools:optionValue="Woo Tester" />
-
-    <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-        android:id="@+id/option_switch_store"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:optionTitle="@string/settings_switch_store" />
-
-    <View style="@style/Woo.Divider" />
-    <!--
         Help & support
     -->
     <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView

@@ -7,8 +7,8 @@ import com.woocommerce.android.cardreader.connection.SpecificReader
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
 import com.woocommerce.android.cardreader.internal.connection.TerminalListenerImpl
 import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManager
-import com.woocommerce.android.cardreader.internal.payments.PaymentManager
 import com.woocommerce.android.cardreader.internal.payments.InteracRefundManager
+import com.woocommerce.android.cardreader.internal.payments.PaymentManager
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalApplicationDelegateWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import com.woocommerce.android.cardreader.payments.RefundParams
@@ -199,10 +199,6 @@ class CardReaderManagerImplTest {
 
             verify(connectionManager).resetBluetoothCardReaderDisplayMessage()
         }
-
-    /*************************************************************************************
-        Interac Refund tests
-     *************************************************************************************/
 
     @Test
     fun `given terminal not initialized when interac refund, then exception is thrown`() {

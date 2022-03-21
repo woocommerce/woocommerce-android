@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-02-16 12:54:07+0000
+Translation-Revision-Date: 2022-03-03 22:41:31+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
@@ -351,6 +351,7 @@ Language: tr
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">WooCommerce Payments uzantısının eski sürümü mağazanızda yüklü. Şahsen Ödemeleri kabul etmek için lütfen güncelleyin.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">WooCommerce Payments\'ı Güncelleyin</string>
     <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Yenile</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">Çok az kaldı! Şahsen Ödemeleri kabul etmeye başlamak için lütfen WooCommerce Paymenst kurulumunu tamamlayın.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">Mağaza yönetici bölümünüzde WooCommerce Payments kurulumunu tamamlayın</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Etkinleştirdikten sonra yenileyin</string>
     <string name="card_reader_onboarding_wcpay_not_activated_hint">WooCommerce Payments uzantısı mağazanıza yüklendi ancak etkinleştirilmedi. Şahsen Ödemeleri kabul etmek için lütfen etkinleştirin.</string>
