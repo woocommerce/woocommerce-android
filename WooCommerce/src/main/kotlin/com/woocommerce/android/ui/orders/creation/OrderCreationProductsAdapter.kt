@@ -65,6 +65,7 @@ class OrderCreationProductsAdapter(
             binding.productName.text = productModel.item.name
             binding.stepperView.apply {
                 value = productModel.item.quantity.toInt()
+                contentDescription = context.getString(R.string.count, value.toString())
             }
 
             binding.productAttributes.text = buildString {
@@ -86,8 +87,11 @@ class OrderCreationProductsAdapter(
                 append(currencyFormatter(productModel.item.total).replace(" ", "\u00A0"))
             }
 
-            binding.productSku.text =
+            binding.productSku.text = if (productModel.item.sku.isNotEmpty()) {
                 context.getString(R.string.orderdetail_product_lineitem_sku_value, productModel.item.sku)
+            } else {
+                context.getString(R.string.no_sku)
+            }
 
             val imageSize = context.resources.getDimensionPixelSize(R.dimen.image_major_50)
             PhotonUtils.getPhotonImageUrl(productModel.imageUrl, imageSize, imageSize)?.let { imageUrl ->

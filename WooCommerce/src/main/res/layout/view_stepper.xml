@@ -14,7 +14,7 @@
         style="@style/Woo.Button.Icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="@string/minus"
+        android:contentDescription="@string/minus_one"
         app:icon="@drawable/ic_gridicons_minus" />
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -33,6 +33,6 @@
         style="@style/Woo.Button.Icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="@string/plus"
+        android:contentDescription="@string/plus_one"
         app:icon="@drawable/ic_add" />
 </merge>

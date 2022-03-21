@@ -99,7 +99,6 @@
         android:layout_height="wrap_content"
         android:clickable="true"
         android:focusable="true"
-        android:importantForAccessibility="no"
         android:text="@string/orderdetail_show_billing"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
