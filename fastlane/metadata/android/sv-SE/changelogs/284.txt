@@ -1,4 +1,0 @@
-8.6:
-Den här versionen innehåller en användbar funktion för handlare som vill registrera en snabb monetär transaktion. Vi kallar funktionen Enkla betalningar. Ta snabbt emot en personlig kreditkortsbetalning eller skicka din kund en betalningslänk till din webbplats!
-
-Du kommer också att märka att vi har ändrat flikarna en aning, samt lagt till en "Mer"-flik. Butiksinställningarna och ett par andra saker har flyttats dit för att ge plats för ännu fler funktioner!

@@ -1,0 +1,4 @@
+8.7:
+Visste du att vi har lanserat en betafunktion för att skapa beställningar? Gå till fliken Meny, tryck på inställningsikonen och bläddra till Betafunktioner. Vi har precis lagt till avgifter och fraktkostnader.
+
+Vi har åtgärdat ett sällsynt problem som gjorde att anteckningarna för en beställning ibland kunde visas felaktigt. Tack för att du berättar!
