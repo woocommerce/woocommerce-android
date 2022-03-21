@@ -55,7 +55,7 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
     // check for an empty list here to simplify our test. note the single fee line is the only way to get the price w/o
     // taxes, and FluxC sets the tax status to "taxable" so when the order is created core automatically sets the total
     // tax if the store has taxes enabled.
-    val feeLineTotal
+    val feeLineTotal:BigDecimal
         get() = if (order.feesLines.isNotEmpty()) {
             order.feesLines[0].total
         } else {

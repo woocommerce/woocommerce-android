@@ -86,22 +86,19 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
     }
 
     private fun setupObservers(binding: FragmentSimplePaymentsBinding) {
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            { event ->
-                when (event) {
-                    is MultiLiveEvent.Event.ShowSnackbar -> {
-                        uiMessageResolver.showSnack(event.message)
-                    }
-                    is SimplePaymentsFragmentViewModel.ShowCustomerNoteEditor -> {
-                        showCustomerNoteEditor()
-                    }
-                    is SimplePaymentsFragmentViewModel.ShowTakePaymentScreen -> {
-                        showTakePaymentScreen()
-                    }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is MultiLiveEvent.Event.ShowSnackbar -> {
+                    uiMessageResolver.showSnack(event.message)
+                }
+                is SimplePaymentsFragmentViewModel.ShowCustomerNoteEditor -> {
+                    showCustomerNoteEditor()
+                }
+                is SimplePaymentsFragmentViewModel.ShowTakePaymentScreen -> {
+                    showTakePaymentScreen()
                 }
             }
-        )
+        }
 
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.orderSubtotal.takeIfNotEqualTo(old?.orderSubtotal) { subtotal ->
