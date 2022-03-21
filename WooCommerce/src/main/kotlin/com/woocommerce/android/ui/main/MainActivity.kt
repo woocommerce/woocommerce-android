@@ -33,7 +33,6 @@ import com.woocommerce.android.R.dimen
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ActivityMainBinding
-import com.woocommerce.android.experimentation.experiment.TestExperiment
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
