@@ -21,10 +21,7 @@ import com.woocommerce.android.R.attr
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentMyStoreBinding
-import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.setClickableText
-import com.woocommerce.android.extensions.startHelpActivity
-import com.woocommerce.android.extensions.verticalOffsetChanges
+import com.woocommerce.android.extensions.*
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
@@ -39,13 +36,17 @@ import com.woocommerce.android.util.*
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.NetworkUtils
-import java.util.Calendar
+import java.util.*
 import javax.inject.Inject
 import kotlin.math.abs
 
+@ExperimentalCoroutinesApi
 @AndroidEntryPoint
 @Suppress("ForbiddenComment")
 class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
@@ -138,6 +139,10 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         prepareJetpackBenefitsBanner()
 
         tabLayout.addOnTabSelectedListener(tabSelectedListener)
+
+        binding.statsScrollView.scrollStartEvents()
+            .onEach { usageTracksEventEmitter.interacted() }
+            .launchIn(viewLifecycleOwner.lifecycleScope)
 
         setupStateObservers()
     }

@@ -44,6 +44,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:minHeight="@dimen/top_performer_min_height"
+            android:nestedScrollingEnabled="false"
             tools:listitem="@layout/top_performers_list_item" />
 
         <ImageView

@@ -13,7 +13,7 @@
         android:layout_gravity="center"
         android:layout_marginStart="@dimen/major_100"
         android:layout_marginTop="@dimen/minor_100"
-        android:contentDescription="@string/orderdetail_product_image_contentdesc"
+        android:importantForAccessibility="no"
         android:scaleType="centerCrop"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

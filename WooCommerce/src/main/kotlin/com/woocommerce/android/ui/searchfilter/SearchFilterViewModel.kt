@@ -34,11 +34,12 @@ class SearchFilterViewModel @Inject constructor() : ViewModel() {
     }
 
     fun onSearch(searchQuery: String) {
-        val searchedItems = allSearchFilterItems.filter { it.name.contains(searchQuery, true) }
+        val trimmedQuery = searchQuery.trim()
+        val searchedItems = allSearchFilterItems.filter { it.name.contains(trimmedQuery, true) }
         val state = if (searchedItems.isNotEmpty()) {
             Search(searchedItems)
         } else {
-            Empty(searchQuery)
+            Empty(trimmedQuery)
         }
         _viewStateLiveData.value = state
     }
