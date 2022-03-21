@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-02-15 09:54:03+0000
+Translation-Revision-Date: 2022-03-03 22:43:13+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
@@ -351,6 +351,7 @@ Language: ko_KR
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">WooCommerce 결제 확장 기능의 오래된 버전이 스토어에 설치되어 있습니다. 대면 결제를 수락하려면 해당 확장 기능을 업데이트하세요.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">WooCommerce 결제 업데이트</string>
     <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">새로 고침</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_hint">거의 완료되었습니다! 대면 결제 수락을 시작하려면 WooCommerce 결제 설정을 마무리하세요.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">스토어 관리자에서 WooCommerce 결제 설정 마무리</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">활성화 후 새로 고침</string>
     <string name="card_reader_onboarding_wcpay_not_activated_hint">WooCommerce 결제 확장 기능이 스토어에 설치되어 있지만 활성화되지 않았습니다. 대면 결제를 수락하려면 해당 확장 기능을 활성화하세요.</string>

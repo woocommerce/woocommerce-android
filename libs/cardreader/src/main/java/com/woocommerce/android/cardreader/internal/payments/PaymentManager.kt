@@ -148,7 +148,11 @@ internal class PaymentManager(
         processPaymentAction.processPayment(paymentIntent).collect {
             when (it) {
                 is ProcessPaymentStatus.Failure -> emit(errorMapper.mapTerminalError(paymentIntent, it.exception))
-                is ProcessPaymentStatus.Success -> result = it.paymentIntent
+                is ProcessPaymentStatus.Success -> {
+                    val paymentMethodType = determinePaymentMethodType(it)
+                    emit(ProcessingPaymentCompleted(paymentMethodType))
+                    result = it.paymentIntent
+                }
             }
         }
         return result
@@ -186,6 +190,15 @@ internal class PaymentManager(
     private suspend fun enrichPaymentInfoWithCustomerId(paymentInfo: PaymentInfo): PaymentInfo {
         val customerId = cardReaderStore.fetchCustomerIdByOrderId(paymentInfo.orderId)
         return paymentInfo.copy(customerId = customerId)
+    }
+
+    private fun determinePaymentMethodType(status: ProcessPaymentStatus.Success): PaymentMethodType {
+        val charge = status.paymentIntent.getCharges().firstOrNull()
+        return when {
+            charge?.paymentMethodDetails?.interacPresentDetails != null -> PaymentMethodType.INTERAC_PRESENT
+            charge?.paymentMethodDetails?.cardPresentDetails != null -> PaymentMethodType.CARD_PRESENT
+            else -> PaymentMethodType.UNKNOWN
+        }
     }
 }
 

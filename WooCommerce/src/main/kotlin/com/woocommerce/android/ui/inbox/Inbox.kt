@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.inbox
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -10,13 +12,19 @@ import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.animations.skeletonAnimationBrush
 import com.woocommerce.android.ui.inbox.InboxViewModel.InboxNoteUi
 import com.woocommerce.android.ui.inbox.InboxViewModel.InboxState
 
@@ -28,11 +36,45 @@ fun Inbox(viewModel: InboxViewModel) {
 
 @Composable
 fun Inbox(state: InboxState) {
-    InboxNotesList(notes = state.notes)
+    when {
+        state.isLoading -> InboxSkeleton()
+        state.notes.isEmpty() -> InboxEmptyCase()
+        state.notes.isNotEmpty() -> InboxNotes(notes = state.notes)
+    }
 }
 
 @Composable
-fun InboxNotesList(notes: List<InboxNoteUi>) {
+fun InboxEmptyCase() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 32.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = stringResource(id = R.string.empty_inbox_title),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.h6,
+            modifier = Modifier.padding(start = 24.dp, end = 24.dp)
+        )
+        Spacer(Modifier.size(54.dp))
+        Image(
+            painter = painterResource(id = R.drawable.img_empty_inbox),
+            contentDescription = null,
+        )
+        Spacer(Modifier.size(48.dp))
+        Text(
+            text = stringResource(id = R.string.empty_inbox_description),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.body1,
+            modifier = Modifier.padding(start = 24.dp, end = 24.dp)
+        )
+    }
+}
+
+@Composable
+fun InboxNotes(notes: List<InboxNoteUi>) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
@@ -74,7 +116,7 @@ fun InboxNoteRow(note: InboxNoteUi) {
             ) {
                 Text(
                     text = note.callToActionText.uppercase(),
-                    color = colorResource(id = R.color.color_secondary)
+                    color = MaterialTheme.colors.secondary
                 )
             }
 
@@ -91,6 +133,98 @@ fun InboxNoteRow(note: InboxNoteUi) {
     }
 }
 
+@Composable
+@Suppress("MagicNumber")
+fun InboxSkeleton() {
+    val numberOfInboxSkeletonRows = 4
+    LazyColumn {
+        repeat(numberOfInboxSkeletonRows) {
+            item {
+                InboxNoteItemSkeleton(brush = skeletonAnimationBrush())
+                Divider(
+                    color = colorResource(id = R.color.divider_color),
+                    thickness = 1.dp
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun InboxNoteItemSkeleton(
+    brush: Brush
+) {
+    Column(modifier = Modifier.padding(16.dp)) {
+        InboxNoteHeaderSkeleton(brush)
+        Spacer(modifier = Modifier.padding(top = 16.dp))
+        InboxNoteContentRowsSkeleton(brush)
+        Spacer(modifier = Modifier.padding(top = 14.dp))
+        InboxNoteButtonsSkeleton(brush)
+    }
+}
+
+@Composable
+private fun InboxNoteHeaderSkeleton(brush: Brush) {
+    Spacer(
+        modifier = Modifier
+            .width(96.dp)
+            .height(16.dp)
+            .background(brush = brush)
+    )
+    Spacer(modifier = Modifier.padding(top = 20.dp))
+    Spacer(
+        modifier = Modifier
+            .width(190.dp)
+            .height(16.dp)
+            .background(brush = brush)
+    )
+}
+
+@Composable
+private fun InboxNoteContentRowsSkeleton(brush: Brush) {
+    Spacer(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(16.dp)
+            .background(brush = brush)
+    )
+    Spacer(modifier = Modifier.padding(top = 6.dp))
+    Spacer(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(16.dp)
+            .background(brush = brush)
+    )
+    Spacer(modifier = Modifier.padding(top = 6.dp))
+    Spacer(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(16.dp)
+            .background(brush = brush)
+    )
+}
+
+@Composable
+private fun InboxNoteButtonsSkeleton(brush: Brush) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Spacer(
+            modifier = Modifier
+                .width(150.dp)
+                .height(16.dp)
+                .background(brush = brush)
+        )
+        Spacer(
+            modifier = Modifier
+                .width(60.dp)
+                .height(16.dp)
+                .background(brush = brush)
+        )
+    }
+}
+
 @Preview
 @Composable
 fun InboxPreview(@PreviewParameter(SampleInboxProvider::class, 1) state: InboxState) {
@@ -101,8 +235,6 @@ class SampleInboxProvider : PreviewParameterProvider<InboxState> {
     override val values = sequenceOf(
         InboxState(
             isLoading = false,
-            isEmpty = false,
-            isError = false,
             notes = listOf(
                 InboxNoteUi(
                     id = "1",

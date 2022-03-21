@@ -6,6 +6,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -17,7 +18,12 @@ class InboxViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     val inboxState = loadInboxNotes().asLiveData()
 
+    @Suppress("MagicNumber", "LongMethod")
     private fun loadInboxNotes(): Flow<InboxState> = flow {
+        emit(InboxState(isLoading = true))
+        delay(2000)
+        emit(InboxState(isLoading = false, notes = emptyList()))
+        delay(2000)
         emit(
             InboxState(
                 notes = listOf(
@@ -76,8 +82,6 @@ class InboxViewModel @Inject constructor(
 
     data class InboxState(
         val isLoading: Boolean = false,
-        val isEmpty: Boolean = false,
-        val isError: Boolean = false,
         val notes: List<InboxNoteUi> = emptyList()
     )
 

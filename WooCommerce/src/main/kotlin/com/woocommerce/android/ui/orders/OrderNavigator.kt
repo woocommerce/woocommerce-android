@@ -63,10 +63,7 @@ class OrderNavigator @Inject constructor() {
             }
             is ViewOrderFulfillInfo -> {
                 val action = OrderDetailFragmentDirections
-                    .actionOrderDetailFragmentToOrderFulfillFragment(
-                        orderId = target.orderId,
-                        orderLocalId = target.localOrderId
-                    )
+                    .actionOrderDetailFragmentToOrderFulfillFragment(orderId = target.orderId)
                 fragment.findNavController().navigateSafely(action)
             }
             is RefundShippingLabel -> {
@@ -80,7 +77,6 @@ class OrderNavigator @Inject constructor() {
                 val action = OrderDetailFragmentDirections
                     .actionGlobalAddOrderShipmentTrackingFragment(
                         orderId = target.orderId,
-                        orderLocalId = target.orderLocalId,
                         orderTrackingProvider = target.orderTrackingProvider,
                         isCustomProvider = target.isCustomProvider,
                     )

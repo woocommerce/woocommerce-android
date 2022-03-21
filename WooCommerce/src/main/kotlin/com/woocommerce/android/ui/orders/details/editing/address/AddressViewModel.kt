@@ -5,9 +5,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.map
+import com.woocommerce.android.R
 import com.woocommerce.android.model.*
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.StateSpinnerStatus.*
+import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -49,13 +51,14 @@ class AddressViewModel @Inject constructor(
     private var initialState = emptyMap<AddressType, Address>()
 
     val isAnyAddressEdited: LiveData<Boolean> = viewStateData.liveData.map { viewState ->
-        viewState.addressSelectionStates.mapValues { it.value.address } != initialState
+        viewState.addressSelectionStates.isNotEmpty() &&
+            viewState.addressSelectionStates.mapValues { it.value.address } != initialState
     }
 
     private val _isDifferentShippingAddressChecked = MutableLiveData<Boolean>()
     val isDifferentShippingAddressChecked: LiveData<Boolean> = _isDifferentShippingAddressChecked
 
-    val shouldShowDoneButton = isAnyAddressEdited.combineWith(
+    val shouldEnableDoneButton = isAnyAddressEdited.combineWith(
         isDifferentShippingAddressChecked,
         viewStateData.liveData.map { it.addressSelectionStates[AddressType.SHIPPING]?.address }
     ) { isAnyAddressEdited, isDifferentShippingAddressChecked, shippingAddress ->
@@ -174,6 +177,14 @@ class AddressViewModel @Inject constructor(
     }
 
     fun onDoneSelected(addDifferentShippingChecked: Boolean? = null) {
+        // order creation/editing will fail if billing email address is invalid
+        viewState.addressSelectionStates.get(AddressType.BILLING)?.address?.email?.let { billingEmail ->
+            if (billingEmail.isNotEmpty() && !StringUtils.isValidEmail(billingEmail)) {
+                triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.email_invalid))
+                return
+            }
+        }
+
         triggerEvent(
             Exit(
                 viewState.addressSelectionStates.mapValues { statePair ->

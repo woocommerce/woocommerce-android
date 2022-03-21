@@ -1,2 +1,0 @@
-8.5:
-Ihr habt den Wunsch geäußert, Bestellungen in der App erstellen zu können. Wir freuen uns, mitteilen zu können, dass eine Vorschau der Funktion nun zum Testen bereitsteht! Rufe in der App die Einstellungen auf und aktiviere die Beta-Funktion „Erstellung von Bestellungen“. Du kannst momentan Produkte, Notizen und Adressen hinzufügen. In zukünftigen Versionen wird es noch zusätzliche Funktionen geben.

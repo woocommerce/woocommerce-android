@@ -15,6 +15,7 @@ import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.prefs.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.*
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ListItemViewState.CardReaderListItem
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ListItemViewState.ScanningInProgressListItem
@@ -59,6 +60,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         on { getIfExists() }.thenReturn(siteModel)
         on { get() }.thenReturn(siteModel)
     }
+    private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
     private val locationId = "location_id"
     private val countryCode = "US"
 
@@ -746,6 +748,19 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when user clicks on connect to reader button, then card reader model stored for tracking`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val readerType = "STRIPE_M2"
+            whenever(reader.type).thenReturn(readerType)
+
+            init()
+
+            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+
+            verify(cardReaderTrackingInfoKeeper, times(2)).setCardReaderModel(readerType)
+        }
+
+    @Test
     fun `given multiple readers found, when user clicks on connect, then app connects to the correct reader`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init(scanState = MULTIPLE_READERS_FOUND)
@@ -1360,6 +1375,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             locationRepository,
             selectedSite,
             cardReaderManager,
+            cardReaderTrackingInfoKeeper,
         )
     }
 
