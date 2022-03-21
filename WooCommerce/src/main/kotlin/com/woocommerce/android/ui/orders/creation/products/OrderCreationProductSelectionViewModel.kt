@@ -104,6 +104,7 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
             ?.takeIf { loadedMore && searchResult differsFrom it }
             ?.let { searchResult + it }
             ?: searchResult
+        viewState = viewState.copy(isEmptyViewShowing = searchResult.isEmpty())
     }
 
     fun onSearchOpened() {
@@ -117,7 +118,8 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
         launch { searchJob?.cancelAndJoin() }
         viewState = viewState.copy(
             isSearchActive = false,
-            query = null
+            query = null,
+            isEmptyViewShowing = false
         )
         loadProductList()
     }
@@ -125,7 +127,8 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
     fun onSearchQueryCleared() {
         productList.value = emptyList()
         viewState = viewState.copy(
-            query = null
+            query = null,
+            isEmptyViewShowing = false
         )
     }
 
@@ -138,7 +141,8 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
     data class ViewState(
         val isSkeletonShown: Boolean? = null,
         val isSearchActive: Boolean? = null,
-        val query: String? = null
+        val query: String? = null,
+        val isEmptyViewShowing: Boolean? = null
     ) : Parcelable
 
     data class AddProduct(val productId: Long) : MultiLiveEvent.Event()
