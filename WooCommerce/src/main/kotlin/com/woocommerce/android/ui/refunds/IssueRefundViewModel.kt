@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent.CREATE_ORDER_REFUND_ITEM_QUANTITY_DIALOG_OPENED
 import com.woocommerce.android.analytics.AnalyticsEvent.CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CREATE_ORDER_REFUND_PRODUCT_AMOUNT_DIALOG_OPENED
@@ -68,7 +69,6 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundItem
 import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
-import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
@@ -553,15 +553,17 @@ class IssueRefundViewModel @Inject constructor(
 
     private suspend fun addOrderNote(reason: String) {
         val note = OrderNote(note = reason, isCustomerNote = false)
-        val onOrderChanged = orderDetailRepository.addOrderNote(order.id, note)
-        if (!onOrderChanged.isError) {
-            AnalyticsTracker.track(ORDER_NOTE_ADD_SUCCESS)
-        } else {
-            AnalyticsTracker.track(
-                ORDER_NOTE_ADD_FAILED,
-                prepareTracksEventsDetails(onOrderChanged)
-            )
-        }
+        orderDetailRepository.addOrderNote(order.id, note).fold(
+            onSuccess = {
+                AnalyticsTracker.track(ORDER_NOTE_ADD_SUCCESS)
+            },
+            onFailure = {
+                AnalyticsTracker.track(
+                    ORDER_NOTE_ADD_FAILED,
+                    prepareTracksEventsDetails(it as WooException)
+                )
+            }
+        )
     }
 
     fun onRefundIssued(reason: String) {
@@ -924,10 +926,10 @@ class IssueRefundViewModel @Inject constructor(
             .add(calculatePartialFeesTaxes(selectedFeeLinesId))
     }
 
-    private fun prepareTracksEventsDetails(event: OnOrderChanged) = mapOf(
+    private fun prepareTracksEventsDetails(exception: WooException) = mapOf(
         AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-        AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
-        AnalyticsTracker.KEY_ERROR_DESC to event.error.message
+        AnalyticsTracker.KEY_ERROR_TYPE to exception.error.type.toString(),
+        AnalyticsTracker.KEY_ERROR_DESC to exception.error.message
     )
 
     private enum class InputValidationState {

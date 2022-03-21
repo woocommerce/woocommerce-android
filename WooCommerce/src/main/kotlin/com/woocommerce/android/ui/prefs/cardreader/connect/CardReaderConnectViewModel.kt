@@ -16,6 +16,7 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.prefs.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.*
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.*
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingChecker
@@ -47,6 +48,7 @@ class CardReaderConnectViewModel @Inject constructor(
     private val locationRepository: CardReaderLocationRepository,
     private val selectedSite: SelectedSite,
     private val cardReaderManager: CardReaderManager,
+    private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderConnectDialogFragmentArgs by savedState.navArgs()
 
@@ -337,12 +339,14 @@ class CardReaderConnectViewModel @Inject constructor(
         )
 
     private fun onConnectToReaderClicked(cardReader: CardReader) {
+        cardReaderTrackingInfoKeeper.setCardReaderModel(cardReader.type)
         tracker.trackOnConnectTapped()
         connectToReader(cardReader)
     }
 
     private fun connectToReader(cardReader: CardReader) {
         launch {
+            cardReaderTrackingInfoKeeper.setCardReaderModel(cardReader.type)
             val cardReaderLocationId = cardReader.locationId
             if (cardReaderLocationId != null) {
                 cardReaderManager.startConnectionToReader(cardReader, cardReaderLocationId)

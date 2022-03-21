@@ -31,7 +31,7 @@ import java.math.BigDecimal
 import java.math.RoundingMode.HALF_UP
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
-import java.util.Locale
+import java.util.*
 import javax.inject.Inject
 import kotlin.math.max
 import kotlin.math.pow
@@ -65,6 +65,11 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
         set(value) {
             field = value
             currencyEditText.supportsEmptyState = value
+        }
+    var imeOptions: Int = 0
+        set(value) {
+            field = value
+            currencyEditText.imeOptions = value
         }
 
     init {
@@ -112,6 +117,9 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
             )
             supportsEmptyState = a.getBoolean(
                 R.styleable.WCMaterialOutlinedCurrencyEditTextView_supportsEmptyState, supportsEmptyState
+            )
+            imeOptions = a.getInt(
+                R.styleable.WCMaterialOutlinedCurrencyEditTextView_android_imeOptions, 0
             )
         }
 

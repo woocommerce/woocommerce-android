@@ -4,11 +4,13 @@ import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
+import com.woocommerce.android.model.UiString
 
 sealed class ViewState(
     @StringRes open val hintLabel: Int? = null,
     @StringRes open val headerLabel: Int? = null,
     @StringRes val paymentStateLabel: Int? = null,
+    open val receiptSentAutomaticallyHint: UiString? = null,
     @DimenRes val paymentStateLabelTopMargin: Int = R.dimen.major_275,
     @DrawableRes val illustration: Int? = null,
     open val isProgressVisible: Boolean = false,
@@ -83,6 +85,18 @@ sealed class ViewState(
         illustration = R.drawable.img_celebration,
         primaryActionLabel = R.string.card_reader_payment_print_receipt,
         secondaryActionLabel = R.string.card_reader_payment_send_receipt,
+        tertiaryActionLabel = R.string.card_reader_payment_save_for_later,
+    )
+
+    data class PaymentSuccessfulReceiptSentAutomaticallyState(
+        override val amountWithCurrencyLabel: String,
+        override val receiptSentAutomaticallyHint: UiString,
+        override val onPrimaryActionClicked: (() -> Unit),
+        override val onTertiaryActionClicked: (() -> Unit)
+    ) : ViewState(
+        headerLabel = R.string.card_reader_payment_completed_payment_header,
+        illustration = R.drawable.img_celebration,
+        primaryActionLabel = R.string.card_reader_payment_print_receipt,
         tertiaryActionLabel = R.string.card_reader_payment_save_for_later,
     )
 

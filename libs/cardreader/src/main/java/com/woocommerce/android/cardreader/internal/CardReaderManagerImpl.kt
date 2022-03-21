@@ -13,10 +13,11 @@ import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
 import com.woocommerce.android.cardreader.internal.connection.TerminalListenerImpl
 import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManager
+import com.woocommerce.android.cardreader.internal.payments.InteracRefundManager
 import com.woocommerce.android.cardreader.internal.payments.PaymentManager
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
+import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
-import com.woocommerce.android.cardreader.payments.CardRefundStatus
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.RefundParams
@@ -32,6 +33,7 @@ internal class CardReaderManagerImpl(
     private val tokenProvider: TokenProvider,
     private val logWrapper: LogWrapper,
     private val paymentManager: PaymentManager,
+    private val interacRefundManager: InteracRefundManager,
     private val connectionManager: ConnectionManager,
     private val softwareUpdateManager: SoftwareUpdateManager,
     private val terminalListener: TerminalListenerImpl,
@@ -101,9 +103,10 @@ internal class CardReaderManagerImpl(
         return paymentManager.acceptPayment(paymentInfo)
     }
 
-    override suspend fun refundPayment(refundParameters: RefundParams): Flow<CardRefundStatus> {
+    override suspend fun refundInteracPayment(refundParams: RefundParams): Flow<CardInteracRefundStatus> {
+        if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
         resetBluetoothDisplayMessage()
-        return paymentManager.refundPayment(refundParameters)
+        return interacRefundManager.refundInteracPayment(refundParams)
     }
 
     private fun resetBluetoothDisplayMessage() {

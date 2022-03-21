@@ -4,6 +4,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
+import com.woocommerce.android.ui.orders.cardreader.ClearCardReaderData
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -18,8 +19,8 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS_COUNT
 import org.wordpress.android.fluxc.annotations.action.Action
+import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.AccountStore
@@ -48,6 +49,7 @@ class MainPresenterTest : BaseUnitTest() {
     }
     private val productImageMap: ProductImageMap = mock()
     private val appPrefs: AppPrefsWrapper = mock()
+    private val clearCardReaderData: ClearCardReaderData = mock()
 
     private val wcOrderStore: WCOrderStore = mock {
         on { observeOrdersForSite(any(), any()) } doReturn emptyFlow()
@@ -67,7 +69,8 @@ class MainPresenterTest : BaseUnitTest() {
                 selectedSite,
                 productImageMap,
                 appPrefs,
-                wcOrderStore
+                wcOrderStore,
+                clearCardReaderData
             )
         )
         actionCaptor = argumentCaptor()
@@ -170,7 +173,7 @@ class MainPresenterTest : BaseUnitTest() {
     fun `Updates orders badge on new unfilled orders`() = runBlocking {
         val initialOrderCount = 25
         val postUpdateOrderCount = 30
-        val fakeObserveResult = MutableSharedFlow<List<WCOrderModel>>()
+        val fakeObserveResult = MutableSharedFlow<List<OrderEntity>>()
         whenever(wcOrderStore.observeOrdersForSite(any(), eq(listOf(CoreOrderStatus.PROCESSING.value)))).doReturn(
             fakeObserveResult
         )
@@ -197,9 +200,18 @@ class MainPresenterTest : BaseUnitTest() {
         }
     }
 
-    private fun generateFakeOrders(size: Int): List<WCOrderModel> {
-        return mutableListOf<WCOrderModel>().also { list ->
-            repeat(size) { repeatCount ->
+    @Test
+    fun `When selected site changes, then card reader data is cleared`() = testBlocking {
+        if (FeatureFlag.CARD_READER.isEnabled()) {
+            mainPresenter.selectedSiteChanged(site = selectedSite.get())
+
+            verify(clearCardReaderData).invoke()
+        }
+    }
+
+    private fun generateFakeOrders(size: Int): List<OrderEntity> {
+        return mutableListOf<OrderEntity>().also { list ->
+            repeat(size) {
                 list.add(OrderTestUtils.generateOrder())
             }
         }
