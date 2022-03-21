@@ -10,7 +10,6 @@ plugins {
     id 'dagger.hilt.android.plugin'
     id 'se.bjurr.violations.violation-comments-to-github-gradle-plugin'
     id 'io.sentry.android.gradle'
-    id 'jacoco'
     id 'androidx.navigation.safeargs.kotlin'
     id 'com.google.gms.google-services'
 }
