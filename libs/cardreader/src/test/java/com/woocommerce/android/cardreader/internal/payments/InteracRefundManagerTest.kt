@@ -185,7 +185,6 @@ class InteracRefundManagerTest {
             assertThat(result).isNotNull // verify the flow did not timeout
         }
 
-
     private fun <T> Flow<T>.takeUntil(untilStatus: KClass<*>): Flow<T> =
         this.take(expectedInteracRefundSequence.indexOf(untilStatus) + 1)
             // the below lines are here just as a safeguard to verify that the

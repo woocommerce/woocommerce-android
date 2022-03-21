@@ -25,16 +25,17 @@ internal class InteracRefundManager(
 
     private suspend fun FlowCollector<CardInteracRefundStatus>.collectInteracRefund(
         refundParameters: RefundParams
-    ) : CollectInteracRefundAction.CollectInteracRefundStatus {
+    ): CollectInteracRefundAction.CollectInteracRefundStatus {
         var collectInteracRefundStatus: CollectInteracRefundAction.CollectInteracRefundStatus =
             CollectInteracRefundAction.CollectInteracRefundStatus.Success
         emit(CardInteracRefundStatus.CollectingInteracRefund)
         collectInteracRefundAction.collectRefund(
             RefundParameters.Builder(
-            chargeId = refundParameters.chargeId,
-            amount = refundParameters.amount.toLong(),
-            currency = refundParameters.currency
-        ).build()).collect { refundStatus ->
+                chargeId = refundParameters.chargeId,
+                amount = refundParameters.amount.toLong(),
+                currency = refundParameters.currency
+            ).build()
+        ).collect { refundStatus ->
             collectInteracRefundStatus = when (refundStatus) {
                 CollectInteracRefundAction.CollectInteracRefundStatus.Success -> {
                     CollectInteracRefundAction.CollectInteracRefundStatus.Success

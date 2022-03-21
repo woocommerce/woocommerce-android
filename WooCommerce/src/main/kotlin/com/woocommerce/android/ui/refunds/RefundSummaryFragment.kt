@@ -30,7 +30,8 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
         const val REFUND_ORDER_NOTICE_KEY = "refund_order_notice"
     }
 
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: IssueRefundViewModel by hiltNavGraphViewModels(R.id.nav_graph_refunds)
 
@@ -108,8 +109,10 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
                     binding.refundSummaryMethodDescription.hide()
                 }
             }
-            handleDialogNotice<String>("Interac_success",
-                entryId = R.id.refundSummaryFragment) {
+            handleDialogNotice<String>(
+                "Interac_success",
+                entryId = R.id.refundSummaryFragment
+            ) {
                 viewModel.notifyRefundBackend()
             }
         }

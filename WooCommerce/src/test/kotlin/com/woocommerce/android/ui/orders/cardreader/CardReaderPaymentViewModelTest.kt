@@ -793,7 +793,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel").isNull()
         }
 
-
     @Test
     fun `when collecting payment, then correct labels and illustration is shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
@@ -1869,17 +1868,19 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             setupViewModelForInteracRefund()
             whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
-                flow { emit(
-                    CardInteracRefundStatus.InteracRefundFailure(
-                        CardInteracRefundStatus.RefundStatusErrorType.Generic,
-                        "",
-                        RefundParams(
-                            amount = BigDecimal.TEN,
-                            chargeId = "",
-                            currency = "USD"
+                flow {
+                    emit(
+                        CardInteracRefundStatus.InteracRefundFailure(
+                            CardInteracRefundStatus.RefundStatusErrorType.Generic,
+                            "",
+                            RefundParams(
+                                amount = BigDecimal.TEN,
+                                chargeId = "",
+                                currency = "USD"
+                            )
                         )
                     )
-                ) }
+                }
             }
 
             viewModel.start()
@@ -1985,17 +1986,18 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             setupViewModelForInteracRefund()
             whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
-                flow { emit(
-                    CardInteracRefundStatus.InteracRefundFailure(
-                        CardInteracRefundStatus.RefundStatusErrorType.Generic,
-                        "",
-                        RefundParams(
-                            amount = BigDecimal.TEN,
-                            chargeId = "",
-                            currency = "USD"
+                flow {
+                    emit(
+                        CardInteracRefundStatus.InteracRefundFailure(
+                            CardInteracRefundStatus.RefundStatusErrorType.Generic,
+                            "",
+                            RefundParams(
+                                amount = BigDecimal.TEN,
+                                chargeId = "",
+                                currency = "USD"
+                            )
                         )
                     )
-                )
                 }
             }
 
@@ -2011,17 +2013,18 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             setupViewModelForInteracRefund()
             whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
-                flow { emit(
-                    CardInteracRefundStatus.InteracRefundFailure(
-                        CardInteracRefundStatus.RefundStatusErrorType.Generic,
-                        "",
-                        RefundParams(
-                            amount = BigDecimal.TEN,
-                            chargeId = "",
-                            currency = "USD"
+                flow {
+                    emit(
+                        CardInteracRefundStatus.InteracRefundFailure(
+                            CardInteracRefundStatus.RefundStatusErrorType.Generic,
+                            "",
+                            RefundParams(
+                                amount = BigDecimal.TEN,
+                                chargeId = "",
+                                currency = "USD"
+                            )
                         )
                     )
-                )
                 }
             }
 
@@ -2051,17 +2054,18 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 interacRefundErrorMapper.mapPaymentErrorToUiError(CardDeclined.InvalidAccount)
             ).thenReturn(InteracRefundFlowError.Declined.InvalidAmount)
             whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
-                flow { emit(
-                    CardInteracRefundStatus.InteracRefundFailure(
-                        nonRetryableError,
-                        "",
-                        RefundParams(
-                            amount = BigDecimal.TEN,
-                            chargeId = "",
-                            currency = "CAD"
+                flow {
+                    emit(
+                        CardInteracRefundStatus.InteracRefundFailure(
+                            nonRetryableError,
+                            "",
+                            RefundParams(
+                                amount = BigDecimal.TEN,
+                                chargeId = "",
+                                currency = "CAD"
+                            )
                         )
                     )
-                )
                 }
             }
 
@@ -2131,17 +2135,19 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 )
             ).thenReturn(InteracRefundFlowError.Generic)
             whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
-                flow { emit(
-                    CardInteracRefundStatus.InteracRefundFailure(
-                        CardInteracRefundStatus.RefundStatusErrorType.Generic,
-                        "",
-                        RefundParams(
-                            amount = BigDecimal.TEN,
-                            chargeId = "",
-                            currency = "CAD"
+                flow {
+                    emit(
+                        CardInteracRefundStatus.InteracRefundFailure(
+                            CardInteracRefundStatus.RefundStatusErrorType.Generic,
+                            "",
+                            RefundParams(
+                                amount = BigDecimal.TEN,
+                                chargeId = "",
+                                currency = "CAD"
+                            )
                         )
                     )
-                ) }
+                }
             }
             viewModel.start()
 
