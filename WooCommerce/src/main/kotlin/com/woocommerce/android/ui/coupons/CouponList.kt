@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponUi
 import com.woocommerce.android.util.StringUtils
 import java.lang.StringBuilder
 import java.math.BigDecimal
+import kotlin.random.Random
 
 @Composable
 fun CouponListContainer(viewModel: CouponListViewModel) {
@@ -95,7 +96,8 @@ fun CouponListItem(coupon: CouponUi, currencyCode: String?) {
             coupon.includedCategoryCount,
         )
 
-        CouponListExpirationLabel()
+        val rand = Random.nextBoolean()
+        CouponListExpirationLabel(rand)
     }
 }
 
@@ -159,19 +161,27 @@ fun CouponListItemInfo(
 }
 
 @Composable
-fun CouponListExpirationLabel() {
+fun CouponListExpirationLabel(active: Boolean = true) {
     // todo this should check a coupon's expiration date
     // to show either "Active" or "Expired" Label
     Surface(
         modifier = Modifier
             .clip(RoundedCornerShape(4.dp, 4.dp, 4.dp, 4.dp))
     ) {
+        val status = if (active) {
+            stringResource(id = R.string.coupon_list_item_label_active)
+        } else {
+            stringResource(id = R.string.coupon_list_item_label_expired)
+        }
+
+        val color = if (active) colorResource(id = R.color.woo_celadon_5) else colorResource(id = R.color.woo_gray_5)
+
         Text(
-            text = stringResource(id = R.string.coupon_list_item_label_active),
+            text = status,
             style = MaterialTheme.typography.body1,
             color = colorResource(id = R.color.color_on_secondary),
             modifier = Modifier
-                .background(color = colorResource(id = R.color.woo_celadon_5))
+                .background(color = color)
                 .padding(horizontal = 6.dp, vertical = 2.dp)
         )
     }
