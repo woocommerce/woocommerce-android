@@ -6,6 +6,10 @@ jacoco {
 
 rootProject.afterEvaluate {
     tasks.create(name: "jacocoTestReport", type: JacocoReport, dependsOn: [':WooCommerce:testWasabiDebugUnitTest', ':libs:cardreader:testDebugUnitTest']) {
+
+        group = "Reporting"
+        description = "Generate Jacoco coverage reports for WasabiDebug variant"
+
         reports {
             xml.getRequired().set(true)
             html.getRequired().set(true)
