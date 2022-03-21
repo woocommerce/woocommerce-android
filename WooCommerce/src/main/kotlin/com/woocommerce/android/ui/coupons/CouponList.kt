@@ -19,6 +19,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.capitalizeWords
 import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListState
@@ -51,17 +52,19 @@ fun CouponList(coupons: List<CouponUi>, currencyCode: String?) {
         modifier = Modifier
             .background(color = colorResource(id = R.color.color_surface))
     ) {
-        itemsIndexed(coupons) { _, coupon ->
+        itemsIndexed(coupons) { index, coupon ->
             CouponListItem(
                 coupon = coupon,
                 currencyCode = currencyCode,
             )
-            Divider(
-                modifier = Modifier
-                    .offset(x = 16.dp),
-                color = colorResource(id = R.color.divider_color),
-                thickness = 1.dp
-            )
+            if (index < coupons.lastIndex) {
+                Divider(
+                    modifier = Modifier
+                        .offset(x = 16.dp),
+                    color = colorResource(id = R.color.divider_color),
+                    thickness = 1.dp
+                )
+            }
         }
     }
 }
@@ -78,7 +81,8 @@ fun CouponListItem(coupon: CouponUi, currencyCode: String?) {
             Text(
                 text = it,
                 style = MaterialTheme.typography.h6,
-                color = colorResource(id = R.color.color_on_surface)
+                color = colorResource(id = R.color.color_on_surface),
+                fontSize = 20.sp
             )
         }
 
@@ -165,6 +169,7 @@ fun CouponListExpirationLabel() {
         Text(
             text = stringResource(id = R.string.coupon_list_item_label_active),
             style = MaterialTheme.typography.body1,
+            color = colorResource(id = R.color.color_on_secondary),
             modifier = Modifier
                 .background(color = colorResource(id = R.color.woo_celadon_5))
                 .padding(horizontal = 6.dp, vertical = 2.dp)
