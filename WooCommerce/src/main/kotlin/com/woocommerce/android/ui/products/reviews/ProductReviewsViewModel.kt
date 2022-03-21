@@ -57,7 +57,7 @@ class ProductReviewsViewModel @Inject constructor(
         launch { fetchProductReviews(remoteProductId = navArgs.remoteProductId, loadMore = true) }
     }
 
-    private fun loadProductReviews() {
+    private fun loadProductReviews() = launch {
         // Initial load. Get and show reviewList from the db if any
         val reviewsInDb = reviewsRepository.getProductReviewsFromDB(navArgs.remoteProductId)
         if (reviewsInDb.isNotEmpty()) {
@@ -67,7 +67,7 @@ class ProductReviewsViewModel @Inject constructor(
             productReviewsViewState = productReviewsViewState.copy(isSkeletonShown = true)
         }
 
-        launch { fetchProductReviews(navArgs.remoteProductId, loadMore = false) }
+        fetchProductReviews(navArgs.remoteProductId, loadMore = false)
     }
 
     private suspend fun fetchProductReviews(
