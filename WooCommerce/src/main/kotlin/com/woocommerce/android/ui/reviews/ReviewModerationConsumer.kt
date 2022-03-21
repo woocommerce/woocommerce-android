@@ -41,3 +41,7 @@ suspend fun ReviewModerationConsumer.observeModerationEvents() {
             reloadReviewsFromCache()
         }
 }
+
+fun ReviewModerationConsumer.undoModerationRequest() {
+    reviewModerationHandler.undoLastOperation()
+}

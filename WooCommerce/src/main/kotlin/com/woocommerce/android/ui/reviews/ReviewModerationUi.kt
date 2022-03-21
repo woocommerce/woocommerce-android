@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.reviews
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.model.ActionStatus
@@ -12,15 +11,14 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 interface ReviewModerationUi
 
 fun ReviewModerationUi.observeModerationStatus(
-    statusLiveData: LiveData<ReviewModerationStatus>,
-    uiMessageResolver: UIMessageResolver,
-    undoAction: () -> Unit
+    reviewModerationViewModel: ReviewModerationConsumer,
+    uiMessageResolver: UIMessageResolver
 ) {
     if (this !is Fragment) error("This function can be called only on a Fragment receiver")
 
     var changeReviewStatusSnackbar: Snackbar? = null
 
-    statusLiveData.observe(viewLifecycleOwner) { status ->
+    reviewModerationViewModel.pendingReviewModerationStatus.observe(viewLifecycleOwner) { status ->
         changeReviewStatusSnackbar?.dismiss()
         when (status.actionStatus) {
             ActionStatus.PENDING -> {
@@ -29,7 +27,7 @@ fun ReviewModerationUi.observeModerationStatus(
                     ProductReviewStatus.getLocalizedLabel(context, status.newStatus)
                         .lowercase(),
                     actionText = getString(R.string.undo),
-                    actionListener = { undoAction() }
+                    actionListener = { reviewModerationViewModel.undoModerationRequest() }
                 ).also {
                     it.show()
                 }

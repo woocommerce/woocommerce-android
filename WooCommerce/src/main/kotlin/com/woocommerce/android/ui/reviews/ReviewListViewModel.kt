@@ -53,7 +53,7 @@ class ReviewListViewModel @Inject constructor(
         get() = _reviewList
 
     override val ReviewModerationConsumer.reviewModerationHandler: ReviewModerationHandler
-        get() = (this as ReviewListViewModel).reviewModerationHandler
+        get() = this@ReviewListViewModel.reviewModerationHandler
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
@@ -143,10 +143,6 @@ class ReviewListViewModel @Inject constructor(
         } else {
             showOfflineSnack()
         }
-    }
-
-    fun undoModerationRequest() {
-        reviewModerationHandler.undoLastOperation()
     }
 
     private suspend fun fetchReviewList(loadMore: Boolean) {

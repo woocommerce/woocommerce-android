@@ -191,9 +191,8 @@ class ReviewListFragment :
         }
 
         observeModerationStatus(
-            statusLiveData = viewModel.pendingReviewModerationStatus,
-            uiMessageResolver = uiMessageResolver,
-            undoAction = viewModel::undoModerationRequest
+            reviewModerationViewModel = viewModel,
+            uiMessageResolver = uiMessageResolver
         )
     }
 
