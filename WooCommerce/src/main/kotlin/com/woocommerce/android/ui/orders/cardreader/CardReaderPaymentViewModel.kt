@@ -224,7 +224,8 @@ class CardReaderPaymentViewModel
                 when (paymentStatus.paymentMethodType) {
                     // Interac payments done in one step, without capturing. That's why we track success here
                     PaymentMethodType.INTERAC_PRESENT -> tracker.trackInteracPaymentSucceeded()
-                    else -> {}
+                    else -> {
+                    }
                 }
             }
             CapturingPayment -> viewState.postValue(CapturingPaymentState(amountLabel))
@@ -283,8 +284,8 @@ class CardReaderPaymentViewModel
                 )
             }
             CardInteracRefundStatus.WaitingForInput -> {
-            // noop
-        }
+                // noop
+            }
         }
     }
 
