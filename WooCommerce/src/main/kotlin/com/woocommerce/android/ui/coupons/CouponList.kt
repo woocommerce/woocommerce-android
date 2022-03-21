@@ -20,8 +20,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.capitalizeWords
 import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListState
 import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponUi
+import com.woocommerce.android.util.StringUtils
 import java.lang.StringBuilder
 import java.math.BigDecimal
 
@@ -49,7 +51,7 @@ fun CouponList(coupons: List<CouponUi>, currencyCode: String?) {
         modifier = Modifier
             .background(color = colorResource(id = R.color.color_surface))
     ) {
-        itemsIndexed(coupons) { index, coupon ->
+        itemsIndexed(coupons) { _, coupon ->
             CouponListItem(
                 coupon = coupon,
                 currencyCode = currencyCode,
@@ -122,11 +124,17 @@ fun CouponListItemInfo(
         if (includedProductsCount == null && excludedProductsCount == null) {
             sb.append(stringResource(id = R.string.coupon_list_item_label_all_products))
         }
+
         includedProductsCount?.let {
-            sb.append(includedProductsCount)
-            sb.append(" ")
-            sb.append(stringResource(id = R.string.products))
+            sb.append(
+                StringUtils.getQuantityString(
+                    it,
+                    default = R.string.product_count_many,
+                    one = R.string.product_count_one
+                )
+            )
         }
+
         includedCategoryCount?.let {
             if (includedProductsCount != null) {
                 sb.append(", ")
@@ -137,7 +145,7 @@ fun CouponListItemInfo(
         }
 
         Text(
-            text = sb.toString(),
+            text = sb.toString().capitalizeWords(),
             style = MaterialTheme.typography.body2,
             color = colorResource(id = R.color.color_surface_variant),
             modifier = Modifier
@@ -183,7 +191,8 @@ fun CouponListPreview() {
             id = 2,
             code = "10off",
             amount = BigDecimal(10),
-            discountType = "fixed_cart"
+            discountType = "fixed_cart",
+            includedProductsCount = 1
         ),
 
         CouponUi(

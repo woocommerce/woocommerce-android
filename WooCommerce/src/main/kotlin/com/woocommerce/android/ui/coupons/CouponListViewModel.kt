@@ -45,7 +45,8 @@ class CouponListViewModel @Inject constructor(
                         id = 3,
                         code = "BlackFriday",
                         amount = BigDecimal(5),
-                        discountType = "fixed_product"
+                        discountType = "fixed_product",
+                        includedProductsCount = 1
                     ),
 
                     CouponUi(
