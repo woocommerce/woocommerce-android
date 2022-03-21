@@ -26,6 +26,7 @@ class SimplePaymentsFragmentViewModelTests : BaseUnitTest() {
                 it.add(
                     Order.TaxLine(
                         id = TAX_LINE_ID,
+                        label = "Test Tax",
                         compound = false,
                         taxTotal = "10.00",
                         ratePercent = TAX_LINE_TAX_RATE
@@ -45,18 +46,18 @@ class SimplePaymentsFragmentViewModelTests : BaseUnitTest() {
     }
 
     @Test
-    fun `when charging taxes is enabled, then tax rate is taken from first tax line`() =
+    fun `when charging taxes is enabled, then taxLines is taken from the order`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             initViewModel()
             viewModel.onChargeTaxesChanged(chargeTaxes = true)
-            assertThat(viewModel.taxRatePercent).isEqualTo(TAX_LINE_TAX_RATE.toString())
+            assertThat(viewModel.orderDraft.taxLines).isEqualTo(testOrder.taxLines)
         }
 
     @Test
-    fun `when charging taxes is NOT enabled, then tax rate is zero`() =
+    fun `when charging taxes is NOT enabled, then taxLines is empty`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             initViewModel()
             viewModel.onChargeTaxesChanged(chargeTaxes = false)
-            assertThat(viewModel.taxRatePercent).isEqualTo(SimplePaymentsFragmentViewModel.EMPTY_TAX_RATE)
+            assertThat(viewModel.orderDraft.taxLines.size).isEqualTo(0)
         }
 }
