@@ -24,6 +24,7 @@ repositories {
             includeGroup "org.wordpress.wellsql"
             includeGroup "org.wordpress.mediapicker"
             includeGroup "com.automattic"
+            includeGroup "com.automattic.tracks"
         }
     }
     maven {
@@ -200,6 +201,7 @@ dependencies {
     }
 
     implementation 'com.github.Automattic:Automattic-Tracks-Android:2.1.0'
+    implementation "com.automattic.tracks:experimentation:121-cf817e1b407a6b9389055495d7b264b68debd69d"
 
     implementation("${gradle.ext.fluxCBinaryPath}:$fluxCVersion") {
         exclude group: "com.android.support"
