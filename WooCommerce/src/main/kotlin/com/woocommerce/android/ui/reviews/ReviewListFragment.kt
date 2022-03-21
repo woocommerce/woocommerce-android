@@ -39,7 +39,8 @@ import javax.inject.Inject
 class ReviewListFragment :
     BaseFragment(R.layout.fragment_reviews_list),
     ItemDecorationListener,
-    ReviewListAdapter.OnReviewClickListener {
+    ReviewListAdapter.OnReviewClickListener,
+    ReviewModerationUi {
     companion object {
         const val TAG = "ReviewListFragment"
         const val KEY_NEW_DATA_AVAILABLE = "new-data-available"

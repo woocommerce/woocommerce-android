@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.reviews
 
 import android.os.Parcelable
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.ActionStatus
@@ -43,15 +43,17 @@ class ReviewListViewModel @Inject constructor(
     private val markAllReviewsAsSeen: MarkAllReviewsAsSeen,
     private val unseenReviewsCountHandler: UnseenReviewsCountHandler,
     private val reviewModerationHandler: ReviewModerationHandler
-) : ScopedViewModel(savedState) {
+) : ScopedViewModel(savedState), ReviewModerationConsumer {
     companion object {
         private const val TAG = "ReviewListViewModel"
     }
-
-    val pendingReviewModerationStatus = reviewModerationHandler.pendingModerationStatus.asLiveData()
-
     private val _reviewList = MutableLiveData<List<ProductReview>>()
-    val reviewList = _reviewList.combineWithModerationStatus(pendingReviewModerationStatus)
+
+    override val ReviewModerationConsumer.rawReviewList: LiveData<List<ProductReview>>
+        get() = _reviewList
+
+    override val ReviewModerationConsumer.reviewModerationHandler: ReviewModerationHandler
+        get() = (this as ReviewListViewModel).reviewModerationHandler
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
@@ -60,8 +62,8 @@ class ReviewListViewModel @Inject constructor(
         EventBus.getDefault().register(this)
         dispatcher.register(this)
         observeReviewUpdates()
-        observeModerationEvents(reviewModerationHandler) {
-            reloadReviewsFromCache()
+        launch {
+            observeModerationEvents()
         }
     }
 
@@ -90,11 +92,7 @@ class ReviewListViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Reload reviews from the database. Useful when a change happens on the backend
-     * when the list view was not visible.
-     */
-    private fun reloadReviewsFromCache() {
+    override fun ReviewModerationConsumer.reloadReviewsFromCache() {
         launch {
             _reviewList.value = reviewRepository.getCachedProductReviews()
         }
