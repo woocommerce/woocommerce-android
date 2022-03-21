@@ -2263,6 +2263,61 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when interac refund fails, then interac refund failed event is triggered`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow {
+                    emit(
+                        CardInteracRefundStatus.InteracRefundFailure(
+                            CardInteracRefundStatus.RefundStatusErrorType.Generic,
+                            "",
+                            RefundParams(
+                                amount = BigDecimal.TEN,
+                                chargeId = "",
+                                currency = "USD"
+                            )
+                        )
+                    )
+                }
+            }
+
+            viewModel.start()
+
+            verify(tracker).trackInteracPaymentFailed(any(), any())
+        }
+
+    @Test
+    fun `when interac refund fails, then interac refund failed event is triggered with correct data`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            val expectedErrorMessage = "Error Message"
+            val expectedErrorType = CardInteracRefundStatus.RefundStatusErrorType.Cancelled
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow {
+                    emit(
+                        CardInteracRefundStatus.InteracRefundFailure(
+                            expectedErrorType,
+                            expectedErrorMessage,
+                            RefundParams(
+                                amount = BigDecimal.TEN,
+                                chargeId = "",
+                                currency = "USD"
+                            )
+                        )
+                    )
+                }
+            }
+            val captor = argumentCaptor<String, CardInteracRefundStatus.RefundStatusErrorType>()
+
+            viewModel.start()
+
+            verify(tracker).trackInteracPaymentFailed(captor.first.capture(), captor.second.capture())
+            assertThat(captor.first.firstValue).isEqualTo(expectedErrorMessage)
+            assertThat(captor.second.firstValue).isEqualTo(expectedErrorType)
+        }
+
+    @Test
     fun `when interac refund succeeds, then correct labels, illustration and buttons are shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             setupViewModelForInteracRefund()
@@ -2363,7 +2418,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             errorMapper = errorMapper,
             interacRefundErrorMapper = interacRefundErrorMapper,
             wooStore = wooStore,
-            dispatchers = coroutinesTestRule.testDispatchers
+            dispatchers = coroutinesTestRule.testDispatchers,
+            cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper
         )
     }
 }

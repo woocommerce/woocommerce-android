@@ -272,13 +272,19 @@ class CardReaderPaymentViewModel
                 viewState.postValue(InteracRefund.RefundSuccessfulState(amountLabel))
                 triggerEvent(InteracRefundSuccessful)
             }
-            is InteracRefundFailure -> emitFailedInteracRefundState(
-                amountLabel,
-                refundStatus.type
-            )
-            CardInteracRefundStatus.WaitingForInput -> {
-                // noop
+            is InteracRefundFailure -> {
+                tracker.trackInteracPaymentFailed(
+                    refundStatus.errorMessage,
+                    refundStatus.type,
+                )
+                emitFailedInteracRefundState(
+                    amountLabel,
+                    refundStatus.type
+                )
             }
+            CardInteracRefundStatus.WaitingForInput -> {
+            // noop
+        }
         }
     }
 
