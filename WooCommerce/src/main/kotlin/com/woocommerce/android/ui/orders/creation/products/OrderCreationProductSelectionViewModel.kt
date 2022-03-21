@@ -87,7 +87,7 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
     }
 
     fun searchProductList(query: String, loadMore: Boolean = false) {
-        viewState = viewState.copy(query = query)
+        viewState = viewState.copy(query = query, isEmptyViewShowing = false)
         searchJob?.cancel()
         searchJob = launch {
             productListRepository.searchProductList(query, loadMore)
@@ -100,16 +100,11 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
         searchResult: List<Product>,
         loadedMore: Boolean
     ) {
-        if (viewState.isEmptyViewShowing == true) {
-            viewState = viewState.copy(isEmptyViewShowing = false)
-        }
         productList.value = productList.value
             ?.takeIf { loadedMore && searchResult differsFrom it }
             ?.let { searchResult + it }
             ?: searchResult
-        if (searchResult.isEmpty()) {
-            viewState = viewState.copy(isEmptyViewShowing = true)
-        }
+        viewState = viewState.copy(isEmptyViewShowing = searchResult.isEmpty())
     }
 
     fun onSearchOpened() {

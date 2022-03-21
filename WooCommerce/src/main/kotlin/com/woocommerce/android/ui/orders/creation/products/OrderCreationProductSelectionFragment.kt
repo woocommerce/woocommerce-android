@@ -129,7 +129,7 @@ class OrderCreationProductSelectionFragment :
                 searchQueryOrFilter = productListViewModel.currentQuery
             )
         } else {
-            binding.emptyView.isVisible = false
+            binding.emptyView.hide()
         }
     }
 
