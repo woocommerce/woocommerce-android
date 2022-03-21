@@ -94,7 +94,7 @@ class ReviewListViewModel @Inject constructor(
      * Reload reviews from the database. Useful when a change happens on the backend
      * when the list view was not visible.
      */
-    fun reloadReviewsFromCache() {
+    private fun reloadReviewsFromCache() {
         launch {
             _reviewList.value = reviewRepository.getCachedProductReviews()
         }
