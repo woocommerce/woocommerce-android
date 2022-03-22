@@ -46,18 +46,18 @@ class SimplePaymentsFragmentViewModelTests : BaseUnitTest() {
     }
 
     @Test
-    fun `when charging taxes is enabled, then taxLines is taken from the order`() =
+    fun `when charging taxes is enabled, then taxes are applied to the total amount of the order`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             initViewModel()
             viewModel.onChargeTaxesChanged(chargeTaxes = true)
-            assertThat(viewModel.orderDraft.taxLines).isEqualTo(testOrder.taxLines)
+            assertThat(viewModel.orderDraft.total).isGreaterThan(viewModel.orderDraft.feesTotal)
         }
 
     @Test
-    fun `when charging taxes is NOT enabled, then taxLines is empty`() =
+    fun `when charging taxes is NOT enabled, then total amount is equal to the total fee`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             initViewModel()
             viewModel.onChargeTaxesChanged(chargeTaxes = false)
-            assertThat(viewModel.orderDraft.taxLines.size).isEqualTo(0)
+            assertThat(viewModel.orderDraft.total).isEqualTo(viewModel.orderDraft.feesTotal)
         }
 }
