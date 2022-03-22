@@ -1,18 +1,44 @@
 package com.woocommerce.android.ui.orders.creation
 
+import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.model.Order
+import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.getStateFlow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.*
 
-class OrderCreationViewModelTest {
+@ExperimentalCoroutinesApi
+class OrderCreationViewModelTest: BaseUnitTest() {
     private lateinit var sut: OrderCreationViewModel
+    private lateinit var orderDraft: MutableStateFlow<Order>
+    private lateinit var savedState: SavedStateHandle
+    private lateinit var createOrUpdateOrderUseCase: CreateOrUpdateOrderDraft
 
     @Before
     fun setUp() {
+        orderDraft = mock()
+        savedState = mock {
+            on { getLiveData(any(), Order.EMPTY) } doReturn mock()
+        }
+        createOrUpdateOrderUseCase = mock()
+        sut = OrderCreationViewModel(
+            savedState = savedState,
+            dispatchers = coroutinesTestRule.testDispatchers,
+            orderDetailRepository = mock(),
+            orderCreationRepository = mock(),
+            mapItemToProductUiModel = mock(),
+            createOrUpdateOrderDraft = createOrUpdateOrderUseCase,
+            createOrderItem = mock(),
+            parameterRepository = mock()
+        )
     }
 
     @Test
     fun `when initializing the view model, then register the orderDraft flowState`() {
-
+        verify(createOrUpdateOrderUseCase.invoke(orderDraft, any()))
     }
 
     @Test
