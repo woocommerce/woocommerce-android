@@ -7,7 +7,6 @@ import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.util.AddressUtils
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import java.math.BigDecimal
@@ -17,8 +16,6 @@ import java.util.Locale
 @Parcelize
 data class Order(
     val id: Long,
-    @Deprecated(replaceWith = ReplaceWith("id"), message = "Use id to identify order.")
-    val rawLocalOrderId: Int,
     val number: String,
     val dateCreated: Date,
     val dateModified: Date,
@@ -47,12 +44,9 @@ data class Order(
     val shippingLines: List<ShippingLine>,
     val feesLines: List<FeeLine>,
     val taxLines: List<TaxLine>,
-    val metaData: List<MetaData<String>>
+    val chargeId: String?,
+    val shippingPhone: String,
 ) : Parcelable {
-    @Deprecated(replaceWith = ReplaceWith("id"), message = "Use id to identify order.")
-    val localId
-        get() = LocalOrRemoteId.LocalId(this.rawLocalOrderId)
-
     @IgnoredOnParcel
     val isOrderPaid = datePaid != null
 
@@ -62,10 +56,6 @@ data class Order(
 
     @IgnoredOnParcel
     val isRefundAvailable = refundTotal < total && availableRefundQuantity > 0
-
-    @IgnoredOnParcel
-    val chargeId
-        get() = metaData.firstOrNull { it.key == "_charge_id" }?.value
 
     @Parcelize
     data class ShippingMethod(
@@ -118,7 +108,7 @@ data class Order(
          */
         val attributesDescription
             get() = attributesList.filter {
-                it.value.isNotEmpty() && it.key.isNotEmpty() && it.isNotInternalAttributeData
+                it.value.isNotEmpty() && it.key.isNotEmpty()
             }.joinToString {
                 it.value.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
             }
@@ -170,11 +160,6 @@ data class Order(
             val asAddonPrice = keyAsAddonRegexGroup
                 ?.last()
                 .orEmpty()
-
-            // Don't include empty or the "_reduced_stock" key
-            // skipping "_reduced_stock" is a temporary workaround until "type" is added to the response.
-            val isNotInternalAttributeData
-                get() = key.first().toString() != "_"
         }
     }
 
@@ -296,7 +281,6 @@ data class Order(
         val EMPTY by lazy {
             Order(
                 id = 0,
-                rawLocalOrderId = 0,
                 number = "",
                 dateCreated = Date(),
                 dateModified = Date(),
@@ -323,9 +307,10 @@ data class Order(
                 shippingMethods = emptyList(),
                 items = emptyList(),
                 shippingLines = emptyList(),
-                metaData = emptyList(),
+                chargeId = "",
                 feesLines = emptyList(),
-                taxLines = emptyList()
+                taxLines = emptyList(),
+                shippingPhone = "",
             )
         }
     }

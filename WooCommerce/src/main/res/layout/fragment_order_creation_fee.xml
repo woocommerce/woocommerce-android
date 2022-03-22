@@ -29,6 +29,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/major_75"
                 android:hint="@string/order_creation_fee_amount_hint"
+                android:imeOptions="flagNoFullscreen"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/fee_type_switch"

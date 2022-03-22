@@ -1,11 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-03-03 22:42:48+0000
+Translation-Revision-Date: 2022-03-10 09:54:12+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="dismiss_inbox_note">非表示</string>
+    <string name="login_error_xml_rpc_auth_error_communicating">サイトとの通信中に問題が発生しました。 HTTP エラーコード401が返されました。</string>
+    <string name="login_error_xml_rpc_cannot_read_site_auth_required">このサイトでは XML-RPC コールがブロックされているようです (エラーコード401)。 ログインに失敗する場合は、ヘルプアイコンをタップして FAQ をご確認ください。</string>
+    <string name="login_error_xml_rpc_cannot_read_site">ご指定の URL の WordPress サイトを読み込めません。 ヘルプアイコンをタップして FAQ を表示してください。</string>
+    <string name="login_error_xml_rpc_services_disabled">このサイトでは XML-RPC サービスが無効になっています。</string>
+    <string name="a8c_email_message">Automattic 以外のメールを使用してサポートチケットを送信してください</string>
+    <string name="card_reader_onboarding_stripe_account_in_unsupported_country">%1$s で登録された Stripe アカウントはサポートされていません</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">%1$s では WooCommerce Payments はサポートされていません</string>
+    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">%1$s では Stripe はサポートされていません</string>
+    <string name="card_reader_connect_scanning_hint">リーダーの電源ボタンを押してください</string>
+    <string name="card_reader_payment_reader_receipt_sent">領収書を &lt;strong&gt;%s&lt;/strong&gt; に送信しました</string>
+    <string name="order_creation_fee_percentage_toggle_text">パーセンテージ手数料</string>
+    <string name="order_creation_fee_percentage_hint">パーセンテージ (%)</string>
+    <string name="order_creation_fee_amount_hint">合計 ($)</string>
+    <string name="order_creation_add_fee_removal_hint">注文から手数料を削除</string>
+    <string name="order_creation_remove_shipping">注文から配送料を削除</string>
+    <string name="order_creation_edit_shipping">配送</string>
+    <string name="order_creation_add_shipping">配送料を追加</string>
+    <string name="order_creation_shipping_title_add">配送料を追加</string>
+    <string name="order_creation_shipping_name">名前</string>
+    <string name="order_creation_shipping_amount">合計</string>
+    <string name="order_creation_payment_fee">料金</string>
+    <string name="order_creation_customer_details">お客様の詳細</string>
+    <string name="order_creation_add_fee">手数料を追加</string>
+    <string name="order_creation_customer_note_edit_content_description">注文メモを編集</string>
+    <string name="order_creation_customer_edit_content_description">お客様の詳細を編集</string>
+    <string name="order_creation_status_edit_content_description">注文のステータスを編集</string>
+    <string name="simple_payments_update_error">シンプルペイメントの注文を更新できません</string>
+    <string name="simple_payments_creation_error">シンプルペイメントの注文を作成できません</string>
+    <string name="more_menu_avatar">ユーザープロフィールの写真</string>
+    <string name="more_menu_button_reviews">レビュー</string>
+    <string name="more_menu_button_store">ストアを表示</string>
+    <string name="more_menu_button_inbox">受信箱</string>
+    <string name="more_menu_button_analytics">アナリティクス</string>
+    <string name="more_menu_button_payments">支払い</string>
+    <string name="more_menu_button_woo_admin">WooCommerce Admin</string>
+    <string name="more_menu">メニュー</string>
     <string name="card_reader_onboarding_both_plugins_activated_refresh_button">更新後に再読み込みする</string>
     <string name="card_reader_onboarding_both_plugins_activated_open_store_admin_label">「プラグイン」を管理</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_two">WooCommerce Payments</string>
@@ -88,10 +125,9 @@ Language: ja_JP
     <string name="order_creation_new_customer_add_different_shipping_address">別の配送先住所を追加</string>
     <string name="order_creation_product_instock">在庫あり</string>
     <string name="order_creation_product_stock_quantity">在庫%s件</string>
-    <string name="order_creation_customer_details">新規顧客</string>
     <string name="order_creation_add_products">商品を追加</string>
     <string name="order_creation_products">商品</string>
-    <string name="order_creation_add_customer">顧客を追加</string>
+    <string name="order_creation_add_customer">お客様の詳細を追加</string>
     <string name="order_creation_customer">お客様</string>
     <string name="simple_payments_cash_dlg_button">支払い済みとしてマーク</string>
     <string name="simple_payments_cash_dlg_message">注文が作成され、WooCommerce 外部で支払いを受け取った場合は支払い済みとしてマークされます</string>
@@ -147,7 +183,6 @@ Language: ja_JP
     <string name="date_timeframe_last_week">先週</string>
     <string name="settings_enable_order_creation_teaser_message">リリースの準備ができ次第、詳細情報で注文の作成をテストしてください</string>
     <string name="settings_enable_order_creation_teaser_title">注文の作成</string>
-    <string name="settings_enable_simple_payments_teaser_title">シンプルペイメント</string>
     <string name="beta_features_order_creation">注文の作成</string>
     <string name="beta_features_simple_payments">シンプルペイメント</string>
     <string name="beta_features_add_ons">アドオンを表示</string>
@@ -166,7 +201,6 @@ Language: ja_JP
     <string name="orderlist_bottom_sheet_create_order_description">手動で新しい注文を作成します</string>
     <string name="orderlist_bottom_sheet_create_order_action">注文を作成</string>
     <string name="orderlist_create_order_button_description">注文を作成</string>
-    <string name="simple_payments_creation_error">注文を作成できません</string>
     <string name="simple_payments_enter_amount">金額を入力</string>
     <string name="simple_payments_dialog_title">支払いを受け取る</string>
     <string name="orderlist_simple_payments_menu">シンプルペイメント</string>
@@ -205,7 +239,6 @@ Language: ja_JP
     <string name="orderfilters_default_filter_option">すべて</string>
     <string name="orderfilters_filter_card_title_filtered_orders">絞り込み済み注文</string>
     <string name="orderfilters_filter_card_title_all_orders">すべての注文</string>
-    <string name="orderlist_simple_payments_wip_message_disabled">お使いの端末からより簡単に支払いを受けることができるように取り組んでいます。 「設定」→「ベータ版の機能」で有効にできます。</string>
     <string name="orderlist_simple_payments_wip_message_enabled">お使いの端末からより簡単に支払いを受けることができるように取り組んでいます。 現在は「+」ボタンをタップすると、希望の金額で注文を作成できます。</string>
     <string name="jetpack_benefits_modal_dismiss">後で</string>
     <string name="jetpack_benefits_modal_install_jetpack">Jetpack をインストール</string>
@@ -217,7 +250,6 @@ Language: ja_JP
     <string name="jetpack_benefits_modal_push_notifications_title">プッシュ通知</string>
     <string name="jetpack_benefits_modal_subtitle">無料の Jetpack プラグインをインストールすると、最高のモバイル環境をご利用いただけます。</string>
     <string name="jetpack_benefits_modal_title">ストアを最大限に活用する</string>
-    <string name="settings_enable_simple_payments_teaser_message">リリースの準備ができ次第、最小限の情報で注文の作成をテストしてください</string>
     <string name="order_detail_use_as_shipping_address">配送先住所として使用</string>
     <string name="order_detail_use_as_billing_address">請求先住所として使用</string>
     <string name="orderfilters_filters_count_title">絞り込み (%d)</string>
@@ -542,7 +574,6 @@ Language: ja_JP
     <string name="card_reader_connect_connecting_header">Reader に接続しています</string>
     <string name="card_reader_connect_to_reader">Reader に接続する</string>
     <string name="card_reader_connect_reader_found_header">Reader に接続しますか %s?</string>
-    <string name="card_reader_connect_scanning_hint">青いライトが点滅するまで、Reader の電源ボタンを押します</string>
     <string name="card_reader_connect_scanning_header">Reader をスキャンしています</string>
     <string name="shipping_label_items_count_placeholder">項目数</string>
     <string name="orderdetail_products_recreate_shipping_label_menu">新しい配送ラベルを作成</string>

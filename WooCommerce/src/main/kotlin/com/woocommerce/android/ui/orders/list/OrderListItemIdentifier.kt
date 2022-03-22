@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.list
 
 import com.woocommerce.android.model.TimeGroup
-import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 
 /**
  * Identifies the two main types of view items in the order list view while providing a
@@ -16,5 +15,5 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
  */
 sealed class OrderListItemIdentifier {
     class SectionHeaderIdentifier(val title: TimeGroup) : OrderListItemIdentifier()
-    class OrderIdentifier(val remoteId: RemoteId, var isLastItemInSection: Boolean = false) : OrderListItemIdentifier()
+    class OrderIdentifier(val orderId: Long, var isLastItemInSection: Boolean = false) : OrderListItemIdentifier()
 }

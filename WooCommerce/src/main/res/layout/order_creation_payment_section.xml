@@ -24,6 +24,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:accessibilityHeading="true"
                 android:text="@string/order_creation_payment"
                 android:textAppearance="?attr/textAppearanceHeadline6" />
 
@@ -41,7 +42,9 @@
             android:gravity="center"
             android:minHeight="@dimen/major_300"
             android:orientation="horizontal"
-            android:paddingHorizontal="@dimen/major_100">
+            android:paddingHorizontal="@dimen/major_100"
+            android:focusable="true"
+            android:focusableInTouchMode="false">
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/products_total_label"
@@ -126,7 +129,9 @@
             android:gravity="center"
             android:minHeight="@dimen/major_300"
             android:orientation="horizontal"
-            android:paddingHorizontal="@dimen/major_100">
+            android:paddingHorizontal="@dimen/major_100"
+            android:focusable="true"
+            android:focusableInTouchMode="false">
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tax_label"
@@ -150,7 +155,9 @@
             android:gravity="center"
             android:minHeight="@dimen/major_300"
             android:orientation="horizontal"
-            android:paddingHorizontal="@dimen/major_100">
+            android:paddingHorizontal="@dimen/major_100"
+            android:focusable="true"
+            android:focusableInTouchMode="false">
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/order_total_label"
@@ -159,7 +166,8 @@
                 android:layout_weight="1"
                 android:text="@string/order_creation_payment_order_total"
                 android:textAppearance="?attr/textAppearanceSubtitle1"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/order_total_value"

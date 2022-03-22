@@ -6,32 +6,41 @@
     android:layout_height="wrap_content"
     app:layoutDescription="@xml/layout_order_creation_customer_info_scene">
 
-    <TextView
-        android:id="@+id/name"
-        android:layout_width="wrap_content"
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/name_email"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/major_100"
-        android:textAppearance="?attr/textAppearanceSubtitle1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="George Costanza" />
+        android:focusable="true"
+        android:focusableInTouchMode="false"
+        android:orientation="vertical"
+        android:layout_marginStart="@dimen/major_100">
 
-    <TextView
-        android:id="@+id/email"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?attr/textAppearanceBody2"
-        app:layout_constraintStart_toStartOf="@id/name"
-        app:layout_constraintTop_toBottomOf="@id/name"
-        tools:text="george@woo.com" />
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceSubtitle1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="George Costanza" />
+
+        <TextView
+            android:id="@+id/email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceBody2"
+            app:layout_constraintStart_toStartOf="@id/name"
+            app:layout_constraintTop_toBottomOf="@id/name"
+            tools:text="george@woo.com" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
     <View
         android:id="@+id/name_divider"
         style="@style/Woo.Divider"
         android:layout_width="0dp"
         android:layout_marginTop="@dimen/minor_100"
-        app:layout_constraintStart_toStartOf="@id/email"
-        app:layout_constraintTop_toBottomOf="@id/email" />
+        app:layout_constraintStart_toStartOf="@id/name_email"
+        app:layout_constraintTop_toBottomOf="@id/name_email" />
 
     <TextView
         android:id="@+id/shipping_header"
@@ -90,7 +99,6 @@
         android:layout_height="wrap_content"
         android:clickable="true"
         android:focusable="true"
-        android:importantForAccessibility="no"
         android:text="@string/orderdetail_show_billing"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
