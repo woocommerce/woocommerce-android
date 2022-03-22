@@ -933,6 +933,7 @@
     <string name="card_reader_refund_failed_invalid_amount">The refund amount is not allowed for the card presented</string>
     <string name="card_reader_refund_failed_test_card">System test cards are not permitted for refund</string>
     <string name="card_reader_refund_failed_ok">OK</string>
+    <string name="card_reader_refund_failed_cancelled">Refund cancelled</string>
     <!--
         Card Reader Payments
     -->
