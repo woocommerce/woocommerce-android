@@ -51,6 +51,7 @@ class ProductReviewsFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentReviewsListBinding.bind(view)
+        setupViews()
         setupObservers()
     }
 
@@ -61,9 +62,7 @@ class ProductReviewsFragment :
         _binding = null
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
+    private fun setupViews() {
         _reviewsAdapter = ReviewListAdapter(this)
 
         binding.reviewsList.apply {
