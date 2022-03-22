@@ -10,6 +10,9 @@ import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_REVIEWS_LOAD_FAI
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.reviews.ReviewModerationConsumer
+import com.woocommerce.android.ui.reviews.ReviewModerationHandler
+import com.woocommerce.android.ui.reviews.observeModerationEvents
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.PRODUCTS
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -26,10 +29,16 @@ import javax.inject.Inject
 class ProductReviewsViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val networkStatus: NetworkStatus,
-    private val reviewsRepository: ProductReviewsRepository
-) : ScopedViewModel(savedState) {
+    private val reviewsRepository: ProductReviewsRepository,
+    private val reviewModerationHandler: ReviewModerationHandler
+) : ScopedViewModel(savedState), ReviewModerationConsumer {
     private val _reviewList = MutableLiveData<List<ProductReview>>()
-    val reviewList: LiveData<List<ProductReview>> = _reviewList
+
+    override val ReviewModerationConsumer.reviewModerationHandler: ReviewModerationHandler
+        get() = this@ProductReviewsViewModel.reviewModerationHandler
+
+    override val ReviewModerationConsumer.rawReviewList: LiveData<List<ProductReview>>
+        get() = _reviewList
 
     val productReviewsViewStateData = LiveDataDelegate(savedState, ProductReviewsViewState())
     private var productReviewsViewState by productReviewsViewStateData
@@ -40,6 +49,7 @@ class ProductReviewsViewModel @Inject constructor(
         if (_reviewList.value == null) {
             loadProductReviews()
         }
+        launch { observeModerationEvents() }
     }
 
     fun refreshProductReviews() {
@@ -55,6 +65,12 @@ class ProductReviewsViewModel @Inject constructor(
 
         productReviewsViewState = productReviewsViewState.copy(isLoadingMore = true)
         launch { fetchProductReviews(remoteProductId = navArgs.remoteProductId, loadMore = true) }
+    }
+
+    override fun ReviewModerationConsumer.reloadReviewsFromCache() {
+        launch {
+            _reviewList.value = reviewsRepository.getProductReviewsFromDB(navArgs.remoteProductId)
+        }
     }
 
     private fun loadProductReviews() = launch {

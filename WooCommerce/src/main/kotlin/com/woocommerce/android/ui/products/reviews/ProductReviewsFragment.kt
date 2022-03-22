@@ -18,6 +18,9 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.reviews.ReviewListAdapter
+import com.woocommerce.android.ui.reviews.ReviewModerationUi
+import com.woocommerce.android.ui.reviews.observeModerationStatus
+import com.woocommerce.android.ui.reviews.reviewList
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.SkeletonView
@@ -28,7 +31,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ProductReviewsFragment :
     BaseFragment(R.layout.fragment_reviews_list),
-    ReviewListAdapter.OnReviewClickListener {
+    ReviewListAdapter.OnReviewClickListener,
+    ReviewModerationUi {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     val viewModel: ProductReviewsViewModel by viewModels()
@@ -114,6 +118,11 @@ class ProductReviewsFragment :
                 showReviewList(it)
             }
         )
+
+        observeModerationStatus(
+            reviewModerationConsumer = viewModel,
+            uiMessageResolver = uiMessageResolver
+        )
     }
 
     private fun showReviewList(reviews: List<ProductReview>) {
@@ -148,7 +157,7 @@ class ProductReviewsFragment :
         (activity as? MainNavigationRouter)?.showReviewDetail(
             review.remoteId,
             launchedFromNotification = false,
-            enableModeration = false
+            enableModeration = true
         )
     }
 }
