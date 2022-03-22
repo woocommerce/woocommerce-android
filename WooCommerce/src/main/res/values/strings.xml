@@ -1860,6 +1860,7 @@
     <string name="empty_inbox_description">Come back soon for more tips and insights on growing your store</string>
 
     <!-- coupons -->
+    <string name="coupons">Coupons</string>
     <string name="coupon_list_item_label_active">Active</string>
     <string name="coupon_list_item_label_expired">Expired</string>
     <string name="coupon_list_item_label_off">Off</string>
