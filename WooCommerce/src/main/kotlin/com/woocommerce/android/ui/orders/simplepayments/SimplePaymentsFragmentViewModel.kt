@@ -181,8 +181,4 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
 
     object ShowCustomerNoteEditor : MultiLiveEvent.Event()
     object ShowTakePaymentScreen : MultiLiveEvent.Event()
-
-    companion object {
-        const val EMPTY_TAX_RATE = "0.00"
-    }
 }
