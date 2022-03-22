@@ -47,7 +47,6 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
     val orderDraft
         get() = order.copy(
             total = viewState.orderTotal,
-            taxLines = viewState.orderTaxes,
             customerNote = viewState.customerNote
         )
 
@@ -68,18 +67,17 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
     }
 
     private fun updateViewState(chargeTaxes: Boolean) {
-        if (chargeTaxes) {
-            viewState = viewState.copy(
+        viewState = if (chargeTaxes) {
+            viewState.copy(
                 chargeTaxes = true,
                 orderSubtotal = feeLineTotal,
                 orderTaxes = order.taxLines,
                 orderTotal = order.total
             )
         } else {
-            viewState = viewState.copy(
+            viewState.copy(
                 chargeTaxes = false,
                 orderSubtotal = feeLineTotal,
-                orderTaxes = emptyList(),
                 orderTotal = feeLineTotal
             )
         }
