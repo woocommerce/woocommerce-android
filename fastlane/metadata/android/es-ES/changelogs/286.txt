@@ -1,0 +1,4 @@
+8.7:
+¿Sabías que hemos lanzado una función beta para crear pedidos? Ve a la pestaña Menú, toca el icono de los ajustes y desplázate hacia las funciones beta. ¡Acabamos de añadir tarifas y gastos de envío!
+
+Hemos corregido un error poco frecuente, por el que a veces las notas de un pedido aparecían incorrectamente. ¡Gracias por tu opinión!

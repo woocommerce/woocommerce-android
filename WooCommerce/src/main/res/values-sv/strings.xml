@@ -1,11 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-02-15 18:54:03+0000
+Translation-Revision-Date: 2022-03-10 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="dismiss_inbox_note">Avfärda</string>
+    <string name="login_error_xml_rpc_auth_error_communicating">Det uppstod ett problem med att kommunicera med webbplatsen. En HTTP-felkod 401 returnerades.</string>
+    <string name="login_error_xml_rpc_cannot_read_site_auth_required">Anrop med XML-RPC verkar blockerade på denna webbplats (felkod 401). Om försöket att logga in misslyckas tryck på hjälpikonen för att se vanliga frågor.</string>
+    <string name="login_error_xml_rpc_cannot_read_site">Kunde inte läsa WordPress-webbplatsen på denna URL. Tryck på hjälpikonen för att se vanliga frågor.</string>
+    <string name="login_error_xml_rpc_services_disabled">Tjänsten för XML-RPC är inaktiverad på denna webbplats.</string>
+    <string name="a8c_email_message">Använd en e-postadress som inte är kopplad till Automattic för att skicka in ett supportärende</string>
+    <string name="card_reader_onboarding_stripe_account_in_unsupported_country">Vi stöder inte Stripe-konton som är registrerade i %1$s</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">Vi stöder inte WooCommerce Payments i %1$s</string>
+    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Vi stöder inte Stripe i %1$s</string>
+    <string name="card_reader_connect_scanning_hint">Tryck på strömknappen på din läsare</string>
+    <string name="card_reader_payment_reader_receipt_sent">Ett kvitto har skickats till &lt;strong&gt;%s&lt;/strong&gt;</string>
+    <string name="order_creation_fee_percentage_toggle_text">Procentuell avgift</string>
+    <string name="order_creation_fee_percentage_hint">Procent (%)</string>
+    <string name="order_creation_fee_amount_hint">Belopp ($)</string>
+    <string name="order_creation_add_fee_removal_hint">Ta bort avgift från beställning</string>
+    <string name="order_creation_remove_shipping">Ta bort frakt från beställning</string>
+    <string name="order_creation_edit_shipping">Frakt</string>
+    <string name="order_creation_add_shipping">Lägg till frakt</string>
+    <string name="order_creation_shipping_title_add">Lägg till frakt</string>
+    <string name="order_creation_shipping_name">Namn</string>
+    <string name="order_creation_shipping_amount">Belopp</string>
+    <string name="order_creation_payment_fee">Avgifter</string>
+    <string name="order_creation_customer_details">Kunddetaljer</string>
+    <string name="order_creation_add_fee">Lägg till avgift</string>
+    <string name="order_creation_customer_note_edit_content_description">Redigera kundanteckning</string>
+    <string name="order_creation_customer_edit_content_description">Redigera kunddetaljer</string>
+    <string name="order_creation_status_edit_content_description">Redigera beställningsstatus</string>
+    <string name="simple_payments_update_error">Beställningen med enkel betalning gick inte att uppdatera</string>
+    <string name="simple_payments_creation_error">Beställningen med enkel betalning gick inte att skapa</string>
+    <string name="more_menu_avatar">Användarens profilbild</string>
+    <string name="more_menu_button_reviews">Recensioner</string>
+    <string name="more_menu_button_store">Visa butik</string>
+    <string name="more_menu_button_inbox">Inkorg</string>
+    <string name="more_menu_button_analytics">Analyser</string>
+    <string name="more_menu_button_payments">Betalningar</string>
+    <string name="more_menu_button_woo_admin">WooCommerce-admin</string>
+    <string name="more_menu">Meny</string>
     <string name="card_reader_onboarding_both_plugins_activated_refresh_button">Uppdatera efter uppdatering</string>
     <string name="card_reader_onboarding_both_plugins_activated_open_store_admin_label">Hantera tillägg</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_two">WooCommerce Payments</string>
@@ -88,10 +125,9 @@ Language: sv_SE
     <string name="order_creation_new_customer_add_different_shipping_address">Lägg till en annan leveransadress</string>
     <string name="order_creation_product_instock">I lager</string>
     <string name="order_creation_product_stock_quantity">%s i lager</string>
-    <string name="order_creation_customer_details">Ny kund</string>
     <string name="order_creation_add_products">Lägg till produkt</string>
     <string name="order_creation_products">Produkter</string>
-    <string name="order_creation_add_customer">Lägg till kund</string>
+    <string name="order_creation_add_customer">Lägg till kunddetaljer</string>
     <string name="order_creation_customer">Kund</string>
     <string name="simple_payments_cash_dlg_button">Markera som betald</string>
     <string name="simple_payments_cash_dlg_message">Detta kommer att skapa din beställning och markera den som slutförd om du har mottagit betalning utanför WooCommerce</string>
@@ -147,7 +183,6 @@ Language: sv_SE
     <string name="date_timeframe_last_week">Förra veckan</string>
     <string name="settings_enable_order_creation_teaser_message">Testa att skapa beställningar med fullständig information medan vi gör oss redo för lansering</string>
     <string name="settings_enable_order_creation_teaser_title">Skapande av beställning</string>
-    <string name="settings_enable_simple_payments_teaser_title">Enkla betalningar</string>
     <string name="beta_features_order_creation">Skapande av beställning</string>
     <string name="beta_features_simple_payments">Enkla betalningar</string>
     <string name="beta_features_add_ons">Visa utökningar</string>
@@ -166,7 +201,6 @@ Language: sv_SE
     <string name="orderlist_bottom_sheet_create_order_description">Skapa en ny manuell beställning</string>
     <string name="orderlist_bottom_sheet_create_order_action">Skapa beställning</string>
     <string name="orderlist_create_order_button_description">Skapa beställning</string>
-    <string name="simple_payments_creation_error">Kan inte skapa beställning</string>
     <string name="simple_payments_enter_amount">Ange belopp</string>
     <string name="simple_payments_dialog_title">Ta emot betalning</string>
     <string name="orderlist_simple_payments_menu">Enkel betalning</string>
@@ -205,7 +239,6 @@ Language: sv_SE
     <string name="orderfilters_default_filter_option">Alla</string>
     <string name="orderfilters_filter_card_title_filtered_orders">Filtrerade beställningar</string>
     <string name="orderfilters_filter_card_title_all_orders">Alla beställningar</string>
-    <string name="orderlist_simple_payments_wip_message_disabled">Vi arbetar på att göra det enklare för dig att ta emot betalningar från din enhet! Aktivera det i Inställningar &gt; Beta-funktioner.</string>
     <string name="orderlist_simple_payments_wip_message_enabled">Vi arbetar på att göra det enklare för dig att ta emot betalningar från din enhet! För tillfället kan du trycka på \"+\"-knappen för att skapa en beställning med det belopp som du vill ta emot.</string>
     <string name="jetpack_benefits_modal_dismiss">Inte nu</string>
     <string name="jetpack_benefits_modal_install_jetpack">Installera Jetpack</string>
@@ -217,7 +250,6 @@ Language: sv_SE
     <string name="jetpack_benefits_modal_push_notifications_title">Push-notiser</string>
     <string name="jetpack_benefits_modal_subtitle">Installera det kostnadsfria Jetpack-tillägget för den bästa mobilupplevelsen.</string>
     <string name="jetpack_benefits_modal_title">Få ut så mycket som möjligt av din butik</string>
-    <string name="settings_enable_simple_payments_teaser_message">Testa att skapa beställningar med minimalt med information medan vi gör oss redo för lansering</string>
     <string name="order_detail_use_as_shipping_address">Använd som leveransadress</string>
     <string name="order_detail_use_as_billing_address">Använd som faktureringsadress</string>
     <string name="orderfilters_filters_count_title">Filter (%d)</string>
@@ -542,7 +574,6 @@ Language: sv_SE
     <string name="card_reader_connect_connecting_header">Ansluter till läsaren</string>
     <string name="card_reader_connect_to_reader">Anslut läsaren</string>
     <string name="card_reader_connect_reader_found_header">Vill du ansluta läsaren %s?</string>
-    <string name="card_reader_connect_scanning_hint">Tryck på knappen på din läsare tills du ser ett blinkande blått ljus</string>
     <string name="card_reader_connect_scanning_header">Söker efter läsare</string>
     <string name="shipping_label_items_count_placeholder">Antal artiklar</string>
     <string name="orderdetail_products_recreate_shipping_label_menu">Skapa ny leveransetikett</string>
