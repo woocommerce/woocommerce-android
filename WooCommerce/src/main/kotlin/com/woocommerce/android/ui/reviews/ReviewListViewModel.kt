@@ -25,7 +25,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
@@ -175,7 +175,7 @@ class ReviewListViewModel @Inject constructor(
     private fun observeReviewUpdates() {
         viewModelScope.launch {
             unseenReviewsCountHandler.observeUnseenCount()
-                .distinctUntilChanged()
+                .drop(1)
                 .collectLatest { forceRefreshReviews() }
         }
     }
