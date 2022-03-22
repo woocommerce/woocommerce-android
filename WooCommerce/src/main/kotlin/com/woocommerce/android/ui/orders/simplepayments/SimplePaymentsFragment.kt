@@ -38,7 +38,6 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
     private val orderTaxesAdapter: OrderTaxesAdapter
         get() = _orderTaxesAdapter!!
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = FragmentSimplePaymentsBinding.bind(view)

@@ -9,7 +9,6 @@ import com.woocommerce.android.databinding.OrderTaxItemBinding
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.util.CurrencyFormatter
 
-
 class OrderTaxesAdapter(
     private val currencyFormatter: CurrencyFormatter,
     private val currencyCode: String
