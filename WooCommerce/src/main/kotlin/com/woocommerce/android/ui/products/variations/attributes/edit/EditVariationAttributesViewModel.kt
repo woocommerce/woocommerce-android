@@ -43,8 +43,7 @@ class EditVariationAttributesViewModel @Inject constructor(
         )
     }
 
-    private val parentProduct
-        get() = productRepository.getProduct(viewState.parentProductID)
+    private val parentProduct by lazy { productRepository.getProduct(viewState.parentProductID) }
 
     private val hasChanges
         get() = editableVariationAttributeList.value?.toTypedArray()
