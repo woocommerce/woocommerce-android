@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.coupons
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,10 +14,13 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,11 +47,35 @@ fun CouponListContainer(state: CouponListState) {
             coupons = state.coupons,
             currencyCode = state.currencyCode
         )
+        state.coupons.isEmpty() -> EmptyCouponList()
     }
 }
 
 @Composable
-fun CouponList(coupons: List<CouponUi>, currencyCode: String?) {
+fun EmptyCouponList() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 32.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = stringResource(id = R.string.coupon_list_empty_heading),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.h6,
+            modifier = Modifier.padding(start = 24.dp, end = 24.dp)
+        )
+        Spacer(Modifier.size(54.dp))
+        Image(
+            painter = painterResource(id = R.drawable.img_empty_coupon_list),
+            contentDescription = null,
+        )
+    }
+}
+
+@Composable
+fun CouponList(coupons: List<CouponUi>, currencyCode: String? = null) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(0.dp),
         modifier = Modifier
@@ -218,5 +246,12 @@ fun CouponListPreview() {
         ),
     )
 
-    CouponList(coupons = coupons, "$")
+    CouponList(coupons = coupons, "USD")
+}
+
+@ExperimentalFoundationApi
+@Preview
+@Composable
+fun CouponListEmptyPreview() {
+    EmptyCouponList()
 }
