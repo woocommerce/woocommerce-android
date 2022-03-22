@@ -1,4 +1,6 @@
-apply plugin: JacocoPlugin
+allprojects {
+    apply plugin: JacocoPlugin
+}
 
 jacoco {
     toolVersion = "0.8.7"
