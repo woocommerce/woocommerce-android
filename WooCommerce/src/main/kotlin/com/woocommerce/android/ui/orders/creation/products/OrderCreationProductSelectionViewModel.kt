@@ -10,7 +10,6 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.ShowProductVariations
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
-import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -89,15 +88,15 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
     }
 
     fun searchProductList(query: String, loadMore: Boolean = false, delayed: Boolean = false) {
-        WooLog.e(WooLog.T.PRODUCTS, "query=$query")
         viewState = viewState.copy(query = query, isEmptyViewShowing = false)
         searchJob?.cancel()
         searchJob = launch {
-            // we delay the search while the user is typing so that the search is more
-            // likely to be submitted when they're done typing - if they continue to
-            // type, this will get called again during the delay and cancelled above
             if (delayed) {
                 delay(SEARCH_TYPING_DELAY_MS)
+            }
+            if (query.isEmpty()) {
+                productList.value = emptyList()
+                return@launch
             }
             productListRepository.searchProductList(query, loadMore)
                 ?.takeIf { query == productListRepository.lastSearchQuery }
