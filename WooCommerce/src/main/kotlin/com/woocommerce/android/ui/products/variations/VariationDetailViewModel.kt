@@ -44,7 +44,7 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import java.math.BigDecimal
-import java.util.*
+import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -319,6 +319,7 @@ class VariationDetailViewModel @Inject constructor(
             val variationInDb = variationRepository.getVariation(remoteProductId, remoteVariationId)
             if (variationInDb != null) {
                 originalVariation = variationInDb
+                showVariation(variationInDb)
                 fetchVariation(remoteProductId, remoteVariationId)
             } else {
                 viewState = viewState.copy(isSkeletonShown = true)
