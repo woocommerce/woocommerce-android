@@ -104,7 +104,7 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
             ?.takeIf { loadedMore && searchResult differsFrom it }
             ?.let { searchResult + it }
             ?: searchResult
-        viewState = viewState.copy(isEmptyViewShowing = searchResult.isEmpty() && !loadedMore)
+        viewState = viewState.copy(isEmptyViewShowing = productListData.value?.isEmpty())
     }
 
     fun onSearchOpened() {
