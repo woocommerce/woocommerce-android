@@ -11,14 +11,14 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 interface ReviewModerationUi
 
 fun ReviewModerationUi.observeModerationStatus(
-    reviewModerationViewModel: ReviewModerationConsumer,
+    reviewModerationConsumer: ReviewModerationConsumer,
     uiMessageResolver: UIMessageResolver
 ) {
     if (this !is Fragment) error("This function can be called only on a Fragment receiver")
 
     var changeReviewStatusSnackbar: Snackbar? = null
 
-    reviewModerationViewModel.pendingReviewModerationStatus.observe(viewLifecycleOwner) { status ->
+    reviewModerationConsumer.pendingReviewModerationStatus.observe(viewLifecycleOwner) { status ->
         changeReviewStatusSnackbar?.dismiss()
         when (status.actionStatus) {
             ActionStatus.PENDING -> {
@@ -27,7 +27,7 @@ fun ReviewModerationUi.observeModerationStatus(
                     ProductReviewStatus.getLocalizedLabel(context, status.newStatus)
                         .lowercase(),
                     actionText = getString(R.string.undo),
-                    actionListener = { reviewModerationViewModel.undoModerationRequest() }
+                    actionListener = { reviewModerationConsumer.undoModerationRequest() }
                 ).also {
                     it.show()
                 }
