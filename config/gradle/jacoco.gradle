@@ -7,7 +7,8 @@ jacoco {
 }
 
 rootProject.afterEvaluate {
-    tasks.create(name: "jacocoTestReport", type: JacocoReport, dependsOn: [':WooCommerce:testWasabiDebugUnitTest', ':libs:cardreader:testDebugUnitTest']) {
+    tasks.register("jacocoTestReport", JacocoReport) {
+        dependsOn(':WooCommerce:testWasabiDebugUnitTest', ':libs:cardreader:testDebugUnitTest')
 
         group = "Reporting"
         description = "Generate Jacoco coverage reports for WasabiDebug variant"
