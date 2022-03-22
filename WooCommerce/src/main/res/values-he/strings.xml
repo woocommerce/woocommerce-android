@@ -1,11 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-03-03 22:41:55+0000
+Translation-Revision-Date: 2022-03-10 09:54:11+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="dismiss_inbox_note">ביטול</string>
+    <string name="login_error_xml_rpc_auth_error_communicating">הייתה בעיה בתקשורת עם האתר הזה. הוחזר קוד שגיאה של HTTP מסוג 401.</string>
+    <string name="login_error_xml_rpc_cannot_read_site_auth_required">נראה שקריאות XML-RPC חסומות באתר הזה (קוד שגיאה 401). אם הניסיון להתחברות נכשל, יש להקיש על סמל העזרה כדי להציג את השאלות הנפוצות.</string>
+    <string name="login_error_xml_rpc_cannot_read_site">לא ניתן לקרוא את אתר WordPress בכתובת URL זו. יש להקיש על סמל העזרה כדי להציג את השאלות הנפוצות.</string>
+    <string name="login_error_xml_rpc_services_disabled">שירותי XML-RPC באתר זה מנותקים.</string>
+    <string name="a8c_email_message">יש להשתמש באימייל שאינו של Automattic כדי לשלוח כרטיס לתמיכה</string>
+    <string name="card_reader_onboarding_stripe_account_in_unsupported_country">אנחנו לא תומכים בחשבונות של Stripe שרשומים בתוך ⁦%1$s⁩</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">אנחנו לא תומכים ב-WooCommerce Payments בתוך ⁦%1$s⁩</string>
+    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">אנחנו לא תומכים ב-Stripe בתוך ⁦%1$s⁩</string>
+    <string name="card_reader_connect_scanning_hint">יש ללחוץ על כפתור ההפעלה של הקורא שלך</string>
+    <string name="card_reader_payment_reader_receipt_sent">הקבלה נשלחה אל &lt;strong&gt;%s&lt;/strong&gt;</string>
+    <string name="order_creation_fee_percentage_toggle_text">עמלת אחוזים</string>
+    <string name="order_creation_fee_percentage_hint">אחוזים (%)</string>
+    <string name="order_creation_fee_amount_hint">סכום ($)</string>
+    <string name="order_creation_add_fee_removal_hint">להסיר את העמלה מההזמנה</string>
+    <string name="order_creation_remove_shipping">להסיר את המשלוח מההזמנה</string>
+    <string name="order_creation_edit_shipping">משלוח</string>
+    <string name="order_creation_add_shipping">להוסיף משלוח</string>
+    <string name="order_creation_shipping_title_add">להוסיף משלוח</string>
+    <string name="order_creation_shipping_name">שם</string>
+    <string name="order_creation_shipping_amount">סכום</string>
+    <string name="order_creation_payment_fee">עמלות</string>
+    <string name="order_creation_customer_details">פרטי לקוח</string>
+    <string name="order_creation_add_fee">להוסיף עמלה</string>
+    <string name="order_creation_customer_note_edit_content_description">לערוך את הערות הלקוח</string>
+    <string name="order_creation_customer_edit_content_description">לערוך את פרטי הלקוח</string>
+    <string name="order_creation_status_edit_content_description">לערוך את סטטוס ההזמנה</string>
+    <string name="simple_payments_update_error">לא ניתן לעדכן הזמנה של תשלום פשוט</string>
+    <string name="simple_payments_creation_error">לא ניתן ליצור הזמנה של תשלום פשוט</string>
+    <string name="more_menu_avatar">תמונת פרופיל של המשתמש</string>
+    <string name="more_menu_button_reviews">ביקורות</string>
+    <string name="more_menu_button_store">להציג את החנות</string>
+    <string name="more_menu_button_inbox">תיבת דואר נכנס</string>
+    <string name="more_menu_button_analytics">נתונים אנליטיים</string>
+    <string name="more_menu_button_payments">תשלומים</string>
+    <string name="more_menu_button_woo_admin">מנהל המערכת של WooCommerce</string>
+    <string name="more_menu">תפריט</string>
     <string name="card_reader_onboarding_both_plugins_activated_refresh_button">לרענן לאחר עדכון</string>
     <string name="card_reader_onboarding_both_plugins_activated_open_store_admin_label">ניהול תוספים</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_two">WooCommerce Payments</string>
@@ -88,10 +125,9 @@ Language: he_IL
     <string name="order_creation_new_customer_add_different_shipping_address">להוסיף כתובת שונה למשלוח</string>
     <string name="order_creation_product_instock">במלאי</string>
     <string name="order_creation_product_stock_quantity">%s במלאי</string>
-    <string name="order_creation_customer_details">לקוח חדש</string>
     <string name="order_creation_add_products">להוסיף מוצר</string>
     <string name="order_creation_products">מוצרים</string>
-    <string name="order_creation_add_customer">להוסיף לקוח</string>
+    <string name="order_creation_add_customer">להוסיף את פרטי הלקוח</string>
     <string name="order_creation_customer">לקוח</string>
     <string name="simple_payments_cash_dlg_button">לסמן כ\'שולמה\'</string>
     <string name="simple_payments_cash_dlg_message">הפעולה הזאת תיצור את ההזמנה ותסמן אותה בתור \'שולמה\' אם קיבלת תשלום מחוץ ל-WooCommerce</string>
@@ -147,7 +183,6 @@ Language: he_IL
     <string name="date_timeframe_last_week">השבוע הקודם</string>
     <string name="settings_enable_order_creation_teaser_message">כדאי לבדוק את האפשרות ליצור הזמנות עם הפרטים המלאים בזמן שאנחנו מתכוננים להשקה</string>
     <string name="settings_enable_order_creation_teaser_title">יצירת הזמנה</string>
-    <string name="settings_enable_simple_payments_teaser_title">תשלומים פשוטים</string>
     <string name="beta_features_order_creation">יצירת הזמנה</string>
     <string name="beta_features_simple_payments">תשלומים פשוטים</string>
     <string name="beta_features_add_ons">להציג הרחבות</string>
@@ -166,7 +201,6 @@ Language: he_IL
     <string name="orderlist_bottom_sheet_create_order_description">ליצור הזמנה ידנית חדשה</string>
     <string name="orderlist_bottom_sheet_create_order_action">ליצור הזמנה</string>
     <string name="orderlist_create_order_button_description">ליצור הזמנה</string>
-    <string name="simple_payments_creation_error">אין אפשרות ליצור הזמנה</string>
     <string name="simple_payments_enter_amount">להזין סכום</string>
     <string name="simple_payments_dialog_title">לגבות תשלום</string>
     <string name="orderlist_simple_payments_menu">תשלום פשוט</string>
@@ -205,7 +239,6 @@ Language: he_IL
     <string name="orderfilters_default_filter_option">הכול</string>
     <string name="orderfilters_filter_card_title_filtered_orders">הזמנות שסוננו</string>
     <string name="orderfilters_filter_card_title_all_orders">כל ההזמנות</string>
-    <string name="orderlist_simple_payments_wip_message_disabled">אנחנו עובדים על השיפור של תהליך קבלת התשלומים מהמכשיר שלך! ניתן להפעיל את האפשרות דרך \'הגדרות\' &gt; \'אפשרויות ביתא\'.</string>
     <string name="orderlist_simple_payments_wip_message_enabled">אנחנו עובדים על השיפור של תהליך קבלת התשלומים מהמכשיר שלך! בינתיים, יש להקיש על הכפתור \'+\' ותהיה לך אפשרות ליצור הזמנה עם הסכום שברצונך לגבות.</string>
     <string name="jetpack_benefits_modal_dismiss">לא עכשיו</string>
     <string name="jetpack_benefits_modal_install_jetpack">להתקין את Jetpack</string>
@@ -217,7 +250,6 @@ Language: he_IL
     <string name="jetpack_benefits_modal_push_notifications_title">הודעות דחיפה</string>
     <string name="jetpack_benefits_modal_subtitle">להתקין את התוסף החינמי של Jetpack בשביל חוויית השימוש הטובה ביותר בנייד.</string>
     <string name="jetpack_benefits_modal_title">לנצל את מלוא הפוטנציאל של החנות שלך</string>
-    <string name="settings_enable_simple_payments_teaser_message">כדאי לבדוק את האפשרות ליצור הזמנות עם מידע חיוני בלבד בזמן שאנחנו מתכוננים להשקה</string>
     <string name="order_detail_use_as_shipping_address">להשתמש בתור כתובת למשלוח</string>
     <string name="order_detail_use_as_billing_address">להשתמש בתור כתובת לחיוב</string>
     <string name="orderfilters_filters_count_title">מסננים (%d)</string>
@@ -542,7 +574,6 @@ Language: he_IL
     <string name="card_reader_connect_connecting_header">מתחבר אל Reader</string>
     <string name="card_reader_connect_to_reader">יש להתחבר אל Reader</string>
     <string name="card_reader_connect_reader_found_header">האם ברצונך לחבר את Reader %s?</string>
-    <string name="card_reader_connect_scanning_hint">יש ללחוץ על כפתור ההפעלה ב-Reader עד שיופיע אור כחול מהבהב</string>
     <string name="card_reader_connect_scanning_header">סורק פריטים של Reader</string>
     <string name="shipping_label_items_count_placeholder">מספר הפריטים</string>
     <string name="orderdetail_products_recreate_shipping_label_menu">ליצור תווית משלוח חדשה</string>
