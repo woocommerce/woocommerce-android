@@ -56,12 +56,9 @@ rootProject.afterEvaluate {
         sourceDirectories.setFrom(files([sources]))
         classDirectories.from = files([kotlinClasses])
 
-        def executions = rootProject.subprojects.findAll { proj ->
-            def path = "${proj.buildDir}/jacoco/testWasabiDebugUnitTest.exec"
-            (new File(path)).exists()
-        }.collect { proj ->
-            "${proj.buildDir}/jacoco/testWasabiDebugUnitTest.exec"
-        }
-        executionData.from = files(executions)
+        executionData.from = files([
+                "WooCommerce/build/jacoco/testWasabiDebugUnitTest.exec",
+                "libs/cardreader/build/jacoco/testDebugUnitTest.exec"
+        ])
     }
 }
