@@ -2363,7 +2363,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             errorMapper = errorMapper,
             interacRefundErrorMapper = interacRefundErrorMapper,
             wooStore = wooStore,
-            dispatchers = coroutinesTestRule.testDispatchers
+            dispatchers = coroutinesTestRule.testDispatchers,
+            cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper
         )
     }
 }
