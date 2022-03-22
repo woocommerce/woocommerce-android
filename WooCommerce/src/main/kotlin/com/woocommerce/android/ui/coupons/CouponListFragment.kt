@@ -7,12 +7,19 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.FeedbackPrefs
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentCouponListBinding
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.feedback.SurveyType
+import com.woocommerce.android.ui.orders.list.OrderListFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -65,10 +72,32 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
         binding.couponsWIPcard.initView(
             getString(R.string.coupon_list_wip_title),
             getString(R.string.coupon_list_wip_message_enabled),
-            onGiveFeedbackClick = { },
+            onGiveFeedbackClick = { onGiveFeedbackClicked() },
             onDismissClick = { },
             showFeedbackButton = true
         )
+    }
+
+    private fun onGiveFeedbackClicked() {
+        AnalyticsTracker.track(
+            AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
+            mapOf(
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_COUPONS_FEEDBACK,
+                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
+            )
+        )
+        registerFeedbackSetting(FeatureFeedbackSettings.FeedbackState.GIVEN)
+
+        NavGraphMainDirections
+            .actionGlobalFeedbackSurveyFragment(SurveyType.COUPONS)
+            .apply { findNavController().navigateSafely(this) }
+    }
+
+    private fun registerFeedbackSetting(state: FeatureFeedbackSettings.FeedbackState) {
+        FeatureFeedbackSettings(
+            FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS.name,
+            state
+        ).registerItselfWith(OrderListFragment.TAG)
     }
 
     override fun onDestroyView() {
