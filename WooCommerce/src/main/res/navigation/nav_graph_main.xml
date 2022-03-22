@@ -227,9 +227,6 @@
         <argument
             android:name="launchedFromNotification"
             app:argType="boolean" />
-        <argument
-            android:name="enableModeration"
-            app:argType="boolean" />
     </action>
     <fragment
         android:id="@+id/reviewDetailFragment"
@@ -246,9 +243,6 @@
             app:nullable="true" />
         <argument
             android:name="launchedFromNotification"
-            app:argType="boolean" />
-        <argument
-            android:name="enableModeration"
             app:argType="boolean" />
         <action
             android:id="@+id/action_reviewDetailFromNotification_to_reviewListFragment"
