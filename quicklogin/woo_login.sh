@@ -1,7 +1,7 @@
 #!/bin/bash -eu
 
 # PASS WORDPRESS_EMAIL and WORDPRESS_PASSWORD as env variable to the script
-# Example: WORDPRESS_EMAIL=my_wp_email@gmail.com  WORDPRESS_PASSWORD=my_pasword_1_# /quicklogin/woo_login.sh
+# Example: WORDPRESS_EMAIL=my_wp_email@gmail.com  WORDPRESS_PASSWORD=my_pasword_1_# ./quicklogin/woo_login.sh
 
 ~/Library/Android/sdk/platform-tools/adb shell pm clear com.woocommerce.android.prealpha
 
