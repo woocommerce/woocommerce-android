@@ -10,12 +10,14 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.ShowProductVariations
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
@@ -86,10 +88,17 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
         }
     }
 
-    fun searchProductList(query: String, loadMore: Boolean = false) {
+    fun searchProductList(query: String, loadMore: Boolean = false, delayed: Boolean = false) {
+        WooLog.e(WooLog.T.PRODUCTS, "query=$query")
         viewState = viewState.copy(query = query, isEmptyViewShowing = false)
         searchJob?.cancel()
         searchJob = launch {
+            // we delay the search while the user is typing so that the search is more
+            // likely to be submitted when they're done typing - if they continue to
+            // type, this will get called again during the delay and cancelled above
+            if (delayed) {
+                delay(SEARCH_TYPING_DELAY_MS)
+            }
             productListRepository.searchProductList(query, loadMore)
                 ?.takeIf { query == productListRepository.lastSearchQuery }
                 ?.let { handleSearchResult(it, loadMore) }
@@ -146,4 +155,8 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
     ) : Parcelable
 
     data class AddProduct(val productId: Long) : MultiLiveEvent.Event()
+
+    companion object {
+        private const val SEARCH_TYPING_DELAY_MS = 500L
+    }
 }

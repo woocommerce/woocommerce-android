@@ -193,6 +193,7 @@ class OrderCreationProductSelectionFragment :
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
+        newText?.let { productListViewModel.searchProductList(it, delayed = true) }
         return true
     }
 
