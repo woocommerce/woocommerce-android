@@ -14,6 +14,8 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineStart.LAZY
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
@@ -34,11 +36,12 @@ class EditVariationAttributesViewModel @Inject constructor(
     val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateLiveData
 
-    private val selectedVariation
-        get() = variationRepository.getVariation(
+    private val selectedVariationDeferred = async(start = LAZY) {
+        variationRepository.getVariation(
             viewState.parentProductID,
             viewState.editableVariationID
         )
+    }
 
     private val parentProduct
         get() = productRepository.getProduct(viewState.parentProductID)
@@ -83,9 +86,9 @@ class EditVariationAttributesViewModel @Inject constructor(
             }
         }
 
-    private fun List<ProductAttribute>.pairAttributeWithSelectedOption() =
+    private suspend fun List<ProductAttribute>.pairAttributeWithSelectedOption() =
         mapNotNull { attribute ->
-            selectedVariation?.attributes
+            selectedVariationDeferred.await()?.attributes
                 ?.find { it.name == attribute.name }
                 ?.let { Pair(attribute, it) }
         }
