@@ -1,11 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-02-15 18:54:03+0000
+Translation-Revision-Date: 2022-03-10 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="dismiss_inbox_note">Ausblenden</string>
+    <string name="login_error_xml_rpc_auth_error_communicating">Bei dem Versuch, mit der Website zu kommunizieren, ist ein Problem aufgetreten. Es wurde ein HTTP-Fehlercode 401 zurückgegeben.</string>
+    <string name="login_error_xml_rpc_cannot_read_site_auth_required">XML-RPC-Anrufe sind auf dieser Website anscheinend blockiert (Fehlercode 401). Wenn der Anmeldeversuch fehlschlägt, tippe auf das Hilfe-Icon, um die FAQ anzuzeigen.</string>
+    <string name="login_error_xml_rpc_cannot_read_site">Unter dieser URL kann keine WordPress-Website gefunden werden. Tippe auf das Hilfe-Icon, um die FAQ anzuzeigen.</string>
+    <string name="login_error_xml_rpc_services_disabled">Der XML-RPC-Service wurde auf dieser Website deaktiviert.</string>
+    <string name="a8c_email_message">Bitte verwende eine E-Mail-Adresse, die nicht von Automattic ist, um ein Support-Ticket einzureichen</string>
+    <string name="card_reader_onboarding_stripe_account_in_unsupported_country">Stripe-Konten, die in %1$s registriert sind, werden nicht unterstützt</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">WooCommerce Payments wird in %1$s nicht unterstützt</string>
+    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Stripe wird in %1$s nicht unterstützt</string>
+    <string name="card_reader_connect_scanning_hint">Drücke den Einschalt-Button deines Kartenlesegeräts</string>
+    <string name="card_reader_payment_reader_receipt_sent">Es wurde ein Beleg an &lt;strong&gt;%s&lt;/strong&gt; gesendet</string>
+    <string name="order_creation_fee_percentage_toggle_text">Prozentuale Gebühr</string>
+    <string name="order_creation_fee_percentage_hint">Prozentsatz (%)</string>
+    <string name="order_creation_fee_amount_hint">Betrag ($)</string>
+    <string name="order_creation_add_fee_removal_hint">Gebühr aus Bestellung entfernen</string>
+    <string name="order_creation_remove_shipping">Versand aus Bestellung entfernen</string>
+    <string name="order_creation_edit_shipping">Versand</string>
+    <string name="order_creation_add_shipping">Versand hinzufügen</string>
+    <string name="order_creation_shipping_title_add">Versand hinzufügen</string>
+    <string name="order_creation_shipping_name">Name</string>
+    <string name="order_creation_shipping_amount">Betrag</string>
+    <string name="order_creation_payment_fee">Gebühren</string>
+    <string name="order_creation_customer_details">Kundendaten</string>
+    <string name="order_creation_add_fee">Gebühr hinzufügen</string>
+    <string name="order_creation_customer_note_edit_content_description">Kundenanmerkung bearbeiten</string>
+    <string name="order_creation_customer_edit_content_description">Kundendaten bearbeiten</string>
+    <string name="order_creation_status_edit_content_description">Bestellstatus bearbeiten</string>
+    <string name="simple_payments_update_error">Bestellung mit Einfachem Bezahlen konnte nicht aktualisiert werden</string>
+    <string name="simple_payments_creation_error">Bestellung mit Einfachem Bezahlen konnte nicht erstellt werden</string>
+    <string name="more_menu_avatar">Profilbild des Benutzers</string>
+    <string name="more_menu_button_reviews">Bewertungen</string>
+    <string name="more_menu_button_store">Shop anzeigen</string>
+    <string name="more_menu_button_inbox">Posteingang</string>
+    <string name="more_menu_button_analytics">Statistiken</string>
+    <string name="more_menu_button_payments">Zahlungen</string>
+    <string name="more_menu_button_woo_admin">WooCommerce Admin</string>
+    <string name="more_menu">Menü</string>
     <string name="card_reader_onboarding_both_plugins_activated_refresh_button">Nach dem Update aktualisieren</string>
     <string name="card_reader_onboarding_both_plugins_activated_open_store_admin_label">Plugins verwalten</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_two">WooCommerce-Zahlungen</string>
@@ -88,10 +125,9 @@ Language: de
     <string name="order_creation_new_customer_add_different_shipping_address">Abweichende Versandadresse hinzufügen</string>
     <string name="order_creation_product_instock">Vorrätig</string>
     <string name="order_creation_product_stock_quantity">%s vorrätig</string>
-    <string name="order_creation_customer_details">Neukunde</string>
     <string name="order_creation_add_products">Produkt hinzufügen</string>
     <string name="order_creation_products">Produkte</string>
-    <string name="order_creation_add_customer">Kunde hinzufügen</string>
+    <string name="order_creation_add_customer">Kundendaten hinzufügen</string>
     <string name="order_creation_customer">Kunde</string>
     <string name="simple_payments_cash_dlg_button">Als bezahlt markieren</string>
     <string name="simple_payments_cash_dlg_message">Dadurch wird deine Bestellung erstellt und als bezahlt markiert, wenn du eine Zahlung außerhalb von WooCommerce erhalten hast</string>
@@ -147,7 +183,6 @@ Language: de
     <string name="date_timeframe_last_week">Letzte Woche</string>
     <string name="settings_enable_order_creation_teaser_message">Versuche, Bestellungen mit vollständigen Informationen zu erstellen, während wir uns auf den Launch vorbereiten</string>
     <string name="settings_enable_order_creation_teaser_title">Erstellung von Bestellungen</string>
-    <string name="settings_enable_simple_payments_teaser_title">Einfaches Bezahlen</string>
     <string name="beta_features_order_creation">Erstellung von Bestellungen</string>
     <string name="beta_features_simple_payments">Einfaches Bezahlen</string>
     <string name="beta_features_add_ons">Add-ons anzeigen</string>
@@ -166,7 +201,6 @@ Language: de
     <string name="orderlist_bottom_sheet_create_order_description">Neue manuelle Bestellung erstellen</string>
     <string name="orderlist_bottom_sheet_create_order_action">Bestellung erstellen</string>
     <string name="orderlist_create_order_button_description">Bestellung erstellen</string>
-    <string name="simple_payments_creation_error">Die Bestellung konnte nicht erstellt werden</string>
     <string name="simple_payments_enter_amount">Betrag eingeben</string>
     <string name="simple_payments_dialog_title">Zahlung erhalten</string>
     <string name="orderlist_simple_payments_menu">Einfaches Bezahlen</string>
@@ -205,7 +239,6 @@ Language: de
     <string name="orderfilters_default_filter_option">Alle</string>
     <string name="orderfilters_filter_card_title_filtered_orders">Gefilterte Bestellungen</string>
     <string name="orderfilters_filter_card_title_all_orders">Alle Bestellungen</string>
-    <string name="orderlist_simple_payments_wip_message_disabled">Wir arbeiten daran, es dir einfacher zu machen, Zahlungen mit deinem Gerät entgegenzunehmen! Aktiviere die Funktion unter „Einstellungen“ &gt; „Betafunktionen“.</string>
     <string name="orderlist_simple_payments_wip_message_enabled">Wir arbeiten daran, es dir einfacher zu machen, Zahlungen mit deinem Gerät entgegenzunehmen! Im Moment kannst du eine Bestellung mit dem von dir gewünschten Betrag erstellen, indem du auf den „+“-Button tippst.</string>
     <string name="jetpack_benefits_modal_dismiss">Nicht jetzt</string>
     <string name="jetpack_benefits_modal_install_jetpack">Jetpack installieren</string>
@@ -217,7 +250,6 @@ Language: de
     <string name="jetpack_benefits_modal_push_notifications_title">Push-Benachrichtigungen</string>
     <string name="jetpack_benefits_modal_subtitle">Installiere das kostenlose Jetpack-Plugin, um auf deinem Mobilgerät die bestmögliche Erfahrung zu haben.</string>
     <string name="jetpack_benefits_modal_title">Hole das Maximum aus deinem Store heraus</string>
-    <string name="settings_enable_simple_payments_teaser_message">Versuche, Bestellungen mit nur wenigen Informationen zu erstellen, während wir uns auf den Launch vorbereiten</string>
     <string name="order_detail_use_as_shipping_address">Als Lieferadresse verwenden</string>
     <string name="order_detail_use_as_billing_address">Als Rechnungsadresse verwenden</string>
     <string name="orderfilters_filters_count_title">Filter (%d)</string>
@@ -542,7 +574,6 @@ Language: de
     <string name="card_reader_connect_connecting_header">Verbindung zum Reader wird hergestellt</string>
     <string name="card_reader_connect_to_reader">Mit Reader verbinden</string>
     <string name="card_reader_connect_reader_found_header">Möchtest du Reader %s verbinden?</string>
-    <string name="card_reader_connect_scanning_hint">Klicke auf den Einschaltknopf deines Readers, bis ein blaues Licht aufleuchtet.</string>
     <string name="card_reader_connect_scanning_header">Suche nach Readern</string>
     <string name="shipping_label_items_count_placeholder">Artikelanzahl</string>
     <string name="orderdetail_products_recreate_shipping_label_menu">Neues Versandetikett erstellen</string>

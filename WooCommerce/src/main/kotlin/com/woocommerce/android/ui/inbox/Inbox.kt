@@ -24,7 +24,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.compose.animations.skeletonAnimationBrush
+import com.woocommerce.android.ui.compose.animations.skeletonAnimationBrush
 import com.woocommerce.android.ui.inbox.InboxViewModel.InboxNoteUi
 import com.woocommerce.android.ui.inbox.InboxViewModel.InboxState
 
@@ -116,7 +116,7 @@ fun InboxNoteRow(note: InboxNoteUi) {
             ) {
                 Text(
                     text = note.callToActionText.uppercase(),
-                    color = colorResource(id = R.color.color_secondary)
+                    color = MaterialTheme.colors.secondary
                 )
             }
 

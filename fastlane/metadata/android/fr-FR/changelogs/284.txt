@@ -1,4 +1,0 @@
-8,6 :
-Cette version contient une fonctionnalité utile pour les commerçants qui cherchent à enregistrer une transaction monétaire rapide appelée « paiement simple ». Acceptez rapidement un paiement par carte de crédit en personne ou envoyez à votre client un lien de paiement vers votre site !
-
-Vous verrez également que nous avons légèrement modifié les onglets et avons ajouté un onglet « Plus ». Les réglages de la boutique et quelques autres éléments ont été déplacés à cet endroit en prévision de nouvelles fonctionnalités !
