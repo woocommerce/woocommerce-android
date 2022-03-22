@@ -30,17 +30,17 @@ class PaymentChargeRepository @Inject constructor(
                 CardDataUsedForOrderPaymentResult.Error
             } else {
                 val paymentMethodDetails = result.result?.paymentMethodDetails
-                when (result.result?.paymentMethodDetails?.type) {
+                when (paymentMethodDetails?.type) {
                     "interac_present" -> {
                         CardDataUsedForOrderPaymentResult.Success(
-                            cardBrand = paymentMethodDetails?.interacCardDetails?.brand,
-                            cardLast4 = paymentMethodDetails?.interacCardDetails?.last4
+                            cardBrand = paymentMethodDetails.interacCardDetails?.brand,
+                            cardLast4 = paymentMethodDetails.interacCardDetails?.last4
                         )
                     }
                     "card_present" -> {
                         CardDataUsedForOrderPaymentResult.Success(
-                            cardBrand = paymentMethodDetails?.cardDetails?.brand,
-                            cardLast4 = paymentMethodDetails?.cardDetails?.last4
+                            cardBrand = paymentMethodDetails.cardDetails?.brand,
+                            cardLast4 = paymentMethodDetails.cardDetails?.last4
                         )
                     }
                     else ->
