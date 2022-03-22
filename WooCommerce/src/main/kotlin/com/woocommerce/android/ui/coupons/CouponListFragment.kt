@@ -73,7 +73,7 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
             getString(R.string.coupon_list_wip_title),
             getString(R.string.coupon_list_wip_message_enabled),
             onGiveFeedbackClick = { onGiveFeedbackClicked() },
-            onDismissClick = { },
+            onDismissClick = { onDismissWIPCardClicked() },
             showFeedbackButton = true
         )
     }
@@ -91,6 +91,18 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
         NavGraphMainDirections
             .actionGlobalFeedbackSurveyFragment(SurveyType.COUPONS)
             .apply { findNavController().navigateSafely(this) }
+    }
+
+    private fun onDismissWIPCardClicked() {
+        AnalyticsTracker.track(
+            AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
+            mapOf(
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_COUPONS_FEEDBACK,
+                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
+            )
+        )
+        registerFeedbackSetting(FeatureFeedbackSettings.FeedbackState.DISMISSED)
+        displayCouponsWIPCard(false)
     }
 
     private fun registerFeedbackSetting(state: FeatureFeedbackSettings.FeedbackState) {
