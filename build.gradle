@@ -82,7 +82,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = 'trunk-0ca63247edb0506e40341866541c10e3aec72288'
+    fluxCVersion = '1.38.0'
     glideVersion = '4.12.0'
     testRunnerVersion = '1.0.1'
     espressoVersion = '3.4.0'
@@ -96,7 +96,7 @@ ext {
     lifecycleVersion = '2.4.0'
     assertjVersion = '3.11.1'
     aztecVersion = 'v1.3.45'
-    flipperVersion = '0.127.0'
+    flipperVersion = '0.138.0'
     stateMachineVersion = '0.2.0'
     coreKtxVersion = '1.7.0'
     appCompatVersion = '1.4.0'
@@ -186,3 +186,5 @@ buildScan {
         uploadInBackground = false
     }
 }
+
+apply from: './config/gradle/jacoco.gradle'

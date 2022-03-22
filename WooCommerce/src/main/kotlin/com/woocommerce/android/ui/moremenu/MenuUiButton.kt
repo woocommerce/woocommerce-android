@@ -15,6 +15,7 @@ data class MenuUiButton(
 enum class MenuButtonType {
     VIEW_ADMIN,
     VIEW_STORE,
+    COUPONS,
     PRODUCT_REVIEWS,
     INBOX
 }

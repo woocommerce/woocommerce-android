@@ -1,4 +1,0 @@
-8.6:
-Esta versión incluye una función útil para los vendedores que quieran registrar una transacción monetaria rápida que denominamos pago simple. Acepta un pago con tarjeta de crédito en persona o envía al cliente un enlace de pago a tu sitio.
-
-Además, verás que hemos cambiado un poco las pestañas y hemos añadido la pestaña "Más", a la que hemos transferido los ajustes de la tienda y otros elementos para ofrecer más funciones.

@@ -91,6 +91,7 @@
     <string name="more_menu_button_analytics">Analytics</string>
     <string name="more_menu_button_inbox">Inbox</string>
     <string name="more_menu_button_store">View Store</string>
+    <string name="more_menu_button_coupons">Coupons</string>
     <string name="more_menu_button_reviews">Reviews</string>
     <string name="more_menu_avatar">User profile picture</string>
     <string name="version_with_name_param">Version %s</string>
@@ -131,12 +132,14 @@
     <string name="generic_string" translatable="false">%s</string>
     <string name="error_required_field">Required field</string>
     <string name="analytics">Analytics</string>
-    <string name="minus">Minus</string>
-    <string name="plus">Plus</string>
+    <string name="minus_one">Minus one</string>
+    <string name="plus_one">Plus one</string>
     <string name="card">Card</string>
     <string name="cash">Cash</string>
     <string name="create">Create</string>
     <string name="exclusive_or">or</string>
+    <string name="count">Count: %s</string>
+    <string name="no_sku">No SKU</string>
 
     <!--
         Date/Time Labels
@@ -875,6 +878,7 @@
     <string name="orderstatus_cancelled">Cancelled</string>
     <string name="orderstatus_refunded">Refunded</string>
     <string name="orderstatus_contentDesc">Order status</string>
+    <string name="orderstatus_contentDesc_withStatus">Order status: %s</string>
     <!--
         Add Shipment Tracking Labels
     -->
@@ -1853,6 +1857,8 @@
 
     <!-- Inbox -->
     <string name="dismiss_inbox_note">Dismiss</string>
+    <string name="empty_inbox_title">Congrats, you’ve read everything!</string>
+    <string name="empty_inbox_description">Come back soon for more tips and insights on growing your store</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>
