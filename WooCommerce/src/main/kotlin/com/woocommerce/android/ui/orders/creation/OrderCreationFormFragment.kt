@@ -305,13 +305,22 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                 val view = LayoutOrderCreationCustomerInfoBinding.inflate(layoutInflater)
                 view.name.text = "${order.billingAddress.firstName} ${order.billingAddress.lastName}"
                 view.email.text = order.billingAddress.email
-                view.shippingAddressDetails.text =
+
+                val shippingAddressDetails =
                     if (order.shippingAddress != Address.EMPTY) {
                         order.formatShippingInformationForDisplay()
                     } else {
                         order.formatBillingInformationForDisplay()
                     }
-                view.billingAddressDetails.text = order.formatBillingInformationForDisplay()
+                view.shippingAddressDetails.text = shippingAddressDetails
+                view.shippingAddressDetails.contentDescription =
+                    shippingAddressDetails.replace("\n", ". ")
+
+                val billingAddressDetails = order.formatBillingInformationForDisplay()
+                view.billingAddressDetails.text = billingAddressDetails
+                view.billingAddressDetails.contentDescription =
+                    billingAddressDetails.replace("\n", ". ")
+
                 view.customerInfoViewMoreButtonTitle.setOnClickListener {
                     view.changeState()
                 }
