@@ -18,7 +18,6 @@ class ProductReviewsRepository @Inject constructor(
     private val coroutineDispatchers: CoroutineDispatchers
 ) {
     companion object {
-        private const val PRODUCT_REVIEW_STATUS_APPROVED = "approved"
         private const val PAGE_SIZE = WCProductStore.NUM_REVIEWS_PER_FETCH
     }
 
@@ -38,8 +37,7 @@ class ProductReviewsRepository @Inject constructor(
 
         val payload = FetchProductReviewsPayload(
             selectedSite.get(), newOffset,
-            productIds = listOf(remoteProductId),
-            filterByStatus = listOf(PRODUCT_REVIEW_STATUS_APPROVED)
+            productIds = listOf(remoteProductId)
         )
         val result = productStore.fetchProductReviews(payload)
         if (result.isError) {
