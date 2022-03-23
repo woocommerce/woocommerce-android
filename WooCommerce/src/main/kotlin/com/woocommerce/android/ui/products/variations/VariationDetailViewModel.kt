@@ -265,7 +265,8 @@ class VariationDetailViewModel @Inject constructor(
 
     private suspend fun updateVariation(variation: ProductVariation) {
         if (networkStatus.isConnected()) {
-            if (variationRepository.updateVariation(variation)) {
+            val result = variationRepository.updateVariation(variation)
+            if (!result.isError) {
                 originalVariation = variation
                 showVariation(variation)
                 loadVariation(variation.remoteProductId, variation.remoteVariationId)
@@ -273,7 +274,7 @@ class VariationDetailViewModel @Inject constructor(
             } else {
                 if (
                     variation.image?.id == 0L &&
-                    variationRepository.lastUpdateVariationErrorType == ProductErrorType.INVALID_VARIATION_IMAGE_ID
+                    result.error.type == ProductErrorType.INVALID_VARIATION_IMAGE_ID
                 ) {
                     triggerEvent(ShowSnackbar(string.variation_detail_update_variation_image_error))
                 } else {
