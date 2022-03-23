@@ -1,0 +1,4 @@
+8.7:
+Wist je dat we een bèta-functie voor het aanmaken van bestellingen hebben uitgebracht? Ga naar het tabblad ‘Menu’, tik op het instellingenpictogram en scrol naar bèta-functies. We hebben zojuist kosten en verzendkosten toegevoegd!
+
+We hebben een zeldzaam probleem opgelost waarbij de opmerkingen van een bestelling soms niet juist werden weergegeven. Bedankt dat je het ons hebt laten weten!
