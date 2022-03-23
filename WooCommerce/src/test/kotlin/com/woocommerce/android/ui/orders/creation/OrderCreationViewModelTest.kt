@@ -29,35 +29,7 @@ class OrderCreationViewModelTest: BaseUnitTest() {
 
     @Before
     fun setUp() {
-        val defaultOrderItem = createOrderItem()
-        viewState = ViewState()
-        savedState = mock {
-            on { getLiveData(viewState.javaClass.name, viewState) } doReturn MutableLiveData(viewState)
-            on { getLiveData(Order.EMPTY.javaClass.name, Order.EMPTY) } doReturn MutableLiveData(Order.EMPTY)
-        }
-        createOrUpdateOrderUseCase = mock()
-        createOrderItemUseCase = mock {
-            onBlocking { invoke(123, null) } doReturn defaultOrderItem
-        }
-        parameterRepository = mock {
-            on { getParameters("parameters_key", savedState) } doReturn
-                SiteParameters(
-                    currencyCode = "",
-                    currencySymbol = null,
-                    currencyFormattingParameters = null,
-                    weightUnit = null,
-                    dimensionUnit = null,
-                    gmtOffset = 0F
-                )
-        }
-        mapItemToProductUIModel = mock {
-            onBlocking { invoke(any()) } doReturn ProductUIModel(
-                item = defaultOrderItem,
-                imageUrl = "",
-                isStockManaged = false,
-                stockQuantity = 0.0
-            )
-        }
+        initMocks()
         sut = OrderCreationViewModel(
             savedState = savedState,
             dispatchers = coroutinesTestRule.testDispatchers,
@@ -172,6 +144,38 @@ class OrderCreationViewModelTest: BaseUnitTest() {
     @Test
     fun `when editing a shipping fee, then reuse the existent one with different value`() {
 
+    }
+
+    private fun initMocks() {
+        val defaultOrderItem = createOrderItem()
+        viewState = ViewState()
+        savedState = mock {
+            on { getLiveData(viewState.javaClass.name, viewState) } doReturn MutableLiveData(viewState)
+            on { getLiveData(Order.EMPTY.javaClass.name, Order.EMPTY) } doReturn MutableLiveData(Order.EMPTY)
+        }
+        createOrUpdateOrderUseCase = mock()
+        createOrderItemUseCase = mock {
+            onBlocking { invoke(123, null) } doReturn defaultOrderItem
+        }
+        parameterRepository = mock {
+            on { getParameters("parameters_key", savedState) } doReturn
+                SiteParameters(
+                    currencyCode = "",
+                    currencySymbol = null,
+                    currencyFormattingParameters = null,
+                    weightUnit = null,
+                    dimensionUnit = null,
+                    gmtOffset = 0F
+                )
+        }
+        mapItemToProductUIModel = mock {
+            onBlocking { invoke(any()) } doReturn ProductUIModel(
+                item = defaultOrderItem,
+                imageUrl = "",
+                isStockManaged = false,
+                stockQuantity = 0.0
+            )
+        }
     }
 
     private fun createOrderItem(withId: Long = 123) = Order.Item.EMPTY.copy(productId = withId)
