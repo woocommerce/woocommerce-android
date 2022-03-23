@@ -32,16 +32,7 @@ class OrderCreationViewModelTest: BaseUnitTest() {
     @Before
     fun setUp() {
         initMocks()
-        sut = OrderCreationViewModel(
-            savedState = savedState,
-            dispatchers = coroutinesTestRule.testDispatchers,
-            orderDetailRepository = mock(),
-            orderCreationRepository = mock(),
-            mapItemToProductUiModel = mapItemToProductUIModel,
-            createOrUpdateOrderDraft = createOrUpdateOrderUseCase,
-            createOrderItem = createOrderItemUseCase,
-            parameterRepository = parameterRepository
-        )
+        createSut()
     }
 
     @Test
@@ -126,7 +117,27 @@ class OrderCreationViewModelTest: BaseUnitTest() {
 
     @Test
     fun `when decreasing variation quantity to zero, then call the full product view`() {
+        val variationOrderItem = createOrderItem().copy(productId = 0, variationId = 123)
+        createOrderItemUseCase = mock {
+            onBlocking { invoke(123, null) } doReturn variationOrderItem
+        }
+        createSut()
 
+        var lastReceivedEvent: MultiLiveEvent.Event? = null
+        sut.event.observeForever {
+            lastReceivedEvent = it
+        }
+
+        sut.onProductSelected(123)
+        sut.onIncreaseProductsQuantity(123)
+        sut.onDecreaseProductsQuantity(123)
+
+        assertThat(lastReceivedEvent).isNotNull
+        lastReceivedEvent
+            .run { this as? ShowProductDetails }
+            ?.let { showProductDetailsEvent ->
+                assertThat(showProductDetailsEvent.item.variationId).isEqualTo(123)
+            } ?: fail("Last event should be of ShowProductDetails type")
     }
 
     @Test
@@ -208,6 +219,19 @@ class OrderCreationViewModelTest: BaseUnitTest() {
     @Test
     fun `when editing a shipping fee, then reuse the existent one with different value`() {
 
+    }
+
+    private fun createSut() {
+        sut = OrderCreationViewModel(
+            savedState = savedState,
+            dispatchers = coroutinesTestRule.testDispatchers,
+            orderDetailRepository = mock(),
+            orderCreationRepository = mock(),
+            mapItemToProductUiModel = mapItemToProductUIModel,
+            createOrUpdateOrderDraft = createOrUpdateOrderUseCase,
+            createOrderItem = createOrderItemUseCase,
+            parameterRepository = parameterRepository
+        )
     }
 
     private fun initMocks() {
