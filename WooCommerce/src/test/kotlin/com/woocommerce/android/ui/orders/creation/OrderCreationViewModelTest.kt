@@ -44,6 +44,30 @@ class OrderCreationViewModelTest: BaseUnitTest() {
 
     @Test
     fun `when initializing the view model, then register the orderDraft flowState`() {
+        verify(createOrUpdateOrderUseCase).invoke(any(), any())
+    }
+
+    @Test
+    fun `when submitting customer note, then update orderDraft liveData`() {
+        var lastReceivedEvent: MultiLiveEvent.Event? = null
+        var orderDraft: Order? = null
+        sut.event.observeForever {
+            lastReceivedEvent = it
+        }
+
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+
+        sut.onCustomerNoteEdited("Customer note test")
+
+        assertThat(lastReceivedEvent).isNull()
+        assertThat(orderDraft?.customerNote).isEqualTo("Customer note test")
+    }
+
+    @Test
+    fun `when decreasing variation quantity to zero, then call the full product view`() {
+
     }
 
     @Test
