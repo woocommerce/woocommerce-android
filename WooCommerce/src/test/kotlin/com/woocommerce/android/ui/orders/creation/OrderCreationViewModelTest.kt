@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.ViewState
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.EditCustomerNote
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.ShowProductDetails
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
@@ -63,6 +64,24 @@ class OrderCreationViewModelTest: BaseUnitTest() {
 
         assertThat(lastReceivedEvent).isNull()
         assertThat(orderDraft?.customerNote).isEqualTo("Customer note test")
+    }
+
+    @Test
+    fun `when customer note click event is called, then trigger EditCustomerNote event`() {
+        var lastReceivedEvent: MultiLiveEvent.Event? = null
+        var orderDraft: Order? = null
+        sut.event.observeForever {
+            lastReceivedEvent = it
+        }
+
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+
+        sut.onCustomerNoteClicked()
+
+        assertThat(lastReceivedEvent).isNotNull
+        assertThat(lastReceivedEvent).isInstanceOf(EditCustomerNote::class.java)
     }
 
     @Test
