@@ -191,10 +191,6 @@ class OrderListAdapter(
         fun onBind(header: SectionHeader) {
             viewBinding.orderListHeader.setText(TimeGroup.valueOf(header.title.name).labelRes)
 
-            /*
-            Set the announceForAccessibility function to the heading container to allow the use of the
-            explore by touch option.
-            */
             (viewBinding.headingContainer as View).announceForAccessibility(
                 viewBinding.headingContainer.resources
                     .getString(TimeGroup.valueOf(header.title.name).labelRes)
