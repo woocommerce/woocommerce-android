@@ -1,11 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-02-15 18:54:03+0000
+Translation-Revision-Date: 2022-03-11 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="dismiss_inbox_note">Sluiten</string>
+    <string name="login_error_xml_rpc_auth_error_communicating">Er is een probleem opgetreden bij het communiceren met de site. Er werd een HTTP-foutcode 401 gegeven.</string>
+    <string name="login_error_xml_rpc_cannot_read_site_auth_required">XML-RPC-oproepen lijken geblokkeerd op deze site (foutcode 401). Indien je niet kunt inloggen, tik dan op het help-pictogram om de veelgestelde vragen te bekijken.</string>
+    <string name="login_error_xml_rpc_cannot_read_site">Kan geen WordPress-site lezen op deze URL. Tik op het help-pictogram om de veelgestelde vragen te bekijken.</string>
+    <string name="login_error_xml_rpc_services_disabled">XML-RPC-services zijn uitgeschakeld voor deze site.</string>
+    <string name="a8c_email_message">Gebruik een niet-Automattic e-mailadres om een ondersteuningsticket in te dienen</string>
+    <string name="card_reader_onboarding_stripe_account_in_unsupported_country">We ondersteunen geen Stripe-accounts die geregistreerd zijn in %1$s</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">We ondersteunen WooCommerce Payments niet in %1$s</string>
+    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">We ondersteunen Stripe niet in %1$s</string>
+    <string name="card_reader_connect_scanning_hint">Druk op de aan-uitknop van je lezer</string>
+    <string name="card_reader_payment_reader_receipt_sent">Er is een kwitantie verzonden naar &lt;strong&gt;%s&lt;/strong&gt;</string>
+    <string name="order_creation_fee_percentage_toggle_text">Percentage kosten</string>
+    <string name="order_creation_fee_percentage_hint">Percentage (%)</string>
+    <string name="order_creation_fee_amount_hint">Bedrag ($)</string>
+    <string name="order_creation_add_fee_removal_hint">Kosten verwijderen uit bestelling</string>
+    <string name="order_creation_remove_shipping">Verzending verwijderen uit bestelling</string>
+    <string name="order_creation_edit_shipping">Verzending</string>
+    <string name="order_creation_add_shipping">Verzending toevoegen</string>
+    <string name="order_creation_shipping_title_add">Verzending toevoegen</string>
+    <string name="order_creation_shipping_name">Naam</string>
+    <string name="order_creation_shipping_amount">Bedrag</string>
+    <string name="order_creation_payment_fee">Kosten</string>
+    <string name="order_creation_customer_details">Klantgegevens</string>
+    <string name="order_creation_add_fee">Kosten toevoegen</string>
+    <string name="order_creation_customer_note_edit_content_description">Notitie voor klant bewerken</string>
+    <string name="order_creation_customer_edit_content_description">Klantgegevens bewerken</string>
+    <string name="order_creation_status_edit_content_description">Bestelstatus bewerken</string>
+    <string name="simple_payments_update_error">Kan bestelling voor eenvoudig betalen niet bijwerken</string>
+    <string name="simple_payments_creation_error">Kan bestelling voor eenvoudig betalen niet aanmaken</string>
+    <string name="more_menu_avatar">Profielfoto van gebruiker</string>
+    <string name="more_menu_button_reviews">Beoordelingen</string>
+    <string name="more_menu_button_store">Winkel bekijken</string>
+    <string name="more_menu_button_inbox">Inbox</string>
+    <string name="more_menu_button_analytics">Analytische gegevens</string>
+    <string name="more_menu_button_payments">Betalingen</string>
+    <string name="more_menu_button_woo_admin">WooCommerce Admin</string>
+    <string name="more_menu">Menu</string>
     <string name="card_reader_onboarding_both_plugins_activated_refresh_button">Vernieuwen na bijwerken</string>
     <string name="card_reader_onboarding_both_plugins_activated_open_store_admin_label">Beheer plugins</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_two">WooCommerce Payments</string>
@@ -88,10 +125,9 @@ Language: nl
     <string name="order_creation_new_customer_add_different_shipping_address">Voeg een ander verzendadres toe</string>
     <string name="order_creation_product_instock">Op voorraad</string>
     <string name="order_creation_product_stock_quantity">%s op voorraad</string>
-    <string name="order_creation_customer_details">Nieuwe klant</string>
     <string name="order_creation_add_products">Product toevoegen</string>
     <string name="order_creation_products">Producten</string>
-    <string name="order_creation_add_customer">Klant toevoegen</string>
+    <string name="order_creation_add_customer">Klantgegevens toevoegen</string>
     <string name="order_creation_customer">Klant</string>
     <string name="simple_payments_cash_dlg_button">Markeren als betaald</string>
     <string name="simple_payments_cash_dlg_message">Hiermee maak je je bestelling aan en markeer je deze als betaald indien je de betaling buiten WooCommerce hebt ontvangen.</string>
@@ -147,7 +183,6 @@ Language: nl
     <string name="date_timeframe_last_week">Afgelopen week</string>
     <string name="settings_enable_order_creation_teaser_message">Probeer eens wat bestellingen aan te maken met volledige gegevens terwijl wij ons voorbereiden voor het uitbrengen van de versie</string>
     <string name="settings_enable_order_creation_teaser_title">Aanmaken van bestellingen</string>
-    <string name="settings_enable_simple_payments_teaser_title">Eenvoudig betalen</string>
     <string name="beta_features_order_creation">Aanmaken van bestellingen</string>
     <string name="beta_features_simple_payments">Eenvoudig betalen</string>
     <string name="beta_features_add_ons">Add-ons bekijken</string>
@@ -166,7 +201,6 @@ Language: nl
     <string name="orderlist_bottom_sheet_create_order_description">Maak een nieuwe handmatige bestelling aan</string>
     <string name="orderlist_bottom_sheet_create_order_action">Bestelling aanmaken</string>
     <string name="orderlist_create_order_button_description">Bestelling aanmaken</string>
-    <string name="simple_payments_creation_error">Kan bestelling niet aanmaken</string>
     <string name="simple_payments_enter_amount">Voer bedrag in</string>
     <string name="simple_payments_dialog_title">Betaling ontvangen</string>
     <string name="orderlist_simple_payments_menu">Eenvoudige betaling</string>
@@ -205,7 +239,6 @@ Language: nl
     <string name="orderfilters_default_filter_option">Alles</string>
     <string name="orderfilters_filter_card_title_filtered_orders">Gefilterde bestellingen</string>
     <string name="orderfilters_filter_card_title_all_orders">Alle bestellingen</string>
-    <string name="orderlist_simple_payments_wip_message_disabled">We zijn bezig om het eenvoudiger voor je te maken om betalingen te ontvangen voor je product vanaf je apparaat! Schakel dit in via Instellingen &gt; Bèta-functies.</string>
     <string name="orderlist_simple_payments_wip_message_enabled">We zijn bezig om het eenvoudiger voor je te maken om betalingen te ontvangen voor je product vanaf je apparaat! Vooralsnog tik je op de \'+\'-knop om een bestelling aan te maken met het bedrag dat je wilt ontvangen</string>
     <string name="jetpack_benefits_modal_dismiss">Niet nu</string>
     <string name="jetpack_benefits_modal_install_jetpack">Jetpack installeren</string>
@@ -217,7 +250,6 @@ Language: nl
     <string name="jetpack_benefits_modal_push_notifications_title">Pushberichten</string>
     <string name="jetpack_benefits_modal_subtitle">Installeer de gratis Jetpack-plugin voor de beste mobiele ervaring.</string>
     <string name="jetpack_benefits_modal_title">Haal het optimale uit je winkel</string>
-    <string name="settings_enable_simple_payments_teaser_message">Probeer eens wat bestellingen aan te maken met minimale gegevens terwijl wij ons voorbereiden op het uitbrengen van de versie</string>
     <string name="order_detail_use_as_shipping_address">Gebruiken als verzendadres</string>
     <string name="order_detail_use_as_billing_address">Gebruiken als factuuradres</string>
     <string name="orderfilters_filters_count_title">Filters (%d)</string>
@@ -542,7 +574,6 @@ Language: nl
     <string name="card_reader_connect_connecting_header">Er wordt verbinding gemaakt met lezer</string>
     <string name="card_reader_connect_to_reader">Verbinding maken met lezer</string>
     <string name="card_reader_connect_reader_found_header">Wil je verbinding maken met lezer %s?</string>
-    <string name="card_reader_connect_scanning_hint">Druk de aan-/uitknop van je lezer in tot je een blauw knipperend lampje ziet</string>
     <string name="card_reader_connect_scanning_header">Er wordt gescand op lezers</string>
     <string name="shipping_label_items_count_placeholder">Aantal artikelen</string>
     <string name="orderdetail_products_recreate_shipping_label_menu">Nieuw verzendlabel aanmaken</string>

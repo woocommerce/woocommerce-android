@@ -1,4 +1,4 @@
-package com.woocommerce.android.compose.animations
+package com.woocommerce.android.ui.compose.animations
 
 import androidx.compose.animation.core.*
 import androidx.compose.runtime.Composable

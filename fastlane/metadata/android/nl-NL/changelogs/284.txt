@@ -1,4 +1,0 @@
-8.6:
-Deze release bevat eenvoudige betalingen, een handige functie voor verkopers die snelle monetaire transacties willen vastleggen. Neem snel fysieke creditcardbetalingen aan of stuur je klant een betaallink naar je site!
-
-Je zal ook merken dat we de tabbladen een beetje hebben aangepast en het tabblad ‘Meer’ hebben toegevoegd. Winkelinstellingen en een paar andere dingen zijn daar naartoe verplaatst om ruimte te maken voor meer functies!
