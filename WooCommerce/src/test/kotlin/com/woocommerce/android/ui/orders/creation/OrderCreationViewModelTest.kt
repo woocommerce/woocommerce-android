@@ -3,7 +3,10 @@ package com.woocommerce.android.ui.orders.creation
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.ViewState
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.ShowProductDetails
+import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -16,20 +19,35 @@ import org.mockito.kotlin.*
 @ExperimentalCoroutinesApi
 class OrderCreationViewModelTest: BaseUnitTest() {
     private lateinit var sut: OrderCreationViewModel
+    private lateinit var viewState: ViewState
     private lateinit var orderDraft: MutableStateFlow<Order>
     private lateinit var savedState: SavedStateHandle
     private lateinit var createOrUpdateOrderUseCase: CreateOrUpdateOrderDraft
     private lateinit var createOrderItemUseCase: CreateOrderItem
+    private lateinit var parameterRepository: ParameterRepository
 
     @Before
     fun setUp() {
+        viewState = ViewState()
         orderDraft = mock()
         savedState = mock {
+            on { getLiveData(viewState.javaClass.name, viewState) } doReturn MutableLiveData(viewState)
             on { getLiveData(Order.EMPTY.javaClass.name, Order.EMPTY) } doReturn MutableLiveData(Order.EMPTY)
         }
         createOrUpdateOrderUseCase = mock()
         createOrderItemUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn createOrderItem()
+        }
+        parameterRepository = mock {
+            on { getParameters("parameters_key", savedState) } doReturn
+                SiteParameters(
+                    currencyCode = "",
+                    currencySymbol = null,
+                    currencyFormattingParameters = null,
+                    weightUnit = null,
+                    dimensionUnit = null,
+                    gmtOffset = 0F
+                )
         }
         sut = OrderCreationViewModel(
             savedState = savedState,
@@ -39,7 +57,7 @@ class OrderCreationViewModelTest: BaseUnitTest() {
             mapItemToProductUiModel = mock(),
             createOrUpdateOrderDraft = createOrUpdateOrderUseCase,
             createOrderItem = createOrderItemUseCase,
-            parameterRepository = mock()
+            parameterRepository = parameterRepository
         )
     }
 
