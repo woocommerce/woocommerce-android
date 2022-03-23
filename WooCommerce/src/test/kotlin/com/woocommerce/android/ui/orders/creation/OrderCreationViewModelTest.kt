@@ -94,7 +94,7 @@ class OrderCreationViewModelTest: BaseUnitTest() {
     }
 
     @Test
-    fun `when decreasing product quantity to one or more, then decrease the product quantity`() = runBlockingTest {
+    fun `when decreasing product quantity to one or more, then decrease the product quantity by one`() = runBlockingTest {
         var lastReceivedEvent: MultiLiveEvent.Event? = null
         var orderDraft: Order? = null
         sut.event.observeForever {
@@ -116,6 +116,27 @@ class OrderCreationViewModelTest: BaseUnitTest() {
             ?.find { it.productId == 123L }
             ?.let { assertThat(it.quantity).isEqualTo(1f) }
             ?: fail("Expected an item with productId 123 with quantity as 1")
+    }
+
+    @Test
+    fun `when adding products, then update product liveData when quantity is one or more`() = runBlockingTest {
+        var lastReceivedEvent: MultiLiveEvent.Event? = null
+        var products: List<ProductUIModel> = emptyList()
+        sut.event.observeForever {
+            lastReceivedEvent = it
+        }
+
+        sut.products.observeForever {
+            products = it
+        }
+
+        sut.onProductSelected(123)
+        assertThat(products).isEmpty()
+
+        sut.onIncreaseProductsQuantity(123)
+        assertThat(lastReceivedEvent).isNull()
+        assertThat(products.size).isEqualTo(1)
+        assertThat(products.first().item.productId).isEqualTo(123)
     }
 
     @Test
