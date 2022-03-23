@@ -38,6 +38,7 @@
                     style="@style/Woo.TextInputEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:imeOptions="actionDone"
                     android:inputType="text" />
 
             </com.google.android.material.textfield.TextInputLayout>
