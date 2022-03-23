@@ -105,7 +105,7 @@ ext {
     jUnitExtVersion = '1.1.3'
     hiltJetpackVersion = '1.0.0'
     wordPressUtilsVersion = "2.3.0"
-    mediapickerVersion = '55-22e624a385e6c930633e640c952950bdddd7e9a6'
+    mediapickerVersion = 'trunk-d0db2634cf27511bec3ef9b837f9cfe27c5ab601'
     wordPressLoginVersion = 'trunk-d4f9830a9e2d2cbf7e1edec2886af687363b0980'
     composeVersion = "1.1.0-rc01"
     aboutAutomatticVersion = '0.0.4'
