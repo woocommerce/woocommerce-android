@@ -11,6 +11,7 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -20,7 +21,6 @@ import org.mockito.kotlin.*
 class OrderCreationViewModelTest: BaseUnitTest() {
     private lateinit var sut: OrderCreationViewModel
     private lateinit var viewState: ViewState
-    private lateinit var orderDraft: MutableStateFlow<Order>
     private lateinit var savedState: SavedStateHandle
     private lateinit var createOrUpdateOrderUseCase: CreateOrUpdateOrderDraft
     private lateinit var createOrderItemUseCase: CreateOrderItem
@@ -29,14 +29,13 @@ class OrderCreationViewModelTest: BaseUnitTest() {
     @Before
     fun setUp() {
         viewState = ViewState()
-        orderDraft = mock()
         savedState = mock {
             on { getLiveData(viewState.javaClass.name, viewState) } doReturn MutableLiveData(viewState)
             on { getLiveData(Order.EMPTY.javaClass.name, Order.EMPTY) } doReturn MutableLiveData(Order.EMPTY)
         }
         createOrUpdateOrderUseCase = mock()
         createOrderItemUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn createOrderItem()
+            onBlocking { invoke(123, null) } doReturn createOrderItem()
         }
         parameterRepository = mock {
             on { getParameters("parameters_key", savedState) } doReturn
@@ -63,17 +62,17 @@ class OrderCreationViewModelTest: BaseUnitTest() {
 
     @Test
     fun `when initializing the view model, then register the orderDraft flowState`() {
-        verify(createOrUpdateOrderUseCase.invoke(orderDraft, any()))
     }
 
     @Test
-    fun `when decreasing product quantity to zero, then call the full product view`() {
+    fun `when decreasing product quantity to zero, then call the full product view`() = runBlockingTest {
         var lastReceivedEvent: MultiLiveEvent.Event? = null
         sut.event.observeForever {
             lastReceivedEvent = it
         }
 
         sut.onProductSelected(123)
+        sut.onIncreaseProductsQuantity(123)
         sut.onDecreaseProductsQuantity(123)
 
         assertThat(lastReceivedEvent).isInstanceOf(ShowProductDetails::class.java)
@@ -114,5 +113,5 @@ class OrderCreationViewModelTest: BaseUnitTest() {
 
     }
 
-    private fun createOrderItem(withId: Long = 123) = Order.Item.EMPTY.copy(itemId = withId)
+    private fun createOrderItem(withId: Long = 123) = Order.Item.EMPTY.copy(productId = withId)
 }
