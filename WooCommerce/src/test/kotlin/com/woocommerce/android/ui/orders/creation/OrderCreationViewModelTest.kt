@@ -10,9 +10,9 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.fail
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.*
@@ -22,12 +22,14 @@ class OrderCreationViewModelTest: BaseUnitTest() {
     private lateinit var sut: OrderCreationViewModel
     private lateinit var viewState: ViewState
     private lateinit var savedState: SavedStateHandle
+    private lateinit var mapItemToProductUIModel: MapItemToProductUiModel
     private lateinit var createOrUpdateOrderUseCase: CreateOrUpdateOrderDraft
     private lateinit var createOrderItemUseCase: CreateOrderItem
     private lateinit var parameterRepository: ParameterRepository
 
     @Before
     fun setUp() {
+        val defaultOrderItem = createOrderItem()
         viewState = ViewState()
         savedState = mock {
             on { getLiveData(viewState.javaClass.name, viewState) } doReturn MutableLiveData(viewState)
@@ -35,7 +37,7 @@ class OrderCreationViewModelTest: BaseUnitTest() {
         }
         createOrUpdateOrderUseCase = mock()
         createOrderItemUseCase = mock {
-            onBlocking { invoke(123, null) } doReturn createOrderItem()
+            onBlocking { invoke(123, null) } doReturn defaultOrderItem
         }
         parameterRepository = mock {
             on { getParameters("parameters_key", savedState) } doReturn
@@ -48,12 +50,20 @@ class OrderCreationViewModelTest: BaseUnitTest() {
                     gmtOffset = 0F
                 )
         }
+        mapItemToProductUIModel = mock {
+            onBlocking { invoke(any()) } doReturn ProductUIModel(
+                item = defaultOrderItem,
+                imageUrl = "",
+                isStockManaged = false,
+                stockQuantity = 0.0
+            )
+        }
         sut = OrderCreationViewModel(
             savedState = savedState,
             dispatchers = coroutinesTestRule.testDispatchers,
             orderDetailRepository = mock(),
             orderCreationRepository = mock(),
-            mapItemToProductUiModel = mock(),
+            mapItemToProductUiModel = mapItemToProductUIModel,
             createOrUpdateOrderDraft = createOrUpdateOrderUseCase,
             createOrderItem = createOrderItemUseCase,
             parameterRepository = parameterRepository
@@ -75,7 +85,37 @@ class OrderCreationViewModelTest: BaseUnitTest() {
         sut.onIncreaseProductsQuantity(123)
         sut.onDecreaseProductsQuantity(123)
 
-        assertThat(lastReceivedEvent).isInstanceOf(ShowProductDetails::class.java)
+        assertThat(lastReceivedEvent).isNotNull
+        lastReceivedEvent
+            .run { this as? ShowProductDetails }
+            ?.let { showProductDetailsEvent ->
+                assertThat(showProductDetailsEvent.item.productId).isEqualTo(123)
+            } ?: fail("Last event should be of ShowProductDetails type")
+    }
+
+    @Test
+    fun `when decreasing product quantity to one or more, then decrease the product quantity`() = runBlockingTest {
+        var lastReceivedEvent: MultiLiveEvent.Event? = null
+        var orderDraft: Order? = null
+        sut.event.observeForever {
+            lastReceivedEvent = it
+        }
+
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+
+        sut.onProductSelected(123)
+        sut.onIncreaseProductsQuantity(123)
+        sut.onIncreaseProductsQuantity(123)
+        sut.onDecreaseProductsQuantity(123)
+
+        assertThat(lastReceivedEvent).isNull()
+        orderDraft?.items
+            ?.takeIf { it.isNotEmpty() }
+            ?.find { it.productId == 123L }
+            ?.let { assertThat(it.quantity).isEqualTo(1f) }
+            ?: fail("Expected an item with productId 123 with quantity as 1")
     }
 
     @Test
