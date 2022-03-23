@@ -191,7 +191,7 @@ class ReviewListFragment :
         }
 
         observeModerationStatus(
-            reviewModerationViewModel = viewModel,
+            reviewModerationConsumer = viewModel,
             uiMessageResolver = uiMessageResolver
         )
     }

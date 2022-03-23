@@ -61,7 +61,7 @@ class AddressViewModelTest : BaseUnitTest() {
     @Before
     fun setup() {
         addressViewModel.viewStateData.liveData.observeForever(viewStateObserver)
-        addressViewModel.shouldShowDoneButton.observeForever(mock())
+        addressViewModel.shouldEnableDoneButton.observeForever(mock())
     }
 
     @Test
@@ -250,18 +250,18 @@ class AddressViewModelTest : BaseUnitTest() {
     fun `Should show done button if billing address has been edited`() {
         addressViewModel.start(mapOf(SHIPPING to shippingAddress, BILLING to shippingAddress))
 
-        assertThat(addressViewModel.shouldShowDoneButton.value).isFalse
+        assertThat(addressViewModel.shouldEnableDoneButton.value).isFalse
         addressViewModel.onFieldEdited(BILLING, Field.FirstName, "new first name")
-        assertThat(addressViewModel.shouldShowDoneButton.value).isTrue
+        assertThat(addressViewModel.shouldEnableDoneButton.value).isTrue
     }
 
     @Test
     fun `Should show done button if shipping address has been edited`() {
         addressViewModel.start(mapOf(SHIPPING to shippingAddress, BILLING to shippingAddress))
 
-        assertThat(addressViewModel.shouldShowDoneButton.value).isFalse
+        assertThat(addressViewModel.shouldEnableDoneButton.value).isFalse
         addressViewModel.onFieldEdited(SHIPPING, Field.FirstName, "new first name")
-        assertThat(addressViewModel.shouldShowDoneButton.value).isTrue
+        assertThat(addressViewModel.shouldEnableDoneButton.value).isTrue
     }
 
     @Test
@@ -273,8 +273,8 @@ class AddressViewModelTest : BaseUnitTest() {
             )
         )
 
-        assertThat(addressViewModel.shouldShowDoneButton.value).isFalse
+        assertThat(addressViewModel.shouldEnableDoneButton.value).isFalse
         addressViewModel.onDifferentShippingAddressChecked(false)
-        assertThat(addressViewModel.shouldShowDoneButton.value).isTrue
+        assertThat(addressViewModel.shouldEnableDoneButton.value).isTrue
     }
 }
