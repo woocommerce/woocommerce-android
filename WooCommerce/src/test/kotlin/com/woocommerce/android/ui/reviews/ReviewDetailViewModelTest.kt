@@ -35,6 +35,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
     private val repository: ReviewDetailRepository = mock()
     private val savedState = SavedStateHandle()
     private val markReviewAsSeen: MarkReviewAsSeen = mock()
+    private val reviewModerationHandler: ReviewModerationHandler = mock()
 
     private val review = ProductReviewTestUtils.generateProductReview(id = REVIEW_ID, productId = PRODUCT_ID)
     private lateinit var viewModel: ReviewDetailViewModel
@@ -46,7 +47,8 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
             savedState,
             networkStatus,
             repository,
-            markReviewAsSeen
+            markReviewAsSeen,
+            reviewModerationHandler
         )
     }
 
@@ -120,6 +122,8 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
         }
 
         viewModel.moderateReview(SPAM)
+
+        verify(reviewModerationHandler).postModerationRequest(review, newStatus = SPAM)
         assertTrue(exitCalled)
     }
 
