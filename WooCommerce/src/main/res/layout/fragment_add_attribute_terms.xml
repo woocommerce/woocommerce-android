@@ -23,7 +23,6 @@
             android:layout_marginTop="@dimen/major_75"
             android:layout_marginEnd="@dimen/major_100"
             android:hint="@string/product_new_attribute_term_name"
-            android:imeOptions="actionDone"
             android:inputType="text"
             android:paddingBottom="@dimen/major_75"
             app:helperText="@string/product_enter_attribute_term"

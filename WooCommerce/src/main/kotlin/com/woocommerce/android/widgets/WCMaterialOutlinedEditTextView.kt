@@ -84,9 +84,12 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
                     text = it
                 }
 
-                imeOptions = a.getInt(
-                    R.styleable.WCMaterialOutlinedEditTextView_android_imeOptions, 0
-                )
+                // only set imeOptions if defined, otherwise we'll override the default value
+                if (a.hasValue(R.styleable.WCMaterialOutlinedEditTextView_android_imeOptions)) {
+                    imeOptions = a.getInt(
+                        R.styleable.WCMaterialOutlinedEditTextView_android_imeOptions, 0
+                    )
+                }
 
                 isEnabled = a.getBoolean(R.styleable.WCMaterialOutlinedCurrencyEditTextView_android_enabled, true)
             } finally {
