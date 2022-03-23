@@ -1,4 +1,0 @@
-8.6:
-Questo rilascio contiene una funzionalità utile per i rivenditori che desiderano registrare una transazione monetaria veloce che noi chiamiamo Pagamenti facili. Accetta in modo rapido un pagamento con carta di credito di persona o invia al tuo cliente un link di pagamento al tuo sito.
-
-Vedrai anche che abbiamo modificato leggermente le schede e aggiunto una scheda "Leggi tutto". Le impostazioni del negozio e alcuni altri elementi sono stati spostati lì per preparare per più funzionalità.

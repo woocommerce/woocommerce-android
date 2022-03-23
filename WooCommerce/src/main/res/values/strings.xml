@@ -132,12 +132,14 @@
     <string name="generic_string" translatable="false">%s</string>
     <string name="error_required_field">Required field</string>
     <string name="analytics">Analytics</string>
-    <string name="minus">Minus</string>
-    <string name="plus">Plus</string>
+    <string name="minus_one">Minus one</string>
+    <string name="plus_one">Plus one</string>
     <string name="card">Card</string>
     <string name="cash">Cash</string>
     <string name="create">Create</string>
     <string name="exclusive_or">or</string>
+    <string name="count">Count: %s</string>
+    <string name="no_sku">No SKU</string>
 
     <!--
         Date/Time Labels
@@ -876,6 +878,7 @@
     <string name="orderstatus_cancelled">Cancelled</string>
     <string name="orderstatus_refunded">Refunded</string>
     <string name="orderstatus_contentDesc">Order status</string>
+    <string name="orderstatus_contentDesc_withStatus">Order status: %s</string>
     <!--
         Add Shipment Tracking Labels
     -->

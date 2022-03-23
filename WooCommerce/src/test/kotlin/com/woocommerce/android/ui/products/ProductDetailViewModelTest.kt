@@ -43,6 +43,7 @@ import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.test.assertNull
 
 @ExperimentalCoroutinesApi
 class ProductDetailViewModelTest : BaseUnitTest() {
@@ -338,6 +339,44 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         viewModel.updateProductDraft(updatedDescription)
 
         assertThat(productData?.productDraft?.description).isEqualTo(updatedDescription)
+    }
+
+    @Test
+    fun `When update product price is null, product detail view displayed correctly`() {
+        doReturn(product).whenever(productRepository).getProduct(any())
+
+        var productData: ProductDetailViewState? = null
+        viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
+
+        viewModel.start()
+
+        assertThat(productData).isEqualTo(productWithParameters)
+
+        val updatedRegularPrice = null
+        val updatedSalePrice = null
+        viewModel.updateProductDraft(regularPrice = updatedRegularPrice, salePrice = updatedSalePrice)
+
+        assertNull(productData?.productDraft?.regularPrice)
+        assertNull(productData?.productDraft?.salePrice)
+    }
+
+    @Test
+    fun `When update product price is zero, product detail view displayed correctly`() {
+        doReturn(product).whenever(productRepository).getProduct(any())
+
+        var productData: ProductDetailViewState? = null
+        viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
+
+        viewModel.start()
+
+        assertThat(productData).isEqualTo(productWithParameters)
+
+        val updatedRegularPrice = BigDecimal.ZERO
+        val updatedSalePrice = BigDecimal.ZERO
+        viewModel.updateProductDraft(regularPrice = updatedRegularPrice, salePrice = updatedSalePrice)
+
+        assertThat(productData?.productDraft?.regularPrice).isEqualTo(updatedRegularPrice)
+        assertThat(productData?.productDraft?.salePrice).isEqualTo(updatedSalePrice)
     }
 
     @Test
