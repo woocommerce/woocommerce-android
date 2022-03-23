@@ -17,6 +17,7 @@ import org.assertj.core.api.Assertions.fail
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.*
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 
 @ExperimentalCoroutinesApi
 class OrderCreationViewModelTest: BaseUnitTest() {
@@ -69,13 +70,8 @@ class OrderCreationViewModelTest: BaseUnitTest() {
     @Test
     fun `when customer note click event is called, then trigger EditCustomerNote event`() {
         var lastReceivedEvent: MultiLiveEvent.Event? = null
-        var orderDraft: Order? = null
         sut.event.observeForever {
             lastReceivedEvent = it
-        }
-
-        sut.orderDraft.observeForever {
-            orderDraft = it
         }
 
         sut.onCustomerNoteClicked()
@@ -85,8 +81,28 @@ class OrderCreationViewModelTest: BaseUnitTest() {
     }
 
     @Test
-    fun `when decreasing variation quantity to zero, then call the full product view`() {
+    fun `when submitting order status, then update orderDraft liveData`() {
+        var lastReceivedEvent: MultiLiveEvent.Event? = null
+        var orderDraft: Order? = null
+        sut.event.observeForever {
+            lastReceivedEvent = it
+        }
 
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        Order.Status.fromDataModel(CoreOrderStatus.COMPLETED)
+            ?.let { sut.onOrderStatusChanged(it) }
+            ?: fail("Failed to submit an order status")
+
+        assertThat(lastReceivedEvent).isNull()
+        assertThat(orderDraft?.status).isEqualTo(Order.Status.fromDataModel(CoreOrderStatus.COMPLETED))
+
+        Order.Status.fromDataModel(CoreOrderStatus.ON_HOLD)
+            ?.let { sut.onOrderStatusChanged(it) }
+            ?: fail("Failed to submit an order status")
+
+        assertThat(orderDraft?.status).isEqualTo(Order.Status.fromDataModel(CoreOrderStatus.ON_HOLD))
     }
 
     @Test
@@ -106,6 +122,11 @@ class OrderCreationViewModelTest: BaseUnitTest() {
             ?.let { showProductDetailsEvent ->
                 assertThat(showProductDetailsEvent.item.productId).isEqualTo(123)
             } ?: fail("Last event should be of ShowProductDetails type")
+    }
+
+    @Test
+    fun `when decreasing variation quantity to zero, then call the full product view`() {
+
     }
 
     @Test
