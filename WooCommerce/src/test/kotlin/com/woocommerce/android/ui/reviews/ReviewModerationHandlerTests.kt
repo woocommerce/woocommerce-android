@@ -88,7 +88,7 @@ class ReviewModerationHandlerTests : BaseUnitTest() {
     }
 
     @Test
-    fun `when review status update succeeds, then keep status for a given time`() = testBlocking {
+    fun `when review status update succeeds, then status removed after a given time`() = testBlocking {
         setup {
             whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(
                 WooResult(
@@ -128,7 +128,7 @@ class ReviewModerationHandlerTests : BaseUnitTest() {
     }
 
     @Test
-    fun `when review status update fails, then keep status for a given time`() = testBlocking {
+    fun `when review status update fails, then status removed after a given time`() = testBlocking {
         setup {
             whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(
                 WooResult(
