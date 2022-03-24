@@ -31,7 +31,6 @@ class ProductDetailBottomSheetBuilder(
         SHORT_DESCRIPTION(string.product_short_description, string.bottom_sheet_short_description_desc),
         LINKED_PRODUCTS(string.product_detail_linked_products, string.bottom_sheet_linked_products_desc),
         PRODUCT_DOWNLOADS(string.product_downloadable_files, string.bottom_sheet_downloadable_files_desc)
-
     }
 
     data class ProductDetailBottomSheetUiItem(
