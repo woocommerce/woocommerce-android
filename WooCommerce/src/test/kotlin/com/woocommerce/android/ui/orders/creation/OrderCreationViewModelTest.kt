@@ -187,6 +187,25 @@ class OrderCreationViewModelTest: BaseUnitTest() {
     }
 
     @Test
+    fun `when remove a product, then update orderDraft liveData with the quantity set to zero`() = runBlockingTest {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+
+        sut.onProductSelected(123)
+        sut.onIncreaseProductsQuantity(123)
+        val addedItem = orderDraft?.items?.first() ?: fail("Added item should exist")
+        sut.onRemoveProduct(addedItem)
+
+        orderDraft?.items
+            ?.takeIf { it.isNotEmpty() }
+            ?.find { it.productId == 123L }
+            ?.let { assertThat(it.quantity).isEqualTo(0f) }
+            ?: fail("Expected an item with productId 123 with quantity set as 0")
+    }
+
+    @Test
     fun `when adding the very same product, then increase item quantity by one`() {
 
     }
