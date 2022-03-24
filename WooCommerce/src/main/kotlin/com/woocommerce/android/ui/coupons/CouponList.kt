@@ -51,7 +51,7 @@ fun CouponList(coupons: List<CouponUi>, currencyCode: String?) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(0.dp),
         modifier = Modifier
-            .background(color = colorResource(id = R.color.color_surface))
+            .background(color = MaterialTheme.colors.surface)
     ) {
         itemsIndexed(coupons) { index, coupon ->
             CouponListItem(
