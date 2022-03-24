@@ -293,7 +293,26 @@ class OrderCreationViewModelTest: BaseUnitTest() {
 
     @Test
     fun `when editing a shipping fee, then reuse the existent one with different value`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
 
+        val newShippingFeeTotal = BigDecimal(123.5)
+
+        sut.onShippingEdited(BigDecimal(1), "1")
+        sut.onShippingEdited(BigDecimal(2), "2")
+        sut.onShippingEdited(BigDecimal(3), "3")
+        sut.onShippingEdited(newShippingFeeTotal, "4")
+
+        orderDraft?.shippingLines
+            ?.takeIf { it.size == 1 }
+            ?.let {
+                val shippingFee = it.first()
+                assertThat(shippingFee.total).isEqualTo(newShippingFeeTotal)
+                assertThat(shippingFee.methodTitle).isEqualTo("4")
+            }
+            ?: fail("Expected a shipping lines list with a single shipping fee with 123.5 as total")
     }
 
     private fun createSut() {
