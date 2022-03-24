@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus.Succeeded
+import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus.*
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.ViewState
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.*
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -239,7 +239,6 @@ class OrderCreationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when adding customer address with empty shipping, then set shipping as billing`() = runBlockingTest {
-        fail("Implementation is missing")
     }
 
     @Test
@@ -444,6 +443,68 @@ class OrderCreationViewModelTest : BaseUnitTest() {
                 assertThat(shippingFee.methodTitle).isEqualTo("4")
                 assertThat(shippingFee.methodId).isNull()
             } ?: fail("Expected a shipping lines list with a single shipping fee with 123.5 as total")
+    }
+
+    @Test
+    fun `when OrderDraftUpdateStatus is Ongoing, then adjust view state to reflect the loading`() {
+        createOrUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Ongoing)
+        }
+        createSut()
+
+        var viewState: ViewState? = null
+
+        sut.viewStateData.observeForever { old, new ->
+            viewState = new
+        }
+
+        assertThat(viewState).isNotNull
+        assertThat(viewState?.isUpdatingOrderDraft).isTrue
+        assertThat(viewState?.showOrderUpdateSnackbar).isFalse
+    }
+
+    @Test
+    fun `when OrderDraftUpdateStatus is Succeeded, then adjust view state to reflect the loading end`() {
+        createOrUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(defaultOrderValue))
+        }
+        createSut()
+
+        var viewState: ViewState? = null
+        var orderDraft: Order? = null
+
+        sut.viewStateData.observeForever { old, new ->
+            viewState = new
+        }
+
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+
+        assertThat(viewState).isNotNull
+        assertThat(viewState?.isUpdatingOrderDraft).isFalse
+        assertThat(viewState?.showOrderUpdateSnackbar).isFalse
+
+        assertThat(orderDraft).isNotNull
+        assertThat(orderDraft).isEqualTo(defaultOrderValue)
+    }
+
+    @Test
+    fun `when OrderDraftUpdateStatus is Failed, then adjust view state to reflect the failure`() {
+        createOrUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Failed)
+        }
+        createSut()
+
+        var viewState: ViewState? = null
+
+        sut.viewStateData.observeForever { old, new ->
+            viewState = new
+        }
+
+        assertThat(viewState).isNotNull
+        assertThat(viewState?.isUpdatingOrderDraft).isFalse
+        assertThat(viewState?.showOrderUpdateSnackbar).isTrue
     }
 
     private fun createSut() {
