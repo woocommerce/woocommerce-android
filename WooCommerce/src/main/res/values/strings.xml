@@ -1864,8 +1864,8 @@
     <string name="coupons">Coupons</string>
     <string name="coupon_list_item_label_active">Active</string>
     <string name="coupon_list_item_label_expired">Expired</string>
-    <string name="coupon_list_item_label_off">Off</string>
-    <string name="coupon_list_item_label_all_products">All Products</string>
+    <string name="coupon_list_item_label_off">off</string>
+    <string name="coupon_list_item_label_all_products">all products</string>
     <string name="coupon_list_empty_heading">No coupons found</string>
 
     <!-- Other -->
