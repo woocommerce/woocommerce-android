@@ -9,7 +9,6 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNaviga
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
