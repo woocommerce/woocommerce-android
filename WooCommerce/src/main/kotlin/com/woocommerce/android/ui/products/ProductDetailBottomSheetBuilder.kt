@@ -22,15 +22,16 @@ class ProductDetailBottomSheetBuilder(
     private val resources: ResourceProvider
 ) {
     enum class ProductDetailBottomSheetType(
+        val id: Long,
         @StringRes val titleResource: Int,
         @StringRes val descResource: Int
     ) {
-        PRODUCT_SHIPPING(string.product_shipping, string.bottom_sheet_shipping_desc),
-        PRODUCT_CATEGORIES(string.product_categories, string.bottom_sheet_categories_desc),
-        PRODUCT_TAGS(string.product_tags, string.bottom_sheet_tags_desc),
-        SHORT_DESCRIPTION(string.product_short_description, string.bottom_sheet_short_description_desc),
-        LINKED_PRODUCTS(string.product_detail_linked_products, string.bottom_sheet_linked_products_desc),
-        PRODUCT_DOWNLOADS(string.product_downloadable_files, string.bottom_sheet_downloadable_files_desc)
+        PRODUCT_SHIPPING(1L, string.product_shipping, string.bottom_sheet_shipping_desc),
+        PRODUCT_CATEGORIES(2L, string.product_categories, string.bottom_sheet_categories_desc),
+        PRODUCT_TAGS(3L, string.product_tags, string.bottom_sheet_tags_desc),
+        SHORT_DESCRIPTION(4L, string.product_short_description, string.bottom_sheet_short_description_desc),
+        LINKED_PRODUCTS(5L, string.product_detail_linked_products, string.bottom_sheet_linked_products_desc),
+        PRODUCT_DOWNLOADS(6L, string.product_downloadable_files, string.bottom_sheet_downloadable_files_desc)
     }
 
     data class ProductDetailBottomSheetUiItem(
