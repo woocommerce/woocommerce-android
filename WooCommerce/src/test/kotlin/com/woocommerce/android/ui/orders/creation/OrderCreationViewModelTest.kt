@@ -238,10 +238,6 @@ class OrderCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when adding customer address with empty shipping, then set shipping as billing`() = runBlockingTest {
-    }
-
-    @Test
     fun `when creating the order fails, then trigger Snackbar with fail message`() {
         orderCreationRepository = mock {
             onBlocking { placeOrder(defaultOrderValue) } doReturn Result.failure(Throwable())
