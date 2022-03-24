@@ -468,6 +468,13 @@ class MainActivity :
             hideBottomNav()
         }
 
+        // Compose-specific title bar updates
+        val currentTitle = title
+        title = when (destination.id) {
+            R.id.couponListFragment -> getString(R.string.coupons)
+            else -> currentTitle
+        }
+
         previousDestinationId = destination.id
     }
 

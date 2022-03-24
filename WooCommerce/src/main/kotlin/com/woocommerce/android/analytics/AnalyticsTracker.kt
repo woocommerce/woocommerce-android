@@ -314,6 +314,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_MORE_MENU_ADMIN_MENU = "admin_menu"
         const val VALUE_MORE_MENU_REVIEWS = "reviews"
         const val VALUE_MORE_MENU_INBOX = "inbox"
+        const val VALUE_MORE_MENU_COUPONS = "coupons"
 
         var sendUsageStats: Boolean = true
             set(value) {
