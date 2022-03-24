@@ -24,6 +24,7 @@ repositories {
             includeGroup "org.wordpress.wellsql"
             includeGroup "org.wordpress.mediapicker"
             includeGroup "com.automattic"
+            includeGroup "com.automattic.tracks"
         }
     }
     maven {
@@ -47,7 +48,6 @@ repositories {
     maven {
         url "https://jitpack.io"
         content {
-            includeModule("com.github.Automattic", "Automattic-Tracks-Android")
             includeModule("com.github.wordpress-mobile.WordPress-Aztec-Android", "aztec")
             includeModule("com.github.wordpress-mobile.WordPress-Aztec-Android", "glide-loader")
             includeModule("com.github.chrisbanes", "PhotoView")
@@ -111,7 +111,6 @@ android {
 
     composeOptions {
         kotlinCompilerExtensionVersion composeVersion
-        kotlinCompilerVersion gradle.ext.kotlinVersion
     }
 
     flavorDimensions "buildType"
@@ -199,7 +198,7 @@ dependencies {
         exclude group: "com.android.support"
     }
 
-    implementation 'com.github.Automattic:Automattic-Tracks-Android:2.1.0'
+    implementation 'com.automattic:Automattic-Tracks-Android:2.2.0'
 
     implementation("${gradle.ext.fluxCBinaryPath}:$fluxCVersion") {
         exclude group: "com.android.support"
@@ -333,9 +332,9 @@ dependencies {
     implementation "androidx.compose.material:material:$composeVersion"
     implementation "androidx.compose.animation:animation:$composeVersion"
     implementation "androidx.compose.ui:ui-tooling:$composeVersion"
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0'
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycleViewmodelComposeVersion"
     implementation "androidx.compose.runtime:runtime-livedata:$composeVersion"
-    implementation "com.google.android.material:compose-theme-adapter:$composeVersion"
+    implementation "com.google.android.material:compose-theme-adapter:$composeThemeAdapterVersion"
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$composeVersion"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$composeVersion"
 }
