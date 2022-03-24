@@ -32,6 +32,7 @@ class OrderCreationViewModelTest : BaseUnitTest() {
     private lateinit var mapItemToProductUIModel: MapItemToProductUiModel
     private lateinit var createOrUpdateOrderUseCase: CreateOrUpdateOrderDraft
     private lateinit var createOrderItemUseCase: CreateOrderItem
+    private lateinit var orderCreationRepository: OrderCreationRepository
     private lateinit var parameterRepository: ParameterRepository
 
     @Before
@@ -408,7 +409,7 @@ class OrderCreationViewModelTest : BaseUnitTest() {
             savedState = savedState,
             dispatchers = coroutinesTestRule.testDispatchers,
             orderDetailRepository = mock(),
-            orderCreationRepository = mock(),
+            orderCreationRepository = orderCreationRepository,
             mapItemToProductUiModel = mapItemToProductUIModel,
             createOrUpdateOrderDraft = createOrUpdateOrderUseCase,
             createOrderItem = createOrderItemUseCase,
@@ -437,6 +438,9 @@ class OrderCreationViewModelTest : BaseUnitTest() {
                     dimensionUnit = null,
                     gmtOffset = 0F
                 )
+        }
+        orderCreationRepository = mock {
+            onBlocking { placeOrder(any()) } doReturn Result.success(Order.EMPTY)
         }
         mapItemToProductUIModel = mock {
             onBlocking { invoke(any()) } doReturn ProductUIModel(
