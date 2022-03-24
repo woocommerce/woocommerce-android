@@ -4,8 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.ViewState
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.EditCustomerNote
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.ShowProductDetails
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.*
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -20,6 +19,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
+import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
 class OrderCreationViewModelTest: BaseUnitTest() {
@@ -56,19 +56,6 @@ class OrderCreationViewModelTest: BaseUnitTest() {
     }
 
     @Test
-    fun `when customer note click event is called, then trigger EditCustomerNote event`() {
-        var lastReceivedEvent: MultiLiveEvent.Event? = null
-        sut.event.observeForever {
-            lastReceivedEvent = it
-        }
-
-        sut.onCustomerNoteClicked()
-
-        assertThat(lastReceivedEvent).isNotNull
-        assertThat(lastReceivedEvent).isInstanceOf(EditCustomerNote::class.java)
-    }
-
-    @Test
     fun `when submitting order status, then update orderDraft liveData`() {
         var orderDraft: Order? = null
         sut.orderDraft.observeForever {
@@ -85,6 +72,45 @@ class OrderCreationViewModelTest: BaseUnitTest() {
             ?: fail("Failed to submit an order status")
 
         assertThat(orderDraft?.status).isEqualTo(Order.Status.fromDataModel(CoreOrderStatus.ON_HOLD))
+    }
+
+    @Test
+    fun `when customer note click event is called, then trigger EditCustomerNote event`() {
+        var lastReceivedEvent: MultiLiveEvent.Event? = null
+        sut.event.observeForever {
+            lastReceivedEvent = it
+        }
+
+        sut.onCustomerNoteClicked()
+
+        assertThat(lastReceivedEvent).isNotNull
+        assertThat(lastReceivedEvent).isInstanceOf(EditCustomerNote::class.java)
+    }
+
+    @Test
+    fun `when hitting the customer button, then trigger the EditCustomer event`() {
+        var lastReceivedEvent: MultiLiveEvent.Event? = null
+        sut.event.observeForever {
+            lastReceivedEvent = it
+        }
+
+        sut.onCustomerClicked()
+
+        assertThat(lastReceivedEvent).isNotNull
+        assertThat(lastReceivedEvent).isInstanceOf(EditCustomer::class.java)
+    }
+
+    @Test
+    fun `when hitting the add product button, then trigger the AddProduct event`() {
+        var lastReceivedEvent: MultiLiveEvent.Event? = null
+        sut.event.observeForever {
+            lastReceivedEvent = it
+        }
+
+        sut.onAddProductClicked()
+
+        assertThat(lastReceivedEvent).isNotNull
+        assertThat(lastReceivedEvent).isInstanceOf(AddProduct::class.java)
     }
 
     @Test
@@ -247,7 +273,22 @@ class OrderCreationViewModelTest: BaseUnitTest() {
 
     @Test
     fun `when editing a fee, then reuse the existent one with different value`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
 
+        val newFeeTotal = BigDecimal(123.5)
+
+        sut.onFeeEdited(BigDecimal(1))
+        sut.onFeeEdited(BigDecimal(2))
+        sut.onFeeEdited(BigDecimal(3))
+        sut.onFeeEdited(newFeeTotal)
+
+        orderDraft?.feesLines
+            ?.takeIf { it.size == 1 }
+            ?.let { assertThat(it.first().total).isEqualTo(newFeeTotal) }
+            ?: fail("Expected a fee lines list with a single fee with 123.5 as total")
     }
 
     @Test
