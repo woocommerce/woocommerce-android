@@ -5,9 +5,12 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.orders.OrderNavigationTarget
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus.*
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.ViewState
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.*
+import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -37,6 +40,7 @@ class OrderCreationViewModelTest : BaseUnitTest() {
     private lateinit var createOrUpdateOrderUseCase: CreateOrUpdateOrderDraft
     private lateinit var createOrderItemUseCase: CreateOrderItem
     private lateinit var orderCreationRepository: OrderCreationRepository
+    private lateinit var orderDetailRepository: OrderDetailRepository
     private lateinit var parameterRepository: ParameterRepository
 
     private val defaultOrderValue = Order.EMPTY.copy(id = 123)
@@ -84,7 +88,6 @@ class OrderCreationViewModelTest : BaseUnitTest() {
         assertThat(orderDraft?.status).isEqualTo(Order.Status.fromDataModel(CoreOrderStatus.ON_HOLD))
     }
 
-
     @Test
     fun `when submitting customer address data, then update orderDraft liveData`() {
         var orderDraft: Order? = null
@@ -99,7 +102,6 @@ class OrderCreationViewModelTest : BaseUnitTest() {
         assertThat(orderDraft?.billingAddress).isEqualTo(defaultBillingAddress)
         assertThat(orderDraft?.shippingAddress).isEqualTo(defaultShippingAddress)
     }
-
 
     @Test
     fun `when submitting customer address data with empty shipping, then the billing data for both addresses`() {
@@ -153,6 +155,26 @@ class OrderCreationViewModelTest : BaseUnitTest() {
 
         assertThat(lastReceivedEvent).isNotNull
         assertThat(lastReceivedEvent).isInstanceOf(AddProduct::class.java)
+    }
+
+    @Test
+    fun `when hitting the edit order status button, then trigger ViewOrderStatusSelector event`() = runBlockingTest {
+        var lastReceivedEvent: Event? = null
+        sut.event.observeForever {
+            lastReceivedEvent = it
+        }
+
+        val currentStatus = Order.OrderStatus("first key", "first status")
+
+        sut.onEditOrderStatusClicked(currentStatus)
+
+        assertThat(lastReceivedEvent).isNotNull
+        lastReceivedEvent
+            .run { this as? ViewOrderStatusSelector }
+            ?.let { viewOrderStatusSelectorEvent ->
+                assertThat(viewOrderStatusSelectorEvent.currentStatus).isEqualTo(currentStatus.statusKey)
+                assertThat(viewOrderStatusSelectorEvent.orderStatusList).isEqualTo(orderStatusList.toTypedArray())
+            } ?: fail("Last event should be of ViewOrderStatusSelector type")
     }
 
     @Test
@@ -541,7 +563,7 @@ class OrderCreationViewModelTest : BaseUnitTest() {
         sut = OrderCreationViewModel(
             savedState = savedState,
             dispatchers = coroutinesTestRule.testDispatchers,
-            orderDetailRepository = mock(),
+            orderDetailRepository = orderDetailRepository,
             orderCreationRepository = orderCreationRepository,
             mapItemToProductUiModel = mapItemToProductUIModel,
             createOrUpdateOrderDraft = createOrUpdateOrderUseCase,
@@ -577,6 +599,9 @@ class OrderCreationViewModelTest : BaseUnitTest() {
         orderCreationRepository = mock {
             onBlocking { placeOrder(defaultOrderValue) } doReturn Result.success(defaultOrderValue)
         }
+        orderDetailRepository = mock {
+            on { getOrderStatusOptions() } doReturn orderStatusList
+        }
         mapItemToProductUIModel = mock {
             onBlocking { invoke(any()) } doReturn ProductUIModel(
                 item = defaultOrderItem,
@@ -588,4 +613,10 @@ class OrderCreationViewModelTest : BaseUnitTest() {
     }
 
     private fun createOrderItem(withId: Long = 123) = Order.Item.EMPTY.copy(productId = withId)
+
+    private val orderStatusList = listOf(
+        Order.OrderStatus("first key", "first status"),
+        Order.OrderStatus("second key", "second status"),
+        Order.OrderStatus("third key", "third status")
+    )
 }
