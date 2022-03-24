@@ -54,9 +54,9 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
         get() = binding.editText.text.toString()
         set(value) = binding.editText.setText(value)
 
-    var imeOptions: Int = 0
+    var imeOptions: Int
+        get() = binding.editText.imeOptions
         set(value) {
-            field = value
             binding.editText.imeOptions = value
         }
 
