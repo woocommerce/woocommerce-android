@@ -17,12 +17,15 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
-class OrderCreationViewModelTest: BaseUnitTest() {
+class OrderCreationViewModelTest : BaseUnitTest() {
     private lateinit var sut: OrderCreationViewModel
     private lateinit var viewState: ViewState
     private lateinit var savedState: SavedStateHandle
@@ -287,8 +290,31 @@ class OrderCreationViewModelTest: BaseUnitTest() {
 
         orderDraft?.feesLines
             ?.takeIf { it.size == 1 }
-            ?.let { assertThat(it.first().total).isEqualTo(newFeeTotal) }
-            ?: fail("Expected a fee lines list with a single fee with 123.5 as total")
+            ?.let {
+                val currentFee = it.first()
+                assertThat(currentFee.total).isEqualTo(newFeeTotal)
+                assertThat(currentFee.name).isNotNull
+            } ?: fail("Expected a fee lines list with a single fee with 123.5 as total")
+    }
+
+    @Test
+    fun `when removing a fee, then mark the existent one with null name`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+
+        val newFeeTotal = BigDecimal(123.5)
+        sut.onFeeEdited(newFeeTotal)
+        sut.onFeeRemoved()
+
+        orderDraft?.feesLines
+            ?.takeIf { it.size == 1 }
+            ?.let {
+                val currentFee = it.first()
+                assertThat(currentFee.total).isEqualTo(newFeeTotal)
+                assertThat(currentFee.name).isNull()
+            } ?: fail("Expected a fee lines list with a single fee with 123.5 as total")
     }
 
     @Test
@@ -311,8 +337,29 @@ class OrderCreationViewModelTest: BaseUnitTest() {
                 val shippingFee = it.first()
                 assertThat(shippingFee.total).isEqualTo(newShippingFeeTotal)
                 assertThat(shippingFee.methodTitle).isEqualTo("4")
-            }
-            ?: fail("Expected a shipping lines list with a single shipping fee with 123.5 as total")
+                assertThat(shippingFee.methodId).isNotNull
+            } ?: fail("Expected a shipping lines list with a single shipping fee with 123.5 as total")
+    }
+
+    @Test
+    fun `when removing a shipping fee, then mark the existent one with null methodId`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+
+        val newShippingFeeTotal = BigDecimal(123.5)
+        sut.onShippingEdited(newShippingFeeTotal, "4")
+        sut.onShippingRemoved()
+
+        orderDraft?.shippingLines
+            ?.takeIf { it.size == 1 }
+            ?.let {
+                val shippingFee = it.first()
+                assertThat(shippingFee.total).isEqualTo(newShippingFeeTotal)
+                assertThat(shippingFee.methodTitle).isEqualTo("4")
+                assertThat(shippingFee.methodId).isNull()
+            } ?: fail("Expected a shipping lines list with a single shipping fee with 123.5 as total")
     }
 
     private fun createSut() {
