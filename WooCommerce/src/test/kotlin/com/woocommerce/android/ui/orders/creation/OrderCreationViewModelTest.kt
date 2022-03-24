@@ -275,6 +275,26 @@ class OrderCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when hitting the fee button with an existent fee, then trigger EditFee with the expected data`() {
+        var lastReceivedEvent: MultiLiveEvent.Event? = null
+        sut.event.observeForever {
+            lastReceivedEvent = it
+        }
+
+        val newFeeTotal = BigDecimal(123.5)
+        sut.onFeeEdited(newFeeTotal)
+        sut.onFeeButtonClicked()
+
+        assertThat(lastReceivedEvent).isNotNull
+        lastReceivedEvent
+            .run { this as? EditFee }
+            ?.let { editFeeEvent ->
+                assertThat(editFeeEvent.currentFeeValue).isEqualTo(newFeeTotal)
+                assertThat(editFeeEvent.orderTotal).isEqualTo(BigDecimal.ZERO)
+            } ?: fail("Last event should be of EditFee type")
+    }
+
+    @Test
     fun `when editing a fee, then reuse the existent one with different value`() {
         var orderDraft: Order? = null
         sut.orderDraft.observeForever {
@@ -315,6 +335,27 @@ class OrderCreationViewModelTest : BaseUnitTest() {
                 assertThat(currentFee.total).isEqualTo(newFeeTotal)
                 assertThat(currentFee.name).isNull()
             } ?: fail("Expected a fee lines list with a single fee with 123.5 as total")
+    }
+
+    @Test
+    fun `when hitting the shipping button with an existent one, then trigger EditShipping with the expected data`() {
+        var lastReceivedEvent: MultiLiveEvent.Event? = null
+        sut.event.observeForever {
+            lastReceivedEvent = it
+        }
+
+        val newFeeTotal = BigDecimal(123.5)
+        sut.onShippingEdited(newFeeTotal, "1")
+        sut.onShippingButtonClicked()
+
+        assertThat(lastReceivedEvent).isNotNull
+        lastReceivedEvent
+            .run { this as? EditShipping }
+            ?.let { editFeeEvent ->
+                val currentShippingLine = editFeeEvent.currentShippingLine
+                assertThat(currentShippingLine?.total).isEqualTo(newFeeTotal)
+                assertThat(currentShippingLine?.methodTitle).isEqualTo("1")
+            } ?: fail("Last event should be of EditShipping type")
     }
 
     @Test
