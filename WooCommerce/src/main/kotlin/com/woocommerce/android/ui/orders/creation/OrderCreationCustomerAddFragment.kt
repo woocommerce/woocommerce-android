@@ -121,7 +121,6 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
             }
         }
     }
-
     private fun inflateLayout(view: View) {
         billingBinding = LayoutAddressFormBinding.inflate(layoutInflater).apply {
             detailsHeaderContainer.announceForAccessibility(R.string.details.toString())
