@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.creation
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.ViewState
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.*
@@ -9,6 +10,7 @@ import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -34,6 +36,8 @@ class OrderCreationViewModelTest : BaseUnitTest() {
     private lateinit var createOrderItemUseCase: CreateOrderItem
     private lateinit var orderCreationRepository: OrderCreationRepository
     private lateinit var parameterRepository: ParameterRepository
+
+    private val defaultOrderValue = Order.EMPTY.copy(id = 123)
 
     @Before
     fun setUp() {
@@ -80,7 +84,7 @@ class OrderCreationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when customer note click event is called, then trigger EditCustomerNote event`() {
-        var lastReceivedEvent: MultiLiveEvent.Event? = null
+        var lastReceivedEvent: Event? = null
         sut.event.observeForever {
             lastReceivedEvent = it
         }
@@ -93,7 +97,7 @@ class OrderCreationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when hitting the customer button, then trigger the EditCustomer event`() {
-        var lastReceivedEvent: MultiLiveEvent.Event? = null
+        var lastReceivedEvent: Event? = null
         sut.event.observeForever {
             lastReceivedEvent = it
         }
@@ -106,7 +110,7 @@ class OrderCreationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when hitting the add product button, then trigger the AddProduct event`() {
-        var lastReceivedEvent: MultiLiveEvent.Event? = null
+        var lastReceivedEvent: Event? = null
         sut.event.observeForever {
             lastReceivedEvent = it
         }
@@ -119,7 +123,7 @@ class OrderCreationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when decreasing product quantity to zero, then call the full product view`() = runBlockingTest {
-        var lastReceivedEvent: MultiLiveEvent.Event? = null
+        var lastReceivedEvent: Event? = null
         sut.event.observeForever {
             lastReceivedEvent = it
         }
@@ -144,7 +148,7 @@ class OrderCreationViewModelTest : BaseUnitTest() {
         }
         createSut()
 
-        var lastReceivedEvent: MultiLiveEvent.Event? = null
+        var lastReceivedEvent: Event? = null
         sut.event.observeForever {
             lastReceivedEvent = it
         }
@@ -238,18 +242,44 @@ class OrderCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    @Suppress("EmptyFunctionBlock")
     fun `when creating the order fails, then trigger Snackbar with fail message`() {
+        val receivedEvents: MutableList<Event> = mutableListOf()
+        sut.event.observeForever {
+            receivedEvents.add(it)
+        }
+
+        sut.onCreateOrderClicked(Order.EMPTY)
+
+        assertThat(receivedEvents).isNotEmpty
     }
 
     @Test
-    @Suppress("EmptyFunctionBlock")
     fun `when creating the order succeed, then call Order details view`() {
+        val receivedEvents: MutableList<Event> = mutableListOf()
+        sut.event.observeForever {
+            receivedEvents.add(it)
+        }
+
+        sut.onCreateOrderClicked(defaultOrderValue)
+
+        assertThat(receivedEvents.size).isEqualTo(2)
+
+        receivedEvents.first()
+            .run { this as? Event.ShowSnackbar }
+            ?.let { showSnackbarEvent ->
+                assertThat(showSnackbarEvent.message).isEqualTo(R.string.order_creation_success_snackbar)
+            } ?: fail("First event should be of ShowSnackbar type with the expected message")
+
+        receivedEvents.last()
+            .run { this as? ShowCreatedOrder }
+            ?.let { showCreatedOrderEvent ->
+                assertThat(showCreatedOrderEvent.orderId).isEqualTo(defaultOrderValue.id)
+            } ?: fail("Second event should be of ShowCreatedOrder type with the expected order ID")
     }
 
     @Test
     fun `when hitting the back button with changes done, then trigger discard warning dialog`() {
-        var lastReceivedEvent: MultiLiveEvent.Event? = null
+        var lastReceivedEvent: Event? = null
         sut.event.observeForever {
             lastReceivedEvent = it
         }
@@ -264,7 +294,7 @@ class OrderCreationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when hitting the back button with no changes, then trigger Exit with no dialog`() {
-        var lastReceivedEvent: MultiLiveEvent.Event? = null
+        var lastReceivedEvent: Event? = null
         sut.event.observeForever {
             lastReceivedEvent = it
         }
@@ -277,7 +307,7 @@ class OrderCreationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when hitting the fee button with an existent fee, then trigger EditFee with the expected data`() {
-        var lastReceivedEvent: MultiLiveEvent.Event? = null
+        var lastReceivedEvent: Event? = null
         sut.event.observeForever {
             lastReceivedEvent = it
         }
@@ -340,7 +370,7 @@ class OrderCreationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when hitting the shipping button with an existent one, then trigger EditShipping with the expected data`() {
-        var lastReceivedEvent: MultiLiveEvent.Event? = null
+        var lastReceivedEvent: Event? = null
         sut.event.observeForever {
             lastReceivedEvent = it
         }
@@ -440,7 +470,7 @@ class OrderCreationViewModelTest : BaseUnitTest() {
                 )
         }
         orderCreationRepository = mock {
-            onBlocking { placeOrder(any()) } doReturn Result.success(Order.EMPTY)
+            onBlocking { placeOrder(defaultOrderValue) } doReturn Result.success(defaultOrderValue)
         }
         mapItemToProductUIModel = mock {
             onBlocking { invoke(any()) } doReturn ProductUIModel(
