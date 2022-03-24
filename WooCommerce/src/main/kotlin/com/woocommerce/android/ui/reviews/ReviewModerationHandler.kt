@@ -15,6 +15,15 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * This class is responsible for handling moderation requests of Product Reviews, the implementation allows
+ * offering a way to undo the last operation when the user is taken back to the reviews list.
+ *
+ * The review moderation can be started by calling [postModerationRequest].
+ * And The client class which should observe the review moderation (generally the ViewModel of the reviews list) needs
+ * to implement the interface [ReviewModerationConsumer], and the corresponding screen needs to
+ * implement [ReviewModerationUi]
+ */
 @Singleton
 class ReviewModerationHandler @Inject constructor(
     private val selectedSite: SelectedSite,
