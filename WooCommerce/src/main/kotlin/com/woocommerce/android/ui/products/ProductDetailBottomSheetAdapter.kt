@@ -11,7 +11,6 @@ import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.Produ
 class ProductDetailBottomSheetAdapter(
     private val onItemClicked: (bottomSheetUiItem: ProductDetailBottomSheetUiItem) -> Unit
 ) : RecyclerView.Adapter<ProductDetailBottomSheetViewHolder>() {
-
     init {
         setHasStableIds(true)
     }
