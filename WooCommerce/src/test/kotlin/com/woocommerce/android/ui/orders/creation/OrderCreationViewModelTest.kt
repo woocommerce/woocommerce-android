@@ -161,7 +161,7 @@ class OrderCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when decreasing product quantity to one or more, then decrease the product quantity by one`() = runBlockingTest {
+    fun `when decreasing product quantity to one or more, then decrease the product quantity by one`() {
         var orderDraft: Order? = null
         sut.orderDraft.observeForever {
             orderDraft = it
@@ -232,18 +232,18 @@ class OrderCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    @Suppress("EmptyFunctionBlock")
     fun `when adding customer address with empty shipping, then set shipping as billing`() {
-
     }
 
     @Test
+    @Suppress("EmptyFunctionBlock")
     fun `when creating the order fails, then trigger Snackbar with fail message`() {
-
     }
 
     @Test
+    @Suppress("EmptyFunctionBlock")
     fun `when creating the order succeed, then call Order details view`() {
-
     }
 
     @Test
