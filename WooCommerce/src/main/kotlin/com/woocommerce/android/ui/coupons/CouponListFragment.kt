@@ -32,7 +32,7 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    CouponListContainer(viewModel)
+                    CouponListScreen(viewModel)
                 }
             }
         }

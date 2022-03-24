@@ -30,14 +30,14 @@ import java.math.BigDecimal
 import kotlin.random.Random
 
 @Composable
-fun CouponListContainer(viewModel: CouponListViewModel) {
+fun CouponListScreen(viewModel: CouponListViewModel) {
     val couponListState by viewModel.couponsState.observeAsState(CouponListState())
 
-    CouponListContainer(state = couponListState)
+    CouponListScreen(state = couponListState)
 }
 
 @Composable
-fun CouponListContainer(state: CouponListState) {
+fun CouponListScreen(state: CouponListState) {
     when {
         state.coupons.isNotEmpty() -> CouponList(
             coupons = state.coupons,
