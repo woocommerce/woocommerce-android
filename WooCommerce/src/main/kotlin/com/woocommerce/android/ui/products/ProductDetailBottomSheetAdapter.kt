@@ -41,7 +41,7 @@ class ProductDetailBottomSheetAdapter(
         holder.bind(options[position], onItemClicked)
     }
 
-    override fun getItemId(position: Int) = options[position].type.id
+    override fun getItemId(position: Int) = options[position].type.ordinal.toLong()
 
     override fun getItemCount() = options.size
 
@@ -64,7 +64,7 @@ class ProductDetailBottomSheetAdapter(
         val result: List<ProductDetailBottomSheetUiItem>
     ) : DiffUtil.Callback() {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-            items[oldItemPosition].type.id == result[newItemPosition].type.id
+            items[oldItemPosition].type.ordinal == result[newItemPosition].type.ordinal
 
         override fun getOldListSize(): Int = items.size
 
