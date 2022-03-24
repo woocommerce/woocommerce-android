@@ -56,7 +56,7 @@ class ReviewModerationHandler @Inject constructor(
         const val SUCCESS_DELAY = 100L
     }
 
-    private val _queue = MutableSharedFlow<ReviewModerationRequest>(extraBufferCapacity = Int.MAX_VALUE)
+    private val queue = MutableSharedFlow<ReviewModerationRequest>(extraBufferCapacity = Int.MAX_VALUE)
 
     private val _pendingModerationStatus = MutableStateFlow<List<ReviewModerationStatus>>(emptyList())
     val pendingModerationStatus = _pendingModerationStatus.map { it.sorted() }
@@ -66,13 +66,12 @@ class ReviewModerationHandler @Inject constructor(
     private var pendingJobs = mutableMapOf<Long, Job>()
 
     init {
-        enqueueIncomingRequests()
-        processIncomingRequests()
+        enqueueAndProcessIncomingRequests()
     }
 
     fun postModerationRequest(review: ProductReview, newStatus: ProductReviewStatus) {
         appCoroutineScope.launch {
-            _queue.emit(
+            queue.emit(
                 ReviewModerationRequest(
                     review = review,
                     newStatus = newStatus
@@ -85,33 +84,41 @@ class ReviewModerationHandler @Inject constructor(
         pendingJobs[review.remoteId]?.cancel()
     }
 
-    private fun enqueueIncomingRequests() {
-        _queue
-            .onEach { request ->
-                WooLog.d(
-                    T.REVIEWS,
-                    "Enqueue moderation request for review " +
-                        "${request.review.remoteId} to status: ${request.newStatus}"
-                )
+    /**
+     * Handles incoming requests, by enqueuing them, then executing them one by one
+     */
+    private fun enqueueAndProcessIncomingRequests() {
+        appCoroutineScope.launch {
+            queue
+                .onEach { request ->
+                    WooLog.d(
+                        T.REVIEWS,
+                        "Enqueue moderation request for review " +
+                            "${request.review.remoteId} to status: ${request.newStatus}"
+                    )
 
-                _pendingModerationStatus.update { it + ReviewModerationStatus(request) }
+                    // Cancel any past requests for the same review
+                    pendingJobs[request.review.remoteId]?.let {
+                        it.cancel()
+                        it.join()
+                    }
 
-                // Skip delay for the previous request if there is any
-                if (_skipDelayTrigger.subscriptionCount.value > 0) {
-                    _skipDelayTrigger.emit(Unit)
+                    _pendingModerationStatus.update { statusList ->
+                        statusList.filterNot { it.review == request.review } + ReviewModerationStatus(request)
+                    }
+
+                    // Skip delay for the previous request if there is any
+                    if (_skipDelayTrigger.subscriptionCount.value > 0) {
+                        _skipDelayTrigger.emit(Unit)
+                    }
                 }
-            }
-            .launchIn(appCoroutineScope)
-    }
-
-    private fun processIncomingRequests() {
-        _queue
-            .onEach { request ->
-                coroutineScope {
-                    pendingJobs[request.review.remoteId] = processModerationRequest(request)
+                .buffer()
+                .collect { request ->
+                    coroutineScope {
+                        pendingJobs[request.review.remoteId] = processModerationRequest(request)
+                    }
                 }
-            }
-            .launchIn(appCoroutineScope)
+        }
     }
 
     private fun CoroutineScope.processModerationRequest(request: ReviewModerationRequest): Job = launch {
