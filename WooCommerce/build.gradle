@@ -24,6 +24,7 @@ repositories {
             includeGroup "org.wordpress.wellsql"
             includeGroup "org.wordpress.mediapicker"
             includeGroup "com.automattic"
+            includeGroup "com.automattic.tracks"
         }
     }
     maven {
@@ -47,7 +48,6 @@ repositories {
     maven {
         url "https://jitpack.io"
         content {
-            includeModule("com.github.Automattic", "Automattic-Tracks-Android")
             includeModule("com.github.wordpress-mobile.WordPress-Aztec-Android", "aztec")
             includeModule("com.github.wordpress-mobile.WordPress-Aztec-Android", "glide-loader")
             includeModule("com.github.chrisbanes", "PhotoView")
@@ -198,7 +198,7 @@ dependencies {
         exclude group: "com.android.support"
     }
 
-    implementation 'com.github.Automattic:Automattic-Tracks-Android:2.1.0'
+    implementation 'com.automattic:Automattic-Tracks-Android:2.2.0'
 
     implementation("${gradle.ext.fluxCBinaryPath}:$fluxCVersion") {
         exclude group: "com.android.support"
