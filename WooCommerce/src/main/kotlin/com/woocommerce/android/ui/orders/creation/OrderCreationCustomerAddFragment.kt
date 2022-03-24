@@ -122,10 +122,6 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
         }
     }
 
-    /*
-   Set the announceForAccessibility function to the heading containers to allow the use of the
-   explore by touch option.
-   */
     private fun inflateLayout(view: View) {
         billingBinding = LayoutAddressFormBinding.inflate(layoutInflater).apply {
             detailsHeaderContainer.announceForAccessibility(R.string.details.toString())
