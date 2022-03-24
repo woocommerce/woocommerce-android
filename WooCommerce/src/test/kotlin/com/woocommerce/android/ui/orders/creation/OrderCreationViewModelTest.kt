@@ -10,6 +10,8 @@ import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
@@ -217,7 +219,30 @@ class OrderCreationViewModelTest: BaseUnitTest() {
 
     @Test
     fun `when hitting the back button with changes done, then trigger discard warning dialog`() {
+        var lastReceivedEvent: MultiLiveEvent.Event? = null
+        sut.event.observeForever {
+            lastReceivedEvent = it
+        }
 
+        sut.onProductSelected(123)
+        sut.onIncreaseProductsQuantity(123)
+        sut.onBackButtonClicked()
+
+        assertThat(lastReceivedEvent).isNotNull
+        assertThat(lastReceivedEvent).isInstanceOf(ShowDialog::class.java)
+    }
+
+    @Test
+    fun `when hitting the back button with no changes, then trigger Exit with no dialog`() {
+        var lastReceivedEvent: MultiLiveEvent.Event? = null
+        sut.event.observeForever {
+            lastReceivedEvent = it
+        }
+
+        sut.onBackButtonClicked()
+
+        assertThat(lastReceivedEvent).isNotNull
+        assertThat(lastReceivedEvent).isInstanceOf(Exit::class.java)
     }
 
     @Test
