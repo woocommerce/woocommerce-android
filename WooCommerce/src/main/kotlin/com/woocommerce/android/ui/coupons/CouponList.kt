@@ -179,7 +179,7 @@ fun CouponListExpirationLabel(active: Boolean = true) {
         Text(
             text = status,
             style = MaterialTheme.typography.body1,
-            color = colorResource(id = R.color.color_on_secondary),
+            color = MaterialTheme.colors.onSecondary,
             modifier = Modifier
                 .background(color = color)
                 .padding(horizontal = 6.dp, vertical = 2.dp)
