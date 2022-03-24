@@ -42,11 +42,7 @@ class OrderCreationViewModelTest: BaseUnitTest() {
 
     @Test
     fun `when submitting customer note, then update orderDraft liveData`() {
-        var lastReceivedEvent: MultiLiveEvent.Event? = null
         var orderDraft: Order? = null
-        sut.event.observeForever {
-            lastReceivedEvent = it
-        }
 
         sut.orderDraft.observeForever {
             orderDraft = it
@@ -54,7 +50,6 @@ class OrderCreationViewModelTest: BaseUnitTest() {
 
         sut.onCustomerNoteEdited("Customer note test")
 
-        assertThat(lastReceivedEvent).isNull()
         assertThat(orderDraft?.customerNote).isEqualTo("Customer note test")
     }
 
@@ -73,12 +68,7 @@ class OrderCreationViewModelTest: BaseUnitTest() {
 
     @Test
     fun `when submitting order status, then update orderDraft liveData`() {
-        var lastReceivedEvent: MultiLiveEvent.Event? = null
         var orderDraft: Order? = null
-        sut.event.observeForever {
-            lastReceivedEvent = it
-        }
-
         sut.orderDraft.observeForever {
             orderDraft = it
         }
@@ -86,7 +76,6 @@ class OrderCreationViewModelTest: BaseUnitTest() {
             ?.let { sut.onOrderStatusChanged(it) }
             ?: fail("Failed to submit an order status")
 
-        assertThat(lastReceivedEvent).isNull()
         assertThat(orderDraft?.status).isEqualTo(Order.Status.fromDataModel(CoreOrderStatus.COMPLETED))
 
         Order.Status.fromDataModel(CoreOrderStatus.ON_HOLD)
@@ -142,12 +131,7 @@ class OrderCreationViewModelTest: BaseUnitTest() {
 
     @Test
     fun `when decreasing product quantity to one or more, then decrease the product quantity by one`() = runBlockingTest {
-        var lastReceivedEvent: MultiLiveEvent.Event? = null
         var orderDraft: Order? = null
-        sut.event.observeForever {
-            lastReceivedEvent = it
-        }
-
         sut.orderDraft.observeForever {
             orderDraft = it
         }
@@ -157,7 +141,6 @@ class OrderCreationViewModelTest: BaseUnitTest() {
         sut.onIncreaseProductsQuantity(123)
         sut.onDecreaseProductsQuantity(123)
 
-        assertThat(lastReceivedEvent).isNull()
         orderDraft?.items
             ?.takeIf { it.isNotEmpty() }
             ?.find { it.productId == 123L }
@@ -167,12 +150,7 @@ class OrderCreationViewModelTest: BaseUnitTest() {
 
     @Test
     fun `when adding products, then update product liveData when quantity is one or more`() = runBlockingTest {
-        var lastReceivedEvent: MultiLiveEvent.Event? = null
         var products: List<ProductUIModel> = emptyList()
-        sut.event.observeForever {
-            lastReceivedEvent = it
-        }
-
         sut.products.observeForever {
             products = it
         }
@@ -181,7 +159,6 @@ class OrderCreationViewModelTest: BaseUnitTest() {
         assertThat(products).isEmpty()
 
         sut.onIncreaseProductsQuantity(123)
-        assertThat(lastReceivedEvent).isNull()
         assertThat(products.size).isEqualTo(1)
         assertThat(products.first().item.productId).isEqualTo(123)
     }
