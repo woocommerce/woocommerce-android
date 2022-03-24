@@ -243,14 +243,25 @@ class OrderCreationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when creating the order fails, then trigger Snackbar with fail message`() {
+        orderCreationRepository = mock {
+            onBlocking { placeOrder(defaultOrderValue) } doReturn Result.failure(Throwable())
+        }
+        createSut()
+
         val receivedEvents: MutableList<Event> = mutableListOf()
         sut.event.observeForever {
             receivedEvents.add(it)
         }
 
-        sut.onCreateOrderClicked(Order.EMPTY)
+        sut.onCreateOrderClicked(defaultOrderValue)
 
-        assertThat(receivedEvents).isNotEmpty
+        assertThat(receivedEvents.size).isEqualTo(1)
+
+        receivedEvents.first()
+            .run { this as? Event.ShowSnackbar }
+            ?.let { showSnackbarEvent ->
+                assertThat(showSnackbarEvent.message).isEqualTo(R.string.order_creation_failure_snackbar)
+            } ?: fail("Event should be of ShowSnackbar type with the expected message")
     }
 
     @Test
