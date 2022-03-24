@@ -207,7 +207,20 @@ class OrderCreationViewModelTest: BaseUnitTest() {
 
     @Test
     fun `when adding the very same product, then increase item quantity by one`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
 
+        sut.onProductSelected(123)
+        sut.onIncreaseProductsQuantity(123)
+        sut.onProductSelected(123)
+
+        orderDraft?.items
+            ?.takeIf { it.isNotEmpty() }
+            ?.find { it.productId == 123L }
+            ?.let { assertThat(it.quantity).isEqualTo(2f) }
+            ?: fail("Expected an item with productId 123 with quantity as 2")
     }
 
     @Test
