@@ -82,7 +82,7 @@ fun CouponListItem(coupon: CouponUi, currencyCode: String?) {
             Text(
                 text = it,
                 style = MaterialTheme.typography.h6,
-                color = colorResource(id = R.color.color_on_surface),
+                color = MaterialTheme.colors.onSurface,
                 fontSize = 20.sp
             )
         }
