@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.creation
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus.*
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.ViewState
@@ -81,6 +82,38 @@ class OrderCreationViewModelTest : BaseUnitTest() {
             ?: fail("Failed to submit an order status")
 
         assertThat(orderDraft?.status).isEqualTo(Order.Status.fromDataModel(CoreOrderStatus.ON_HOLD))
+    }
+
+
+    @Test
+    fun `when submitting customer address data, then update orderDraft liveData`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        val defaultBillingAddress = Address.EMPTY.copy(firstName = "Test", lastName = "Billing")
+        val defaultShippingAddress = Address.EMPTY.copy(firstName = "Test", lastName = "Shipping")
+
+        sut.onCustomerAddressEdited(defaultBillingAddress, defaultShippingAddress)
+
+        assertThat(orderDraft?.billingAddress).isEqualTo(defaultBillingAddress)
+        assertThat(orderDraft?.shippingAddress).isEqualTo(defaultShippingAddress)
+    }
+
+
+    @Test
+    fun `when submitting customer address data with empty shipping, then the billing data for both addresses`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        val defaultBillingAddress = Address.EMPTY.copy(firstName = "Test", lastName = "Billing")
+        val defaultShippingAddress = Address.EMPTY
+
+        sut.onCustomerAddressEdited(defaultBillingAddress, defaultShippingAddress)
+
+        assertThat(orderDraft?.billingAddress).isEqualTo(defaultBillingAddress)
+        assertThat(orderDraft?.shippingAddress).isEqualTo(defaultBillingAddress)
     }
 
     @Test
@@ -461,8 +494,9 @@ class OrderCreationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when OrderDraftUpdateStatus is Succeeded, then adjust view state to reflect the loading end`() {
+        val modifiedOrderValue = defaultOrderValue.copy(id = 999)
         createOrUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(defaultOrderValue))
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(modifiedOrderValue))
         }
         createSut()
 
@@ -482,7 +516,7 @@ class OrderCreationViewModelTest : BaseUnitTest() {
         assertThat(viewState?.showOrderUpdateSnackbar).isFalse
 
         assertThat(orderDraft).isNotNull
-        assertThat(orderDraft).isEqualTo(defaultOrderValue)
+        assertThat(orderDraft).isEqualTo(modifiedOrderValue)
     }
 
     @Test
