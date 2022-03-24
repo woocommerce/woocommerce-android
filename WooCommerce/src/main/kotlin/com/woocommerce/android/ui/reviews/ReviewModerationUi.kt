@@ -43,8 +43,11 @@ fun ReviewModerationUi.observeModerationStatus(
     }
 
     viewLifecycleOwner.lifecycle.addObserver(object : DefaultLifecycleObserver {
-        override fun onDestroy(owner: LifecycleOwner) {
+        override fun onStop(owner: LifecycleOwner) {
             changeReviewStatusSnackbar?.dismiss()
+        }
+
+        override fun onDestroy(owner: LifecycleOwner) {
             changeReviewStatusSnackbar = null
             lifecycle.removeObserver(this)
         }
