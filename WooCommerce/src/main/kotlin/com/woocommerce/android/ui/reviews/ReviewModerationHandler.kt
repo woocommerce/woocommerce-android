@@ -7,6 +7,8 @@ import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.model.ActionStatus.*
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.reviews.ReviewModerationHandler.Companion.SUCCESS_DELAY
+import com.woocommerce.android.ui.reviews.ReviewModerationHandler.Companion.UNDO_DELAY
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import kotlinx.coroutines.*
@@ -19,10 +21,22 @@ import javax.inject.Singleton
  * This class is responsible for handling moderation requests of Product Reviews, the implementation allows
  * offering a way to undo the last operation when the user is taken back to the reviews list.
  *
- * The review moderation can be started by calling [postModerationRequest].
- * And The client class which should observe the review moderation (generally the ViewModel of the reviews list) needs
- * to implement the interface [ReviewModerationConsumer], and the corresponding screen needs to
- * implement [ReviewModerationUi]
+ * A review moderation is handled by the following steps:
+ * 1. The function [postModerationRequest] is called after the user's action.
+ * 2. The handler will set the status of the request to [PENDING] and publishes it in [pendingModerationStatus].
+ * 3. Then we wait for the delay defined by [UNDO_DELAY]
+ * 3. After the delay is expired, the handler will fire a request to the server.
+ * 4. Depending on the result of the API request, the server will update the status to either [SUCCESS] or [ERROR]
+ * 5. If the request succeeded, we keep the status for the delay [SUCCESS_DELAY] to
+ *    allow clients to refresh the list of reviews
+ * 6. If the request fails, we keep the status for the duration [ERROR] to allow clients
+ *    to display an error Snackbar
+ * 7. After we are done, the handler will remove the request and its status.
+ *
+ * For this to work, the client class which should observe the review moderation (generally the ViewModel
+ * of the reviews list) needs to implement the interface [ReviewModerationConsumer], and the corresponding screen
+ * needs to implement [ReviewModerationUi]
+ *
  */
 @Singleton
 class ReviewModerationHandler @Inject constructor(
@@ -33,6 +47,7 @@ class ReviewModerationHandler @Inject constructor(
     companion object {
         @VisibleForTesting
         const val UNDO_DELAY = 2750L
+
         @VisibleForTesting
         const val ERROR_SNACKBAR_DELAY = 1000L
 
