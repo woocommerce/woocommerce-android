@@ -189,7 +189,7 @@ class ReviewModerationHandler @Inject constructor(
             delay(ERROR_SNACKBAR_DELAY)
         } else {
             val updatedReview = remoteOperationResult.model!!
-            WooLog.w(
+            WooLog.d(
                 T.REVIEWS,
                 "Review status updated, id: ${updatedReview.remoteProductReviewId}, status:${updatedReview.status}"
             )
