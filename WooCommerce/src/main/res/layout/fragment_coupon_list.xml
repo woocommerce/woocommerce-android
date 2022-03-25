@@ -1,30 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:background="@color/color_surface">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/products_list"
+    <com.woocommerce.android.ui.products.FeatureWIPNoticeCard
+        android:id="@+id/couponsWIPcard"
+        style="@style/Woo.Card.Expandable"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="?attr/colorSurface"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:itemCount="5"
-        tools:listitem="@layout/product_list_item" />
+        tools:visibility="visible" />
 
-    <com.woocommerce.android.widgets.WCEmptyView
-        android:id="@+id/empty_view"
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/couponsComposeView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/couponsWIPcard" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

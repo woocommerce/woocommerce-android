@@ -77,3 +77,9 @@ fun String.semverCompareTo(otherVersion: String): Int {
         return -1
     }
 }
+
+fun String.capitalizeWords(): String {
+    return this.split(" ").joinToString(" ") { word ->
+        word.replaceFirstChar { it.uppercase() }
+    }
+}
