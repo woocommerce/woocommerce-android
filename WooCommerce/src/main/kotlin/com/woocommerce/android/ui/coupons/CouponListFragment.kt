@@ -18,6 +18,8 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListEvent.NavigateToCouponSummaryEvent
+import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponUi
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.orders.list.OrderListFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -55,9 +57,28 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
         return view
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupObservers()
+    }
+
+    private fun setupObservers() {
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is NavigateToCouponSummaryEvent -> navigateToCouponSummary(event.coupon)
+            }
+        }
+    }
+
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         displayCouponsWIPCard(true)
+    }
+
+    private fun navigateToCouponSummary(coupon: CouponUi) {
+        findNavController().navigateSafely(
+            CouponListFragmentDirections.actionCouponListFragmentToCouponSummaryFragment()
+        )
     }
 
     private fun displayCouponsWIPCard(show: Boolean) {

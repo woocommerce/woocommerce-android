@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.coupons
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -98,6 +99,11 @@ class CouponListViewModel @Inject constructor(
             )
         )
     }
+
+    fun onCouponClick(coupon: CouponUi) {
+        triggerEvent(CouponListEvent.NavigateToCouponSummaryEvent(coupon))
+    }
+
     data class CouponListState(
         val currencyCode: String? = null,
         val isLoading: Boolean = false,
@@ -130,4 +136,8 @@ class CouponListViewModel @Inject constructor(
         val includedCategoryCount: Int? = null,
         val excludedCategoryCount: Int? = null
     )
+
+    sealed class CouponListEvent : MultiLiveEvent.Event() {
+        data class NavigateToCouponSummaryEvent(val coupon: CouponUi) : MultiLiveEvent.Event()
+    }
 }
