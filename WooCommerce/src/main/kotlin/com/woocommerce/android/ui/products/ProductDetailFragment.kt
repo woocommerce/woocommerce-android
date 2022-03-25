@@ -45,6 +45,7 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.variations.VariationListFragment
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.VariationListData
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.Optional
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
@@ -163,8 +164,8 @@ class ProductDetailFragment :
         }
         handleResult<PricingData>(BaseProductEditorFragment.KEY_PRICING_DIALOG_RESULT) {
             viewModel.updateProductDraft(
-                regularPrice = it.regularPrice,
-                salePrice = it.salePrice,
+                regularPrice = Optional(it.regularPrice),
+                salePrice = Optional(it.salePrice),
                 saleStartDate = it.saleStartDate,
                 saleEndDate = it.saleEndDate,
                 isSaleScheduled = it.isSaleScheduled,
