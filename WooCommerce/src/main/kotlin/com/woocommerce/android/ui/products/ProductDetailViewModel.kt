@@ -575,8 +575,8 @@ class ProductDetailViewModel @Inject constructor(
             isUploadingImagesForNonCreatedProduct
         ) {
             val positiveAction = DialogInterface.OnClickListener { _, _ ->
-                // discard changes made to the product and exit product detail
-                discardEditChanges()
+                // Make sure to cancel any remaining image uploads
+                mediaFileUploadHandler.cancelUpload(getRemoteProductId())
                 triggerEvent(ExitProduct)
             }
 
@@ -984,22 +984,6 @@ class ProductDetailViewModel @Inject constructor(
 
     fun onProductDetailBottomSheetItemSelected(uiItem: ProductDetailBottomSheetUiItem) {
         onEditProductCardClicked(uiItem.clickEvent, uiItem.stat)
-    }
-
-    /**
-     * Called when discard is clicked on any of the product screens to restore the product to
-     * the state it was in when the screen was first entered
-     */
-    private fun discardEditChanges() {
-        viewState = viewState.copy(productDraft = storedProduct)
-        _addedProductTags.clearList()
-
-        // Make sure to cancel any remaining image uploads
-        mediaFileUploadHandler.cancelUpload(getRemoteProductId())
-
-        // updates the UPDATE menu button in the product detail screen i.e. the UPDATE menu button
-        // will only be displayed if there are changes made to the Product model.
-        updateProductEditAction()
     }
 
     fun checkConnection(): Boolean {
