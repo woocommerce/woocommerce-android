@@ -1003,6 +1003,12 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
+    fun refreshProduct() {
+        launch {
+            fetchProduct(viewState.productDraft?.remoteId ?: navArgs.remoteProductId)
+        }
+    }
+
     private fun loadRemoteProduct(remoteProductId: Long) {
         // Pre-load current site's tax class list for use in the product pricing screen
         launch(dispatchers.main) {

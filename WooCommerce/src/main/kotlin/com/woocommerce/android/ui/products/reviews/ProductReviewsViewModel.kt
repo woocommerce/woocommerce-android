@@ -16,7 +16,7 @@ import com.woocommerce.android.ui.reviews.observeModerationEvents
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.PRODUCTS
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -44,6 +44,8 @@ class ProductReviewsViewModel @Inject constructor(
     private var productReviewsViewState by productReviewsViewStateData
 
     private val navArgs: ProductReviewsFragmentArgs by savedState.navArgs()
+
+    private var hasModifiedReviews: Boolean = false
 
     init {
         if (_reviewList.value == null) {
