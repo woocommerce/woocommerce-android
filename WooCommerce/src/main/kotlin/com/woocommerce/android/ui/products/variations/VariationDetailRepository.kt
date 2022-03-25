@@ -8,41 +8,21 @@ import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.WooLog.T.PRODUCTS
 import kotlinx.coroutines.withContext
-import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchSingleVariationPayload
 import org.wordpress.android.fluxc.store.WCProductStore.OnVariationChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnVariationUpdated
-import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import javax.inject.Inject
 
 @OpenClassOnDebug
 class VariationDetailRepository @Inject constructor(
-    private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite,
     private val coroutineDispatchers: CoroutineDispatchers
 ) {
-    private var continuationFetchVariation = ContinuationWrapper<Boolean>(PRODUCTS)
-
-    private var remoteProductId: Long = 0L
-    private var remoteVariationId: Long = 0L
-
-    var lastFetchVariationErrorType: ProductErrorType? = null
-
-    init {
-        dispatcher.register(this)
-    }
-
-    fun onCleanup() {
-        dispatcher.unregister(this)
-    }
-
     suspend fun fetchVariation(remoteProductId: Long, remoteVariationId: Long): OnVariationChanged {
         val payload = FetchSingleVariationPayload(
             selectedSite.get(),
