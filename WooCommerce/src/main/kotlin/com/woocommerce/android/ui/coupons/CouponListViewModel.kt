@@ -3,17 +3,18 @@ package com.woocommerce.android.ui.coupons
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.store.CouponStore
+import org.wordpress.android.fluxc.persistence.entity.CouponDataModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import java.math.BigDecimal
+import org.wordpress.android.util.DateTimeUtils
 import java.util.*
 import javax.inject.Inject
 
@@ -22,14 +23,20 @@ class CouponListViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val wooCommerceStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
-    private val couponRepository: CouponRepository
+    private val couponRepository: CouponRepository,
+    private val currencyFormatter: CurrencyFormatter,
+    private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedState) {
     val couponsState = couponRepository.couponsFlow
         .map { coupons ->
             CouponListState(
-                currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode,
                 isLoading = false,
-                coupons = coupons
+                coupons = coupons.map {
+                    it.toAppModel(
+                        currencyFormatter,
+                        wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
+                    )
+                }
             )
         }
         .asLiveData()
@@ -43,30 +50,71 @@ class CouponListViewModel @Inject constructor(
     data class CouponListState(
         val currencyCode: String? = null,
         val isLoading: Boolean = false,
-        val coupons: List<CouponUi> = emptyList()
+        val coupons: List<CouponItem> = emptyList()
     )
 
-    data class CouponUi(
+    data class CouponItem(
         val id: Long,
         val code: String? = null,
-        val amount: BigDecimal? = null,
-        val dateCreatedGmt: Date? = null,
-        val dateModifiedGmt: Date? = null,
-        val discountType: String? = null,
-        val description: String? = null,
-        val dateExpiresGmt: Date? = null,
-        val usageCount: Int? = null,
-        val isForIndividualUse: Boolean? = null,
-        val usageLimit: Int? = null,
-        val usageLimitPerUser: Int? = null,
-        val limitUsageToXItems: Int? = null,
-        val isShippingFree: Boolean? = null,
-        val areSaleItemsExcluded: Boolean? = null,
-        val minimumAmount: BigDecimal? = null,
-        val maximumAmount: BigDecimal? = null,
-        val includedProductsCount: Int,
-        val excludedProductsCount: Int,
-        val includedCategoryCount: Int,
-        val excludedCategoryCount: Int
+        val discount: String,
+        val affectedArticles: String,
+        val isActive: Boolean
     )
+
+    fun CouponDataModel.toAppModel(currencyFormatter: CurrencyFormatter, currencyCode: String?): CouponItem {
+        fun formatDiscount(amount: String?, discountType: String?): String {
+            return when (discountType) {
+                "percent" -> "$amount%"
+                else -> {
+                    if (amount != null) {
+                        currencyCode?.let { currencyFormatter.formatCurrency(amount, currencyCode) } ?: amount
+                    } else {
+                        ""
+                    }
+                }
+            }
+        }
+
+        fun formatAffectedArticles(
+            includedProductsCount: Int,
+            excludedProductsCount: Int,
+            includedCategoriesCount: Int
+        ): String {
+            return if (includedProductsCount == 0 && excludedProductsCount == 0) {
+                resourceProvider.getString(R.string.coupon_list_item_label_all_products)
+            }
+            else {
+                val products = StringUtils.getQuantityString(
+                    resourceProvider,
+                    includedProductsCount,
+                    default = R.string.product_count_many,
+                    one = R.string.product_count_one
+                )
+
+                val categories = StringUtils.getQuantityString(
+                    resourceProvider,
+                    includedCategoriesCount,
+                    default = R.string.category_count_many,
+                    one = R.string.category_count_one
+                )
+                "$products, $categories"
+            }
+        }
+
+        fun isCouponActive(expiryDate: String?): Boolean {
+            return if (expiryDate != null) {
+                DateTimeUtils.dateUTCFromIso8601(expiryDate).before(Date())
+            } else {
+                true
+            }
+        }
+
+        return CouponItem(
+            id = couponEntity.id,
+            code = couponEntity.code,
+            discount = formatDiscount(couponEntity.amount, couponEntity.discountType),
+            affectedArticles = formatAffectedArticles(products.size, excludedProducts.size, categories.size),
+            isActive = isCouponActive(couponEntity.dateExpiresGmt)
+        )
+    }
 }

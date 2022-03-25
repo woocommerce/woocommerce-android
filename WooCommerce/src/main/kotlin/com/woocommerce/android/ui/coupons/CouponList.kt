@@ -25,13 +25,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.capitalizeWords
 import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListState
-import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponUi
-import com.woocommerce.android.util.StringUtils
-import java.lang.StringBuilder
-import java.math.BigDecimal
-import kotlin.random.Random
+import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponItem
 
 @Composable
 fun CouponListScreen(viewModel: CouponListViewModel) {
@@ -75,7 +70,7 @@ fun EmptyCouponList() {
 }
 
 @Composable
-fun CouponList(coupons: List<CouponUi>, currencyCode: String? = null) {
+fun CouponList(coupons: List<CouponItem>, currencyCode: String? = null) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(0.dp),
         modifier = Modifier
@@ -99,7 +94,7 @@ fun CouponList(coupons: List<CouponUi>, currencyCode: String? = null) {
 }
 
 @Composable
-fun CouponListItem(coupon: CouponUi, currencyCode: String?) {
+fun CouponListItem(coupon: CouponItem, currencyCode: String?) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -115,77 +110,23 @@ fun CouponListItem(coupon: CouponUi, currencyCode: String?) {
             )
         }
 
-        CouponListItemInfo(
-            coupon.amount,
-            coupon.discountType,
-            currencyCode,
-            coupon.includedProductsCount,
-            coupon.excludedProductsCount,
-            coupon.includedCategoryCount,
-        )
+        CouponListItemInfo(coupon.discount, coupon.affectedArticles)
 
-        val rand = Random.nextBoolean()
-        CouponListExpirationLabel(rand)
+        CouponListExpirationLabel(coupon.isActive)
     }
 }
 
 @Composable
 fun CouponListItemInfo(
-    amount: BigDecimal?,
-    discountType: String?,
-    currencyCode: String?,
-    includedProductsCount: Int? = null,
-    excludedProductsCount: Int? = null,
-    includedCategoryCount: Int? = null,
+    amount: String,
+    affectedArticles: String
 ) {
-    if (amount == null || discountType == null) {
-        // Show nothing if the amount or discount type is unclear.
-        return
-    } else {
-        val sb = StringBuilder()
-        val amountText = amount.toString()
-        when (discountType) {
-            "percent" -> sb.append("$amountText% ")
-            else -> {
-                currencyCode?.let {
-                    sb.append("$currencyCode $amountText ")
-                }
-            }
-        }
-        sb.append(stringResource(id = R.string.coupon_list_item_label_off))
-        sb.append(" ")
-
-        if (includedProductsCount == null && excludedProductsCount == null) {
-            sb.append(stringResource(id = R.string.coupon_list_item_label_all_products))
-        }
-
-        includedProductsCount?.let {
-            sb.append(
-                StringUtils.getQuantityString(
-                    it,
-                    default = R.string.product_count_many,
-                    one = R.string.product_count_one
-                )
-            )
-        }
-
-        includedCategoryCount?.let {
-            if (includedProductsCount != null) {
-                sb.append(", ")
-            }
-            sb.append(includedCategoryCount)
-            sb.append(" ")
-            sb.append(stringResource(id = R.string.product_categories))
-        }
-
-        Text(
-            text = sb.toString().capitalizeWords(),
-            style = MaterialTheme.typography.body2,
-            color = colorResource(id = R.color.color_surface_variant),
-            modifier = Modifier
-                .padding(vertical = 4.dp)
-        )
-    }
+    Text(
+        text = "$amount ${stringResource(id = R.string.coupon_list_item_label_off)} $affectedArticles",
+        style = MaterialTheme.typography.body2,
+        color = colorResource(id = R.color.color_surface_variant),
+        modifier = Modifier.padding(vertical = 4.dp)
+    )
 }
 
 @Composable
@@ -221,28 +162,28 @@ fun CouponListExpirationLabel(active: Boolean = true) {
 @Suppress("MagicNumber")
 fun CouponListPreview() {
     val coupons = listOf(
-        CouponUi(
+        CouponItem(
             id = 1,
             code = "ABCDE",
-            amount = BigDecimal(25),
-            discountType = "percent",
-            includedProductsCount = 5,
-            includedCategoryCount = 4
+            discount = "USD 10.00",
+            affectedArticles = "all products",
+            isActive = true
         ),
 
-        CouponUi(
+        CouponItem(
             id = 2,
             code = "10off",
-            amount = BigDecimal(10),
-            discountType = "fixed_cart",
-            includedProductsCount = 1
+            discount = "5%",
+            affectedArticles = "1 product, 2 categories",
+            isActive = true
         ),
 
-        CouponUi(
+        CouponItem(
             id = 3,
             code = "BlackFriday",
-            amount = BigDecimal(5),
-            discountType = "fixed_product"
+            discount = "USD 3.00",
+            affectedArticles = "all products",
+            isActive = true
         ),
     )
 
