@@ -233,6 +233,8 @@ class ProductDetailViewModel @Inject constructor(
         val isRestoredFromSavedState = viewState.productDraft != null
         if (!isRestoredFromSavedState) {
             initializeViewState()
+        } else {
+            initializeStoredProductAfterRestoration()
         }
         observeImageUploadEvents()
     }
@@ -245,14 +247,28 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     private fun startAddNewProduct() {
+        val defaultProduct = createDefaultProductForAddFlow()
+        viewState = viewState.copy(
+            productDraft = defaultProduct
+        )
+        updateProductState(defaultProduct)
+    }
+
+    private fun createDefaultProductForAddFlow(): Product {
         val preferredSavedType = prefs.getSelectedProductType()
         val defaultProductType = ProductType.fromString(preferredSavedType)
         val isProductVirtual = prefs.isSelectedProductVirtual()
-        val defaultProduct = ProductHelper.getDefaultNewProduct(defaultProductType, isProductVirtual)
-        viewState = viewState.copy(
-            productDraft = ProductHelper.getDefaultNewProduct(defaultProductType, isProductVirtual)
-        )
-        updateProductState(defaultProduct)
+        return ProductHelper.getDefaultNewProduct(defaultProductType, isProductVirtual)
+    }
+
+    private fun initializeStoredProductAfterRestoration() {
+        launch {
+            storedProduct = if (isAddFlowEntryPoint && !isProductStoredAtSite) {
+                createDefaultProductForAddFlow()
+            } else {
+                productRepository.getProduct(viewState.productDraft?.remoteId ?: navArgs.remoteProductId)
+            }
+        }
     }
 
     fun getProduct() = viewState
