@@ -104,7 +104,7 @@ fun InboxNoteRow(note: InboxNoteUi) {
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
-            text = note.updatedTime,
+            text = note.dateCreated,
             style = MaterialTheme.typography.subtitle2,
             color = colorResource(id = R.color.color_surface_variant)
         )
@@ -137,10 +137,7 @@ fun InboxNoteAction(inboxAction: InboxNoteActionUi) {
     ) {
         Text(
             text = inboxAction.label.uppercase(),
-            color = colorResource(
-                id = if (inboxAction.primary) R.color.color_secondary
-                else R.color.color_surface_variant
-            )
+            color = colorResource(id = inboxAction.textColor)
         )
     }
 }
@@ -255,19 +252,19 @@ class SampleInboxProvider : PreviewParameterProvider<InboxState> {
                         "Now that your store is set up, you’re ready to begin marketing it. " +
                             "Head over to the WooCommerce marketing panel to get started."
                     },
-                    updatedTime = "5h ago",
+                    dateCreated = "5h ago",
                     actions = listOf(
                         InboxNoteActionUi(
                             id = 3,
                             label = "Open",
-                            primary = true,
+                            textColor = R.color.color_secondary,
                             onClick = {},
                             url = ""
                         ),
                         InboxNoteActionUi(
                             id = 4,
                             label = "Dismiss",
-                            primary = true,
+                            textColor = R.color.color_surface_variant,
                             onClick = {},
                             url = ""
                         )
@@ -280,19 +277,19 @@ class SampleInboxProvider : PreviewParameterProvider<InboxState> {
                         "Grow your customer base and increase your sales with marketing tools " +
                             "built for WooCommerce."
                     },
-                    updatedTime = "22 minutes ago",
+                    dateCreated = "22 minutes ago",
                     actions = listOf(
                         InboxNoteActionUi(
                             id = 3,
                             label = "Open",
-                            primary = true,
+                            textColor = R.color.color_secondary,
                             onClick = {},
                             url = ""
                         ),
                         InboxNoteActionUi(
                             id = 4,
                             label = "Dismiss",
-                            primary = true,
+                            textColor = R.color.color_surface_variant,
                             onClick = {},
                             url = ""
                         )
