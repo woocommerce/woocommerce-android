@@ -349,8 +349,8 @@ class VariationDetailViewModel @Inject constructor(
 
     private suspend fun fetchVariation(remoteProductId: Long, remoteVariationId: Long) {
         if (networkStatus.isConnected()) {
-            val fetchedVariation = variationRepository.fetchVariation(remoteProductId, remoteVariationId)
-            originalVariation = fetchedVariation
+            variationRepository.fetchVariation(remoteProductId, remoteVariationId)
+            originalVariation = variationRepository.getVariation(remoteProductId, remoteVariationId)
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
         }
