@@ -32,7 +32,7 @@ class CouponSummaryFragment : BaseFragment(R.layout.fragment_coupon_summary) {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    // to do CouponSummaryScreen
+                    CouponSummaryScreen(viewModel)
                 }
             }
         }
