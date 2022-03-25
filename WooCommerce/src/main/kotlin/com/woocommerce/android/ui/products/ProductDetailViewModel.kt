@@ -321,7 +321,6 @@ class ProductDetailViewModel @Inject constructor(
         viewState.productDraft?.let {
             triggerEvent(ViewProductImageGallery(it.remoteId, it.images))
         }
-        updateProductBeforeEnteringFragment()
     }
 
     /**
@@ -332,7 +331,6 @@ class ProductDetailViewModel @Inject constructor(
         viewState.productDraft?.let {
             triggerEvent(ViewProductImageGallery(it.remoteId, it.images, true))
         }
-        updateProductBeforeEnteringFragment()
     }
 
     fun onAddFirstVariationClicked() {
@@ -354,7 +352,6 @@ class ProductDetailViewModel @Inject constructor(
     fun onEditProductCardClicked(target: ProductNavigationTarget, stat: AnalyticsEvent? = null) {
         stat?.let { AnalyticsTracker.track(it) }
         triggerEvent(target)
-        updateProductBeforeEnteringFragment()
     }
 
     /**
@@ -824,14 +821,6 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     /**
-     * Called before entering any product screen to save of copy of the product prior to the user making any
-     * changes in that specific screen
-     */
-    fun updateProductBeforeEnteringFragment() {
-        viewState.productBeforeEnteringFragment = viewState.productDraft ?: storedProduct
-    }
-
-    /**
      * Update all product fields that are edited by the user
      */
     @Suppress("LongMethod", "ComplexMethod")
@@ -1002,7 +991,7 @@ class ProductDetailViewModel @Inject constructor(
      * the state it was in when the screen was first entered
      */
     private fun discardEditChanges() {
-        viewState = viewState.copy(productDraft = viewState.productBeforeEnteringFragment)
+        viewState = viewState.copy(productDraft = storedProduct)
         _addedProductTags.clearList()
 
         // Make sure to cancel any remaining image uploads
@@ -1543,7 +1532,6 @@ class ProductDetailViewModel @Inject constructor(
             }
             viewState = viewState.copy(
                 productDraft = null,
-                productBeforeEnteringFragment = storedProduct,
                 isProductUpdated = false
             )
             loadRemoteProduct(product.remoteId)
@@ -1567,7 +1555,6 @@ class ProductDetailViewModel @Inject constructor(
         if (isSuccess) {
             viewState = viewState.copy(
                 productDraft = null,
-                productBeforeEnteringFragment = storedProduct,
                 isProductUpdated = false
             )
             loadRemoteProduct(newProductRemoteId)
@@ -1599,12 +1586,6 @@ class ProductDetailViewModel @Inject constructor(
             productDraft = updatedDraft
         )
         storedProduct = productToUpdateFrom
-
-        if (viewState.productBeforeEnteringFragment == null) {
-            viewState = viewState.copy(
-                productBeforeEnteringFragment = updatedDraft
-            )
-        }
     }
 
     private fun loadProductTaxAndShippingClassDependencies(product: Product) {
@@ -2074,16 +2055,10 @@ class ProductDetailViewModel @Inject constructor(
      * When the user first enters the product detail screen, the [productDraft] and [storedProduct] are the same.
      * When a change is made to the product in the UI, the [productDraft] model is updated with whatever change
      * has been made in the UI.
-     *
-     * The [productBeforeEnteringFragment] is a copy of the product before a specific detail fragment is entered.
-     * This is used when the user taps the back button to detect if any changes were made in that fragment, and
-     * if so we ask whether the user wants to discard changes. If they do, then we reset [productDraft] back to
-     * [productBeforeEnteringFragment] to restore it to the state it was when the fragment was entered.
      */
     @Parcelize
     data class ProductDetailViewState(
         val productDraft: Product? = null,
-        var productBeforeEnteringFragment: Product? = null,
         val isSkeletonShown: Boolean? = null,
         val uploadingImageUris: List<Uri>? = null,
         val isProgressDialogShown: Boolean? = null,

@@ -10,9 +10,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
@@ -31,12 +29,6 @@ abstract class BaseProductFragment : BaseFragment, BackPressListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // if this is the initial creation of this fragment, tell the viewModel to make a copy of the product
-        // as it exists now so we can easily discard changes are determine if any changes were made inside
-        // this fragment
-        if (savedInstanceState == null) {
-            viewModel.updateProductBeforeEnteringFragment()
-        }
 
         setupObservers(viewModel)
     }
