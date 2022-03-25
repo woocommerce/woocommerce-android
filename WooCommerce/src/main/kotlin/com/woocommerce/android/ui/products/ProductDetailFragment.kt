@@ -42,6 +42,7 @@ import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
+import com.woocommerce.android.ui.products.reviews.ProductReviewsFragment
 import com.woocommerce.android.ui.products.variations.VariationListFragment
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.VariationListData
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -215,6 +216,10 @@ class ProductDetailFragment :
 
         handleResult<VariationListData>(VariationListFragment.KEY_VARIATION_LIST_RESULT) { data ->
             data.currentVariationAmount?.let { viewModel.onVariationAmountReceived(it) }
+        }
+
+        handleNotice(ProductReviewsFragment.PRODUCT_REVIEWS_MODIFIED) {
+            viewModel.refreshProduct()
         }
     }
 

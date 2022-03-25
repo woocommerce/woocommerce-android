@@ -2,7 +2,7 @@
 
 8.9
 -----
-
+- [*] Added support for moderating reviews of specific products from the Product Details screen. [https://github.com/woocommerce/woocommerce-android/pull/6070]
 
 8.8
 -----
