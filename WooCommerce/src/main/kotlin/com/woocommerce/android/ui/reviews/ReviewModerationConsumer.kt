@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.filter
 interface ReviewModerationConsumer {
     val ReviewModerationConsumer.reviewModerationHandler: ReviewModerationHandler
     val ReviewModerationConsumer.rawReviewList: LiveData<List<ProductReview>>
-    fun ReviewModerationConsumer.reloadReviewsFromCache()
+    fun ReviewModerationConsumer.onReviewModerationSuccess()
 }
 
 val ReviewModerationConsumer.pendingReviewModerationStatus
@@ -35,7 +35,7 @@ val ReviewModerationConsumer.reviewList
 suspend fun ReviewModerationConsumer.observeModerationEvents() {
     reviewModerationHandler.pendingModerationStatus
         .filter { statuses -> statuses.any { it.actionStatus == ActionStatus.SUCCESS } }
-        .collect { reloadReviewsFromCache() }
+        .collect { onReviewModerationSuccess() }
 }
 
 fun ReviewModerationConsumer.undoModerationRequest(review: ProductReview) {

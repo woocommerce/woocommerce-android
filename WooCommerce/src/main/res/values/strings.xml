@@ -1233,9 +1233,9 @@
     <string name="product_no_shipping_class">No shipping class</string>
     <string name="product_shipping_settings">Shipping settings</string>
     <string name="product_total_orders">Total orders</string>
-    <string name="product_ratings_count">\u2022  rated %d times</string>
-    <string name="product_ratings_count_one">\u2022  rated once</string>
-    <string name="product_ratings_count_zero">\u2022  no ratings</string>
+    <string name="product_ratings_count">\u2022  %d approved reviews</string>
+    <string name="product_ratings_count_one">\u2022  one approved review</string>
+    <string name="product_ratings_count_zero">\u2022  no approved reviews</string>
     <string name="product_reviews">Reviews</string>
     <string name="product_downloads">Downloads</string>
     <string name="product_downloadable_files">Downloadable files</string>
