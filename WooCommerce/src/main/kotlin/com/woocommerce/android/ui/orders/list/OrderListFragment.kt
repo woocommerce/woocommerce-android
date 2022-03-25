@@ -209,13 +209,7 @@ class OrderListFragment :
     }
 
     private fun initCreateOrderFAB(fabButton: FloatingActionButton) {
-        fabButton.setOnClickListener {
-            if (AppPrefs.isOrderCreationEnabled) {
-                showOrderCreationBottomSheet()
-            } else {
-                showSimplePaymentsDialog()
-            }
-        }
+        fabButton.setOnClickListener { showOrderCreationBottomSheet() }
         pinFabAboveBottomNavigationBar(fabButton)
     }
 
