@@ -67,7 +67,20 @@ class ProductReviewsViewModel @Inject constructor(
         launch { fetchProductReviews(remoteProductId = navArgs.remoteProductId, loadMore = true) }
     }
 
-    override fun ReviewModerationConsumer.reloadReviewsFromCache() {
+    override fun ReviewModerationConsumer.onReviewModerationSuccess() {
+        reloadReviewsFromCache()
+        hasModifiedReviews = true
+    }
+
+    fun onBackButtonClicked() {
+        if (hasModifiedReviews) {
+            triggerEvent(ExitWithResult(Unit))
+        } else {
+            triggerEvent(Exit)
+        }
+    }
+
+    private fun reloadReviewsFromCache() {
         launch {
             _reviewList.value = reviewsRepository.getProductReviewsFromDB(navArgs.remoteProductId)
         }
