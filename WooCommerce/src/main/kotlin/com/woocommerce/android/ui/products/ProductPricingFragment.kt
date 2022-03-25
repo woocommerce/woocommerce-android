@@ -29,7 +29,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
 import dagger.hilt.android.AndroidEntryPoint
-import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
 
@@ -133,7 +132,7 @@ class ProductPricingFragment :
 
             pricingData.regularPrice?.let { text = it.toString() }
             setOnTextChangedListener {
-                val price = it.toString().toBigDecimalOrNull() ?: BigDecimal.ZERO
+                val price = it.toString().toBigDecimalOrNull()
                 viewModel.onRegularPriceEntered(price)
             }
         }
@@ -145,7 +144,7 @@ class ProductPricingFragment :
 
             pricingData.salePrice?.let { text = it.toString() }
             setOnTextChangedListener {
-                val price = it.toString().toBigDecimalOrNull() ?: BigDecimal.ZERO
+                val price = it.toString().toBigDecimalOrNull()
                 viewModel.onSalePriceEntered(price)
             }
         }
