@@ -15,6 +15,10 @@ class OrderTaxesAdapter(
 ) : RecyclerView.Adapter<OrderTaxesAdapter.ViewHolder>() {
     private var taxes: List<Order.TaxLine> = emptyList()
 
+    init {
+        setHasStableIds(true)
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     fun updateTaxes(newTaxes: List<Order.TaxLine>) {
         taxes = newTaxes
@@ -36,6 +40,8 @@ class OrderTaxesAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(taxes[position])
     }
+
+    override fun getItemId(position: Int): Long = taxes[position].id
 
     override fun getItemCount(): Int = taxes.size
 
