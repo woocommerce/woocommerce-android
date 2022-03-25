@@ -105,14 +105,6 @@ class AppSettingsActivity :
         }
     }
 
-    override fun onOrderCreationOptionChanged(enabled: Boolean) {
-        if (AppPrefs.isOrderCreationEnabled != enabled) {
-            isBetaOptionChanged = true
-            AppPrefs.isOrderCreationEnabled = enabled
-            setResult(RESULT_CODE_BETA_OPTIONS_CHANGED)
-        }
-    }
-
     override fun finishLogout() {
         notificationMessageHandler.removeAllNotificationsFromSystemsBar()
 
