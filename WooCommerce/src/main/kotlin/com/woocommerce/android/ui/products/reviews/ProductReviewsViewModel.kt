@@ -85,6 +85,9 @@ class ProductReviewsViewModel @Inject constructor(
     private fun reloadReviewsFromCache() {
         launch {
             _reviewList.value = reviewsRepository.getProductReviewsFromDB(navArgs.remoteProductId)
+            productReviewsViewState = productReviewsViewState.copy(
+                isEmptyViewVisible = _reviewList.value?.isEmpty() == true
+            )
         }
     }
 
