@@ -106,7 +106,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     private val productWithParameters = ProductDetailViewState(
         productDraft = product,
-        productBeforeEnteringFragment = product,
         isSkeletonShown = false,
         uploadingImageUris = emptyList(),
         showBottomSheetButton = true
