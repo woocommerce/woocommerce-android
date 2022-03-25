@@ -383,6 +383,14 @@
     <fragment
         android:id="@+id/couponListFragment"
         android:name="com.woocommerce.android.ui.coupons.CouponListFragment"
-        android:label="CouponListFragment" />
+        android:label="CouponListFragment" >
+        <action
+            android:id="@+id/action_couponListFragment_to_couponSummaryFragment"
+            app:destination="@id/couponSummaryFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/couponSummaryFragment"
+        android:name="com.woocommerce.android.ui.coupons.CouponSummaryFragment"
+        android:label="CouponSummaryFragment" />
 
 </navigation>
