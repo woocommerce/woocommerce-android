@@ -359,7 +359,6 @@ class VariationDetailViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         productRepository.onCleanup()
-        variationRepository.onCleanup()
         mediaFileUploadHandler.cancelUpload(navArgs.remoteVariationId)
     }
 
