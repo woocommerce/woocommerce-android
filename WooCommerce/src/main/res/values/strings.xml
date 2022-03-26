@@ -330,6 +330,10 @@
     <string name="simple_payments_cash_dlg_message">This will create your order and mark it as paid if you received payment outside of WooCommerce</string>
     <string name="simple_payments_cash_dlg_button">Mark as paid</string>
     <!--
+         Taxes
+    -->
+    <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
+    <!--
          Order Creation
     -->
     <string name="orderlist_create_order_button_description">Create order</string>
