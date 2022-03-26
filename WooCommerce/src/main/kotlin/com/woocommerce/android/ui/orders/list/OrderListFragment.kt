@@ -24,6 +24,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentOrderListBinding
 import com.woocommerce.android.extensions.*
 import com.woocommerce.android.model.FeatureFeedbackSettings
+import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.SimplePayments
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -90,7 +91,8 @@ class OrderListFragment :
         get() = binding.orderListView.emptyView
 
     private val feedbackState
-        get() = FeedbackPrefs.getFeatureFeedbackSettings(TAG)?.state ?: FeatureFeedbackSettings.FeedbackState.UNANSWERED
+        get() = FeedbackPrefs.getFeatureFeedbackSettings(SimplePayments(TAG))?.state
+            ?: FeatureFeedbackSettings.FeedbackState.UNANSWERED
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -563,8 +565,8 @@ class OrderListFragment :
 
     private fun registerFeedbackSetting(state: FeatureFeedbackSettings.FeedbackState) {
         FeatureFeedbackSettings(
-            FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS.name,
+            SimplePayments(TAG),
             state
-        ).registerItselfWith(TAG)
+        ).registerItself()
     }
 }
