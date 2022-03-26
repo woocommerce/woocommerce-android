@@ -48,15 +48,15 @@ object FeedbackPrefs {
         FeedbackPrefs.context = context.applicationContext
     }
 
-    fun getFeatureFeedbackSettings(featureKey: String) =
-        featureMap[featureKey]
+    fun getFeatureFeedbackSettings(feature: FeatureFeedbackSettings.Feature) =
+        featureMap[feature.tag]
             ?.let { gson.fromJson(it, FeatureFeedbackSettings::class.java) }
 
-    fun setFeatureFeedbackSettings(featureKey: String, settings: FeatureFeedbackSettings) {
+    fun setFeatureFeedbackSettings(settings: FeatureFeedbackSettings) {
         featureMap
             .toMutableMap()
             .run {
-                set(featureKey, gson.toJson(settings))
+                set(settings.feature.tag, gson.toJson(settings))
                 toMap()
             }
             .let { gson.toJson(it) }
