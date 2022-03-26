@@ -21,6 +21,7 @@ data class FeatureFeedbackSettings(
         PRODUCTS_VARIATIONS("products_variations"),
         PRODUCT_ADDONS("product_addons"),
         SIMPLE_PAYMENTS("simple_payments"),
+        SIMPLE_PAYMENTS_AND_ORDER_CREATION("simple_payments_and_order_creation"),
         COUPONS("coupons")
     }
 
