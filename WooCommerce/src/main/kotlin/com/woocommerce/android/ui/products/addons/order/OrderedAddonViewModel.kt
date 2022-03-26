@@ -8,6 +8,7 @@ import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.FeatureFeedbackSettings
+import com.woocommerce.android.model.FeatureFeedbackSettings.*
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
 import com.woocommerce.android.model.Order
@@ -45,10 +46,12 @@ class OrderedAddonViewModel @Inject constructor(
     private val _orderedAddons = MutableLiveData<List<Addon>>()
     val orderedAddonsData: LiveData<List<Addon>> = _orderedAddons
 
+    private val feedbackFeature = Feature.ProductAddons(TAG)
+
     private val currentFeedbackSettings
-        get() = FeedbackPrefs.getFeatureFeedbackSettings(TAG)
-            ?: FeatureFeedbackSettings(OrderedAddonFragment.CURRENT_WIP_NOTICE_FEATURE.name)
-                .apply { registerItselfWith(TAG) }
+        get() = FeedbackPrefs.getFeatureFeedbackSettings(feedbackFeature)
+            ?: FeatureFeedbackSettings(feedbackFeature)
+                .apply { registerItself() }
 
     /**
      * Provides the currencyCode for views who requires display prices
@@ -77,9 +80,9 @@ class OrderedAddonViewModel @Inject constructor(
         trackFeedback(AnalyticsTracker.VALUE_FEEDBACK_GIVEN)
 
         FeatureFeedbackSettings(
-            OrderedAddonFragment.CURRENT_WIP_NOTICE_FEATURE.name,
+            feedbackFeature,
             GIVEN
-        ).registerItselfWith(TAG)
+        ).registerItself()
 
         triggerEvent(ShowSurveyView)
     }
@@ -88,9 +91,9 @@ class OrderedAddonViewModel @Inject constructor(
         trackFeedback(AnalyticsTracker.VALUE_FEEDBACK_DISMISSED)
 
         FeatureFeedbackSettings(
-            OrderedAddonFragment.CURRENT_WIP_NOTICE_FEATURE.name,
+            feedbackFeature,
             DISMISSED
-        ).registerItselfWith(TAG)
+        ).registerItself()
 
         viewState = viewState.copy(shouldDisplayFeedbackCard = false)
     }
