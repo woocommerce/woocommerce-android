@@ -24,6 +24,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentOrderListBinding
 import com.woocommerce.android.extensions.*
 import com.woocommerce.android.model.FeatureFeedbackSettings
+import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS_AND_ORDER_CREATION
+import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -90,7 +92,7 @@ class OrderListFragment :
         get() = binding.orderListView.emptyView
 
     private val feedbackState
-        get() = FeedbackPrefs.getFeatureFeedbackSettings(TAG)?.state ?: FeatureFeedbackSettings.FeedbackState.UNANSWERED
+        get() = FeedbackPrefs.getFeatureFeedbackSettings(TAG)?.state ?: FeedbackState.UNANSWERED
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -511,10 +513,7 @@ class OrderListFragment :
     }
 
     private fun displaySimplePaymentsWIPCard(show: Boolean) {
-        if (!show ||
-            feedbackState == FeatureFeedbackSettings.FeedbackState.DISMISSED ||
-            !viewModel.isCardReaderOnboardingCompleted()
-        ) {
+        if (!show || feedbackState == FeedbackState.DISMISSED) {
             binding.simplePaymentsWIPcard.isVisible = false
             return
         }
@@ -537,7 +536,7 @@ class OrderListFragment :
                 AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
             )
         )
-        registerFeedbackSetting(FeatureFeedbackSettings.FeedbackState.GIVEN)
+        registerFeedbackSetting(FeedbackState.GIVEN)
         NavGraphMainDirections
             .actionGlobalFeedbackSurveyFragment(SurveyType.SIMPLE_PAYMENTS)
             .apply { findNavController().navigateSafely(this) }
@@ -551,13 +550,13 @@ class OrderListFragment :
                 AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
             )
         )
-        registerFeedbackSetting(FeatureFeedbackSettings.FeedbackState.DISMISSED)
+        registerFeedbackSetting(FeedbackState.DISMISSED)
         displaySimplePaymentsWIPCard(false)
     }
 
-    private fun registerFeedbackSetting(state: FeatureFeedbackSettings.FeedbackState) {
+    private fun registerFeedbackSetting(state: FeedbackState) {
         FeatureFeedbackSettings(
-            FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS.name,
+            SIMPLE_PAYMENTS_AND_ORDER_CREATION.name,
             state
         ).registerItselfWith(TAG)
     }
