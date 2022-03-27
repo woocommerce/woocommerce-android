@@ -18,6 +18,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -161,6 +162,8 @@ fun CouponListItemInfo(
     includedProductsCount: Int? = null,
     excludedProductsCount: Int? = null,
     includedCategoryCount: Int? = null,
+    fontSize: Int = 14,
+    color: Color = colorResource(id = R.color.color_surface_variant)
 ) {
     if (amount == null || discountType == null) {
         // Show nothing if the amount or discount type is unclear.
@@ -205,7 +208,8 @@ fun CouponListItemInfo(
         Text(
             text = sb.toString().capitalizeWords(),
             style = MaterialTheme.typography.body2,
-            color = colorResource(id = R.color.color_surface_variant),
+            color = color,
+            fontSize = fontSize.sp,
             modifier = Modifier
                 .padding(vertical = 4.dp)
         )

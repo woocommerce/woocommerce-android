@@ -30,8 +30,10 @@ class CouponSummaryViewModel @Inject constructor(
                     amount = BigDecimal(25),
                     discountType = "percent",
                     includedProductsCount = 5,
-                    includedCategoryCount = 4
-                )
+                    includedCategoryCount = 4,
+                    minimumAmount = "10.5",
+                    maximumAmount = "100.5"
+                ),
             )
         )
     }
