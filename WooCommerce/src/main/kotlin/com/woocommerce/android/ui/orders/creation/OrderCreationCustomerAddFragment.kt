@@ -5,7 +5,6 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
@@ -29,6 +28,7 @@ import com.woocommerce.android.ui.orders.details.editing.address.AddressViewMode
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.AddressType.SHIPPING
 import com.woocommerce.android.ui.orders.details.editing.address.LocationCode
 import com.woocommerce.android.ui.searchfilter.SearchFilterItem
+import com.woocommerce.android.util.UiHelpers.setAccessibilityHeaders
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -123,12 +123,7 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
     }
     private fun inflateLayout(view: View) {
         billingBinding = LayoutAddressFormBinding.inflate(layoutInflater).apply {
-            detailsHeaderContainer.announceForAccessibility(R.string.details.toString())
-            ViewCompat.setAccessibilityHeading(detailsHeaderContainer, true)
-
-            addressHeaderContainer.announceForAccessibility(R.string.order_detail_billing_address_section.toString())
-            addressSectionHeader.setText(R.string.order_detail_add_billing_address)
-            ViewCompat.setAccessibilityHeading(addressHeaderContainer, true)
+            setAccessibilityHeaders(R.string.details, R.string.order_detail_billing_address_section)
 
             countrySpinner.setClickListener {
                 addressViewModel.onCountrySpinnerClicked(BILLING)
@@ -139,12 +134,7 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
         }
 
         shippingBinding = LayoutAddressFormBinding.inflate(layoutInflater).apply {
-            detailsHeaderContainer.announceForAccessibility(R.string.details.toString())
-            ViewCompat.setAccessibilityHeading(detailsHeaderContainer, true)
-
-            addressHeaderContainer.announceForAccessibility(R.string.order_detail_shipping_address_section.toString())
-            addressSectionHeader.setText(R.string.order_detail_add_shipping_address)
-            ViewCompat.setAccessibilityHeading(addressHeaderContainer, true)
+            setAccessibilityHeaders(R.string.details, R.string.order_detail_shipping_address_section)
 
             email.visibility = View.GONE
             countrySpinner.setClickListener {

@@ -11,7 +11,9 @@ import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.text.HtmlCompat
+import androidx.core.view.ViewCompat
 import com.woocommerce.android.R
+import com.woocommerce.android.databinding.LayoutAddressFormBinding
 import com.woocommerce.android.model.UiDimen
 import com.woocommerce.android.model.UiDimen.UiDimenDPInt
 import com.woocommerce.android.model.UiDimen.UiDimenRes
@@ -104,5 +106,13 @@ object UiHelpers {
 
             window.setLayout(proposedWidth, LayoutParams.WRAP_CONTENT)
         }
+    }
+    fun LayoutAddressFormBinding.setAccessibilityHeaders(detailsHeading: Int, addressHeading: Int) {
+        detailsHeaderContainer.announceForAccessibility(detailsHeading.toString())
+        ViewCompat.setAccessibilityHeading(detailsHeaderContainer, true)
+
+        addressHeaderContainer.announceForAccessibility(addressHeading.toString())
+        addressSectionHeader.setText(addressHeading)
+        ViewCompat.setAccessibilityHeading(addressHeaderContainer, true)
     }
 }
