@@ -46,7 +46,6 @@ data class LocalAmountFee(
     override var amount: BigDecimal,
     override val totalTax: BigDecimal,
 ) : LocalFeeLine, Parcelable {
-
     override fun getTotal(): BigDecimal = amount
     override fun getType(): LocalFeeLineType = LocalFeeLineType.AMOUNT
     override fun copyFee(
@@ -93,7 +92,6 @@ data class LocalPercentageFee(
     override val totalTax: BigDecimal,
     val orderTotal: BigDecimal
 ) : LocalFeeLine, Parcelable {
-
     override fun getTotal(): BigDecimal = (amount * orderTotal) / PERCENTAGE_BASE
     override fun getType(): LocalFeeLineType = LocalFeeLineType.PERCENTAGE
     override fun copyFee(

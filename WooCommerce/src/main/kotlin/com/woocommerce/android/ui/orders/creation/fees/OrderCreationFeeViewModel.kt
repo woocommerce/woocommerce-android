@@ -15,7 +15,6 @@ import javax.inject.Inject
 class OrderCreationFeeViewModel @Inject constructor(
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
-
     private val navArgs: OrderCreationFeeFragmentArgs by savedState.navArgs()
 
     val orderTotal = navArgs.orderTotal
