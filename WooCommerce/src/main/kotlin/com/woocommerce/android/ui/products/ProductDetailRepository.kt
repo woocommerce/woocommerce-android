@@ -1,24 +1,15 @@
 package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.AppConstants
-import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_LOADED
-import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_UPDATE_ERROR
-import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_UPDATE_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsEvent.*
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.annotations.OpenClassOnDebug
-import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.ProductAttribute
-import com.woocommerce.android.model.ProductAttributeTerm
-import com.woocommerce.android.model.ProductGlobalAttribute
-import com.woocommerce.android.model.RequestResult
-import com.woocommerce.android.model.ShippingClass
-import com.woocommerce.android.model.TaxClass
-import com.woocommerce.android.model.toAppModel
-import com.woocommerce.android.model.toDataModel
+import com.woocommerce.android.model.*
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.PRODUCTS
 import com.woocommerce.android.util.suspendCoroutineWithTimeout
@@ -28,22 +19,11 @@ import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.WCProductAction.ADDED_PRODUCT
-import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_PASSWORD
-import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_SKU_AVAILABILITY
-import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT_SHIPPING_CLASS
-import org.wordpress.android.fluxc.action.WCProductAction.UPDATED_PRODUCT
-import org.wordpress.android.fluxc.action.WCProductAction.UPDATE_PRODUCT_PASSWORD
+import org.wordpress.android.fluxc.action.WCProductAction.*
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.store.WCGlobalAttributeStore
 import org.wordpress.android.fluxc.store.WCProductStore
-import org.wordpress.android.fluxc.store.WCProductStore.FetchProductSkuAvailabilityPayload
-import org.wordpress.android.fluxc.store.WCProductStore.OnProductCreated
-import org.wordpress.android.fluxc.store.WCProductStore.OnProductPasswordChanged
-import org.wordpress.android.fluxc.store.WCProductStore.OnProductShippingClassesChanged
-import org.wordpress.android.fluxc.store.WCProductStore.OnProductSkuAvailabilityChanged
-import org.wordpress.android.fluxc.store.WCProductStore.OnProductUpdated
-import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
+import org.wordpress.android.fluxc.store.WCProductStore.*
 import org.wordpress.android.fluxc.store.WCTaxStore
 import javax.inject.Inject
 import kotlin.coroutines.Continuation
@@ -55,7 +35,8 @@ class ProductDetailRepository @Inject constructor(
     private val productStore: WCProductStore,
     private val globalAttributeStore: WCGlobalAttributeStore,
     private val selectedSite: SelectedSite,
-    private val taxStore: WCTaxStore
+    private val taxStore: WCTaxStore,
+    private val coroutineDispatchers: CoroutineDispatchers
 ) {
     private var continuationUpdateProduct: Continuation<Boolean>? = null
     private var continuationFetchProductPassword = ContinuationWrapper<String?>(PRODUCTS)
@@ -261,6 +242,10 @@ class ProductDetailRepository @Inject constructor(
         productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
 
     fun getProduct(remoteProductId: Long): Product? = getCachedWCProductModel(remoteProductId)?.toAppModel()
+
+    suspend fun getProductAsync(remoteProductId: Long): Product? = withContext(coroutineDispatchers.io) {
+        getCachedWCProductModel(remoteProductId)?.toAppModel()
+    }
 
     fun isSkuAvailableLocally(sku: String) = !productStore.geProductExistsBySku(selectedSite.get(), sku)
 
