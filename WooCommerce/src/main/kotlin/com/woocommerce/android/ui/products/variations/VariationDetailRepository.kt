@@ -12,7 +12,6 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.fluxc.store.WCProductStore
-import org.wordpress.android.fluxc.store.WCProductStore.FetchSingleVariationPayload
 import org.wordpress.android.fluxc.store.WCProductStore.OnVariationChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnVariationUpdated
 import javax.inject.Inject
@@ -24,12 +23,11 @@ class VariationDetailRepository @Inject constructor(
     private val coroutineDispatchers: CoroutineDispatchers
 ) {
     suspend fun fetchVariation(remoteProductId: Long, remoteVariationId: Long): OnVariationChanged {
-        val payload = FetchSingleVariationPayload(
+        return productStore.fetchSingleVariation(
             selectedSite.get(),
             remoteProductId,
             remoteVariationId
-        )
-        return productStore.fetchSingleVariation(payload).also {
+        ).also {
             if (!it.isError) {
                 AnalyticsTracker.track(PRODUCT_VARIATION_LOADED)
             }
