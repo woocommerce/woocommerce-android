@@ -95,6 +95,10 @@ class ProductDetailViewModel @Inject constructor(
     }
     private var viewState by productDetailViewStateData
 
+    /**
+     * The goal of this is to allow composition of reactive streams using the product draft changes,
+     * we need a separate stream because [LiveDataDelegate] supports a single observer.
+     */
     private val draftChanges = MutableStateFlow<Product?>(null)
 
     private val storedProduct = MutableStateFlow<Product?>(null)
