@@ -59,7 +59,7 @@ fun CouponSummaryHeading(
         code?.let {
             Text(
                 text = it,
-                style = MaterialTheme.typography.h2,
+                style = MaterialTheme.typography.h1,
                 color = MaterialTheme.colors.onSurface,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
@@ -156,14 +156,14 @@ fun CouponListSpendingInfo(
 
     minimumAmount?.let { amount ->
         currencyCode?.let { code ->
-            val value = " $code $amount \n\n"
+            val value = "$code $amount \n\n"
             sb.append(stringResource(id = R.string.coupon_summary_minimum_spend, value))
         }
     }
 
     maximumAmount?.let { amount ->
         currencyCode?.let { code ->
-            val value = " $code $amount \n"
+            val value = "$code $amount \n"
             sb.append(stringResource(id = R.string.coupon_summary_maximum_spend, value))
         }
     }
@@ -205,7 +205,7 @@ fun CouponPerformanceSection() {
                     Text(
                         text = stringResource(id = R.string.coupon_summary_performance_discounted_order_heading),
                         style = MaterialTheme.typography.h3,
-                        color = MaterialTheme.colors.onSurface,
+                        color = colorResource(id = R.color.color_surface_variant),
                         fontSize = 18.sp
                     )
                     Spacer(modifier = Modifier.height(16.dp))
@@ -226,7 +226,7 @@ fun CouponPerformanceSection() {
                     Text(
                         text = stringResource(id = R.string.coupon_summary_performance_amount_heading),
                         style = MaterialTheme.typography.h3,
-                        color = MaterialTheme.colors.onSurface,
+                        color = colorResource(id = R.color.color_surface_variant),
                         fontSize = 18.sp
                     )
                     Spacer(modifier = Modifier.height(16.dp))
