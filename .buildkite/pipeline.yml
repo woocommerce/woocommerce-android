@@ -63,4 +63,6 @@ steps:
       echo "--- ⚒️ Testing debug & generating code coverage"
       cp gradle.properties-example gradle.properties
       ./gradlew jacocoTestReport
-      bash <(curl -s https://codecov.io/bash)
+      curl -Os https://uploader.codecov.io/latest/linux/codecov
+      chmod +x codecov
+      ./codecov -t $CODECOV_TOKEN
