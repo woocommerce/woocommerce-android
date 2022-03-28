@@ -28,6 +28,8 @@ import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus
+import com.woocommerce.android.ui.orders.creation.fees.LocalFeeLine
+import com.woocommerce.android.ui.orders.creation.fees.LocalFeeManager
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.*
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -88,6 +90,8 @@ class OrderCreationViewModel @Inject constructor(
 
     val currentDraft
         get() = _orderDraft.value
+
+    private val localFeeManager: LocalFeeManager = LocalFeeManager(feeName = ORDER_CUSTOM_FEE_NAME)
 
     init {
         _orderDraft.update {
@@ -253,7 +257,11 @@ class OrderCreationViewModel @Inject constructor(
      */
     private fun monitorOrderChanges() {
         viewModelScope.launch {
-            createOrUpdateOrderDraft(_orderDraft, retryOrderDraftUpdateTrigger)
+            val orderDraftFlow = _orderDraft.map { draft ->
+                localFeeManager.updateFeeLine(draft.feesLines, draft.productsTotal)
+                draft.copy(feesLines = localFeeManager.getFeeLines())
+            }
+            createOrUpdateOrderDraft(orderDraftFlow, retryOrderDraftUpdateTrigger)
                 .collect { updateStatus ->
                     when (updateStatus) {
                         OrderDraftUpdateStatus.Ongoing ->
@@ -319,27 +327,18 @@ class OrderCreationViewModel @Inject constructor(
         }
     }
 
-    fun onFeeEdited(feeValue: BigDecimal) {
+    fun onFeeEdited(localFeeLine: LocalFeeLine) {
         AnalyticsTracker.track(
             AnalyticsEvent.ORDER_FEE_ADD,
             mapOf(KEY_FLOW to VALUE_FLOW_CREATION)
         )
-
-        val newFee = _orderDraft.value.feesLines.firstOrNull { it.name != null }
-            ?: Order.FeeLine.EMPTY
-
-        _orderDraft.update { draft ->
-            listOf(newFee.copy(name = ORDER_CUSTOM_FEE_NAME, total = feeValue))
-                .let { draft.copy(feesLines = it) }
-        }
+        localFeeManager.editFee(localFeeLine)
+        _orderDraft.update { draft -> draft.copy(feesLines = localFeeManager.getFeeLines()) }
     }
 
     fun onFeeRemoved() {
-        _orderDraft.update { draft ->
-            draft.feesLines
-                .map { it.copy(name = null) }
-                .let { draft.copy(feesLines = it) }
-        }
+        localFeeManager.onFeeRemoved()
+        _orderDraft.update { draft -> draft.copy(feesLines = localFeeManager.getFeeLines()) }
     }
 
     @Parcelize
