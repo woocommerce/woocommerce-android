@@ -40,8 +40,8 @@ fun CouponSummaryScreen(state: CouponSummaryState) {
                 code = coupon.code,
                 isActive = true
             )
-
-            CouponSummary(coupon, state.currencyCode)
+            CouponSummarySection(coupon, state.currencyCode)
+            CouponPerformanceSection()
         }
     }
 }
@@ -96,14 +96,15 @@ fun CouponSummaryExpirationLabel(isActive: Boolean) {
 }
 
 @Composable
-fun CouponSummary(coupon: CouponUi, currencyCode: String?) {
+fun CouponSummarySection(coupon: CouponUi, currencyCode: String?) {
     Card(
         elevation = 1.dp,
         modifier = Modifier
             .fillMaxWidth()
+            .padding(vertical = 16.dp)
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 24.dp, vertical = 24.dp)
+            modifier = Modifier.padding(24.dp)
         ) {
             Text(
                 text = stringResource(id = R.string.coupon_summary_heading),
@@ -173,5 +174,73 @@ fun CouponListSpendingInfo(
             text = sb.toString(),
             fontSize = 20.sp
         )
+    }
+}
+
+// todo use actual data instead of hardcoded value
+@Composable
+fun CouponPerformanceSection() {
+    Card(
+        elevation = 1.dp,
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(24.dp)
+        ) {
+            Text(
+                text = stringResource(id = R.string.coupon_summary_performance_heading),
+                style = MaterialTheme.typography.h2,
+                color = MaterialTheme.colors.onSurface,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Row {
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.coupon_summary_performance_discounted_order_heading),
+                        style = MaterialTheme.typography.h3,
+                        color = MaterialTheme.colors.onSurface,
+                        fontSize = 18.sp
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Hardcoded value for design purposes.
+                    Text(
+                        text = "12",
+                        style = MaterialTheme.typography.body1,
+                        color = MaterialTheme.colors.onSurface,
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.coupon_summary_performance_amount_heading),
+                        style = MaterialTheme.typography.h3,
+                        color = MaterialTheme.colors.onSurface,
+                        fontSize = 18.sp
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Hardcoded value for design purposes.
+                    Text(
+                        text = "$12.45",
+                        style = MaterialTheme.typography.body1,
+                        color = MaterialTheme.colors.onSurface,
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+        }
     }
 }
