@@ -49,7 +49,7 @@ fun CouponListScreen(viewModel: CouponListViewModel) {
 @Composable
 fun CouponListScreen(
     state: CouponListState,
-    onCouponClick: (coupon: CouponUi) -> Unit
+    onCouponClick: () -> Unit
 ) {
     when {
         state.coupons.isNotEmpty() -> CouponList(
@@ -88,7 +88,7 @@ fun EmptyCouponList() {
 fun CouponList(
     coupons: List<CouponUi>,
     currencyCode: String? = null,
-    onCouponClick: (coupon: CouponUi) -> Unit
+    onCouponClick: () -> Unit
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(0.dp),
@@ -117,7 +117,7 @@ fun CouponList(
 fun CouponListItem(
     coupon: CouponUi,
     currencyCode: String?,
-    onCouponClick: (coupon: CouponUi) -> Unit
+    onCouponClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -127,7 +127,7 @@ fun CouponListItem(
                 enabled = true,
                 onClickLabel = stringResource(id = R.string.coupon_list_view_coupon),
                 role = Role.Button,
-                onClick = { onCouponClick(coupon) }
+                onClick = { onCouponClick() }
             ),
         verticalArrangement = Arrangement.spacedBy(0.dp)
     ) {
