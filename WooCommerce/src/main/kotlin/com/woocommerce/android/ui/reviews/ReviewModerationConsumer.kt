@@ -4,8 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
-import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
-import com.woocommerce.android.ui.reviews.ProductReviewStatus.TRASH
 import com.woocommerce.android.viewmodel.combineWith
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
@@ -13,35 +11,33 @@ import kotlinx.coroutines.flow.filter
 interface ReviewModerationConsumer {
     val ReviewModerationConsumer.reviewModerationHandler: ReviewModerationHandler
     val ReviewModerationConsumer.rawReviewList: LiveData<List<ProductReview>>
-    fun ReviewModerationConsumer.reloadReviewsFromCache()
+    fun ReviewModerationConsumer.onReviewModerationSuccess()
 }
 
 val ReviewModerationConsumer.pendingReviewModerationStatus
     get() = reviewModerationHandler.pendingModerationStatus.asLiveData()
 
 val ReviewModerationConsumer.reviewList
-    get() = rawReviewList.combineWith(pendingReviewModerationStatus) { list, status ->
-        if (status == null) return@combineWith list.orEmpty()
-        list?.map {
-            if (it.remoteId == status.review.remoteId) {
-                it.copy(status = status.newStatus.toString())
+    get() = rawReviewList.combineWith(pendingReviewModerationStatus) { list, statuses ->
+        if (statuses == null) return@combineWith list.orEmpty()
+        list?.map { review ->
+            val status = statuses.firstOrNull { it.review.remoteId == review.remoteId }
+            if (status != null) {
+                review.copy(status = status.newStatus.toString())
             } else {
-                it
+                review
             }
         }?.filter {
-            it.status != TRASH.toString() &&
-                it.status != SPAM.toString()
+            it.status != ProductReviewStatus.TRASH.toString() && it.status != ProductReviewStatus.SPAM.toString()
         }.orEmpty()
     }
 
 suspend fun ReviewModerationConsumer.observeModerationEvents() {
     reviewModerationHandler.pendingModerationStatus
-        .filter { it.actionStatus == ActionStatus.SUCCESS }
-        .collect {
-            reloadReviewsFromCache()
-        }
+        .filter { statuses -> statuses.any { it.actionStatus == ActionStatus.SUCCESS } }
+        .collect { onReviewModerationSuccess() }
 }
 
-fun ReviewModerationConsumer.undoModerationRequest() {
-    reviewModerationHandler.undoLastOperation()
+fun ReviewModerationConsumer.undoModerationRequest(review: ProductReview) {
+    reviewModerationHandler.undoOperation(review)
 }

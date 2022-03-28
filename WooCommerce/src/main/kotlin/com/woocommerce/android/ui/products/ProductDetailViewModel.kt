@@ -36,6 +36,7 @@ import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.Optional
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -827,8 +828,8 @@ class ProductDetailViewModel @Inject constructor(
         soldIndividually: Boolean? = null,
         stockQuantity: Double? = null,
         backorderStatus: ProductBackorderStatus? = null,
-        regularPrice: BigDecimal? = null,
-        salePrice: BigDecimal? = null,
+        regularPrice: Optional<BigDecimal?>? = null,
+        salePrice: Optional<BigDecimal?>? = null,
         isOnSale: Boolean? = null,
         isVirtual: Boolean? = null,
         isSaleScheduled: Boolean? = null,
@@ -877,13 +878,13 @@ class ProductDetailViewModel @Inject constructor(
                 backorderStatus = backorderStatus ?: product.backorderStatus,
                 stockQuantity = stockQuantity ?: product.stockQuantity,
                 images = images ?: product.images,
-                regularPrice = if (regularPrice isNotEqualTo product.regularPrice) {
-                    regularPrice
+                regularPrice = if (regularPrice != null) {
+                    regularPrice.value
                 } else {
                     product.regularPrice
                 },
-                salePrice = if (salePrice isNotEqualTo product.salePrice) {
-                    salePrice
+                salePrice = if (salePrice != null) {
+                    salePrice.value
                 } else {
                     product.salePrice
                 },
@@ -1000,6 +1001,12 @@ class ProductDetailViewModel @Inject constructor(
         } else {
             triggerEvent(ShowSnackbar(R.string.offline_error))
             false
+        }
+    }
+
+    fun refreshProduct() {
+        launch {
+            fetchProduct(viewState.productDraft?.remoteId ?: navArgs.remoteProductId)
         }
     }
 

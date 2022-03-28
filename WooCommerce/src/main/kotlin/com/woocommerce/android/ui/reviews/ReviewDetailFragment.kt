@@ -229,37 +229,30 @@ class ReviewDetailFragment :
     }
 
     private fun configureModerationButtons(status: ProductReviewStatus) {
-        val visibility = if (navArgs.enableModeration) View.VISIBLE else View.GONE
-        binding.reviewApprove.visibility = visibility
-        binding.reviewSpam.visibility = visibility
-        binding.reviewTrash.visibility = visibility
+        binding.reviewApprove.setOnCheckedChangeListener(null)
 
-        if (navArgs.enableModeration) {
-            binding.reviewApprove.setOnCheckedChangeListener(null)
+        // Use the status override if present,else new status
+        when (val newStatus = navArgs.tempStatus?.let { ProductReviewStatus.fromString(it) } ?: status) {
+            APPROVED -> binding.reviewApprove.isChecked = true
+            HOLD -> binding.reviewApprove.isChecked = false
+            else -> WooLog.w(REVIEWS, "Unable to process Review with a status of $newStatus")
+        }
 
-            // Use the status override if present,else new status
-            when (val newStatus = navArgs.tempStatus?.let { ProductReviewStatus.fromString(it) } ?: status) {
-                APPROVED -> binding.reviewApprove.isChecked = true
-                HOLD -> binding.reviewApprove.isChecked = false
-                else -> WooLog.w(REVIEWS, "Unable to process Review with a status of $newStatus")
-            }
+        // Configure the moderate button
+        binding.reviewApprove.setOnCheckedChangeListener(moderateListener)
 
-            // Configure the moderate button
-            binding.reviewApprove.setOnCheckedChangeListener(moderateListener)
+        // Configure the spam button
+        binding.reviewSpam.setOnClickListener {
+            AnalyticsTracker.track(AnalyticsEvent.REVIEW_DETAIL_SPAM_BUTTON_TAPPED)
 
-            // Configure the spam button
-            binding.reviewSpam.setOnClickListener {
-                AnalyticsTracker.track(AnalyticsEvent.REVIEW_DETAIL_SPAM_BUTTON_TAPPED)
+            processReviewModeration(SPAM)
+        }
 
-                processReviewModeration(SPAM)
-            }
+        // Configure the trash button
+        binding.reviewTrash.setOnClickListener {
+            AnalyticsTracker.track(AnalyticsEvent.REVIEW_DETAIL_TRASH_BUTTON_TAPPED)
 
-            // Configure the trash button
-            binding.reviewTrash.setOnClickListener {
-                AnalyticsTracker.track(AnalyticsEvent.REVIEW_DETAIL_TRASH_BUTTON_TAPPED)
-
-                processReviewModeration(TRASH)
-            }
+            processReviewModeration(TRASH)
         }
     }
 
