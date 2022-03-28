@@ -4,10 +4,7 @@ import android.content.DialogInterface
 import android.net.Uri
 import android.os.Parcelable
 import androidx.core.net.toUri
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.map
+import androidx.lifecycle.*
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
@@ -98,9 +95,9 @@ class ProductDetailViewModel @Inject constructor(
     }
     private var viewState by productDetailViewStateData
 
-    private val draftChanges = MutableLiveData<Product>()
+    private val draftChanges = MutableStateFlow<Product?>(null)
 
-    private val storedProduct = MutableLiveData<Product?>(null)
+    private val storedProduct = MutableStateFlow<Product?>(null)
 
     // view state for the product categories screen
     val productCategoriesViewStateData = LiveDataDelegate(savedState, ProductCategoriesViewState())
@@ -155,12 +152,13 @@ class ProductDetailViewModel @Inject constructor(
         ProductDetailBottomSheetBuilder(resources)
     }
 
-    val hasChanges = storedProduct
-        .combineWith(draftChanges) { storedProduct, productDraft ->
+    private val _hasChanges = storedProduct
+        .combine(draftChanges) { storedProduct, productDraft ->
             storedProduct?.let { product ->
                 productDraft?.isSameProduct(product) == false || viewState.isPasswordChanged
             } ?: false
-        }
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
+    val hasChanges = _hasChanges.asLiveData()
 
     /**
      * Returns the filtered list of attributes assigned to the product who are enabled for Variations
@@ -174,8 +172,8 @@ class ProductDetailViewModel @Inject constructor(
     val productDraftAttributes
         get() = viewState.productDraft?.attributes ?: emptyList()
 
-    val menuButtonsState = draftChanges.combineWith(hasChanges) { productDraft, hasChanges ->
-        Pair(productDraft, hasChanges ?: false)
+    val menuButtonsState = draftChanges.combine(_hasChanges) { productDraft, hasChanges ->
+        Pair(productDraft, hasChanges)
     }.map { (productDraft, hasChanges) ->
         val canBeSavedAsDraft = isAddFlowEntryPoint &&
             !isProductStoredAtSite
@@ -189,7 +187,7 @@ class ProductDetailViewModel @Inject constructor(
             shareOption = !isProductUnderCreation,
             trashOption = !isProductUnderCreation && navArgs.isTrashEnabled
         )
-    }
+    }.asLiveData()
 
     /**
      * Validates if the product exists at the Store or if it's currently defined only inside the app
@@ -566,7 +564,7 @@ class ProductDetailViewModel @Inject constructor(
      * changes have been made to the [Product] model locally that still need to be saved to the backend.
      */
     fun onBackButtonClickedProductDetail(): Boolean {
-        val isProductDetailUpdated = hasChanges.value ?: false
+        val isProductDetailUpdated = _hasChanges.value ?: false
         // Consider a non created product with ongoing uploads same as product with non saved changes
         val isUploadingImagesForNonCreatedProduct = isProductUnderCreation && isUploadingImages()
 
