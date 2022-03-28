@@ -198,7 +198,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     @Test
     fun `Display success message on add product success`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         // given
-        doReturn(product).whenever(productRepository).getProduct(any())
+        doReturn(product).whenever(productRepository).getProductAsync(any())
         doReturn(Pair(true, 1L)).whenever(productRepository).addProduct(any())
 
         var successSnackbarShown = false
@@ -220,7 +220,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         viewModel.onUpdateButtonClicked(false)
 
         // then
-        verify(productRepository, times(1)).getProduct(1L)
+        verify(productRepository, times(1)).getProductAsync(1L)
 
         assertThat(successSnackbarShown).isTrue()
         assertThat(productData?.isProgressDialogShown).isFalse()
@@ -284,7 +284,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     fun `Display correct message on updating a freshly added product`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // given
-            doReturn(product).whenever(productRepository).getProduct(any())
+            doReturn(product).whenever(productRepository).getProductAsync(any())
             doReturn(Pair(true, 1L)).whenever(productRepository).addProduct(any())
 
             var successSnackbarShown = false
@@ -306,7 +306,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             viewModel.onUpdateButtonClicked(true)
 
             // then
-            verify(productRepository, times(1)).getProduct(1L)
+            verify(productRepository, times(1)).getProductAsync(1L)
 
             assertThat(successSnackbarShown).isTrue()
             assertThat(productData?.isProgressDialogShown).isFalse()
@@ -375,7 +375,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     @Test
     fun `when a new product is saved, then assign the new id to ongoing image uploads`() = testBlocking {
         doReturn(Pair(true, PRODUCT_REMOTE_ID)).whenever(productRepository).addProduct(any())
-        doReturn(product).whenever(productRepository).getProduct(any())
+        doReturn(product).whenever(productRepository).getProductAsync(any())
         savedState = ProductDetailFragmentArgs(isAddProduct = true).initSavedStateHandle()
 
         setup()
@@ -428,7 +428,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     fun `given a product is under creation, when clicking on save product, then assign uploads to the new id`() =
         testBlocking {
             doReturn(Pair(true, PRODUCT_REMOTE_ID)).whenever(productRepository).addProduct(any())
-            doReturn(product).whenever(productRepository).getProduct(any())
+            doReturn(product).whenever(productRepository).getProductAsync(any())
             viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
             viewModel.start()

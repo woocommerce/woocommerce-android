@@ -1006,7 +1006,7 @@ class ProductDetailViewModel @Inject constructor(
 
         launch {
             // fetch product
-            val productInDb = productRepository.getProduct(remoteProductId)
+            val productInDb = productRepository.getProductAsync(remoteProductId)
             if (productInDb != null) {
                 val shouldFetch = remoteProductId != getRemoteProductId()
                 updateProductState(productInDb)
