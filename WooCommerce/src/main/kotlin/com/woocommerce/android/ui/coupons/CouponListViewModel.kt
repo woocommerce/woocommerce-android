@@ -77,10 +77,9 @@ class CouponListViewModel @Inject constructor(
 
         fun formatAffectedArticles(
             includedProductsCount: Int,
-            excludedProductsCount: Int,
             includedCategoriesCount: Int
         ): String {
-            return if (includedProductsCount == 0 && excludedProductsCount == 0) {
+            return if (includedProductsCount == 0 && includedCategoriesCount == 0) {
                 resourceProvider.getString(R.string.coupon_list_item_label_all_products)
             }
             else {
@@ -103,7 +102,8 @@ class CouponListViewModel @Inject constructor(
 
         fun isCouponActive(expiryDate: String?): Boolean {
             return if (expiryDate != null) {
-                DateTimeUtils.dateUTCFromIso8601(expiryDate).before(Date())
+                val date = if (expiryDate.endsWith("Z")) expiryDate else "${expiryDate}Z"
+                DateTimeUtils.dateUTCFromIso8601(date).after(Date())
             } else {
                 true
             }
@@ -113,7 +113,7 @@ class CouponListViewModel @Inject constructor(
             id = couponEntity.id,
             code = couponEntity.code,
             discount = formatDiscount(couponEntity.amount, couponEntity.discountType),
-            affectedArticles = formatAffectedArticles(products.size, excludedProducts.size, categories.size),
+            affectedArticles = formatAffectedArticles(products.size, categories.size),
             isActive = isCouponActive(couponEntity.dateExpiresGmt)
         )
     }
