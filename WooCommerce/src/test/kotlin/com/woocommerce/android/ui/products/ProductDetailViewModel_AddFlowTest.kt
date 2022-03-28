@@ -10,6 +10,7 @@ import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
+import com.woocommerce.android.ui.products.ProductDetailViewModel.MenuButtonsState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.addons.AddonRepository
@@ -438,4 +439,29 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
             verify(mediaFileUploadHandler).assignUploadsToCreatedProduct(PRODUCT_REMOTE_ID)
         }
+
+    @Test
+    fun `Publish option shown when product is published and from addProduct flow and is under product creation`() {
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+
+        var menuButtonsState: MenuButtonsState? = null
+        viewModel.menuButtonsState.observeForever { menuButtonsState = it }
+
+        viewModel.start()
+        viewModel.updateProductDraft(productStatus = ProductStatus.PUBLISH)
+        assertThat(menuButtonsState?.publishOption).isTrue
+    }
+
+    @Test
+    fun `Save option not shown when product has changes but in add product flow`() {
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+
+        var menuButtonsState: MenuButtonsState? = null
+        viewModel.menuButtonsState.observeForever { menuButtonsState = it }
+
+        viewModel.start()
+        viewModel.updateProductDraft(title = "name")
+
+        assertThat(menuButtonsState?.saveOption).isFalse()
+    }
 }

@@ -755,23 +755,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Publish option shown when product is published and from addProduct flow and is under product creation`() {
-        savedState = ProductDetailFragmentArgs(
-            remoteProductId = ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID,
-            isAddProduct = true
-        ).initSavedStateHandle()
-
-        viewModel.productDetailViewStateData.observeForever { _, _ -> }
-
-        var menuButtonsState: MenuButtonsState? = null
-        viewModel.menuButtonsState.observeForever { menuButtonsState = it }
-
-        viewModel.start()
-        viewModel.updateProductDraft(productStatus = ProductStatus.PUBLISH)
-        assertThat(menuButtonsState?.publishOption).isTrue
-    }
-
-    @Test
     fun `Publish option shown when product is Draft`() {
         doReturn(product).whenever(productRepository).getProduct(any())
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
@@ -810,23 +793,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         viewModel.updateProductDraft(title = product.name + "2")
 
         assertThat(menuButtonsState?.saveOption).isTrue()
-    }
-
-    @Test
-    fun `Save option not shown when product has changes but in add product flow`() {
-        savedState = ProductDetailFragmentArgs(
-            remoteProductId = ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID,
-            isAddProduct = true
-        ).initSavedStateHandle()
-        viewModel.productDetailViewStateData.observeForever { _, _ -> }
-
-        var menuButtonsState: MenuButtonsState? = null
-        viewModel.menuButtonsState.observeForever { menuButtonsState = it }
-
-        viewModel.start()
-        viewModel.updateProductDraft(title = "name")
-
-        assertThat(menuButtonsState?.saveOption).isFalse()
     }
 
     @Test
