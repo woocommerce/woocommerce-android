@@ -566,7 +566,7 @@ class ProductDetailViewModel @Inject constructor(
      * changes have been made to the [Product] model locally that still need to be saved to the backend.
      */
     fun onBackButtonClickedProductDetail(): Boolean {
-        val isProductDetailUpdated = viewState.isProductUpdated ?: false
+        val isProductDetailUpdated = hasChanges.value ?: false
         // Consider a non created product with ongoing uploads same as product with non saved changes
         val isUploadingImagesForNonCreatedProduct = isProductUnderCreation && isUploadingImages()
 
@@ -934,8 +934,6 @@ class ProductDetailViewModel @Inject constructor(
                 numVariations = numVariation ?: product.numVariations
             )
             viewState = viewState.copy(productDraft = updatedProduct)
-
-            updateProductEditAction()
         }
     }
 
@@ -1105,19 +1103,6 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun isUploadingImages() = !viewState.uploadingImageUris.isNullOrEmpty()
-
-    /**
-     * Updates the UPDATE menu button in the product detail screen. UPDATE is only displayed
-     * when there are changes made to the [Product] model and this can be verified by comparing
-     * the viewState.product with storedProduct.value model.
-     */
-    private fun updateProductEditAction() {
-        viewState.productDraft?.let { draft ->
-            val isProductUpdated = storedProduct.value?.isSameProduct(draft) == false ||
-                viewState.isPasswordChanged
-            viewState = viewState.copy(isProductUpdated = isProductUpdated)
-        }
-    }
 
     /**
      * Loads the attributes assigned to the draft product, used by the attribute list fragment
@@ -1514,8 +1499,7 @@ class ProductDetailViewModel @Inject constructor(
                 triggerEvent(ShowSnackbar(successMsg))
             }
             viewState = viewState.copy(
-                productDraft = null,
-                isProductUpdated = false
+                productDraft = null
             )
             loadRemoteProduct(product.remoteId)
         } else {
@@ -1537,8 +1521,7 @@ class ProductDetailViewModel @Inject constructor(
         val (isSuccess, newProductRemoteId) = result
         if (isSuccess) {
             viewState = viewState.copy(
-                productDraft = null,
-                isProductUpdated = false
+                productDraft = null
             )
             loadRemoteProduct(newProductRemoteId)
             triggerEvent(RefreshMenu)
@@ -2031,10 +2014,6 @@ class ProductDetailViewModel @Inject constructor(
      * if we need to display the UPDATE menu button (which is only displayed if there are changes made to
      * any of the product fields).
      *
-     * [isProductUpdated] is used to determine if there are any changes made to the product by comparing
-     * [productDraft] and [storedProduct.value]. Currently used in the product detail screen to display or hide the UPDATE
-     * menu button.
-     *
      * When the user first enters the product detail screen, the [productDraft] and [storedProduct.value] are the same.
      * When a change is made to the product in the UI, the [productDraft] model is updated with whatever change
      * has been made in the UI.
@@ -2045,7 +2024,6 @@ class ProductDetailViewModel @Inject constructor(
         val isSkeletonShown: Boolean? = null,
         val uploadingImageUris: List<Uri>? = null,
         val isProgressDialogShown: Boolean? = null,
-        val isProductUpdated: Boolean? = null,
         val storedPassword: String? = null,
         val draftPassword: String? = null,
         val showBottomSheetButton: Boolean? = null,
