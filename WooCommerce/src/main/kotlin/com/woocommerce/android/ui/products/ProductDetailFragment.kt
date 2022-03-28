@@ -13,7 +13,6 @@ import android.view.View
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
-import androidx.core.view.forEach
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -346,25 +345,6 @@ class ProductDetailFragment :
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
 
-        fun Menu.printItems(): String = buildString {
-            this@printItems.forEach {
-                append("${resources.getResourceName(it.itemId)}\n")
-            }
-        }
-
-        // Some users are experiencing a crash because the entry R.id.menu_view_product is missing from the menu
-        // see: https://github.com/woocommerce/woocommerce-android/issues/3241
-        // If this happens, we will send the below report, and we avoid the crash using the null checks below
-        // TODO: remove the null checks once the root cause is identified is fixed
-        if (menu.findItem(R.id.menu_view_product) == null) {
-            val message = """menu.findItem(R.id.menu_view_product) is null
-                |User is ${if (viewModel.isProductUnderCreation) "creating a product" else "modifying a product"}
-                |menu elements:
-                |${menu.printItems()}
-            """.trimMargin()
-            crashLogging.sendReport(exception = NullPointerException(message))
-        }
-
         // change the font color of the trash menu item to red, and only show it if it should be enabled
         with(menu.findItem(R.id.menu_trash_product)) {
             if (this == null) return@with
@@ -387,15 +367,6 @@ class ProductDetailFragment :
         viewModel.menuButtonsState.value?.let {
             menu.updateOptions(it)
         }
-
-//        if (saveMenuItem?.isVisible ?: false) {
-//            publishMenuItem?.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER)
-//            publishMenuItem?.title = getString(R.string.product_add_tool_bar_menu_button_done)
-//        } else {
-//            publishMenuItem?.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)
-//            publishMenuItem?.title =
-//                getString(R.string.product_add_tool_bar_menu_button_done).uppercase(Locale.getDefault())
-//        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
