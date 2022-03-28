@@ -110,7 +110,7 @@ fun CouponListItem(coupon: CouponItem, currencyCode: String?) {
             )
         }
 
-        CouponListItemInfo(coupon.discount, coupon.affectedArticles)
+        CouponListItemInfo(coupon.formattedDiscount, coupon.affectedArticles)
 
         CouponListExpirationLabel(coupon.isActive)
     }
@@ -165,7 +165,7 @@ fun CouponListPreview() {
         CouponItem(
             id = 1,
             code = "ABCDE",
-            discount = "USD 10.00",
+            formattedDiscount = "USD 10.00",
             affectedArticles = "all products",
             isActive = true
         ),
@@ -173,7 +173,7 @@ fun CouponListPreview() {
         CouponItem(
             id = 2,
             code = "10off",
-            discount = "5%",
+            formattedDiscount = "5%",
             affectedArticles = "1 product, 2 categories",
             isActive = true
         ),
@@ -181,7 +181,7 @@ fun CouponListPreview() {
         CouponItem(
             id = 3,
             code = "BlackFriday",
-            discount = "USD 3.00",
+            formattedDiscount = "USD 3.00",
             affectedArticles = "all products",
             isActive = true
         ),

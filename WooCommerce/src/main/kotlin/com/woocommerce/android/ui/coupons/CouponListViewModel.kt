@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
@@ -12,9 +13,8 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.persistence.entity.CouponDataModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import org.wordpress.android.util.DateTimeUtils
+import java.math.BigDecimal
 import java.util.*
 import javax.inject.Inject
 
@@ -27,15 +27,16 @@ class CouponListViewModel @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedState) {
+    private val currencyCode by lazy {
+        wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
+    }
+
     val couponsState = couponRepository.couponsFlow
         .map { coupons ->
             CouponListState(
                 isLoading = false,
                 coupons = coupons.map {
-                    it.toAppModel(
-                        currencyFormatter,
-                        wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
-                    )
+                    it.toUiModel(currencyFormatter, currencyCode)
                 }
             )
         }
@@ -56,18 +57,20 @@ class CouponListViewModel @Inject constructor(
     data class CouponItem(
         val id: Long,
         val code: String? = null,
-        val discount: String,
+        val formattedDiscount: String,
         val affectedArticles: String,
         val isActive: Boolean
     )
 
-    fun CouponDataModel.toAppModel(currencyFormatter: CurrencyFormatter, currencyCode: String?): CouponItem {
-        fun formatDiscount(amount: String?, discountType: String?): String {
-            return when (discountType) {
-                "percent" -> "$amount%"
+    private fun Coupon.toUiModel(currencyFormatter: CurrencyFormatter, currencyCode: String?): CouponItem {
+        fun formatDiscount(amount: BigDecimal?, couponType: Coupon.Type?): String {
+            return when (couponType) {
+                Coupon.Type.Percent -> "$amount%"
                 else -> {
                     if (amount != null) {
-                        currencyCode?.let { currencyFormatter.formatCurrency(amount, currencyCode) } ?: amount
+                        currencyCode?.let {
+                            currencyFormatter.formatCurrency(amount, currencyCode)
+                        } ?: amount.toString()
                     } else {
                         ""
                     }
@@ -75,10 +78,7 @@ class CouponListViewModel @Inject constructor(
             }
         }
 
-        fun formatAffectedArticles(
-            includedProductsCount: Int,
-            includedCategoriesCount: Int
-        ): String {
+        fun formatAffectedArticles(includedProductsCount: Int, includedCategoriesCount: Int): String {
             return if (includedProductsCount == 0 && includedCategoriesCount == 0) {
                 resourceProvider.getString(R.string.coupon_list_item_label_all_products)
             }
@@ -100,21 +100,12 @@ class CouponListViewModel @Inject constructor(
             }
         }
 
-        fun isCouponActive(expiryDate: String?): Boolean {
-            return if (expiryDate != null) {
-                val date = if (expiryDate.endsWith("Z")) expiryDate else "${expiryDate}Z"
-                DateTimeUtils.dateUTCFromIso8601(date).after(Date())
-            } else {
-                true
-            }
-        }
-
         return CouponItem(
-            id = couponEntity.id,
-            code = couponEntity.code,
-            discount = formatDiscount(couponEntity.amount, couponEntity.discountType),
+            id = id,
+            code = code,
+            formattedDiscount = formatDiscount(amount, type),
             affectedArticles = formatAffectedArticles(products.size, categories.size),
-            isActive = isCouponActive(couponEntity.dateExpiresGmt)
+            isActive = dateExpiresGmt?.after(Date()) ?: true
         )
     }
 }
