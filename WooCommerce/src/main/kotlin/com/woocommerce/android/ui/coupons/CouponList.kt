@@ -25,7 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponItem
+import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListItem
 import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListState
 
 @Composable
@@ -69,7 +69,7 @@ fun EmptyCouponList() {
 }
 
 @Composable
-fun CouponList(coupons: List<CouponItem>) {
+fun CouponList(coupons: List<CouponListItem>) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(0.dp),
         modifier = Modifier
@@ -92,7 +92,7 @@ fun CouponList(coupons: List<CouponItem>) {
 }
 
 @Composable
-fun CouponListItem(coupon: CouponItem) {
+fun CouponListItem(coupon: CouponListItem) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -160,7 +160,7 @@ fun CouponListExpirationLabel(active: Boolean = true) {
 @Suppress("MagicNumber")
 fun CouponListPreview() {
     val coupons = listOf(
-        CouponItem(
+        CouponListItem(
             id = 1,
             code = "ABCDE",
             formattedDiscount = "USD 10.00",
@@ -168,7 +168,7 @@ fun CouponListPreview() {
             isActive = true
         ),
 
-        CouponItem(
+        CouponListItem(
             id = 2,
             code = "10off",
             formattedDiscount = "5%",
@@ -176,7 +176,7 @@ fun CouponListPreview() {
             isActive = true
         ),
 
-        CouponItem(
+        CouponListItem(
             id = 3,
             code = "BlackFriday",
             formattedDiscount = "USD 3.00",

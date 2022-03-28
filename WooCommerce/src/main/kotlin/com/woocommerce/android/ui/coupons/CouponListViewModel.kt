@@ -34,7 +34,6 @@ class CouponListViewModel @Inject constructor(
     val couponsState = couponRepository.couponsFlow
         .map { coupons ->
             CouponListState(
-                isLoading = false,
                 coupons = coupons.map {
                     it.toUiModel(currencyFormatter, currencyCode)
                 }
@@ -49,12 +48,11 @@ class CouponListViewModel @Inject constructor(
     }
 
     data class CouponListState(
-        val currencyCode: String? = null,
         val isLoading: Boolean = false,
-        val coupons: List<CouponItem> = emptyList()
+        val coupons: List<CouponListItem> = emptyList()
     )
 
-    data class CouponItem(
+    data class CouponListItem(
         val id: Long,
         val code: String? = null,
         val formattedDiscount: String,
@@ -62,7 +60,7 @@ class CouponListViewModel @Inject constructor(
         val isActive: Boolean
     )
 
-    private fun Coupon.toUiModel(currencyFormatter: CurrencyFormatter, currencyCode: String?): CouponItem {
+    private fun Coupon.toUiModel(currencyFormatter: CurrencyFormatter, currencyCode: String?): CouponListItem {
         fun formatDiscount(amount: BigDecimal?, couponType: Coupon.Type?): String {
             return when (couponType) {
                 Coupon.Type.Percent -> "$amount%"
@@ -99,7 +97,7 @@ class CouponListViewModel @Inject constructor(
             }
         }
 
-        return CouponItem(
+        return CouponListItem(
             id = id,
             code = code,
             formattedDiscount = formatDiscount(amount, type),
