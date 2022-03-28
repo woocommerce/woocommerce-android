@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.coupons
 
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.DateUtils
 import kotlinx.coroutines.flow.map
 import org.wordpress.android.fluxc.store.CouponStore
 import javax.inject.Inject

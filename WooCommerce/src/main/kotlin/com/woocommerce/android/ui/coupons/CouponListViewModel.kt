@@ -81,8 +81,7 @@ class CouponListViewModel @Inject constructor(
         fun formatAffectedArticles(includedProductsCount: Int, includedCategoriesCount: Int): String {
             return if (includedProductsCount == 0 && includedCategoriesCount == 0) {
                 resourceProvider.getString(R.string.coupon_list_item_label_all_products)
-            }
-            else {
+            } else {
                 val products = StringUtils.getQuantityString(
                     resourceProvider,
                     includedProductsCount,

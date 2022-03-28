@@ -25,8 +25,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListState
 import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponItem
+import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListState
 
 @Composable
 fun CouponListScreen(viewModel: CouponListViewModel) {
@@ -39,8 +39,7 @@ fun CouponListScreen(viewModel: CouponListViewModel) {
 fun CouponListScreen(state: CouponListState) {
     when {
         state.coupons.isNotEmpty() -> CouponList(
-            coupons = state.coupons,
-            currencyCode = state.currencyCode
+            coupons = state.coupons
         )
         state.coupons.isEmpty() -> EmptyCouponList()
     }
@@ -70,7 +69,7 @@ fun EmptyCouponList() {
 }
 
 @Composable
-fun CouponList(coupons: List<CouponItem>, currencyCode: String? = null) {
+fun CouponList(coupons: List<CouponItem>) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(0.dp),
         modifier = Modifier
@@ -79,7 +78,6 @@ fun CouponList(coupons: List<CouponItem>, currencyCode: String? = null) {
         itemsIndexed(coupons) { index, coupon ->
             CouponListItem(
                 coupon = coupon,
-                currencyCode = currencyCode,
             )
             if (index < coupons.lastIndex) {
                 Divider(
@@ -94,7 +92,7 @@ fun CouponList(coupons: List<CouponItem>, currencyCode: String? = null) {
 }
 
 @Composable
-fun CouponListItem(coupon: CouponItem, currencyCode: String?) {
+fun CouponListItem(coupon: CouponItem) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -187,7 +185,7 @@ fun CouponListPreview() {
         ),
     )
 
-    CouponList(coupons = coupons, "USD")
+    CouponList(coupons = coupons)
 }
 
 @ExperimentalFoundationApi

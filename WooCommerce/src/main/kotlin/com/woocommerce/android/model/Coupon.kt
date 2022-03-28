@@ -1,7 +1,6 @@
 package com.woocommerce.android.model
 
 import com.woocommerce.android.extensions.parseFromIso8601DateFormat
-import com.woocommerce.android.util.DateUtils
 import org.wordpress.android.fluxc.persistence.entity.CouponDataModel
 import java.math.BigDecimal
 import java.util.*
