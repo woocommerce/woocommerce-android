@@ -4,13 +4,12 @@ import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.Order
 import java.math.BigDecimal
 
-
 class LocalFeeManager(private val feeName: String) {
     var localFeeLine: LocalFeeLine = LocalFeeLine.EMPTY
         private set
 
     fun updateFeeLine(feeLines: List<Order.FeeLine>, orderTotal: BigDecimal) {
-        if(feeLines.isEmpty()){
+        if (feeLines.isEmpty()) {
             localFeeLine = LocalFeeLine.EMPTY
             return
         }
@@ -39,7 +38,11 @@ class LocalFeeManager(private val feeName: String) {
     }
 
     fun editFee(editedLocalFee: LocalFeeLine) {
-        localFeeLine = if (editedLocalFee.name.isNullOrEmpty()) editedLocalFee.copyFee(name = feeName) else editedLocalFee
+        localFeeLine =
+            if (editedLocalFee.name.isNullOrEmpty())
+                editedLocalFee.copyFee(name = feeName)
+            else
+                editedLocalFee
     }
 
     fun getFeeLines(): List<Order.FeeLine> = if (localFeeLine == LocalFeeLine.EMPTY) {

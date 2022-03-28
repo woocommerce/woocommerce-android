@@ -205,7 +205,7 @@ class OrderCreationViewModel @Inject constructor(
     fun onFeeButtonClicked() {
         triggerEvent(
             EditFee(
-                orderTotal = _orderDraft.value.productsTotal,
+                orderTotal = _orderDraft.value.total,
                 currentLocalFee = localFeeManager.localFeeLine
             )
         )
@@ -258,7 +258,7 @@ class OrderCreationViewModel @Inject constructor(
     private fun monitorOrderChanges() {
         viewModelScope.launch {
             val orderDraftFlow = _orderDraft.map { draft ->
-                localFeeManager.updateFeeLine(draft.feesLines, draft.productsTotal)
+                localFeeManager.updateFeeLine(draft.feesLines, draft.total)
                 draft.copy(feesLines = localFeeManager.getFeeLines())
             }
             createOrUpdateOrderDraft(orderDraftFlow, retryOrderDraftUpdateTrigger)
