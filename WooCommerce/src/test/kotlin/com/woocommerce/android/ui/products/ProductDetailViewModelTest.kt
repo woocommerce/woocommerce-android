@@ -385,6 +385,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `Displays update menu action if product is edited`() {
         doReturn(product).whenever(productRepository).getProduct(any())
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
         var hasChanges: Boolean? = null
         viewModel.hasChanges.observeForever { hasChanges = it }

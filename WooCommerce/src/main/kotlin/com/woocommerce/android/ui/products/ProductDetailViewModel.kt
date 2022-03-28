@@ -172,22 +172,24 @@ class ProductDetailViewModel @Inject constructor(
     val productDraftAttributes
         get() = viewState.productDraft?.attributes ?: emptyList()
 
-    val menuButtonsState = draftChanges.combine(_hasChanges) { productDraft, hasChanges ->
-        Pair(productDraft, hasChanges)
-    }.map { (productDraft, hasChanges) ->
-        val canBeSavedAsDraft = isAddFlowEntryPoint &&
-            !isProductStoredAtSite
-        val isProductPublishedOrPrivate = productDraft?.status == PUBLISH || productDraft?.status == PRIVATE
-        val isProductPublished = viewState.productDraft?.status == PUBLISH
-        MenuButtonsState(
-            saveOption = hasChanges && !canBeSavedAsDraft,
-            saveAsDraftOption = canBeSavedAsDraft,
-            publishOption = !isProductPublishedOrPrivate || isProductUnderCreation,
-            viewProductOption = isProductPublished && !isProductUnderCreation,
-            shareOption = !isProductUnderCreation,
-            trashOption = !isProductUnderCreation && navArgs.isTrashEnabled
-        )
-    }.asLiveData()
+    val menuButtonsState = draftChanges
+        .filterNotNull()
+        .combine(_hasChanges) { productDraft, hasChanges ->
+            Pair(productDraft, hasChanges)
+        }.map { (productDraft, hasChanges) ->
+            val canBeSavedAsDraft = isAddFlowEntryPoint &&
+                !isProductStoredAtSite
+            val isProductPublishedOrPrivate = productDraft.status == PUBLISH || productDraft.status == PRIVATE
+            val isProductPublished = viewState.productDraft?.status == PUBLISH
+            MenuButtonsState(
+                saveOption = hasChanges && !canBeSavedAsDraft,
+                saveAsDraftOption = canBeSavedAsDraft,
+                publishOption = !isProductPublishedOrPrivate || isProductUnderCreation,
+                viewProductOption = isProductPublished && !isProductUnderCreation,
+                shareOption = !isProductUnderCreation,
+                trashOption = !isProductUnderCreation && navArgs.isTrashEnabled
+            )
+        }.asLiveData()
 
     /**
      * Validates if the product exists at the Store or if it's currently defined only inside the app
