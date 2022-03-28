@@ -262,10 +262,12 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     private fun initializeStoredProductAfterRestoration() {
-        storedProduct = if (isAddFlowEntryPoint && !isProductStoredAtSite) {
-            createDefaultProductForAddFlow()
-        } else {
-            productRepository.getProduct(viewState.productDraft?.remoteId ?: navArgs.remoteProductId)
+        launch {
+            storedProduct = if (isAddFlowEntryPoint && !isProductStoredAtSite) {
+                createDefaultProductForAddFlow()
+            } else {
+                productRepository.getProductAsync(viewState.productDraft?.remoteId ?: navArgs.remoteProductId)
+            }
         }
     }
 
