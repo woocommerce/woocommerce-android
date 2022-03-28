@@ -206,6 +206,8 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 successSnackbarShown = true
             }
         }
+        var hasChanges: Boolean? = null
+        viewModel.hasChanges.observeForever { hasChanges = it }
 
         var productData: ProductDetailViewState? = null
 
@@ -221,7 +223,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
         assertThat(successSnackbarShown).isTrue()
         assertThat(productData?.isProgressDialogShown).isFalse()
-        assertThat(productData?.isProductUpdated).isFalse()
+        assertThat(hasChanges).isFalse()
         assertThat(productData?.productDraft).isEqualTo(product)
     }
 
@@ -290,6 +292,8 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                     successSnackbarShown = true
                 }
             }
+            var hasChanges: Boolean? = null
+            viewModel.hasChanges.observeForever { hasChanges = it }
 
             var productData: ProductDetailViewState? = null
 
@@ -305,7 +309,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
             assertThat(successSnackbarShown).isTrue()
             assertThat(productData?.isProgressDialogShown).isFalse()
-            assertThat(productData?.isProductUpdated).isFalse()
+            assertThat(hasChanges).isFalse()
             assertThat(productData?.productDraft).isEqualTo(product)
 
             // when
@@ -323,13 +327,14 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             // then
             assertThat(successSnackbarShown).isTrue()
             assertThat(productData?.isProgressDialogShown).isFalse()
-            assertThat(productData?.isProductUpdated).isFalse()
+            assertThat(hasChanges).isFalse()
             assertThat(productData?.productDraft).isEqualTo(product)
         }
 
     @Test
     fun `Save as draft shown in discard dialog when changes made in add flow`() {
         doReturn(true).whenever(viewModel).isProductUnderCreation
+        viewModel.productDetailViewStateData.observeForever { _, _ ->  }
 
         viewModel.start()
 
@@ -388,12 +393,11 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 .onCompletion { isObservingEvents = false }
             doReturn(successEvents).whenever(mediaFileUploadHandler)
                 .observeSuccessfulUploads(ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID)
-            savedState = ProductDetailFragmentArgs(isAddProduct = true).initSavedStateHandle()
+            viewModel.productDetailViewStateData.observeForever { _, _ ->  }
 
-            setup()
             viewModel.start()
             // Make some changes to trigger discard changes dialog
-            viewModel.onProductTitleChanged("Product")
+            viewModel.onProductTitleChanged("Product 2")
             viewModel.onBackButtonClickedProductDetail()
 
             assertThat(isObservingEvents).isFalse()
@@ -408,9 +412,8 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 .onCompletion { isObservingEvents = false }
             doReturn(successEvents).whenever(mediaFileUploadHandler)
                 .observeSuccessfulUploads(ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID)
-            savedState = ProductDetailFragmentArgs(isAddProduct = true).initSavedStateHandle()
+            viewModel.productDetailViewStateData.observeForever { _, _ ->  }
 
-            setup()
             viewModel.start()
             // Make some changes to trigger discard changes dialog
             viewModel.onProductTitleChanged("Product")
@@ -425,9 +428,8 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         testBlocking {
             doReturn(Pair(true, PRODUCT_REMOTE_ID)).whenever(productRepository).addProduct(any())
             doReturn(product).whenever(productRepository).getProduct(any())
-            savedState = ProductDetailFragmentArgs(isAddProduct = true).initSavedStateHandle()
+            viewModel.productDetailViewStateData.observeForever { _, _ ->  }
 
-            setup()
             viewModel.start()
             // Make some changes to trigger discard changes dialog
             viewModel.onProductTitleChanged("Product")

@@ -12,8 +12,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadData
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus
-import com.woocommerce.android.ui.products.ProductDetailViewModel.HideImageUploadErrorSnackbar
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
+import com.woocommerce.android.ui.products.ProductDetailViewModel.*
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.models.ProductProperty.*
@@ -387,17 +386,17 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     fun `Displays update menu action if product is edited`() {
         doReturn(product).whenever(productRepository).getProduct(any())
 
-        var productData: ProductDetailViewState? = null
-        viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
+        var hasChanges: Boolean? = null
+        viewModel.hasChanges.observeForever { hasChanges = it }
 
         viewModel.start()
 
-        assertThat(productData?.isProductUpdated).isNull()
+        assertThat(hasChanges).isFalse()
 
         val updatedDescription = "Updated product description"
         viewModel.updateProductDraft(updatedDescription)
 
-        assertThat(productData?.isProductUpdated).isTrue()
+        assertThat(hasChanges).isTrue()
     }
 
     @Test
@@ -478,6 +477,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         var productData: ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
 
+        var hasChanges: Boolean? = null
+        viewModel.hasChanges.observeForever { hasChanges = it }
+
         viewModel.start()
 
         viewModel.onUpdateButtonClicked(false)
@@ -486,8 +488,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         verify(productRepository, times(2)).getProduct(PRODUCT_REMOTE_ID)
 
         assertThat(successSnackbarShown).isTrue()
-        assertThat(productData?.isProgressDialogShown).isFalse()
-        assertThat(productData?.isProductUpdated).isFalse()
+        assertThat(productData?.isProgressDialogShown).isFalse
+        assertThat(hasChanges).isFalse()
         assertThat(productData?.productDraft).isEqualTo(product)
     }
 
@@ -731,74 +733,115 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `Publish option not shown when product is published except addProduct flow`() {
         doReturn(product).whenever(productRepository).getProduct(any())
+        viewModel.productDetailViewStateData.observeForever { _, _ ->  }
+        var menuButtonsState: MenuButtonsState? = null
+        viewModel.menuButtonsState.observeForever { menuButtonsState = it }
+
         viewModel.start()
         viewModel.updateProductDraft(productStatus = ProductStatus.PUBLISH)
-        assertThat(viewModel.isPublishOptionNeeded).isFalse()
+        assertThat(menuButtonsState?.publishOption).isFalse
     }
 
     @Test
     fun `Publish option not shown when product is published privately except addProduct flow`() {
         doReturn(product).whenever(productRepository).getProduct(any())
-        doReturn(false).whenever(viewModel).isAddFlowEntryPoint
-        doReturn(false).whenever(viewModel).isProductUnderCreation
+        viewModel.productDetailViewStateData.observeForever { _, _ ->  }
+        var menuButtonsState: MenuButtonsState? = null
+        viewModel.menuButtonsState.observeForever { menuButtonsState = it }
+
         viewModel.start()
         viewModel.updateProductDraft(productStatus = ProductStatus.PRIVATE)
-        assertThat(viewModel.isPublishOptionNeeded).isFalse()
+        assertThat(menuButtonsState?.publishOption).isFalse
     }
 
     @Test
     fun `Publish option shown when product is published and from addProduct flow and is under product creation`() {
-        doReturn(true).whenever(viewModel).isAddFlowEntryPoint
-        doReturn(true).whenever(viewModel).isProductUnderCreation
+        savedState = ProductDetailFragmentArgs(
+            remoteProductId = ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID,
+            isAddProduct = true
+        ).initSavedStateHandle()
+
+        viewModel.productDetailViewStateData.observeForever { _, _ ->  }
+
+        var menuButtonsState: MenuButtonsState? = null
+        viewModel.menuButtonsState.observeForever { menuButtonsState = it }
+
         viewModel.start()
         viewModel.updateProductDraft(productStatus = ProductStatus.PUBLISH)
-        assertThat(viewModel.isPublishOptionNeeded).isTrue()
+        assertThat(menuButtonsState?.publishOption).isTrue
     }
 
     @Test
     fun `Publish option shown when product is Draft`() {
         doReturn(product).whenever(productRepository).getProduct(any())
+        viewModel.productDetailViewStateData.observeForever { _, _ ->  }
+
+        var menuButtonsState: MenuButtonsState? = null
+        viewModel.menuButtonsState.observeForever { menuButtonsState = it }
+
         viewModel.start()
         viewModel.updateProductDraft(productStatus = ProductStatus.DRAFT)
-        assertThat(viewModel.isPublishOptionNeeded).isTrue()
+        assertThat(menuButtonsState?.publishOption).isTrue
     }
 
     @Test
     fun `Publish option shown when product is Pending Review`() {
         doReturn(product).whenever(productRepository).getProduct(any())
+        viewModel.productDetailViewStateData.observeForever { _, _ ->  }
+
+        var menuButtonsState: MenuButtonsState? = null
+        viewModel.menuButtonsState.observeForever { menuButtonsState = it }
+
         viewModel.start()
         viewModel.updateProductDraft(productStatus = ProductStatus.PENDING)
-        assertThat(viewModel.isPublishOptionNeeded).isTrue()
+        assertThat(menuButtonsState?.publishOption).isTrue()
     }
 
     @Test
     fun `Save option shown when product has changes except add product flow irrespective of product statuses`() {
         doReturn(product).whenever(productRepository).getProduct(any())
-        doReturn(false).whenever(viewModel).isAddFlowEntryPoint
-        doReturn(false).whenever(viewModel).isProductUnderCreation
-        doReturn(true).whenever(viewModel).hasChanges()
+        viewModel.productDetailViewStateData.observeForever { _, _ ->  }
+
+        var menuButtonsState: MenuButtonsState? = null
+        viewModel.menuButtonsState.observeForever { menuButtonsState = it }
+
         viewModel.start()
-        assertThat(viewModel.isSaveOptionNeeded).isTrue()
+        // Trigger changes
+        viewModel.updateProductDraft(title = product.name + "2")
+
+        assertThat(menuButtonsState?.saveOption).isTrue()
     }
 
     @Test
     fun `Save option not shown when product has changes but in add product flow`() {
-        doReturn(true).whenever(viewModel).isAddFlowEntryPoint
-        doReturn(true).whenever(viewModel).isProductUnderCreation
-        doReturn(true).whenever(viewModel).hasChanges()
+        savedState = ProductDetailFragmentArgs(
+            remoteProductId = ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID,
+            isAddProduct = true
+        ).initSavedStateHandle()
+        viewModel.productDetailViewStateData.observeForever { _, _ ->  }
+
+        var menuButtonsState: MenuButtonsState? = null
+        viewModel.menuButtonsState.observeForever { menuButtonsState = it }
+
         viewModel.start()
-        assertThat(viewModel.isSaveOptionNeeded).isFalse()
+        viewModel.updateProductDraft(title = "name")
+
+        assertThat(menuButtonsState?.saveOption).isFalse()
     }
 
     @Test
-    fun `when restoring saved state, then re-fetch stored product to correctly calculate hasChanges`() {
+    fun `when restoring saved state, then re-fetch stored product to correctly calculate hasChanges`() = testBlocking {
         // Make sure draft product has different data than draft product
-        doReturn(product.copy(name = product.name + "test")).whenever(productRepository).getProduct(any())
+        doReturn(product.copy(name = product.name + "test")).whenever(productRepository).getProductAsync(any())
         savedState.set(ProductDetailViewState::class.java.name, productWithParameters)
+        viewModel.productDetailViewStateData.observeForever { _, _ ->  }
+
+        var hasChanges: Boolean? = null
+        viewModel.hasChanges.observeForever { hasChanges = it }
 
         viewModel.start()
 
-        assertThat(viewModel.hasChanges()).isTrue
+        assertThat(hasChanges).isTrue
     }
 
     private val productsDraft
