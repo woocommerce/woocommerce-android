@@ -334,7 +334,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     @Test
     fun `Save as draft shown in discard dialog when changes made in add flow`() {
         doReturn(true).whenever(viewModel).isProductUnderCreation
-        viewModel.productDetailViewStateData.observeForever { _, _ ->  }
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
         viewModel.start()
 
@@ -393,7 +393,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 .onCompletion { isObservingEvents = false }
             doReturn(successEvents).whenever(mediaFileUploadHandler)
                 .observeSuccessfulUploads(ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID)
-            viewModel.productDetailViewStateData.observeForever { _, _ ->  }
+            viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
             viewModel.start()
             // Make some changes to trigger discard changes dialog
@@ -412,7 +412,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 .onCompletion { isObservingEvents = false }
             doReturn(successEvents).whenever(mediaFileUploadHandler)
                 .observeSuccessfulUploads(ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID)
-            viewModel.productDetailViewStateData.observeForever { _, _ ->  }
+            viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
             viewModel.start()
             // Make some changes to trigger discard changes dialog
@@ -428,7 +428,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         testBlocking {
             doReturn(Pair(true, PRODUCT_REMOTE_ID)).whenever(productRepository).addProduct(any())
             doReturn(product).whenever(productRepository).getProduct(any())
-            viewModel.productDetailViewStateData.observeForever { _, _ ->  }
+            viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
             viewModel.start()
             // Make some changes to trigger discard changes dialog

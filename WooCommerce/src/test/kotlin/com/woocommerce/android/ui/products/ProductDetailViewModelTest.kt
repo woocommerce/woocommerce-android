@@ -733,7 +733,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `Publish option not shown when product is published except addProduct flow`() {
         doReturn(product).whenever(productRepository).getProduct(any())
-        viewModel.productDetailViewStateData.observeForever { _, _ ->  }
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
         var menuButtonsState: MenuButtonsState? = null
         viewModel.menuButtonsState.observeForever { menuButtonsState = it }
 
@@ -745,7 +745,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `Publish option not shown when product is published privately except addProduct flow`() {
         doReturn(product).whenever(productRepository).getProduct(any())
-        viewModel.productDetailViewStateData.observeForever { _, _ ->  }
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
         var menuButtonsState: MenuButtonsState? = null
         viewModel.menuButtonsState.observeForever { menuButtonsState = it }
 
@@ -761,7 +761,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             isAddProduct = true
         ).initSavedStateHandle()
 
-        viewModel.productDetailViewStateData.observeForever { _, _ ->  }
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
         var menuButtonsState: MenuButtonsState? = null
         viewModel.menuButtonsState.observeForever { menuButtonsState = it }
@@ -774,7 +774,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `Publish option shown when product is Draft`() {
         doReturn(product).whenever(productRepository).getProduct(any())
-        viewModel.productDetailViewStateData.observeForever { _, _ ->  }
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
         var menuButtonsState: MenuButtonsState? = null
         viewModel.menuButtonsState.observeForever { menuButtonsState = it }
@@ -787,7 +787,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `Publish option shown when product is Pending Review`() {
         doReturn(product).whenever(productRepository).getProduct(any())
-        viewModel.productDetailViewStateData.observeForever { _, _ ->  }
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
         var menuButtonsState: MenuButtonsState? = null
         viewModel.menuButtonsState.observeForever { menuButtonsState = it }
@@ -800,7 +800,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `Save option shown when product has changes except add product flow irrespective of product statuses`() {
         doReturn(product).whenever(productRepository).getProduct(any())
-        viewModel.productDetailViewStateData.observeForever { _, _ ->  }
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
         var menuButtonsState: MenuButtonsState? = null
         viewModel.menuButtonsState.observeForever { menuButtonsState = it }
@@ -818,7 +818,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             remoteProductId = ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID,
             isAddProduct = true
         ).initSavedStateHandle()
-        viewModel.productDetailViewStateData.observeForever { _, _ ->  }
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
         var menuButtonsState: MenuButtonsState? = null
         viewModel.menuButtonsState.observeForever { menuButtonsState = it }
@@ -834,7 +834,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         // Make sure draft product has different data than draft product
         doReturn(product.copy(name = product.name + "test")).whenever(productRepository).getProductAsync(any())
         savedState.set(ProductDetailViewState::class.java.name, productWithParameters)
-        viewModel.productDetailViewStateData.observeForever { _, _ ->  }
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
         var hasChanges: Boolean? = null
         viewModel.hasChanges.observeForever { hasChanges = it }

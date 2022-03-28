@@ -15,7 +15,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.forEach
 import androidx.core.view.isVisible
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
@@ -243,36 +242,30 @@ class ProductDetailFragment :
             }
         }
 
-        viewModel.productDetailCards.observe(
-            viewLifecycleOwner,
-            Observer {
-                showProductCards(it)
-            }
-        )
+        viewModel.productDetailCards.observe(viewLifecycleOwner) {
+            showProductCards(it)
+        }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is LaunchUrlInChromeTab -> {
-                        ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
-                    }
-                    is RefreshMenu -> activity?.invalidateOptionsMenu()
-                    is ExitWithResult<*> -> {
-                        navigateBackWithResult(
-                            KEY_PRODUCT_DETAIL_RESULT,
-                            Bundle().also {
-                                it.putLong(KEY_REMOTE_PRODUCT_ID, event.data as Long)
-                                it.putBoolean(KEY_PRODUCT_DETAIL_DID_TRASH, true)
-                            }
-                        )
-                    }
-                    is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
-                    is HideImageUploadErrorSnackbar -> imageUploadErrorsSnackbar?.dismiss()
-                    else -> event.isHandled = false
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is LaunchUrlInChromeTab -> {
+                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 }
+                is RefreshMenu -> activity?.invalidateOptionsMenu()
+                is ExitWithResult<*> -> {
+                    navigateBackWithResult(
+                        KEY_PRODUCT_DETAIL_RESULT,
+                        Bundle().also {
+                            it.putLong(KEY_REMOTE_PRODUCT_ID, event.data as Long)
+                            it.putBoolean(KEY_PRODUCT_DETAIL_DID_TRASH, true)
+                        }
+                    )
+                }
+                is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
+                is HideImageUploadErrorSnackbar -> imageUploadErrorsSnackbar?.dismiss()
+                else -> event.isHandled = false
             }
-        )
+        }
 
         viewModel.menuButtonsState.observe(viewLifecycleOwner) {
             menu?.updateOptions(it)
