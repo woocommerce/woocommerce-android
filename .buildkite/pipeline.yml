@@ -60,5 +60,7 @@ steps:
 
   - label: "Generate code coverage and send it to CodeCov"
     command: |
+      echo "--- ⚒️ Testing debug & generating code coverage"
+      cp gradle.properties-example gradle.properties
       ./gradlew jacocoTestReport
       bash <(curl -s https://codecov.io/bash)
