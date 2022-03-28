@@ -57,3 +57,8 @@ steps:
     command: ".buildkite/commands/installable-build.sh"
     if: "build.pull_request.id != null || build.pull_request.draft"
     plugins: *common_plugins
+
+  - label: "Generate code coverage and send it to CodeCov"
+    command: |
+      ./gradlew jacocoTestReport
+      bash <(curl -s https://codecov.io/bash)
