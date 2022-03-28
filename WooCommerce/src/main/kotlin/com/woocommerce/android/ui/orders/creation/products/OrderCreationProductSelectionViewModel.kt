@@ -16,6 +16,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
@@ -86,10 +87,17 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
         }
     }
 
-    fun searchProductList(query: String, loadMore: Boolean = false) {
+    fun searchProductList(query: String, loadMore: Boolean = false, delayed: Boolean = false) {
         viewState = viewState.copy(query = query, isEmptyViewShowing = false)
         searchJob?.cancel()
         searchJob = launch {
+            if (delayed) {
+                delay(SEARCH_TYPING_DELAY_MS)
+            }
+            if (query.isEmpty()) {
+                productList.value = emptyList()
+                return@launch
+            }
             productListRepository.searchProductList(query, loadMore)
                 ?.takeIf { query == productListRepository.lastSearchQuery }
                 ?.let { handleSearchResult(it, loadMore) }
@@ -146,4 +154,8 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
     ) : Parcelable
 
     data class AddProduct(val productId: Long) : MultiLiveEvent.Event()
+
+    companion object {
+        private const val SEARCH_TYPING_DELAY_MS = 500L
+    }
 }

@@ -18,33 +18,36 @@ fun ReviewModerationUi.observeModerationStatus(
 
     var changeReviewStatusSnackbar: Snackbar? = null
 
-    reviewModerationConsumer.pendingReviewModerationStatus.observe(viewLifecycleOwner) { status ->
+    reviewModerationConsumer.pendingReviewModerationStatus.observe(viewLifecycleOwner) { statuses ->
         changeReviewStatusSnackbar?.dismiss()
-        when (status.actionStatus) {
-            ActionStatus.PENDING -> {
+        when {
+            statuses.any { it.actionStatus == ActionStatus.ERROR } -> {
+                // Prioritize error snackbar
+                uiMessageResolver.showSnack(R.string.wc_moderate_review_error)
+                return@observe
+            }
+            statuses.any { it.actionStatus == ActionStatus.PENDING } -> {
+                // Get first pending status, this will be the oldest request, since list is ordered by time
+                val status = statuses.first { it.actionStatus == ActionStatus.PENDING }
                 changeReviewStatusSnackbar = uiMessageResolver.getIndefiniteActionSnack(
                     R.string.review_moderation_undo,
                     ProductReviewStatus.getLocalizedLabel(context, status.newStatus)
                         .lowercase(),
                     actionText = getString(R.string.undo),
-                    actionListener = { reviewModerationConsumer.undoModerationRequest() }
+                    actionListener = { reviewModerationConsumer.undoModerationRequest(status.review) }
                 ).also {
                     it.show()
                 }
-            }
-            ActionStatus.ERROR -> {
-                uiMessageResolver.getSnack(R.string.wc_moderate_review_error)
-                    .also { it.show() }
-            }
-            else -> {
-                // NO-OP
             }
         }
     }
 
     viewLifecycleOwner.lifecycle.addObserver(object : DefaultLifecycleObserver {
-        override fun onDestroy(owner: LifecycleOwner) {
+        override fun onStop(owner: LifecycleOwner) {
             changeReviewStatusSnackbar?.dismiss()
+        }
+
+        override fun onDestroy(owner: LifecycleOwner) {
             changeReviewStatusSnackbar = null
             lifecycle.removeObserver(this)
         }

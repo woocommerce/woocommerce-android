@@ -69,9 +69,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "8.8-rc-1"
+            versionName "8.8-rc-2"
         }
-        versionCode 287
+        versionCode 288
 
         minSdkVersion 21
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
@@ -166,7 +166,6 @@ android {
 }
 
 dependencies {
-
     implementation("org.wordpress:libaddressinput.common:$libaddressinputVersion") {
         exclude group: "org.json", module: "json"
         exclude group: "com.google.guava", module: "guava"
