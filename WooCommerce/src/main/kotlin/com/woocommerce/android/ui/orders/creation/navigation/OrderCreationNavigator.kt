@@ -20,7 +20,7 @@ object OrderCreationNavigator {
             is EditFee ->
                 OrderCreationFormFragmentDirections.actionOrderCreationFragmentToOrderCreationEditFeeFragment(
                     orderTotal = target.orderTotal,
-                    currentFeeValue = target.currentFeeValue
+                    currentFee = target.currentLocalFee
                 )
             is ShowProductDetails ->
                 OrderCreationFormFragmentDirections

@@ -199,9 +199,12 @@ class OrderCreationViewModel @Inject constructor(
     }
 
     fun onFeeButtonClicked() {
-        val currentOrderTotal = _orderDraft.value.total
-        val currentFeeTotal = _orderDraft.value.feesLines.firstOrNull()?.total
-        triggerEvent(EditFee(currentOrderTotal, currentFeeTotal))
+        triggerEvent(
+            EditFee(
+                orderTotal = _orderDraft.value.productsTotal,
+                currentLocalFee = localFeeManager.localFeeLine
+            )
+        )
     }
 
     fun onShippingButtonClicked() {

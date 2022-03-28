@@ -9,53 +9,34 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
-import java.math.MathContext
-import java.math.RoundingMode.HALF_UP
 import javax.inject.Inject
 
 @HiltViewModel
 class OrderCreationFeeViewModel @Inject constructor(
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
-    companion object {
-        private const val DEFAULT_SCALE_QUOTIENT = 4
-        private val PERCENTAGE_BASE = BigDecimal(100)
-    }
 
     private val navArgs: OrderCreationFeeFragmentArgs by savedState.navArgs()
-    private val orderSubtotal
-        get() = navArgs.orderTotal - (navArgs.currentFeeValue ?: BigDecimal.ZERO)
 
+    val orderTotal = navArgs.orderTotal
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
-    private val activeFeeValue
-        get() = when (viewState.isPercentageSelected) {
-            true -> ((orderSubtotal * viewState.feePercentage) / PERCENTAGE_BASE)
-                .round(MathContext(DEFAULT_SCALE_QUOTIENT))
-            false -> viewState.feeAmount
-        }
-
-    private val appliedPercentageFromCurrentFeeValue
-        get() = navArgs.currentFeeValue
-            ?.takeIf { orderSubtotal > BigDecimal.ZERO }
-            ?.let { it.divide(orderSubtotal, DEFAULT_SCALE_QUOTIENT, HALF_UP) * PERCENTAGE_BASE }
-            ?.stripTrailingZeros()
-            ?: BigDecimal.ZERO
+    private var activeLocalFee: LocalFeeLine = navArgs.currentFee ?: LocalFeeLine.EMPTY
 
     init {
-        viewState = viewState.copy(shouldDisplayPercentageSwitch = orderSubtotal > BigDecimal.ZERO)
-        navArgs.currentFeeValue?.let {
-            viewState = viewState.copy(
-                feeAmount = it,
-                feePercentage = appliedPercentageFromCurrentFeeValue,
-                shouldDisplayRemoveFeeButton = true
-            )
-        }
+        val isPercentageFee = activeLocalFee.getType() == LocalFeeLineType.PERCENTAGE
+        viewState = viewState.copy(
+            feeAmount = activeLocalFee.getTotal(),
+            feePercentage = if (isPercentageFee) activeLocalFee.amount else BigDecimal.ZERO,
+            isPercentageSelected = isPercentageFee,
+            shouldDisplayRemoveFeeButton = activeLocalFee.id != 0L,
+            shouldDisplayPercentageSwitch = orderTotal > BigDecimal.ZERO
+        )
     }
 
     fun onDoneSelected() {
-        triggerEvent(UpdateFee(activeFeeValue))
+        triggerEvent(UpdateFee(activeLocalFee))
     }
 
     fun onRemoveFeeClicked() {
@@ -63,17 +44,23 @@ class OrderCreationFeeViewModel @Inject constructor(
     }
 
     fun onPercentageSwitchChanged(isChecked: Boolean) {
+        activeLocalFee = if (isChecked) {
+            LocalPercentageFee.toPercentageFee(activeLocalFee, orderTotal)
+        } else {
+            LocalAmountFee.toAmountFee(activeLocalFee)
+        }
         viewState = viewState.copy(isPercentageSelected = isChecked)
     }
 
     fun onFeeAmountChanged(feeAmount: BigDecimal) {
         viewState = viewState.copy(feeAmount = feeAmount)
+        activeLocalFee = activeLocalFee.copyFee(amount = feeAmount)
     }
 
-    fun onFeePercentageChanged(feePercentage: String) {
-        viewState = viewState.copy(
-            feePercentage = feePercentage.toBigDecimalOrNull() ?: BigDecimal.ZERO
-        )
+    fun onFeePercentageChanged(feePercentageRaw: String) {
+        val feePercentage = feePercentageRaw.toBigDecimalOrNull() ?: BigDecimal.ZERO
+        viewState = viewState.copy(feePercentage = feePercentage)
+        activeLocalFee = activeLocalFee.copyFee(amount = feePercentage)
     }
 
     @Parcelize
@@ -86,7 +73,7 @@ class OrderCreationFeeViewModel @Inject constructor(
     ) : Parcelable
 
     data class UpdateFee(
-        val amount: BigDecimal
+        val amount: LocalFeeLine
     ) : Event()
 
     object RemoveFee : Event()

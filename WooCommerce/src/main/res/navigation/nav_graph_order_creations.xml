@@ -64,8 +64,8 @@
                 android:name="orderTotal"
                 app:argType="java.math.BigDecimal" />
             <argument
-                android:name="currentFeeValue"
-                app:argType="java.math.BigDecimal"
+                android:name="currentFee"
+                app:argType="com.woocommerce.android.ui.orders.creation.fees.LocalFeeLine"
                 app:nullable="true"
                 android:defaultValue="@null"/>
         </action>
@@ -165,8 +165,8 @@
             android:name="orderTotal"
             app:argType="java.math.BigDecimal" />
         <argument
-            android:name="currentFeeValue"
-            app:argType="java.math.BigDecimal"
+            android:name="currentFee"
+            app:argType="com.woocommerce.android.ui.orders.creation.fees.LocalFeeLine"
             app:nullable="true"
             android:defaultValue="@null"/>
     </fragment>
