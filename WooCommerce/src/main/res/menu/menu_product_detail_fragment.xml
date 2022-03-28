@@ -31,7 +31,6 @@
     <item
         android:id="@+id/menu_product_settings"
         android:title="@string/product_settings"
-        android:visible="false"
         app:showAsAction="withText" />
 
     <item

@@ -7,6 +7,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.map
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
@@ -38,12 +39,9 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.Optional
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.*
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
-import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.viewmodel.ScopedViewModel
-import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
@@ -94,12 +92,15 @@ class ProductDetailViewModel @Inject constructor(
         if (old?.productDraft != new.productDraft) {
             new.productDraft?.let {
                 updateCards(it)
+                draftChanges.value = it
             }
         }
     }
     private var viewState by productDetailViewStateData
 
-    private var storedProduct: Product? = null
+    private val draftChanges = MutableLiveData<Product>()
+
+    private val storedProduct = MutableLiveData<Product?>(null)
 
     // view state for the product categories screen
     val productCategoriesViewStateData = LiveDataDelegate(savedState, ProductCategoriesViewState())
@@ -154,6 +155,13 @@ class ProductDetailViewModel @Inject constructor(
         ProductDetailBottomSheetBuilder(resources)
     }
 
+    val hasChanges = storedProduct
+        .combineWith(draftChanges) { storedProduct, productDraft ->
+            storedProduct?.let { product ->
+                productDraft?.isSameProduct(product) == false || viewState.isPasswordChanged
+            } ?: false
+        }
+
     /**
      * Returns the filtered list of attributes assigned to the product who are enabled for Variations
      */
@@ -166,17 +174,22 @@ class ProductDetailViewModel @Inject constructor(
     val productDraftAttributes
         get() = viewState.productDraft?.attributes ?: emptyList()
 
-    val isProductPublished: Boolean
-        get() = viewState.productDraft?.status == PUBLISH
-
-    private val isProductPublishedOrPrivate: Boolean
-        get() = viewState.productDraft?.let { it.status == PUBLISH || it.status == PRIVATE } ?: false
-
-    val isSaveOptionNeeded: Boolean
-        get() = hasChanges() and (isAddFlowEntryPoint and isProductUnderCreation).not()
-
-    val isPublishOptionNeeded: Boolean
-        get() = isProductPublishedOrPrivate.not() or (isAddFlowEntryPoint and isProductUnderCreation)
+    val menuButtonsState = draftChanges.combineWith(hasChanges) { productDraft, hasChanges ->
+        Pair(productDraft, hasChanges ?: false)
+    }.map { (productDraft, hasChanges) ->
+        val canBeSavedAsDraft = isAddFlowEntryPoint &&
+            !isProductStoredAtSite
+        val isProductPublishedOrPrivate = productDraft?.status == PUBLISH || productDraft?.status == PRIVATE
+        val isProductPublished = viewState.productDraft?.status == PUBLISH
+        MenuButtonsState(
+            saveOption = hasChanges && !canBeSavedAsDraft,
+            saveAsDraftOption = canBeSavedAsDraft,
+            publishOption = !isProductPublishedOrPrivate || isProductUnderCreation,
+            viewProductOption = isProductPublished && !isProductUnderCreation,
+            shareOption = !isProductUnderCreation,
+            trashOption = !isProductUnderCreation && navArgs.isTrashEnabled
+        )
+    }
 
     /**
      * Validates if the product exists at the Store or if it's currently defined only inside the app
@@ -194,14 +207,6 @@ class ProductDetailViewModel @Inject constructor(
      */
     val isAddFlowEntryPoint: Boolean
         get() = navArgs.isAddProduct
-
-    /**
-     * Validates if the current product can be changed to DRAFT status.
-     */
-    val canBeStoredAsDraft
-        get() = isAddFlowEntryPoint and
-            isProductStoredAtSite.not() and
-            (viewState.productDraft?.status != DRAFT)
 
     /**
      * Validates if the view model was started for the **add** flow AND there is an already valid product to modify.
@@ -263,7 +268,7 @@ class ProductDetailViewModel @Inject constructor(
 
     private fun initializeStoredProductAfterRestoration() {
         launch {
-            storedProduct = if (isAddFlowEntryPoint && !isProductStoredAtSite) {
+            storedProduct.value = if (isAddFlowEntryPoint && !isProductStoredAtSite) {
                 createDefaultProductForAddFlow()
             } else {
                 productRepository.getProductAsync(viewState.productDraft?.remoteId ?: navArgs.remoteProductId)
@@ -379,12 +384,12 @@ class ProductDetailViewModel @Inject constructor(
             attributeListViewState = attributeListViewState.copy(isCreatingVariationDialogShown = false)
         }
 
-    fun hasCategoryChanges() = storedProduct?.hasCategoryChanges(viewState.productDraft) ?: false
+    fun hasCategoryChanges() = storedProduct.value?.hasCategoryChanges(viewState.productDraft) ?: false
 
-    fun hasTagChanges() = storedProduct?.hasTagChanges(viewState.productDraft) ?: false
+    fun hasTagChanges() = storedProduct.value?.hasTagChanges(viewState.productDraft) ?: false
 
     fun hasSettingsChanges(): Boolean {
-        return if (storedProduct?.hasSettingsChanges(viewState.productDraft) == true) {
+        return if (storedProduct.value?.hasSettingsChanges(viewState.productDraft) == true) {
             true
         } else {
             viewState.isPasswordChanged
@@ -501,25 +506,19 @@ class ProductDetailViewModel @Inject constructor(
         )
     }
 
-    fun hasExternalLinkChanges() = storedProduct?.hasExternalLinkChanges(viewState.productDraft) ?: false
+    fun hasExternalLinkChanges() = storedProduct.value?.hasExternalLinkChanges(viewState.productDraft) ?: false
 
-    fun hasLinkedProductChanges() = storedProduct?.hasLinkedProductChanges(viewState.productDraft) ?: false
+    fun hasLinkedProductChanges() = storedProduct.value?.hasLinkedProductChanges(viewState.productDraft) ?: false
 
     fun hasDownloadsChanges(): Boolean {
-        return storedProduct?.hasDownloadChanges(viewState.productDraft) ?: false
+        return storedProduct.value?.hasDownloadChanges(viewState.productDraft) ?: false
     }
 
     fun hasDownloadsSettingsChanges(): Boolean {
-        return storedProduct?.let {
+        return storedProduct.value?.let {
             it.downloadLimit != viewState.productDraft?.downloadLimit ||
                 it.downloadExpiry != viewState.productDraft?.downloadExpiry ||
                 it.isDownloadable != viewState.productDraft?.isDownloadable
-        } ?: false
-    }
-
-    fun hasChanges(): Boolean {
-        return storedProduct?.let { product ->
-            viewState.productDraft?.isSameProduct(product) == false || viewState.isPasswordChanged
         } ?: false
     }
 
@@ -745,7 +744,7 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     private fun trackWithProductId(event: AnalyticsEvent) {
-        storedProduct?.let {
+        storedProduct.value?.let {
             AnalyticsTracker.track(
                 event,
                 mapOf(AnalyticsTracker.KEY_PRODUCT_ID to it.remoteId)
@@ -922,11 +921,11 @@ class ProductDetailViewModel @Inject constructor(
                 saleEndDateGmt = if (productHasSale(isSaleScheduled, product)) {
                     saleEndDate
                 } else {
-                    storedProduct?.saleEndDateGmt
+                    storedProduct.value?.saleEndDateGmt
                 },
                 saleStartDateGmt = if (productHasSale(isSaleScheduled, product)) {
                     saleStartDate ?: product.saleStartDateGmt
-                } else storedProduct?.saleStartDateGmt,
+                } else storedProduct.value?.saleStartDateGmt,
                 downloads = downloads ?: product.downloads,
                 downloadLimit = downloadLimit ?: product.downloadLimit,
                 downloadExpiry = downloadExpiry ?: product.downloadExpiry,
@@ -961,7 +960,7 @@ class ProductDetailViewModel @Inject constructor(
     private fun updateCards(product: Product) {
         launch(dispatchers.io) {
             mutex.withLock {
-                val cards = cardBuilder.buildPropertyCards(product, storedProduct?.sku ?: "")
+                val cards = cardBuilder.buildPropertyCards(product, storedProduct.value?.sku ?: "")
                 withContext(dispatchers.main) {
                     _productDetailCards.value = cards
                 }
@@ -1054,7 +1053,7 @@ class ProductDetailViewModel @Inject constructor(
      * then the visibility is `PRIVATE`, otherwise it's `PUBLIC`.
      */
     fun getProductVisibility(): ProductVisibility {
-        val status = viewState.productDraft?.status ?: storedProduct?.status
+        val status = viewState.productDraft?.status ?: storedProduct.value?.status
         val password = viewState.draftPassword ?: viewState.storedPassword
         return when {
             password?.isNotEmpty() == true -> {
@@ -1110,11 +1109,11 @@ class ProductDetailViewModel @Inject constructor(
     /**
      * Updates the UPDATE menu button in the product detail screen. UPDATE is only displayed
      * when there are changes made to the [Product] model and this can be verified by comparing
-     * the viewState.product with storedProduct model.
+     * the viewState.product with storedProduct.value model.
      */
     private fun updateProductEditAction() {
         viewState.productDraft?.let { draft ->
-            val isProductUpdated = storedProduct?.isSameProduct(draft) == false ||
+            val isProductUpdated = storedProduct.value?.isSameProduct(draft) == false ||
                 viewState.isPasswordChanged
             viewState = viewState.copy(isProductUpdated = isProductUpdated)
         }
@@ -1409,7 +1408,7 @@ class ProductDetailViewModel @Inject constructor(
         triggerEvent(RenameProductAttribute(attributeName))
     }
 
-    fun hasAttributeChanges() = storedProduct?.hasAttributeChanges(viewState.productDraft) ?: false
+    fun hasAttributeChanges() = storedProduct.value?.hasAttributeChanges(viewState.productDraft) ?: false
 
     /**
      * Used by the add attribute screen to fetch the list of store-wide product attributes
@@ -1557,7 +1556,7 @@ class ProductDetailViewModel @Inject constructor(
 
     private fun updateProductState(productToUpdateFrom: Product) {
         val updatedDraft = viewState.productDraft?.let { currentDraft ->
-            if (storedProduct?.isSameProduct(currentDraft) == true) {
+            if (storedProduct.value?.isSameProduct(currentDraft) == true) {
                 productToUpdateFrom
             } else {
                 productToUpdateFrom.mergeProduct(currentDraft)
@@ -1569,7 +1568,7 @@ class ProductDetailViewModel @Inject constructor(
         viewState = viewState.copy(
             productDraft = updatedDraft
         )
-        storedProduct = productToUpdateFrom
+        storedProduct.value = productToUpdateFrom
     }
 
     private fun loadProductTaxAndShippingClassDependencies(product: Product) {
@@ -2027,16 +2026,16 @@ class ProductDetailViewModel @Inject constructor(
 
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.
-     * [storedProduct] is the [Product] model that is fetched from the API and available in the local db.
+     * [storedProduct.value] is the [Product] model that is fetched from the API and available in the local db.
      * This is read only and is not updated in any way. It is used in the product detail screen, to check
      * if we need to display the UPDATE menu button (which is only displayed if there are changes made to
      * any of the product fields).
      *
      * [isProductUpdated] is used to determine if there are any changes made to the product by comparing
-     * [productDraft] and [storedProduct]. Currently used in the product detail screen to display or hide the UPDATE
+     * [productDraft] and [storedProduct.value]. Currently used in the product detail screen to display or hide the UPDATE
      * menu button.
      *
-     * When the user first enters the product detail screen, the [productDraft] and [storedProduct] are the same.
+     * When the user first enters the product detail screen, the [productDraft] and [storedProduct.value] are the same.
      * When a change is made to the product in the UI, the [productDraft] model is updated with whatever change
      * has been made in the UI.
      */
@@ -2102,4 +2101,13 @@ class ProductDetailViewModel @Inject constructor(
     data class AttributeListViewState(
         val isCreatingVariationDialogShown: Boolean? = null
     ) : Parcelable
+
+    data class MenuButtonsState(
+        val saveOption: Boolean,
+        val saveAsDraftOption: Boolean,
+        val publishOption: Boolean,
+        val viewProductOption: Boolean,
+        val shareOption: Boolean,
+        val trashOption: Boolean
+    )
 }

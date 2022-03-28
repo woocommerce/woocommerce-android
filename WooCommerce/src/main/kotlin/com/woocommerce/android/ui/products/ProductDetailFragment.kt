@@ -33,8 +33,7 @@ import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_EDITOR_TEXT
 import com.woocommerce.android.ui.dialog.WooDialog
-import com.woocommerce.android.ui.products.ProductDetailViewModel.HideImageUploadErrorSnackbar
-import com.woocommerce.android.ui.products.ProductDetailViewModel.RefreshMenu
+import com.woocommerce.android.ui.products.ProductDetailViewModel.*
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
@@ -53,7 +52,6 @@ import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
-import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -80,8 +78,7 @@ class ProductDetailFragment :
 
     private var progressDialog: CustomProgressDialog? = null
     private var layoutManager: LayoutManager? = null
-    private var saveMenuItem: MenuItem? = null
-    private var publishMenuItem: MenuItem? = null
+    private var menu: Menu? = null
     private var imageUploadErrorsSnackbar: Snackbar? = null
 
     private var _binding: FragmentProductDetailBinding? = null
@@ -157,11 +154,9 @@ class ProductDetailFragment :
     private fun setupResultHandlers(viewModel: ProductDetailViewModel) {
         handleResult<ProductTypesBottomSheetUiItem>(ProductTypesBottomSheetFragment.KEY_PRODUCT_TYPE_RESULT) {
             viewModel.updateProductDraft(type = it.type.value, isVirtual = it.isVirtual)
-            changesMade()
         }
         handleResult<List<Long>>(GroupedProductListType.GROUPED.resultKey) {
             viewModel.updateProductDraft(groupedProductIds = it)
-            changesMade()
         }
         handleResult<PricingData>(BaseProductEditorFragment.KEY_PRICING_DIALOG_RESULT) {
             viewModel.updateProductDraft(
@@ -173,7 +168,6 @@ class ProductDetailFragment :
                 taxClass = it.taxClass,
                 taxStatus = it.taxStatus
             )
-            changesMade()
         }
         handleResult<InventoryData>(BaseProductEditorFragment.KEY_INVENTORY_DIALOG_RESULT) {
             viewModel.updateProductDraft(
@@ -184,7 +178,6 @@ class ProductDetailFragment :
                 backorderStatus = it.backorderStatus,
                 manageStock = it.isStockManaged
             )
-            changesMade()
         }
         handleResult<ShippingData>(BaseProductEditorFragment.KEY_SHIPPING_DIALOG_RESULT) {
             viewModel.updateProductDraft(
@@ -195,11 +188,9 @@ class ProductDetailFragment :
                 shippingClass = it.shippingClassSlug,
                 shippingClassId = it.shippingClassId
             )
-            changesMade()
         }
         handleResult<List<Image>>(BaseProductEditorFragment.KEY_IMAGES_DIALOG_RESULT) {
             viewModel.updateProductDraft(images = it)
-            changesMade()
         }
 
         handleResult<Bundle>(AztecEditorFragment.AZTEC_EDITOR_RESULT) { result ->
@@ -212,7 +203,6 @@ class ProductDetailFragment :
                     viewModel.updateProductDraft(shortDescription = result.getString(ARG_AZTEC_EDITOR_TEXT))
                 }
             }
-            changesMade()
         }
 
         handleResult<VariationListData>(VariationListFragment.KEY_VARIATION_LIST_RESULT) { data ->
@@ -284,6 +274,10 @@ class ProductDetailFragment :
                 }
             }
         )
+
+        viewModel.menuButtonsState.observe(viewLifecycleOwner) {
+            menu?.updateOptions(it)
+        }
     }
 
     private fun showProductDetails(product: Product) {
@@ -352,8 +346,6 @@ class ProductDetailFragment :
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_product_detail_fragment, menu)
-        saveMenuItem = menu.findItem(R.id.menu_save)
-        publishMenuItem = menu.findItem(R.id.menu_publish)
 
         super.onCreateOptionsMenu(menu, inflater)
     }
@@ -381,14 +373,6 @@ class ProductDetailFragment :
             crashLogging.sendReport(exception = NullPointerException(message))
         }
 
-        // visibility of these menu items depends on whether we're in the add product flow
-        menu.findItem(R.id.menu_view_product)?.isVisible =
-            viewModel.isProductPublished &&
-            !viewModel.isProductUnderCreation
-
-        menu.findItem(R.id.menu_share)?.isVisible = !viewModel.isProductUnderCreation
-        menu.findItem(R.id.menu_product_settings)?.isVisible = true
-
         // change the font color of the trash menu item to red, and only show it if it should be enabled
         with(menu.findItem(R.id.menu_trash_product)) {
             if (this == null) return@with
@@ -405,22 +389,21 @@ class ProductDetailFragment :
                 0
             )
             this.title = title
-            this.isVisible = viewModel.isTrashEnabled
         }
 
-        menu.findItem(R.id.menu_save_as_draft)?.isVisible = viewModel.canBeStoredAsDraft && viewModel.hasChanges()
-
-        saveMenuItem?.isVisible = viewModel.isSaveOptionNeeded
-        publishMenuItem?.isVisible = viewModel.isPublishOptionNeeded
-
-        if (saveMenuItem?.isVisible ?: false) {
-            publishMenuItem?.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER)
-            publishMenuItem?.title = getString(R.string.product_add_tool_bar_menu_button_done)
-        } else {
-            publishMenuItem?.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)
-            publishMenuItem?.title =
-                getString(R.string.product_add_tool_bar_menu_button_done).uppercase(Locale.getDefault())
+        this.menu = menu
+        viewModel.menuButtonsState.value?.let {
+            menu.updateOptions(it)
         }
+
+//        if (saveMenuItem?.isVisible ?: false) {
+//            publishMenuItem?.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER)
+//            publishMenuItem?.title = getString(R.string.product_add_tool_bar_menu_button_done)
+//        } else {
+//            publishMenuItem?.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)
+//            publishMenuItem?.title =
+//                getString(R.string.product_add_tool_bar_menu_button_done).uppercase(Locale.getDefault())
+//        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -464,10 +447,6 @@ class ProductDetailFragment :
 
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    private fun changesMade() {
-        requireActivity().invalidateOptionsMenu()
     }
 
     private fun showSkeleton(show: Boolean) {
@@ -524,6 +503,22 @@ class ProductDetailFragment :
     override fun onGalleryAddImageClicked() {
         AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
         viewModel.onAddImageButtonClicked()
+    }
+
+    private fun Menu.updateOptions(state: MenuButtonsState) {
+        findItem(R.id.menu_save)?.isVisible = state.saveOption
+        findItem(R.id.menu_save_as_draft)?.isVisible = state.saveAsDraftOption
+        findItem(R.id.menu_view_product)?.isVisible = state.viewProductOption
+        findItem(R.id.menu_publish)?.apply {
+            isVisible = state.publishOption
+            if (state.saveOption) {
+                setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER)
+            } else {
+                setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)
+            }
+        }
+        findItem(R.id.menu_share)?.isVisible = state.shareOption
+        findItem(R.id.menu_trash_product)?.isVisible = state.trashOption
     }
 
     override fun getFragmentTitle(): String = productName
