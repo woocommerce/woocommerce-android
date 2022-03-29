@@ -59,7 +59,7 @@ class VariationDetailViewModelTest : BaseUnitTest() {
     private val variationRepository: VariationDetailRepository = mock {
         onBlocking { getVariation(any(), any()) } doReturn TEST_VARIATION
         onBlocking { fetchVariation(any(), any()) } doAnswer {
-            OnVariationChanged(1, it.arguments[0] as Long, it.arguments[1] as Long)
+            OnVariationChanged(it.arguments[0] as Long, it.arguments[1] as Long)
         }
     }
 
