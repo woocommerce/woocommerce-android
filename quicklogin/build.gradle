@@ -88,7 +88,30 @@ android {
     }
 
     targetProjectPath ':WooCommerce'
-    targetVariant 'debug'
+}
+
+def assertVariantsCorrectness = tasks.register("assertVariantsCorrectness") {
+    doFirst {
+        def applicationAssembleTask = getTaskNameForProject("WooCommerce")
+        def quickloginAssembleTask = getTaskNameForProject("quicklogin")
+
+        if (applicationAssembleTask != quickloginAssembleTask) {
+            throw new InvalidUserDataException("Application and quicklogin modules target different variants: $applicationAssembleTask != $quickloginAssembleTask. \n" +
+                    "To keep your build performant, please make sure that under `Build Variants` tab in IDE, projects run on the same variant.")
+        }
+    }
+}
+
+private String getTaskNameForProject(String projectName) {
+    return gradle.startParameter.taskRequests[0].args.find { it.contains(projectName) }.split(':').last()
+}
+
+project.afterEvaluate {
+    tasks.all {
+        if (it.name.contains('assemble')) {
+            it.dependsOn(assertVariantsCorrectness.get())
+        }
+    }
 }
 
 dependencies {
