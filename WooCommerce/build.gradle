@@ -123,6 +123,7 @@ android {
         wasabi { // Development only version, can be installed along release versions
             applicationId "com.woocommerce.android.dev"
             dimension "buildType"
+            isDefault true
         }
 
         jalapeno { // Pre-Alpha version, used for PR builds, can be installed along release and dev versions.
@@ -142,6 +143,7 @@ android {
         debug {
             minifyEnabled false
             pseudoLocalesEnabled true
+            isDefault true
         }
     }
 
