@@ -184,8 +184,8 @@ class ProductDetailViewModel @Inject constructor(
             val canBeSavedAsDraft = isAddFlowEntryPoint &&
                 !isProductStoredAtSite &&
                 productDraft.status != DRAFT
-            val isProductPublishedOrPrivate = productDraft.status == PUBLISH || productDraft.status == PRIVATE
-            val isProductPublished = viewState.productDraft?.status == PUBLISH
+            val isProductPublished = productDraft.status == PUBLISH
+            val isProductPublishedOrPrivate = isProductPublished || productDraft.status == PRIVATE
             MenuButtonsState(
                 saveOption = hasChanges && !canBeSavedAsDraft,
                 saveAsDraftOption = canBeSavedAsDraft,
