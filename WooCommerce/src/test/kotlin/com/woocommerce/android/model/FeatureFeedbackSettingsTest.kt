@@ -24,7 +24,7 @@ class FeatureFeedbackSettingsTest {
 
         sut = FeatureFeedbackSettings(featureKey = featureKey)
 
-        val expectedTag = requestingViewName + "_" + selectedFeature::class.java.simpleName
+        val expectedTag = requestingViewName + "_" + selectedFeature.toString()
         assertThat(sut.featureKey.value).isEqualTo(expectedTag)
     }
 }

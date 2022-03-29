@@ -28,6 +28,6 @@ data class FeatureFeedbackSettings(
         private val feature: Feature
     ) {
         val value
-            get() = requestingView + "_" + feature::class.java.simpleName
+            get() = requestingView + "_" + feature.toString()
     }
 }
