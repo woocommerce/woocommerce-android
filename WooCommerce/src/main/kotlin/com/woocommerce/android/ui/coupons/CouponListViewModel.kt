@@ -47,6 +47,107 @@ class CouponListViewModel @Inject constructor(
         }
     }
 
+    private fun formatDiscount(amount: BigDecimal?, couponType: Coupon.Type?): String {
+        return when (couponType) {
+            Coupon.Type.Percent -> "$amount%"
+            else -> {
+                if (amount != null) {
+                    currencyCode?.let {
+                        currencyFormatter.formatCurrency(amount, currencyCode)
+                    } ?: amount.toString()
+                } else {
+                    ""
+                }
+            }
+        }
+    }
+
+    /*
+    - When only specific products or categories are defined: Display "x products" or "x categories"
+    - When specific products/categories and exceptions are defined: Display "x products excl. y categories" etc.
+    - When both specific products and categories are defined: Display "x products and y categories"
+    - When only exceptions are defined: Display "everything excl. x products" or "everything excl. y categories"
+     */
+    private fun formatAffectedArticles(
+        includedProducts: Int,
+        excludedProducts: Int,
+        includedCategories: Int,
+        excludedCategories: Int
+    ): String {
+        val included = when {
+            includedProducts != 0 && includedCategories != 0 -> {
+                resourceProvider.getString(
+                    R.string.coupon_list_item_label_products_and_categories,
+                    formatProducts(includedProducts),
+                    formatCategories(includedCategories)
+                )
+            }
+            includedProducts != 0 -> formatProducts(includedProducts)
+            includedCategories != 0 -> formatCategories(includedCategories)
+            else -> resourceProvider.getString(R.string.coupon_list_item_label_everything)
+        }
+
+        val excluded = when {
+            excludedProducts != 0 && excludedCategories != 0 -> {
+                resourceProvider.getString(
+                    R.string.coupon_list_item_label_products_and_categories,
+                    formatProducts(excludedProducts),
+                    formatCategories(excludedCategories)
+                )
+            }
+            excludedProducts != 0 -> formatProducts(excludedProducts)
+            excludedCategories != 0 -> formatCategories(excludedCategories)
+            else -> ""
+        }
+
+        return if (excluded.isNotEmpty()) {
+            resourceProvider.getString(
+                R.string.coupon_list_item_label_included_and_excluded,
+                included,
+                excluded
+            )
+        } else {
+            included
+        }
+    }
+
+    private fun formatProducts(products: Int): String {
+        return if (products > 0) {
+            StringUtils.getQuantityString(
+                resourceProvider,
+                products,
+                default = R.string.product_count_many,
+                one = R.string.product_count_one
+            )
+        } else ""
+    }
+
+    private fun formatCategories(categories: Int): String {
+        return if (categories > 0) {
+            StringUtils.getQuantityString(
+                resourceProvider,
+                categories,
+                default = R.string.category_count_many,
+                one = R.string.category_count_one
+            )
+        } else ""
+    }
+
+    private fun Coupon.toUiModel(): CouponListItem {
+        return CouponListItem(
+            id = id,
+            code = code,
+            formattedDiscount = formatDiscount(amount, type),
+            affectedArticles = formatAffectedArticles(
+                products.size,
+                excludedProducts.size,
+                categories.size,
+                excludedCategories.size
+            ),
+            isActive = dateExpiresGmt?.after(Date()) ?: true
+        )
+    }
+
     data class CouponListState(
         val isLoading: Boolean = false,
         val coupons: List<CouponListItem> = emptyList()
@@ -59,50 +160,4 @@ class CouponListViewModel @Inject constructor(
         val affectedArticles: String,
         val isActive: Boolean
     )
-
-    private fun Coupon.toUiModel(currencyFormatter: CurrencyFormatter, currencyCode: String?): CouponListItem {
-        fun formatDiscount(amount: BigDecimal?, couponType: Coupon.Type?): String {
-            return when (couponType) {
-                Coupon.Type.Percent -> "$amount%"
-                else -> {
-                    if (amount != null) {
-                        currencyCode?.let {
-                            currencyFormatter.formatCurrency(amount, currencyCode)
-                        } ?: amount.toString()
-                    } else {
-                        ""
-                    }
-                }
-            }
-        }
-
-        fun formatAffectedArticles(includedProductsCount: Int, includedCategoriesCount: Int): String {
-            return if (includedProductsCount == 0 && includedCategoriesCount == 0) {
-                resourceProvider.getString(R.string.coupon_list_item_label_all_products)
-            } else {
-                val products = StringUtils.getQuantityString(
-                    resourceProvider,
-                    includedProductsCount,
-                    default = R.string.product_count_many,
-                    one = R.string.product_count_one
-                )
-
-                val categories = StringUtils.getQuantityString(
-                    resourceProvider,
-                    includedCategoriesCount,
-                    default = R.string.category_count_many,
-                    one = R.string.category_count_one
-                )
-                "$products, $categories"
-            }
-        }
-
-        return CouponListItem(
-            id = id,
-            code = code,
-            formattedDiscount = formatDiscount(amount, type),
-            affectedArticles = formatAffectedArticles(products.size, categories.size),
-            isActive = dateExpiresGmt?.after(Date()) ?: true
-        )
-    }
 }

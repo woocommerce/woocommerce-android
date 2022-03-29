@@ -1871,7 +1871,9 @@
     <string name="coupon_list_item_label_active">Active</string>
     <string name="coupon_list_item_label_expired">Expired</string>
     <string name="coupon_list_item_label_off">off</string>
-    <string name="coupon_list_item_label_all_products">all products</string>
+    <string name="coupon_list_item_label_everything">everything</string>
+    <string name="coupon_list_item_label_products_and_categories">%1s and %2s</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1s excl. %2s</string>
     <string name="coupon_list_empty_heading">No coupons found</string>
     <string name="coupon_list_wip_title">View and edit coupons</string>
     <string name="coupon_list_wip_message_enabled">We’ve been working on making it possible to view and edit coupons from your device!</string>
