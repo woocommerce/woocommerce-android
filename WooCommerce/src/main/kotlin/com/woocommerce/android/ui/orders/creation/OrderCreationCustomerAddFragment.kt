@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
@@ -28,7 +29,6 @@ import com.woocommerce.android.ui.orders.details.editing.address.AddressViewMode
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.AddressType.SHIPPING
 import com.woocommerce.android.ui.orders.details.editing.address.LocationCode
 import com.woocommerce.android.ui.searchfilter.SearchFilterItem
-import com.woocommerce.android.util.UiHelpers.setAccessibilityHeaders
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -175,6 +175,15 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
                 addressViewModel.onFieldEdited(addressType, field, value)
             }
         )
+    }
+
+    private fun LayoutAddressFormBinding.setAccessibilityHeaders(detailsHeading: Int, addressHeading: Int) {
+        detailsHeaderContainer.announceForAccessibility(detailsHeading.toString())
+        ViewCompat.setAccessibilityHeading(detailsHeaderContainer, true)
+
+        addressHeaderContainer.announceForAccessibility(addressHeading.toString())
+        addressSectionHeader.setText(addressHeading)
+        ViewCompat.setAccessibilityHeading(addressHeaderContainer, true)
     }
 
     private fun setupHandlingCountrySelection(addressType: AddressType) {
