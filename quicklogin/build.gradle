@@ -52,8 +52,6 @@ android {
         minSdkVersion 21
         targetSdkVersion 31
 
-        missingDimensionStrategy 'buildType', 'jalapeno'
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testApplicationId "com.woocommerce.android.prealpha.quicklogin"
 
