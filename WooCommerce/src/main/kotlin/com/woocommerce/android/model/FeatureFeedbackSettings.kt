@@ -4,7 +4,7 @@ import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.UNANSWERED
 
 data class FeatureFeedbackSettings(
-    val feature: Feature,
+    val featureKey: FeatureKey,
     val state: FeedbackState = UNANSWERED
 ) {
 
@@ -14,16 +14,21 @@ data class FeatureFeedbackSettings(
         UNANSWERED
     }
 
-    fun registerItself() = FeedbackPrefs.setFeatureFeedbackSettings(this)
-
-    sealed class Feature(private val requestingView: String) {
-        class ShippingLabelM4(requestingView: String): Feature(requestingView)
-        class ProductVariations(requestingView: String): Feature(requestingView)
-        class ProductAddons(requestingView: String): Feature(requestingView)
-        class SimplePayments(requestingView: String): Feature(requestingView)
-        class Coupons(requestingView: String): Feature(requestingView)
-
-        val tag
-            get() = requestingView + "_" + this::class.java.simpleName
+    enum class Feature {
+        SHIPPING_LABEL_M4,
+        PRODUCT_VARIATIONS,
+        PRODUCT_ADDONS,
+        SIMPLE_PAYMENTS,
+        COUPONS
     }
+
+    data class FeatureKey(
+        private val requestingView: String,
+        private val feature: Feature
+    ) {
+        val value
+            get() = requestingView + "_" + feature::class.java.simpleName
+    }
+
+    fun registerItself() = FeedbackPrefs.setFeatureFeedbackSettings(this)
 }
