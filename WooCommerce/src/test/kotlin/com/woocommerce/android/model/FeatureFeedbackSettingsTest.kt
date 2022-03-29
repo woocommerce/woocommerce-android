@@ -9,9 +9,9 @@ class FeatureFeedbackSettingsTest {
 
     @Test
     fun `when settings is created with no define state, then set it as UNANSWERED by default`() {
-        sut = FeatureFeedbackSettings(
-            feature = Feature.SimplePayments("test-view-name")
-        )
+        val featureKey = FeatureKey("testViewName", Feature.values().first())
+
+        sut = FeatureFeedbackSettings(featureKey = featureKey)
 
         assertThat(sut.state).isEqualTo(FeedbackState.UNANSWERED)
     }
@@ -19,12 +19,13 @@ class FeatureFeedbackSettingsTest {
     @Test
     fun `when settings is created, then set tag value as requesting view with Feature class simple name`() {
         val requestingViewName = "testViewName"
-        val feature = Feature.ProductVariations(requestingViewName)
+        val selectedFeature = Feature.values().first()
+        val featureKey = FeatureKey(requestingViewName, selectedFeature)
 
-        sut = FeatureFeedbackSettings(feature = feature)
+        sut = FeatureFeedbackSettings(featureKey = featureKey)
 
-        val expectedTag = requestingViewName + "_" + feature::class.java.simpleName
-        assertThat(sut.feature.tag).isEqualTo(expectedTag)
+        val expectedTag = requestingViewName + "_" + selectedFeature::class.java.simpleName
+        assertThat(sut.featureKey.value).isEqualTo(expectedTag)
     }
 
 
