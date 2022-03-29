@@ -14,8 +14,19 @@ class ProductTagsAdapter(
     private val loadMoreListener: OnLoadMoreListener,
     private val clickListener: OnProductTagClickListener
 ) : RecyclerView.Adapter<ProductTagViewHolder>() {
-    private val productTags = ArrayList<ProductTag>()
     private var currentFilter: String = ""
+
+    var productTags: List<ProductTag> = emptyList()
+        set(value) {
+            val diffResult = DiffUtil.calculateDiff(
+                ProductTagItemDiffUtil(
+                    field,
+                    value
+                )
+            )
+            field = value
+            diffResult.dispatchUpdatesTo(this)
+        }
 
     init {
         setHasStableIds(true)
@@ -42,18 +53,6 @@ class ProductTagsAdapter(
         if (position == itemCount - 1) {
             loadMoreListener.onRequestLoadMore()
         }
-    }
-
-    fun setProductTags(productsTags: List<ProductTag>) {
-        if (productsTags == this.productTags) {
-            return
-        }
-
-        val diffResult =
-            DiffUtil.calculateDiff(ProductTagItemDiffUtil(this.productTags, productsTags))
-        this.productTags.clear()
-        this.productTags.addAll(productsTags)
-        diffResult.dispatchUpdatesTo(this)
     }
 
     fun hasFilter() = currentFilter.isNotEmpty()
