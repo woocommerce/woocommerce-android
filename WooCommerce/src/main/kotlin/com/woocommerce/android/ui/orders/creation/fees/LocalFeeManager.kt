@@ -1,13 +1,16 @@
 package com.woocommerce.android.ui.orders.creation.fees
 
+import android.os.Parcelable
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.Order
+import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 
-class LocalFeeManager(private val feeName: String) {
-    var localFeeLine: LocalFeeLine = LocalFeeLine.EMPTY
-        private set
-
+@Parcelize
+class LocalFeeManager(
+    private val feeName: String,
+    private var localFeeLine: LocalFeeLine = LocalFeeLine.EMPTY
+) : Parcelable {
     fun updateFeeLine(feeLines: List<Order.FeeLine>, orderTotal: BigDecimal) {
         if (feeLines.isEmpty()) {
             localFeeLine = LocalFeeLine.EMPTY
@@ -44,6 +47,8 @@ class LocalFeeManager(private val feeName: String) {
             else
                 editedLocalFee
     }
+
+    fun getLocalFeeLine() = localFeeLine
 
     fun getFeeLines(): List<Order.FeeLine> = if (localFeeLine == LocalFeeLine.EMPTY) {
         emptyList()

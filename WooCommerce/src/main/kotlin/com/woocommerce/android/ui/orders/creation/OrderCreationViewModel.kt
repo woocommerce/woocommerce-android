@@ -59,6 +59,7 @@ class OrderCreationViewModel @Inject constructor(
     parameterRepository: ParameterRepository
 ) : ScopedViewModel(savedState) {
     companion object {
+        private const val FEE_MANAGER = "fee_manager_key"
         private const val PARAMETERS_KEY = "parameters_key"
         private const val ORDER_CUSTOM_FEE_NAME = "order_custom_fee"
     }
@@ -91,7 +92,8 @@ class OrderCreationViewModel @Inject constructor(
     val currentDraft
         get() = _orderDraft.value
 
-    private val localFeeManager: LocalFeeManager = LocalFeeManager(feeName = ORDER_CUSTOM_FEE_NAME)
+    private val localFeeManager: LocalFeeManager =
+        savedState.get<LocalFeeManager>(FEE_MANAGER) ?: LocalFeeManager(feeName = ORDER_CUSTOM_FEE_NAME)
 
     init {
         _orderDraft.update {
@@ -206,7 +208,7 @@ class OrderCreationViewModel @Inject constructor(
         triggerEvent(
             EditFee(
                 orderTotal = _orderDraft.value.productsTotal,
-                currentLocalFee = localFeeManager.localFeeLine
+                currentLocalFee = localFeeManager.getLocalFeeLine()
             )
         )
     }
@@ -269,6 +271,8 @@ class OrderCreationViewModel @Inject constructor(
                         OrderDraftUpdateStatus.Failed ->
                             viewState = viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = true)
                         is OrderDraftUpdateStatus.Succeeded -> {
+                            // Save fee manager state
+                            savedState[FEE_MANAGER] = localFeeManager
                             viewState = viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = false)
                             _orderDraft.update { currentDraft ->
                                 // Keep the user's selected status
