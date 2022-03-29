@@ -106,8 +106,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     private val productWithParameters = ProductDetailViewState(
         productDraft = product,
-        storedProduct = product,
-        productBeforeEnteringFragment = product,
         isSkeletonShown = false,
         uploadingImageUris = emptyList(),
         showBottomSheetButton = true
@@ -790,6 +788,17 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(true).whenever(viewModel).hasChanges()
         viewModel.start()
         assertThat(viewModel.isSaveOptionNeeded).isFalse()
+    }
+
+    @Test
+    fun `when restoring saved state, then re-fetch stored product to correctly calculate hasChanges`() {
+        // Make sure draft product has different data than draft product
+        doReturn(product.copy(name = product.name + "test")).whenever(productRepository).getProduct(any())
+        savedState.set(ProductDetailViewState::class.java.name, productWithParameters)
+
+        viewModel.start()
+
+        assertThat(viewModel.hasChanges()).isTrue
     }
 
     private val productsDraft
