@@ -61,6 +61,7 @@ class ProductListFragment :
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
         val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"
+        val feedbackFeatureKey = FeatureKey(TAG, Feature.PRODUCT_VARIATIONS)
     }
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
@@ -84,7 +85,7 @@ class ProductListFragment :
 
     private val feedbackState: FeedbackState
         get() =
-            FeedbackPrefs.getFeatureFeedbackSettings(Feature.ProductVariations(TAG))?.state
+            FeedbackPrefs.getFeatureFeedbackSettings(feedbackFeatureKey)?.state
                 ?: UNANSWERED
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -529,7 +530,7 @@ class ProductListFragment :
 
     private fun registerFeedbackSetting(state: FeedbackState) {
         FeatureFeedbackSettings(
-            Feature.ProductVariations(TAG),
+            feedbackFeatureKey,
             state
         ).registerItself()
     }

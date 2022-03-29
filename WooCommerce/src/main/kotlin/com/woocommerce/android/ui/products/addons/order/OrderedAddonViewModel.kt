@@ -38,6 +38,7 @@ class OrderedAddonViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
+        private val feedbackFeatureKey = FeatureKey(TAG, Feature.PRODUCT_ADDONS)
     }
 
     val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
@@ -46,11 +47,9 @@ class OrderedAddonViewModel @Inject constructor(
     private val _orderedAddons = MutableLiveData<List<Addon>>()
     val orderedAddonsData: LiveData<List<Addon>> = _orderedAddons
 
-    private val feedbackFeature = Feature.ProductAddons(TAG)
-
     private val currentFeedbackSettings
-        get() = FeedbackPrefs.getFeatureFeedbackSettings(feedbackFeature)
-            ?: FeatureFeedbackSettings(feedbackFeature)
+        get() = FeedbackPrefs.getFeatureFeedbackSettings(feedbackFeatureKey)
+            ?: FeatureFeedbackSettings(feedbackFeatureKey)
                 .apply { registerItself() }
 
     /**
@@ -80,7 +79,7 @@ class OrderedAddonViewModel @Inject constructor(
         trackFeedback(AnalyticsTracker.VALUE_FEEDBACK_GIVEN)
 
         FeatureFeedbackSettings(
-            feedbackFeature,
+            feedbackFeatureKey,
             GIVEN
         ).registerItself()
 
@@ -91,7 +90,7 @@ class OrderedAddonViewModel @Inject constructor(
         trackFeedback(AnalyticsTracker.VALUE_FEEDBACK_DISMISSED)
 
         FeatureFeedbackSettings(
-            feedbackFeature,
+            feedbackFeatureKey,
             DISMISSED
         ).registerItself()
 

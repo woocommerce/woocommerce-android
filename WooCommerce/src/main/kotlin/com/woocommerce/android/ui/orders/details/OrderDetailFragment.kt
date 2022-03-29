@@ -74,6 +74,7 @@ import javax.inject.Inject
 class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderProductActionListener {
     companion object {
         val TAG: String = OrderDetailFragment::class.java.simpleName
+        val feedbackFeatureKey = FeatureKey(TAG, Feature.SHIPPING_LABEL_M4)
     }
 
     private val viewModel: OrderDetailViewModel by viewModels()
@@ -98,7 +99,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         }
 
     private val feedbackState
-        get() = FeedbackPrefs.getFeatureFeedbackSettings(Feature.ShippingLabelM4(TAG))?.state
+        get() = FeedbackPrefs.getFeatureFeedbackSettings(feedbackFeatureKey)?.state
             ?: UNANSWERED
 
     override fun onResume() {
@@ -517,7 +518,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
 
     private fun registerFeedbackSetting(state: FeedbackState) {
         FeatureFeedbackSettings(
-            Feature.ShippingLabelM4(TAG),
+            feedbackFeatureKey,
             state
         ).registerItself()
     }
