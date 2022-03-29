@@ -182,7 +182,8 @@ class ProductDetailViewModel @Inject constructor(
             Pair(productDraft, hasChanges)
         }.map { (productDraft, hasChanges) ->
             val canBeSavedAsDraft = isAddFlowEntryPoint &&
-                !isProductStoredAtSite
+                !isProductStoredAtSite &&
+                productDraft.status != DRAFT
             val isProductPublishedOrPrivate = productDraft.status == PUBLISH || productDraft.status == PRIVATE
             val isProductPublished = viewState.productDraft?.status == PUBLISH
             MenuButtonsState(
