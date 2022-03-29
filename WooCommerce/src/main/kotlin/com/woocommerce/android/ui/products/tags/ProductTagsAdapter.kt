@@ -17,12 +17,6 @@ class ProductTagsAdapter(
 ) : ListAdapter<ProductTag, ProductTagViewHolder>(ProductTagDiffCallback) {
     private var currentFilter: String = ""
 
-    var productTags: List<ProductTag> = emptyList()
-        set(value) {
-            submitList(value)
-            field = value
-        }
-
     init {
         setHasStableIds(true)
     }
@@ -32,9 +26,11 @@ class ProductTagsAdapter(
         fun onProductTagRemoved(productTag: ProductTag)
     }
 
-    override fun getItemId(position: Int) = productTags[position].remoteTagId
+    fun setProductTags(productTags: List<ProductTag>) {
+        submitList(productTags)
+    }
 
-    override fun getItemCount() = productTags.size
+    override fun getItemId(position: Int) = getItem(position).remoteTagId
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductTagViewHolder {
         return ProductTagViewHolder(
@@ -43,7 +39,7 @@ class ProductTagsAdapter(
     }
 
     override fun onBindViewHolder(holder: ProductTagViewHolder, position: Int) {
-        holder.bind(productTags[position])
+        holder.bind(getItem(position))
 
         if (position == itemCount - 1) {
             loadMoreListener.onRequestLoadMore()
