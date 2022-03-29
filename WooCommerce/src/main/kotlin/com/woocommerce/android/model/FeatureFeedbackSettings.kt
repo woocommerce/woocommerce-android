@@ -7,6 +7,7 @@ data class FeatureFeedbackSettings(
     val featureKey: FeatureKey,
     val state: FeedbackState = UNANSWERED
 ) {
+    fun registerItself() = FeedbackPrefs.setFeatureFeedbackSettings(this)
 
     enum class FeedbackState {
         GIVEN,
@@ -29,6 +30,4 @@ data class FeatureFeedbackSettings(
         val value
             get() = requestingView + "_" + feature::class.java.simpleName
     }
-
-    fun registerItself() = FeedbackPrefs.setFeatureFeedbackSettings(this)
 }
