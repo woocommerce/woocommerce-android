@@ -24,6 +24,6 @@ data class FeatureFeedbackSettings(
         class Coupons(requestingView: String): Feature(requestingView)
 
         val tag
-            get() = requestingView + "_" + javaClass.simpleName
+            get() = requestingView + "_" + this::class.java.simpleName
     }
 }
