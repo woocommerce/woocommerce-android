@@ -9,10 +9,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.compose.utils.toAnnotatedString
+import com.woocommerce.android.ui.inbox.domain.FetchInboxNotes
 import com.woocommerce.android.ui.inbox.domain.InboxNote
 import com.woocommerce.android.ui.inbox.domain.InboxNoteAction
 import com.woocommerce.android.ui.inbox.domain.ObserveInboxNotes
-import com.woocommerce.android.ui.inbox.domain.FetchInboxNotes
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -30,11 +30,22 @@ class InboxViewModel @Inject constructor(
     private val observeInboxNotes: ObserveInboxNotes,
     savedState: SavedStateHandle,
 ) : ScopedViewModel(savedState) {
-
     val inboxState: LiveData<InboxState> = merge(
         refreshInboxNotes(),
         inboxNotesUpdates()
-    ).asLiveData()
+    )
+        .filter { !isFirstEmissionAndNotesEmpty(it) }
+        .asLiveData()
+
+    private var isFirstEmission = true
+
+    private fun isFirstEmissionAndNotesEmpty(it: InboxState) =
+        if (isFirstEmission) {
+            isFirstEmission = false
+            it.notes.isEmpty()
+        } else {
+            false
+        }
 
     private fun inboxNotesUpdates() =
         observeInboxNotes()
