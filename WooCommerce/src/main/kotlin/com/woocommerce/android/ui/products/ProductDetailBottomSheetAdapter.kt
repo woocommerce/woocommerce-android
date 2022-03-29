@@ -11,10 +11,6 @@ import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.Produ
 class ProductDetailBottomSheetAdapter(
     private val onItemClicked: (bottomSheetUiItem: ProductDetailBottomSheetUiItem) -> Unit
 ) : RecyclerView.Adapter<ProductDetailBottomSheetViewHolder>() {
-    init {
-        setHasStableIds(true)
-    }
-
     var options: List<ProductDetailBottomSheetUiItem> = emptyList()
         set(value) {
             val diffResult = DiffUtil.calculateDiff(
@@ -40,8 +36,6 @@ class ProductDetailBottomSheetAdapter(
     override fun onBindViewHolder(holder: ProductDetailBottomSheetViewHolder, position: Int) {
         holder.bind(options[position], onItemClicked)
     }
-
-    override fun getItemId(position: Int) = options[position].type.ordinal.toLong()
 
     override fun getItemCount() = options.size
 
