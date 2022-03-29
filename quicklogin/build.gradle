@@ -59,6 +59,26 @@ android {
         buildConfigField "String", "QUICK_LOGIN_WP_PASSWORD", "\"${project.getProperties().get("quickLoginWpPassword")}\""
     }
 
+    flavorDimensions "buildType"
+
+    productFlavors {
+        vanilla {
+            dimension "buildType"
+        }
+        wasabi {
+            dimension "buildType"
+            isDefault true
+        }
+        jalapeno {
+            dimension "buildType"
+        }
+    }
+    buildTypes {
+        debug {
+            isDefault true
+        }
+        release
+    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
