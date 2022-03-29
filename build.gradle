@@ -6,8 +6,8 @@ plugins {
     id 'io.github.wzieba.tracks.plugin'
     id 'io.sentry.android.gradle'
     id 'com.android.application' apply false
+    id 'org.jetbrains.kotlin.android' apply false
     id 'dagger.hilt.android.plugin' apply false
-    id 'androidx.navigation.safeargs.kotlin' apply false
     id 'com.google.gms.google-services' apply false
 }
 
@@ -82,7 +82,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = 'trunk-57e5f331589f50340925a73fe51e8a59c4464c83'
+    fluxCVersion = 'trunk-23e8fe682e21e4e045cf365a06ca8be46f55d425'
     glideVersion = '4.12.0'
     testRunnerVersion = '1.0.1'
     espressoVersion = '3.4.0'
@@ -110,9 +110,9 @@ ext {
     aboutAutomatticVersion = '0.0.4'
 
     // Compose and its module versions need to be consistent with each other (for example 'compose-theme-adapter')
-    composeVersion = "1.1.0-rc01"
-    lifecycleViewmodelComposeVersion = "2.4.0"
-    composeThemeAdapterVersion = "1.1.2"
+    composeVersion = "1.1.1"
+    lifecycleViewmodelComposeVersion = "2.4.1"
+    composeThemeAdapterVersion = "1.1.6"
 }
 
 // Onboarding and dev env setup tasks
