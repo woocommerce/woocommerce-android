@@ -78,6 +78,7 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
                 is ViewStoreEvent -> openInBrowser(event.url)
                 is ViewReviewsEvent -> navigateToReviews()
                 is ViewInboxEvent -> navigateToInbox()
+                is ViewCouponsEvent -> navigateToCoupons()
             }
         }
     }
@@ -105,6 +106,12 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
     private fun navigateToInbox() {
         findNavController().navigateSafely(
             MoreMenuFragmentDirections.actionMoreMenuFragmentToInboxFragment()
+        )
+    }
+
+    private fun navigateToCoupons() {
+        findNavController().navigateSafely(
+            MoreMenuFragmentDirections.actionMoreMenuToCouponListFragment()
         )
     }
 }

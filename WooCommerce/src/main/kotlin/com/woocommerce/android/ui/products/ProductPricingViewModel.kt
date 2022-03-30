@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
 import com.woocommerce.android.RequestCodes
+import com.woocommerce.android.extensions.greaterThan
 import com.woocommerce.android.extensions.isEquivalentTo
 import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.extensions.isSet
@@ -96,11 +97,11 @@ class ProductPricingViewModel @Inject constructor(
         )
     }
 
-    fun onRegularPriceEntered(inputValue: BigDecimal) {
+    fun onRegularPriceEntered(inputValue: BigDecimal?) {
         onDataChanged(regularPrice = inputValue)
 
-        val salePrice = pricingData.salePrice ?: BigDecimal.ZERO
-        viewState = if (salePrice.isSet() && salePrice > inputValue) {
+        val salePrice = pricingData.salePrice
+        viewState = if (salePrice.isSet() && inputValue.isSet() && salePrice.greaterThan(inputValue)) {
             viewState.copy(salePriceErrorMessage = string.product_pricing_update_sale_price_error)
         } else {
             viewState.copy(salePriceErrorMessage = 0)
@@ -116,11 +117,11 @@ class ProductPricingViewModel @Inject constructor(
         onDataChanged(isSaleScheduled = isSaleScheduled)
     }
 
-    fun onSalePriceEntered(inputValue: BigDecimal) {
+    fun onSalePriceEntered(inputValue: BigDecimal?) {
         onDataChanged(salePrice = inputValue)
 
-        val regularPrice = pricingData.regularPrice ?: BigDecimal.ZERO
-        viewState = if (inputValue.isSet() && inputValue > regularPrice) {
+        val regularPrice = pricingData.regularPrice
+        viewState = if (inputValue.isSet() && regularPrice.isSet() && inputValue.greaterThan(regularPrice)) {
             viewState.copy(salePriceErrorMessage = string.product_pricing_update_sale_price_error)
         } else if (pricingData.isSaleScheduled == true && inputValue.isNotSet()) {
             viewState.copy(salePriceErrorMessage = string.product_pricing_scheduled_sale_price_error)
