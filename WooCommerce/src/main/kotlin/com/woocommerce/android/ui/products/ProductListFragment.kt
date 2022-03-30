@@ -61,7 +61,7 @@ class ProductListFragment :
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
         val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"
-        val feedbackFeatureKey = FeatureKey(TAG, Feature.PRODUCT_VARIATIONS)
+        val feedbackFeatureKey = FeatureFeedbackKey(TAG, Feature.PRODUCT_VARIATIONS)
     }
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver

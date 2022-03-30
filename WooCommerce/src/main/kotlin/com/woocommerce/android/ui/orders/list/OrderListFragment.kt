@@ -55,7 +55,7 @@ class OrderListFragment :
         const val STATE_KEY_IS_SEARCHING = "is_searching"
         private const val SEARCH_TYPING_DELAY_MS = 500L
         const val FILTER_CHANGE_NOTICE_KEY = "filters_changed_notice"
-        val feedbackFeatureKey = FeatureKey(TAG, Feature.SIMPLE_PAYMENTS)
+        val feedbackFeatureKey = FeatureFeedbackKey(TAG, Feature.SIMPLE_PAYMENTS)
     }
 
     @Inject internal lateinit var uiMessageResolver: UIMessageResolver

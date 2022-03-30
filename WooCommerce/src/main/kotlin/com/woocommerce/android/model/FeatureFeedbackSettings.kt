@@ -4,7 +4,7 @@ import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.UNANSWERED
 
 data class FeatureFeedbackSettings(
-    val featureKey: FeatureKey,
+    val featureFeedbackKey: FeatureFeedbackKey,
     val state: FeedbackState = UNANSWERED
 ) {
     fun registerItself() = FeedbackPrefs.setFeatureFeedbackSettings(this)
@@ -23,7 +23,7 @@ data class FeatureFeedbackSettings(
         COUPONS
     }
 
-    data class FeatureKey(
+    data class FeatureFeedbackKey(
         private val requestingView: String,
         private val feature: Feature
     ) {

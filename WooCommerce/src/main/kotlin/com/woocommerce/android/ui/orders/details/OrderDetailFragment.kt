@@ -74,7 +74,7 @@ import javax.inject.Inject
 class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderProductActionListener {
     companion object {
         val TAG: String = OrderDetailFragment::class.java.simpleName
-        val feedbackFeatureKey = FeatureKey(TAG, Feature.SHIPPING_LABEL_M4)
+        val feedbackFeatureKey = FeatureFeedbackKey(TAG, Feature.SHIPPING_LABEL_M4)
     }
 
     private val viewModel: OrderDetailViewModel by viewModels()

@@ -38,7 +38,7 @@ class OrderedAddonViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
-        private val feedbackFeatureKey = FeatureKey(TAG, Feature.PRODUCT_ADDONS)
+        private val feedbackFeatureKey = FeatureFeedbackKey(TAG, Feature.PRODUCT_ADDONS)
     }
 
     val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
