@@ -95,7 +95,7 @@ def assertVariantsCorrectness = tasks.register("assertVariantsCorrectness") {
         def applicationAssembleTask = getTaskNameForProject("WooCommerce")
         def quickloginAssembleTask = getTaskNameForProject("quicklogin")
 
-        if (applicationAssembleTask != quickloginAssembleTask) {
+        if (applicationAssembleTask != null && applicationAssembleTask != quickloginAssembleTask) {
             throw new InvalidUserDataException("Application and quicklogin modules target different variants: $applicationAssembleTask != $quickloginAssembleTask. \n" +
                     "To keep your build performant, please make sure that under `Build Variants` tab in IDE, projects run on the same variant.")
         }
@@ -103,7 +103,12 @@ def assertVariantsCorrectness = tasks.register("assertVariantsCorrectness") {
 }
 
 private String getTaskNameForProject(String projectName) {
-    return gradle.startParameter.taskRequests[0].args.find { it.contains(projectName) }.split(':').last()
+    def taskFullName = gradle.startParameter.taskRequests[0].args.find { it.contains(projectName) }
+    if (taskFullName != null) {
+        return taskFullName.split(':').last()
+    } else {
+        return null
+    }
 }
 
 project.afterEvaluate {
