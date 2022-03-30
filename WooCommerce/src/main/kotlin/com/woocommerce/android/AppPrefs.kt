@@ -249,7 +249,6 @@ object AppPrefs {
     fun setLastVersionWithAnnouncement(version: String) =
         setString(UndeletablePrefKey.LAST_VERSION_WITH_ANNOUNCEMENT, version)
 
-
     fun setCardReaderWelcomeDialogShown() =
         setBoolean(UndeletablePrefKey.CARD_READER_WELCOME_SHOWN, true)
 

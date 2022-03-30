@@ -44,21 +44,23 @@ class CardReaderStatusCheckerViewModel
                 if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected) {
                     triggerEvent(StatusCheckerEvent.NavigateToPayment(param))
                 } else {
-                    when (val state = cardReaderChecker.getOnboardingState()) {
-                        is CardReaderOnboardingState.OnboardingCompleted -> {
-                            if (appPrefsWrapper.isCardReaderWelcomeDialogShown()) {
-                                cardReaderTracker.trackOnboardingState(state)
-                                triggerEvent(StatusCheckerEvent.NavigateToConnection(param))
-                            } else {
-                                triggerEvent(StatusCheckerEvent.NavigateToWelcome(param))
-                            }
-                        }
-                        else -> {
-                            triggerEvent(StatusCheckerEvent.NavigateToOnboarding(param))
-                        }
-                    }
+                    handleOnboardingStatus(param)
                 }
             }
+        }
+    }
+
+    private suspend fun handleOnboardingStatus(param: CardReaderFlowParam) {
+        when (val state = cardReaderChecker.getOnboardingState()) {
+            is CardReaderOnboardingState.OnboardingCompleted -> {
+                if (appPrefsWrapper.isCardReaderWelcomeDialogShown()) {
+                    cardReaderTracker.trackOnboardingState(state)
+                    triggerEvent(StatusCheckerEvent.NavigateToConnection(param))
+                } else {
+                    triggerEvent(StatusCheckerEvent.NavigateToWelcome(param))
+                }
+            }
+            else -> triggerEvent(StatusCheckerEvent.NavigateToOnboarding(param))
         }
     }
 
