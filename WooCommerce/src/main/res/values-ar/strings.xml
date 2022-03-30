@@ -1,11 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-03-03 22:43:05+0000
+Translation-Revision-Date: 2022-03-11 18:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="dismiss_inbox_note">تجاهل</string>
+    <string name="login_error_xml_rpc_auth_error_communicating">حدثت مشكلة في أثناء الاتصال بالموقع. تم إرجاع رمز خطأ HTTP رقم 401.</string>
+    <string name="login_error_xml_rpc_cannot_read_site_auth_required">تبدو استدعاءات XML-RPC محظورة على هذا الموقع (رمز الخطأ 401). إذا فشلت محاولة تسجيل الدخول، فانقر على أيقونة المساعدة لعرض الأسئلة المتداولة.</string>
+    <string name="login_error_xml_rpc_cannot_read_site">يتعذر قراءة موقع WordPress على معرف URL ذلك. انقر على أيقونة المساعدة لعرض الأسئلة المتداولة.</string>
+    <string name="login_error_xml_rpc_services_disabled">خدمات XML-RPC غير مفعلة في هذا الموقع.</string>
+    <string name="a8c_email_message">يرجى استخدام بريد إلكتروني غير تلقائي لإرسال تذكرة دعم</string>
+    <string name="card_reader_onboarding_stripe_account_in_unsupported_country">لا ندعم حسابات Stripe المُسجلة في ⁦%1$s⁩</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">لا ندعم WooCommerce Payments في ⁦%1$s⁩</string>
+    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">لا ندعم Stripe في ⁦%1$s⁩</string>
+    <string name="card_reader_connect_scanning_hint">اضغط على زر الطاقة للقارئ الخاص بك</string>
+    <string name="card_reader_payment_reader_receipt_sent">تم إرسال إيصال إلى &lt;strong&gt;%s&lt;/strong&gt;</string>
+    <string name="order_creation_fee_percentage_toggle_text">النسبة المئوية للرسوم</string>
+    <string name="order_creation_fee_percentage_hint">النسبة المئوية (%)</string>
+    <string name="order_creation_fee_amount_hint">المبلغ ($)</string>
+    <string name="order_creation_add_fee_removal_hint">إزالة الرسوم من الطلب</string>
+    <string name="order_creation_remove_shipping">إزالة الشحن من طلب</string>
+    <string name="order_creation_edit_shipping">الشحن</string>
+    <string name="order_creation_add_shipping">إضافة الشحن</string>
+    <string name="order_creation_shipping_title_add">إضافة الشحن</string>
+    <string name="order_creation_shipping_name">الاسم</string>
+    <string name="order_creation_shipping_amount">الكمية</string>
+    <string name="order_creation_payment_fee">الرسوم</string>
+    <string name="order_creation_customer_details">بيانات الزبون</string>
+    <string name="order_creation_add_fee">إضافة رسوم إضافية</string>
+    <string name="order_creation_customer_note_edit_content_description">تحرير ملحوظة العميل</string>
+    <string name="order_creation_customer_edit_content_description">تحرير تفاصيل العميل</string>
+    <string name="order_creation_status_edit_content_description">تحرير حالة الطلب</string>
+    <string name="simple_payments_update_error">يتعذر تحديث طلب الدفع البسيط</string>
+    <string name="simple_payments_creation_error">يتعذر إنشاء طلب الدفع البسيط</string>
+    <string name="more_menu_avatar">صورة الملف الشخصي للمستخدم</string>
+    <string name="more_menu_button_reviews">المراجعات</string>
+    <string name="more_menu_button_store">عرض المخزن</string>
+    <string name="more_menu_button_inbox">علبة الوارد</string>
+    <string name="more_menu_button_analytics">التحليلات</string>
+    <string name="more_menu_button_payments">المدفوعات</string>
+    <string name="more_menu_button_woo_admin">مدير WooCommerce</string>
+    <string name="more_menu">القائمة</string>
     <string name="card_reader_onboarding_both_plugins_activated_refresh_button">التنشيط بعد التحديث</string>
     <string name="card_reader_onboarding_both_plugins_activated_open_store_admin_label">إدارة الإضافات</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_two">المدفوعات WooCommerce</string>
@@ -88,10 +125,9 @@ Language: ar
     <string name="order_creation_new_customer_add_different_shipping_address">إضافة عنوان شحن مختلف</string>
     <string name="order_creation_product_instock">متوفر في المخزون</string>
     <string name="order_creation_product_stock_quantity">%s متوفر في المخزون</string>
-    <string name="order_creation_customer_details">العميل الجديد</string>
     <string name="order_creation_add_products">إضافة منتج</string>
     <string name="order_creation_products">المنتجات</string>
-    <string name="order_creation_add_customer">إضافة عميل</string>
+    <string name="order_creation_add_customer">إضافة تفاصيل العميل</string>
     <string name="order_creation_customer">زبون</string>
     <string name="simple_payments_cash_dlg_button">وسم كمدفوع</string>
     <string name="simple_payments_cash_dlg_message">سيقوم هذا بإنشاء طلبك ووسمه كمدفوع إذا تلقيت المدفوعات خارج WooCommerce</string>
@@ -147,7 +183,6 @@ Language: ar
     <string name="date_timeframe_last_week">الأسبوع الماضي</string>
     <string name="settings_enable_order_creation_teaser_message">اختبر إنشاء الطلبات باستخدام تفاصيل كاملة بينما نستعد لإطلاقها</string>
     <string name="settings_enable_order_creation_teaser_title">إنشاء الطلب</string>
-    <string name="settings_enable_simple_payments_teaser_title">المدفوعات البسيطة</string>
     <string name="beta_features_order_creation">إنشاء الطلب</string>
     <string name="beta_features_simple_payments">المدفوعات البسيطة</string>
     <string name="beta_features_add_ons">عرض الوظائف الإضافية</string>
@@ -166,7 +201,6 @@ Language: ar
     <string name="orderlist_bottom_sheet_create_order_description">إنشاء طلب يدوي جديد</string>
     <string name="orderlist_bottom_sheet_create_order_action">إنشاء طلب</string>
     <string name="orderlist_create_order_button_description">إنشاء طلب</string>
-    <string name="simple_payments_creation_error">يتعذر إنشاء الطلب</string>
     <string name="simple_payments_enter_amount">إدخال المبلغ</string>
     <string name="simple_payments_dialog_title">تحصيل الدفع</string>
     <string name="orderlist_simple_payments_menu">عملية دفع بسيطة</string>
@@ -205,7 +239,6 @@ Language: ar
     <string name="orderfilters_default_filter_option">الكل</string>
     <string name="orderfilters_filter_card_title_filtered_orders">الطلبات التي تمت تصفيتها</string>
     <string name="orderfilters_filter_card_title_all_orders">جميع الطلبات</string>
-    <string name="orderlist_simple_payments_wip_message_disabled">نعمل على تسهيل تحصيلك المدفوعات من جهازك! قم بتمكينه في الإعدادات &gt; ميزات بيتا.</string>
     <string name="orderlist_simple_payments_wip_message_enabled">نعمل على تسهيل تحصيلك المدفوعات من جهازك! من الآن، اضغط الآن على زر \"+\" وستتمكن من إنشاء طلب بالمبلغ الذي ترغب في تجميعه.</string>
     <string name="jetpack_benefits_modal_dismiss">ليس الآن</string>
     <string name="jetpack_benefits_modal_install_jetpack">تثبيت Jetpack</string>
@@ -217,7 +250,6 @@ Language: ar
     <string name="jetpack_benefits_modal_push_notifications_title">دفع التنبيهات</string>
     <string name="jetpack_benefits_modal_subtitle">قم بتثبيت إضافة Jetpack المجانية للاستمتاع بأفضل تجربة على الهاتف المحمول.</string>
     <string name="jetpack_benefits_modal_title">الاستفادة من مخزنك إلى أقصى حد</string>
-    <string name="settings_enable_simple_payments_teaser_message">اختبر إنشاء الطلبات من خلال أقل قدر من المعلومات بينما نستعد لإطلاقها</string>
     <string name="order_detail_use_as_shipping_address">استخدام عنوان الشحن</string>
     <string name="order_detail_use_as_billing_address">استخدام عنوان الفوترة</string>
     <string name="orderfilters_filters_count_title">عوامل التصفية (%d)</string>
@@ -542,7 +574,6 @@ Language: ar
     <string name="card_reader_connect_connecting_header">الربط بالقارئ</string>
     <string name="card_reader_connect_to_reader">الربط بالقارئ</string>
     <string name="card_reader_connect_reader_found_header">هل ترغب في ربط القارئ %s؟</string>
-    <string name="card_reader_connect_scanning_hint">اضغط على زر الطاقة الخاص بالقارئ لديك حتى ترى ضوءًا أزرق وامضًا</string>
     <string name="card_reader_connect_scanning_header">الفحص بحثًا عن أجهزة القراءة</string>
     <string name="shipping_label_items_count_placeholder">عدد العناصر</string>
     <string name="orderdetail_products_recreate_shipping_label_menu">إنشاء ملصق شحن جديد</string>
