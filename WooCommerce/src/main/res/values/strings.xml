@@ -932,6 +932,7 @@
     <string name="card_reader_refund_failed_test_card">System test cards are not permitted for refund</string>
     <string name="card_reader_refund_failed_ok">OK</string>
     <string name="card_reader_refund_failed_cancelled">Refund cancelled</string>
+    <string name="card_reader_refund_order_refunded_refund_cancelled">The order is already refunded</string>
     <!--
         Card Reader Payments
     -->
