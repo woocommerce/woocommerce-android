@@ -12,6 +12,7 @@ class CardReaderInteracRefundErrorMapper @Inject constructor() {
                 mapPaymentDeclinedErrorType(errorType)
             CardInteracRefundStatus.RefundStatusErrorType.Generic -> InteracRefundFlowError.Generic
             CardInteracRefundStatus.RefundStatusErrorType.Server -> InteracRefundFlowError.Server
+            CardInteracRefundStatus.RefundStatusErrorType.Cancelled -> InteracRefundFlowError.Cancelled
             else -> InteracRefundFlowError.Generic
         }
 

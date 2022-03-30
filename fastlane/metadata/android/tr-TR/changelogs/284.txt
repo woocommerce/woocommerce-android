@@ -1,4 +1,0 @@
-8.6:
-Bu sürüm, basit ödemeler olarak adlandırdığımız hızlı bir parasal işlemi kaydetmek isteyen satıcılar için yararlı bir özellik içerir. Kredi kartı ödemelerini hızlı bir şekilde alın veya müşterinize sitenizin ödeme bağlantısını gönderin!
-
-Ayrıca sekmelerde biraz değişiklik yaptığımızı ve “Diğer” adında bir sekme eklediğimizi göreceksiniz.  Mağaza ayarları ve diğer birkaç şey, daha fazla özelliğe hazırlanmak için oraya taşınmıştır!

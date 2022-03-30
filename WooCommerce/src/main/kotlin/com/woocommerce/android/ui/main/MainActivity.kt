@@ -468,6 +468,13 @@ class MainActivity :
             hideBottomNav()
         }
 
+        // Compose-specific title bar updates
+        val currentTitle = title
+        title = when (destination.id) {
+            R.id.couponListFragment -> getString(R.string.coupons)
+            else -> currentTitle
+        }
+
         previousDestinationId = destination.id
     }
 
@@ -754,7 +761,7 @@ class MainActivity :
                     )
                 }
                 is ViewReviewDetail -> {
-                    showReviewDetail(event.uniqueId, launchedFromNotification = true, enableModeration = true)
+                    showReviewDetail(event.uniqueId, launchedFromNotification = true)
                 }
                 is ViewReviewList -> showReviewList()
                 is RestartActivityForNotification -> {
@@ -820,7 +827,6 @@ class MainActivity :
     override fun showReviewDetail(
         remoteReviewId: Long,
         launchedFromNotification: Boolean,
-        enableModeration: Boolean,
         tempStatus: String?
     ) {
         if (launchedFromNotification) {
@@ -831,8 +837,7 @@ class MainActivity :
         val action = NavGraphMainDirections.actionGlobalReviewDetailFragment(
             remoteReviewId = remoteReviewId,
             tempStatus = tempStatus,
-            launchedFromNotification = launchedFromNotification,
-            enableModeration = enableModeration
+            launchedFromNotification = launchedFromNotification
         )
         navController.navigateSafely(action)
     }
@@ -840,7 +845,6 @@ class MainActivity :
     override fun showReviewDetailWithSharedTransition(
         remoteReviewId: Long,
         launchedFromNotification: Boolean,
-        enableModeration: Boolean,
         sharedView: View,
         tempStatus: String?
     ) {
@@ -849,8 +853,7 @@ class MainActivity :
         val action = ReviewListFragmentDirections.actionReviewListFragmentToReviewDetailFragment(
             remoteReviewId = remoteReviewId,
             tempStatus = tempStatus,
-            launchedFromNotification = launchedFromNotification,
-            enableModeration = enableModeration
+            launchedFromNotification = launchedFromNotification
         )
         navController.navigateSafely(directions = action, extras = extras)
     }
