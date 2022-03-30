@@ -34,9 +34,7 @@ class CouponListViewModel @Inject constructor(
     val couponsState = couponRepository.couponsFlow
         .map { coupons ->
             CouponListState(
-                coupons = coupons.map {
-                    it.toUiModel(currencyFormatter, currencyCode)
-                }
+                coupons = coupons.map { it.toUiModel() }
             )
         }
         .asLiveData()
@@ -52,9 +50,8 @@ class CouponListViewModel @Inject constructor(
             Coupon.Type.Percent -> "$amount%"
             else -> {
                 if (amount != null) {
-                    currencyCode?.let {
-                        currencyFormatter.formatCurrency(amount, currencyCode)
-                    } ?: amount.toString()
+                    currencyCode?.let { currencyFormatter.formatCurrency(amount, it) }
+                        ?: amount.toString()
                 } else {
                     ""
                 }
