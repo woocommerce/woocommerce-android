@@ -109,6 +109,9 @@ object AppPrefs {
 
         // The last version of the app where an announcement was shown,
         LAST_VERSION_WITH_ANNOUNCEMENT,
+
+        // card reader welcome dialog was shown
+        CARD_READER_WELCOME_SHOWN,
     }
 
     fun init(context: Context) {
@@ -245,6 +248,10 @@ object AppPrefs {
 
     fun setLastVersionWithAnnouncement(version: String) =
         setString(UndeletablePrefKey.LAST_VERSION_WITH_ANNOUNCEMENT, version)
+
+
+    fun setCardReaderWelcomeDialogShown() =
+        setBoolean(UndeletablePrefKey.CARD_READER_WELCOME_SHOWN, true)
 
     /**
      * Flag to check products features are enabled
@@ -430,6 +437,8 @@ object AppPrefs {
         )
         return completedStatus == CARD_READER_ONBOARDING_COMPLETED
     }
+
+    fun isCardReaderWelcomeDialogShown() = getBoolean(UndeletablePrefKey.CARD_READER_WELCOME_SHOWN, false)
 
     fun getCardReaderPreferredPlugin(
         localSiteId: Int,

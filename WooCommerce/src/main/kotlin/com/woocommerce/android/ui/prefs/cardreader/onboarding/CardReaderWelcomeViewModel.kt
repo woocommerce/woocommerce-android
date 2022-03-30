@@ -6,7 +6,6 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString.UiStringRes
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -16,7 +15,6 @@ import javax.inject.Inject
 @HiltViewModel
 class CardReaderWelcomeViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    selectedSite: SelectedSite,
     appPrefsWrapper: AppPrefsWrapper,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderWelcomeDialogFragmentArgs by savedState.navArgs()
@@ -25,17 +23,10 @@ class CardReaderWelcomeViewModel @Inject constructor(
     val viewState: LiveData<ViewState> = _viewState
 
     init {
-        val site = selectedSite.get()
-        if (appPrefsWrapper.isCardReaderOnboardingCompleted(site.id, site.siteId, site.selfHostedSiteId)) {
-            proceedToOnboarding()
-        }
+        appPrefsWrapper.setCardReaderWelcomeDialogShown()
     }
 
     private fun onButtonClick() {
-        proceedToOnboarding()
-    }
-
-    private fun proceedToOnboarding() {
         triggerEvent(CardReaderWelcomeDialogEvent.NavigateToOnboardingFlow(arguments.cardReaderFlowParam))
     }
 

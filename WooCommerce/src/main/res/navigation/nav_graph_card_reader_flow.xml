@@ -42,6 +42,16 @@
                 app:argType="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam"
                 app:nullable="false" />
         </action>
+        <action
+            android:id="@+id/action_cardReaderStatusCheckerDialogFragment_to_cardReaderConnectDialogFragment"
+            app:destination="@id/cardReaderConnectDialogFragment"
+            app:popUpTo="@+id/cardReaderStatusCheckerDialogFragment"
+            app:popUpToInclusive="true">
+            <argument
+                android:name="cardReaderFlowParam"
+                app:argType="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam"
+                app:nullable="false" />
+        </action>
     </dialog>
 
     <fragment
