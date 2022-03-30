@@ -1,0 +1,4 @@
+8.7:
+Abbiamo rilasciato una beta per la creazione degli ordini. Vai alla scheda Menu, tocca l'icona delle impostazioni e scorri verso le funzionalità beta. Abbiamo aggiunto le tasse e le spese di spedizione.
+
+Abbiamo risolto un problema per cui talvolta le note per un ordine apparivano in modo errato. Grazie per averci informato.
