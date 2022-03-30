@@ -13,6 +13,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_IMAGE_
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_VIEW_VARIATION_VISIBILITY_SWITCH_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ID
+import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.ProductVariation
@@ -44,7 +45,7 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import java.math.BigDecimal
-import java.util.*
+import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -228,8 +229,16 @@ class VariationDetailViewModel @Inject constructor(
                     remoteVariationId = remoteVariationId ?: variation.remoteVariationId,
                     sku = sku ?: variation.sku,
                     image = if (image != null) image.value else variation.image,
-                    regularPrice = regularPrice ?: variation.regularPrice,
-                    salePrice = salePrice ?: variation.salePrice,
+                    regularPrice = if (regularPrice isNotEqualTo variation.regularPrice) {
+                        regularPrice
+                    } else {
+                        variation.regularPrice
+                    },
+                    salePrice = if (salePrice isNotEqualTo variation.salePrice) {
+                        salePrice
+                    } else {
+                        variation.salePrice
+                    },
                     saleEndDateGmt = saleEndDate,
                     saleStartDateGmt = saleStartDate,
                     isSaleScheduled = isSaleScheduled ?: variation.isSaleScheduled,
@@ -265,7 +274,8 @@ class VariationDetailViewModel @Inject constructor(
 
     private suspend fun updateVariation(variation: ProductVariation) {
         if (networkStatus.isConnected()) {
-            if (variationRepository.updateVariation(variation)) {
+            val result = variationRepository.updateVariation(variation)
+            if (!result.isError) {
                 originalVariation = variation
                 showVariation(variation)
                 loadVariation(variation.remoteProductId, variation.remoteVariationId)
@@ -273,7 +283,7 @@ class VariationDetailViewModel @Inject constructor(
             } else {
                 if (
                     variation.image?.id == 0L &&
-                    variationRepository.lastUpdateVariationErrorType == ProductErrorType.INVALID_VARIATION_IMAGE_ID
+                    result.error.type == ProductErrorType.INVALID_VARIATION_IMAGE_ID
                 ) {
                     triggerEvent(ShowSnackbar(string.variation_detail_update_variation_image_error))
                 } else {
@@ -319,6 +329,7 @@ class VariationDetailViewModel @Inject constructor(
             val variationInDb = variationRepository.getVariation(remoteProductId, remoteVariationId)
             if (variationInDb != null) {
                 originalVariation = variationInDb
+                showVariation(variationInDb)
                 fetchVariation(remoteProductId, remoteVariationId)
             } else {
                 viewState = viewState.copy(isSkeletonShown = true)
@@ -338,8 +349,8 @@ class VariationDetailViewModel @Inject constructor(
 
     private suspend fun fetchVariation(remoteProductId: Long, remoteVariationId: Long) {
         if (networkStatus.isConnected()) {
-            val fetchedVariation = variationRepository.fetchVariation(remoteProductId, remoteVariationId)
-            originalVariation = fetchedVariation
+            variationRepository.fetchVariation(remoteProductId, remoteVariationId)
+            originalVariation = variationRepository.getVariation(remoteProductId, remoteVariationId)
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
         }
@@ -348,7 +359,6 @@ class VariationDetailViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         productRepository.onCleanup()
-        variationRepository.onCleanup()
         mediaFileUploadHandler.cancelUpload(navArgs.remoteVariationId)
     }
 

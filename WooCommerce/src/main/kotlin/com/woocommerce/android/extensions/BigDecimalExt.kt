@@ -6,13 +6,9 @@ infix fun BigDecimal?.isEqualTo(x: BigDecimal?) = this == x || (x != null && thi
 
 infix fun BigDecimal?.isNotEqualTo(x: BigDecimal?) = !this.isEqualTo(x)
 
-infix fun BigDecimal?.isEquivalentTo(that: BigDecimal?): Boolean {
-    val val1 = this ?: BigDecimal.ZERO
-    val val2 = that ?: BigDecimal.ZERO
-    return val1.isEqualTo(val2)
-}
+infix fun BigDecimal?.isEquivalentTo(that: BigDecimal?) = this.isEqualTo(that)
 
-fun BigDecimal?.isNotSet(): Boolean = this.isEquivalentTo(BigDecimal.ZERO)
+fun BigDecimal?.isNotSet(): Boolean = this == null || this.toString().isBlank()
 
 fun BigDecimal?.isSet(): Boolean = !this.isNotSet()
 

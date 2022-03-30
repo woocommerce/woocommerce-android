@@ -554,6 +554,15 @@ class DateUtils @Inject constructor(
             null
         }
 
+    fun getDateFromIso8601String(isoStringDate: String): Date? =
+        try {
+            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+                .parse(isoStringDate)
+        } catch (e: Exception) {
+            "Date string argument is not a valid format".reportAsError(e)
+            null
+        }
+
     companion object {
         const val DAYS_IN_QUARTER = 90
         const val DAYS_TAIL_IN_WEEK = 6

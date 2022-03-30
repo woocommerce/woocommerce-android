@@ -1,11 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-03-03 22:41:45+0000
+Translation-Revision-Date: 2022-03-10 11:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="dismiss_inbox_note">關閉</string>
+    <string name="login_error_xml_rpc_auth_error_communicating">與網站通訊時發生問題。 已傳回 HTTP 錯誤代碼 401。</string>
+    <string name="login_error_xml_rpc_cannot_read_site_auth_required">這個網站似乎封鎖了 XML-RPC 呼叫 (錯誤代碼 401)。 如果嘗試登入失敗，請點選說明圖示，查看常見問題集。</string>
+    <string name="login_error_xml_rpc_cannot_read_site">無法透過該 URL 讀取 WordPress 網站。 請點選說明圖示，查看常見問題集。</string>
+    <string name="login_error_xml_rpc_services_disabled">這個網站尚未開啟 XML-RPC 服務</string>
+    <string name="a8c_email_message">請使用非 Automattic 的電子郵件提交支援票證</string>
+    <string name="card_reader_onboarding_stripe_account_in_unsupported_country">我們不支援在 %1$s 註冊的 Stripe 帳戶</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">我們未在 %1$s 支援 WooCommerce Payments </string>
+    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">我們未在 %1$s 支援 Stripe</string>
+    <string name="card_reader_connect_scanning_hint">按下讀卡機的電源按鈕</string>
+    <string name="card_reader_payment_reader_receipt_sent">收據已傳送至 &lt;strong&gt;%s&lt;/strong&gt;</string>
+    <string name="order_creation_fee_percentage_toggle_text">百分比費用</string>
+    <string name="order_creation_fee_percentage_hint">百分比 (%)</string>
+    <string name="order_creation_fee_amount_hint">金額 ($)</string>
+    <string name="order_creation_add_fee_removal_hint">從訂單中移除費用</string>
+    <string name="order_creation_remove_shipping">從訂單中移除運送方式</string>
+    <string name="order_creation_edit_shipping">運送方式</string>
+    <string name="order_creation_add_shipping">新增運費</string>
+    <string name="order_creation_shipping_title_add">新增運送</string>
+    <string name="order_creation_shipping_name">名稱</string>
+    <string name="order_creation_shipping_amount">金額</string>
+    <string name="order_creation_payment_fee">費用</string>
+    <string name="order_creation_customer_details">客戶詳細資料</string>
+    <string name="order_creation_add_fee">新增費用</string>
+    <string name="order_creation_customer_note_edit_content_description">編輯顧客備註</string>
+    <string name="order_creation_customer_edit_content_description">編輯顧客詳細資料</string>
+    <string name="order_creation_status_edit_content_description">編輯訂單狀態</string>
+    <string name="simple_payments_update_error">無法更新輕鬆付款訂單</string>
+    <string name="simple_payments_creation_error">無法建立輕鬆付款訂單</string>
+    <string name="more_menu_avatar">使用者個人檔案圖片</string>
+    <string name="more_menu_button_reviews">評論</string>
+    <string name="more_menu_button_store">查看商店</string>
+    <string name="more_menu_button_inbox">收件匣</string>
+    <string name="more_menu_button_analytics">分析</string>
+    <string name="more_menu_button_payments">付款</string>
+    <string name="more_menu_button_woo_admin">WooCommerce Admin</string>
+    <string name="more_menu">選單</string>
     <string name="card_reader_onboarding_both_plugins_activated_refresh_button">在更新後重新整理</string>
     <string name="card_reader_onboarding_both_plugins_activated_open_store_admin_label">管理外掛程式</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_two">WooCommerce Payments</string>
@@ -88,10 +125,9 @@ Language: zh_TW
     <string name="order_creation_new_customer_add_different_shipping_address">新增其他運送地址</string>
     <string name="order_creation_product_instock">尚有庫存</string>
     <string name="order_creation_product_stock_quantity">%s 尚有庫存</string>
-    <string name="order_creation_customer_details">新顧客</string>
     <string name="order_creation_add_products">新增商品</string>
     <string name="order_creation_products">商品</string>
-    <string name="order_creation_add_customer">新增顧客</string>
+    <string name="order_creation_add_customer">新增顧客詳細資料</string>
     <string name="order_creation_customer">顧客</string>
     <string name="simple_payments_cash_dlg_button">標示為已付款</string>
     <string name="simple_payments_cash_dlg_message">如果你從 WooCommerce 以外的來源收到款項，這麼做會建立你的訂單並標示為已付款</string>
@@ -147,7 +183,6 @@ Language: zh_TW
     <string name="date_timeframe_last_week">上週</string>
     <string name="settings_enable_order_creation_teaser_message">測試即將推出的「建立完整詳細資訓的訂單」功能</string>
     <string name="settings_enable_order_creation_teaser_title">建立訂單</string>
-    <string name="settings_enable_simple_payments_teaser_title">輕鬆付款</string>
     <string name="beta_features_order_creation">建立訂單</string>
     <string name="beta_features_simple_payments">輕鬆付款</string>
     <string name="beta_features_add_ons">檢視附加元件</string>
@@ -166,7 +201,6 @@ Language: zh_TW
     <string name="orderlist_bottom_sheet_create_order_description">建立全新手動訂單</string>
     <string name="orderlist_bottom_sheet_create_order_action">建立訂單</string>
     <string name="orderlist_create_order_button_description">建立訂單</string>
-    <string name="simple_payments_creation_error">無法建立訂單</string>
     <string name="simple_payments_enter_amount">輸入金額</string>
     <string name="simple_payments_dialog_title">收取款項</string>
     <string name="orderlist_simple_payments_menu">輕鬆付款</string>
@@ -205,7 +239,6 @@ Language: zh_TW
     <string name="orderfilters_default_filter_option">全部</string>
     <string name="orderfilters_filter_card_title_filtered_orders">篩選的訂單</string>
     <string name="orderfilters_filter_card_title_all_orders">全部訂單</string>
-    <string name="orderlist_simple_payments_wip_message_disabled">我們正努力讓你能更輕鬆從裝置收取款項！ 從「設定」&gt;「測試版功能」啟用。</string>
     <string name="orderlist_simple_payments_wip_message_enabled">我們正努力讓你能更輕鬆從裝置收取款項！ 現在點選「+」按鈕將能建立收款金額的訂單。</string>
     <string name="jetpack_benefits_modal_dismiss">現在不要</string>
     <string name="jetpack_benefits_modal_install_jetpack">安裝 Jetpack</string>
@@ -217,7 +250,6 @@ Language: zh_TW
     <string name="jetpack_benefits_modal_push_notifications_title">推播通知</string>
     <string name="jetpack_benefits_modal_subtitle">安裝 Jetpack 免費外掛程式，獲得最佳行動體驗。</string>
     <string name="jetpack_benefits_modal_title">從自己的商店獲得最大利益</string>
-    <string name="settings_enable_simple_payments_teaser_message">測試即將推出的「建立包含最少資訊的訂單」功能</string>
     <string name="order_detail_use_as_shipping_address">當作運送地址</string>
     <string name="order_detail_use_as_billing_address">當作帳單地址</string>
     <string name="orderfilters_filters_count_title">篩選條件 (%d 個)</string>
@@ -542,7 +574,6 @@ Language: zh_TW
     <string name="card_reader_connect_connecting_header">正在連線至閱讀器</string>
     <string name="card_reader_connect_to_reader">連線至閱讀器</string>
     <string name="card_reader_connect_reader_found_header">你要連線至閱讀器 %s 嗎？</string>
-    <string name="card_reader_connect_scanning_hint">按住閱讀器的電源按鈕，直到藍燈閃爍為止</string>
     <string name="card_reader_connect_scanning_header">掃瞄閱讀器</string>
     <string name="shipping_label_items_count_placeholder">商品數量</string>
     <string name="orderdetail_products_recreate_shipping_label_menu">建立新的運送標籤</string>

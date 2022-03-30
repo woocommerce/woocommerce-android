@@ -16,6 +16,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
@@ -86,10 +87,17 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
         }
     }
 
-    fun searchProductList(query: String, loadMore: Boolean = false) {
-        viewState = viewState.copy(query = query)
+    fun searchProductList(query: String, loadMore: Boolean = false, delayed: Boolean = false) {
+        viewState = viewState.copy(query = query, isEmptyViewShowing = false)
         searchJob?.cancel()
         searchJob = launch {
+            if (delayed) {
+                delay(SEARCH_TYPING_DELAY_MS)
+            }
+            if (query.isEmpty()) {
+                productList.value = emptyList()
+                return@launch
+            }
             productListRepository.searchProductList(query, loadMore)
                 ?.takeIf { query == productListRepository.lastSearchQuery }
                 ?.let { handleSearchResult(it, loadMore) }
@@ -104,6 +112,7 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
             ?.takeIf { loadedMore && searchResult differsFrom it }
             ?.let { searchResult + it }
             ?: searchResult
+        viewState = viewState.copy(isEmptyViewShowing = productListData.value?.isEmpty())
     }
 
     fun onSearchOpened() {
@@ -117,7 +126,8 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
         launch { searchJob?.cancelAndJoin() }
         viewState = viewState.copy(
             isSearchActive = false,
-            query = null
+            query = null,
+            isEmptyViewShowing = false
         )
         loadProductList()
     }
@@ -125,7 +135,8 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
     fun onSearchQueryCleared() {
         productList.value = emptyList()
         viewState = viewState.copy(
-            query = null
+            query = null,
+            isEmptyViewShowing = false
         )
     }
 
@@ -138,8 +149,13 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
     data class ViewState(
         val isSkeletonShown: Boolean? = null,
         val isSearchActive: Boolean? = null,
-        val query: String? = null
+        val query: String? = null,
+        val isEmptyViewShowing: Boolean? = null
     ) : Parcelable
 
     data class AddProduct(val productId: Long) : MultiLiveEvent.Event()
+
+    companion object {
+        private const val SEARCH_TYPING_DELAY_MS = 500L
+    }
 }

@@ -24,6 +24,7 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.Optional
 import com.woocommerce.android.util.ProductUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
@@ -42,7 +43,7 @@ import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.*
-import kotlin.collections.ArrayList
+import kotlin.test.assertNull
 
 @ExperimentalCoroutinesApi
 class ProductDetailViewModelTest : BaseUnitTest() {
@@ -105,8 +106,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     private val productWithParameters = ProductDetailViewState(
         productDraft = product,
-        storedProduct = product,
-        productBeforeEnteringFragment = product,
         isSkeletonShown = false,
         uploadingImageUris = emptyList(),
         showBottomSheetButton = true
@@ -338,6 +337,50 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         viewModel.updateProductDraft(updatedDescription)
 
         assertThat(productData?.productDraft?.description).isEqualTo(updatedDescription)
+    }
+
+    @Test
+    fun `When update product price is null, product detail view displayed correctly`() {
+        doReturn(product).whenever(productRepository).getProduct(any())
+
+        var productData: ProductDetailViewState? = null
+        viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
+
+        viewModel.start()
+
+        assertThat(productData).isEqualTo(productWithParameters)
+
+        val updatedRegularPrice = null
+        val updatedSalePrice = null
+        viewModel.updateProductDraft(
+            regularPrice = Optional(updatedRegularPrice),
+            salePrice = Optional(updatedSalePrice)
+        )
+
+        assertNull(productData?.productDraft?.regularPrice)
+        assertNull(productData?.productDraft?.salePrice)
+    }
+
+    @Test
+    fun `When update product price is zero, product detail view displayed correctly`() {
+        doReturn(product).whenever(productRepository).getProduct(any())
+
+        var productData: ProductDetailViewState? = null
+        viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
+
+        viewModel.start()
+
+        assertThat(productData).isEqualTo(productWithParameters)
+
+        val updatedRegularPrice = BigDecimal.ZERO
+        val updatedSalePrice = BigDecimal.ZERO
+        viewModel.updateProductDraft(
+            regularPrice = Optional(updatedRegularPrice),
+            salePrice = Optional(updatedSalePrice)
+        )
+
+        assertThat(productData?.productDraft?.regularPrice).isEqualTo(updatedRegularPrice)
+        assertThat(productData?.productDraft?.salePrice).isEqualTo(updatedSalePrice)
     }
 
     @Test
@@ -745,6 +788,17 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(true).whenever(viewModel).hasChanges()
         viewModel.start()
         assertThat(viewModel.isSaveOptionNeeded).isFalse()
+    }
+
+    @Test
+    fun `when restoring saved state, then re-fetch stored product to correctly calculate hasChanges`() {
+        // Make sure draft product has different data than draft product
+        doReturn(product.copy(name = product.name + "test")).whenever(productRepository).getProduct(any())
+        savedState.set(ProductDetailViewState::class.java.name, productWithParameters)
+
+        viewModel.start()
+
+        assertThat(viewModel.hasChanges()).isTrue
     }
 
     private val productsDraft

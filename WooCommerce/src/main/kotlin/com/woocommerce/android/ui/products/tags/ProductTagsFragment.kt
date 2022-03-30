@@ -175,7 +175,7 @@ class ProductTagsFragment :
     }
 
     private fun showProductTags(productTags: List<ProductTag>) {
-        productTagsAdapter.setProductTags(productTags)
+        productTagsAdapter.submitList(productTags)
         updateSelectedTags()
     }
 

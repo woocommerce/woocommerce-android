@@ -31,6 +31,9 @@ object AppUrls {
 
     const val SIMPLE_PAYMENTS_SURVEY = "https://automattic.survey.fm/woo-app-quick-order-production"
 
+    const val COUPONS_SURVEY_DEBUG = "https://automattic.survey.fm/woo-app-coupon-management-testing"
+    const val COUPONS_SURVEY = "https://automattic.survey.fm/woo-app-coupon-management-production"
+
     const val WOOCOMMERCE_USER_ROLES =
         "https://woocommerce.com/posts/a-guide-to-woocommerce-user-roles-permissions-and-security/"
     const val SHIPPING_LABEL_CUSTOMS_ITN = "https://pe.usps.com/text/imm/immc5_010.htm"

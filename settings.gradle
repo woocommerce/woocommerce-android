@@ -1,9 +1,9 @@
 pluginManagement {
-    gradle.ext.agpVersion = '4.2.2'
+    gradle.ext.agpVersion = '7.1.1'
     gradle.ext.daggerVersion = '2.40.5'
     gradle.ext.detektVersion = '1.19.0'
-    gradle.ext.kotlinVersion = '1.5.31'
-    gradle.ext.navigationVersion = '2.4.0-beta02'
+    gradle.ext.kotlinVersion = '1.6.10'
+    gradle.ext.navigationVersion = '2.4.1'
 
     repositories {
         gradlePluginPortal()
@@ -45,6 +45,7 @@ plugins {
     id 'com.gradle.enterprise' version '3.8.1'
 }
 
+include ':quicklogin'
 include ':libs:cardreader'
 include ':WooCommerce'
 

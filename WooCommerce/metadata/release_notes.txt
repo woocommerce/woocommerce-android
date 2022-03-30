@@ -1,3 +1,3 @@
-Did you know we’ve released a beta feature for creating orders? Head to the Menu tab, tap the settings icon, and scroll to beta features. We just added fees and shipping costs!
+Even though this release doesn’t have any surprising new features, we still put a lot of love into it! We fixed a few bugs and made several improvements for accessibility using TalkBack.
 
-We fixed a rare issue where sometimes the notes for an order appeared incorrectly. Thanks for letting us know!
+Did you know we’ve released a beta feature for creating orders? Head to the Menu tab, tap the settings icon, and scroll to beta features.

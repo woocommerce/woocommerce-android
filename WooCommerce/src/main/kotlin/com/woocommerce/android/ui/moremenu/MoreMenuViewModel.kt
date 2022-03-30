@@ -8,11 +8,13 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_OPTION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_ADMIN_MENU
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_COUPONS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_INBOX
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_REVIEWS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_VIEW_STORE
 import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.moremenu.MenuButtonType.COUPONS
 import com.woocommerce.android.ui.moremenu.MenuButtonType.INBOX
 import com.woocommerce.android.ui.moremenu.MenuButtonType.PRODUCT_REVIEWS
 import com.woocommerce.android.ui.moremenu.MenuButtonType.VIEW_ADMIN
@@ -60,6 +62,13 @@ class MoreMenuViewModel @Inject constructor(
                 text = R.string.more_menu_button_store,
                 icon = R.drawable.ic_more_menu_store,
                 onClick = ::onViewStoreButtonClick
+            ),
+            MenuUiButton(
+                type = COUPONS,
+                text = R.string.more_menu_button_coupons,
+                icon = R.drawable.ic_more_menu_coupons,
+                isEnabled = FeatureFlag.MORE_MENU_COUPONS.isEnabled(),
+                onClick = ::onCouponsButtonClick
             ),
             MenuUiButton(
                 type = PRODUCT_REVIEWS,
@@ -110,6 +119,11 @@ class MoreMenuViewModel @Inject constructor(
         triggerEvent(MoreMenuEvent.ViewStoreEvent(selectedSite.get().url))
     }
 
+    private fun onCouponsButtonClick() {
+        trackMoreMenuOptionSelected(VALUE_MORE_MENU_COUPONS)
+        triggerEvent(MoreMenuEvent.ViewCouponsEvent)
+    }
+
     private fun onReviewsButtonClick() {
         trackMoreMenuOptionSelected(VALUE_MORE_MENU_REVIEWS)
         triggerEvent(MoreMenuEvent.ViewReviewsEvent)
@@ -141,5 +155,6 @@ class MoreMenuViewModel @Inject constructor(
         data class ViewStoreEvent(val url: String) : MoreMenuEvent()
         object ViewReviewsEvent : MoreMenuEvent()
         object ViewInboxEvent : MoreMenuEvent()
+        object ViewCouponsEvent : MoreMenuEvent()
     }
 }

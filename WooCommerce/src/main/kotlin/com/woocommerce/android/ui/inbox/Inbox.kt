@@ -4,6 +4,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -18,13 +20,16 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.compose.animations.skeletonAnimationBrush
+import com.woocommerce.android.ui.compose.animations.skeletonAnimationBrush
+import com.woocommerce.android.ui.inbox.InboxViewModel.InboxNoteActionUi
 import com.woocommerce.android.ui.inbox.InboxViewModel.InboxNoteUi
 import com.woocommerce.android.ui.inbox.InboxViewModel.InboxState
 
@@ -76,6 +81,7 @@ fun InboxEmptyCase() {
 @Composable
 fun InboxNotes(notes: List<InboxNoteUi>) {
     LazyColumn(
+        Modifier.padding(top = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         itemsIndexed(notes) { index, note ->
@@ -94,7 +100,7 @@ fun InboxNoteRow(note: InboxNoteUi) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
@@ -104,32 +110,38 @@ fun InboxNoteRow(note: InboxNoteUi) {
         )
         Text(
             text = note.title,
+            fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.subtitle1
         )
         Text(
             text = note.description,
             style = MaterialTheme.typography.body2
         )
-        Row(modifier = Modifier.fillMaxWidth()) {
-            TextButton(
-                onClick = { note.onCallToActionClick(note.id) }
-            ) {
-                Text(
-                    text = note.callToActionText.uppercase(),
-                    color = colorResource(id = R.color.color_secondary)
-                )
-            }
+        InboxNoteActionsRow(note.actions)
+    }
+}
 
-            TextButton(
-                onClick = { note.onDismissNote(note.id) },
-                Modifier.padding(start = 16.dp)
-            ) {
-                Text(
-                    text = note.dismissText.uppercase(),
-                    color = colorResource(id = R.color.color_surface_variant)
-                )
-            }
+@Composable
+private fun InboxNoteActionsRow(actions: List<InboxNoteActionUi>) {
+    LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+        items(actions) { action ->
+            InboxNoteAction(inboxAction = action)
         }
+    }
+}
+
+@Composable
+fun InboxNoteAction(inboxAction: InboxNoteActionUi) {
+    TextButton(
+        onClick = { inboxAction.onClick(inboxAction.url) },
+    ) {
+        Text(
+            text = inboxAction.label.uppercase(),
+            color = colorResource(
+                id = if (inboxAction.primary) R.color.color_secondary
+                else R.color.color_surface_variant
+            )
+        )
     }
 }
 
@@ -237,28 +249,54 @@ class SampleInboxProvider : PreviewParameterProvider<InboxState> {
             isLoading = false,
             notes = listOf(
                 InboxNoteUi(
-                    id = "1",
+                    id = 1,
                     title = "Install the Facebook free extension",
-                    description = "Now that your store is set up, you’re ready to begin marketing it. " +
-                        "Head over to the WooCommerce marketing panel to get started.",
+                    description = buildAnnotatedString {
+                        "Now that your store is set up, you’re ready to begin marketing it. " +
+                            "Head over to the WooCommerce marketing panel to get started."
+                    },
                     updatedTime = "5h ago",
-                    callToActionText = "Learn more",
-                    onCallToActionClick = {},
-                    dismissText = "Dismiss",
-                    onDismissNote = {},
-                    isRead = false
+                    actions = listOf(
+                        InboxNoteActionUi(
+                            id = 3,
+                            label = "Open",
+                            primary = true,
+                            onClick = {},
+                            url = ""
+                        ),
+                        InboxNoteActionUi(
+                            id = 4,
+                            label = "Dismiss",
+                            primary = true,
+                            onClick = {},
+                            url = ""
+                        )
+                    )
                 ),
                 InboxNoteUi(
-                    id = "2",
+                    id = 2,
                     title = "Connect with your audience",
-                    description = "Grow your customer base and increase your sales with marketing tools " +
-                        "built for WooCommerce.",
+                    description = buildAnnotatedString {
+                        "Grow your customer base and increase your sales with marketing tools " +
+                            "built for WooCommerce."
+                    },
                     updatedTime = "22 minutes ago",
-                    callToActionText = "Learn more",
-                    onCallToActionClick = {},
-                    dismissText = "Dismiss",
-                    onDismissNote = {},
-                    isRead = false
+                    actions = listOf(
+                        InboxNoteActionUi(
+                            id = 3,
+                            label = "Open",
+                            primary = true,
+                            onClick = {},
+                            url = ""
+                        ),
+                        InboxNoteActionUi(
+                            id = 4,
+                            label = "Dismiss",
+                            primary = true,
+                            onClick = {},
+                            url = ""
+                        )
+                    )
                 )
             )
         )

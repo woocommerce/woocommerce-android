@@ -24,9 +24,10 @@ import org.junit.Test
 import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType.GENERIC_ERROR
+import org.wordpress.android.fluxc.store.WCProductStore.OnVariationChanged
 import java.time.LocalDateTime
 import java.time.ZoneOffset
-import java.util.*
+import java.util.Date
 
 class VariationDetailViewModelTest : BaseUnitTest() {
     companion object {
@@ -56,8 +57,10 @@ class VariationDetailViewModelTest : BaseUnitTest() {
         on { getParameters(any(), any<SavedStateHandle>()) } doReturn (siteParams)
     }
     private val variationRepository: VariationDetailRepository = mock {
-        on { getVariation(any(), any()) } doReturn TEST_VARIATION
-        onBlocking { fetchVariation(any(), any()) } doReturn TEST_VARIATION
+        onBlocking { getVariation(any(), any()) } doReturn TEST_VARIATION
+        onBlocking { fetchVariation(any(), any()) } doAnswer {
+            OnVariationChanged(it.arguments[0] as Long, it.arguments[1] as Long)
+        }
     }
 
     private val resourceProvider: ResourceProvider = mock {

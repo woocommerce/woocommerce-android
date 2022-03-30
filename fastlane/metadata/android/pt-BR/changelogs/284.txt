@@ -1,4 +1,0 @@
-8.6:
-Esta versão contém uma funcionalidade útil para comerciantes que desejam oferecer uma transação financeira rápida que chamamos de pagamentos simples. Receba pagamentos com cartão de crédito físico ou envie ao cliente um link para pagamento no seu site!
-
-Você verá também que alteramos um pouco as guias e incluímos a guia “Mais”. As configurações da loja e outras opções foram movidas para lá enquanto preparamos mais funcionalidades!

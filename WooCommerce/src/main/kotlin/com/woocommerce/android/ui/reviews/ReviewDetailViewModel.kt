@@ -6,9 +6,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.ProductReview
-import com.woocommerce.android.model.RequestResult.ERROR
-import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
-import com.woocommerce.android.model.RequestResult.SUCCESS
+import com.woocommerce.android.model.RequestResult.*
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.NavigateBackFromNotification
 import com.woocommerce.android.ui.reviews.domain.MarkReviewAsSeen
@@ -20,7 +18,6 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,7 +25,8 @@ class ReviewDetailViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val networkStatus: NetworkStatus,
     private val repository: ReviewDetailRepository,
-    private val markReviewAsSeen: MarkReviewAsSeen
+    private val markReviewAsSeen: MarkReviewAsSeen,
+    private val reviewModerationHandler: ReviewModerationHandler
 ) : ScopedViewModel(savedState) {
     private var remoteReviewId = 0L
 
@@ -45,13 +43,7 @@ class ReviewDetailViewModel @Inject constructor(
     fun moderateReview(newStatus: ProductReviewStatus) {
         if (networkStatus.isConnected()) {
             viewState.productReview?.let { review ->
-                // post an event to tell the notification list to moderate this
-                // review, then close the fragment
-                val event = OnRequestModerateReviewEvent(
-                    ProductReviewModerationRequest(review, newStatus)
-                )
-                EventBus.getDefault().post(event)
-
+                reviewModerationHandler.postModerationRequest(review, newStatus)
                 // Close the detail view
                 triggerEvent(Exit)
             }

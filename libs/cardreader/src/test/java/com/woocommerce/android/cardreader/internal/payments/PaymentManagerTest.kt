@@ -164,27 +164,6 @@ class PaymentManagerTest {
     }
 
     @Test
-    fun `given customer id returns, when creating payment finishes, then payment info enriched`() =
-        runBlockingTest {
-            whenever(createPaymentAction.createPaymentIntent(anyOrNull()))
-                .thenReturn(flow { emit(CreatePaymentStatus.Success(mock())) })
-            val customerId = "customerId"
-            whenever(cardReaderStore.fetchCustomerIdByOrderId(any()))
-                .thenReturn(customerId)
-
-            val result = withTimeoutOrNull(TIMEOUT) {
-                manager
-                    .acceptPayment(createPaymentInfo())
-                    .toList()
-            }
-
-            assertThat(result).isNotNull // verify the flow did not timeout
-            val paymentInfoCaptor = argumentCaptor<PaymentInfo>()
-            verify(createPaymentAction).createPaymentIntent(paymentInfoCaptor.capture())
-            assertThat(paymentInfoCaptor.firstValue.customerId).isEqualTo(customerId)
-        }
-
-    @Test
     fun `given status not REQUIRES_PAYMENT_METHOD, when creating payment finishes, then flow terminates`() =
         runBlockingTest {
             whenever(createPaymentAction.createPaymentIntent(anyOrNull()))
@@ -615,7 +594,6 @@ class PaymentManagerTest {
         customerName: String? = DUMMY_CUSTOMER_NAME,
         storeName: String? = DUMMY_STORE_NAME,
         siteUrl: String? = DUMMY_SITE_URL,
-        customerId: String? = null,
         orderKey: String? = null,
         statementDescriptor: String? = null,
         countryCode: String = "US"
@@ -629,7 +607,6 @@ class PaymentManagerTest {
             customerName = customerName,
             storeName = storeName,
             siteUrl = siteUrl,
-            customerId = customerId,
             orderKey = orderKey,
             statementDescriptor = statementDescriptor,
             countryCode = countryCode,

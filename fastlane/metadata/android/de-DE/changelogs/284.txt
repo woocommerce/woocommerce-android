@@ -1,4 +1,0 @@
-8.6:
-Diese Version beinhaltet eine hilfreiche Funktion für Händler, die schnelle Geldtransaktionen für Einfaches Bezahlen erfassen möchten. Du kannst ganz einfach persönliche Kreditkartenzahlungen annehmen oder deinem Kunden einen Zahlungslink zu deiner Website senden!
-
-Außerdem wirst du sehen, dass wir die Tabs ein wenig geändert und den Tab „Mehr“ hinzugefügt haben. Hier findest du ab sofort die Shop-Einstellungen und ein paar weitere Funktionen!

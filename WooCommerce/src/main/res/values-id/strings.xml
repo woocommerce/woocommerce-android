@@ -1,11 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-03-03 22:41:17+0000
+Translation-Revision-Date: 2022-03-09 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="dismiss_inbox_note">Tutup</string>
+    <string name="login_error_xml_rpc_auth_error_communicating">Ada kendala saat berkomunikasi dengan situs. Kode error HTTP 401 dikembalikan.</string>
+    <string name="login_error_xml_rpc_cannot_read_site_auth_required">Panggilan XML-RPC tampaknya diblok di situs ini (kode error 401). Jika upaya login gagal, ketuk ikon bantuan untuk melihat FAQ.</string>
+    <string name="login_error_xml_rpc_cannot_read_site">Tidak dapat membaca situs WordPress dalam URL tersebut. Ketuk ikon bantuan untuk melihat FAQ.</string>
+    <string name="login_error_xml_rpc_services_disabled">Layanan XML-RPC tidak tersedia di situs ini.</string>
+    <string name="a8c_email_message">Harap gunakan email non-Automattic untuk mengirimkan tiket dukungan</string>
+    <string name="card_reader_onboarding_stripe_account_in_unsupported_country">Kami tidak mendukung akun Stripe yang terdaftar di %1$s</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">Kami tidak mendukung WooCommerce Payments di %1$s</string>
+    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Kami tidak mendukung Stripe di %1$s</string>
+    <string name="card_reader_connect_scanning_hint">Tekan tombol daya di pembaca Anda</string>
+    <string name="card_reader_payment_reader_receipt_sent">Tanda terima dikirimkan ke &lt;strong&gt;%s&lt;/strong&gt;</string>
+    <string name="order_creation_fee_percentage_toggle_text">Biaya persentase</string>
+    <string name="order_creation_fee_percentage_hint">Persentase (%)</string>
+    <string name="order_creation_fee_amount_hint">Jumlah ($)</string>
+    <string name="order_creation_add_fee_removal_hint">Hapus biaya dari pesanan</string>
+    <string name="order_creation_remove_shipping">Hapus pengiriman dari pesanan</string>
+    <string name="order_creation_edit_shipping">Pengiriman</string>
+    <string name="order_creation_add_shipping">Tambahkan cara pengiriman</string>
+    <string name="order_creation_shipping_title_add">Tambahkan Pengiriman</string>
+    <string name="order_creation_shipping_name">Nama</string>
+    <string name="order_creation_shipping_amount">Jumlah</string>
+    <string name="order_creation_payment_fee">Biaya</string>
+    <string name="order_creation_customer_details">Detail pelanggan</string>
+    <string name="order_creation_add_fee">Tambahkan biaya</string>
+    <string name="order_creation_customer_note_edit_content_description">Sunting catatan pelanggan</string>
+    <string name="order_creation_customer_edit_content_description">Sunting detail pelanggan</string>
+    <string name="order_creation_status_edit_content_description">Sunting status pesanan</string>
+    <string name="simple_payments_update_error">Tidak dapat memperbarui pesanan pembayaran simpel</string>
+    <string name="simple_payments_creation_error">Tidak dapat membuat pesanan pembayaran simpel</string>
+    <string name="more_menu_avatar">Foto profil pengguna</string>
+    <string name="more_menu_button_reviews">Ulasan</string>
+    <string name="more_menu_button_store">Lihat Toko</string>
+    <string name="more_menu_button_inbox">Kotak Masuk</string>
+    <string name="more_menu_button_analytics">Analytics</string>
+    <string name="more_menu_button_payments">Pembayaran</string>
+    <string name="more_menu_button_woo_admin">Admin WooCommerce</string>
+    <string name="more_menu">Menu</string>
     <string name="card_reader_onboarding_both_plugins_activated_refresh_button">Segarkan setelah memperbarui</string>
     <string name="card_reader_onboarding_both_plugins_activated_open_store_admin_label">Kelola Plugin</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_two">Pembayaran WooCommerce</string>
@@ -88,10 +125,9 @@ Language: id
     <string name="order_creation_new_customer_add_different_shipping_address">Tambahkan alamat pengiriman lain</string>
     <string name="order_creation_product_instock">Tersedia</string>
     <string name="order_creation_product_stock_quantity">%s tersedia</string>
-    <string name="order_creation_customer_details">Pelanggan baru</string>
     <string name="order_creation_add_products">Tambahkan Produk</string>
     <string name="order_creation_products">Produk</string>
-    <string name="order_creation_add_customer">Tambahkan pelanggan</string>
+    <string name="order_creation_add_customer">Tambahkan Detail Pelanggan</string>
     <string name="order_creation_customer">Pelanggan</string>
     <string name="simple_payments_cash_dlg_button">Tandai sebagai dibayar</string>
     <string name="simple_payments_cash_dlg_message">Pesanan akan dibuat dan ditandai sebagai dibayar jika Anda telah menerima pembayaran tanpa melalui WooCommerce</string>
@@ -147,7 +183,6 @@ Language: id
     <string name="date_timeframe_last_week">Minggu Terakhir</string>
     <string name="settings_enable_order_creation_teaser_message">Coba buat pesanan dengan detail lengkap sembari kami bersiap untuk meluncurkan</string>
     <string name="settings_enable_order_creation_teaser_title">Pembuatan Pesanan</string>
-    <string name="settings_enable_simple_payments_teaser_title">Simple payments</string>
     <string name="beta_features_order_creation">Pembuatan pesanan</string>
     <string name="beta_features_simple_payments">Simple payments</string>
     <string name="beta_features_add_ons">Lihat Add-on</string>
@@ -166,7 +201,6 @@ Language: id
     <string name="orderlist_bottom_sheet_create_order_description">Buat pesanan manual baru</string>
     <string name="orderlist_bottom_sheet_create_order_action">Buat pesanan</string>
     <string name="orderlist_create_order_button_description">Buat pesanan</string>
-    <string name="simple_payments_creation_error">Tidak dapat membuat pesanan</string>
     <string name="simple_payments_enter_amount">Masukkan jumlah</string>
     <string name="simple_payments_dialog_title">Terima pembayaran</string>
     <string name="orderlist_simple_payments_menu">Simple payment</string>
@@ -205,7 +239,6 @@ Language: id
     <string name="orderfilters_default_filter_option">Semua</string>
     <string name="orderfilters_filter_card_title_filtered_orders">Pesanan disaring</string>
     <string name="orderfilters_filter_card_title_all_orders">Semua Pesanan</string>
-    <string name="orderlist_simple_payments_wip_message_disabled">Kami berupaya untuk lebih memudahkan Anda menerima pembayaran dari perangkat! Aktifkan di Pengaturan &gt; Fitur beta.</string>
     <string name="orderlist_simple_payments_wip_message_enabled">Kami berupaya untuk lebih memudahkan Anda menerima pembayaran dari perangkat! Untuk sekarang, ketuk tombol \"+\" dan Anda akan dapat membuat pesanan dengan jumlah yang diinginkan.</string>
     <string name="jetpack_benefits_modal_dismiss">Lain Kali</string>
     <string name="jetpack_benefits_modal_install_jetpack">Menginstal Jetpack</string>
@@ -217,7 +250,6 @@ Language: id
     <string name="jetpack_benefits_modal_push_notifications_title">Notifikasi Otomatis</string>
     <string name="jetpack_benefits_modal_subtitle">Instal plugin Jetpack gratis untuk mendapatkan pengalaman seluler terbaik.</string>
     <string name="jetpack_benefits_modal_title">Dapatkan hasil maksimal dari toko Anda</string>
-    <string name="settings_enable_simple_payments_teaser_message">Coba buat pesanan dengan informasi minimal sembari kami bersiap untuk meluncurkan</string>
     <string name="order_detail_use_as_shipping_address">Gunakan sebagai Alamat Pengiriman</string>
     <string name="order_detail_use_as_billing_address">Gunakan sebagai Alamat Penagihan</string>
     <string name="orderfilters_filters_count_title">Penyaring (%d)</string>
@@ -542,7 +574,6 @@ Language: id
     <string name="card_reader_connect_connecting_header">Menyambungkan ke pembaca</string>
     <string name="card_reader_connect_to_reader">Sambungkan ke pembaca</string>
     <string name="card_reader_connect_reader_found_header">Anda ingin menyambungkan pembaca %s?</string>
-    <string name="card_reader_connect_scanning_hint">Tekan tombol daya pembaca sampai lampu biru berkedip</string>
     <string name="card_reader_connect_scanning_header">Memindai pembaca</string>
     <string name="shipping_label_items_count_placeholder">Jumlah item</string>
     <string name="orderdetail_products_recreate_shipping_label_menu">Buat label pengiriman baru</string>

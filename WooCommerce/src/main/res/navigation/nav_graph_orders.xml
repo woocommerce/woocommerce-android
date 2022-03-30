@@ -488,8 +488,6 @@
         android:id="@+id/cardReaderOnboardingFragment"
         android:name="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingFragment"
         android:label="CardReaderOnboardingFragment" >
-        <!-- This action is not used by the app during runtime
-             it's just needed to fix build issues -->
         <action
             android:id="@+id/action_cardReaderOnboardingFragment_to_cardReaderHubFragment"
             app:destination="@id/cardReaderHubFragment" >

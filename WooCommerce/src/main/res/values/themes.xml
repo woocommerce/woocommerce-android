@@ -42,7 +42,7 @@
         <item name="android:textColorLink">@color/color_secondary</item>
 
         <item name="minTouchTargetSize">@dimen/min_tap_target</item>
-        <item name="actionMenuTextColor">?attr/colorSecondary</item>
+        <item name="actionMenuTextColor">@color/action_menu_fg_selector</item>
 
         <!-- Shapes -->
         <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.Theme.Woo.SmallComponent</item>

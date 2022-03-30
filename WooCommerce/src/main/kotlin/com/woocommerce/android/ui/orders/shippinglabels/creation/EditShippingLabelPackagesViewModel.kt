@@ -17,9 +17,7 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -112,8 +110,8 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         suspend fun fetchVariationIfNeeded(productId: Long, variationId: Long): Boolean {
             if (!fetchProductIfNeeded(productId)) return false
             if (variationDetailRepository.getVariation(productId, variationId) == null) {
-                return variationDetailRepository.fetchVariation(productId, variationId) != null ||
-                    variationDetailRepository.lastFetchVariationErrorType == ProductErrorType.INVALID_PRODUCT_ID
+                val response = variationDetailRepository.fetchVariation(productId, variationId)
+                return !response.isError || response.error.type == ProductErrorType.INVALID_PRODUCT_ID
             }
             return true
         }
@@ -317,7 +315,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
             }
     }
 
-    private fun Order.Item.toShippingItem(): ShippingLabelPackage.Item {
+    private suspend fun Order.Item.toShippingItem(): ShippingLabelPackage.Item {
         val weight = if (isVariation) {
             variationDetailRepository.getVariation(productId, variationId)!!.weight
         } else {

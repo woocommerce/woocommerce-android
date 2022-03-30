@@ -6,8 +6,11 @@ import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.model.Order.Item
 import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.fluxc.model.OrderEntity
+import org.wordpress.android.fluxc.model.WCMetaData
 import org.wordpress.android.fluxc.model.order.OrderAddress
 import org.wordpress.android.fluxc.model.order.TaxLine
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderMappingConst.CHARGE_ID_KEY
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderMappingConst.SHIPPING_PHONE_KEY
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.util.*
@@ -18,7 +21,7 @@ import org.wordpress.android.fluxc.model.order.ShippingLine as WCShippingLine
 
 class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
     fun toAppModel(databaseEntity: OrderEntity): Order {
-        @Suppress("DEPRECATION_ERROR")
+        val metaDataList = databaseEntity.getMetaDataList()
         return Order(
             id = databaseEntity.orderId,
             number = databaseEntity.number,
@@ -50,8 +53,21 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
             shippingLines = databaseEntity.getShippingLineList().mapShippingLines(),
             feesLines = databaseEntity.getFeeLineList().mapFeesLines(),
             taxLines = databaseEntity.getTaxLineList().mapTaxLines(),
-            metaData = databaseEntity.getMetaDataList().mapNotNull { it.toAppModel() }
+            chargeId = metaDataList.getOrNull(CHARGE_ID_KEY),
+            shippingPhone = metaDataList.getOrEmpty(SHIPPING_PHONE_KEY),
         )
+    }
+
+    private fun List<WCMetaData>.getOrNull(key: String): String? = firstOrNull {
+        it.key == key
+    }.let {
+        it?.value?.toString()
+    }
+
+    private fun List<WCMetaData>.getOrEmpty(key: String): String = find {
+        it.key == key
+    }.let {
+        it?.value?.toString().orEmpty()
     }
 
     private fun List<WCFeeLine>.mapFeesLines(): List<Order.FeeLine> = map {
@@ -66,6 +82,7 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
     private fun List<TaxLine>.mapTaxLines(): List<Order.TaxLine> = map {
         Order.TaxLine(
             id = it.id!!,
+            label = it.label!!,
             compound = it.compound ?: false,
             taxTotal = it.taxTotal ?: StringUtils.EMPTY,
             ratePercent = it.ratePercent ?: 0f

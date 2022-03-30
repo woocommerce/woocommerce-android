@@ -430,7 +430,7 @@ class CreateShippingLabelViewModel @Inject constructor(
     }
 
     private fun getShippingAddress(order: Order): Address {
-        val phoneNumber = order.metaData.firstOrNull { it.key == "_shipping_phone" }?.value.orEmpty()
+        val phoneNumber = order.shippingPhone
         return order.shippingAddress.copy(phone = phoneNumber)
     }
 

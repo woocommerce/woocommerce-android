@@ -160,11 +160,11 @@
             android:id="@+id/action_moreMenu_to_settingsActivity"
             app:destination="@id/appSettingsActivity" />
         <action
-            android:id="@+id/action_moreMenuFragment_to_reviewDetailFragment"
-            app:destination="@id/reviewDetailFragment" />
-        <action
             android:id="@+id/action_moreMenuFragment_to_inboxFragment"
             app:destination="@id/inboxFragment" />
+        <action
+            android:id="@+id/action_moreMenu_to_couponListFragment"
+            app:destination="@id/couponListFragment" />
     </fragment>
     <fragment
         android:id="@+id/feedbackSurveyFragment"
@@ -211,23 +211,7 @@
     </action>
     <action
         android:id="@+id/action_global_reviewDetailFragment"
-        app:destination="@id/reviewDetailFragment">
-        <argument
-            android:name="remoteReviewId"
-            android:defaultValue="0L"
-            app:argType="long" />
-        <argument
-            android:name="tempStatus"
-            android:defaultValue="null"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
-            android:name="launchedFromNotification"
-            app:argType="boolean" />
-        <argument
-            android:name="enableModeration"
-            app:argType="boolean" />
-    </action>
+        app:destination="@id/reviewDetailFragment" />
     <fragment
         android:id="@+id/reviewDetailFragment"
         android:name="com.woocommerce.android.ui.reviews.ReviewDetailFragment"
@@ -243,9 +227,6 @@
             app:nullable="true" />
         <argument
             android:name="launchedFromNotification"
-            app:argType="boolean" />
-        <argument
-            android:name="enableModeration"
             app:argType="boolean" />
         <action
             android:id="@+id/action_reviewDetailFromNotification_to_reviewListFragment"
@@ -377,5 +358,9 @@
         android:name="com.woocommerce.android.ui.inbox.InboxFragment"
         android:label="InboxFragment"
         tools:layout="@layout/fragment_inbox" />
+    <fragment
+        android:id="@+id/couponListFragment"
+        android:name="com.woocommerce.android.ui.coupons.CouponListFragment"
+        android:label="CouponListFragment" />
 
 </navigation>

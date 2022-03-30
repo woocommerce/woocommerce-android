@@ -26,7 +26,7 @@
             android:layout_height="@dimen/image_minor_100"
             android:layout_gravity="center"
             android:background="@drawable/picture_corners"
-            android:contentDescription="@string/product_image_content_description"
+            android:importantForAccessibility="no"
             android:scaleType="centerCrop"
             tools:src="@drawable/ic_product" />
     </FrameLayout>

@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -14,6 +13,7 @@ import com.woocommerce.android.databinding.FragmentMoreMenuBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.*
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -51,7 +51,7 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
             // Dispose of the Composition when the view's LifecycleOwner is destroyed
             setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                MaterialTheme {
+                WooThemeWithBackground {
                     MoreMenu(viewModel)
                 }
             }
@@ -78,6 +78,7 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
                 is ViewStoreEvent -> openInBrowser(event.url)
                 is ViewReviewsEvent -> navigateToReviews()
                 is ViewInboxEvent -> navigateToInbox()
+                is ViewCouponsEvent -> navigateToCoupons()
             }
         }
     }
@@ -105,6 +106,12 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
     private fun navigateToInbox() {
         findNavController().navigateSafely(
             MoreMenuFragmentDirections.actionMoreMenuFragmentToInboxFragment()
+        )
+    }
+
+    private fun navigateToCoupons() {
+        findNavController().navigateSafely(
+            MoreMenuFragmentDirections.actionMoreMenuToCouponListFragment()
         )
     }
 }

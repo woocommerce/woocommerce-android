@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.main
 
 import android.content.Context
 import android.os.Bundle
-import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.MenuItem
 import android.view.View
@@ -72,23 +71,6 @@ class MainBottomNavigationView @JvmOverloads constructor(
                     }
                 }
             })
-    }
-
-    /**
-     * HACK alert! The bottom nav's presenter stores the badges in its saved state and recreates them
-     * in onRestoreInstanceState, which should be fine but instead it ends up creating duplicates
-     * of our badges. To work around this we remove the badges before state is saved and recreate
-     * them ourselves when state is restored.
-     */
-    override fun onSaveInstanceState(): Parcelable {
-        removeBadge(R.id.orders)
-        removeBadge(R.id.reviews)
-        return super.onSaveInstanceState()
-    }
-
-    override fun onRestoreInstanceState(state: Parcelable?) {
-        super.onRestoreInstanceState(state)
-        createBadges()
     }
 
     private fun createBadges() {

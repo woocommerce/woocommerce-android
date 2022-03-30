@@ -24,6 +24,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:accessibilityHeading="true"
                 android:text="@string/order_creation_payment"
                 android:textAppearance="?attr/textAppearanceHeadline6" />
 

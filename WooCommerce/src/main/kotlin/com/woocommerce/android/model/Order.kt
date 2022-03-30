@@ -44,7 +44,8 @@ data class Order(
     val shippingLines: List<ShippingLine>,
     val feesLines: List<FeeLine>,
     val taxLines: List<TaxLine>,
-    val metaData: List<MetaData<String>>
+    val chargeId: String?,
+    val shippingPhone: String,
 ) : Parcelable {
     @IgnoredOnParcel
     val isOrderPaid = datePaid != null
@@ -55,10 +56,6 @@ data class Order(
 
     @IgnoredOnParcel
     val isRefundAvailable = refundTotal < total && availableRefundQuantity > 0
-
-    @IgnoredOnParcel
-    val chargeId
-        get() = metaData.firstOrNull { it.key == "_charge_id" }?.value
 
     @Parcelize
     data class ShippingMethod(
@@ -111,7 +108,7 @@ data class Order(
          */
         val attributesDescription
             get() = attributesList.filter {
-                it.value.isNotEmpty() && it.key.isNotEmpty() && it.isNotInternalAttributeData
+                it.value.isNotEmpty() && it.key.isNotEmpty()
             }.joinToString {
                 it.value.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
             }
@@ -163,11 +160,6 @@ data class Order(
             val asAddonPrice = keyAsAddonRegexGroup
                 ?.last()
                 .orEmpty()
-
-            // Don't include empty or the "_reduced_stock" key
-            // skipping "_reduced_stock" is a temporary workaround until "type" is added to the response.
-            val isNotInternalAttributeData
-                get() = key.first().toString() != "_"
         }
     }
 
@@ -186,6 +178,7 @@ data class Order(
     @Parcelize
     data class TaxLine(
         val id: Long,
+        val label: String,
         val compound: Boolean,
         val taxTotal: String,
         val ratePercent: Float
@@ -315,9 +308,10 @@ data class Order(
                 shippingMethods = emptyList(),
                 items = emptyList(),
                 shippingLines = emptyList(),
-                metaData = emptyList(),
+                chargeId = "",
                 feesLines = emptyList(),
-                taxLines = emptyList()
+                taxLines = emptyList(),
+                shippingPhone = "",
             )
         }
     }

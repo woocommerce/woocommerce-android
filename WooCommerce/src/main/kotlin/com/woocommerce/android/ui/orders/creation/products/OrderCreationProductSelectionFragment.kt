@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.orders.creation.products.OrderCreationProductS
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.ProductListAdapter
 import com.woocommerce.android.widgets.SkeletonView
+import com.woocommerce.android.widgets.WCEmptyView
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 
@@ -99,6 +100,9 @@ class OrderCreationProductSelectionFragment :
         new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) {
             showSkeleton(binding, it)
         }
+        new.isEmptyViewShowing?.takeIfNotEqualTo(old?.isEmptyViewShowing) {
+            showEmptyView(binding, it)
+        }
     }
 
     private fun showSkeleton(
@@ -109,6 +113,20 @@ class OrderCreationProductSelectionFragment :
             skeletonView.show(binding.productsList, R.layout.skeleton_product_list, delayed = true)
         } else {
             skeletonView.hide()
+        }
+    }
+
+    private fun showEmptyView(
+        binding: FragmentOrderCreationProductSelectionBinding,
+        show: Boolean
+    ) {
+        if (show) {
+            binding.emptyView.show(
+                WCEmptyView.EmptyViewType.SEARCH_RESULTS,
+                searchQueryOrFilter = productListViewModel.currentQuery
+            )
+        } else {
+            binding.emptyView.hide()
         }
     }
 
@@ -175,6 +193,7 @@ class OrderCreationProductSelectionFragment :
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
+        newText?.let { productListViewModel.searchProductList(it, delayed = true) }
         return true
     }
 

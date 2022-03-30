@@ -91,6 +91,7 @@
     <string name="more_menu_button_analytics">Analytics</string>
     <string name="more_menu_button_inbox">Inbox</string>
     <string name="more_menu_button_store">View Store</string>
+    <string name="more_menu_button_coupons">Coupons</string>
     <string name="more_menu_button_reviews">Reviews</string>
     <string name="more_menu_avatar">User profile picture</string>
     <string name="version_with_name_param">Version %s</string>
@@ -131,12 +132,14 @@
     <string name="generic_string" translatable="false">%s</string>
     <string name="error_required_field">Required field</string>
     <string name="analytics">Analytics</string>
-    <string name="minus">Minus</string>
-    <string name="plus">Plus</string>
+    <string name="minus_one">Minus one</string>
+    <string name="plus_one">Plus one</string>
     <string name="card">Card</string>
     <string name="cash">Cash</string>
     <string name="create">Create</string>
     <string name="exclusive_or">or</string>
+    <string name="count">Count: %s</string>
+    <string name="no_sku">No SKU</string>
 
     <!--
         Date/Time Labels
@@ -255,13 +258,6 @@
     <string name="dashboard_stats_error_content_description">Error image</string>
     <string name="dashboard_stats_todays_stats">Today\'s Stats</string>
 
-    <string name="dashboard_stats_updated_now">Updated moments ago</string>
-    <string name="dashboard_stats_updated_minutes">Updated %d minutes ago</string>
-    <string name="dashboard_stats_updated_one_hour">Updated 1 hour ago</string>
-    <string name="dashboard_stats_updated_hours">Updated %d hours ago</string>
-    <string name="dashboard_stats_updated_one_day">Updated 1 day ago</string>
-    <string name="dashboard_stats_updated_date_time">Updated on %s</string>
-
     <string name="dashboard_top_performers_title">Top performers</string>
     <string name="dashboard_top_performers_items_sold">Items Sold</string>
     <string name="dashboard_top_performers_total_orders">Total orders: %s</string>
@@ -333,6 +329,10 @@
     <string name="simple_payments_cash_dlg_title">Mark as paid?</string>
     <string name="simple_payments_cash_dlg_message">This will create your order and mark it as paid if you received payment outside of WooCommerce</string>
     <string name="simple_payments_cash_dlg_button">Mark as paid</string>
+    <!--
+         Taxes
+    -->
+    <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
     <!--
          Order Creation
     -->
@@ -875,6 +875,7 @@
     <string name="orderstatus_cancelled">Cancelled</string>
     <string name="orderstatus_refunded">Refunded</string>
     <string name="orderstatus_contentDesc">Order status</string>
+    <string name="orderstatus_contentDesc_withStatus">Order status: %s</string>
     <!--
         Add Shipment Tracking Labels
     -->
@@ -1236,9 +1237,9 @@
     <string name="product_no_shipping_class">No shipping class</string>
     <string name="product_shipping_settings">Shipping settings</string>
     <string name="product_total_orders">Total orders</string>
-    <string name="product_ratings_count">\u2022  rated %d times</string>
-    <string name="product_ratings_count_one">\u2022  rated once</string>
-    <string name="product_ratings_count_zero">\u2022  no ratings</string>
+    <string name="product_ratings_count">\u2022  %d approved reviews</string>
+    <string name="product_ratings_count_one">\u2022  one approved review</string>
+    <string name="product_ratings_count_zero">\u2022  no approved reviews</string>
     <string name="product_reviews">Reviews</string>
     <string name="product_downloads">Downloads</string>
     <string name="product_downloadable_files">Downloadable files</string>
@@ -1853,8 +1854,25 @@
 
     <!-- Inbox -->
     <string name="dismiss_inbox_note">Dismiss</string>
+    <string name="inbox_note_recency_now">Moments ago</string>
+    <string name="inbox_note_recency_minutes">%d minutes ago</string>
+    <string name="inbox_note_recency_one_hour">An hour ago</string>
+    <string name="inbox_note_recency_hours">%d hours ago</string>
+    <string name="inbox_note_recency_one_day">A day ago</string>
+    <string name="inbox_note_recency_days">%d days ago</string>
+    <string name="inbox_note_recency_date_time">Created on %s</string>
     <string name="empty_inbox_title">Congrats, you’ve read everything!</string>
     <string name="empty_inbox_description">Come back soon for more tips and insights on growing your store</string>
+
+    <!-- coupons -->
+    <string name="coupons">Coupons</string>
+    <string name="coupon_list_item_label_active">Active</string>
+    <string name="coupon_list_item_label_expired">Expired</string>
+    <string name="coupon_list_item_label_off">Off</string>
+    <string name="coupon_list_item_label_all_products">All Products</string>
+    <string name="coupon_list_empty_heading">No coupons found</string>
+    <string name="coupon_list_wip_title">View and edit coupons</string>
+    <string name="coupon_list_wip_message_enabled">We’ve been working on making it possible to view and edit coupons from your device!</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>

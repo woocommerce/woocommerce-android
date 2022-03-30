@@ -1,0 +1,4 @@
+8.7:
+Did you know we’ve released a beta feature for creating orders? Head to the Menu tab, tap the settings icon, and scroll to beta features. We just added fees and shipping costs!
+
+We fixed a rare issue where sometimes the notes for an order appeared incorrectly. תודה ששיתפת אותנו!

@@ -58,7 +58,7 @@ class AddressViewModel @Inject constructor(
     private val _isDifferentShippingAddressChecked = MutableLiveData<Boolean>()
     val isDifferentShippingAddressChecked: LiveData<Boolean> = _isDifferentShippingAddressChecked
 
-    val shouldShowDoneButton = isAnyAddressEdited.combineWith(
+    val shouldEnableDoneButton = isAnyAddressEdited.combineWith(
         isDifferentShippingAddressChecked,
         viewStateData.liveData.map { it.addressSelectionStates[AddressType.SHIPPING]?.address }
     ) { isAnyAddressEdited, isDifferentShippingAddressChecked, shippingAddress ->
