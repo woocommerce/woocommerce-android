@@ -69,7 +69,7 @@ class InboxViewModel @Inject constructor(
             label = label,
             textColor = getActionTextColor(),
             url = url,
-            onClick = {} //TODO set action lambda
+            onClick = {} // TODO set action lambda
         )
 
     private fun InboxNoteAction.getActionTextColor() =
