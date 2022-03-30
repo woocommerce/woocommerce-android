@@ -66,6 +66,7 @@ class CardReaderPaymentViewModel
     private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
+    private val interacRefundableChecker: CardReaderInteracRefundableChecker,
     private val tracker: CardReaderTracker,
     private val currencyFormatter: CurrencyFormatter,
     private val errorMapper: CardReaderPaymentErrorMapper,
@@ -158,6 +159,10 @@ class CardReaderPaymentViewModel
                 delay(ARTIFICIAL_RETRY_DELAY)
             }
             fetchOrder()?.let { order ->
+                if (!interacRefundableChecker.isRefundable(order)) {
+                    exitWithSnackbar(R.string.card_reader_refund_order_refunded_refund_cancelled)
+                    return@launch
+                }
                 launch {
                     refundPaymentFlow(cardReaderManager, order)
                 }
