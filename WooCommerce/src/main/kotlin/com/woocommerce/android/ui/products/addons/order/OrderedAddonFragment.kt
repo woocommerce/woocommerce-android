@@ -31,10 +31,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
-    companion object {
-        val TAG: String = OrderedAddonFragment::class.java.simpleName
-    }
-
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     private val viewModel: OrderedAddonViewModel by viewModels()

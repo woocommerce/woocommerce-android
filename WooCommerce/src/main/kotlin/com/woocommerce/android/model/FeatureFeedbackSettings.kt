@@ -4,9 +4,12 @@ import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.UNANSWERED
 
 data class FeatureFeedbackSettings(
-    val featureFeedbackKey: FeatureFeedbackKey,
-    val state: FeedbackState = UNANSWERED
+    val feature: Feature,
+    val feedbackState: FeedbackState = UNANSWERED
 ) {
+    val key
+        get() = feature.toString()
+
     fun registerItself() = FeedbackPrefs.setFeatureFeedbackSettings(this)
 
     enum class FeedbackState {
@@ -22,13 +25,5 @@ data class FeatureFeedbackSettings(
         SIMPLE_PAYMENTS,
         SIMPLE_PAYMENTS_AND_ORDER_CREATION,
         COUPONS
-    }
-
-    data class FeatureFeedbackKey(
-        private val requestingView: String,
-        private val feature: Feature
-    ) {
-        val value
-            get() = requestingView + "_" + feature.toString()
     }
 }
