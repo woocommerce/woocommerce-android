@@ -30,8 +30,7 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.FeatureFeedbackSettings
-import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.SHIPPING_LABELS_M4
-import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
+import com.woocommerce.android.model.FeatureFeedbackSettings.*
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.UNANSWERED
@@ -75,6 +74,7 @@ import javax.inject.Inject
 class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderProductActionListener {
     companion object {
         val TAG: String = OrderDetailFragment::class.java.simpleName
+        val feedbackFeatureKey = FeatureFeedbackKey(TAG, Feature.SHIPPING_LABEL_M4)
     }
 
     private val viewModel: OrderDetailViewModel by viewModels()
@@ -99,7 +99,8 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         }
 
     private val feedbackState
-        get() = FeedbackPrefs.getFeatureFeedbackSettings(TAG)?.state ?: UNANSWERED
+        get() = FeedbackPrefs.getFeatureFeedbackSettings(feedbackFeatureKey)?.state
+            ?: UNANSWERED
 
     override fun onResume() {
         super.onResume()
@@ -516,8 +517,10 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     }
 
     private fun registerFeedbackSetting(state: FeedbackState) {
-        FeatureFeedbackSettings(SHIPPING_LABELS_M4.name, state)
-            .run { FeedbackPrefs.setFeatureFeedbackSettings(TAG, this) }
+        FeatureFeedbackSettings(
+            feedbackFeatureKey,
+            state
+        ).registerItself()
     }
 
     private fun displayUndoSnackbar(

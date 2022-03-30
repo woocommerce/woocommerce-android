@@ -8,6 +8,7 @@ import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.FeatureFeedbackSettings
+import com.woocommerce.android.model.FeatureFeedbackSettings.*
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
 import com.woocommerce.android.model.Order
@@ -37,6 +38,7 @@ class OrderedAddonViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
+        private val feedbackFeatureKey = FeatureFeedbackKey(TAG, Feature.PRODUCT_ADDONS)
     }
 
     val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
@@ -46,9 +48,9 @@ class OrderedAddonViewModel @Inject constructor(
     val orderedAddonsData: LiveData<List<Addon>> = _orderedAddons
 
     private val currentFeedbackSettings
-        get() = FeedbackPrefs.getFeatureFeedbackSettings(TAG)
-            ?: FeatureFeedbackSettings(OrderedAddonFragment.CURRENT_WIP_NOTICE_FEATURE.name)
-                .apply { registerItselfWith(TAG) }
+        get() = FeedbackPrefs.getFeatureFeedbackSettings(feedbackFeatureKey)
+            ?: FeatureFeedbackSettings(feedbackFeatureKey)
+                .apply { registerItself() }
 
     /**
      * Provides the currencyCode for views who requires display prices
@@ -77,9 +79,9 @@ class OrderedAddonViewModel @Inject constructor(
         trackFeedback(AnalyticsTracker.VALUE_FEEDBACK_GIVEN)
 
         FeatureFeedbackSettings(
-            OrderedAddonFragment.CURRENT_WIP_NOTICE_FEATURE.name,
+            feedbackFeatureKey,
             GIVEN
-        ).registerItselfWith(TAG)
+        ).registerItself()
 
         triggerEvent(ShowSurveyView)
     }
@@ -88,9 +90,9 @@ class OrderedAddonViewModel @Inject constructor(
         trackFeedback(AnalyticsTracker.VALUE_FEEDBACK_DISMISSED)
 
         FeatureFeedbackSettings(
-            OrderedAddonFragment.CURRENT_WIP_NOTICE_FEATURE.name,
+            feedbackFeatureKey,
             DISMISSED
-        ).registerItselfWith(TAG)
+        ).registerItself()
 
         viewState = viewState.copy(shouldDisplayFeedbackCard = false)
     }

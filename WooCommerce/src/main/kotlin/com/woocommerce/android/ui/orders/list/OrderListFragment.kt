@@ -24,8 +24,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentOrderListBinding
 import com.woocommerce.android.extensions.*
 import com.woocommerce.android.model.FeatureFeedbackSettings
-import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS_AND_ORDER_CREATION
-import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
+import com.woocommerce.android.model.FeatureFeedbackSettings.*
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -56,6 +55,7 @@ class OrderListFragment :
         const val STATE_KEY_IS_SEARCHING = "is_searching"
         private const val SEARCH_TYPING_DELAY_MS = 500L
         const val FILTER_CHANGE_NOTICE_KEY = "filters_changed_notice"
+        val feedbackFeatureKey = FeatureFeedbackKey(TAG, Feature.SIMPLE_PAYMENTS_AND_ORDER_CREATION)
     }
 
     @Inject internal lateinit var uiMessageResolver: UIMessageResolver
@@ -92,7 +92,8 @@ class OrderListFragment :
         get() = binding.orderListView.emptyView
 
     private val feedbackState
-        get() = FeedbackPrefs.getFeatureFeedbackSettings(TAG)?.state ?: FeedbackState.UNANSWERED
+        get() = FeedbackPrefs.getFeatureFeedbackSettings(feedbackFeatureKey)?.state
+            ?: FeedbackState.UNANSWERED
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -556,8 +557,8 @@ class OrderListFragment :
 
     private fun registerFeedbackSetting(state: FeedbackState) {
         FeatureFeedbackSettings(
-            SIMPLE_PAYMENTS_AND_ORDER_CREATION.name,
+            feedbackFeatureKey,
             state
-        ).registerItselfWith(TAG)
+        ).registerItself()
     }
 }

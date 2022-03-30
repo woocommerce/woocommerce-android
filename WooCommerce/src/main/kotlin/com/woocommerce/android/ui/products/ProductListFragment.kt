@@ -30,7 +30,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
-import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
+import com.woocommerce.android.model.FeatureFeedbackSettings.*
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.UNANSWERED
@@ -60,8 +60,8 @@ class ProductListFragment :
     OnActionExpandListener {
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
-        val CURRENT_WIP_NOTICE_FEATURE = FeatureFeedbackSettings.Feature.PRODUCTS_VARIATIONS
         val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"
+        val feedbackFeatureKey = FeatureFeedbackKey(TAG, Feature.PRODUCT_VARIATIONS)
     }
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
@@ -85,9 +85,8 @@ class ProductListFragment :
 
     private val feedbackState: FeedbackState
         get() =
-            FeedbackPrefs.getFeatureFeedbackSettings(TAG)
-                ?.takeIf { it.name == CURRENT_WIP_NOTICE_FEATURE.name }
-                ?.state ?: UNANSWERED
+            FeedbackPrefs.getFeatureFeedbackSettings(feedbackFeatureKey)?.state
+                ?: UNANSWERED
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -530,8 +529,10 @@ class ProductListFragment :
     }
 
     private fun registerFeedbackSetting(state: FeedbackState) {
-        FeatureFeedbackSettings(CURRENT_WIP_NOTICE_FEATURE.name, state)
-            .run { FeedbackPrefs.setFeatureFeedbackSettings(TAG, this) }
+        FeatureFeedbackSettings(
+            feedbackFeatureKey,
+            state
+        ).registerItself()
     }
 
     override fun shouldExpandToolbar(): Boolean {

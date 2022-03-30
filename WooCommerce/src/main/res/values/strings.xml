@@ -330,6 +330,10 @@
     <string name="simple_payments_cash_dlg_message">This will create your order and mark it as paid if you received payment outside of WooCommerce</string>
     <string name="simple_payments_cash_dlg_button">Mark as paid</string>
     <!--
+         Taxes
+    -->
+    <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
+    <!--
          Order Creation
     -->
     <string name="orderlist_create_order_button_description">Create order</string>
@@ -1233,9 +1237,9 @@
     <string name="product_no_shipping_class">No shipping class</string>
     <string name="product_shipping_settings">Shipping settings</string>
     <string name="product_total_orders">Total orders</string>
-    <string name="product_ratings_count">\u2022  rated %d times</string>
-    <string name="product_ratings_count_one">\u2022  rated once</string>
-    <string name="product_ratings_count_zero">\u2022  no ratings</string>
+    <string name="product_ratings_count">\u2022  %d approved reviews</string>
+    <string name="product_ratings_count_one">\u2022  one approved review</string>
+    <string name="product_ratings_count_zero">\u2022  no approved reviews</string>
     <string name="product_reviews">Reviews</string>
     <string name="product_downloads">Downloads</string>
     <string name="product_downloadable_files">Downloadable files</string>
