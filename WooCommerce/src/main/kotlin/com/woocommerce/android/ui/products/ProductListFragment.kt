@@ -31,6 +31,7 @@ import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.FeatureFeedbackSettings.*
+import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.PRODUCT_VARIATIONS
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.UNANSWERED
@@ -61,7 +62,6 @@ class ProductListFragment :
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
         val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"
-        val feedbackFeatureKey = FeatureFeedbackKey(TAG, Feature.PRODUCT_VARIATIONS)
     }
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
@@ -85,7 +85,7 @@ class ProductListFragment :
 
     private val feedbackState: FeedbackState
         get() =
-            FeedbackPrefs.getFeatureFeedbackSettings(feedbackFeatureKey)?.state
+            FeedbackPrefs.getFeatureFeedbackSettings(PRODUCT_VARIATIONS)?.feedbackState
                 ?: UNANSWERED
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -530,7 +530,7 @@ class ProductListFragment :
 
     private fun registerFeedbackSetting(state: FeedbackState) {
         FeatureFeedbackSettings(
-            feedbackFeatureKey,
+            PRODUCT_VARIATIONS,
             state
         ).registerItself()
     }

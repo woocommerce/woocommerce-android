@@ -17,7 +17,6 @@ import com.woocommerce.android.databinding.FragmentCouponListBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS
-import com.woocommerce.android.model.FeatureFeedbackSettings.FeatureFeedbackKey
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
@@ -27,13 +26,12 @@ import dagger.hilt.android.AndroidEntryPoint
 class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
     companion object {
         const val TAG: String = "CouponListFragment"
-        val feedbackFeatureKey = FeatureFeedbackKey(TAG, SIMPLE_PAYMENTS)
     }
 
     private var _binding: FragmentCouponListBinding? = null
     private val binding get() = _binding!!
     private val feedbackState
-        get() = FeedbackPrefs.getFeatureFeedbackSettings(feedbackFeatureKey)?.state
+        get() = FeedbackPrefs.getFeatureFeedbackSettings(SIMPLE_PAYMENTS)?.feedbackState
             ?: FeatureFeedbackSettings.FeedbackState.UNANSWERED
 
     private val viewModel: CouponListViewModel by viewModels()
@@ -110,7 +108,7 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
 
     private fun registerFeedbackSetting(state: FeatureFeedbackSettings.FeedbackState) {
         FeatureFeedbackSettings(
-            feedbackFeatureKey,
+            SIMPLE_PAYMENTS,
             state
         ).registerItself()
     }

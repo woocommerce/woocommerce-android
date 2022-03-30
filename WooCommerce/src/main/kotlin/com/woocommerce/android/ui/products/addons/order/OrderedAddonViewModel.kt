@@ -8,13 +8,12 @@ import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.FeatureFeedbackSettings
-import com.woocommerce.android.model.FeatureFeedbackSettings.*
+import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.PRODUCT_ADDONS
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.addons.AddonRepository
-import com.woocommerce.android.ui.products.addons.order.OrderedAddonFragment.Companion.TAG
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -38,7 +37,6 @@ class OrderedAddonViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
-        private val feedbackFeatureKey = FeatureFeedbackKey(TAG, Feature.PRODUCT_ADDONS)
     }
 
     val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
@@ -48,8 +46,8 @@ class OrderedAddonViewModel @Inject constructor(
     val orderedAddonsData: LiveData<List<Addon>> = _orderedAddons
 
     private val currentFeedbackSettings
-        get() = FeedbackPrefs.getFeatureFeedbackSettings(feedbackFeatureKey)
-            ?: FeatureFeedbackSettings(feedbackFeatureKey)
+        get() = FeedbackPrefs.getFeatureFeedbackSettings(PRODUCT_ADDONS)
+            ?: FeatureFeedbackSettings(PRODUCT_ADDONS)
                 .apply { registerItself() }
 
     /**
@@ -79,7 +77,7 @@ class OrderedAddonViewModel @Inject constructor(
         trackFeedback(AnalyticsTracker.VALUE_FEEDBACK_GIVEN)
 
         FeatureFeedbackSettings(
-            feedbackFeatureKey,
+            PRODUCT_ADDONS,
             GIVEN
         ).registerItself()
 
@@ -90,7 +88,7 @@ class OrderedAddonViewModel @Inject constructor(
         trackFeedback(AnalyticsTracker.VALUE_FEEDBACK_DISMISSED)
 
         FeatureFeedbackSettings(
-            feedbackFeatureKey,
+            PRODUCT_ADDONS,
             DISMISSED
         ).registerItself()
 
@@ -183,7 +181,7 @@ class OrderedAddonViewModel @Inject constructor(
             viewState = viewState.copy(
                 isSkeletonShown = false,
                 isLoadingFailure = false,
-                shouldDisplayFeedbackCard = currentFeedbackSettings.state != DISMISSED
+                shouldDisplayFeedbackCard = currentFeedbackSettings.feedbackState != DISMISSED
             )
             track(result)
             _orderedAddons.value = result
