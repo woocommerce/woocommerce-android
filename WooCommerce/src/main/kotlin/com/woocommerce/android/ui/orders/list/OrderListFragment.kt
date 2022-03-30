@@ -539,7 +539,7 @@ class OrderListFragment :
         )
         registerFeedbackSetting(FeedbackState.GIVEN)
         NavGraphMainDirections
-            .actionGlobalFeedbackSurveyFragment(SurveyType.SIMPLE_PAYMENTS)
+            .actionGlobalFeedbackSurveyFragment(SurveyType.ORDER_CREATION)
             .apply { findNavController().navigateSafely(this) }
     }
 
