@@ -1,0 +1,4 @@
+8.7 :
+Savez-vous que nous avons lancé une fonctionnalité de création de commandes en version bêta ? Vous pouvez y accéder en sélectionnant l’icône des réglages dans l’onglet Menu. Nous avons ajouté la prise en charge des frais et des coûts d’expédition.
+
+Nous avons également corrigé un problème peu fréquent qui empêchait le bon affichage des notes de commande. Merci de nous faire part de vos impressions !

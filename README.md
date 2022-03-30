@@ -47,8 +47,8 @@
 
 1. Open and modify the newly created `gradle.properties` files. See the [Configuration Files](docs/project-overview.md#configuration-files) section for a breakdown of the properties.
 1. In Android Studio, open the project from the local repository. This will auto-generate `local.properties` with the SDK location.
-1. Go to Tools → AVD Manager and create an emulated device.
-1. Run.
+1. Optional: Go to Tools → Device Manager and create an emulated device.
+1. Run. (Creates a default virtual device if you skipped the previous step)
 
 ## Build & Test
 

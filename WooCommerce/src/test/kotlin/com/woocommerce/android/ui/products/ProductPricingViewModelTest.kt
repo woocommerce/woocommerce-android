@@ -287,7 +287,7 @@ class ProductPricingViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Hides sale price error message when sale price is zero and regular price has any value`() =
+    fun `Display sale price error message when sale price is zero and regular price has negative value`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             var state: ViewState? = null
             viewModel.viewStateData.observeForever { _, new -> state = new }
@@ -295,6 +295,21 @@ class ProductPricingViewModelTest : BaseUnitTest() {
             givenScheduleDateIsDisabled()
             givenProductPricesInput(
                 regularPrice = -2,
+                salePrice = 0
+            )
+
+            assertThat(state?.salePriceErrorMessage).isEqualTo(R.string.product_pricing_update_sale_price_error)
+        }
+
+    @Test
+    fun `Hide sale price error message when sale price is null and regular price has any value`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            var state: ViewState? = null
+            viewModel.viewStateData.observeForever { _, new -> state = new }
+
+            givenScheduleDateIsDisabled()
+            givenProductPricesInput(
+                regularPrice = 2,
                 salePrice = 0
             )
 
