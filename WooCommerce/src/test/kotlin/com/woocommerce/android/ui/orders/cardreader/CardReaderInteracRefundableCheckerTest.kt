@@ -110,7 +110,6 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
             assertThat(isRefundable).isTrue()
         }
 
-
     @Test
     fun `when order in not supported country then it is not refundable`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {

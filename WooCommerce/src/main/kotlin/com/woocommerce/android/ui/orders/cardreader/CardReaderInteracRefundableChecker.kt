@@ -15,7 +15,7 @@ class CardReaderInteracRefundableChecker @Inject constructor(
     suspend fun isRefundable(order: Order): Boolean {
         return with(order) {
             cardReaderPaymentCurrencySupportedChecker.isCurrencySupported(currency) &&
-                Order.Status.Completed == status  &&
+                Order.Status.Completed == status &&
                 isOrderPaid &&
                 order.total.compareTo(BigDecimal.ZERO) == 1 &&
                 // Empty payment method explanation:
