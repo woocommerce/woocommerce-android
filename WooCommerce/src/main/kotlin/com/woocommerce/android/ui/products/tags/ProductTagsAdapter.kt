@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.ProductTagListItemBinding
 import com.woocommerce.android.model.ProductTag
@@ -13,8 +14,7 @@ import com.woocommerce.android.ui.products.tags.ProductTagsAdapter.ProductTagVie
 class ProductTagsAdapter(
     private val loadMoreListener: OnLoadMoreListener,
     private val clickListener: OnProductTagClickListener
-) : RecyclerView.Adapter<ProductTagViewHolder>() {
-    private val productTags = ArrayList<ProductTag>()
+) : ListAdapter<ProductTag, ProductTagViewHolder>(ProductTagDiffCallback) {
     private var currentFilter: String = ""
 
     init {
@@ -26,9 +26,7 @@ class ProductTagsAdapter(
         fun onProductTagRemoved(productTag: ProductTag)
     }
 
-    override fun getItemId(position: Int) = productTags[position].remoteTagId
-
-    override fun getItemCount() = productTags.size
+    override fun getItemId(position: Int) = getItem(position).remoteTagId
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductTagViewHolder {
         return ProductTagViewHolder(
@@ -37,23 +35,11 @@ class ProductTagsAdapter(
     }
 
     override fun onBindViewHolder(holder: ProductTagViewHolder, position: Int) {
-        holder.bind(productTags[position])
+        holder.bind(getItem(position))
 
         if (position == itemCount - 1) {
             loadMoreListener.onRequestLoadMore()
         }
-    }
-
-    fun setProductTags(productsTags: List<ProductTag>) {
-        if (productsTags == this.productTags) {
-            return
-        }
-
-        val diffResult =
-            DiffUtil.calculateDiff(ProductTagItemDiffUtil(this.productTags, productsTags))
-        this.productTags.clear()
-        this.productTags.addAll(productsTags)
-        diffResult.dispatchUpdatesTo(this)
     }
 
     fun hasFilter() = currentFilter.isNotEmpty()
@@ -90,20 +76,18 @@ class ProductTagsAdapter(
         }
     }
 
-    private class ProductTagItemDiffUtil(
-        val oldList: List<ProductTag>,
-        val newList: List<ProductTag>
-    ) : DiffUtil.Callback() {
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-            oldList[oldItemPosition].remoteTagId == newList[newItemPosition].remoteTagId
+    object ProductTagDiffCallback : DiffUtil.ItemCallback<ProductTag>() {
+        override fun areItemsTheSame(
+            oldItem: ProductTag,
+            newItem: ProductTag
+        ): Boolean {
+            return oldItem.remoteTagId == newItem.remoteTagId
+        }
 
-        override fun getOldListSize(): Int = oldList.size
-
-        override fun getNewListSize(): Int = newList.size
-
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            val oldItem = oldList[oldItemPosition]
-            val newItem = newList[newItemPosition]
+        override fun areContentsTheSame(
+            oldItem: ProductTag,
+            newItem: ProductTag
+        ): Boolean {
             return oldItem == newItem
         }
     }
