@@ -79,6 +79,6 @@ class ProductDetailBottomSheetFragment : BottomSheetDialogFragment() {
     private fun showProductDetailBottomSheetOptions(
         productDetailBottomSheetOptions: List<ProductDetailBottomSheetUiItem>
     ) {
-        productDetailBottomSheetAdapter.setProductDetailBottomSheetOptions(productDetailBottomSheetOptions)
+        productDetailBottomSheetAdapter.options = productDetailBottomSheetOptions
     }
 }

@@ -1,11 +1,14 @@
-apply plugin: JacocoPlugin
+allprojects {
+    apply plugin: JacocoPlugin
+}
 
 jacoco {
     toolVersion = "0.8.7"
 }
 
 rootProject.afterEvaluate {
-    tasks.create(name: "jacocoTestReport", type: JacocoReport, dependsOn: [':WooCommerce:testWasabiDebugUnitTest', ':libs:cardreader:testDebugUnitTest']) {
+    tasks.register("jacocoTestReport", JacocoReport) {
+        dependsOn(':WooCommerce:testWasabiDebugUnitTest', ':libs:cardreader:testDebugUnitTest')
 
         group = "Reporting"
         description = "Generate Jacoco coverage reports for WasabiDebug variant"
@@ -54,12 +57,9 @@ rootProject.afterEvaluate {
         sourceDirectories.setFrom(files([sources]))
         classDirectories.from = files([kotlinClasses])
 
-        def executions = rootProject.subprojects.findAll { proj ->
-            def path = "${proj.buildDir}/jacoco/testWasabiDebugUnitTest.exec"
-            (new File(path)).exists()
-        }.collect { proj ->
-            "${proj.buildDir}/jacoco/testWasabiDebugUnitTest.exec"
-        }
-        executionData.from = files(executions)
+        executionData.from = files([
+                "WooCommerce/build/jacoco/testWasabiDebugUnitTest.exec",
+                "libs/cardreader/build/jacoco/testDebugUnitTest.exec"
+        ])
     }
 }

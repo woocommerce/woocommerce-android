@@ -7,12 +7,16 @@
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/details_header_container"
         android:layout_width="match_parent"
+        android:focusable="true"
         android:layout_height="@dimen/major_300"
         android:orientation="vertical">
 
         <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/card_header"
             style="@style/Woo.Card.Header"
+            android:importantForAccessibility="no"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/details" />
@@ -80,13 +84,16 @@
     </com.woocommerce.android.widgets.WCElevatedLinearLayout>
 
     <LinearLayout
+        android:id="@+id/address_header_container"
         android:layout_width="match_parent"
+        android:focusable="true"
         android:layout_height="@dimen/major_300"
         android:orientation="vertical">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/address_section_header"
             style="@style/Woo.Card.Header"
+            android:importantForAccessibility="no"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/order_detail_address_section" />

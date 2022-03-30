@@ -8,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_OPTION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_ADMIN_MENU
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_COUPONS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_INBOX
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_REVIEWS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_VIEW_STORE
@@ -119,7 +120,8 @@ class MoreMenuViewModel @Inject constructor(
     }
 
     private fun onCouponsButtonClick() {
-        // Todo
+        trackMoreMenuOptionSelected(VALUE_MORE_MENU_COUPONS)
+        triggerEvent(MoreMenuEvent.ViewCouponsEvent)
     }
 
     private fun onReviewsButtonClick() {
@@ -153,5 +155,6 @@ class MoreMenuViewModel @Inject constructor(
         data class ViewStoreEvent(val url: String) : MoreMenuEvent()
         object ViewReviewsEvent : MoreMenuEvent()
         object ViewInboxEvent : MoreMenuEvent()
+        object ViewCouponsEvent : MoreMenuEvent()
     }
 }
