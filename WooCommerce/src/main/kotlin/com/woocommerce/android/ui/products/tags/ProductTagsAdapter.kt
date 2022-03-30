@@ -26,10 +26,6 @@ class ProductTagsAdapter(
         fun onProductTagRemoved(productTag: ProductTag)
     }
 
-    fun setProductTags(productTags: List<ProductTag>) {
-        submitList(productTags)
-    }
-
     override fun getItemId(position: Int) = getItem(position).remoteTagId
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductTagViewHolder {
