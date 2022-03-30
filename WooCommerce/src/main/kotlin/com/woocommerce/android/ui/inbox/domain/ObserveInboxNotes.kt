@@ -4,6 +4,7 @@ import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.wordpress.android.fluxc.persistence.entity.InboxNoteActionEntity
+import org.wordpress.android.fluxc.persistence.entity.InboxNoteEntity.LocalInboxNoteStatus
 import org.wordpress.android.fluxc.persistence.entity.InboxNoteWithActions
 import org.wordpress.android.fluxc.store.WCInboxStore
 import javax.inject.Inject
@@ -24,6 +25,7 @@ class ObserveInboxNotes @Inject constructor(
             title = inboxNote.title,
             description = inboxNote.content,
             dateCreated = inboxNote.dateCreated,
+            status = inboxNote.status.toInboxNoteStatus(),
             actions = noteActions.map { it.toInboxAction() },
         )
 
@@ -34,4 +36,11 @@ class ObserveInboxNotes @Inject constructor(
             isPrimary = primary,
             url = url,
         )
+
+    private fun LocalInboxNoteStatus.toInboxNoteStatus() =
+        when (this) {
+            LocalInboxNoteStatus.Unactioned -> InboxNote.Status.Unactioned
+            LocalInboxNoteStatus.Actioned -> InboxNote.Status.Actioned
+            LocalInboxNoteStatus.Snoozed -> InboxNote.Status.Snoozed
+        }
 }

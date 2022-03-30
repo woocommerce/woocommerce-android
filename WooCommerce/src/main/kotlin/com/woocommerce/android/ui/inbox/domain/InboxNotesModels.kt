@@ -5,8 +5,15 @@ data class InboxNote(
     val title: String,
     val description: String,
     val dateCreated: String,
+    val status: Status,
     val actions: List<InboxNoteAction>
-)
+) {
+    enum class Status {
+        Unactioned,
+        Actioned,
+        Snoozed
+    }
+}
 
 data class InboxNoteAction(
     val id: Long,

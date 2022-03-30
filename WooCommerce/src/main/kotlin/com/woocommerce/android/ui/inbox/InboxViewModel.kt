@@ -11,6 +11,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.compose.utils.toAnnotatedString
 import com.woocommerce.android.ui.inbox.domain.FetchInboxNotes
 import com.woocommerce.android.ui.inbox.domain.InboxNote
+import com.woocommerce.android.ui.inbox.domain.InboxNote.Status
 import com.woocommerce.android.ui.inbox.domain.InboxNoteAction
 import com.woocommerce.android.ui.inbox.domain.ObserveInboxNotes
 import com.woocommerce.android.util.DateUtils
@@ -33,30 +34,24 @@ class InboxViewModel @Inject constructor(
     val inboxState: LiveData<InboxState> = merge(
         refreshInboxNotes(),
         inboxNotesUpdates()
-    )
-        .filter { !isFirstEmissionAndNotesEmpty(it) }
-        .asLiveData()
-
-    private var isFirstEmission = true
-
-    private fun isFirstEmissionAndNotesEmpty(it: InboxState) =
-        if (isFirstEmission) {
-            isFirstEmission = false
-            it.notes.isEmpty()
-        } else {
-            false
-        }
+    ).asLiveData()
 
     private fun inboxNotesUpdates() =
         observeInboxNotes()
+            .filter { it.isNotEmpty() }
             .map { inboxNotes ->
-                val notes = inboxNotes.map { it.toInboxNoteUi() }
+                val notes = inboxNotes
+                    .filter { it.status == Status.Unactioned }
+                    .map { it.toInboxNoteUi() }
                 InboxState(isLoading = false, notes = notes)
             }
 
     private fun refreshInboxNotes(): Flow<InboxState> = flow {
         emit(InboxState(isLoading = true))
-        fetchInboxNotes()
+        val fetchResult = fetchInboxNotes()
+        if (fetchResult == FetchInboxNotes.Fail) {
+            emit(InboxState(isLoading = false, notes = emptyList()))
+        }
     }
 
     private fun InboxNote.toInboxNoteUi() =
