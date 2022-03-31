@@ -464,4 +464,17 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
         assertThat(menuButtonsState?.saveOption).isFalse()
     }
+
+    @Test
+    fun `given product status is draft, when save is clicked, then save product with correct status`() = testBlocking {
+        whenever(productRepository.updateProduct(any())).thenReturn(true)
+        var viewState: ProductDetailViewState? = null
+        viewModel.productDetailViewStateData.observeForever { _, new -> viewState = new }
+
+        viewModel.start()
+        viewModel.updateProductDraft(productStatus = DRAFT)
+        viewModel.onSaveButtonClicked()
+
+        assertThat(viewState?.productDraft?.status).isEqualTo(DRAFT)
+    }
 }
