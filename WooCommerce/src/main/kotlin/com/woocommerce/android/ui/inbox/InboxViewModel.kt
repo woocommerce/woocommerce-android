@@ -7,19 +7,17 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.compose.utils.toAnnotatedString
-import com.woocommerce.android.ui.inbox.domain.FetchInboxNotes
-import com.woocommerce.android.ui.inbox.domain.InboxNote
-import com.woocommerce.android.ui.inbox.domain.InboxNote.Status
-import com.woocommerce.android.ui.inbox.domain.InboxNoteAction
-import com.woocommerce.android.ui.inbox.domain.ObserveInboxNotes
+import com.woocommerce.android.ui.inbox.domain.*
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import org.wordpress.android.util.DateTimeUtils
 import java.util.Date
 import javax.inject.Inject
@@ -30,6 +28,7 @@ class InboxViewModel @Inject constructor(
     private val dateUtils: DateUtils,
     private val fetchInboxNotes: FetchInboxNotes,
     private val observeInboxNotes: ObserveInboxNotes,
+    private val markNoteAsActioned: MarkNoteAsActioned,
     savedState: SavedStateHandle,
 ) : ScopedViewModel(savedState) {
     val inboxState: LiveData<InboxState> = merge(
@@ -41,9 +40,7 @@ class InboxViewModel @Inject constructor(
         observeInboxNotes()
             .filter { it.isNotEmpty() }
             .map { inboxNotes ->
-                val notes = inboxNotes
-                    .filter { it.status == Status.Unactioned }
-                    .map { it.toInboxNoteUi() }
+                val notes = inboxNotes.map { it.toInboxNoteUi() }
                 InboxState(isLoading = false, notes = notes)
             }
 
@@ -64,26 +61,29 @@ class InboxViewModel @Inject constructor(
             actions = actions.map { it.toInboxActionUi(id) },
         )
 
-    private fun InboxNoteAction.toInboxActionUi(noteId: Long) =
+    private fun InboxNoteAction.toInboxActionUi(parentNoteId: Long) =
         InboxNoteActionUi(
             id = id,
-            parentNoteId = noteId,
+            parentNoteId = parentNoteId,
             label = label,
             textColor = getActionTextColor(),
             url = url,
-            onClick = { actionId, parentNoteId ->
-                val clickedNote = inboxState.value?.notes?.firstOrNull { it.id == parentNoteId }
+            onClick = { actionId, noteId ->
+                val clickedNote = inboxState.value?.notes?.firstOrNull { noteId == it.id }
                 val clickedAction = clickedNote?.actions?.firstOrNull { actionId == it.id }
                 clickedAction?.let {
                     when {
-                        url.isNotEmpty() -> openUrl(url)
+                        url.isNotEmpty() -> openUrl(noteId, actionId, url)
                         else -> dismissNote()
                     }
                 }
             }
         )
 
-    private fun openUrl(url: String) {
+    private fun openUrl(noteId: Long, actionId: Long, url: String) {
+        viewModelScope.launch {
+            markNoteAsActioned(noteId, actionId)
+        }
         triggerEvent(InboxNoteActionEvent.OpenUrlEvent(url))
     }
 

@@ -11,7 +11,8 @@ data class InboxNote(
     enum class Status {
         Unactioned,
         Actioned,
-        Snoozed
+        Snoozed,
+        Unknown
     }
 }
 

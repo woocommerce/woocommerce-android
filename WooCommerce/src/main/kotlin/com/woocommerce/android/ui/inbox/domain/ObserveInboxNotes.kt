@@ -42,5 +42,6 @@ class ObserveInboxNotes @Inject constructor(
             LocalInboxNoteStatus.Unactioned -> InboxNote.Status.Unactioned
             LocalInboxNoteStatus.Actioned -> InboxNote.Status.Actioned
             LocalInboxNoteStatus.Snoozed -> InboxNote.Status.Snoozed
+            LocalInboxNoteStatus.Unknown -> InboxNote.Status.Unknown
         }
 }
