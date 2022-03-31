@@ -27,7 +27,7 @@ steps:
     command: |
       echo "--- 🧹 Linting"
       cp gradle.properties-example gradle.properties
-      ./gradlew lintVanillaRelease
+      ./gradlew lintJalapenoDebug
     plugins: *common_plugins
     artifact_paths:
       - "**/build/reports/lint-results*.*"
@@ -36,21 +36,21 @@ steps:
     command: |
       echo "--- 🧪 Testing"
       cp gradle.properties-example gradle.properties
-      ./gradlew testVanillaRelease
+      ./gradlew testJalapenoDebug
     plugins: *common_plugins
 
   - label: "Test CardReaderModule"
     command: |
       echo "--- 🧪 Testing"
       cp gradle.properties-example gradle.properties
-      ./gradlew lib:cardreader:testRelease
+      ./gradlew lib:cardreader:testDebug
     plugins: *common_plugins
 
   - label: "Ensure Screenshot Tests Build"
     command: |
       echo "--- ⚒️ Building"
       cp gradle.properties-example gradle.properties
-      ./gradlew assembleVanillaDebugAndroidTest
+      ./gradlew assembleJalapenoDebugAndroidTest
     plugins: *common_plugins
 
   - label: "🛠 Installable Build"
