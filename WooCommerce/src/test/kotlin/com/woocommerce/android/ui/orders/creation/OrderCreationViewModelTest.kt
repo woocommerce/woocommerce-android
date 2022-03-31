@@ -183,15 +183,27 @@ class OrderCreationViewModelTest : BaseUnitTest() {
             lastReceivedEvent = it
         }
 
+        var orderDraft: Order? = null
+        var addedProductItem: Order.Item? = null
+        sut.orderDraft.observeForever { order ->
+            orderDraft = order
+            addedProductItem = order.items.find { it.productId == 123L }
+        }
+
         sut.onProductSelected(123)
-        sut.onIncreaseProductsQuantity(123)
-        sut.onDecreaseProductsQuantity(123)
+
+        assertThat(addedProductItem).isNotNull
+        val addedProductItemId = addedProductItem!!.itemId
+
+        sut.onIncreaseProductsQuantity(addedProductItemId)
+        sut.onDecreaseProductsQuantity(addedProductItemId)
 
         assertThat(lastReceivedEvent).isNotNull
         lastReceivedEvent
             .run { this as? ShowProductDetails }
             ?.let { showProductDetailsEvent ->
-                assertThat(showProductDetailsEvent.item.itemId).isEqualTo(123)
+                assertThat(showProductDetailsEvent.item.productId).isEqualTo(123)
+                assertThat(showProductDetailsEvent.item.itemId).isEqualTo(addedProductItemId)
             } ?: fail("Last event should be of ShowProductDetails type")
     }
 
@@ -208,35 +220,53 @@ class OrderCreationViewModelTest : BaseUnitTest() {
             lastReceivedEvent = it
         }
 
+        var orderDraft: Order? = null
+        var addedProductItem: Order.Item? = null
+        sut.orderDraft.observeForever { order ->
+            orderDraft = order
+            addedProductItem = order.items.find { it.variationId == 123L }
+        }
+
         sut.onProductSelected(123)
-        sut.onIncreaseProductsQuantity(123)
-        sut.onDecreaseProductsQuantity(123)
+
+        assertThat(addedProductItem).isNotNull
+        val addedProductItemId = addedProductItem!!.itemId
+
+        sut.onIncreaseProductsQuantity(addedProductItemId)
+        sut.onDecreaseProductsQuantity(addedProductItemId)
 
         assertThat(lastReceivedEvent).isNotNull
         lastReceivedEvent
             .run { this as? ShowProductDetails }
             ?.let { showProductDetailsEvent ->
                 assertThat(showProductDetailsEvent.item.variationId).isEqualTo(123)
+                assertThat(showProductDetailsEvent.item.itemId).isEqualTo(addedProductItemId)
             } ?: fail("Last event should be of ShowProductDetails type")
     }
 
     @Test
     fun `when decreasing product quantity to one or more, then decrease the product quantity by one`() {
         var orderDraft: Order? = null
-        sut.orderDraft.observeForever {
-            orderDraft = it
+        var addedProductItem: Order.Item? = null
+        sut.orderDraft.observeForever { order ->
+            orderDraft = order
+            addedProductItem = order.items.find { it.productId == 123L }
         }
 
         sut.onProductSelected(123)
-        sut.onIncreaseProductsQuantity(123)
-        sut.onIncreaseProductsQuantity(123)
-        sut.onDecreaseProductsQuantity(123)
+
+        assertThat(addedProductItem).isNotNull
+        val addedProductItemId = addedProductItem!!.itemId
+
+        sut.onIncreaseProductsQuantity(addedProductItemId)
+        sut.onIncreaseProductsQuantity(addedProductItemId)
+        sut.onDecreaseProductsQuantity(addedProductItemId)
 
         orderDraft?.items
             ?.takeIf { it.isNotEmpty() }
-            ?.find { it.itemId == 123L }
+            ?.find { it.productId == 123L && it.itemId == addedProductItemId }
             ?.let { assertThat(it.quantity).isEqualTo(1f) }
-            ?: fail("Expected an item with itemId 123 with quantity as 1")
+            ?: fail("Expected an item with productId 123 with quantity as 1")
     }
 
     @Test
@@ -246,31 +276,49 @@ class OrderCreationViewModelTest : BaseUnitTest() {
             products = it
         }
 
+        var orderDraft: Order? = null
+        var addedProductItem: Order.Item? = null
+        sut.orderDraft.observeForever { order ->
+            orderDraft = order
+            addedProductItem = order.items.find { it.productId == 123L }
+        }
+
         sut.onProductSelected(123)
+
+        assertThat(addedProductItem).isNotNull
+        val addedProductItemId = addedProductItem!!.itemId
+
         assertThat(products).isEmpty()
 
-        sut.onIncreaseProductsQuantity(123)
+        sut.onIncreaseProductsQuantity(addedProductItemId)
+
         assertThat(products.size).isEqualTo(1)
-        assertThat(products.first().item.itemId).isEqualTo(123)
+        assertThat(products.first().item.productId).isEqualTo(123)
+        assertThat(products.first().item.itemId).isEqualTo(addedProductItemId)
     }
 
     @Test
     fun `when remove a product, then update orderDraft liveData with the quantity set to zero`() = runBlockingTest {
         var orderDraft: Order? = null
-        sut.orderDraft.observeForever {
-            orderDraft = it
+        var addedProductItem: Order.Item? = null
+        sut.orderDraft.observeForever { order ->
+            orderDraft = order
+            addedProductItem = order.items.find { it.productId == 123L }
         }
 
         sut.onProductSelected(123)
-        sut.onIncreaseProductsQuantity(123)
-        val addedItem = orderDraft?.items?.first() ?: fail("Added item should exist")
-        sut.onRemoveProduct(addedItem)
+
+        assertThat(addedProductItem).isNotNull
+        val addedProductItemId = addedProductItem!!.itemId
+
+        sut.onIncreaseProductsQuantity(addedProductItemId)
+        sut.onRemoveProduct(addedProductItem!!)
 
         orderDraft?.items
             ?.takeIf { it.isNotEmpty() }
-            ?.find { it.itemId == 123L }
+            ?.find { it.productId == 123L && it.itemId == addedProductItemId }
             ?.let { assertThat(it.quantity).isEqualTo(0f) }
-            ?: fail("Expected an item with itemId 123 with quantity set as 0")
+            ?: fail("Expected an item with productId 123 with quantity set as 0")
     }
 
     @Test
@@ -281,16 +329,15 @@ class OrderCreationViewModelTest : BaseUnitTest() {
         }
 
         sut.onProductSelected(123)
-        sut.onIncreaseProductsQuantity(123)
         sut.onProductSelected(123)
 
         orderDraft?.items
             ?.takeIf { it.isNotEmpty() }
-            ?.filter { it.itemId == 123L }
+            ?.filter { it.productId == 123L }
             ?.let { addedItemsList ->
                 assertThat(addedItemsList.size).isEqualTo(2)
             }
-            ?: fail("Expected two product items with itemId 123")
+            ?: fail("Expected two product items with productId 123")
     }
 
     @Test
@@ -347,8 +394,19 @@ class OrderCreationViewModelTest : BaseUnitTest() {
             lastReceivedEvent = it
         }
 
+        var orderDraft: Order? = null
+        var addedProductItem: Order.Item? = null
+        sut.orderDraft.observeForever { order ->
+            orderDraft = order
+            addedProductItem = order.items.find { it.productId == 123L }
+        }
+
         sut.onProductSelected(123)
-        sut.onIncreaseProductsQuantity(123)
+
+        assertThat(addedProductItem).isNotNull
+        val addedProductItemId = addedProductItem!!.itemId
+
+        sut.onIncreaseProductsQuantity(addedProductItemId)
         sut.onBackButtonClicked()
 
         assertThat(lastReceivedEvent).isNotNull
@@ -613,7 +671,11 @@ class OrderCreationViewModelTest : BaseUnitTest() {
         }
     }
 
-    private fun createOrderItem(withId: Long = 123) = Order.Item.EMPTY.copy(itemId = withId)
+    private fun createOrderItem(withId: Long = 123) =
+        Order.Item.EMPTY.copy(
+            productId = withId,
+            itemId = (1L..1000000000L).random()
+        )
 
     private val orderStatusList = listOf(
         Order.OrderStatus("first key", "first status"),
