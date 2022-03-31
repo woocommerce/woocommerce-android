@@ -92,7 +92,7 @@ class OrderListFragment :
         get() = binding.orderListView.emptyView
 
     private val feedbackState
-        get() = FeedbackPrefs.getFeatureFeedbackSettings(SIMPLE_PAYMENTS)?.feedbackState
+        get() = FeedbackPrefs.getFeatureFeedbackSettings(SIMPLE_PAYMENTS_AND_ORDER_CREATION)?.feedbackState
             ?: FeedbackState.UNANSWERED
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -212,13 +212,7 @@ class OrderListFragment :
     }
 
     private fun initCreateOrderFAB(fabButton: FloatingActionButton) {
-        fabButton.setOnClickListener {
-            if (AppPrefs.isOrderCreationEnabled) {
-                showOrderCreationBottomSheet()
-            } else {
-                showSimplePaymentsDialog()
-            }
-        }
+        fabButton.setOnClickListener { showOrderCreationBottomSheet() }
         pinFabAboveBottomNavigationBar(fabButton)
     }
 
@@ -520,10 +514,7 @@ class OrderListFragment :
     }
 
     private fun displaySimplePaymentsWIPCard(show: Boolean) {
-        if (!show ||
-            feedbackState == FeedbackState.DISMISSED ||
-            !viewModel.isCardReaderOnboardingCompleted()
-        ) {
+        if (!show || feedbackState == FeedbackState.DISMISSED) {
             binding.simplePaymentsWIPcard.isVisible = false
             return
         }
@@ -548,7 +539,7 @@ class OrderListFragment :
         )
         registerFeedbackSetting(FeedbackState.GIVEN)
         NavGraphMainDirections
-            .actionGlobalFeedbackSurveyFragment(SurveyType.SIMPLE_PAYMENTS)
+            .actionGlobalFeedbackSurveyFragment(SurveyType.ORDER_CREATION)
             .apply { findNavController().navigateSafely(this) }
     }
 
@@ -566,7 +557,7 @@ class OrderListFragment :
 
     private fun registerFeedbackSetting(state: FeedbackState) {
         FeatureFeedbackSettings(
-            SIMPLE_PAYMENTS,
+            SIMPLE_PAYMENTS_AND_ORDER_CREATION,
             state
         ).registerItself()
     }
