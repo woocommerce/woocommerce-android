@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.coupons
+package com.woocommerce.android.ui.coupons.details
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
@@ -12,7 +12,7 @@ import java.math.BigDecimal
 import javax.inject.Inject
 
 @HiltViewModel
-class CouponSummaryViewModel @Inject constructor(
+class CouponDetailsViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val wooCommerceStore: WooCommerceStore,
     private val selectedSite: SelectedSite

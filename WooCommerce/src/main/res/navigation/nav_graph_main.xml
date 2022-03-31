@@ -390,7 +390,7 @@
     </fragment>
     <fragment
         android:id="@+id/couponSummaryFragment"
-        android:name="com.woocommerce.android.ui.coupons.CouponSummaryFragment"
+        android:name="com.woocommerce.android.ui.coupons.details.CouponDetailsFragment"
         android:label="CouponSummaryFragment" />
 
 </navigation>

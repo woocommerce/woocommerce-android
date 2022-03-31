@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.coupons
+package com.woocommerce.android.ui.coupons.details
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -18,19 +18,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.coupons.CouponSummaryViewModel.CouponSummaryState
-import com.woocommerce.android.ui.coupons.CouponSummaryViewModel.CouponUi
+import com.woocommerce.android.ui.coupons.CouponListItemInfo
+import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponSummaryState
+import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponUi
 import java.lang.StringBuilder
 
 @Composable
-fun CouponSummaryScreen(viewModel: CouponSummaryViewModel) {
+fun CouponDetailsScreen(viewModel: CouponDetailsViewModel) {
     val couponSummaryState by viewModel.couponState.observeAsState(CouponSummaryState())
 
-    CouponSummaryScreen(state = couponSummaryState)
+    CouponDetailsScreen(state = couponSummaryState)
 }
 
 @Composable
-fun CouponSummaryScreen(state: CouponSummaryState) {
+fun CouponDetailsScreen(state: CouponSummaryState) {
     Column(
         modifier = Modifier
             .fillMaxSize()
