@@ -38,6 +38,11 @@ steps:
       cp gradle.properties-example gradle.properties
       ./gradlew testJalapenoDebug
       ./gradlew lib:cardreader:testDebug
+      echo "--- ⚒️ Testing debug & generating code coverage"
+      ./gradlew jacocoTestReport
+      curl -Os https://uploader.codecov.io/latest/linux/codecov
+      chmod +x codecov
+      ./codecov -t $CODECOV_TOKEN
     plugins: *common_plugins
 
   - label: "Ensure Screenshot Tests Build"
@@ -51,12 +56,3 @@ steps:
     command: ".buildkite/commands/installable-build.sh"
     if: "build.pull_request.id != null || build.pull_request.draft"
     plugins: *common_plugins
-
-  - label: "Generate code coverage and send it to CodeCov"
-    command: |
-      echo "--- ⚒️ Testing debug & generating code coverage"
-      cp gradle.properties-example gradle.properties
-      ./gradlew jacocoTestReport
-      curl -Os https://uploader.codecov.io/latest/linux/codecov
-      chmod +x codecov
-      ./codecov -t $CODECOV_TOKEN
