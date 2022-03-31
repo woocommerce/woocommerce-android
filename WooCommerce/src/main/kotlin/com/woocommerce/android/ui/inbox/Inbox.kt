@@ -133,7 +133,7 @@ private fun InboxNoteActionsRow(actions: List<InboxNoteActionUi>) {
 @Composable
 fun InboxNoteAction(inboxAction: InboxNoteActionUi) {
     TextButton(
-        onClick = { inboxAction.onClick(inboxAction.url) },
+        onClick = { inboxAction.onClick(inboxAction.id, inboxAction.parentNoteId) },
     ) {
         Text(
             text = inboxAction.label.uppercase(),
@@ -256,16 +256,18 @@ class SampleInboxProvider : PreviewParameterProvider<InboxState> {
                     actions = listOf(
                         InboxNoteActionUi(
                             id = 3,
+                            parentNoteId = 1,
                             label = "Open",
                             textColor = R.color.color_secondary,
-                            onClick = {},
+                            onClick = { _, _ -> },
                             url = ""
                         ),
                         InboxNoteActionUi(
                             id = 4,
+                            parentNoteId = 1,
                             label = "Dismiss",
                             textColor = R.color.color_surface_variant,
-                            onClick = {},
+                            onClick = { _, _ -> },
                             url = ""
                         )
                     )
@@ -281,16 +283,18 @@ class SampleInboxProvider : PreviewParameterProvider<InboxState> {
                     actions = listOf(
                         InboxNoteActionUi(
                             id = 3,
+                            parentNoteId = 2,
                             label = "Open",
                             textColor = R.color.color_secondary,
-                            onClick = {},
+                            onClick = { _, _ -> },
                             url = ""
                         ),
                         InboxNoteActionUi(
                             id = 4,
+                            parentNoteId = 2,
                             label = "Dismiss",
                             textColor = R.color.color_surface_variant,
-                            onClick = {},
+                            onClick = { _, _ -> },
                             url = ""
                         )
                     )

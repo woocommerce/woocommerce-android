@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.inbox.domain.InboxNote.Status
 import com.woocommerce.android.ui.inbox.domain.InboxNoteAction
 import com.woocommerce.android.ui.inbox.domain.ObserveInboxNotes
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -60,17 +61,35 @@ class InboxViewModel @Inject constructor(
             title = title,
             description = getContentFromHtml(description),
             dateCreated = formatNoteCreationDate(dateCreated),
-            actions = actions.map { it.toInboxActionUi() },
+            actions = actions.map { it.toInboxActionUi(id) },
         )
 
-    private fun InboxNoteAction.toInboxActionUi() =
+    private fun InboxNoteAction.toInboxActionUi(noteId: Long) =
         InboxNoteActionUi(
             id = id,
+            parentNoteId = noteId,
             label = label,
             textColor = getActionTextColor(),
             url = url,
-            onClick = {} // TODO set action lambda
+            onClick = { actionId, parentNoteId ->
+                val clickedNote = inboxState.value?.notes?.firstOrNull { it.id == parentNoteId }
+                val clickedAction = clickedNote?.actions?.firstOrNull { actionId == it.id }
+                clickedAction?.let {
+                    when {
+                        url.isNotEmpty() -> openUrl(url)
+                        else -> dismissNote()
+                    }
+                }
+            }
         )
+
+    private fun openUrl(url: String) {
+        triggerEvent(InboxNoteActionEvent.OpenUrlEvent(url))
+    }
+
+    private fun dismissNote() {
+        TODO("Not yet implemented")
+    }
 
     private fun InboxNoteAction.getActionTextColor() =
         if (isPrimary) R.color.color_secondary
@@ -124,9 +143,14 @@ class InboxViewModel @Inject constructor(
 
     data class InboxNoteActionUi(
         val id: Long,
+        val parentNoteId: Long,
         val label: String,
         @ColorRes val textColor: Int,
         val url: String,
-        val onClick: (String) -> Unit
+        val onClick: (Long, Long) -> Unit
     )
+
+    sealed class InboxNoteActionEvent : MultiLiveEvent.Event() {
+        data class OpenUrlEvent(val url: String) : InboxNoteActionEvent()
+    }
 }
