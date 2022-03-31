@@ -54,7 +54,6 @@ class OrderListFragment :
         const val TAG: String = "OrderListFragment"
         const val STATE_KEY_SEARCH_QUERY = "search-query"
         const val STATE_KEY_IS_SEARCHING = "is_searching"
-        private const val SEARCH_TYPING_DELAY_MS = 500L
         const val FILTER_CHANGE_NOTICE_KEY = "filters_changed_notice"
     }
 
@@ -446,7 +445,7 @@ class OrderListFragment :
                     if (query == it.query.toString()) handleNewSearchRequest(query)
                 }
             },
-            SEARCH_TYPING_DELAY_MS
+            AppConstants.SEARCH_TYPING_DELAY_MS
         )
     }
 
