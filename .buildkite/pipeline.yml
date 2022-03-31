@@ -32,17 +32,11 @@ steps:
     artifact_paths:
       - "**/build/reports/lint-results*.*"
 
-  - label: "Test WooCommerce"
+  - label: "Unit tests"
     command: |
       echo "--- 🧪 Testing"
       cp gradle.properties-example gradle.properties
       ./gradlew testJalapenoDebug
-    plugins: *common_plugins
-
-  - label: "Test CardReaderModule"
-    command: |
-      echo "--- 🧪 Testing"
-      cp gradle.properties-example gradle.properties
       ./gradlew lib:cardreader:testDebug
     plugins: *common_plugins
 
