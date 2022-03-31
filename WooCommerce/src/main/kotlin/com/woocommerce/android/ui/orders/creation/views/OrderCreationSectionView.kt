@@ -23,6 +23,13 @@ class OrderCreationSectionView @JvmOverloads constructor(
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
     private val binding = OrderCreationSectionBinding.inflate(LayoutInflater.from(ctx), this, true)
 
+    private var currentAddButton: MaterialButton? = null
+    var addButtonIsEnabled
+        get() = currentAddButton?.isEnabled ?: false
+        set(value) {
+            currentAddButton?.isEnabled = value
+        }
+
     var header: CharSequence
         get() = binding.headerLabel.text
         set(value) {
@@ -62,6 +69,7 @@ class OrderCreationSectionView @JvmOverloads constructor(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
+            currentAddButton = button
         }
     }
 
