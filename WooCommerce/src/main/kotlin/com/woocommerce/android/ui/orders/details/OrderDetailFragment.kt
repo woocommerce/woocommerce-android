@@ -30,8 +30,8 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.FeatureFeedbackSettings
-import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.SHIPPING_LABELS_M4
-import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
+import com.woocommerce.android.model.FeatureFeedbackSettings.*
+import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.SHIPPING_LABEL_M4
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.UNANSWERED
@@ -99,7 +99,8 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         }
 
     private val feedbackState
-        get() = FeedbackPrefs.getFeatureFeedbackSettings(TAG)?.state ?: UNANSWERED
+        get() = FeedbackPrefs.getFeatureFeedbackSettings(SHIPPING_LABEL_M4)?.feedbackState
+            ?: UNANSWERED
 
     override fun onResume() {
         super.onResume()
@@ -516,8 +517,10 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     }
 
     private fun registerFeedbackSetting(state: FeedbackState) {
-        FeatureFeedbackSettings(SHIPPING_LABELS_M4.name, state)
-            .run { FeedbackPrefs.setFeatureFeedbackSettings(TAG, this) }
+        FeatureFeedbackSettings(
+            SHIPPING_LABEL_M4,
+            state
+        ).registerItself()
     }
 
     private fun displayUndoSnackbar(
