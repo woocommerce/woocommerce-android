@@ -628,14 +628,17 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Called when the UPDATE/PUBLISH menu button is clicked in the product detail screen.
-     * Displays a progress dialog and updates/publishes the product
-     */
-    fun onUpdateButtonClicked(isPublish: Boolean) {
+    fun onSaveButtonClicked() {
         when (isProductUnderCreation) {
-            true -> startPublishProduct()
-            else -> startUpdateProduct(isPublish)
+            true -> startPublishProduct(productStatus = viewState.productDraft?.status ?: PUBLISH)
+            else -> startUpdateProduct(isPublish = false)
+        }
+    }
+
+    fun onPublishButtonClicked() {
+        when (isProductUnderCreation) {
+            true -> startPublishProduct(productStatus = PUBLISH)
+            else -> startUpdateProduct(isPublish = true)
         }
     }
 
@@ -682,7 +685,7 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
-    private fun startPublishProduct(productStatus: ProductStatus = PUBLISH, exitWhenDone: Boolean = false) {
+    private fun startPublishProduct(productStatus: ProductStatus, exitWhenDone: Boolean = false) {
         viewState.productDraft?.let {
             val product = it.copy(status = productStatus)
             trackPublishing(product)

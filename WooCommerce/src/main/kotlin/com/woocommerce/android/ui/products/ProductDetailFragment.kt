@@ -373,7 +373,7 @@ class ProductDetailFragment :
         return when (item.itemId) {
             R.id.menu_publish -> {
                 ActivityUtils.hideKeyboard(activity)
-                viewModel.onUpdateButtonClicked(isPublish = true)
+                viewModel.onPublishButtonClicked()
                 true
             }
 
@@ -389,7 +389,7 @@ class ProductDetailFragment :
 
             R.id.menu_save -> {
                 ActivityUtils.hideKeyboard(activity)
-                viewModel.onUpdateButtonClicked(isPublish = false)
+                viewModel.onSaveButtonClicked()
                 true
             }
 
