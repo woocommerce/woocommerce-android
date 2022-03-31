@@ -54,6 +54,14 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                             )
                     )
                 }
+                is CardReaderOnboardingViewModel.OnboardingEvent.ContinueToConnection -> {
+                    findNavController().navigate(
+                        CardReaderOnboardingFragmentDirections
+                            .actionCardReaderOnboardingFragmentToCardReaderConnectDialogFragment(
+                                event.cardReaderFlowParam
+                            )
+                    )
+                }
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
                 else -> event.isHandled = false
             }

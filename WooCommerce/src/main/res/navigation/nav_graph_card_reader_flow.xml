@@ -76,6 +76,9 @@
                 app:argType="string"
                 app:nullable="false" />
         </action>
+        <action
+            android:id="@+id/action_cardReaderOnboardingFragment_to_cardReaderConnectDialogFragment"
+            app:destination="@id/cardReaderConnectDialogFragment" />
     </fragment>
     <fragment
         android:id="@+id/cardReaderHubFragment"

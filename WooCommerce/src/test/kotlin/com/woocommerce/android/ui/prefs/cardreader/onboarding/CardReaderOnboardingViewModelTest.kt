@@ -62,6 +62,23 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given payment flow, when onboarding completed, then navigates to card reader connection screen`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.OnboardingCompleted(WOOCOMMERCE_PAYMENTS, countryCode)
+            )
+
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    cardReaderFlowParam = CardReaderFlowParam.ConnectAndAcceptPayment(1L)
+                ).initSavedStateHandle()
+            )
+
+            assertThat(viewModel.event.value)
+                .isInstanceOf(OnboardingEvent.ContinueToConnection::class.java)
+        }
+
+    @Test
     fun `when store country not supported, then country not supported state shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
