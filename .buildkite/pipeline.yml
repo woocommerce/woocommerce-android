@@ -38,7 +38,7 @@ steps:
       cp gradle.properties-example gradle.properties
       ./gradlew testJalapenoDebug
       ./gradlew lib:cardreader:testDebug
-      echo "--- ⚒️ Testing debug & generating code coverage"
+      echo "--- ⚒️ Generating and uploading code coverage"
       ./gradlew jacocoTestReport
       curl -Os https://uploader.codecov.io/latest/linux/codecov
       chmod +x codecov
