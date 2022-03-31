@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.coupons.details
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -98,7 +97,7 @@ fun CouponSummaryExpirationLabel(isActive: Boolean) {
 
 @Composable
 fun CouponSummarySection(coupon: CouponUi, currencyCode: String?) {
-    Card(
+    Surface(
         elevation = 1.dp,
         modifier = Modifier
             .fillMaxWidth()
@@ -181,7 +180,7 @@ fun CouponListSpendingInfo(
 // todo use actual data instead of hardcoded value
 @Composable
 fun CouponPerformanceSection() {
-    Card(
+    Surface(
         elevation = 1.dp,
         modifier = Modifier
             .fillMaxWidth()
