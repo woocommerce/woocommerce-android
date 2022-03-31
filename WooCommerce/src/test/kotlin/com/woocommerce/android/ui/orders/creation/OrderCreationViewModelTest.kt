@@ -183,10 +183,8 @@ class OrderCreationViewModelTest : BaseUnitTest() {
             lastReceivedEvent = it
         }
 
-        var orderDraft: Order? = null
         var addedProductItem: Order.Item? = null
         sut.orderDraft.observeForever { order ->
-            orderDraft = order
             addedProductItem = order.items.find { it.productId == 123L }
         }
 
@@ -220,10 +218,8 @@ class OrderCreationViewModelTest : BaseUnitTest() {
             lastReceivedEvent = it
         }
 
-        var orderDraft: Order? = null
         var addedProductItem: Order.Item? = null
         sut.orderDraft.observeForever { order ->
-            orderDraft = order
             addedProductItem = order.items.find { it.variationId == 123L }
         }
 
@@ -276,10 +272,8 @@ class OrderCreationViewModelTest : BaseUnitTest() {
             products = it
         }
 
-        var orderDraft: Order? = null
         var addedProductItem: Order.Item? = null
         sut.orderDraft.observeForever { order ->
-            orderDraft = order
             addedProductItem = order.items.find { it.productId == 123L }
         }
 
@@ -394,10 +388,8 @@ class OrderCreationViewModelTest : BaseUnitTest() {
             lastReceivedEvent = it
         }
 
-        var orderDraft: Order? = null
         var addedProductItem: Order.Item? = null
         sut.orderDraft.observeForever { order ->
-            orderDraft = order
             addedProductItem = order.items.find { it.productId == 123L }
         }
 
@@ -564,7 +556,7 @@ class OrderCreationViewModelTest : BaseUnitTest() {
 
         var viewState: ViewState? = null
 
-        sut.viewStateData.observeForever { old, new ->
+        sut.viewStateData.observeForever { _, new ->
             viewState = new
         }
 
@@ -584,7 +576,7 @@ class OrderCreationViewModelTest : BaseUnitTest() {
         var viewState: ViewState? = null
         var orderDraft: Order? = null
 
-        sut.viewStateData.observeForever { old, new ->
+        sut.viewStateData.observeForever { _, new ->
             viewState = new
         }
 
@@ -609,7 +601,7 @@ class OrderCreationViewModelTest : BaseUnitTest() {
 
         var viewState: ViewState? = null
 
-        sut.viewStateData.observeForever { old, new ->
+        sut.viewStateData.observeForever { _, new ->
             viewState = new
         }
 
