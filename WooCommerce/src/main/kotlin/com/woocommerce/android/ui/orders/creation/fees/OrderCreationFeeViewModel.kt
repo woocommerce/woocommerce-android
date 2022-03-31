@@ -10,7 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 import java.math.MathContext
-import java.math.RoundingMode.HALF_UP
+import java.math.RoundingMode
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,33 +29,34 @@ class OrderCreationFeeViewModel @Inject constructor(
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
-    private val activeFeeValue
-        get() = when (viewState.isPercentageSelected) {
-            true -> ((orderSubtotal * viewState.feePercentage) / PERCENTAGE_BASE)
-                .round(MathContext(DEFAULT_SCALE_QUOTIENT))
-            false -> viewState.feeAmount
+    private fun calculateFeePercentage(percentage: BigDecimal): BigDecimal {
+        return orderSubtotal.multiply(percentage).divide(PERCENTAGE_BASE)
+            .round(MathContext(DEFAULT_SCALE_QUOTIENT))
+    }
+
+    private fun calculatePercentageFromValue(value: BigDecimal): BigDecimal {
+        if (orderSubtotal <= BigDecimal.ZERO) {
+            viewState = viewState.copy(feeAmount = BigDecimal.ZERO)
+            return BigDecimal.ZERO
         }
 
-    private val appliedPercentageFromCurrentFeeValue
-        get() = navArgs.currentFeeValue
-            ?.takeIf { orderSubtotal > BigDecimal.ZERO }
-            ?.let { it.divide(orderSubtotal, DEFAULT_SCALE_QUOTIENT, HALF_UP) * PERCENTAGE_BASE }
-            ?.stripTrailingZeros()
-            ?: BigDecimal.ZERO
+        return value.divide(orderSubtotal, DEFAULT_SCALE_QUOTIENT, RoundingMode.HALF_UP)
+            .multiply(PERCENTAGE_BASE)
+            .stripTrailingZeros()
+    }
 
     init {
         viewState = viewState.copy(shouldDisplayPercentageSwitch = orderSubtotal > BigDecimal.ZERO)
-        navArgs.currentFeeValue?.let {
+        navArgs.currentFeeValue?.let { currentFee ->
             viewState = viewState.copy(
-                feeAmount = it,
-                feePercentage = appliedPercentageFromCurrentFeeValue,
+                feeAmount = currentFee,
                 shouldDisplayRemoveFeeButton = true
             )
         }
     }
 
     fun onDoneSelected() {
-        triggerEvent(UpdateFee(activeFeeValue))
+        triggerEvent(UpdateFee(viewState.feeAmount))
     }
 
     fun onRemoveFeeClicked() {
@@ -63,16 +64,30 @@ class OrderCreationFeeViewModel @Inject constructor(
     }
 
     fun onPercentageSwitchChanged(isChecked: Boolean) {
-        viewState = viewState.copy(isPercentageSelected = isChecked)
+        viewState = if (isChecked) {
+            val feePercentage = calculatePercentageFromValue(viewState.feeAmount)
+            viewState.copy(
+                isPercentageSelected = isChecked,
+                feePercentage = feePercentage
+            )
+        } else {
+            viewState.copy(isPercentageSelected = isChecked)
+        }
     }
 
     fun onFeeAmountChanged(feeAmount: BigDecimal) {
+        // Only update when isPercentageSelected is not enabled
+        if (viewState.isPercentageSelected) return
         viewState = viewState.copy(feeAmount = feeAmount)
     }
 
-    fun onFeePercentageChanged(feePercentage: String) {
+    fun onFeePercentageChanged(feePercentageRaw: String) {
+        // Only update when isPercentageSelected is enabled
+        if (!viewState.isPercentageSelected) return
+        val feePercentage = feePercentageRaw.toBigDecimalOrNull() ?: BigDecimal.ZERO
         viewState = viewState.copy(
-            feePercentage = feePercentage.toBigDecimalOrNull() ?: BigDecimal.ZERO
+            feePercentage = feePercentage,
+            feeAmount = calculateFeePercentage(feePercentage)
         )
     }
 

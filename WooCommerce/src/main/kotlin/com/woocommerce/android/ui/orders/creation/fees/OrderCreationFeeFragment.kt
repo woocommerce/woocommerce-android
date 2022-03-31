@@ -73,8 +73,10 @@ class OrderCreationFeeFragment :
 
     private fun FragmentOrderCreationFeeBinding.observeViewStateData() {
         editFeeViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.feeAmount.takeIfNotEqualTo(old?.feeAmount) {
-                feeAmountEditText.setValueIfDifferent(it)
+            new.feeAmount.takeIfNotEqualTo(old?.feeAmount) { feeAmount ->
+                feeAmountEditText.setValueIfDifferent(feeAmount)
+                val formattedAmount = currencyFormatter.formatCurrency(amount = feeAmount)
+                feePercentageEditText.suffixText = formattedAmount
             }
             new.feePercentage.takeIfNotEqualTo(old?.feePercentage) {
                 feePercentageEditText.setTextIfDifferent(it.toPlainString())

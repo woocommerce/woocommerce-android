@@ -136,8 +136,8 @@ class OrderCreationFeeViewModelTest : BaseUnitTest() {
         sut.event.observeForever { lastReceivedEvent = it }
 
         sut.onFeeAmountChanged(BigDecimal(123))
-        sut.onFeePercentageChanged("25")
         sut.onPercentageSwitchChanged(isChecked = true)
+        sut.onFeePercentageChanged("25")
 
         sut.onDoneSelected()
 
@@ -154,9 +154,9 @@ class OrderCreationFeeViewModelTest : BaseUnitTest() {
         var lastReceivedEvent: Event? = null
         sut.event.observeForever { lastReceivedEvent = it }
 
+        sut.onPercentageSwitchChanged(isChecked = false)
         sut.onFeeAmountChanged(BigDecimal(123))
         sut.onFeePercentageChanged("25")
-        sut.onPercentageSwitchChanged(isChecked = false)
 
         sut.onDoneSelected()
 
