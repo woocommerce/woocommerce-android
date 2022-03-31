@@ -413,7 +413,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        viewModel.onUpdateButtonClicked(false)
+        viewModel.onSaveButtonClicked()
 
         assertThat(isProgressDialogShown).containsExactly(true, false)
     }
@@ -433,7 +433,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        viewModel.onUpdateButtonClicked(false)
+        viewModel.onSaveButtonClicked()
 
         verify(productRepository, times(0)).updateProduct(any())
         assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
@@ -455,7 +455,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        viewModel.onUpdateButtonClicked(false)
+        viewModel.onSaveButtonClicked()
 
         verify(productRepository, times(1)).updateProduct(any())
         assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.product_detail_update_product_error))
@@ -482,7 +482,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        viewModel.onUpdateButtonClicked(false)
+        viewModel.onSaveButtonClicked()
 
         verify(productRepository, times(1)).updateProduct(any())
         verify(productRepository, times(2)).getProductAsync(PRODUCT_REMOTE_ID)
