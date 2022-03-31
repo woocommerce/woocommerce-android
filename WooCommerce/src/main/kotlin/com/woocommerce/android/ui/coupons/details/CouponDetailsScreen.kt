@@ -129,7 +129,7 @@ fun CouponSummarySection(coupon: CouponUi, currencyCode: String?) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            CouponListSpendingInfo(
+            CouponDetailsSpendingInfo(
                 coupon.minimumAmount,
                 coupon.maximumAmount,
                 currencyCode
@@ -147,7 +147,7 @@ fun CouponSummarySection(coupon: CouponUi, currencyCode: String?) {
 }
 
 @Composable
-fun CouponListSpendingInfo(
+fun CouponDetailsSpendingInfo(
     minimumAmount: String? = null,
     maximumAmount: String? = null,
     currencyCode: String?
