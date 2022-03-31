@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.view.Window
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.widget.ViewPager2
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
@@ -19,6 +20,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class CardReaderTutorialDialogFragment : DialogFragment(R.layout.card_reader_tutorial_dialog) {
+    private val args: CardReaderTutorialDialogFragmentArgs by navArgs()
     @Inject lateinit var appPrefs: AppPrefs
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -57,7 +59,7 @@ class CardReaderTutorialDialogFragment : DialogFragment(R.layout.card_reader_tut
     }
 
     private fun navigateNext() {
-        when (val param = requireArguments().getParcelable<CardReaderFlowParam>("cardReaderFlowParam")) {
+        when (val param = args.cardReaderFlowParam) {
             CardReaderFlowParam.CardReadersHub -> findNavController().popBackStack()
             is CardReaderFlowParam.ConnectAndAcceptPayment -> {
                 val action = CardReaderTutorialDialogFragmentDirections
