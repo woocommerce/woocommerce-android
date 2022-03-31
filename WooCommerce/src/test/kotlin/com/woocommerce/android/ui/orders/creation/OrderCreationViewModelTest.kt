@@ -191,7 +191,7 @@ class OrderCreationViewModelTest : BaseUnitTest() {
         lastReceivedEvent
             .run { this as? ShowProductDetails }
             ?.let { showProductDetailsEvent ->
-                assertThat(showProductDetailsEvent.item.productId).isEqualTo(123)
+                assertThat(showProductDetailsEvent.item.itemId).isEqualTo(123)
             } ?: fail("Last event should be of ShowProductDetails type")
     }
 
@@ -234,9 +234,9 @@ class OrderCreationViewModelTest : BaseUnitTest() {
 
         orderDraft?.items
             ?.takeIf { it.isNotEmpty() }
-            ?.find { it.productId == 123L }
+            ?.find { it.itemId == 123L }
             ?.let { assertThat(it.quantity).isEqualTo(1f) }
-            ?: fail("Expected an item with productId 123 with quantity as 1")
+            ?: fail("Expected an item with itemId 123 with quantity as 1")
     }
 
     @Test
@@ -251,7 +251,7 @@ class OrderCreationViewModelTest : BaseUnitTest() {
 
         sut.onIncreaseProductsQuantity(123)
         assertThat(products.size).isEqualTo(1)
-        assertThat(products.first().item.productId).isEqualTo(123)
+        assertThat(products.first().item.itemId).isEqualTo(123)
     }
 
     @Test
@@ -268,13 +268,13 @@ class OrderCreationViewModelTest : BaseUnitTest() {
 
         orderDraft?.items
             ?.takeIf { it.isNotEmpty() }
-            ?.find { it.productId == 123L }
+            ?.find { it.itemId == 123L }
             ?.let { assertThat(it.quantity).isEqualTo(0f) }
-            ?: fail("Expected an item with productId 123 with quantity set as 0")
+            ?: fail("Expected an item with itemId 123 with quantity set as 0")
     }
 
     @Test
-    fun `when adding the very same product, then increase item quantity by one`() {
+    fun `when adding the very same product, then add a clone of the same product to the list`() {
         var orderDraft: Order? = null
         sut.orderDraft.observeForever {
             orderDraft = it
@@ -286,9 +286,11 @@ class OrderCreationViewModelTest : BaseUnitTest() {
 
         orderDraft?.items
             ?.takeIf { it.isNotEmpty() }
-            ?.find { it.productId == 123L }
-            ?.let { assertThat(it.quantity).isEqualTo(2f) }
-            ?: fail("Expected an item with productId 123 with quantity as 2")
+            ?.filter { it.itemId == 123L }
+            ?.let { addedItemsList ->
+                assertThat(addedItemsList.size).isEqualTo(2)
+            }
+            ?: fail("Expected two product items with itemId 123")
     }
 
     @Test
@@ -611,7 +613,7 @@ class OrderCreationViewModelTest : BaseUnitTest() {
         }
     }
 
-    private fun createOrderItem(withId: Long = 123) = Order.Item.EMPTY.copy(productId = withId)
+    private fun createOrderItem(withId: Long = 123) = Order.Item.EMPTY.copy(itemId = withId)
 
     private val orderStatusList = listOf(
         Order.OrderStatus("first key", "first status"),
