@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R.string
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
@@ -28,10 +29,6 @@ class ProductSelectionListViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val productRepository: ProductListRepository
 ) : ScopedViewModel(savedState) {
-    companion object {
-        private const val SEARCH_TYPING_DELAY_MS = 500L
-    }
-
     private val navArgs: ProductSelectionListFragmentArgs by savedState.navArgs()
 
     private val _productList = MutableLiveData<List<Product>>()
@@ -130,7 +127,7 @@ class ProductSelectionListViewModel @Inject constructor(
             // the fetch until the user stops typing
             searchJob?.cancel()
             searchJob = launch {
-                delay(SEARCH_TYPING_DELAY_MS)
+                delay(AppConstants.SEARCH_TYPING_DELAY_MS)
                 productSelectionListViewState = productSelectionListViewState.copy(
                     isLoading = true,
                     isLoadingMore = loadMore,
