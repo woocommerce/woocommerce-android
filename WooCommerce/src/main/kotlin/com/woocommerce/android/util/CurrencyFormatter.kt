@@ -1,7 +1,11 @@
 package com.woocommerce.android.util
 
+import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.locale.LocaleProvider
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.text.DecimalFormat
@@ -18,6 +22,7 @@ class CurrencyFormatter @Inject constructor(
     private val wcStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
     private val localeProvider: LocaleProvider,
+    @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) {
     companion object {
         private const val ONE_THOUSAND = 1000
@@ -42,6 +47,21 @@ class CurrencyFormatter @Inject constructor(
             } else {
                 currencyFormatter.format(roundedValue).toString().removeSuffix(".00")
             }
+        }
+    }
+
+    private var defaultCurrencyCode = ""
+
+    init {
+        appCoroutineScope.launch {
+            selectedSite.observe()
+                .onEach { defaultCurrencyCode = "" }
+                .filterNotNull()
+                .mapNotNull { site -> wcStore.getSiteSettings(site) }
+                .map { settings -> settings.currencyCode }
+                .collect { currencyCode ->
+                    defaultCurrencyCode = currencyCode
+                }
         }
     }
 
