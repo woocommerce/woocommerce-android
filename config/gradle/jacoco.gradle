@@ -8,10 +8,10 @@ jacoco {
 
 rootProject.afterEvaluate {
     tasks.register("jacocoTestReport", JacocoReport) {
-        dependsOn(':WooCommerce:testWasabiDebugUnitTest', ':libs:cardreader:testDebugUnitTest')
+        dependsOn(':WooCommerce:testJalapenoDebugUnitTest', ':libs:cardreader:testDebugUnitTest')
 
         group = "Reporting"
-        description = "Generate Jacoco coverage reports for WasabiDebug variant"
+        description = "Generate Jacoco coverage reports for JalapenoDebug variant"
 
         reports {
             xml.getRequired().set(true)
@@ -43,7 +43,7 @@ rootProject.afterEvaluate {
         ]
 
         def kClasses = rootProject.subprojects.collect { proj ->
-            ["${proj.buildDir}/tmp/kotlin-classes/wasabiDebug", "${proj.buildDir}/tmp/kotlin-classes/debug"]
+            ["${proj.buildDir}/tmp/kotlin-classes/jalapenoDebug", "${proj.buildDir}/tmp/kotlin-classes/debug"]
         }.flatten()
 
         def kotlinClasses = kClasses.collect { path ->
@@ -58,7 +58,7 @@ rootProject.afterEvaluate {
         classDirectories.from = files([kotlinClasses])
 
         executionData.from = files([
-                "WooCommerce/build/jacoco/testWasabiDebugUnitTest.exec",
+                "WooCommerce/build/jacoco/testJalapenoDebugUnitTest.exec",
                 "libs/cardreader/build/jacoco/testDebugUnitTest.exec"
         ])
     }
