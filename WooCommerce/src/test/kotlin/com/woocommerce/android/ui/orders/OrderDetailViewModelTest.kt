@@ -38,7 +38,6 @@ import org.wordpress.android.fluxc.store.WCOrderStore.*
 import org.wordpress.android.fluxc.utils.DateUtils
 import java.math.BigDecimal
 import java.util.concurrent.CancellationException
-import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
 class OrderDetailViewModelTest : BaseUnitTest() {
