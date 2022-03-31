@@ -8,6 +8,7 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ProductDetailViewModel.MenuButtonsState
@@ -467,7 +468,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
     @Test
     fun `given product status is draft, when save is clicked, then save product with correct status`() = testBlocking {
-        whenever(productRepository.updateProduct(any())).thenReturn(true)
+        whenever(productRepository.addProduct(any())).thenAnswer { it.arguments.first() as Product }
         var viewState: ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> viewState = new }
 
