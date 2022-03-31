@@ -439,7 +439,7 @@ class CardReaderPaymentViewModel
         )
 
     private fun Order.getAmountLabel(): String = currencyFormatter
-        .formatAmountWithCurrency(this.currency, this.total.toDouble())
+        .formatAmountWithCurrency(this.total.toDouble(), this.currency)
 
     private fun Order.getReceiptDocumentName() = "receipt-order-$id"
 

@@ -31,7 +31,7 @@ class CurrencyFormatterTest : BaseUnitTest() {
     fun `given fr locale, when formatting amount, then comma used as decimal point`() {
         whenever(localeProvider.provideLocale()).thenReturn(Locale.FRANCE)
 
-        val result = formatter.formatAmountWithCurrency("USD", 113.7)
+        val result = formatter.formatAmountWithCurrency(113.7, "USD")
 
         assertThat(result).contains("113,7")
     }
@@ -40,7 +40,7 @@ class CurrencyFormatterTest : BaseUnitTest() {
     fun `given us locale, when formatting amount, then dot used as decimal point`() {
         whenever(localeProvider.provideLocale()).thenReturn(Locale.US)
 
-        val result = formatter.formatAmountWithCurrency("USD", 113.7)
+        val result = formatter.formatAmountWithCurrency(113.7, "USD")
 
         assertThat(result).contains("113.7")
     }
@@ -49,7 +49,7 @@ class CurrencyFormatterTest : BaseUnitTest() {
     fun `given fr locale, when formatting dollar amount, then $US displayed`() {
         whenever(localeProvider.provideLocale()).thenReturn(Locale.FRANCE)
 
-        val result = formatter.formatAmountWithCurrency("USD", 113.7)
+        val result = formatter.formatAmountWithCurrency(113.7, "USD")
 
         assertThat(result).contains("\$US")
     }
@@ -58,7 +58,7 @@ class CurrencyFormatterTest : BaseUnitTest() {
     fun `given us locale, when formatting dollar amount, then $ displayed`() {
         whenever(localeProvider.provideLocale()).thenReturn(Locale.US)
 
-        val result = formatter.formatAmountWithCurrency("USD", 113.7)
+        val result = formatter.formatAmountWithCurrency(113.7, "USD")
 
         assertThat(result).doesNotContain("\$US").contains("$")
     }
@@ -67,7 +67,7 @@ class CurrencyFormatterTest : BaseUnitTest() {
     fun `given fr locale, when formatting dollar amount, then currency at the end`() {
         whenever(localeProvider.provideLocale()).thenReturn(Locale.FRANCE)
 
-        val result = formatter.formatAmountWithCurrency("USD", 113.7)
+        val result = formatter.formatAmountWithCurrency(113.7, "USD")
 
         assertThat(result).endsWith("\$US")
     }
@@ -76,7 +76,7 @@ class CurrencyFormatterTest : BaseUnitTest() {
     fun `given us locale, when formatting dollar amount, then currency at the beginning`() {
         whenever(localeProvider.provideLocale()).thenReturn(Locale.US)
 
-        val result = formatter.formatAmountWithCurrency("USD", 113.7)
+        val result = formatter.formatAmountWithCurrency(113.7, "USD")
 
         assertThat(result).startsWith("$")
     }
