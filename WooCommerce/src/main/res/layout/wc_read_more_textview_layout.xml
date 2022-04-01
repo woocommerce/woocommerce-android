@@ -21,6 +21,7 @@
         android:id="@+id/btnReadMore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/minor_50"
         android:background="?attr/selectableItemBackground"
         android:paddingVertical="@dimen/minor_50"
         android:text="@string/read_more"
