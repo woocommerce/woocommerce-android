@@ -266,7 +266,6 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                 WCReadMoreTextView(requireContext()).also {
                     it.show(
                         content = noteText,
-                        maxLines = resources.getInteger(R.integer.max_lines_read_more_customer_note),
                         dialogCaptionId = R.string.order_creation_customer_note
                     )
                     notesSection.content = it

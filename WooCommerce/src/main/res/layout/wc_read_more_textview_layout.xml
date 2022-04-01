@@ -7,25 +7,25 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textContent"
-        style="@style/Woo.Card.Body"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/minor_50"
+        android:layout_marginBottom="@dimen/minor_50"
         android:ellipsize="end"
         android:lineSpacingExtra="@dimen/minor_25"
         android:textAlignment="viewStart"
+        android:textAppearance="?attr/textAppearanceBody2"
         tools:text="textContent" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/btnReadMore"
-        style="@style/Woo.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingStart="0dp"
-        android:paddingTop="@dimen/minor_50"
-        android:paddingEnd="0dp"
-        android:paddingBottom="@dimen/minor_50"
+        android:background="?attr/selectableItemBackground"
+        android:paddingVertical="@dimen/minor_50"
         android:text="@string/read_more"
-        android:textAllCaps="false" />
+        android:textAllCaps="false"
+        android:textAppearance="?attr/textAppearanceButton"
+        android:textColor="@color/button_fg_selector" />
 
 </LinearLayout>

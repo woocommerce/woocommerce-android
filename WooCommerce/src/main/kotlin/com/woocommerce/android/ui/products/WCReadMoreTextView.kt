@@ -20,7 +20,8 @@ class WCReadMoreTextView @JvmOverloads constructor(
     defStyle: Int = 0
 ) : ConstraintLayout(context, attrs, defStyle) {
     private var textContent: MaterialTextView
-    private var btnReadMore: MaterialButton
+    private var btnReadMore: MaterialTextView
+    private val defaultMaxLines = context.resources.getInteger(R.integer.default_max_lines_read_more_textview)
 
     init {
         with(View.inflate(context, R.layout.wc_read_more_textview_layout, this)) {
@@ -29,7 +30,7 @@ class WCReadMoreTextView @JvmOverloads constructor(
         }
     }
 
-    fun show(content: String, maxLines: Int, @StringRes dialogCaptionId: Int) {
+    fun show(content: String, @StringRes dialogCaptionId: Int, maxLines: Int = defaultMaxLines) {
         if (textContent.text.toString() == content && textContent.maxLines == maxLines) {
             return
         }
