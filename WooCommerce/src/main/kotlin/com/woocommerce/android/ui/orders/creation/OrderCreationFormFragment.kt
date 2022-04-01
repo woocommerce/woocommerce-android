@@ -264,7 +264,11 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         customerNote.takeIf { it.isNotBlank() }
             ?.let { noteText ->
                 WCProductPropertyReadMoreView(requireContext()).also {
-                    it.show(caption = "", content = noteText, maxLines = 10)
+                    it.show(
+                        caption = "",
+                        content = noteText,
+                        maxLines = resources.getInteger(R.integer.max_lines_read_more_customer_note)
+                    )
                     notesSection.content = it
                 }
             }
