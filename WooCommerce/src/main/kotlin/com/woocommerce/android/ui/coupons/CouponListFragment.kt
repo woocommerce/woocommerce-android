@@ -77,7 +77,7 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
 
     private fun navigateToCouponSummary(couponId: Long) {
         findNavController().navigateSafely(
-            CouponListFragmentDirections.actionCouponListFragmentToCouponSummaryFragment(couponId)
+            CouponListFragmentDirections.actionCouponListFragmentToCouponDetailsFragment(couponId)
         )
     }
 
