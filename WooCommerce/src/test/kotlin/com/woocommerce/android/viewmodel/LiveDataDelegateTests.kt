@@ -74,14 +74,30 @@ class LiveDataDelegateTests : BaseUnitTest() {
         assertThat(new).isEqualTo(ExampleData(1))
     }
 
-
-    // This test fails now
     @Test
     fun `when having two observers, then previous value is calculated correctly`() {
         val livedataDelegate = LiveDataDelegate(SavedStateHandle(), ExampleData(0))
         var dataHolder by livedataDelegate
 
         livedataDelegate.observeForever { _, _ -> }
+
+        var lastData: Pair<ExampleData?, ExampleData?> = Pair(null, null)
+        livedataDelegate.observeForever { old, new ->
+            lastData = Pair(old, new)
+        }
+        dataHolder = dataHolder.copy(data = 1)
+
+        val (old, new) = lastData
+        assertThat(old).isEqualTo(ExampleData(0))
+        assertThat(new).isEqualTo(ExampleData(1))
+    }
+
+    @Test
+    fun `when observing livedata directly, then previous value is calculated correctly`() {
+        val livedataDelegate = LiveDataDelegate(SavedStateHandle(), ExampleData(0))
+        var dataHolder by livedataDelegate
+
+        livedataDelegate.liveData.observeForever { }
 
         var lastData: Pair<ExampleData?, ExampleData?> = Pair(null, null)
         livedataDelegate.observeForever { old, new ->

@@ -1,7 +1,12 @@
 package com.woocommerce.android.viewmodel
 
 import android.os.Parcelable
-import androidx.lifecycle.*
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.map
+import com.woocommerce.android.extensions.scan
 import kotlin.reflect.KProperty
 
 /**
@@ -22,34 +27,26 @@ class LiveDataDelegate<T : Parcelable>(
     private val onChange: (T?, T) -> Unit = { _, _ -> }
 ) {
     private val _liveData: MutableLiveData<T> = savedState.getLiveData(savedStateKey, initialValue)
-    val liveData: LiveData<T> = _liveData
+    private val previousValueLiveData: LiveData<Pair<T?, T>> = _liveData.scan(null) { accumulatedValue, nextValue ->
+        val previousValue = accumulatedValue?.second
+        onChange(previousValue, nextValue)
+        Pair(previousValue, nextValue)
+    }
 
-    private var previousValue: T? = null
+    val liveData = previousValueLiveData.map { it.second }
 
     val hasInitialValue: Boolean
         get() = _liveData.value == initialValue
 
     fun observe(owner: LifecycleOwner, observer: (T?, T) -> Unit) {
-        if (_liveData.hasActiveObservers()) {
-            throw(IllegalStateException("Multiple observers registered but only one is supported."))
+        previousValueLiveData.observe(owner) { (previousValue, nextValue) ->
+            observer(previousValue, nextValue)
         }
-
-        previousValue = null
-        _liveData.observe(
-            owner,
-            Observer {
-                onChange(previousValue, it)
-                observer(previousValue, it)
-                previousValue = it
-            }
-        )
     }
 
     fun observeForever(observer: (T?, T) -> Unit) {
-        _liveData.observeForever {
-            onChange(previousValue, it)
-            observer(previousValue, it)
-            previousValue = it
+        previousValueLiveData.observeForever { (previousValue, nextValue) ->
+            observer(previousValue, nextValue)
         }
     }
 

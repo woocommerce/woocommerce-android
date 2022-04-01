@@ -68,3 +68,13 @@ fun <T : Any> LiveData<T?>.filterNotNull(): LiveData<T> {
     }
     return mediator
 }
+
+fun <T, R> LiveData<T>.scan(initialValue: R?, accumulator: (R?, T) -> R): LiveData<R> {
+    val outputLiveData: MediatorLiveData<R> = MediatorLiveData<R>()
+    initialValue?.let { outputLiveData.value = it }
+
+    outputLiveData.addSource(this) {
+        outputLiveData.value = accumulator(outputLiveData.value, it)
+    }
+    return outputLiveData
+}
