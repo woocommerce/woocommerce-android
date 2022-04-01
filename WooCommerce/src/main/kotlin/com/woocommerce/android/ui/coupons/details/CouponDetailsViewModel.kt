@@ -31,11 +31,11 @@ class CouponDetailsViewModel @Inject constructor(
                     id = 1,
                     code = "ABCDE",
                     amount = BigDecimal(25),
-                    discountType = "percent",
-                    includedProductsCount = 5,
-                    includedCategoryCount = 4,
                     minimumAmount = "10.5",
-                    maximumAmount = "100.5"
+                    maximumAmount = "100.5",
+                    formattedDiscount = "25%",
+                    affectedArticles = "Everything excl. 5 products",
+                    isActive = true
                 ),
             )
         )
@@ -50,26 +50,10 @@ class CouponDetailsViewModel @Inject constructor(
         val id: Long,
         val code: String? = null,
         val amount: BigDecimal? = null,
-        val dateCreated: String? = null,
-        val dateCreatedGmt: String? = null,
-        val dateModified: String? = null,
-        val dateModifiedGmt: String? = null,
-        val discountType: String? = null,
-        val description: String? = null,
-        val dateExpires: String? = null,
-        val dateExpiresGmt: String? = null,
-        val usageCount: Int? = null,
-        val isForIndividualUse: Boolean? = null,
-        val usageLimit: Int? = null,
-        val usageLimitPerUser: Int? = null,
-        val limitUsageToXItems: Int? = null,
-        val isShippingFree: Boolean? = null,
-        val areSaleItemsExcluded: Boolean? = null,
         val minimumAmount: String? = null,
         val maximumAmount: String? = null,
-        val includedProductsCount: Int? = null,
-        val excludedProductsCount: Int? = null,
-        val includedCategoryCount: Int? = null,
-        val excludedCategoryCount: Int? = null
+        val formattedDiscount: String,
+        val affectedArticles: String,
+        val isActive: Boolean
     )
 }

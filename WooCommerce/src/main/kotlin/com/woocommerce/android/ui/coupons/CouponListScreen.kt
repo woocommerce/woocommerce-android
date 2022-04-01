@@ -18,7 +18,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -141,14 +140,12 @@ fun CouponListItem(
 fun CouponListItemInfo(
     amount: String,
     affectedArticles: String,
-    fontSize: Int = 14,
-    color: Color = colorResource(id = R.color.color_surface_variant)
 ) {
     Text(
         text = "$amount ${stringResource(id = R.string.coupon_list_item_label_off)} $affectedArticles",
         style = MaterialTheme.typography.body2,
-        color = color,
-        fontSize = fontSize.sp,
+        color = colorResource(id = R.color.color_surface_variant),
+        fontSize = 14.sp,
         modifier = Modifier.padding(vertical = 4.dp)
     )
 }

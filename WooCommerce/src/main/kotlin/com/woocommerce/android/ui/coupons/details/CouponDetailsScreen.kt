@@ -17,7 +17,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.coupons.CouponListItemInfo
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponDetailsState
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponUi
 import java.lang.StringBuilder
@@ -116,10 +115,9 @@ fun CouponSummarySection(coupon: CouponUi) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            CouponListItemInfo(
-                amount = coupon.amount,
-                fontSize = 20,
-                color = MaterialTheme.colors.onSurface
+            CouponDetailsItemInfo(
+                amount = coupon.formattedDiscount,
+                affectedArticles = coupon.affectedArticles
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -138,6 +136,20 @@ fun CouponSummarySection(coupon: CouponUi) {
             )
         }
     }
+}
+
+@Composable
+fun CouponDetailsItemInfo(
+    amount: String,
+    affectedArticles: String
+) {
+    Text(
+        text = "$amount ${stringResource(id = R.string.coupon_list_item_label_off)} $affectedArticles",
+        style = MaterialTheme.typography.body2,
+        color = MaterialTheme.colors.onSurface,
+        fontSize = 20.sp,
+        modifier = Modifier.padding(vertical = 4.dp)
+    )
 }
 
 @Composable
