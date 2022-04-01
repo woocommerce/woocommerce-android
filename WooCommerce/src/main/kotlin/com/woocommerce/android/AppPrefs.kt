@@ -109,6 +109,9 @@ object AppPrefs {
 
         // The last version of the app where an announcement was shown,
         LAST_VERSION_WITH_ANNOUNCEMENT,
+
+        // The user choice on how to sort products
+        PRODUCT_SORTING_PREF_KEY,
     }
 
     fun init(context: Context) {
@@ -151,6 +154,10 @@ object AppPrefs {
     var isProductAddonsEnabled: Boolean
         get() = getBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, false)
         set(value) = setBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, value)
+
+    var productSortingChoice: String
+        get() = getString(UndeletablePrefKey.PRODUCT_SORTING_PREF_KEY)
+        set(value) = setString(UndeletablePrefKey.PRODUCT_SORTING_PREF_KEY, value)
 
     fun getLastAppVersionCode(): Int {
         return getDeletableInt(UndeletablePrefKey.LAST_APP_VERSION_CODE)
