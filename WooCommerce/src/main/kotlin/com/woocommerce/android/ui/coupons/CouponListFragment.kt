@@ -65,7 +65,7 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is NavigateToCouponSummaryEvent -> navigateToCouponSummary()
+                is NavigateToCouponSummaryEvent -> navigateToCouponSummary(event.couponId)
             }
         }
     }
@@ -75,9 +75,9 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
         displayCouponsWIPCard(true)
     }
 
-    private fun navigateToCouponSummary() {
+    private fun navigateToCouponSummary(couponId: Long) {
         findNavController().navigateSafely(
-            CouponListFragmentDirections.actionCouponListFragmentToCouponSummaryFragment()
+            CouponListFragmentDirections.actionCouponListFragmentToCouponSummaryFragment(couponId)
         )
     }
 

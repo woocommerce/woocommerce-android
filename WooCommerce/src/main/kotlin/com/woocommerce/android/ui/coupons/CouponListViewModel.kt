@@ -146,8 +146,8 @@ class CouponListViewModel @Inject constructor(
         )
     }
 
-    fun onCouponClick() {
-        triggerEvent(CouponListEvent.NavigateToCouponSummaryEvent)
+    fun onCouponClick(couponId: Long) {
+        triggerEvent(CouponListEvent.NavigateToCouponSummaryEvent(couponId))
     }
 
     data class CouponListState(
@@ -164,6 +164,6 @@ class CouponListViewModel @Inject constructor(
     )
 
     sealed class CouponListEvent : MultiLiveEvent.Event() {
-        object NavigateToCouponSummaryEvent : MultiLiveEvent.Event()
+        data class NavigateToCouponSummaryEvent(val couponId: Long) : MultiLiveEvent.Event()
     }
 }

@@ -319,14 +319,12 @@
         <argument
             android:name="currentProductType"
             android:defaultValue="null"
-            app:nullable="true"
             app:argType="string"
-            />
+            app:nullable="true" />
         <argument
             android:name="isCurrentProductVirtual"
             android:defaultValue="false"
-            app:argType="boolean"
-            />
+            app:argType="boolean" />
     </dialog>
     <dialog
         android:id="@+id/featureAnnouncementDialogFragmentOnMain"
@@ -361,10 +359,14 @@
     <fragment
         android:id="@+id/couponListFragment"
         android:name="com.woocommerce.android.ui.coupons.CouponListFragment"
-        android:label="CouponListFragment" >
+        android:label="CouponListFragment">
         <action
             android:id="@+id/action_couponListFragment_to_couponSummaryFragment"
-            app:destination="@id/couponSummaryFragment" />
+            app:destination="@id/couponSummaryFragment">
+            <argument
+                android:name="couponId"
+                app:argType="long" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/couponSummaryFragment"

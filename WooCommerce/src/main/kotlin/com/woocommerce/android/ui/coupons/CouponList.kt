@@ -44,7 +44,7 @@ fun CouponListScreen(viewModel: CouponListViewModel) {
 @Composable
 fun CouponListScreen(
     state: CouponListState,
-    onCouponClick: () -> Unit
+    onCouponClick: (Long) -> Unit
 ) {
     when {
         state.coupons.isNotEmpty() -> CouponList(
@@ -81,7 +81,8 @@ fun EmptyCouponList() {
 @Composable
 fun CouponList(
     coupons: List<CouponListItem>,
-    onCouponClick: () -> Unit) {
+    onCouponClick: (Long) -> Unit
+) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(0.dp),
         modifier = Modifier
@@ -107,7 +108,8 @@ fun CouponList(
 @Composable
 fun CouponListItem(
     coupon: CouponListItem,
-    onCouponClick: () -> Unit) {
+    onCouponClick: (Long) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -116,7 +118,7 @@ fun CouponListItem(
                 enabled = true,
                 onClickLabel = stringResource(id = R.string.coupon_list_view_coupon),
                 role = Role.Button,
-                onClick = { onCouponClick() }
+                onClick = { onCouponClick(0L) }
             ),
         verticalArrangement = Arrangement.spacedBy(0.dp)
     ) {
@@ -209,7 +211,7 @@ fun CouponListPreview() {
         ),
     )
 
-    CouponList(coupons = coupons)
+    CouponList(coupons = coupons) {}
 }
 
 @ExperimentalFoundationApi
