@@ -29,6 +29,7 @@ class InboxViewModel @Inject constructor(
     private val fetchInboxNotes: FetchInboxNotes,
     private val observeInboxNotes: ObserveInboxNotes,
     private val markNoteAsActioned: MarkNoteAsActioned,
+    private val dismissNote: DismissNote,
     savedState: SavedStateHandle,
 ) : ScopedViewModel(savedState) {
     private companion object {
@@ -107,7 +108,9 @@ class InboxViewModel @Inject constructor(
     }
 
     private fun dismissNote(noteId: Long) {
-        TODO("Not yet implemented")
+        viewModelScope.launch {
+            dismissNote.invoke(noteId)
+        }
     }
 
     private fun InboxNoteAction.getActionTextColor() =
