@@ -65,7 +65,8 @@ object AppPrefs {
      */
     private enum class DeletableSitePrefKey : PrefKey {
         TRACKING_EXTENSION_AVAILABLE,
-        JETPACK_BENEFITS_BANNER_DISMISSAL_DATE
+        JETPACK_BENEFITS_BANNER_DISMISSAL_DATE,
+        WC_PREF_NOTIFICATIONS_TOKEN,
     }
 
     /**
@@ -165,6 +166,18 @@ object AppPrefs {
 
     fun setCancelledAppVersionCode(versionCode: Int) {
         setDeletableInt(UndeletablePrefKey.CANCELLED_APP_VERSION_CODE, versionCode)
+    }
+
+    fun getFCMToken(): String {
+        return getString(DeletableSitePrefKey.WC_PREF_NOTIFICATIONS_TOKEN)
+    }
+
+    fun setFCMToken(token: String) {
+        setString(DeletableSitePrefKey.WC_PREF_NOTIFICATIONS_TOKEN, token)
+    }
+
+    fun removeFCMToken() {
+        remove(DeletableSitePrefKey.WC_PREF_NOTIFICATIONS_TOKEN)
     }
 
     fun setSupportEmail(email: String?) {

@@ -93,4 +93,10 @@ class AppPrefsWrapper @Inject constructor() {
     }
 
     fun isUserEligible(): Boolean = AppPrefs.isUserEligible()
+
+    fun getFCMToken() = AppPrefs.getFCMToken()
+
+    fun setFCMToken(token: String) = AppPrefs.setFCMToken(token)
+
+    fun removeFCMToken() = AppPrefs.removeFCMToken()
 }
