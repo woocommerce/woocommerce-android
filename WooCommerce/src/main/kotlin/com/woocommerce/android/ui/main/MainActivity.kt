@@ -459,6 +459,12 @@ class MainActivity :
                 window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
                 showToolbar()
             }
+
+            // On Compose-based screen, if needed we can hide this activity's toolbar and then
+            // have the screen create its own customized toolbar.
+            if (destination.id == R.id.couponDetailsFragment) {
+                hideToolbar()
+            }
         }
 
         // show bottom nav if this is a dialog destination from root or, just root itself
