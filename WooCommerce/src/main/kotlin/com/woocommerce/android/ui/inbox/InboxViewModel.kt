@@ -31,6 +31,10 @@ class InboxViewModel @Inject constructor(
     private val markNoteAsActioned: MarkNoteAsActioned,
     savedState: SavedStateHandle,
 ) : ScopedViewModel(savedState) {
+    private companion object {
+        const val DEFAULT_DISMISS_LABEL = "Dismiss" // Inbox notes are not localised and always displayed in English
+    }
+
     val inboxState: LiveData<InboxState> = merge(
         refreshInboxNotes(),
         inboxNotesUpdates()
@@ -58,8 +62,26 @@ class InboxViewModel @Inject constructor(
             title = title,
             description = getContentFromHtml(description),
             dateCreated = formatNoteCreationDate(dateCreated),
-            actions = actions.map { it.toInboxActionUi(id) },
+            actions = mapToInboxActionUI(),
         )
+
+    private fun InboxNote.mapToInboxActionUI(): List<InboxNoteActionUi> {
+        val noteActionsUi = actions
+            .filter { it.label != DEFAULT_DISMISS_LABEL }
+            .map { it.toInboxActionUi(id) }
+            .toMutableList()
+        noteActionsUi.add(
+            InboxNoteActionUi(
+                id = 0,
+                parentNoteId = id,
+                label = DEFAULT_DISMISS_LABEL,
+                textColor = R.color.color_surface_variant,
+                url = "",
+                onClick = { _, noteId -> dismissNote(noteId) }
+            )
+        )
+        return noteActionsUi
+    }
 
     private fun InboxNoteAction.toInboxActionUi(parentNoteId: Long) =
         InboxNoteActionUi(
@@ -72,10 +94,7 @@ class InboxViewModel @Inject constructor(
                 val clickedNote = inboxState.value?.notes?.firstOrNull { noteId == it.id }
                 val clickedAction = clickedNote?.actions?.firstOrNull { actionId == it.id }
                 clickedAction?.let {
-                    when {
-                        url.isNotEmpty() -> openUrl(noteId, actionId, url)
-                        else -> dismissNote()
-                    }
+                    if (url.isNotEmpty()) openUrl(noteId, actionId, url)
                 }
             }
         )
@@ -87,7 +106,7 @@ class InboxViewModel @Inject constructor(
         triggerEvent(InboxNoteActionEvent.OpenUrlEvent(url))
     }
 
-    private fun dismissNote() {
+    private fun dismissNote(noteId: Long) {
         TODO("Not yet implemented")
     }
 
