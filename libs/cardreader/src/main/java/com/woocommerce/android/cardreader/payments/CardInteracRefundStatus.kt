@@ -33,7 +33,7 @@ sealed class CardInteracRefundStatus {
                 /**
                  * A possibly temporary error caused the decline (e.g. the issuing
                  * bank's servers could not be contacted.) Tell the user this and prompt
-                 * them to try again with the same (or another) payment method.
+                 * them to try again with the same (or another) refund method.
                  */
                 object Temporary : CardDeclined()
 
@@ -45,76 +45,76 @@ sealed class CardInteracRefundStatus {
 
                 /**
                  * The payment was declined for an unspecified reason. Ask
-                 * the user to try another payment method.
+                 * the user to try another refund method.
                  */
                 object Generic : CardDeclined()
 
                 /**
                  * The card, or the account it connects to, is not valid. Ask
-                 * the user to try another payment method.
+                 * the user to try another refund method.
                  */
                 object InvalidAccount : CardDeclined()
 
                 /**
                  * The card presented is not supported. Tell the user this and
-                 * ask them to try another payment method.
+                 * ask them to try another refund method.
                  */
                 object CardNotSupported : CardDeclined()
 
                 /**
                  * The currency is not supported by the card presented. Tell the
-                 * user this and ask them to try another payment method.
+                 * user this and ask them to try another refund method.
                  */
                 object CurrencyNotSupported : CardDeclined()
 
                 /**
                  * An identical transaction was just completed for the card presented.
-                 * Tell the user this and ask them to try another payment method if they
+                 * Tell the user this and ask them to try another refund method if they
                  * really want to do this.
                  */
                 object DuplicateTransaction : CardDeclined()
 
                 /**
                  * The card presented has expired. Tell the user this and ask them
-                 * to try another payment method.
+                 * to try another refund method.
                  */
                 object ExpiredCard : CardDeclined()
 
                 /**
                  * The card presented has a different ZIP/postal code than was
                  * used to place the order. Tell the user this and ask them
-                 * to try another payment method (or correct the order.)
+                 * to try another refund method (or correct the order.)
                  */
                 object IncorrectPostalCode : CardDeclined()
 
                 /**
                  * The card presented has insufficient funds for the purchase.
-                 * Tell the user this and ask them to try another payment method.
+                 * Tell the user this and ask them to try another refund method.
                  */
                 object InsufficientFunds : CardDeclined()
 
                 /**
                  * The card presented does not allow purchases of the amount
-                 * given. Tell the user this and ask them to try another payment method.
+                 * given. Tell the user this and ask them to try another refund method.
                  */
                 object InvalidAmount : CardDeclined()
 
                 /**
                  * The card presented requires a PIN and the device doesn't support
-                 * PIN entry. Tell the user this and ask them to try another payment method.
+                 * PIN entry. Tell the user this and ask them to try another refund method.
                  */
                 object PinRequired : CardDeclined()
 
                 /**
                  * The card presented has had an incorrect PIN entered too many times.
-                 * Tell the user this and ask them to try another payment method.
+                 * Tell the user this and ask them to try another refund method.
                  */
                 object TooManyPinTries : CardDeclined()
 
                 /**
                  * The card presented is a system test card and cannot be used to
-                 * process a payment. Tell the user this and ask them to try another
-                 * payment method.
+                 * process a refund. Tell the user this and ask them to try another
+                 * refund method.
                  */
                 object TestCard : CardDeclined()
 
