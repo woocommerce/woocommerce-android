@@ -12,10 +12,10 @@ import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverRe
 import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManager
 import com.woocommerce.android.cardreader.internal.payments.AdditionalInfoMapper
 import com.woocommerce.android.cardreader.internal.payments.InteracRefundManager
-import com.woocommerce.android.cardreader.internal.payments.RefundErrorMapper
 import com.woocommerce.android.cardreader.internal.payments.PaymentErrorMapper
 import com.woocommerce.android.cardreader.internal.payments.PaymentManager
 import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
+import com.woocommerce.android.cardreader.internal.payments.RefundErrorMapper
 import com.woocommerce.android.cardreader.internal.payments.actions.CancelPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectInteracRefundAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction

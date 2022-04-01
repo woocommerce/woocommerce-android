@@ -10,7 +10,7 @@ sealed class CardInteracRefundStatus {
         val type: RefundStatusErrorType,
         val errorMessage: String,
         val refundParams: RefundParams
-        ) : CardInteracRefundStatus()
+    ) : CardInteracRefundStatus()
 
     sealed class RefundStatusErrorType {
         object NoNetwork : RefundStatusErrorType()
