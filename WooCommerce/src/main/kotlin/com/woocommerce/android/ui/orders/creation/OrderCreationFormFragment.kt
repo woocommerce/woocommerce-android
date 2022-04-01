@@ -34,11 +34,11 @@ import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Companion.KEY_ORDER_STATUS_RESULT
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
-import com.woocommerce.android.widgets.WCReadMoreTextView
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.widgets.CustomProgressDialog
+import com.woocommerce.android.widgets.WCReadMoreTextView
 import dagger.hilt.android.AndroidEntryPoint
 import java.math.BigDecimal
 import javax.inject.Inject
