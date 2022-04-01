@@ -34,10 +34,7 @@ class OrderCreationFeeViewModel @Inject constructor(
     }
 
     private fun calculatePercentageFromValue(value: BigDecimal): BigDecimal {
-        if (orderSubtotal <= BigDecimal.ZERO) {
-            viewState = viewState.copy(feeAmount = BigDecimal.ZERO)
-            return BigDecimal.ZERO
-        }
+        if (orderSubtotal <= BigDecimal.ZERO) return BigDecimal.ZERO
 
         return value.divide(orderSubtotal, DEFAULT_SCALE_QUOTIENT, RoundingMode.HALF_UP)
             .multiply(PERCENTAGE_BASE)
@@ -56,9 +53,9 @@ class OrderCreationFeeViewModel @Inject constructor(
     }
 
     fun onDoneSelected() {
-        val feeAmount = if(viewState.isPercentageSelected) {
+        val feeAmount = if (viewState.isPercentageSelected) {
             calculateFeePercentage(viewState.feePercentage)
-        }else{
+        } else {
             viewState.feeAmount
         }
         triggerEvent(UpdateFee(feeAmount))
