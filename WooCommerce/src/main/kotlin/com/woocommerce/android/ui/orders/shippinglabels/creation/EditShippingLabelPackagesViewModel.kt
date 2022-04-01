@@ -110,8 +110,8 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         suspend fun fetchVariationIfNeeded(productId: Long, variationId: Long): Boolean {
             if (!fetchProductIfNeeded(productId)) return false
             if (variationDetailRepository.getVariation(productId, variationId) == null) {
-                return variationDetailRepository.fetchVariation(productId, variationId) != null ||
-                    variationDetailRepository.lastFetchVariationErrorType == ProductErrorType.INVALID_PRODUCT_ID
+                val response = variationDetailRepository.fetchVariation(productId, variationId)
+                return !response.isError || response.error.type == ProductErrorType.INVALID_PRODUCT_ID
             }
             return true
         }

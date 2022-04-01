@@ -92,7 +92,11 @@ class ReviewListViewModel @Inject constructor(
         }
     }
 
-    override fun ReviewModerationConsumer.reloadReviewsFromCache() {
+    override fun ReviewModerationConsumer.onReviewModerationSuccess() {
+        reloadReviewsFromCache()
+    }
+
+    private fun reloadReviewsFromCache() {
         launch {
             _reviewList.value = reviewRepository.getCachedProductReviews()
         }

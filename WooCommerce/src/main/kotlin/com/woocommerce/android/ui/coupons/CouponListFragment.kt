@@ -16,11 +16,11 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentCouponListBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.FeatureFeedbackSettings
+import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListEvent.NavigateToCouponSummaryEvent
 import com.woocommerce.android.ui.feedback.SurveyType
-import com.woocommerce.android.ui.orders.list.OrderListFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -32,7 +32,8 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
     private var _binding: FragmentCouponListBinding? = null
     private val binding get() = _binding!!
     private val feedbackState
-        get() = FeedbackPrefs.getFeatureFeedbackSettings(TAG)?.state ?: FeatureFeedbackSettings.FeedbackState.UNANSWERED
+        get() = FeedbackPrefs.getFeatureFeedbackSettings(SIMPLE_PAYMENTS)?.feedbackState
+            ?: FeatureFeedbackSettings.FeedbackState.UNANSWERED
 
     private val viewModel: CouponListViewModel by viewModels()
 
@@ -127,9 +128,9 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
 
     private fun registerFeedbackSetting(state: FeatureFeedbackSettings.FeedbackState) {
         FeatureFeedbackSettings(
-            FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS.name,
+            SIMPLE_PAYMENTS,
             state
-        ).registerItselfWith(OrderListFragment.TAG)
+        ).registerItself()
     }
 
     override fun onDestroyView() {

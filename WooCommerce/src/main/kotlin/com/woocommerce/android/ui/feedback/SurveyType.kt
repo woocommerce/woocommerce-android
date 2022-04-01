@@ -9,6 +9,7 @@ enum class SurveyType(private val untaggedUrl: String, private val milestone: In
     PRODUCT(AppUrls.CROWDSIGNAL_PRODUCT_SURVEY, 4),
     SHIPPING_LABELS(AppUrls.CROWDSIGNAL_SHIPPING_LABELS_SURVEY, 4),
     SIMPLE_PAYMENTS(AppUrls.SIMPLE_PAYMENTS_SURVEY, 1),
+    ORDER_CREATION(AppUrls.ORDER_CREATION_SURVEY, 1),
     MAIN(AppUrls.CROWDSIGNAL_MAIN_SURVEY),
     COUPONS(
         if (FeatureFlag.MORE_MENU_COUPONS.isEnabled()) { AppUrls.COUPONS_SURVEY_DEBUG } else { AppUrls.COUPONS_SURVEY }

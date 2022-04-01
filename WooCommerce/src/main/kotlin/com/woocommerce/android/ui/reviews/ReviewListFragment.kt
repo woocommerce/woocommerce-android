@@ -250,14 +250,12 @@ class ReviewListFragment :
                 router.showReviewDetail(
                     review.remoteId,
                     launchedFromNotification = false,
-                    enableModeration = true,
                     tempStatus = review.status
                 )
             } else {
                 router.showReviewDetailWithSharedTransition(
                     review.remoteId,
                     launchedFromNotification = false,
-                    enableModeration = true,
                     tempStatus = review.status,
                     sharedView = sharedView
                 )

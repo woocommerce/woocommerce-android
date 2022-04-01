@@ -178,6 +178,7 @@ data class Order(
     @Parcelize
     data class TaxLine(
         val id: Long,
+        val label: String,
         val compound: Boolean,
         val taxTotal: String,
         val ratePercent: Float

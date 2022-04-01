@@ -24,6 +24,7 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.Optional
 import com.woocommerce.android.util.ProductUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
@@ -42,7 +43,6 @@ import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.test.assertNull
 
 @ExperimentalCoroutinesApi
@@ -106,8 +106,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     private val productWithParameters = ProductDetailViewState(
         productDraft = product,
-        storedProduct = product,
-        productBeforeEnteringFragment = product,
         isSkeletonShown = false,
         uploadingImageUris = emptyList(),
         showBottomSheetButton = true
@@ -354,7 +352,10 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         val updatedRegularPrice = null
         val updatedSalePrice = null
-        viewModel.updateProductDraft(regularPrice = updatedRegularPrice, salePrice = updatedSalePrice)
+        viewModel.updateProductDraft(
+            regularPrice = Optional(updatedRegularPrice),
+            salePrice = Optional(updatedSalePrice)
+        )
 
         assertNull(productData?.productDraft?.regularPrice)
         assertNull(productData?.productDraft?.salePrice)
@@ -373,7 +374,10 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         val updatedRegularPrice = BigDecimal.ZERO
         val updatedSalePrice = BigDecimal.ZERO
-        viewModel.updateProductDraft(regularPrice = updatedRegularPrice, salePrice = updatedSalePrice)
+        viewModel.updateProductDraft(
+            regularPrice = Optional(updatedRegularPrice),
+            salePrice = Optional(updatedSalePrice)
+        )
 
         assertThat(productData?.productDraft?.regularPrice).isEqualTo(updatedRegularPrice)
         assertThat(productData?.productDraft?.salePrice).isEqualTo(updatedSalePrice)
@@ -784,6 +788,17 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(true).whenever(viewModel).hasChanges()
         viewModel.start()
         assertThat(viewModel.isSaveOptionNeeded).isFalse()
+    }
+
+    @Test
+    fun `when restoring saved state, then re-fetch stored product to correctly calculate hasChanges`() {
+        // Make sure draft product has different data than draft product
+        doReturn(product.copy(name = product.name + "test")).whenever(productRepository).getProduct(any())
+        savedState.set(ProductDetailViewState::class.java.name, productWithParameters)
+
+        viewModel.start()
+
+        assertThat(viewModel.hasChanges()).isTrue
     }
 
     private val productsDraft

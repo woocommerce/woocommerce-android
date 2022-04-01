@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
@@ -55,7 +56,6 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
-
         inflateLayout(view)
         setupLocationHandling()
         observeEvents()
@@ -121,10 +121,10 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
             }
         }
     }
-
     private fun inflateLayout(view: View) {
         billingBinding = LayoutAddressFormBinding.inflate(layoutInflater).apply {
-            addressSectionHeader.setText(R.string.order_detail_billing_address_section)
+            setAccessibilityHeaders(R.string.details, R.string.order_detail_billing_address_section)
+
             countrySpinner.setClickListener {
                 addressViewModel.onCountrySpinnerClicked(BILLING)
             }
@@ -134,7 +134,8 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
         }
 
         shippingBinding = LayoutAddressFormBinding.inflate(layoutInflater).apply {
-            addressSectionHeader.setText(R.string.order_detail_shipping_address_section)
+            setAccessibilityHeaders(R.string.details, R.string.order_detail_shipping_address_section)
+
             email.visibility = View.GONE
             countrySpinner.setClickListener {
                 addressViewModel.onCountrySpinnerClicked(SHIPPING)
@@ -174,6 +175,15 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
                 addressViewModel.onFieldEdited(addressType, field, value)
             }
         )
+    }
+
+    private fun LayoutAddressFormBinding.setAccessibilityHeaders(detailsHeading: Int, addressHeading: Int) {
+        detailsHeaderContainer.announceForAccessibility(detailsHeading.toString())
+        ViewCompat.setAccessibilityHeading(detailsHeaderContainer, true)
+
+        addressHeaderContainer.announceForAccessibility(addressHeading.toString())
+        addressSectionHeader.setText(addressHeading)
+        ViewCompat.setAccessibilityHeading(addressHeaderContainer, true)
     }
 
     private fun setupHandlingCountrySelection(addressType: AddressType) {

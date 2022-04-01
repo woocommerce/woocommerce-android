@@ -128,7 +128,7 @@ class OrderListAdapter(
     }
 
     private inner class OrderItemUIViewHolder(val viewBinding: OrderListItemBinding) :
-        RecyclerView.ViewHolder(viewBinding.getRoot()) {
+        RecyclerView.ViewHolder(viewBinding.root) {
         fun onBind(orderItemUI: OrderListItemUI) {
             // Grab the current context from the underlying view
             val ctx = this.itemView.context
@@ -187,9 +187,15 @@ class OrderListAdapter(
     private class LoadingViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
     private class SectionHeaderViewHolder(val viewBinding: OrderListHeaderBinding) :
-        RecyclerView.ViewHolder(viewBinding.getRoot()) {
+        RecyclerView.ViewHolder(viewBinding.root) {
         fun onBind(header: SectionHeader) {
             viewBinding.orderListHeader.setText(TimeGroup.valueOf(header.title.name).labelRes)
+
+            (viewBinding.headingContainer as View).announceForAccessibility(
+                viewBinding.headingContainer.resources
+                    .getString(TimeGroup.valueOf(header.title.name).labelRes)
+            )
+            ViewCompat.setAccessibilityHeading(viewBinding.headingContainer as View, true)
         }
     }
 }

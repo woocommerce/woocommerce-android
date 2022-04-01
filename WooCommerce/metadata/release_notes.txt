@@ -1,2 +1,3 @@
+Even though this release doesn’t have any surprising new features, we still put a lot of love into it! We fixed a few bugs and made several improvements for accessibility using TalkBack.
 
-
+Did you know we’ve released a beta feature for creating orders? Head to the Menu tab, tap the settings icon, and scroll to beta features.

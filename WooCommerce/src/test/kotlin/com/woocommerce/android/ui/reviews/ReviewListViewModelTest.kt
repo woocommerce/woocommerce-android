@@ -31,7 +31,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
     private val markAllReviewsAsSeen: MarkAllReviewsAsSeen = mock()
     private val unseenReviewsCountHandler: UnseenReviewsCountHandler = mock()
     private val reviewModerationHandler: ReviewModerationHandler = mock() {
-        on { pendingModerationStatus } doReturn emptyFlow<ReviewModerationStatus>()
+        on { pendingModerationStatus } doReturn emptyFlow()
     }
 
     private val reviews = ProductReviewTestUtils.generateProductReviewList()

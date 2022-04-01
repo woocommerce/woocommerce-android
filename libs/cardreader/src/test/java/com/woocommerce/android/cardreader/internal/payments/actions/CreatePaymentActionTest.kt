@@ -312,20 +312,6 @@ internal class CreatePaymentActionTest {
     }
 
     @Test
-    fun `given payment info with customer id, when creating payment intent, then customer id set`() = runBlockingTest {
-        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
-            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
-        }
-        val captor = argumentCaptor<String>()
-        val customerId = "customerId"
-
-        action.createPaymentIntent(createPaymentInfo(customerId = customerId)).toList()
-        verify(intentParametersBuilder).setCustomer(captor.capture())
-
-        assertThat(captor.firstValue).isEqualTo(customerId)
-    }
-
-    @Test
     fun `given payment info with order key, when creating payment intent, then order key is set`() {
         runBlockingTest {
             whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
@@ -395,7 +381,6 @@ internal class CreatePaymentActionTest {
         customerName: String? = "",
         storeName: String? = "",
         siteUrl: String? = "",
-        customerId: String? = null,
         orderKey: String? = null,
         countryCode: String? = "US",
         statementDescriptor: String? = null,
@@ -409,7 +394,6 @@ internal class CreatePaymentActionTest {
             customerName = customerName,
             storeName = storeName,
             siteUrl = siteUrl,
-            customerId = customerId,
             orderKey = orderKey,
             countryCode = countryCode,
             statementDescriptor = statementDescriptor

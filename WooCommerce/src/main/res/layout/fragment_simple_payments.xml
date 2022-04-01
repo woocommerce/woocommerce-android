@@ -139,31 +139,13 @@
                 android:layout_height="wrap_content"
                 android:text="@string/simple_payments_charge_taxes" />
 
-            <!-- Tax -->
-            <LinearLayout
-                android:id="@+id/containerTaxes"
+            <!-- Taxes -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/listTaxes"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content">
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/textTaxLabel"
-                    style="@style/Woo.Card.Body.High"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="@string/tax" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/textTax"
-                    style="@style/Woo.Card.Body.High"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_weight="1"
-                    android:gravity="end"
-                    tools:text="$4.00" />
-            </LinearLayout>
+            </androidx.recyclerview.widget.RecyclerView>
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textTaxMessage"
