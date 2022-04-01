@@ -248,11 +248,19 @@ class OrderCreationViewModel @Inject constructor(
                         OrderDraftUpdateStatus.WillStart ->
                             viewState = viewState.copy(willUpdateOrderDraft = true, showOrderUpdateSnackbar = false)
                         OrderDraftUpdateStatus.Ongoing ->
-                            viewState = viewState.copy(willUpdateOrderDraft = false, isUpdatingOrderDraft = true)
+                            viewState = viewState.copy(isUpdatingOrderDraft = true)
                         OrderDraftUpdateStatus.Failed ->
-                            viewState = viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = true)
+                            viewState = viewState.copy(
+                                willUpdateOrderDraft = false,
+                                isUpdatingOrderDraft = false,
+                                showOrderUpdateSnackbar = true
+                            )
                         is OrderDraftUpdateStatus.Succeeded -> {
-                            viewState = viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = false)
+                            viewState = viewState.copy(
+                                willUpdateOrderDraft = false,
+                                isUpdatingOrderDraft = false,
+                                showOrderUpdateSnackbar = false
+                            )
                             _orderDraft.update { currentDraft ->
                                 // Keep the user's selected status
                                 updateStatus.order.copy(status = currentDraft.status)
@@ -341,7 +349,7 @@ class OrderCreationViewModel @Inject constructor(
         val showOrderUpdateSnackbar: Boolean = false
     ) : Parcelable {
         @IgnoredOnParcel
-        val canCreateOrder: Boolean = !isUpdatingOrderDraft && !showOrderUpdateSnackbar
+        val canCreateOrder: Boolean = !willUpdateOrderDraft && !showOrderUpdateSnackbar
     }
 }
 
