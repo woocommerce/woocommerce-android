@@ -34,7 +34,7 @@ import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Companion.KEY_ORDER_STATUS_RESULT
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
-import com.woocommerce.android.ui.products.WCProductPropertyReadMoreView
+import com.woocommerce.android.ui.products.WCReadMoreTextView
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
@@ -263,11 +263,11 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     private fun bindNotesSection(notesSection: OrderCreationSectionView, customerNote: String) {
         customerNote.takeIf { it.isNotBlank() }
             ?.let { noteText ->
-                WCProductPropertyReadMoreView(requireContext()).also {
+                WCReadMoreTextView(requireContext()).also {
                     it.show(
-                        caption = "",
                         content = noteText,
-                        maxLines = resources.getInteger(R.integer.max_lines_read_more_customer_note)
+                        maxLines = resources.getInteger(R.integer.max_lines_read_more_customer_note),
+                        dialogCaptionId = R.string.order_creation_customer_note
                     )
                     notesSection.content = it
                 }

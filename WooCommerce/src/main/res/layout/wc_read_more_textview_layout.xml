@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textContent"
+        style="@style/Woo.Card.Body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/minor_50"
+        android:ellipsize="end"
+        android:lineSpacingExtra="@dimen/minor_25"
+        android:textAlignment="viewStart"
+        tools:text="textContent" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/btnReadMore"
+        style="@style/Woo.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="0dp"
+        android:paddingTop="@dimen/minor_50"
+        android:paddingEnd="0dp"
+        android:paddingBottom="@dimen/minor_50"
+        android:text="@string/read_more"
+        android:textAllCaps="false" />
+
+</LinearLayout>
