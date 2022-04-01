@@ -20,7 +20,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponDetailsState
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponUi
 
-
 @Composable
 fun CouponDetailsScreen(viewModel: CouponDetailsViewModel) {
     val couponSummaryState by viewModel.couponState.observeAsState(CouponDetailsState())
