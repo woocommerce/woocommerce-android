@@ -245,8 +245,10 @@ class OrderCreationViewModel @Inject constructor(
             createOrUpdateOrderDraft(_orderDraft, retryOrderDraftUpdateTrigger)
                 .collect { updateStatus ->
                     when (updateStatus) {
+                        OrderDraftUpdateStatus.WillStart ->
+                            viewState = viewState.copy(willUpdateOrderDraft = true, showOrderUpdateSnackbar = false)
                         OrderDraftUpdateStatus.Ongoing ->
-                            viewState = viewState.copy(isUpdatingOrderDraft = true, showOrderUpdateSnackbar = false)
+                            viewState = viewState.copy(willUpdateOrderDraft = false, isUpdatingOrderDraft = true)
                         OrderDraftUpdateStatus.Failed ->
                             viewState = viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = true)
                         is OrderDraftUpdateStatus.Succeeded -> {
@@ -334,6 +336,7 @@ class OrderCreationViewModel @Inject constructor(
     @Parcelize
     data class ViewState(
         val isProgressDialogShown: Boolean = false,
+        val willUpdateOrderDraft: Boolean = false,
         val isUpdatingOrderDraft: Boolean = false,
         val showOrderUpdateSnackbar: Boolean = false
     ) : Parcelable {
