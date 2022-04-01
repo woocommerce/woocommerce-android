@@ -38,7 +38,6 @@ class WCProductPropertyReadMoreView @JvmOverloads constructor(
             return
         }
 
-        textCaption.isVisible = caption.isNotEmpty()
         textCaption.text = caption
         textContent.text = content
 
