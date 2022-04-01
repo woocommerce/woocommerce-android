@@ -1,12 +1,7 @@
 package com.woocommerce.android.viewmodel
 
 import android.os.Parcelable
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.SavedStateHandle
-import java.lang.IllegalStateException
+import androidx.lifecycle.*
 import kotlin.reflect.KProperty
 
 /**
@@ -58,9 +53,9 @@ class LiveDataDelegate<T : Parcelable>(
         }
     }
 
-    operator fun setValue(ref: Any, p: KProperty<*>, value: T) {
+    operator fun setValue(ref: Any?, p: KProperty<*>, value: T) {
         _liveData.value = value
     }
 
-    operator fun getValue(ref: Any, p: KProperty<*>): T = _liveData.value!!
+    operator fun getValue(ref: Any?, p: KProperty<*>): T = _liveData.value!!
 }
