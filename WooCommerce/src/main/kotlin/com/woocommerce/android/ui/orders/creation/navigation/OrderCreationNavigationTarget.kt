@@ -14,7 +14,7 @@ sealed class OrderCreationNavigationTarget : Event() {
     data class ShowCreatedOrder(val orderId: Long) : OrderCreationNavigationTarget()
     data class EditShipping(val currentShippingLine: ShippingLine?) : OrderCreationNavigationTarget()
     data class EditFee(
-        val orderTotal: BigDecimal,
+        val orderSubTotal: BigDecimal,
         val currentFeeValue: BigDecimal? = null
     ) : OrderCreationNavigationTarget()
 }

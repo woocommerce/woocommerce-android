@@ -382,7 +382,7 @@ class OrderCreationViewModelTest : BaseUnitTest() {
             .run { this as? EditFee }
             ?.let { editFeeEvent ->
                 assertThat(editFeeEvent.currentFeeValue).isEqualTo(newFeeTotal)
-                assertThat(editFeeEvent.orderTotal).isEqualTo(BigDecimal.ZERO)
+                assertThat(editFeeEvent.orderSubTotal).isEqualTo(BigDecimal.ZERO)
             } ?: fail("Last event should be of EditFee type")
     }
 
