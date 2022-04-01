@@ -33,7 +33,7 @@ class CouponDetailsViewModel @Inject constructor(
                     amount = BigDecimal(25),
                     formattedDiscount = "25%",
                     affectedArticles = "Everything excl. 5 products",
-                    formattedSpendingInfo = "Minimum spend of $20 \n Maximum spend of $200",
+                    formattedSpendingInfo = "Minimum spend of $20 \n\nMaximum spend of $200 \n",
                     isActive = true
                 ),
             )
