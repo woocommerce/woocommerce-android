@@ -19,7 +19,7 @@ object OrderCreationNavigator {
                 OrderCreationFormFragmentDirections.actionOrderCreationFragmentToOrderCreationProductSelectionFragment()
             is EditFee ->
                 OrderCreationFormFragmentDirections.actionOrderCreationFragmentToOrderCreationEditFeeFragment(
-                    orderSubTotal  = target.orderSubTotal,
+                    orderSubTotal = target.orderSubTotal,
                     currentFeeValue = target.currentFeeValue
                 )
             is ShowProductDetails ->
