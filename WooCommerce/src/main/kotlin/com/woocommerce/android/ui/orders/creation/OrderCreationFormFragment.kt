@@ -58,6 +58,10 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         )
     }
 
+    private val View?.productsAdapter
+        get() = (this as? RecyclerView)
+            ?.run { adapter as? OrderCreationProductsAdapter }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
@@ -206,6 +210,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                 binding.paymentSection.loadingProgress.isVisible = show
                 binding.paymentSection.feeButton.isEnabled = show.not()
                 binding.productsSection.addButtonIsEnabled = show.not()
+                binding.productsSection.content.productsAdapter?.isEnabled = show.not()
             }
             new.showOrderUpdateSnackbar.takeIfNotEqualTo(old?.showOrderUpdateSnackbar) { show ->
                 showOrHideErrorSnackBar(show)
@@ -294,7 +299,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                     itemAnimator = animator
                 }
             }
-            ((productsSection.content as RecyclerView).adapter as OrderCreationProductsAdapter).products = products
+            productsSection.content.productsAdapter?.products = products
         }
     }
 
