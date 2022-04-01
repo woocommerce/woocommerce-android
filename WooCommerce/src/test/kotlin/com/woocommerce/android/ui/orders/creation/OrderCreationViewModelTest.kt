@@ -548,6 +548,25 @@ class OrderCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when OrderDraftUpdateStatus is WillStart, then adjust view state to reflect the loading preparation`() {
+        createOrUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(WillStart)
+        }
+        createSut()
+
+        var viewState: ViewState? = null
+
+        sut.viewStateData.observeForever { _, new ->
+            viewState = new
+        }
+
+        assertThat(viewState).isNotNull
+        assertThat(viewState?.willUpdateOrderDraft).isTrue
+        assertThat(viewState?.isUpdatingOrderDraft).isFalse
+        assertThat(viewState?.showOrderUpdateSnackbar).isFalse
+    }
+
+    @Test
     fun `when OrderDraftUpdateStatus is Ongoing, then adjust view state to reflect the loading`() {
         createOrUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(Ongoing)
@@ -561,6 +580,7 @@ class OrderCreationViewModelTest : BaseUnitTest() {
         }
 
         assertThat(viewState).isNotNull
+        assertThat(viewState?.willUpdateOrderDraft).isFalse
         assertThat(viewState?.isUpdatingOrderDraft).isTrue
         assertThat(viewState?.showOrderUpdateSnackbar).isFalse
     }
@@ -585,6 +605,7 @@ class OrderCreationViewModelTest : BaseUnitTest() {
         }
 
         assertThat(viewState).isNotNull
+        assertThat(viewState?.willUpdateOrderDraft).isFalse
         assertThat(viewState?.isUpdatingOrderDraft).isFalse
         assertThat(viewState?.showOrderUpdateSnackbar).isFalse
 
@@ -606,6 +627,7 @@ class OrderCreationViewModelTest : BaseUnitTest() {
         }
 
         assertThat(viewState).isNotNull
+        assertThat(viewState?.willUpdateOrderDraft).isFalse
         assertThat(viewState?.isUpdatingOrderDraft).isFalse
         assertThat(viewState?.showOrderUpdateSnackbar).isTrue
     }
