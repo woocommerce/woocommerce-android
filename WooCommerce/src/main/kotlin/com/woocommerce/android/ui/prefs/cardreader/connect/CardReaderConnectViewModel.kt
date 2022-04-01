@@ -410,6 +410,9 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun exitFlow(connected: Boolean) {
         if (!connected) {
+            // this is workaround for the problem with dialog blinking during
+            // transition from CardReaderStatusCheckerDialogFragment to CardReaderConnectDialogFragment
+            // More: https://github.com/woocommerce/woocommerce-android/pull/6021#discussion_r839122284
             when (arguments.cardReaderFlowParam) {
                 CardReaderFlowParam.CardReadersHub -> triggerEvent(ExitWithResult(false))
                 is CardReaderFlowParam.ConnectAndAcceptPayment -> triggerEvent(ExitFlow)
