@@ -1,51 +1,44 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.widgets
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.annotation.StringRes
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
+import com.woocommerce.android.databinding.WcReadMoreTextviewLayoutBinding
 
 /**
- * Similar to WCProductPropertyReadMoreView but without a caption and no preset horizontal margins
+ * Simple TextView which shows a "Read more" button after a set number of lines
  */
 class WCReadMoreTextView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0
 ) : ConstraintLayout(context, attrs, defStyle) {
-    private var textContent: MaterialTextView
-    private var btnReadMore: MaterialTextView
     private val defaultMaxLines = context.resources.getInteger(R.integer.default_max_lines_read_more_textview)
-
-    init {
-        with(View.inflate(context, R.layout.wc_read_more_textview_layout, this)) {
-            textContent = findViewById(R.id.textContent)
-            btnReadMore = findViewById(R.id.btnReadMore)
-        }
-    }
+    private val binding = WcReadMoreTextviewLayoutBinding.inflate(LayoutInflater.from(context), this, true)
 
     fun show(content: String, @StringRes dialogCaptionId: Int, maxLines: Int = defaultMaxLines) {
-        if (textContent.text.toString() == content && textContent.maxLines == maxLines) {
+        if (binding.textContent.text.toString() == content && binding.textContent.maxLines == maxLines) {
             return
         }
 
-        textContent.text = content
+        binding.textContent.text = content
 
-        textContent.viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
+        binding.textContent.viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
             override fun onGlobalLayout() {
-                textContent.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                if (textContent.lineCount > maxLines) {
-                    textContent.maxLines = maxLines
-                    btnReadMore.visibility = View.VISIBLE
-                    btnReadMore.setOnClickListener { showFullContent(content, dialogCaptionId) }
+                binding.textContent.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                if (binding.textContent.lineCount > maxLines) {
+                    binding.textContent.maxLines = maxLines
+                    binding.btnReadMore.visibility = View.VISIBLE
+                    binding.btnReadMore.setOnClickListener { showFullContent(content, dialogCaptionId) }
                 } else {
-                    btnReadMore.visibility = View.GONE
+                    binding.btnReadMore.visibility = View.GONE
                 }
             }
         })
