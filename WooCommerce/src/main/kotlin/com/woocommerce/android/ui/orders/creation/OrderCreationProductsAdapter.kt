@@ -28,6 +28,14 @@ class OrderCreationProductsAdapter(
             diffResult.dispatchUpdatesTo(this)
         }
 
+    var isEnabled = false
+        set(value) {
+            if (value != field) {
+                field = value
+                notifyDataSetChanged()
+            }
+        }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
         return ProductViewHolder(
             OrderCreationProductItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -63,6 +71,8 @@ class OrderCreationProductsAdapter(
 
         fun bind(productModel: ProductUIModel) {
             binding.productName.text = productModel.item.name
+            binding.stepperView.isMinusButtonEnabled = isEnabled
+            binding.stepperView.isPlusButtonEnabled = isEnabled
             binding.stepperView.apply {
                 value = productModel.item.quantity.toInt()
                 contentDescription = context.getString(R.string.count, value.toString())
