@@ -206,7 +206,7 @@ class OrderCreationViewModel @Inject constructor(
         val currentFeeTotalValue = currentFee?.getTotalValue() ?: BigDecimal.ZERO
 
         val orderSubtotal = order.total - currentFeeTotalValue
-        triggerEvent(EditFee(orderSubtotal,currentFeeValue))
+        triggerEvent(EditFee(orderSubtotal, currentFeeValue))
     }
 
     fun onShippingButtonClicked() {
