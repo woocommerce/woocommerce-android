@@ -19,10 +19,12 @@ class CardReaderStatusCheckerDialogFragment : DialogFragment(R.layout.card_reade
     val viewModel: CardReaderStatusCheckerViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        dialog?.let {
-            it.setCanceledOnTouchOutside(false)
-            it.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog?.run {
+            window?.attributes?.windowAnimations = R.style.Woo_Animations_Dialog_NoAnimation
+            setCanceledOnTouchOutside(false)
+            requestWindowFeature(Window.FEATURE_NO_TITLE)
         }
+
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 

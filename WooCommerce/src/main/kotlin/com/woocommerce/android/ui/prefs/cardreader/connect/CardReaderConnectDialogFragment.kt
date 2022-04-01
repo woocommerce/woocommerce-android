@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.prefs.cardreader.connect
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.app.Activity.RESULT_OK
+import android.app.Dialog
 import android.bluetooth.BluetoothAdapter
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -82,10 +83,19 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
         (viewModel.event.value as? OpenLocationSettings)?.onLocationSettingsClosed?.invoke()
     }
 
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return object : Dialog(requireContext(), theme) {
+            override fun onBackPressed() {
+                viewModel.onBackClicked()
+            }
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        dialog?.let {
-            it.setCanceledOnTouchOutside(false)
-            it.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog?.run {
+            window?.attributes?.windowAnimations = R.style.Woo_Animations_Dialog_NoAnimation
+            setCanceledOnTouchOutside(false)
+            requestWindowFeature(Window.FEATURE_NO_TITLE)
         }
         return super.onCreateView(inflater, container, savedInstanceState)
     }
@@ -234,6 +244,9 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
                         key = KEY_CONNECT_TO_READER_RESULT,
                         result = event.data as Boolean,
                     )
+                }
+                is CardReaderConnectEvent.ExitFlow -> {
+                    findNavController().popBackStack(R.id.cardReaderStatusCheckerDialogFragment, true)
                 }
                 is CardReaderConnectEvent.ShowToast ->
                     ToastUtils.showToast(requireContext(), getString(event.message))

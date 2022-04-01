@@ -44,4 +44,6 @@ sealed class CardReaderConnectEvent : MultiLiveEvent.Event() {
     data class OpenWPComWebView(val url: String) : CardReaderConnectEvent()
 
     data class OpenGenericWebView(val url: String) : CardReaderConnectEvent()
+
+    object ExitFlow : CardReaderConnectEvent()
 }
