@@ -89,7 +89,6 @@ class ProductDetailViewModel @Inject constructor(
         if (old?.productDraft != new.productDraft) {
             new.productDraft?.let {
                 updateCards(it)
-                draftChanges.value = it
             }
         }
     }
@@ -97,9 +96,11 @@ class ProductDetailViewModel @Inject constructor(
 
     /**
      * The goal of this is to allow composition of reactive streams using the product draft changes,
-     * we need a separate stream because [LiveDataDelegate] supports a single observer.
      */
-    private val draftChanges = MutableStateFlow<Product?>(null)
+    private val draftChanges = productDetailViewStateData.liveData
+        .map { it.productDraft }
+        .asFlow()
+        .shareIn(viewModelScope, started = SharingStarted.WhileSubscribed())
 
     private val storedProduct = MutableStateFlow<Product?>(null)
 
