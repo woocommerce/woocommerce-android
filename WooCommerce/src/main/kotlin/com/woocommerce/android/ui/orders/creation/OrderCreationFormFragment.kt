@@ -7,19 +7,20 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.core.view.isVisible
-import androidx.core.widget.TextViewCompat
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationFormBinding
 import com.woocommerce.android.databinding.LayoutOrderCreationCustomerInfoBinding
 import com.woocommerce.android.databinding.OrderCreationPaymentSectionBinding
-import com.woocommerce.android.extensions.*
+import com.woocommerce.android.extensions.handleDialogResult
+import com.woocommerce.android.extensions.isNotEqualTo
+import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.base.BaseFragment
@@ -33,6 +34,7 @@ import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Companion.KEY_ORDER_STATUS_RESULT
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
+import com.woocommerce.android.ui.products.WCProductPropertyReadMoreView
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
@@ -260,14 +262,11 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
 
     private fun bindNotesSection(notesSection: OrderCreationSectionView, customerNote: String) {
         customerNote.takeIf { it.isNotBlank() }
-            ?.let {
-                val textView = MaterialTextView(requireContext())
-                TextViewCompat.setTextAppearance(textView, R.style.TextAppearance_Woo_Subtitle1)
-                textView.text = it
-                textView
-            }
-            .let {
-                notesSection.content = it
+            ?.let { noteText ->
+                WCProductPropertyReadMoreView(requireContext()).also {
+                    it.show(caption = "", content = noteText, maxLines = 10)
+                    notesSection.content = it
+                }
             }
     }
 
