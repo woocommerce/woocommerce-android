@@ -632,6 +632,41 @@ class OrderCreationViewModelTest : BaseUnitTest() {
         assertThat(viewState?.showOrderUpdateSnackbar).isTrue
     }
 
+    @Test
+    fun `when viewState is under the order draft sync state, then canCreateOrder must be false`() {
+        var viewState = ViewState(
+            willUpdateOrderDraft = true,
+            isUpdatingOrderDraft = false,
+            showOrderUpdateSnackbar = false
+        )
+
+        assertThat(viewState.canCreateOrder).isFalse
+
+        viewState = ViewState(
+            willUpdateOrderDraft = false,
+            isUpdatingOrderDraft = true,
+            showOrderUpdateSnackbar = false
+        )
+
+        assertThat(viewState.canCreateOrder).isFalse
+
+        viewState = ViewState(
+            willUpdateOrderDraft = false,
+            isUpdatingOrderDraft = false,
+            showOrderUpdateSnackbar = true
+        )
+
+        assertThat(viewState.canCreateOrder).isFalse
+
+        viewState = ViewState(
+            willUpdateOrderDraft = false,
+            isUpdatingOrderDraft = false,
+            showOrderUpdateSnackbar = false
+        )
+
+        assertThat(viewState.canCreateOrder).isTrue
+    }
+
     private fun createSut() {
         sut = OrderCreationViewModel(
             savedState = savedState,
