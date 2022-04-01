@@ -653,6 +653,50 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given account pending requirements and hub, when button clicked, then continues to hub`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    CardReaderOnboardingState.StripeAccountPendingRequirement(
+                        0L,
+                        WOOCOMMERCE_PAYMENTS,
+                        countryCode
+                    )
+                )
+
+            val viewModel = createVM()
+            (viewModel.viewStateData.value as StripeAcountError.StripeAccountPendingRequirementsState)
+                .onButtonActionClicked.invoke()
+
+            assertThat(viewModel.event.value)
+                .isInstanceOf(OnboardingEvent.ContinueToHub::class.java)
+        }
+
+    @Test
+    fun `given account pending requirements and payment, when button clicked, then continues to connection`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    CardReaderOnboardingState.StripeAccountPendingRequirement(
+                        0L,
+                        WOOCOMMERCE_PAYMENTS,
+                        countryCode
+                    )
+                )
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    cardReaderFlowParam = CardReaderFlowParam.ConnectAndAcceptPayment(1L)
+                ).initSavedStateHandle()
+            )
+
+            (viewModel.viewStateData.value as StripeAcountError.StripeAccountPendingRequirementsState)
+                .onButtonActionClicked.invoke()
+
+            assertThat(viewModel.event.value)
+                .isInstanceOf(OnboardingEvent.ContinueToConnection::class.java)
+        }
+
+    @Test
     fun `when account pending requirements, then due date not empty`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
