@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponDetailsState
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponUi
-import java.lang.StringBuilder
+
 
 @Composable
 fun CouponDetailsScreen(viewModel: CouponDetailsViewModel) {
@@ -122,10 +122,7 @@ fun CouponSummarySection(coupon: CouponUi) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            CouponDetailsSpendingInfo(
-                coupon.minimumAmount,
-                coupon.maximumAmount
-            )
+            CouponDetailsSpendingInfo(coupon.formattedSpendingInfo)
 
             /* Hardcoded for design work purposes */
             Text(
@@ -153,34 +150,12 @@ fun CouponDetailsItemInfo(
 }
 
 @Composable
-fun CouponDetailsSpendingInfo(
-    minimumAmount: String? = null,
-    maximumAmount: String? = null,
-    currencyCode: String?
-) {
-    val sb = StringBuilder()
-
-    minimumAmount?.let { amount ->
-        currencyCode?.let { code ->
-            val value = "$code $amount \n\n"
-            sb.append(stringResource(id = R.string.coupon_summary_minimum_spend, value))
-        }
-    }
-
-    maximumAmount?.let { amount ->
-        currencyCode?.let { code ->
-            val value = "$code $amount \n"
-            sb.append(stringResource(id = R.string.coupon_summary_maximum_spend, value))
-        }
-    }
-
-    if (sb.isNotEmpty()) {
-        Text(
-            style = MaterialTheme.typography.body1,
-            text = sb.toString(),
-            fontSize = 20.sp
-        )
-    }
+fun CouponDetailsSpendingInfo(formattedSpendingInfo: String) {
+    Text(
+        style = MaterialTheme.typography.body1,
+        text = formattedSpendingInfo,
+        fontSize = 20.sp
+    )
 }
 
 // todo use actual data instead of hardcoded value

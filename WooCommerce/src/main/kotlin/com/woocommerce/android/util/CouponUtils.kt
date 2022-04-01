@@ -3,6 +3,7 @@ package com.woocommerce.android.util
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.viewmodel.ResourceProvider
+import java.lang.StringBuilder
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -97,5 +98,39 @@ class CouponUtils @Inject constructor(
                 one = R.string.category_count_one
             )
         } else ""
+    }
+
+    fun formatSpendingInfo(
+        minimumAmount: String? = null,
+        maximumAmount: String? = null,
+        currencyCode: String?
+    ) : String {
+        val sb = StringBuilder()
+
+        minimumAmount?.let { amount ->
+            currencyCode?.let { code ->
+                val value = "$code $amount \n\n"
+                sb.append(
+                    resourceProvider.getString(
+                        R.string.coupon_summary_minimum_spend,
+                        value
+                    )
+                )
+            }
+        }
+
+        maximumAmount?.let { amount ->
+            currencyCode?.let { code ->
+                val value = "$code $amount \n"
+                sb.append(
+                    resourceProvider.getString(
+                        R.string.coupon_summary_maximum_spend,
+                        value
+                    )
+                )
+            }
+        }
+
+        return sb.toString()
     }
 }

@@ -35,6 +35,7 @@ class CouponDetailsViewModel @Inject constructor(
                     maximumAmount = "100.5",
                     formattedDiscount = "25%",
                     affectedArticles = "Everything excl. 5 products",
+                    formattedSpendingInfo = "Minimum spend of $20 \n Maximum spend of $200",
                     isActive = true
                 ),
             )
@@ -54,6 +55,7 @@ class CouponDetailsViewModel @Inject constructor(
         val maximumAmount: String? = null,
         val formattedDiscount: String,
         val affectedArticles: String,
+        val formattedSpendingInfo: String,
         val isActive: Boolean
     )
 }
