@@ -3,9 +3,10 @@ package com.woocommerce.android.ui.coupons.details
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -33,6 +34,20 @@ fun CouponDetailsScreen(state: CouponDetailsState) {
         modifier = Modifier
             .fillMaxSize()
     ) {
+        TopAppBar(
+            title = { Text(state.coupon?.code ?: "") },
+            navigationIcon = {
+                IconButton(onClick = { /* todo */ }) {
+                    Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                }
+            },
+            actions = {
+                IconButton(onClick = { /* todo */ }) {
+                    Icon(Icons.Filled.MoreVert, contentDescription = "Coupons Menu")
+                }
+            }
+        )
+
         state.coupon?.let { coupon ->
             CouponSummaryHeading(
                 code = coupon.code,
