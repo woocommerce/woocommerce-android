@@ -50,13 +50,19 @@ class OrderCreationFeeViewModel @Inject constructor(
         navArgs.currentFeeValue?.let { currentFee ->
             viewState = viewState.copy(
                 feeAmount = currentFee,
+                feePercentage = calculatePercentageFromValue(currentFee),
                 shouldDisplayRemoveFeeButton = true
             )
         }
     }
 
     fun onDoneSelected() {
-        triggerEvent(UpdateFee(viewState.feeAmount))
+        val feeAmount = if(viewState.isPercentageSelected) {
+            calculateFeePercentage(viewState.feePercentage)
+        }else{
+            viewState.feeAmount
+        }
+        triggerEvent(UpdateFee(feeAmount))
     }
 
     fun onRemoveFeeClicked() {
@@ -64,21 +70,16 @@ class OrderCreationFeeViewModel @Inject constructor(
     }
 
     fun onPercentageSwitchChanged(isChecked: Boolean) {
-        viewState = if (isChecked) {
-            val feePercentage = calculatePercentageFromValue(viewState.feeAmount)
-            viewState.copy(
-                isPercentageSelected = isChecked,
-                feePercentage = feePercentage
-            )
-        } else {
-            viewState.copy(isPercentageSelected = isChecked)
-        }
+        viewState = viewState.copy(isPercentageSelected = isChecked)
     }
 
     fun onFeeAmountChanged(feeAmount: BigDecimal) {
         // Only update when isPercentageSelected is not enabled
         if (viewState.isPercentageSelected) return
-        viewState = viewState.copy(feeAmount = feeAmount)
+        viewState = viewState.copy(
+            feeAmount = feeAmount,
+            feePercentage = calculatePercentageFromValue(feeAmount)
+        )
     }
 
     fun onFeePercentageChanged(feePercentageRaw: String) {
