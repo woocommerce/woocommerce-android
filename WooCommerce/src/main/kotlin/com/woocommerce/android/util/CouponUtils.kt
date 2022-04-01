@@ -18,14 +18,16 @@ class CouponUtils @Inject constructor(
     ): String {
         return when (couponType) {
             Coupon.Type.Percent -> "$amount%"
-            else -> {
-                if (amount != null) {
-                    currencyCode?.let { currencyFormatter.formatCurrency(amount, it) }
-                        ?: amount.toString()
-                } else {
-                    ""
-                }
-            }
+            else -> formatCurrency(amount, currencyCode)
+        }
+    }
+
+    private fun formatCurrency(amount: BigDecimal?, currencyCode: String?): String {
+        return if (amount != null) {
+            currencyCode?.let { currencyFormatter.formatCurrency(amount, it) }
+                ?: amount.toString()
+        } else {
+            ""
         }
     }
 
@@ -101,34 +103,28 @@ class CouponUtils @Inject constructor(
     }
 
     fun formatSpendingInfo(
-        minimumAmount: String? = null,
-        maximumAmount: String? = null,
+        minimumAmount: BigDecimal?,
+        maximumAmount: BigDecimal?,
         currencyCode: String?
-    ) : String {
+    ): String {
         val sb = StringBuilder()
 
-        minimumAmount?.let { amount ->
-            currencyCode?.let { code ->
-                val value = "$code $amount \n\n"
-                sb.append(
-                    resourceProvider.getString(
-                        R.string.coupon_summary_minimum_spend,
-                        value
-                    )
+        if (minimumAmount != null) {
+            sb.append(
+                resourceProvider.getString(
+                    R.string.coupon_summary_minimum_spend,
+                    formatCurrency(minimumAmount, currencyCode)
                 )
-            }
+            )
         }
 
-        maximumAmount?.let { amount ->
-            currencyCode?.let { code ->
-                val value = "$code $amount \n"
-                sb.append(
-                    resourceProvider.getString(
-                        R.string.coupon_summary_maximum_spend,
-                        value
-                    )
+        if (maximumAmount != null) {
+            sb.append(
+                resourceProvider.getString(
+                    R.string.coupon_summary_maximum_spend,
+                    formatCurrency(maximumAmount, currencyCode)
                 )
-            }
+            )
         }
 
         return sb.toString()
