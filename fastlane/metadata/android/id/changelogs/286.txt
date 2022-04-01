@@ -1,4 +1,0 @@
-8.7:
-Tahukah Anda bahwa kami baru saja merilis fitur beta untuk membuat pesanan? Arahkan kursor ke tab Menu, ketuk ikon pengaturan, dan gulir ke fitur beta. Kami menambahkan biaya dan biaya pengiriman.
-
-Kami menyelesaikan masalah langka catatan pesanan yang kadang tidak ditunjukkan secara akurat. Terima kasih telah memberi tahu kami!

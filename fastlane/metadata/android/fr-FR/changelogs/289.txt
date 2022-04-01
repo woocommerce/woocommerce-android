@@ -1,0 +1,4 @@
+8.8 :
+Cette version n’a pas beaucoup de nouveautés sensationnelles à offrir, mais nous y avons mis tout notre cœur. Nous avons corrigé quelques bugs et apportés plusieurs améliorations concernant la convivialité de TalkBack.
+
+Savez-vous que nous avons lancé une fonctionnalité de création de commandes en version bêta ? Vous pouvez y accéder en sélectionnant l’icône des réglages dans l’onglet Menu.
