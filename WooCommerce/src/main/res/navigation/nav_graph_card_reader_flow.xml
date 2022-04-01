@@ -47,6 +47,8 @@
             app:popUpToInclusive="false" />
         <action
             android:id="@+id/action_cardReaderOnboardingFragment_to_cardReaderConnectDialogFragment"
+            app:popUpTo="@+id/cardReaderOnboardingFragment"
+            app:popUpToInclusive="true"
             app:destination="@id/cardReaderConnectDialogFragment" />
     </fragment>
     <fragment

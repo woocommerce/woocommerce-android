@@ -246,7 +246,9 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
                     )
                 }
                 is CardReaderConnectEvent.ExitFlow -> {
-                    findNavController().popBackStack(R.id.cardReaderStatusCheckerDialogFragment, true)
+                    if (!findNavController().popBackStack(R.id.cardReaderStatusCheckerDialogFragment, true)) {
+                        findNavController().popBackStack()
+                    }
                 }
                 is CardReaderConnectEvent.ShowToast ->
                     ToastUtils.showToast(requireContext(), getString(event.message))
