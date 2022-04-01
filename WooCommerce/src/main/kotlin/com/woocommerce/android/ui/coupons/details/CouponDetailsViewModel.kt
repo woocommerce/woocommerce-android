@@ -17,13 +17,16 @@ class CouponDetailsViewModel @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedState) {
+    private val currencyCode by lazy {
+        wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
+    }
+
     val couponState = loadCoupon().asLiveData()
 
     @Suppress("MagicNumber")
-    private fun loadCoupon(): Flow<CouponSummaryState> = flow {
+    private fun loadCoupon(): Flow<CouponDetailsState> = flow {
         emit(
-            CouponSummaryState(
-                currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode,
+            CouponDetailsState(
                 coupon = CouponUi(
                     id = 1,
                     code = "ABCDE",
@@ -38,8 +41,7 @@ class CouponDetailsViewModel @Inject constructor(
         )
     }
 
-    data class CouponSummaryState(
-        val currencyCode: String? = null,
+    data class CouponDetailsState(
         val isLoading: Boolean = false,
         val coupon: CouponUi? = null
     )

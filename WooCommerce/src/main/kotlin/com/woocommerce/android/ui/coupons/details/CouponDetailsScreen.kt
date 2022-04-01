@@ -18,19 +18,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.coupons.CouponListItemInfo
-import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponSummaryState
+import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponDetailsState
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponUi
 import java.lang.StringBuilder
 
 @Composable
 fun CouponDetailsScreen(viewModel: CouponDetailsViewModel) {
-    val couponSummaryState by viewModel.couponState.observeAsState(CouponSummaryState())
+    val couponSummaryState by viewModel.couponState.observeAsState(CouponDetailsState())
 
     CouponDetailsScreen(state = couponSummaryState)
 }
 
 @Composable
-fun CouponDetailsScreen(state: CouponSummaryState) {
+fun CouponDetailsScreen(state: CouponDetailsState) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -40,7 +40,7 @@ fun CouponDetailsScreen(state: CouponSummaryState) {
                 code = coupon.code,
                 isActive = true
             )
-            CouponSummarySection(coupon, state.currencyCode)
+            CouponSummarySection(coupon)
             CouponPerformanceSection()
         }
     }
@@ -96,7 +96,7 @@ fun CouponSummaryExpirationLabel(isActive: Boolean) {
 }
 
 @Composable
-fun CouponSummarySection(coupon: CouponUi, currencyCode: String?) {
+fun CouponSummarySection(coupon: CouponUi) {
     Surface(
         elevation = 1.dp,
         modifier = Modifier
@@ -118,11 +118,6 @@ fun CouponSummarySection(coupon: CouponUi, currencyCode: String?) {
 
             CouponListItemInfo(
                 amount = coupon.amount,
-                discountType = coupon.discountType,
-                currencyCode = currencyCode,
-                includedProductsCount = coupon.includedProductsCount,
-                excludedProductsCount = coupon.excludedProductsCount,
-                includedCategoryCount = coupon.includedCategoryCount,
                 fontSize = 20,
                 color = MaterialTheme.colors.onSurface
             )
@@ -131,8 +126,7 @@ fun CouponSummarySection(coupon: CouponUi, currencyCode: String?) {
 
             CouponDetailsSpendingInfo(
                 coupon.minimumAmount,
-                coupon.maximumAmount,
-                currencyCode
+                coupon.maximumAmount
             )
 
             /* Hardcoded for design work purposes */
