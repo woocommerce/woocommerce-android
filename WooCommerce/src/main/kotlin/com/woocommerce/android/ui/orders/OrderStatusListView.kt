@@ -5,9 +5,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.*
 import com.woocommerce.android.databinding.OrderStatusListItemBinding
 import com.woocommerce.android.databinding.OrderStatusListViewBinding
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
@@ -38,7 +36,7 @@ class OrderStatusListView @JvmOverloads constructor(
     }
 
     fun updateOrderStatusListView(orderStatusModelList: List<WCOrderStatusModel>) {
-        (binding.orderStatusList.adapter as OrderStatusListAdapter).setOrderStatusList(orderStatusModelList)
+        (binding.orderStatusList.adapter as OrderStatusListAdapter).submitList(orderStatusModelList)
     }
 
     class OrderStatusListViewHolder(val viewBinding: OrderStatusListItemBinding) :
@@ -54,17 +52,7 @@ class OrderStatusListView @JvmOverloads constructor(
 
     class OrderStatusListAdapter(
         private val listener: OrderStatusListListener
-    ) : RecyclerView.Adapter<OrderStatusListViewHolder>() {
-        private val orderStatusList: ArrayList<WCOrderStatusModel> = ArrayList()
-
-        fun setOrderStatusList(newList: List<WCOrderStatusModel>) {
-            orderStatusList.clear()
-            orderStatusList.addAll(newList)
-            notifyDataSetChanged()
-        }
-
-        override fun getItemCount() = orderStatusList.size
-
+    ) : ListAdapter<WCOrderStatusModel, OrderStatusListViewHolder>(StatusDiffCallback) {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OrderStatusListViewHolder {
             return OrderStatusListViewHolder(
                 OrderStatusListItemBinding.inflate(
@@ -76,11 +64,27 @@ class OrderStatusListView @JvmOverloads constructor(
         }
 
         override fun onBindViewHolder(holder: OrderStatusListViewHolder, position: Int) {
-            val orderStatusModel = orderStatusList[position]
+            val orderStatusModel = getItem(position)
             holder.bind(orderStatusModel)
             holder.itemView.setOnClickListener {
                 listener.onOrderStatusSelected(orderStatusModel.statusKey)
             }
+        }
+    }
+
+    object StatusDiffCallback : DiffUtil.ItemCallback<WCOrderStatusModel>() {
+        override fun areItemsTheSame(
+            oldItem: WCOrderStatusModel,
+            newItem: WCOrderStatusModel
+        ): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(
+            oldItem: WCOrderStatusModel,
+            newItem: WCOrderStatusModel
+        ): Boolean {
+            return oldItem == newItem
         }
     }
 }
