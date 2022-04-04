@@ -8,7 +8,6 @@ import org.junit.Before
 import org.junit.Test
 
 class CardReaderInteracRefundErrorMapperTest : BaseUnitTest() {
-
     private lateinit var cardReaderInteracRefundErrorMapper: CardReaderInteracRefundErrorMapper
 
     @Before
