@@ -35,6 +35,7 @@ fun CouponDetailsScreen(state: CouponDetailsState) {
             .fillMaxSize()
     ) {
         TopAppBar(
+            backgroundColor = MaterialTheme.colors.surface,
             title = { Text(state.coupon?.code ?: "") },
             navigationIcon = {
                 IconButton(onClick = { /* todo */ }) {
