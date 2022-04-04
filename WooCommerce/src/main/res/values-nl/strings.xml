@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-03-11 13:54:03+0000
+Translation-Revision-Date: 2022-03-28 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="empty_inbox_description">We zien je snel weer terug voor meer tips en kennis over hoe je je winkel kunt laten groeien</string>
+    <string name="empty_inbox_title">Gefeliciteerd, je hebt alles gelezen!</string>
+    <string name="orderstatus_contentDesc_withStatus">Bestelstatus: %s</string>
+    <string name="no_sku">Geen SKU</string>
+    <string name="count">Aantal: %s</string>
+    <string name="plus_one">Plus een</string>
+    <string name="minus_one">Min een</string>
+    <string name="more_menu_button_coupons">Coupons</string>
     <string name="dismiss_inbox_note">Sluiten</string>
     <string name="login_error_xml_rpc_auth_error_communicating">Er is een probleem opgetreden bij het communiceren met de site. Er werd een HTTP-foutcode 401 gegeven.</string>
     <string name="login_error_xml_rpc_cannot_read_site_auth_required">XML-RPC-oproepen lijken geblokkeerd op deze site (foutcode 401). Indien je niet kunt inloggen, tik dan op het help-pictogram om de veelgestelde vragen te bekijken.</string>
@@ -144,8 +152,6 @@ Language: nl
     <string name="order_card_transition_name">order_card_%1$s</string>
     <string name="cash">Contant</string>
     <string name="card">Kaart</string>
-    <string name="plus">Plus</string>
-    <string name="minus">Min</string>
     <string name="tax">Belasting</string>
     <string name="email">E-mail</string>
     <string name="order_creation_add_customer_note">Notitie toevoegen</string>

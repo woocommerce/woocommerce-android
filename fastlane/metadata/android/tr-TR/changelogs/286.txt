@@ -1,4 +1,0 @@
-8.7:
-Sipariş oluşturmaya yönelik bir beta özelliği yayınladığımızı biliyor muydunuz? Menü sekmesine gidin, ayarlar simgesine dokunun ve beta özelliklerine gidin. Sadece ücretleri ve gönderim masraflarını ekledik!
-
-Bazen sipariş notlarının yanlış görünmesine neden olan nadir bir sorunu düzelttik. Bizi bilgilendirdiğiniz için teşekkür ederiz!

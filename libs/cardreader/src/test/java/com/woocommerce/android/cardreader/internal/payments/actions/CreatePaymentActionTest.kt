@@ -53,7 +53,6 @@ internal class CreatePaymentActionTest {
         whenever(paymentIntentParametersFactory.createBuilder(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.setAmount(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.setCurrency(any())).thenReturn(intentParametersBuilder)
-        whenever(intentParametersBuilder.setReceiptEmail(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.setDescription(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.setMetadata(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.build()).thenReturn(mock())
@@ -121,12 +120,12 @@ internal class CreatePaymentActionTest {
     }
 
     @Test
-    fun `when customer email not empty, then PaymentIntent setReceiptEmail invoked`() = runBlockingTest {
+    fun `when customer email not empty, then PaymentIntent setReceiptEmail not invoked`() = runBlockingTest {
         val expectedEmail = "test@test.cz"
 
         action.createPaymentIntent(createPaymentInfo(customerEmail = expectedEmail)).toList()
 
-        verify(intentParametersBuilder).setReceiptEmail(expectedEmail)
+        verify(intentParametersBuilder, never()).setReceiptEmail(any())
     }
 
     @Test
