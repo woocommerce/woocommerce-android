@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.coupons
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -20,6 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,14 +34,21 @@ import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListState
 fun CouponListScreen(viewModel: CouponListViewModel) {
     val couponListState by viewModel.couponsState.observeAsState(CouponListState())
 
-    CouponListScreen(state = couponListState)
+    CouponListScreen(
+        state = couponListState,
+        onCouponClick = viewModel::onCouponClick
+    )
 }
 
 @Composable
-fun CouponListScreen(state: CouponListState) {
+fun CouponListScreen(
+    state: CouponListState,
+    onCouponClick: (Long) -> Unit
+) {
     when {
         state.coupons.isNotEmpty() -> CouponList(
-            coupons = state.coupons
+            coupons = state.coupons,
+            onCouponClick = onCouponClick
         )
         state.coupons.isEmpty() -> EmptyCouponList()
     }
@@ -69,7 +78,10 @@ fun EmptyCouponList() {
 }
 
 @Composable
-fun CouponList(coupons: List<CouponListItem>) {
+fun CouponList(
+    coupons: List<CouponListItem>,
+    onCouponClick: (Long) -> Unit
+) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(0.dp),
         modifier = Modifier
@@ -78,6 +90,7 @@ fun CouponList(coupons: List<CouponListItem>) {
         itemsIndexed(coupons) { index, coupon ->
             CouponListItem(
                 coupon = coupon,
+                onCouponClick = onCouponClick
             )
             if (index < coupons.lastIndex) {
                 Divider(
@@ -92,11 +105,20 @@ fun CouponList(coupons: List<CouponListItem>) {
 }
 
 @Composable
-fun CouponListItem(coupon: CouponListItem) {
+fun CouponListItem(
+    coupon: CouponListItem,
+    onCouponClick: (Long) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clickable(
+                enabled = true,
+                onClickLabel = stringResource(id = R.string.coupon_list_view_coupon),
+                role = Role.Button,
+                onClick = { onCouponClick(0L) }
+            ),
         verticalArrangement = Arrangement.spacedBy(0.dp)
     ) {
         coupon.code?.let {
@@ -117,12 +139,13 @@ fun CouponListItem(coupon: CouponListItem) {
 @Composable
 fun CouponListItemInfo(
     amount: String,
-    affectedArticles: String
+    affectedArticles: String,
 ) {
     Text(
         text = "$amount ${stringResource(id = R.string.coupon_list_item_label_off)} $affectedArticles",
         style = MaterialTheme.typography.body2,
         color = colorResource(id = R.color.color_surface_variant),
+        fontSize = 14.sp,
         modifier = Modifier.padding(vertical = 4.dp)
     )
 }
@@ -185,7 +208,7 @@ fun CouponListPreview() {
         ),
     )
 
-    CouponList(coupons = coupons)
+    CouponList(coupons = coupons) {}
 }
 
 @ExperimentalFoundationApi
