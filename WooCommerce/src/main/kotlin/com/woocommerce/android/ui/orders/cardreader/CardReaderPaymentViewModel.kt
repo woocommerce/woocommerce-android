@@ -454,4 +454,6 @@ class CardReaderPaymentViewModel
     class ShowSnackbarInDialog(@StringRes val message: Int) : Event()
 
     object PlayChaChing : MultiLiveEvent.Event()
+
+    object InteracRefundSuccessful : MultiLiveEvent.Event()
 }

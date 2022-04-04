@@ -80,7 +80,10 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         DeclinedByBackendError.AmountTooSmall, mock(), "dummy msg"
     )
 
-    private val savedState: SavedStateHandle = CardReaderPaymentDialogFragmentArgs(ORDER_ID).initSavedStateHandle()
+    private val savedState: SavedStateHandle = CardReaderPaymentDialogFragmentArgs(
+        ORDER_ID,
+        false
+    ).initSavedStateHandle()
 
     private val errorMapper: CardReaderPaymentErrorMapper = mock()
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
