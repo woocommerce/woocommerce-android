@@ -388,7 +388,6 @@ class IssueRefundViewModel @Inject constructor(
 
                     triggerEvent(IssueRefundEvent.CardReaderPaymentScreen(order.id, true))
 
-
 //                    val resultCall = async(dispatchers.io) {
 //                        return@async when (commonState.refundType) {
 //                            ITEMS -> {
@@ -475,79 +474,79 @@ class IssueRefundViewModel @Inject constructor(
     fun notifyRefundBackend() {
         launch {
             val resultCall = async(dispatchers.io) {
-                        return@async when (commonState.refundType) {
-                            ITEMS -> {
-                                val allItems = mutableListOf<WCRefundItem>()
-                                refundItems.value?.let {
-                                    it.forEach { item -> allItems.add(item.toDataModel()) }
-                                }
-
-                                val selectedShipping = refundShippingLines.value?.filter {
-                                    refundByItemsState.selectedShippingLines
-                                        ?.contains(it.shippingLine.itemId)
-                                        ?: false
-                                }
-                                selectedShipping?.forEach { allItems.add(it.toDataModel()) }
-
-                                val selectedFees = refundFeeLines.value?.filter {
-                                    refundByItemsState.selectedFeeLines
-                                        ?.contains(it.feeLine.id)
-                                        ?: false
-                                }
-                                selectedFees?.forEach { allItems.add(it.toDataModel()) }
-
-                                refundStore.createItemsRefund(
-                                    selectedSite.get(),
-                                    order.id,
-                                    refundSummaryState.refundReason ?: "",
-                                    true,
-                                    gateway.supportsRefunds,
-                                    items = allItems
-                                )
-                            }
-                            AMOUNT -> {
-                                refundStore.createAmountRefund(
-                                    selectedSite.get(),
-                                    order.id,
-                                    commonState.refundTotal,
-                                    refundSummaryState.refundReason ?: "",
-                                    gateway.supportsRefunds
-                                )
-                            }
-                        }
-                    }
-
-                    val result = resultCall.await()
-                    if (result.isError) {
-                        AnalyticsTracker.track(
-                            REFUND_CREATE_FAILED,
-                            mapOf(
-                                AnalyticsTracker.KEY_ORDER_ID to order.id,
-                                AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                                AnalyticsTracker.KEY_ERROR_TYPE to result.error.type.toString(),
-                                AnalyticsTracker.KEY_ERROR_DESC to result.error.message
-                            )
-                        )
-
-                        triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_error))
-                    } else {
-                        AnalyticsTracker.track(
-                            REFUND_CREATE_SUCCESS,
-                            mapOf(
-                                AnalyticsTracker.KEY_ORDER_ID to order.id,
-                                AnalyticsTracker.KEY_ID to result.model?.id
-                            )
-                        )
-
-                        refundSummaryState.refundReason?.let { reason ->
-                            if (reason.isNotBlank()) {
-                                addOrderNote(reason)
-                            }
+                return@async when (commonState.refundType) {
+                    ITEMS -> {
+                        val allItems = mutableListOf<WCRefundItem>()
+                        refundItems.value?.let {
+                            it.forEach { item -> allItems.add(item.toDataModel()) }
                         }
 
-                        triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_successful))
-                        triggerEvent(Exit)
+                        val selectedShipping = refundShippingLines.value?.filter {
+                            refundByItemsState.selectedShippingLines
+                                ?.contains(it.shippingLine.itemId)
+                                ?: false
+                        }
+                        selectedShipping?.forEach { allItems.add(it.toDataModel()) }
+
+                        val selectedFees = refundFeeLines.value?.filter {
+                            refundByItemsState.selectedFeeLines
+                                ?.contains(it.feeLine.id)
+                                ?: false
+                        }
+                        selectedFees?.forEach { allItems.add(it.toDataModel()) }
+
+                        refundStore.createItemsRefund(
+                            selectedSite.get(),
+                            order.id,
+                            refundSummaryState.refundReason ?: "",
+                            true,
+                            gateway.supportsRefunds,
+                            items = allItems
+                        )
                     }
+                    AMOUNT -> {
+                        refundStore.createAmountRefund(
+                            selectedSite.get(),
+                            order.id,
+                            commonState.refundTotal,
+                            refundSummaryState.refundReason ?: "",
+                            gateway.supportsRefunds
+                        )
+                    }
+                }
+            }
+
+            val result = resultCall.await()
+            if (result.isError) {
+                AnalyticsTracker.track(
+                    REFUND_CREATE_FAILED,
+                    mapOf(
+                        AnalyticsTracker.KEY_ORDER_ID to order.id,
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to result.error.type.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to result.error.message
+                    )
+                )
+
+                triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_error))
+            } else {
+                AnalyticsTracker.track(
+                    REFUND_CREATE_SUCCESS,
+                    mapOf(
+                        AnalyticsTracker.KEY_ORDER_ID to order.id,
+                        AnalyticsTracker.KEY_ID to result.model?.id
+                    )
+                )
+
+                refundSummaryState.refundReason?.let { reason ->
+                    if (reason.isNotBlank()) {
+                        addOrderNote(reason)
+                    }
+                }
+
+                triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_successful))
+                triggerEvent(Exit)
+            }
         }
     }
 
@@ -1018,12 +1017,14 @@ class IssueRefundViewModel @Inject constructor(
             val message: String,
             val confirmButtonTitle: String
         ) : IssueRefundEvent()
+
         data class ShowRefundSummary(val refundType: RefundType) : IssueRefundEvent()
         data class ShowRefundAmountDialog(
             val refundAmount: BigDecimal,
             val maxRefund: BigDecimal,
             val message: String
         ) : IssueRefundEvent()
+
         data class OpenUrl(val url: String) : IssueRefundEvent()
         object HideValidationError : IssueRefundEvent()
         data class CardReaderPaymentScreen(val orderId: Long, val isRefund: Boolean) : IssueRefundEvent()
