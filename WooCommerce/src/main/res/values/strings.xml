@@ -1863,6 +1863,7 @@
     <string name="inbox_note_recency_date_time">Created on %s</string>
     <string name="empty_inbox_title">Congrats, you’ve read everything!</string>
     <string name="empty_inbox_description">Come back soon for more tips and insights on growing your store</string>
+    <string name="inbox_note_survey_actioned">Thank you for your feedback!</string>
 
     <!-- coupons -->
     <string name="coupons">Coupons</string>

@@ -11,6 +11,8 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.compose.utils.toAnnotatedString
 import com.woocommerce.android.ui.inbox.domain.*
+import com.woocommerce.android.ui.inbox.domain.InboxNote.NoteType.SURVEY
+import com.woocommerce.android.ui.inbox.domain.InboxNote.Status.ACTIONED
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -64,6 +66,8 @@ class InboxViewModel @Inject constructor(
             description = getContentFromHtml(description),
             dateCreated = formatNoteCreationDate(dateCreated),
             actions = mapToInboxActionUI(),
+            isSurvey = type == SURVEY,
+            isActioned = status == ACTIONED
         )
 
     private fun InboxNote.mapToInboxActionUI(): List<InboxNoteActionUi> {
@@ -160,7 +164,9 @@ class InboxViewModel @Inject constructor(
         val title: String,
         val description: AnnotatedString,
         val dateCreated: String,
-        val actions: List<InboxNoteActionUi>
+        val actions: List<InboxNoteActionUi>,
+        val isSurvey: Boolean,
+        val isActioned: Boolean
     )
 
     data class InboxNoteActionUi(

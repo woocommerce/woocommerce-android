@@ -6,13 +6,21 @@ data class InboxNote(
     val description: String,
     val dateCreated: String,
     val status: Status,
-    val actions: List<InboxNoteAction>
+    val actions: List<InboxNoteAction>,
+    val type: NoteType
 ) {
     enum class Status {
-        Unactioned,
-        Actioned,
-        Snoozed,
-        Unknown
+        UNACTIONED,
+        ACTIONED,
+        SNOOZED,
+        UNKNOWN
+    }
+
+    enum class NoteType {
+        INFO,
+        MARKETING,
+        UPDATE,
+        SURVEY
     }
 }
 

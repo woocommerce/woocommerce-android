@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.inbox
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -7,10 +8,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -117,7 +116,10 @@ fun InboxNoteRow(note: InboxNoteUi) {
             text = note.description,
             style = MaterialTheme.typography.body2
         )
-        InboxNoteActionsRow(note.actions)
+        when {
+            note.isSurvey -> InboxNoteSurveyActionsRow(note.actions, note.isActioned)
+            else -> InboxNoteActionsRow(note.actions)
+        }
     }
 }
 
@@ -125,13 +127,34 @@ fun InboxNoteRow(note: InboxNoteUi) {
 private fun InboxNoteActionsRow(actions: List<InboxNoteActionUi>) {
     LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
         items(actions) { action ->
-            InboxNoteAction(inboxAction = action)
+            InboxNoteTextAction(inboxAction = action)
         }
     }
 }
 
 @Composable
-fun InboxNoteAction(inboxAction: InboxNoteActionUi) {
+private fun InboxNoteSurveyActionsRow(actions: List<InboxNoteActionUi>, isActioned: Boolean) {
+    if (isActioned) {
+        Text(
+            text = stringResource(id = R.string.inbox_note_survey_actioned),
+            style = MaterialTheme.typography.body2
+        )
+    } else {
+        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            actions
+
+                .forEachIndexed { index, inboxNoteActionUi ->
+                    if (index < 2)
+                        InboxNoteSurveyAction(inboxNoteActionUi)
+                    else
+                        InboxNoteTextAction(inboxNoteActionUi)
+                }
+        }
+    }
+}
+
+@Composable
+fun InboxNoteTextAction(inboxAction: InboxNoteActionUi) {
     TextButton(
         onClick = { inboxAction.onClick(inboxAction.id, inboxAction.parentNoteId) },
     ) {
@@ -139,6 +162,17 @@ fun InboxNoteAction(inboxAction: InboxNoteActionUi) {
             text = inboxAction.label.uppercase(),
             color = colorResource(id = inboxAction.textColor)
         )
+    }
+}
+
+@Composable
+fun InboxNoteSurveyAction(inboxAction: InboxNoteActionUi) {
+    OutlinedButton(
+        onClick = { inboxAction.onClick(inboxAction.id, inboxAction.parentNoteId) },
+        border = BorderStroke(1.dp, colorResource(id = R.color.color_surface_variant)),
+        shape = RoundedCornerShape(10), // = 50% percent
+    ) {
+        Text(text = inboxAction.label)
     }
 }
 
@@ -270,7 +304,9 @@ class SampleInboxProvider : PreviewParameterProvider<InboxState> {
                             onClick = { _, _ -> },
                             url = ""
                         )
-                    )
+                    ),
+                    isActioned = false,
+                    isSurvey = false
                 ),
                 InboxNoteUi(
                     id = 2,
@@ -297,7 +333,9 @@ class SampleInboxProvider : PreviewParameterProvider<InboxState> {
                             onClick = { _, _ -> },
                             url = ""
                         )
-                    )
+                    ),
+                    isActioned = false,
+                    isSurvey = true
                 )
             )
         )
