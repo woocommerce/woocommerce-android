@@ -29,7 +29,9 @@
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_cardReaderStatusCheckerDialogFragment_to_cardReaderConnectDialogFragment"
-            app:destination="@id/cardReaderConnectDialogFragment" />
+            app:destination="@id/cardReaderConnectDialogFragment"
+            app:popUpTo="@+id/cardReaderStatusCheckerDialogFragment"
+            app:popUpToInclusive="true" />
     </dialog>
 
     <fragment

@@ -961,26 +961,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given payment flow, when back clicked, then exit flow invoked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            val viewModel = initVM(CardReaderFlowParam.ConnectAndAcceptPayment(1L))
-
-            viewModel.onBackClicked()
-
-            assertThat(viewModel.event.value).isEqualTo(ExitFlow)
-        }
-
-    @Test
-    fun `given hub flow, when back clicked, then exit with resulkt invoked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            val viewModel = initVM(CardReaderFlowParam.CardReadersHub)
-
-            viewModel.onBackClicked()
-
-            assertThat(viewModel.event.value).isEqualTo(Event.ExitWithResult(false))
-        }
-
-    @Test
     fun `when app in scanning state, then correct labels and illustrations shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             init(scanState = SCANNING)

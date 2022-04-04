@@ -24,23 +24,29 @@
             android:layout_marginTop="0dp"
             android:layout_marginBottom="0dp"
             android:gravity="center"
-            android:text="@string/card_reader_connect_scanning_header"
+            android:text="@string/card_reader_onboarding_title"
             android:textColor="@color/color_on_surface_high"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/illustration"
+        <FrameLayout
+            android:id="@+id/progress_bar_wrapper"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="@dimen/margin_extra_extra_medium_large"
-            android:contentDescription="@null"
+            android:paddingTop="@dimen/major_175"
+            android:paddingBottom="@dimen/major_150"
+            app:layout_constraintBottom_toTopOf="@id/hint_label"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/header_label"
-            app:srcCompat="@drawable/img_card_reader_scanning" />
+            app:layout_constraintTop_toBottomOf="@id/header_label">
+
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="@dimen/progress_bar_large"
+                android:layout_height="@dimen/progress_bar_large"
+                android:layout_marginTop="@dimen/minor_25" />
+        </FrameLayout>
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/hint_label"
@@ -49,22 +55,25 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_125"
             android:layout_marginEnd="@dimen/major_125"
+            android:layout_marginBottom="@dimen/minor_75"
             android:gravity="center"
-            android:text="@string/card_reader_connect_scanning_hint"
-            app:layout_constraintBottom_toTopOf="@id/secondary_action_btn"
+            android:text="@string/card_reader_onboarding_loading"
+            app:layout_constraintBottom_toTopOf="@id/hint_label_bottom"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/illustration" />
+            app:layout_constraintStart_toStartOf="parent" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/secondary_action_btn"
-            style="@style/Woo.Button.Outlined"
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/hint_label_bottom"
+            style="@style/Woo.TextView.Body2"
             android:layout_width="0dp"
+            android:text="@string/please_wait"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/major_200"
-            android:text="@string/cancel"
+            android:layout_marginBottom="@dimen/minor_75"
+            android:layout_marginHorizontal="@dimen/major_125"
+            android:gravity="center_horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
