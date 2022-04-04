@@ -127,7 +127,7 @@ class PrintShippingLabelCustomsFormFragment :
 
 class PrintCustomsFormAdapter(
     private val onPrintClicked: (String) -> Unit
-) : ListAdapter<String, PrintCustomsFormViewHolder>(PrintCustomsFormDiffCallback) {
+) : ListAdapter<String, PrintCustomsFormViewHolder>(PrintCustomsFormDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PrintCustomsFormViewHolder {
         return PrintCustomsFormViewHolder(
             PrintCustomsFormListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -151,7 +151,7 @@ class PrintCustomsFormAdapter(
         }
     }
 
-    object PrintCustomsFormDiffCallback : DiffUtil.ItemCallback<String>() {
+    private class PrintCustomsFormDiffCallback : DiffUtil.ItemCallback<String>() {
         override fun areItemsTheSame(
             oldItem: String,
             newItem: String

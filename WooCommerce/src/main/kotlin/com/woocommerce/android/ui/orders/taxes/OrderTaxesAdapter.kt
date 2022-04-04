@@ -13,7 +13,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 class OrderTaxesAdapter(
     private val currencyFormatter: CurrencyFormatter,
     private val currencyCode: String
-) : ListAdapter<Order.TaxLine, OrderTaxesAdapter.ViewHolder>(TaxLineDiffCallBack()) {
+) : ListAdapter<Order.TaxLine, OrderTaxesAdapter.ViewHolder>(TaxLineDiffCallBack) {
     init {
         setHasStableIds(true)
     }
@@ -49,7 +49,7 @@ class OrderTaxesAdapter(
         }
     }
 
-    private class TaxLineDiffCallBack : DiffUtil.ItemCallback<Order.TaxLine>() {
+    object TaxLineDiffCallBack : DiffUtil.ItemCallback<Order.TaxLine>() {
         override fun areItemsTheSame(
             oldItem: Order.TaxLine,
             newItem: Order.TaxLine

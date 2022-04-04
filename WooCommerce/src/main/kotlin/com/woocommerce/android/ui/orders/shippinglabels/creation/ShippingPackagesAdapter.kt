@@ -14,7 +14,7 @@ import com.woocommerce.android.model.ShippingPackage
 class ShippingPackagesAdapter(
     private val lengthUnit: String,
     private val onPackageSelected: (ShippingPackage) -> Unit
-) : ListAdapter<ShippingPackagesAdapter.ListItem, ViewHolder>(ShippingPackagesDiffCallBack()) {
+) : ListAdapter<ShippingPackagesAdapter.ListItem, ViewHolder>(ShippingPackagesDiffCallBack) {
     companion object {
         private const val VIEW_TYPE_HEADER = 0
         private const val VIEW_TYPE_PACKAGE = 1
@@ -86,7 +86,7 @@ class ShippingPackagesAdapter(
         }
     }
 
-    private class ShippingPackagesDiffCallBack : DiffUtil.ItemCallback<ListItem>() {
+    object ShippingPackagesDiffCallBack : DiffUtil.ItemCallback<ListItem>() {
         override fun areItemsTheSame(
             oldItem: ListItem,
             newItem: ListItem
