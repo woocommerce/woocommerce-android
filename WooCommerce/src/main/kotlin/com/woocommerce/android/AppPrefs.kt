@@ -175,9 +175,7 @@ object AppPrefs {
         setDeletableInt(UndeletablePrefKey.CANCELLED_APP_VERSION_CODE, versionCode)
     }
 
-    fun getFCMToken(): String {
-        return getString(DeletableSitePrefKey.WC_PREF_NOTIFICATIONS_TOKEN)
-    }
+    fun getFCMToken() = getString(DeletableSitePrefKey.WC_PREF_NOTIFICATIONS_TOKEN)
 
     fun setFCMToken(token: String) {
         setString(DeletableSitePrefKey.WC_PREF_NOTIFICATIONS_TOKEN, token)
