@@ -37,16 +37,11 @@ class ProductTypesBottomSheetAdapter(
     override fun getItemCount() = options.size
 
     fun setProductTypeOptions(optionList: List<ProductTypesBottomSheetUiItem>) {
-        if (options.isEmpty()) {
-            options.addAll(optionList)
-            notifyDataSetChanged()
-        } else {
-            val diffResult =
-                DiffUtil.calculateDiff(ProductTypesBottomSheetItemDiffUtil(options, optionList))
-            options.clear()
-            options.addAll(optionList)
-            diffResult.dispatchUpdatesTo(this)
-        }
+        val diffResult =
+            DiffUtil.calculateDiff(ProductTypesBottomSheetItemDiffUtil(options, optionList))
+        options.clear()
+        options.addAll(optionList)
+        diffResult.dispatchUpdatesTo(this)
     }
 
     class ProductTypesBottomSheetViewHolder(val viewBinder: ProductDetailBottomSheetListItemBinding) :
