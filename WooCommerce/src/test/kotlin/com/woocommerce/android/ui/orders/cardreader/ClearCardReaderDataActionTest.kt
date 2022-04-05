@@ -10,10 +10,10 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
-class ClearCardReaderDataTest : BaseUnitTest() {
+class ClearCardReaderDataActionTest : BaseUnitTest() {
     private val cardReaderManager: CardReaderManager = mock()
 
-    private val sut = ClearCardReaderData(cardReaderManager)
+    private val sut = ClearCardReaderDataAction(cardReaderManager)
 
     @Test
     fun `Given card reader is initialised, when clearing card reader data, cache is cleared`() =

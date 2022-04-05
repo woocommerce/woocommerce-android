@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.cardreader
+package com.woocommerce.android.ui.orders.cardreader.receipt
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -14,11 +14,11 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.PrintReceipt
-import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.SendReceipt
-import com.woocommerce.android.ui.orders.cardreader.ReceiptPreviewViewModel.ReceiptPreviewEvent.LoadUrl
-import com.woocommerce.android.ui.orders.cardreader.ReceiptPreviewViewModel.ReceiptPreviewViewState.Content
-import com.woocommerce.android.ui.orders.cardreader.ReceiptPreviewViewModel.ReceiptPreviewViewState.Loading
+import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptEvent.PrintReceipt
+import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptEvent.SendReceipt
+import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptPreviewViewModel.ReceiptPreviewEvent.LoadUrl
+import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptPreviewViewModel.ReceiptPreviewViewState.Content
+import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptPreviewViewModel.ReceiptPreviewViewState.Loading
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.CANCELLED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.FAILED
