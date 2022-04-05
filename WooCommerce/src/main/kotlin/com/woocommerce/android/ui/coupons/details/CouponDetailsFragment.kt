@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
+import androidx.navigation.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCouponDetailsBinding
 import com.woocommerce.android.ui.base.BaseFragment
@@ -32,7 +33,9 @@ class CouponDetailsFragment : BaseFragment(R.layout.fragment_coupon_details) {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    CouponDetailsScreen(viewModel)
+                    CouponDetailsScreen(viewModel) {
+                        findNavController().popBackStack()
+                    }
                 }
             }
         }

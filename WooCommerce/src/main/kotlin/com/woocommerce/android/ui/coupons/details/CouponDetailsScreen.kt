@@ -22,23 +22,30 @@ import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponD
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponUi
 
 @Composable
-fun CouponDetailsScreen(viewModel: CouponDetailsViewModel) {
+fun CouponDetailsScreen(
+    viewModel: CouponDetailsViewModel,
+    onBackPress: () -> Boolean
+) {
     val couponSummaryState by viewModel.couponState.observeAsState(CouponDetailsState())
 
-    CouponDetailsScreen(state = couponSummaryState)
+    CouponDetailsScreen(couponSummaryState, onBackPress)
 }
 
 @Composable
-fun CouponDetailsScreen(state: CouponDetailsState) {
+fun CouponDetailsScreen(
+    state: CouponDetailsState,
+    onBackPress: () -> Boolean
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
     ) {
+
         TopAppBar(
             backgroundColor = MaterialTheme.colors.surface,
             title = { Text(state.coupon?.code ?: "") },
             navigationIcon = {
-                IconButton(onClick = { /* todo */ }) {
+                IconButton(onClick = { onBackPress() } ) {
                     Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
                 }
             },
