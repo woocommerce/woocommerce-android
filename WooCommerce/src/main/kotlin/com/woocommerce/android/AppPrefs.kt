@@ -512,10 +512,9 @@ object AppPrefs {
         remoteSiteId: Long,
         selfHostedSiteId: Long
     ) {
-        PreferenceUtils.setString(
-            getPreferences(),
+        setString(
             getCardReaderStatementDescriptorKey(localSiteId, remoteSiteId, selfHostedSiteId),
-            statementDescriptor
+            statementDescriptor.orEmpty()
         )
     }
 
@@ -523,21 +522,19 @@ object AppPrefs {
         localSiteId: Int,
         remoteSiteId: Long,
         selfHostedSiteId: Long
-    ): String? = PreferenceUtils.getString(
-        getPreferences(),
+    ): String? = getString(
         getCardReaderStatementDescriptorKey(
             localSiteId,
             remoteSiteId,
             selfHostedSiteId
-        ),
-        null
-    )
+        )
+    ).takeIf { it.isNotEmpty() }
 
     private fun getCardReaderStatementDescriptorKey(
         localSiteId: Int,
         remoteSiteId: Long,
         selfHostedSiteId: Long
-    ) = "$CARD_READER_STATEMENT_DESCRIPTOR:$localSiteId:$remoteSiteId:$selfHostedSiteId"
+    ) = PrefKeyString("$CARD_READER_STATEMENT_DESCRIPTOR:$localSiteId:$remoteSiteId:$selfHostedSiteId")
 
     fun getJetpackBenefitsDismissalDate(): Long {
         return getLong(DeletableSitePrefKey.JETPACK_BENEFITS_BANNER_DISMISSAL_DATE, 0L)
