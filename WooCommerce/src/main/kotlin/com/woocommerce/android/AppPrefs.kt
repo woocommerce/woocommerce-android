@@ -166,7 +166,7 @@ object AppPrefs {
     }
 
     private fun getProductSortingKey(currentSiteId: Int) =
-        PrefKeyString("${PRODUCT_SORTING_PREFIX}:$currentSiteId")
+        PrefKeyString("$PRODUCT_SORTING_PREFIX:$currentSiteId")
 
     fun getLastAppVersionCode(): Int {
         return getDeletableInt(UndeletablePrefKey.LAST_APP_VERSION_CODE)
