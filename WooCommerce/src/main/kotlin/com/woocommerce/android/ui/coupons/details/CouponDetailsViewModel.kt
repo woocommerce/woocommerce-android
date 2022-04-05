@@ -9,6 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.onStart
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -31,6 +32,8 @@ class CouponDetailsViewModel @Inject constructor(
 
     val couponState = combine(couponDetails, couponPerformance) { details, _ ->
         CouponDetailsState(coupon = details)
+    }.onStart {
+        emit(CouponDetailsState(isLoading = true))
     }.catch {
         // TODO trigger an error Snackbar and navigate up
     }.asLiveData()
