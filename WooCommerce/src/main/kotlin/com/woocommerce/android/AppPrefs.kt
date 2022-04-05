@@ -237,17 +237,16 @@ object AppPrefs {
     fun setUserEmail(email: String) = setString(DeletablePrefKey.USER_EMAIL, email)
 
     fun getReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
-        PreferenceUtils.getString(getPreferences(), getReceiptKey(localSiteId, remoteSiteId, selfHostedSiteId, orderId))
+        getString(getReceiptKey(localSiteId, remoteSiteId, selfHostedSiteId, orderId))
 
     fun setReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long, url: String) =
-        PreferenceUtils.setString(
-            getPreferences(),
+        setString(
             getReceiptKey(localSiteId, remoteSiteId, selfHostedSiteId, orderId),
             url
         )
 
     private fun getReceiptKey(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
-        "$RECEIPT_PREFIX:$localSiteId:$remoteSiteId:$selfHostedSiteId:$orderId"
+        PrefKeyString("$RECEIPT_PREFIX:$localSiteId:$remoteSiteId:$selfHostedSiteId:$orderId")
 
     fun setLastConnectedCardReaderId(readerId: String) =
         setString(UndeletablePrefKey.LAST_CONNECTED_CARD_READER_ID, readerId)
