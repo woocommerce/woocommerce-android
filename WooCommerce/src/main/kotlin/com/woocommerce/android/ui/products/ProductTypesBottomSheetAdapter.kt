@@ -32,7 +32,7 @@ class ProductTypesBottomSheetAdapter(
         holder.bind(options[position], onItemClicked)
     }
 
-    override fun getItemId(position: Int) = position.toLong()
+    override fun getItemId(position: Int) = options[position].type.ordinal.toLong()
 
     override fun getItemCount() = options.size
 
