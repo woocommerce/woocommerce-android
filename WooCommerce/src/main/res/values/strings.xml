@@ -1883,6 +1883,9 @@
     <string name="coupon_details_performance_amount_heading">Amount</string>
     <string name="coupon_details_menu_copy">Copy Coupon Code</string>
     <string name="coupon_details_menu_share">Share Coupon</string>
+    <string name="coupon_details_copy_clipboard_label">Coupon Code</string>
+    <string name="coupon_details_copy_success">Coupon code copied to clipboard.</string>
+    <string name="coupon_details_copy_error">Error copying coupon code to clipboard.</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>

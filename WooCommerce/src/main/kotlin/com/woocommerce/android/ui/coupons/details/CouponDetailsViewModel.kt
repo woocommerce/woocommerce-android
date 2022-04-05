@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.coupons.details
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -40,6 +41,10 @@ class CouponDetailsViewModel @Inject constructor(
         )
     }
 
+    fun onCopyButtonClick(couponCode: String) {
+        triggerEvent(CouponDetailsEvent.CopyCodeEvent(couponCode))
+    }
+
     data class CouponDetailsState(
         val isLoading: Boolean = false,
         val coupon: CouponUi? = null
@@ -54,4 +59,8 @@ class CouponDetailsViewModel @Inject constructor(
         val formattedSpendingInfo: String,
         val isActive: Boolean
     )
+
+    sealed class CouponDetailsEvent : MultiLiveEvent.Event() {
+        data class CopyCodeEvent(val couponCode: String) : MultiLiveEvent.Event()
+    }
 }
