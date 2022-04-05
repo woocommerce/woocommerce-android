@@ -7,8 +7,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,6 +39,7 @@ fun CouponDetailsScreen(
         modifier = Modifier
             .fillMaxSize()
     ) {
+        var showMenu by remember { mutableStateOf(false) }
 
         TopAppBar(
             backgroundColor = MaterialTheme.colors.surface,
@@ -50,8 +50,19 @@ fun CouponDetailsScreen(
                 }
             },
             actions = {
-                IconButton(onClick = { /* todo */ }) {
+                IconButton(onClick = { showMenu = !showMenu }) {
                     Icon(Icons.Filled.MoreVert, contentDescription = "Coupons Menu")
+                }
+                DropdownMenu(
+                    expanded = showMenu,
+                    onDismissRequest = { showMenu = false }
+                ) {
+                    DropdownMenuItem(onClick = { /*TODO*/ }) {
+                        Text(stringResource(id = R.string.coupon_details_menu_copy))
+                    }
+                    DropdownMenuItem(onClick = { /*TODO*/ }) {
+                        Text(stringResource(id = R.string.coupon_details_menu_share))
+                    }
                 }
             }
         )
