@@ -16,13 +16,14 @@ class CouponDetailsRepository @Inject constructor(
     private val store: CouponStore
 ) {
     // TODO This should return a [com.woocommerce.android.model.Coupon] instead of [CouponUi]
-    @Suppress("MagicNumber")
+    @Suppress("MagicNumber", "UnusedPrivateMember")
     fun loadCoupon(couponId: Long): Flow<CouponUi> {
         return flowOf(
             CouponUi(
                 id = 1,
                 code = "ABCDE",
                 amount = BigDecimal(25),
+                usageCount = 10,
                 formattedDiscount = "25%",
                 affectedArticles = "Everything excl. 5 products",
                 formattedSpendingInfo = "Minimum spend of $20 \n\nMaximum spend of $200 \n",
