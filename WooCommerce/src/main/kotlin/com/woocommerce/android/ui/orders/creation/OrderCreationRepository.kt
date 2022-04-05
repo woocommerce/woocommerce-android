@@ -76,13 +76,7 @@ class OrderCreationRepository @Inject constructor(
     }
 
     suspend fun createOrUpdateDraft(order: Order): Result<Order> {
-        val status = if (isAutoDraftSupported) {
-            WCOrderStatusModel(statusKey = AUTO_DRAFT)
-        } else {
-            WCOrderStatusModel(statusKey = CoreOrderStatus.PENDING.value)
-        }
         val request = UpdateOrderRequest(
-            status = status,
             lineItems = order.items.map { item ->
                 LineItem(
                     id = item.itemId.takeIf { it != 0L },
@@ -102,7 +96,13 @@ class OrderCreationRepository @Inject constructor(
         )
 
         val result = if (order.id == 0L) {
-            orderUpdateStore.createOrder(selectedSite.get(), request)
+            val status = if (isAutoDraftSupported) {
+                WCOrderStatusModel(statusKey = AUTO_DRAFT)
+            } else {
+                WCOrderStatusModel(statusKey = CoreOrderStatus.PENDING.value)
+            }
+
+            orderUpdateStore.createOrder(selectedSite.get(), request.copy(status = status))
         } else {
             orderUpdateStore.updateOrder(selectedSite.get(), order.id, request)
         }
