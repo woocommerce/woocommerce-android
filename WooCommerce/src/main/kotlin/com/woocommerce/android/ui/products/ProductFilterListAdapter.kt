@@ -44,7 +44,7 @@ class ProductFilterListAdapter(
         }
     }
 
-    override fun getItemId(position: Int) = position.toLong()
+    override fun getItemId(position: Int) = filterList[position].filterItemKey.ordinal.toLong()
 
     override fun getItemCount() = filterList.size
 
