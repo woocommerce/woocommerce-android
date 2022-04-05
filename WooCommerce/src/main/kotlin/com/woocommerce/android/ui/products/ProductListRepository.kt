@@ -50,11 +50,11 @@ class ProductListRepository @Inject constructor(
     var productSortingChoice: ProductSorting
         get() {
             return ProductSorting.valueOf(
-                appPrefsWrapper.getProductSortingChoice() ?: TITLE_ASC.name
+                appPrefsWrapper.getProductSortingChoice(selectedSite.getSelectedSiteId()) ?: TITLE_ASC.name
             )
         }
         set(value) {
-            appPrefsWrapper.setProductSortingChoice(value.name)
+            appPrefsWrapper.setProductSortingChoice(selectedSite.getSelectedSiteId(), value.name)
         }
 
     init {

@@ -25,6 +25,9 @@ import java.util.Date
 object AppPrefs {
     interface PrefKey
 
+    @JvmInline
+    value class PrefKeyString(val key: String) : PrefKey
+
     private lateinit var context: Context
 
     /**
@@ -58,6 +61,7 @@ object AppPrefs {
         ORDER_FILTER_PREFIX,
         ORDER_FILTER_CUSTOM_DATE_RANGE_START,
         ORDER_FILTER_CUSTOM_DATE_RANGE_END,
+        PRODUCT_SORTING_PREFIX,
     }
 
     /**
@@ -109,9 +113,6 @@ object AppPrefs {
 
         // The last version of the app where an announcement was shown,
         LAST_VERSION_WITH_ANNOUNCEMENT,
-
-        // The user choice on how to sort products
-        PRODUCT_SORTING_PREF_KEY,
     }
 
     fun init(context: Context) {
@@ -155,9 +156,13 @@ object AppPrefs {
         get() = getBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, false)
         set(value) = setBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, value)
 
-    var productSortingChoice: String
-        get() = getString(UndeletablePrefKey.PRODUCT_SORTING_PREF_KEY)
-        set(value) = setString(UndeletablePrefKey.PRODUCT_SORTING_PREF_KEY, value)
+    fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId))
+
+    fun setProductSortingChoice(currentSiteId: Int, value: String) {
+        setString(getProductSortingKey(currentSiteId), value)
+    }
+
+    private fun getProductSortingKey(currentSiteId: Int) = PrefKeyString("$ORDER_FILTER_PREFIX:$currentSiteId")
 
     fun getLastAppVersionCode(): Int {
         return getDeletableInt(UndeletablePrefKey.LAST_APP_VERSION_CODE)
