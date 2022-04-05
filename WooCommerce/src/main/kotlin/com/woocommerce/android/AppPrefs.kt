@@ -9,6 +9,7 @@ import android.content.SharedPreferences.Editor
 import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.*
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.*
+import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.products.ProductType
@@ -159,7 +160,7 @@ object AppPrefs {
         get() = getBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, false)
         set(value) = setBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, value)
 
-    fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId))
+    fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 
     fun setProductSortingChoice(currentSiteId: Int, value: String) {
         setString(getProductSortingKey(currentSiteId), value)
@@ -468,7 +469,7 @@ object AppPrefs {
                 selfHostedSiteId
             )
         )
-        return storedValue.ifEmpty { null }?.let { PluginType.valueOf(it) }
+        return storedValue.orNullIfEmpty()?.let { PluginType.valueOf(it) }
     }
 
     fun setCardReaderOnboardingStatusAndPreferredPlugin(
@@ -522,7 +523,7 @@ object AppPrefs {
             remoteSiteId,
             selfHostedSiteId
         )
-    ).takeIf { it.isNotEmpty() }
+    ).orNullIfEmpty()
 
     private fun getCardReaderStatementDescriptorKey(
         localSiteId: Int,
