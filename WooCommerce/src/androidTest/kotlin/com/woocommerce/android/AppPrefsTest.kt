@@ -388,4 +388,16 @@ class AppPrefsTest {
             )
         ).isEqualTo(null)
     }
+
+    @Test
+    fun givenSpecificSiteIdWhenProductSortingChoiceIsSetThenGetReturnsStoredValue() {
+        val siteIds = 1 to 2
+        val productSortingChoices = "TITLE_ASC" to "TITLE_DESC"
+
+        AppPrefs.setProductSortingChoice(siteIds.first, productSortingChoices.first)
+        AppPrefs.setProductSortingChoice(siteIds.second, productSortingChoices.second)
+
+        assertThat(AppPrefs.getProductSortingChoice(siteIds.first)).isEqualTo(productSortingChoices.first)
+        assertThat(AppPrefs.getProductSortingChoice(siteIds.second)).isEqualTo(productSortingChoices.second)
+    }
 }
