@@ -5,6 +5,7 @@ import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForCan
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUnsupportedCountry
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.cardreader.payment.CardReaderPaymentCurrencySupportedChecker
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before

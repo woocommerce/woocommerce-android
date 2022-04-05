@@ -22,6 +22,7 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.util.*
 import com.woocommerce.android.util.FeatureFlag.CARD_READER
 import com.woocommerce.android.util.WooLog.T
@@ -99,7 +100,10 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
 
         updateStoreSettings()
         binding.optionCardReaderPayments.setOnClickListener {
-            findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_cardReaderOnboardingFragment)
+            val action = MainSettingsFragmentDirections.actionMainSettingsFragmentToCardReaderFlow(
+                CardReaderFlowParam.CardReadersHub
+            )
+            findNavController().navigateSafely(action)
         }
 
         binding.optionHelpAndSupport.setOnClickListener {
