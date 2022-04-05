@@ -252,8 +252,7 @@ object AppPrefs {
     fun setLastConnectedCardReaderId(readerId: String) =
         setString(UndeletablePrefKey.LAST_CONNECTED_CARD_READER_ID, readerId)
 
-    fun getLastConnectedCardReaderId() =
-        PreferenceUtils.getString(getPreferences(), UndeletablePrefKey.LAST_CONNECTED_CARD_READER_ID.toString(), null)
+    fun getLastConnectedCardReaderId() = getString(UndeletablePrefKey.LAST_CONNECTED_CARD_READER_ID).orNullIfEmpty()
 
     fun removeLastConnectedCardReaderId() = remove(UndeletablePrefKey.LAST_CONNECTED_CARD_READER_ID)
 
