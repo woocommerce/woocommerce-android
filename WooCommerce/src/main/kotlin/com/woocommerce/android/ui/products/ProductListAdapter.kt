@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.ListAdapter
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_PRODUCT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ProductListItemBinding
@@ -16,9 +16,7 @@ typealias OnProductClickListener = (remoteProductId: Long, sharedView: View?) ->
 class ProductListAdapter(
     private inline val clickListener: OnProductClickListener? = null,
     private val loadMoreListener: OnLoadMoreListener
-) : RecyclerView.Adapter<ProductItemViewHolder>() {
-    private val productList = ArrayList<Product>()
-
+) : ListAdapter<Product, ProductItemViewHolder>(ProductItemDiffCallback) {
     // allow the selection library to track the selections of the user
     var tracker: SelectionTracker<Long>? = null
 
@@ -26,9 +24,7 @@ class ProductListAdapter(
         setHasStableIds(true)
     }
 
-    override fun getItemId(position: Int) = productList[position].remoteId
-
-    override fun getItemCount() = productList.size
+    override fun getItemId(position: Int) = getItem(position).remoteId
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductItemViewHolder {
         return ProductItemViewHolder(
@@ -41,7 +37,7 @@ class ProductListAdapter(
     }
 
     override fun onBindViewHolder(holder: ProductItemViewHolder, position: Int) {
-        val product = productList[position]
+        val product = getItem(position)
 
         holder.bind(product, tracker?.isSelected(product.remoteId) ?: false)
 
@@ -55,15 +51,19 @@ class ProductListAdapter(
         }
     }
 
-    fun setProductList(products: List<Product>) {
-        if (productList.isEmpty()) {
-            productList.addAll(products)
-            notifyDataSetChanged()
-        } else {
-            val diffResult = DiffUtil.calculateDiff(ProductItemDiffUtil(productList, products))
-            productList.clear()
-            productList.addAll(products)
-            diffResult.dispatchUpdatesTo(this)
+    object ProductItemDiffCallback : DiffUtil.ItemCallback<Product>() {
+        override fun areItemsTheSame(
+            oldItem: Product,
+            newItem: Product
+        ): Boolean {
+            return oldItem.remoteId == newItem.remoteId
+        }
+
+        override fun areContentsTheSame(
+            oldItem: Product,
+            newItem: Product
+        ): Boolean {
+            return oldItem == newItem
         }
     }
 }
