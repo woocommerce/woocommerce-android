@@ -565,28 +565,22 @@ object AppPrefs {
         PrefKeyString("$ORDER_FILTER_PREFIX:$currentSiteId:$filterCategory")
 
     fun getOrderFilterCustomDateRange(selectedSiteId: Int): Pair<Long, Long> {
-        val startDateMillis = PreferenceUtils.getLong(
-            getPreferences(),
-            key = "${DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_START}:$selectedSiteId",
-            default = 0
+        val startDateMillis = getLong(
+            PrefKeyString("$ORDER_FILTER_CUSTOM_DATE_RANGE_START:$selectedSiteId")
         )
-        val endDateMillis = PreferenceUtils.getLong(
-            getPreferences(),
-            key = "${DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_END}:$selectedSiteId",
-            default = 0
+        val endDateMillis = getLong(
+            PrefKeyString("$ORDER_FILTER_CUSTOM_DATE_RANGE_END:$selectedSiteId")
         )
         return Pair(startDateMillis, endDateMillis)
     }
 
     fun setOrderFilterCustomDateRange(selectedSiteId: Int, startDateMillis: Long, endDateMillis: Long) {
-        PreferenceUtils.setLong(
-            getPreferences(),
-            "${DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_START}:$selectedSiteId",
+        setLong(
+            PrefKeyString("$ORDER_FILTER_CUSTOM_DATE_RANGE_START:$selectedSiteId"),
             startDateMillis
         )
-        PreferenceUtils.setLong(
-            getPreferences(),
-            "${DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_END}:$selectedSiteId",
+        setLong(
+            PrefKeyString("$ORDER_FILTER_CUSTOM_DATE_RANGE_END:$selectedSiteId"),
             endDateMillis
         )
     }
