@@ -34,12 +34,6 @@ class OrderCreationRepository @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val wooCommerceStore: WooCommerceStore
 ) {
-    private val isAutoDraftSupported by lazy {
-        val version = wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE)?.version
-            ?: "0.0"
-        version.semverCompareTo(AUTO_DRAFT_SUPPORTED_VERSION) >= 0
-    }
-
     suspend fun placeOrder(order: Order): Result<Order> {
         val status = withContext(dispatchers.io) {
             // Currently this query will run on the current thread, so forcing the usage of IO dispatcher
@@ -96,7 +90,7 @@ class OrderCreationRepository @Inject constructor(
         )
 
         val result = if (order.id == 0L) {
-            val status = if (isAutoDraftSupported) {
+            val status = if (isAutoDraftSupported()) {
                 WCOrderStatusModel(statusKey = AUTO_DRAFT)
             } else {
                 WCOrderStatusModel(statusKey = CoreOrderStatus.PENDING.value)
@@ -128,6 +122,14 @@ class OrderCreationRepository @Inject constructor(
                 }
             }
         }
+    }
+
+    private suspend fun isAutoDraftSupported(): Boolean {
+        val version = withContext(dispatchers.io) {
+            wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE)?.version
+                ?: "0.0"
+        }
+        return version.semverCompareTo(AUTO_DRAFT_SUPPORTED_VERSION) >= 0
     }
 
     private fun ShippingLine.toDataModel() = WCShippingLine(
