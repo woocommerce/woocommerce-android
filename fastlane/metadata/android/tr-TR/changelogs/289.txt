@@ -1,0 +1,4 @@
+8.8:
+Bu sürümde şaşırtıcı yeni özellikler bulunmasa da, yine de ona çok fazla sevgi katıyoruz! TalkBack üzerinden erişilebilirlik ile ilgili birkaç hatayı düzelttik ve çeşitli iyileştirmeler yaptık.
+
+Sipariş oluşturmaya yönelik bir beta özelliği yayınladığımızı biliyor muydunuz? Menü sekmesine gidin, ayarlar simgesine dokunun ve beta özelliklerine gidin.

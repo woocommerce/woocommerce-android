@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-03-10 11:54:03+0000
+Translation-Revision-Date: 2022-03-22 13:25:51+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="empty_inbox_description">Kom tillbaka snart för fler tips och insikter om hur du får din butik att växa</string>
+    <string name="empty_inbox_title">Grattis, du har läst allt!</string>
+    <string name="orderstatus_contentDesc_withStatus">Beställningsstatus: %s</string>
+    <string name="no_sku">Inget artikelnummer</string>
+    <string name="count">Antal: %s</string>
+    <string name="plus_one">Plus en</string>
+    <string name="minus_one">Minus en</string>
+    <string name="more_menu_button_coupons">Rabattkoder</string>
     <string name="dismiss_inbox_note">Avfärda</string>
     <string name="login_error_xml_rpc_auth_error_communicating">Det uppstod ett problem med att kommunicera med webbplatsen. En HTTP-felkod 401 returnerades.</string>
     <string name="login_error_xml_rpc_cannot_read_site_auth_required">Anrop med XML-RPC verkar blockerade på denna webbplats (felkod 401). Om försöket att logga in misslyckas tryck på hjälpikonen för att se vanliga frågor.</string>
@@ -144,8 +152,6 @@ Language: sv_SE
     <string name="order_card_transition_name">order_card_%1$s</string>
     <string name="cash">Kontant</string>
     <string name="card">Kort</string>
-    <string name="plus">Plus</string>
-    <string name="minus">Minus</string>
     <string name="tax">Moms</string>
     <string name="email">E-post</string>
     <string name="order_creation_add_customer_note">Lägg till anteckning</string>

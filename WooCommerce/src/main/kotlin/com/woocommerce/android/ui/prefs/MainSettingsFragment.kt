@@ -47,7 +47,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     interface AppSettingsListener {
         fun onRequestLogout()
         fun onProductAddonsOptionChanged(enabled: Boolean)
-        fun onOrderCreationOptionChanged(enabled: Boolean)
     }
 
     private lateinit var settingsListener: AppSettingsListener
@@ -253,7 +252,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     private fun generateBetaFeaturesTitleList() =
         mutableListOf<String>().apply {
             add(getString(R.string.beta_features_add_ons))
-            add(getString(R.string.beta_features_order_creation))
         }
 
     /**
