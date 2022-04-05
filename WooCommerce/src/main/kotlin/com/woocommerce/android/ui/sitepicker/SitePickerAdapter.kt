@@ -100,6 +100,6 @@ class SitePickerAdapter(private val context: Context, private val listener: OnSi
         override fun areContentsTheSame(
             oldItem: SiteModel,
             newItem: SiteModel
-        ): Boolean = oldItem.siteId == newItem.siteId // TODO nbradbury compare sites
+        ): Boolean = areItemsTheSame(oldItem, newItem)
     }
 }
