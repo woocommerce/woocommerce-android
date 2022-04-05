@@ -72,7 +72,7 @@ class OrderCreationVariationSelectionFragment : BaseFragment(R.layout.fragment_o
                 }
             )
         }
-        (productsList.adapter as VariationListAdapter).setVariationList(variationsList)
+        (productsList.adapter as VariationListAdapter).submitList(variationsList)
     }
 
     private fun FragmentOrderCreationProductSelectionBinding.showSkeleton(

@@ -402,7 +402,7 @@ class ProductListFragment :
     }
 
     private fun showProductList(products: List<Product>) {
-        productAdapter.setProductList(products)
+        productAdapter.submitList(products)
 
         showProductWIPNoticeCard(true)
     }
