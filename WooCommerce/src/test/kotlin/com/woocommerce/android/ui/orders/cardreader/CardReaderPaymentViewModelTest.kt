@@ -95,8 +95,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     private val errorMapper: CardReaderPaymentErrorMapper = mock()
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
-
     private val interacRefundErrorMapper: CardReaderInteracRefundErrorMapper = mock()
+    private val interacRefundableChecker: CardReaderInteracRefundableChecker = mock()
 
     @Before
     fun setUp() = coroutinesTestRule.testDispatcher.runBlockingTest {
@@ -107,6 +107,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             resourceProvider = resourceProvider,
             selectedSite = selectedSite,
             paymentCollectibilityChecker = paymentCollectibilityChecker,
+            interacRefundableChecker = interacRefundableChecker,
             tracker = tracker,
             appPrefsWrapper = appPrefsWrapper,
             currencyFormatter = currencyFormatter,
@@ -141,6 +142,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(selectedSite.get()).thenReturn(SiteModel().apply { name = "testName" }.apply { url = "testUrl.com" })
         whenever(resourceProvider.getString(anyOrNull(), anyOrNull())).thenReturn("")
         whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(true)
+        whenever(interacRefundableChecker.isRefundable(any())).thenReturn(true)
         whenever(appPrefsWrapper.getReceiptUrl(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
             .thenReturn("test url")
         whenever(appPrefsWrapper.getCardReaderStatementDescriptor(anyOrNull(), anyOrNull(), anyOrNull()))
@@ -2357,6 +2359,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             resourceProvider = resourceProvider,
             selectedSite = selectedSite,
             paymentCollectibilityChecker = paymentCollectibilityChecker,
+            interacRefundableChecker = interacRefundableChecker,
             tracker = tracker,
             appPrefsWrapper = appPrefsWrapper,
             currencyFormatter = currencyFormatter,
