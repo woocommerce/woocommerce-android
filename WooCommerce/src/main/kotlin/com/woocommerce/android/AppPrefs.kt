@@ -435,15 +435,14 @@ object AppPrefs {
         selfHostedSiteId: Long
     ): CardReaderOnboardingStatus {
         return CardReaderOnboardingStatus.valueOf(
-            PreferenceUtils.getString(
-                getPreferences(),
+            getString(
                 getCardReaderOnboardingKey(
                     localSiteId,
                     remoteSiteId,
                     selfHostedSiteId
                 ),
                 CARD_READER_ONBOARDING_NOT_COMPLETED.name
-            ) ?: CARD_READER_ONBOARDING_NOT_COMPLETED.name
+            )
         )
     }
 
@@ -463,16 +462,14 @@ object AppPrefs {
         remoteSiteId: Long,
         selfHostedSiteId: Long
     ): PluginType? {
-        val storedValue = PreferenceUtils.getString(
-            getPreferences(),
+        val storedValue = getString(
             getCardReaderPreferredPluginKey(
                 localSiteId,
                 remoteSiteId,
                 selfHostedSiteId
-            ),
-            null
+            )
         )
-        return storedValue?.let { PluginType.valueOf(it) }
+        return storedValue.ifEmpty { null }?.let { PluginType.valueOf(it) }
     }
 
     fun setCardReaderOnboardingStatusAndPreferredPlugin(
@@ -482,15 +479,13 @@ object AppPrefs {
         status: CardReaderOnboardingStatus,
         preferredPlugin: PluginType?,
     ) {
-        PreferenceUtils.setString(
-            getPreferences(),
+        setString(
             getCardReaderOnboardingKey(localSiteId, remoteSiteId, selfHostedSiteId),
             status.toString()
         )
-        PreferenceUtils.setString(
-            getPreferences(),
+        setString(
             getCardReaderPreferredPluginKey(localSiteId, remoteSiteId, selfHostedSiteId),
-            preferredPlugin?.toString()
+            preferredPlugin?.toString().orEmpty()
         )
     }
 
@@ -498,13 +493,13 @@ object AppPrefs {
         localSiteId: Int,
         remoteSiteId: Long,
         selfHostedSiteId: Long
-    ) = "$CARD_READER_ONBOARDING_COMPLETED_STATUS_V2:$localSiteId:$remoteSiteId:$selfHostedSiteId"
+    ) = PrefKeyString("$CARD_READER_ONBOARDING_COMPLETED_STATUS_V2:$localSiteId:$remoteSiteId:$selfHostedSiteId")
 
     private fun getCardReaderPreferredPluginKey(
         localSiteId: Int,
         remoteSiteId: Long,
         selfHostedSiteId: Long
-    ) = "$CARD_READER_PREFERRED_PLUGIN:$localSiteId:$remoteSiteId:$selfHostedSiteId"
+    ) = PrefKeyString("$CARD_READER_PREFERRED_PLUGIN:$localSiteId:$remoteSiteId:$selfHostedSiteId")
 
     fun setCardReaderStatementDescriptor(
         statementDescriptor: String?,
