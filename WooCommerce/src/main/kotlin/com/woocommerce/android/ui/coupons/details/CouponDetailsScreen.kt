@@ -45,7 +45,7 @@ fun CouponDetailsScreen(
             backgroundColor = MaterialTheme.colors.surface,
             title = { Text(state.coupon?.code ?: "") },
             navigationIcon = {
-                IconButton(onClick = { onBackPress() } ) {
+                IconButton(onClick = { onBackPress() }) {
                     Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
                 }
             },
