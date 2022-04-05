@@ -555,22 +555,14 @@ object AppPrefs {
         setBoolean(DeletableSitePrefKey.TRACKING_EXTENSION_AVAILABLE, isAvailable)
     }
 
-    fun setOrderFilters(currentSiteId: Int, filterCategory: String, filterValue: String) =
-        PreferenceUtils.setString(
-            getPreferences(),
-            getOrderFilterKey(currentSiteId, filterCategory),
-            filterValue
-        )
+    fun setOrderFilters(currentSiteId: Int, filterCategory: String, filterValue: String) {
+        setString(getOrderFilterKey(currentSiteId, filterCategory), filterValue)
+    }
 
-    fun getOrderFilters(currentSiteId: Int, filterCategory: String) =
-        PreferenceUtils.getString(
-            getPreferences(),
-            getOrderFilterKey(currentSiteId, filterCategory),
-            null
-        )
+    fun getOrderFilters(currentSiteId: Int, filterCategory: String) = getOrderFilterKey(currentSiteId, filterCategory)
 
     private fun getOrderFilterKey(currentSiteId: Int, filterCategory: String) =
-        "$ORDER_FILTER_PREFIX:$currentSiteId:$filterCategory"
+        PrefKeyString("$ORDER_FILTER_PREFIX:$currentSiteId:$filterCategory")
 
     fun getOrderFilterCustomDateRange(selectedSiteId: Int): Pair<Long, Long> {
         val startDateMillis = PreferenceUtils.getLong(
