@@ -56,14 +56,9 @@ class ProductListAdapter(
     }
 
     fun setProductList(products: List<Product>) {
-        if (productList.isEmpty()) {
-            productList.addAll(products)
-            notifyDataSetChanged()
-        } else {
-            val diffResult = DiffUtil.calculateDiff(ProductItemDiffUtil(productList, products))
-            productList.clear()
-            productList.addAll(products)
-            diffResult.dispatchUpdatesTo(this)
-        }
+        val diffResult = DiffUtil.calculateDiff(ProductItemDiffUtil(productList, products))
+        productList.clear()
+        productList.addAll(products)
+        diffResult.dispatchUpdatesTo(this)
     }
 }
