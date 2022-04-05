@@ -19,10 +19,19 @@ class SitePickerAdapter(private val context: Context, private val listener: OnSi
     var selectedSiteId: Long = 0
         set(value) {
             if (field != value) {
+                val oldPos = getSitePosition(field)
+                val newPos = getSitePosition(value)
                 field = value
-                notifyDataSetChanged()
+                if (oldPos > -1) {
+                    notifyItemChanged(oldPos)
+                }
+                if (newPos > -1) {
+                    notifyItemChanged(newPos)
+                }
             }
         }
+
+    val siteList = ArrayList<SiteModel>()
 
     interface OnSiteClickListener {
         fun onSiteClick(siteId: Long)
@@ -33,6 +42,23 @@ class SitePickerAdapter(private val context: Context, private val listener: OnSi
     }
 
     override fun getItemId(position: Int): Long = getItem(position).siteId
+
+    private fun getSitePosition(siteId: Long): Int {
+        for (index in 0 until itemCount) {
+            if (getItem(index).siteId == siteId) {
+                return index
+            }
+        }
+        return -1
+    }
+
+    fun getSiteIds(): List<Int> {
+        val list = ArrayList<Int>()
+        for (index in 0 until itemCount) {
+            list.add(getItem(index).id)
+        }
+        return list
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SiteViewHolder {
         return SiteViewHolder(
@@ -82,6 +108,6 @@ class SitePickerAdapter(private val context: Context, private val listener: OnSi
         override fun areContentsTheSame(
             oldItem: SiteModel,
             newItem: SiteModel
-        ): Boolean = oldItem == newItem
+        ): Boolean = oldItem.siteId == newItem.siteId // TODO nbradbury compare sites
     }
 }

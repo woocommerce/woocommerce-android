@@ -207,8 +207,7 @@ class SitePickerActivity :
     public override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        val sitesList = siteAdapter.siteList.map { it.id }
-        outState.putIntArray(STATE_KEY_SITE_ID_LIST, sitesList.toIntArray())
+        outState.putIntArray(STATE_KEY_SITE_ID_LIST, siteAdapter.getSiteIds().toIntArray())
         outState.putBoolean(KEY_CALLED_FROM_LOGIN, calledFromLogin)
         outState.putLong(KEY_CLICKED_SITE_ID, clickedSiteId)
 
@@ -359,7 +358,7 @@ class SitePickerActivity :
             else -> getString(R.string.site_picker_title)
         }
 
-        siteAdapter.siteList = sites
+        siteAdapter.submitList(sites)
         siteAdapter.selectedSiteId = if (clickedSiteId > 0) {
             clickedSiteId
         } else {
