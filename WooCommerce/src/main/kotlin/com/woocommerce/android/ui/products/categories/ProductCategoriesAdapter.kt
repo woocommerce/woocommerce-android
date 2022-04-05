@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products.categories
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
@@ -13,7 +12,6 @@ import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.categories.ProductCategoriesAdapter.ProductCategoryViewHolder
 
 class ProductCategoriesAdapter(
-    private val context: Context,
     private val loadMoreListener: OnLoadMoreListener,
     private val clickListener: OnProductCategoryClickListener
 ) : RecyclerView.Adapter<ProductCategoryViewHolder>() {
