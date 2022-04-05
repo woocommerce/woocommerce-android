@@ -217,7 +217,7 @@ class ProductSelectionListFragment :
     }
 
     private fun showProductList(productSelectionList: List<Product>) {
-        productSelectionListAdapter.setProductList(productSelectionList)
+        productSelectionListAdapter.submitList(productSelectionList)
     }
 
     private fun enableProductsRefresh(enable: Boolean) {
