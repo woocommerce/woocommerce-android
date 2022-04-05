@@ -139,7 +139,7 @@ fun CouponSummarySection(coupon: CouponUi) {
             modifier = Modifier.padding(24.dp)
         ) {
             Text(
-                text = stringResource(id = R.string.coupon_summary_heading),
+                text = stringResource(id = R.string.coupon_details_heading),
                 style = MaterialTheme.typography.h2,
                 color = MaterialTheme.colors.onSurface,
                 fontSize = 20.sp,
@@ -203,7 +203,7 @@ fun CouponPerformanceSection() {
             modifier = Modifier.padding(24.dp)
         ) {
             Text(
-                text = stringResource(id = R.string.coupon_summary_performance_heading),
+                text = stringResource(id = R.string.coupon_details_performance_heading),
                 style = MaterialTheme.typography.h2,
                 color = MaterialTheme.colors.onSurface,
                 fontSize = 20.sp,
@@ -217,7 +217,7 @@ fun CouponPerformanceSection() {
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = stringResource(id = R.string.coupon_summary_performance_discounted_order_heading),
+                        text = stringResource(id = R.string.coupon_details_performance_discounted_order_heading),
                         style = MaterialTheme.typography.h3,
                         color = colorResource(id = R.color.color_surface_variant),
                         fontSize = 18.sp
@@ -238,7 +238,7 @@ fun CouponPerformanceSection() {
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = stringResource(id = R.string.coupon_summary_performance_amount_heading),
+                        text = stringResource(id = R.string.coupon_details_performance_amount_heading),
                         style = MaterialTheme.typography.h3,
                         color = colorResource(id = R.color.color_surface_variant),
                         fontSize = 18.sp

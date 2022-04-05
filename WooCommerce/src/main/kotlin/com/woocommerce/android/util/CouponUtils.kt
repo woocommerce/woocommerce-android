@@ -112,7 +112,7 @@ class CouponUtils @Inject constructor(
         if (minimumAmount != null) {
             sb.append(
                 resourceProvider.getString(
-                    R.string.coupon_summary_minimum_spend,
+                    R.string.coupon_details_minimum_spend,
                     formatCurrency(minimumAmount, currencyCode)
                 )
             )
@@ -121,7 +121,7 @@ class CouponUtils @Inject constructor(
         if (maximumAmount != null) {
             sb.append(
                 resourceProvider.getString(
-                    R.string.coupon_summary_maximum_spend,
+                    R.string.coupon_details_maximum_spend,
                     formatCurrency(maximumAmount, currencyCode)
                 )
             )
