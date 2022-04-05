@@ -55,16 +55,11 @@ class ProductCategoriesAdapter(
     }
 
     fun setProductCategories(productsCategories: List<ProductCategoryItemUiModel>) {
-        if (productCategoryList.isEmpty()) {
-            productCategoryList.addAll(productsCategories)
-            notifyDataSetChanged()
-        } else {
-            val diffResult =
-                DiffUtil.calculateDiff(ProductCategoryItemDiffUtil(productCategoryList, productsCategories))
-            productCategoryList.clear()
-            productCategoryList.addAll(productsCategories)
-            diffResult.dispatchUpdatesTo(this)
-        }
+        val diffResult =
+            DiffUtil.calculateDiff(ProductCategoryItemDiffUtil(productCategoryList, productsCategories))
+        productCategoryList.clear()
+        productCategoryList.addAll(productsCategories)
+        diffResult.dispatchUpdatesTo(this)
     }
 
     inner class ProductCategoryViewHolder(private val viewBinder: ProductCategoryListItemBinding) :
