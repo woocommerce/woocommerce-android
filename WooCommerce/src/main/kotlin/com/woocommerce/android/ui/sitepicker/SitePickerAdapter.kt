@@ -19,8 +19,8 @@ class SitePickerAdapter(private val context: Context, private val listener: OnSi
     var selectedSiteId: Long = 0
         set(value) {
             if (field != value) {
-                val oldPos = getSitePosition(field)
-                val newPos = getSitePosition(value)
+                val oldPos = indexOfSite(field)
+                val newPos = indexOfSite(value)
                 field = value
                 if (oldPos > -1) {
                     notifyItemChanged(oldPos)
@@ -43,21 +43,13 @@ class SitePickerAdapter(private val context: Context, private val listener: OnSi
 
     override fun getItemId(position: Int): Long = getItem(position).siteId
 
-    private fun getSitePosition(siteId: Long): Int {
+    private fun indexOfSite(siteId: Long): Int {
         for (index in 0 until itemCount) {
             if (getItem(index).siteId == siteId) {
                 return index
             }
         }
         return -1
-    }
-
-    fun getSiteIds(): List<Int> {
-        val list = ArrayList<Int>()
-        for (index in 0 until itemCount) {
-            list.add(getItem(index).id)
-        }
-        return list
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SiteViewHolder {

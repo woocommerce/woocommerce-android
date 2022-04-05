@@ -207,7 +207,8 @@ class SitePickerActivity :
     public override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        outState.putIntArray(STATE_KEY_SITE_ID_LIST, siteAdapter.getSiteIds().toIntArray())
+        val sitesList = siteAdapter.currentList.map { it.id }
+        outState.putIntArray(STATE_KEY_SITE_ID_LIST, sitesList.toIntArray())
         outState.putBoolean(KEY_CALLED_FROM_LOGIN, calledFromLogin)
         outState.putLong(KEY_CLICKED_SITE_ID, clickedSiteId)
 
