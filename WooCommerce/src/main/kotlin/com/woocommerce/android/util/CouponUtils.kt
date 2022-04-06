@@ -3,7 +3,6 @@ package com.woocommerce.android.util
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.viewmodel.ResourceProvider
-import java.lang.StringBuilder
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -22,7 +21,7 @@ class CouponUtils @Inject constructor(
         }
     }
 
-    private fun formatCurrency(amount: BigDecimal?, currencyCode: String?): String {
+    fun formatCurrency(amount: BigDecimal?, currencyCode: String?): String {
         return if (amount != null) {
             currencyCode?.let { currencyFormatter.formatCurrency(amount, it) }
                 ?: amount.toString()

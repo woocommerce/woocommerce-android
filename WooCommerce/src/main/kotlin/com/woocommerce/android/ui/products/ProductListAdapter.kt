@@ -4,9 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.selection.SelectionTracker
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_PRODUCT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ProductListItemBinding
@@ -49,22 +47,6 @@ class ProductListAdapter(
 
         if (position == itemCount - 1) {
             loadMoreListener.onRequestLoadMore()
-        }
-    }
-
-    object ProductItemDiffCallback : DiffUtil.ItemCallback<Product>() {
-        override fun areItemsTheSame(
-            oldItem: Product,
-            newItem: Product
-        ): Boolean {
-            return oldItem.remoteId == newItem.remoteId
-        }
-
-        override fun areContentsTheSame(
-            oldItem: Product,
-            newItem: Product
-        ): Boolean {
-            return oldItem == newItem
         }
     }
 }
