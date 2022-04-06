@@ -31,8 +31,6 @@ class SitePickerAdapter(private val context: Context, private val listener: OnSi
             }
         }
 
-    val siteList = ArrayList<SiteModel>()
-
     interface OnSiteClickListener {
         fun onSiteClick(siteId: Long)
     }
