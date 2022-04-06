@@ -19,8 +19,8 @@ import com.woocommerce.android.util.WooLog
 
 class FeatureAnnouncementListAdapter :
     ListAdapter<FeatureAnnouncementItem, FeatureAnnouncementViewHolder>(ItemDiffCallback) {
-    fun updateData(uiModels: List<FeatureAnnouncementItem>) {
-        submitList(uiModels)
+    init {
+        setHasStableIds(true)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FeatureAnnouncementViewHolder {
