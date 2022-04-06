@@ -150,7 +150,6 @@ class ProductPricingFragment :
         }
 
         val scheduleSale = pricingData.isSaleScheduled == true
-        val gmtOffset = viewModel.parameters.gmtOffset
 
         enableScheduleSale(scheduleSale)
         with(binding.scheduleSaleSwitch) {
@@ -168,9 +167,7 @@ class ProductPricingFragment :
                     binding.scheduleSaleStartDate,
                     OnDateSetListener {
                         _, selectedYear, selectedMonth, dayOfMonth ->
-                        val selectedDate = dateUtils.localDateToGmt(
-                            selectedYear, selectedMonth, dayOfMonth, gmtOffset, true
-                        )
+                        val selectedDate = dateUtils.getDateAtStartOfDay(selectedYear, selectedMonth, dayOfMonth)
 
                         viewModel.onDataChanged(saleStartDate = selectedDate)
                     }
@@ -185,9 +182,7 @@ class ProductPricingFragment :
                     binding.scheduleSaleEndDate,
                     OnDateSetListener {
                         _, selectedYear, selectedMonth, dayOfMonth ->
-                        val selectedDate = dateUtils.localDateToGmt(
-                            selectedYear, selectedMonth, dayOfMonth, gmtOffset, false
-                        )
+                        val selectedDate = dateUtils.getDateAtStartOfDay(selectedYear, selectedMonth, dayOfMonth)
 
                         viewModel.onDataChanged(saleEndDate = selectedDate)
                     }
