@@ -23,7 +23,7 @@ class WCActionableEmptyLabel @JvmOverloads constructor(ctx: Context, attrs: Attr
      * @param emptyTextId - string id of the text to appear if text is empty
      * @param maxLines - optional max number of lines to display
      */
-    fun setText(text: String, @StringRes emptyTextId: Int, maxLines: Int? = null) {
+    fun setText(text: String, @StringRes emptyTextId: Int, maxLines: Int = 0) {
         if (text.isEmpty()) {
             binding.emptyLabel.setText(emptyTextId)
             binding.emptyLabel.visibility = View.VISIBLE
@@ -32,8 +32,8 @@ class WCActionableEmptyLabel @JvmOverloads constructor(ctx: Context, attrs: Attr
             binding.notEmptyLabel.text = text
             binding.notEmptyLabel.visibility = View.VISIBLE
             binding.emptyLabel.visibility = View.GONE
-            maxLines?.let {
-                binding.notEmptyLabel.maxLines = it
+            if (maxLines > 0) {
+                binding.notEmptyLabel.maxLines = maxLines
                 binding.notEmptyLabel.ellipsize = TextUtils.TruncateAt.END
             }
         }
