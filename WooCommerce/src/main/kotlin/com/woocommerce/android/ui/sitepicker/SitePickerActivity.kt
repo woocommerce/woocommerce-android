@@ -217,7 +217,7 @@ class SitePickerActivity :
             unifiedLoginTracker.getFlow()?.value?.let {
                 outState.putString(KEY_UNIFIED_TRACKER_FLOW, it)
             }
-            outState.putString(KEY_UNIFIED_TRACKER_FLOW, unifiedLoginTracker.getSource().value)
+            outState.putString(KEY_UNIFIED_TRACKER_SOURCE, unifiedLoginTracker.getSource().value)
             outState.putString(KEY_UNIFIED_TRACKER_STEP, unifiedLoginTracker.currentStep?.value)
         }
 
