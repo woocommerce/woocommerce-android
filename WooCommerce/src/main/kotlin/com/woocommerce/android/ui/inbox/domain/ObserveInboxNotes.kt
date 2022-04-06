@@ -23,7 +23,7 @@ class ObserveInboxNotes @Inject constructor(
 
     private fun InboxNoteWithActions.toInboxNote() =
         InboxNote(
-            id = inboxNote.id,
+            id = inboxNote.remoteId,
             title = inboxNote.title,
             description = inboxNote.content,
             dateCreated = inboxNote.dateCreated,
@@ -40,7 +40,7 @@ class ObserveInboxNotes @Inject constructor(
 
     private fun InboxNoteActionEntity.toInboxAction() =
         InboxNoteAction(
-            id = id,
+            id = remoteId,
             label = label,
             isPrimary = primary,
             url = url,
