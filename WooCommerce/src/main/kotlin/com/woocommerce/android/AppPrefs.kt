@@ -7,7 +7,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
 import androidx.preference.PreferenceManager
-import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.*
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_COMPLETED
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.*
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
@@ -450,15 +451,15 @@ object AppPrefs {
         selfHostedSiteId: Long,
         preferredPlugin: PluginType,
     ) = PreferenceUtils.getString(
-            getPreferences(),
-            getCardReaderPreferredPluginVersionKey(
-                localSiteId,
-                remoteSiteId,
-                selfHostedSiteId,
-                preferredPlugin
-            ),
-            null
-        )
+        getPreferences(),
+        getCardReaderPreferredPluginVersionKey(
+            localSiteId,
+            remoteSiteId,
+            selfHostedSiteId,
+            preferredPlugin
+        ),
+        null
+    )
 
     fun setCardReaderOnboardingStatusAndPreferredPlugin(
         localSiteId: Int,

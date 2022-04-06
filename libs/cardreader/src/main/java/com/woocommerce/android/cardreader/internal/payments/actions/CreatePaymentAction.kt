@@ -60,8 +60,7 @@ internal class CreatePaymentAction(
             as CardReaderConfigForSupportedCountry
         val builder = paymentIntentParametersFactory.createBuilder(
             cardReaderConfig.paymentMethodType
-        )
-            .setDescription(paymentInfo.paymentDescription)
+        ).setDescription(paymentInfo.paymentDescription)
             .setAmount(amountInSmallestCurrencyUnit)
             .setCurrency(paymentInfo.currency)
             .setMetadata(createMetaData(paymentInfo))
