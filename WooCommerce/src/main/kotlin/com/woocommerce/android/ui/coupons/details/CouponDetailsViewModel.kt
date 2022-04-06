@@ -3,8 +3,10 @@ package com.woocommerce.android.ui.coupons.details
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CouponUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -50,7 +52,10 @@ class CouponDetailsViewModel @Inject constructor(
                     )
                     emit(CouponPerformanceState.Success(performanceUi))
                 },
-                onFailure = { emit(CouponPerformanceState.Failure()) }
+                onFailure = {
+                    triggerEvent(ShowSnackbar(R.string.coupon_details_performance_loading_failure))
+                    emit(CouponPerformanceState.Failure())
+                }
             )
     }.combine(couponDetails) { couponPerformanceState, couponDetails ->
         when {

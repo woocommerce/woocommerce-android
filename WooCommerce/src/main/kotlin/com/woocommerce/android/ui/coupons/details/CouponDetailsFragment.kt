@@ -9,14 +9,18 @@ import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCouponDetailsBinding
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class CouponDetailsFragment : BaseFragment(R.layout.fragment_coupon_details) {
     private var _binding: FragmentCouponDetailsBinding? = null
     private val binding get() = _binding!!
 
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
     private val viewModel: CouponDetailsViewModel by viewModels()
 
     override fun onCreateView(
@@ -36,7 +40,16 @@ class CouponDetailsFragment : BaseFragment(R.layout.fragment_coupon_details) {
                 }
             }
         }
+        setupObservers()
         return view
+    }
+
+    private fun setupObservers() {
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+            }
+        }
     }
 
     override fun onDestroyView() {
