@@ -34,11 +34,11 @@ class CouponDetailsViewModel @Inject constructor(
     private val coupon = couponDetailsRepository.observeCoupon(navArgs.couponId)
         .toStateFlow(null)
 
-    private val couponUi = loadCouponDetails()
+    private val couponSummary = loadCouponSummary()
     private val couponPerformance = loadCouponPerformance()
 
-    val couponState = combine(couponUi, couponPerformance) { couponUi, couponPerformance ->
-        CouponDetailsState(coupon = couponUi, couponPerformanceState = couponPerformance)
+    val couponState = combine(couponSummary, couponPerformance) { couponSummary, couponPerformance ->
+        CouponDetailsState(couponSummary = couponSummary, couponPerformanceState = couponPerformance)
     }.onStart {
         emit(CouponDetailsState(isLoading = true))
     }.asLiveData()
@@ -52,24 +52,18 @@ class CouponDetailsViewModel @Inject constructor(
         }
     }
 
-    private fun loadCouponDetails(): Flow<CouponUi> {
+    private fun loadCouponSummary(): Flow<CouponSummaryUi> {
         return coupon
             .filterNotNull()
-            .map {
-                CouponUi(
-                    formattedDiscount = couponUtils.formatDiscount(it.amount, it.type, currencyCode),
-                    formattedSpendingInfo = couponUtils.formatSpendingInfo(
-                        it.minimumAmount,
-                        it.maximumAmount,
-                        currencyCode
-                    ),
-                    affectedArticles = couponUtils.formatAffectedArticles(
-                        it.products.size,
-                        it.excludedProducts.size,
-                        it.categories.size,
-                        it.excludedCategories.size
-                    ),
-                    isActive = it.dateExpiresGmt?.after(Date()) ?: true
+            .map { coupon ->
+                CouponSummaryUi(
+                    code = coupon.code,
+                    summary = couponUtils.generateSummary(coupon, currencyCode),
+                    discountType = coupon.type?.let { couponUtils.localizeType(it) },
+                    minimumSpending = couponUtils.formatMinimumSpendingInfo(coupon.minimumAmount, currencyCode),
+                    maximumSpending = couponUtils.formatMaximumSpendingInfo(coupon.maximumAmount, currencyCode),
+                    isActive = coupon.dateExpiresGmt?.after(Date()) ?: true,
+                    expiration = coupon.dateExpiresGmt?.let { couponUtils.formatExpirationDate(it) }
                 )
             }
     }
@@ -113,16 +107,18 @@ class CouponDetailsViewModel @Inject constructor(
 
     data class CouponDetailsState(
         val isLoading: Boolean = false,
-        val coupon: CouponUi? = null,
+        val couponSummary: CouponSummaryUi? = null,
         val couponPerformanceState: CouponPerformanceState? = null
     )
 
-    data class CouponUi(
-        val code: String? = null,
-        val formattedDiscount: String,
-        val affectedArticles: String,
-        val formattedSpendingInfo: String,
-        val isActive: Boolean
+    data class CouponSummaryUi(
+        val code: String?,
+        val isActive: Boolean,
+        val summary: String,
+        val discountType: String?,
+        val minimumSpending: String?,
+        val maximumSpending: String?,
+        val expiration: String?
     )
 
     data class CouponPerformanceUi(
