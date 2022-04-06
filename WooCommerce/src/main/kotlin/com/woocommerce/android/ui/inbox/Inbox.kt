@@ -141,14 +141,12 @@ private fun InboxNoteSurveyActionsRow(actions: List<InboxNoteActionUi>, isAction
         )
     } else {
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            actions
-
-                .forEachIndexed { index, inboxNoteActionUi ->
-                    if (index < 2)
-                        InboxNoteSurveyAction(inboxNoteActionUi)
-                    else
-                        InboxNoteTextAction(inboxNoteActionUi)
-                }
+            actions.forEachIndexed { index, inboxNoteActionUi ->
+                if (index < 2)
+                    InboxNoteSurveyAction(inboxNoteActionUi)
+                else
+                    InboxNoteTextAction(inboxNoteActionUi)
+            }
         }
     }
 }
@@ -169,10 +167,17 @@ fun InboxNoteTextAction(inboxAction: InboxNoteActionUi) {
 fun InboxNoteSurveyAction(inboxAction: InboxNoteActionUi) {
     OutlinedButton(
         onClick = { inboxAction.onClick(inboxAction.id, inboxAction.parentNoteId) },
-        border = BorderStroke(1.dp, colorResource(id = R.color.color_surface_variant)),
-        shape = RoundedCornerShape(10), // = 50% percent
+        border = BorderStroke(1.dp, colorResource(id = R.color.color_on_surface_disabled)),
+        shape = RoundedCornerShape(20),
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = MaterialTheme.colors.background,
+        )
     ) {
-        Text(text = inboxAction.label)
+        Text(
+            text = inboxAction.label,
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.subtitle1
+        )
     }
 }
 
