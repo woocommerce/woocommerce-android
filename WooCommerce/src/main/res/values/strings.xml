@@ -1886,6 +1886,9 @@
     <string name="coupon_details_copy_clipboard_label">Coupon Code</string>
     <string name="coupon_details_copy_success">Coupon code copied to clipboard.</string>
     <string name="coupon_details_copy_error">Error copying coupon code to clipboard.</string>
+    <string name="coupon_details_share_coupon_all">Apply %s off to all products with the promo code %s</string>
+    <string name="coupon_details_share_coupon_some">Apply %s off to select products with the promo code %s</string>
+    <string name="coupon_details_share_coupon_error">Error sharing coupon code.</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>

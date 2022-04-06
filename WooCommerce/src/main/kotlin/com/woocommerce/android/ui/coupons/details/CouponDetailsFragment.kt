@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.coupons.details
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,7 @@ import com.woocommerce.android.databinding.FragmentCouponDetailsBinding
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponDetailsEvent.CopyCodeEvent
+import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponDetailsEvent.ShareCodeEvent
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.copyToClipboard
 import dagger.hilt.android.AndroidEntryPoint
@@ -56,6 +58,7 @@ class CouponDetailsFragment : BaseFragment(R.layout.fragment_coupon_details) {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is CopyCodeEvent -> copyCodeToClipboard(event.couponCode)
+                is ShareCodeEvent -> shareCode(event.shareCodeMessage)
             }
         }
     }
@@ -67,6 +70,18 @@ class CouponDetailsFragment : BaseFragment(R.layout.fragment_coupon_details) {
         } catch (e: IllegalStateException) {
             WooLog.e(WooLog.T.UTILS, e)
             ToastUtils.showToast(context, R.string.coupon_details_copy_error)
+        }
+    }
+
+    private fun shareCode(shareCodeMessage: String) {
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.type = "text/plain"
+        intent.putExtra(Intent.EXTRA_TEXT, shareCodeMessage)
+        try {
+            startActivity(Intent.createChooser(intent, getString(R.string.share)))
+        } catch (e: android.content.ActivityNotFoundException) {
+            WooLog.e(WooLog.T.UTILS, e)
+            ToastUtils.showToast(context, R.string.coupon_details_share_coupon_error)
         }
     }
 

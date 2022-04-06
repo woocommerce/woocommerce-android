@@ -30,7 +30,8 @@ fun CouponDetailsScreen(
     CouponDetailsScreen(
         couponSummaryState,
         onBackPress,
-        viewModel::onCopyButtonClick
+        viewModel::onCopyButtonClick,
+        viewModel::onShareButtonClick
     )
 }
 
@@ -38,7 +39,8 @@ fun CouponDetailsScreen(
 fun CouponDetailsScreen(
     state: CouponDetailsState,
     onBackPress: () -> Boolean,
-    onCopyButtonClick: (String) -> Unit
+    onCopyButtonClick: (String) -> Unit,
+    onShareButtonClick: (String) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -67,7 +69,9 @@ fun CouponDetailsScreen(
                     }) {
                         Text(stringResource(id = R.string.coupon_details_menu_copy))
                     }
-                    DropdownMenuItem(onClick = { /*TODO*/ }) {
+                    DropdownMenuItem(onClick = {
+                        onShareButtonClick(state.coupon?.shareCodeMessage ?: "")
+                    }) {
                         Text(stringResource(id = R.string.coupon_details_menu_share))
                     }
                 }

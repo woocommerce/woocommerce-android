@@ -16,7 +16,7 @@ import javax.inject.Inject
 class CouponDetailsViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val wooCommerceStore: WooCommerceStore,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
 ) : ScopedViewModel(savedState) {
     private val currencyCode by lazy {
         wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
@@ -35,7 +35,8 @@ class CouponDetailsViewModel @Inject constructor(
                     formattedDiscount = "25%",
                     affectedArticles = "Everything excl. 5 products",
                     formattedSpendingInfo = "Minimum spend of $20 \n\nMaximum spend of $200 \n",
-                    isActive = true
+                    isActive = true,
+                    shareCodeMessage = "Apply 25% off to select products with the promo code ABCDE"
                 ),
             )
         )
@@ -43,6 +44,10 @@ class CouponDetailsViewModel @Inject constructor(
 
     fun onCopyButtonClick(couponCode: String) {
         triggerEvent(CouponDetailsEvent.CopyCodeEvent(couponCode))
+    }
+
+    fun onShareButtonClick(shareCodeMessage: String) {
+        triggerEvent(CouponDetailsEvent.ShareCodeEvent(shareCodeMessage))
     }
 
     data class CouponDetailsState(
@@ -57,10 +62,12 @@ class CouponDetailsViewModel @Inject constructor(
         val formattedDiscount: String,
         val affectedArticles: String,
         val formattedSpendingInfo: String,
-        val isActive: Boolean
+        val isActive: Boolean,
+        val shareCodeMessage: String
     )
 
     sealed class CouponDetailsEvent : MultiLiveEvent.Event() {
         data class CopyCodeEvent(val couponCode: String) : MultiLiveEvent.Event()
+        data class ShareCodeEvent(val shareCodeMessage: String) : MultiLiveEvent.Event()
     }
 }

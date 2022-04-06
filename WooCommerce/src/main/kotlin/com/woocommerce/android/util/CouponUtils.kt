@@ -80,6 +80,36 @@ class CouponUtils @Inject constructor(
         }
     }
 
+    /*
+    - If all products are included: "Apply 15% off to all products with the promo code ABCDE"
+    - If only some products: "Apply 15% off to select products with the promo code ABCDE"
+     */
+    fun formatSharingMessage(
+        amount: BigDecimal?,
+        currencyCode: String?,
+        couponCode: String,
+        includedProducts: Int,
+        excludedProducts: Int
+    ): String {
+        return if (amount != null && currencyCode != null) {
+            if (includedProducts == 0 && excludedProducts == 0) {
+                resourceProvider.getString(
+                    R.string.coupon_details_share_coupon_all,
+                    formatCurrency(amount, currencyCode),
+                    couponCode
+                )
+            } else {
+                resourceProvider.getString(
+                    R.string.coupon_details_share_coupon_some,
+                    formatCurrency(amount, currencyCode),
+                    couponCode
+                )
+            }
+        } else {
+            ""
+        }
+    }
+
     private fun formatProducts(products: Int): String {
         return if (products > 0) {
             StringUtils.getQuantityString(
