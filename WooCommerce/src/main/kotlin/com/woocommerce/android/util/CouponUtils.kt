@@ -1,6 +1,7 @@
 package com.woocommerce.android.util
 
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.viewmodel.ResourceProvider
 import java.math.BigDecimal
@@ -108,7 +109,7 @@ class CouponUtils @Inject constructor(
     ): String {
         val sb = StringBuilder()
 
-        if (minimumAmount != null) {
+        if (minimumAmount != null && minimumAmount.isNotEqualTo(BigDecimal.ZERO)) {
             sb.append(
                 resourceProvider.getString(
                     R.string.coupon_summary_minimum_spend,
@@ -117,7 +118,10 @@ class CouponUtils @Inject constructor(
             )
         }
 
-        if (maximumAmount != null) {
+        if (maximumAmount != null && maximumAmount.isNotEqualTo(BigDecimal.ZERO)) {
+            if (sb.isNotEmpty()) {
+                sb.append(" ")
+            }
             sb.append(
                 resourceProvider.getString(
                     R.string.coupon_summary_maximum_spend,
