@@ -66,6 +66,13 @@ class CardReaderTutorialDialogFragment : DialogFragment(R.layout.card_reader_tut
                     .actionCardReaderTutorialDialogFragmentToCardReaderPaymentDialogFragment(param.orderId)
                 findNavController().navigateSafely(action, skipThrottling = true)
             }
+            is CardReaderFlowParam.ConnectAndInteracRefund -> {
+                val action = CardReaderTutorialDialogFragmentDirections
+                    .actionCardReaderTutorialDialogFragmentToCardReaderPaymentDialogFragment(
+                        param.orderId, isInteracRefund = true
+                    )
+                findNavController().navigateSafely(action, skipThrottling = true)
+            }
         }
     }
 

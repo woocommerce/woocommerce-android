@@ -18,6 +18,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundConfirmation
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -63,11 +64,10 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.getSnack(event.message, *event.args).show()
                 is Exit -> navigateBackWithNotice(REFUND_ORDER_NOTICE_KEY, R.id.orderDetailFragment)
-                is IssueRefundViewModel.IssueRefundEvent.CardReaderPaymentScreen -> {
+                is IssueRefundViewModel.IssueRefundEvent.NavigateToCardReaderScreen -> {
                     val action =
-                        RefundSummaryFragmentDirections.actionRefundSummaryFragmentToCardReaderPaymentDialog(
-                            orderId = event.orderId,
-                            isRefund = event.isRefund
+                        RefundSummaryFragmentDirections.actionRefundSummaryFragmentToCardReaderFlow(
+                            cardReaderFlowParam = CardReaderFlowParam.ConnectAndInteracRefund(event.orderId)
                         )
                     findNavController().navigateSafely(action)
                 }

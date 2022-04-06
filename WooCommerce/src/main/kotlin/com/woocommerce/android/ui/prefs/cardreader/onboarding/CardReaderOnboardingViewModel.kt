@@ -223,6 +223,9 @@ class CardReaderOnboardingViewModel @Inject constructor(
             is CardReaderFlowParam.ConnectAndAcceptPayment -> {
                 triggerEvent(OnboardingEvent.ContinueToConnection(arguments.cardReaderFlowParam))
             }
+            is CardReaderFlowParam.ConnectAndInteracRefund -> {
+                triggerEvent(OnboardingEvent.ContinueToConnection(arguments.cardReaderFlowParam))
+            }
         }.exhaustive
     }
 

@@ -47,6 +47,13 @@ class CardReaderStatusCheckerViewModel
                     handleOnboardingStatus(param)
                 }
             }
+            is CardReaderFlowParam.ConnectAndInteracRefund -> {
+                if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected) {
+                    triggerEvent(StatusCheckerEvent.NavigateToPayment(param))
+                } else {
+                    handleOnboardingStatus(param)
+                }
+            }
         }
     }
 
