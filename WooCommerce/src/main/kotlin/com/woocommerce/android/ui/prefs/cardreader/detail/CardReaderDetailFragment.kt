@@ -52,45 +52,44 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
 
     private fun observeEvents(binding: FragmentCardReaderDetailBinding) {
         viewModel.event.observe(
-            viewLifecycleOwner,
-            { event ->
-                when (event) {
-                    is CardReaderConnectScreen ->
-                        findNavController()
-                            .navigateSafely(
-                                CardReaderDetailFragmentDirections
-                                    .actionCardReaderDetailFragmentToCardReaderConnectFragment(skipOnboarding = true)
-                            )
-                    is CardReaderUpdateScreen ->
-                        findNavController().navigateSafely(
+            viewLifecycleOwner
+        ) { event ->
+            when (event) {
+                is CardReaderConnectScreen ->
+                    findNavController()
+                        .navigateSafely(
                             CardReaderDetailFragmentDirections
-                                .actionCardReaderDetailFragmentToCardReaderUpdateDialogFragment(requiredUpdate = false)
+                                .actionCardReaderDetailFragmentToCardReaderConnectFragment(event.cardReaderFlowParam)
                         )
-                    is ShowSnackbar -> {
-                        Snackbar.make(
-                            binding.root,
-                            getString(event.message),
-                            BaseTransientBottomBar.LENGTH_LONG
-                        ).show()
-                    }
-                    is CopyReadersNameToClipboard -> requireContext().copyToClipboard(
-                        event.readersName,
-                        event.readersName
+                is CardReaderUpdateScreen ->
+                    findNavController().navigateSafely(
+                        CardReaderDetailFragmentDirections
+                            .actionCardReaderDetailFragmentToCardReaderUpdateDialogFragment(requiredUpdate = false)
                     )
-                    is CardReaderDetailViewModel.CardReaderDetailEvent.CardReaderDisconnected ->
-                        binding.readerDisconnectedState.cardReaderDetailConnectBtn.announceForAccessibility(
-                            getString(event.accessibilityDisconnectedText)
-                        )
-                    is CardReaderDetailViewModel.CardReaderDetailEvent.CardReaderConnected ->
-                        binding.readerConnectedState.primaryActionBtn.announceForAccessibility(
-                            getString(event.accessibilityConnectedText)
-                        )
-                    is NavigateToUrlInGenericWebView ->
-                        ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
-                    else -> event.isHandled = false
+                is ShowSnackbar -> {
+                    Snackbar.make(
+                        binding.root,
+                        getString(event.message),
+                        BaseTransientBottomBar.LENGTH_LONG
+                    ).show()
                 }
+                is CopyReadersNameToClipboard -> requireContext().copyToClipboard(
+                    event.readersName,
+                    event.readersName
+                )
+                is CardReaderDetailViewModel.CardReaderDetailEvent.CardReaderDisconnected ->
+                    binding.readerDisconnectedState.cardReaderDetailConnectBtn.announceForAccessibility(
+                        getString(event.accessibilityDisconnectedText)
+                    )
+                is CardReaderDetailViewModel.CardReaderDetailEvent.CardReaderConnected ->
+                    binding.readerConnectedState.primaryActionBtn.announceForAccessibility(
+                        getString(event.accessibilityConnectedText)
+                    )
+                is NavigateToUrlInGenericWebView ->
+                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
     private fun observeViewState(binding: FragmentCardReaderDetailBinding) {

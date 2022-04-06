@@ -7,6 +7,7 @@ import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.InPersonPaymentsCanadaFeatureFlag
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -30,7 +31,10 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     private val countryCode = "US"
-    private val savedState = CardReaderHubFragmentArgs(storeCountryCode = countryCode).initSavedStateHandle()
+    private val savedState = CardReaderHubFragmentArgs(
+        storeCountryCode = countryCode,
+        cardReaderFlowParam = CardReaderFlowParam.CardReadersHub,
+    ).initSavedStateHandle()
 
     @Before
     fun setUp() {
@@ -156,7 +160,11 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             }!!.onItemClicked.invoke()
 
         assertThat(viewModel.event.value)
-            .isEqualTo(CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderDetail)
+            .isEqualTo(
+                CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderDetail(
+                    CardReaderFlowParam.CardReadersHub
+                )
+            )
     }
 
     @Test

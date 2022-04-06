@@ -1,0 +1,4 @@
+8.8:
+Ainda que esta versão não tenha nenhuma funcionalidade surpreendente, nós a fizemos com muito amor. Corrigimos alguns bugs e fizemos várias melhorias na acessibilidade para quando o TalkBack é usado.
+
+Sabia que lançamos uma funcionalidade beta para criação de pedidos? Acesse a guia Menu, toque no ícone de configuração e role a tela até as funcionalidades beta.
