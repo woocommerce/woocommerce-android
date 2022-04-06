@@ -66,6 +66,10 @@ internal class CreatePaymentAction(
             .setCurrency(paymentInfo.currency)
             .setMetadata(createMetaData(paymentInfo))
         with(paymentInfo) {
+            customerEmail?.takeIf { it.isNotEmpty() }?.let {
+                // We use Stripe receipt sending mechanism in cases when WCPay can not do that
+                if (!wcpayCanSendReceipt) builder.setReceiptEmail(it)
+            }
             statementDescriptor?.takeIf { it.isNotEmpty() }?.let { builder.setStatementDescriptor(it) }
         }
         return builder.build()

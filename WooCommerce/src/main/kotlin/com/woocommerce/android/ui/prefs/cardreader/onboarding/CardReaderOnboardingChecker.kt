@@ -34,6 +34,8 @@ const val SUPPORTED_WCPAY_VERSION = "3.2.1"
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
 const val SUPPORTED_STRIPE_EXTENSION_VERSION = "6.2.0"
 
+const val WCPAY_STYLED_RECEIPTS_SUPPORT_VERSION = "4.0.0"
+
 /**
  * This class is used to check if the selected store is ready to accept In Person Payments. The app should check store's
  * eligibility every time it attempts to connect to a card reader.
