@@ -17,9 +17,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class CouponDetailsFragment : BaseFragment(R.layout.fragment_coupon_details) {
-    private var _binding: FragmentCouponDetailsBinding? = null
-    private val binding get() = _binding!!
-
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     private val viewModel: CouponDetailsViewModel by viewModels()
 
@@ -28,9 +25,8 @@ class CouponDetailsFragment : BaseFragment(R.layout.fragment_coupon_details) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentCouponDetailsBinding.inflate(inflater, container, false)
+        val binding = FragmentCouponDetailsBinding.inflate(inflater, container, false)
 
-        val view = binding.root
         binding.couponsComposeView.apply {
             // Dispose of the Composition when the view's LifecycleOwner is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -41,7 +37,7 @@ class CouponDetailsFragment : BaseFragment(R.layout.fragment_coupon_details) {
             }
         }
         setupObservers()
-        return view
+        return binding.root
     }
 
     private fun setupObservers() {
@@ -50,10 +46,5 @@ class CouponDetailsFragment : BaseFragment(R.layout.fragment_coupon_details) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
             }
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }
