@@ -117,7 +117,7 @@ fun CouponListItem(
                 enabled = true,
                 onClickLabel = stringResource(id = R.string.coupon_list_view_coupon),
                 role = Role.Button,
-                onClick = { onCouponClick(0L) }
+                onClick = { onCouponClick(coupon.id) }
             ),
         verticalArrangement = Arrangement.spacedBy(0.dp)
     ) {
