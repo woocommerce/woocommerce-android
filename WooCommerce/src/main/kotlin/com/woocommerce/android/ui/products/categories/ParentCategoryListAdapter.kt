@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products.categories
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
