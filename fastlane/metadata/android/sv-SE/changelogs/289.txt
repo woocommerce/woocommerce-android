@@ -1,0 +1,4 @@
+8.8:
+Den här versionen kanske inte innehåller några spännande nya funktioner, men vi har ändå lagt ner mycket jobb på den. Vi har åtgärdat ett par buggar och gjort flera förbättringar av tillgängligheten med TalkBack.
+
+Visste du att vi har lanserat en betafunktion för att skapa beställningar? Gå till fliken Meny, tryck på inställningsikonen och bläddra till Betafunktioner.

@@ -4,8 +4,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
-import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.*
@@ -15,7 +13,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentCollectibilityChecker
+import com.woocommerce.android.ui.orders.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
@@ -28,14 +26,11 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers.anyInt
-import org.mockito.ArgumentMatchers.anyLong
 import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
@@ -43,7 +38,6 @@ import org.wordpress.android.fluxc.store.WCOrderStore.*
 import org.wordpress.android.fluxc.utils.DateUtils
 import java.math.BigDecimal
 import java.util.concurrent.CancellationException
-import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
 class OrderDetailViewModelTest : BaseUnitTest() {
@@ -55,14 +49,12 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val appPrefsWrapper: AppPrefs = mock {
         on(it.isTrackingExtensionAvailable()).thenAnswer { true }
-        on(it.isCardReaderOnboardingCompleted(anyInt(), anyLong(), anyLong())).thenAnswer { true }
     }
     private val editor = mock<SharedPreferences.Editor>()
     private val preferences = mock<SharedPreferences> { whenever(it.edit()).thenReturn(editor) }
     private val selectedSite: SelectedSite = mock()
     private val repository: OrderDetailRepository = mock()
     private val addonsRepository: AddonRepository = mock()
-    private val cardReaderManager: CardReaderManager = mock()
     private val cardReaderTracker: CardReaderTracker = mock()
     private val resources: ResourceProvider = mock {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
@@ -116,7 +108,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             it
         }
         doReturn(site).whenever(selectedSite).getIfExists()
-        doReturn(site).whenever(selectedSite).get()
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any())
         }
@@ -1083,195 +1074,32 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given card reader is connecting, when user clicks on accept card, then start card reader connect flow`() =
+    fun `when user presses collect payment button, then start card reader payment flow`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(order).whenever(repository).fetchOrderById(any())
             doReturn(false).whenever(repository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
-            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connecting))
             viewModel.start()
 
             // When
-            viewModel.onAcceptCardPresentPaymentClicked(cardReaderManager)
-
-            // Then
-            assertThat(viewModel.event.value).isInstanceOf(OrderNavigationTarget.StartCardReaderConnectFlow::class.java)
-        }
-
-    @Test
-    fun `given card reader is connected, when user clicks on accept card, then start card reader payment flow`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // Given
-            doReturn(order).whenever(repository).getOrderById(any())
-            doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(false).whenever(repository).fetchOrderNotes(any())
-            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
-            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connected(mock())))
-            viewModel.start()
-
-            // When
-            viewModel.onAcceptCardPresentPaymentClicked(cardReaderManager)
+            viewModel.onAcceptCardPresentPaymentClicked()
 
             // Then
             assertThat(viewModel.event.value).isInstanceOf(OrderNavigationTarget.StartCardReaderPaymentFlow::class.java)
-        }
-
-    @Test
-    fun `given card reader is NOT connected, when user clicks on accept card, then start card reader connect flow`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // Given
-            doReturn(order).whenever(repository).getOrderById(any())
-            doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(false).whenever(repository).fetchOrderNotes(any())
-            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
-            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
-            viewModel.start()
-
-            // When
-            viewModel.onAcceptCardPresentPaymentClicked(cardReaderManager)
-
-            // Then
-            assertThat(viewModel.event.value).isInstanceOf(OrderNavigationTarget.StartCardReaderConnectFlow::class.java)
-        }
-
-    @Test
-    fun `given onboarding not completed, when user clicks on accept card, then show welcome dialog`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // Given
-            doReturn(order).whenever(repository).getOrderById(any())
-            doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(false).whenever(repository).fetchOrderNotes(any())
-            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
-            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
-            whenever(appPrefsWrapper.isCardReaderOnboardingCompleted(anyInt(), anyLong(), anyLong())).thenReturn(false)
-            viewModel.start()
-
-            // When
-            viewModel.onAcceptCardPresentPaymentClicked(cardReaderManager)
-
-            // Then
-            assertThat(viewModel.event.value)
-                .isInstanceOf(OrderNavigationTarget.ShowCardReaderWelcomeDialog::class.java)
-        }
-
-    @Test
-    fun `given card reader connected,when user clicks on accept card,then start card reader payment flow with data`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // Given
-            doReturn(order).whenever(repository).getOrderById(any())
-            doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(false).whenever(repository).fetchOrderNotes(any())
-            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
-            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connected(mock())))
-            viewModel.start()
-
-            // When
-            viewModel.onAcceptCardPresentPaymentClicked(cardReaderManager)
-
-            // Then
-            assertEquals(OrderNavigationTarget.StartCardReaderPaymentFlow(order.id), viewModel.event.value)
-        }
-
-    @Test
-    fun `given card reader connecting,when user clicks on accept card,then onboarding checks not skipped`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // Given
-            doReturn(order).whenever(repository).getOrderById(any())
-            doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(false).whenever(repository).fetchOrderNotes(any())
-            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
-            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connecting))
-            viewModel.start()
-
-            // When
-            viewModel.onAcceptCardPresentPaymentClicked(cardReaderManager)
-
-            // Then
-            assertEquals(OrderNavigationTarget.StartCardReaderConnectFlow(false), viewModel.event.value)
-        }
-
-    @Test
-    fun `given card reader NOT connected,when user clicks on accept card,then onboarding checks not skipped`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // Given
-            doReturn(order).whenever(repository).getOrderById(any())
-            doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(false).whenever(repository).fetchOrderNotes(any())
-            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
-            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
-            viewModel.start()
-
-            // When
-            viewModel.onAcceptCardPresentPaymentClicked(cardReaderManager)
-
-            // Then
-            assertEquals(OrderNavigationTarget.StartCardReaderConnectFlow(false), viewModel.event.value)
-        }
-
-    @Test
-    fun `given card reader result is received, when it is connected, then trigger start card reader payment flow`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // Given
-            doReturn(order).whenever(repository).getOrderById(any())
-            doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(false).whenever(repository).fetchOrderNotes(any())
-            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
-            viewModel.start()
-
-            // When
-            viewModel.onConnectToReaderResultReceived(connected = true)
-            advanceUntilIdle()
-
-            // Then
-            assertThat(viewModel.event.value).isInstanceOf(OrderNavigationTarget.StartCardReaderPaymentFlow::class.java)
-        }
-
-    @Test
-    fun `given card reader result is received,when it is connected,then trigger card reader payment flow with data`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // Given
-            doReturn(order).whenever(repository).getOrderById(any())
-            doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(false).whenever(repository).fetchOrderNotes(any())
-            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
-            viewModel.start()
-
-            // When
-            viewModel.onConnectToReaderResultReceived(connected = true)
-            advanceUntilIdle()
-
-            // Then
-            assertEquals(OrderNavigationTarget.StartCardReaderPaymentFlow(order.id), viewModel.event.value)
-        }
-
-    @Test
-    fun `given card reader result is received,when it is NOT connected,then do not trigger card reader payment flow`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            // Given
-            doReturn(order).whenever(repository).getOrderById(any())
-            doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(false).whenever(repository).fetchOrderNotes(any())
-            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
-            viewModel.start()
-
-            // When
-            viewModel.onConnectToReaderResultReceived(connected = false)
-            advanceUntilIdle()
-
-            // Then
-            assertThat(viewModel.event.value)
-                .isNotInstanceOf(OrderNavigationTarget.StartCardReaderPaymentFlow::class.java)
         }
 
     @Test
     fun `when user presses collect payment button, then event tracked`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             // Given
-            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(mock()))
+            doReturn(order).whenever(repository).getOrderById(any())
+            doReturn(order).whenever(repository).fetchOrderById(any())
+            viewModel.start()
+
             // When
-            viewModel.onAcceptCardPresentPaymentClicked(cardReaderManager)
+            viewModel.onAcceptCardPresentPaymentClicked()
 
             // Then
             verify(cardReaderTracker).trackCollectPaymentTapped()

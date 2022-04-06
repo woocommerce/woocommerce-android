@@ -386,7 +386,7 @@ class IssueRefundViewModel @Inject constructor(
                         )
                     )
 
-                    triggerEvent(IssueRefundEvent.CardReaderPaymentScreen(order.id, true))
+                    triggerEvent(IssueRefundEvent.NavigateToCardReaderScreen(order.id))
 
 //                    val resultCall = async(dispatchers.io) {
 //                        return@async when (commonState.refundType) {
@@ -1027,6 +1027,6 @@ class IssueRefundViewModel @Inject constructor(
 
         data class OpenUrl(val url: String) : IssueRefundEvent()
         object HideValidationError : IssueRefundEvent()
-        data class CardReaderPaymentScreen(val orderId: Long, val isRefund: Boolean) : IssueRefundEvent()
+        data class NavigateToCardReaderScreen(val orderId: Long) : IssueRefundEvent()
     }
 }

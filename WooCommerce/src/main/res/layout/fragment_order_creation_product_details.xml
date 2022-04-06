@@ -43,8 +43,8 @@
             android:id="@+id/productAttributes"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/minor_50"
             android:textAppearance="?attr/textAppearanceBody2"
-            app:layout_constraintBottom_toBottomOf="@id/productIcon"
             app:layout_constraintEnd_toEndOf="@id/productName"
             app:layout_constraintStart_toStartOf="@id/productName"
             app:layout_constraintTop_toBottomOf="@id/productName"
@@ -57,7 +57,7 @@
             android:layout_marginTop="@dimen/major_100"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/productIcon"
-            app:layout_constraintTop_toBottomOf="@id/productIcon" />
+            app:layout_constraintTop_toBottomOf="@id/productAttributes" />
     </com.woocommerce.android.widgets.WCElevatedConstraintLayout>
 
     <com.google.android.material.button.MaterialButton
