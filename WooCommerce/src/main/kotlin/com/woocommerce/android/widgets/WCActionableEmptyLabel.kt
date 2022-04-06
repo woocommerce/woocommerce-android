@@ -1,6 +1,7 @@
 package com.woocommerce.android.widgets
 
 import android.content.Context
+import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -20,8 +21,9 @@ class WCActionableEmptyLabel @JvmOverloads constructor(ctx: Context, attrs: Attr
     /**
      * @param text - the text to appear if it's not empty
      * @param emptyTextId - string id of the text to appear if text is empty
+     * @param maxLines - optional max number of lines to display
      */
-    fun setText(text: String, @StringRes emptyTextId: Int) {
+    fun setText(text: String, @StringRes emptyTextId: Int, maxLines: Int? = null) {
         if (text.isEmpty()) {
             binding.emptyLabel.setText(emptyTextId)
             binding.emptyLabel.visibility = View.VISIBLE
@@ -30,6 +32,10 @@ class WCActionableEmptyLabel @JvmOverloads constructor(ctx: Context, attrs: Attr
             binding.notEmptyLabel.text = text
             binding.notEmptyLabel.visibility = View.VISIBLE
             binding.emptyLabel.visibility = View.GONE
+            maxLines?.let {
+                binding.notEmptyLabel.maxLines = it
+                binding.notEmptyLabel.ellipsize = TextUtils.TruncateAt.END
+            }
         }
     }
 
