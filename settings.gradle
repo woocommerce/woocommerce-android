@@ -48,6 +48,9 @@ plugins {
 gradleEnterprise {
     server = "https://gradle.a8c.com"
     allowUntrustedServer = false
+    buildScan {
+        publishAlways()
+    }
 }
 
 rootProject.name = 'WCAndroid'
