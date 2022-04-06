@@ -46,8 +46,10 @@ class CouponDetailsViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             couponDetailsRepository.fetchCoupon(navArgs.couponId).onFailure {
-                triggerEvent(ShowSnackbar(R.string.coupon_details_performance_loading_failure))
-                triggerEvent(Exit)
+                if (coupon.value == null) {
+                    triggerEvent(ShowSnackbar(R.string.coupon_summary_loading_failure))
+                    triggerEvent(Exit)
+                }
             }
         }
     }
