@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.coupons.details
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -17,8 +18,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponDetailsState
-import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponUi
+import com.woocommerce.android.R.color
+import com.woocommerce.android.R.string
+import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.*
+import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponPerformanceState.Loading
+import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponPerformanceState.Success
 
 @Composable
 fun CouponDetailsScreen(viewModel: CouponDetailsViewModel) {
@@ -39,7 +43,9 @@ fun CouponDetailsScreen(state: CouponDetailsState) {
                 isActive = true
             )
             CouponSummarySection(coupon)
-            CouponPerformanceSection()
+        }
+        state.couponPerformanceState?.let {
+            CouponPerformanceSection(it)
         }
     }
 }
@@ -159,7 +165,7 @@ fun CouponDetailsSpendingInfo(formattedSpendingInfo: String) {
 
 // todo use actual data instead of hardcoded value
 @Composable
-fun CouponPerformanceSection() {
+private fun CouponPerformanceSection(couponPerformanceState: CouponPerformanceState) {
     Surface(
         elevation = 1.dp,
         modifier = Modifier
@@ -169,57 +175,78 @@ fun CouponPerformanceSection() {
             modifier = Modifier.padding(24.dp)
         ) {
             Text(
-                text = stringResource(id = R.string.coupon_summary_performance_heading),
-                style = MaterialTheme.typography.h2,
+                text = stringResource(id = string.coupon_summary_performance_heading),
+                style = MaterialTheme.typography.subtitle1,
                 color = MaterialTheme.colors.onSurface,
-                fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
             )
 
             Spacer(modifier = Modifier.height(32.dp))
 
             Row {
-                Column(
+                CouponPerformanceCount(
+                    couponPerformanceState = couponPerformanceState,
                     modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.coupon_summary_performance_discounted_order_heading),
-                        style = MaterialTheme.typography.h3,
-                        color = colorResource(id = R.color.color_surface_variant),
-                        fontSize = 18.sp
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
+                )
 
-                    // Hardcoded value for design purposes.
-                    Text(
-                        text = "12",
-                        style = MaterialTheme.typography.body1,
-                        color = MaterialTheme.colors.onSurface,
-                        fontSize = 32.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-
-                Column(
+                CouponPerformanceAmount(
+                    couponPerformanceState = couponPerformanceState,
                     modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.coupon_summary_performance_amount_heading),
-                        style = MaterialTheme.typography.h3,
-                        color = colorResource(id = R.color.color_surface_variant),
-                        fontSize = 18.sp
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
+                )
+            }
+        }
+    }
+}
 
-                    // Hardcoded value for design purposes.
-                    Text(
-                        text = "$12.45",
-                        style = MaterialTheme.typography.body1,
-                        color = MaterialTheme.colors.onSurface,
-                        fontSize = 32.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+@Composable
+private fun CouponPerformanceCount(
+    couponPerformanceState: CouponPerformanceState,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = modifier
+    ) {
+        Text(
+            text = stringResource(id = string.coupon_summary_performance_discounted_order_heading),
+            style = MaterialTheme.typography.subtitle1,
+            color = colorResource(id = color.color_surface_variant)
+        )
+
+        Text(
+            text = couponPerformanceState.ordersCount?.toString().orEmpty(),
+            style = MaterialTheme.typography.h5,
+            color = MaterialTheme.colors.onSurface,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
+private fun CouponPerformanceAmount(
+    couponPerformanceState: CouponPerformanceState,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = modifier
+    ) {
+        Text(
+            text = stringResource(id = string.coupon_summary_performance_amount_heading),
+            style = MaterialTheme.typography.subtitle1,
+            color = colorResource(id = color.color_surface_variant)
+        )
+        when (couponPerformanceState) {
+            is Loading -> CircularProgressIndicator(modifier = Modifier.size(32.dp))
+            else -> {
+                val amount = (couponPerformanceState as? Success)?.data
+                    ?.formattedAmount ?: "-"
+                Text(
+                    text = amount,
+                    style = MaterialTheme.typography.h5,
+                    color = MaterialTheme.colors.onSurface,
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
     }
