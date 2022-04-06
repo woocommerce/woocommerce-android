@@ -23,10 +23,6 @@ class MultipleCardReadersFoundAdapter : RecyclerView.Adapter<MultipleCardReaders
             diffResult.dispatchUpdatesTo(this)
         }
 
-    init {
-        setHasStableIds(true)
-    }
-
     override fun getItemViewType(position: Int): Int {
         return when (list[position]) {
             is ScanningInProgressListItem -> VIEW_TYPE_PROGRESS_ITEM
