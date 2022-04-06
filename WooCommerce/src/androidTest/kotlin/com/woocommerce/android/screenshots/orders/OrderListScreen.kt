@@ -26,7 +26,7 @@ class OrderListScreen : Screen {
         return OrderSearchScreen()
     }
 
-    fun newOrder():OrderCreationScreen{
+    fun newOrder(): OrderCreationScreen {
         clickOn(NEW_ORDER_BUTTON)
         clickOn(CREATE_ORDER_OPTION)
         return OrderCreationScreen()
