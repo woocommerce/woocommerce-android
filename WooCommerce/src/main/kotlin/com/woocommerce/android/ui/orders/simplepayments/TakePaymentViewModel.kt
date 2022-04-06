@@ -9,8 +9,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_COLLECT_CARD
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_COLLECT_CASH
 import com.woocommerce.android.annotations.OpenClassOnDebug
-import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -39,7 +37,6 @@ class TakePaymentViewModel @Inject constructor(
     private val orderStore: WCOrderStore,
     private val dispatchers: CoroutineDispatchers,
     private val networkStatus: NetworkStatus,
-    private val cardReaderManager: CardReaderManager,
     private val appPrefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedState) {
     private val navArgs: TakePaymentFragmentArgs by savedState.navArgs()
@@ -104,26 +101,15 @@ class TakePaymentViewModel @Inject constructor(
                 AnalyticsTracker.KEY_PAYMENT_METHOD to VALUE_SIMPLE_PAYMENTS_COLLECT_CARD
             )
         )
-        if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected) {
-            triggerEvent(OrderNavigationTarget.StartCardReaderPaymentFlow(order.id))
-        } else {
-            triggerEvent(OrderNavigationTarget.StartCardReaderConnectFlow(skipOnboarding = true))
-        }
+        triggerEvent(OrderNavigationTarget.StartCardReaderPaymentFlow(order.id))
     }
 
     fun onConnectToReaderResultReceived(connected: Boolean) {
-        launch {
-            // this dummy delay needs to be here since the navigation component hasn't finished the previous
-            // transaction when a result is received
-            delay(DELAY_MS)
-            if (connected) {
-                triggerEvent(OrderNavigationTarget.StartCardReaderPaymentFlow(order.id))
-            } else {
-                AnalyticsTracker.track(
-                    AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_FAILED,
-                    mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD)
-                )
-            }
+        if (!connected) {
+            AnalyticsTracker.track(
+                AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_FAILED,
+                mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD)
+            )
         }
     }
 

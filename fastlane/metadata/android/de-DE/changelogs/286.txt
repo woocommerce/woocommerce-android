@@ -1,4 +1,0 @@
-8.7:
-Wusstest du schon, dass wir eine Beta-Funktion zum Erstellen von Bestellungen veröffentlicht haben? Geh zum Tab „Menü“, tippe auf das Einstellungs-Icon und scrolle zu den Beta-Funktionen. Wir haben Gebühren und Versandkosten hinzugefügt!
-
-Zudem haben wir ein seltenes Problem behoben, wodurch die Bestellhinweise nicht korrekt angezeigt wurden. Danke für die Mitteilung!

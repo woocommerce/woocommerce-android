@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.map
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.extensions.differsFrom
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.ShowProductVariations
@@ -92,7 +93,7 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
         searchJob?.cancel()
         searchJob = launch {
             if (delayed) {
-                delay(SEARCH_TYPING_DELAY_MS)
+                delay(AppConstants.SEARCH_TYPING_DELAY_MS)
             }
             if (query.isEmpty()) {
                 productList.value = emptyList()
@@ -154,8 +155,4 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
     ) : Parcelable
 
     data class AddProduct(val productId: Long) : MultiLiveEvent.Event()
-
-    companion object {
-        private const val SEARCH_TYPING_DELAY_MS = 500L
-    }
 }
