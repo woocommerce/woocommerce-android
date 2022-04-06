@@ -65,12 +65,16 @@ class InboxViewModel @Inject constructor(
             title = title,
             description = getContentFromHtml(description),
             dateCreated = formatNoteCreationDate(dateCreated),
-            actions = mapToInboxActionUI(),
+            actions = mapInboxActionsToUi(),
             isSurvey = type == SURVEY,
             isActioned = status == ACTIONED
         )
 
-    private fun InboxNote.mapToInboxActionUI(): List<InboxNoteActionUi> {
+    private fun InboxNote.mapInboxActionsToUi(): List<InboxNoteActionUi> {
+        if (type == SURVEY && status == ACTIONED) {
+            return emptyList()
+        }
+
         val noteActionsUi = actions
             .map { it.toInboxActionUi(id) }
             .toMutableList()
@@ -89,7 +93,6 @@ class InboxViewModel @Inject constructor(
                     label = DEFAULT_DISMISS_LABEL,
                     textColor = R.color.color_surface_variant,
                     url = "",
-                    isActioned = false,
                     onClick = { _, noteId -> dismissNote(noteId) }
                 )
             )
@@ -106,21 +109,33 @@ class InboxViewModel @Inject constructor(
             label = label,
             textColor = getActionTextColor(),
             url = url,
-            isActioned = isActioned,
             onClick = { actionId, noteId ->
                 val clickedNote = inboxState.value?.notes?.firstOrNull { noteId == it.id }
-                val clickedAction = clickedNote?.actions?.firstOrNull { actionId == it.id }
-                clickedAction?.let {
-                    if (url.isNotEmpty()) openUrl(noteId, actionId, url)
+                clickedNote?.let {
+                    when {
+                        it.isSurvey -> markSurveyAsAnswered(clickedNote.id, actionId)
+                        else -> handleInboxNoteAction(clickedNote, actionId)
+                    }
                 }
             }
         )
 
-    private fun openUrl(noteId: Long, actionId: Long, url: String) {
+    private fun handleInboxNoteAction(clickedNote: InboxNoteUi, actionId: Long) {
+        val clickedAction = clickedNote.actions.firstOrNull { actionId == it.id }
+        clickedAction?.let {
+            if (it.url.isNotEmpty()) {
+                viewModelScope.launch {
+                    markNoteAsActioned(clickedNote.id, actionId)
+                }
+                triggerEvent(InboxNoteActionEvent.OpenUrlEvent(it.url))
+            }
+        }
+    }
+
+    private fun markSurveyAsAnswered(noteId: Long, actionId: Long) {
         viewModelScope.launch {
             markNoteAsActioned(noteId, actionId)
         }
-        triggerEvent(InboxNoteActionEvent.OpenUrlEvent(url))
     }
 
     private fun dismissNote(noteId: Long) {
@@ -187,7 +202,6 @@ class InboxViewModel @Inject constructor(
         val label: String,
         @ColorRes val textColor: Int,
         val url: String,
-        val isActioned: Boolean,
         val onClick: (Long, Long) -> Unit
     )
 

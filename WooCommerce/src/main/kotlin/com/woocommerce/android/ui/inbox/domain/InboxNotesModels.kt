@@ -28,5 +28,5 @@ data class InboxNoteAction(
     val id: Long,
     val label: String,
     val isPrimary: Boolean,
-    val url: String
+    val url: String,
 )
