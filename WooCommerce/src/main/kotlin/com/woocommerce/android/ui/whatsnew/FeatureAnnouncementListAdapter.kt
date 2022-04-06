@@ -37,7 +37,7 @@ class FeatureAnnouncementListAdapter :
         holder.bind(getItem(position))
     }
 
-    override fun getItemId(position: Int) = position.toLong()
+    override fun getItemId(position: Int) = getItem(position).title.hashCode().toLong()
 
     class FeatureAnnouncementViewHolder(val viewBinding: FeatureAnnouncementListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
