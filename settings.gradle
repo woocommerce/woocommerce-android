@@ -45,6 +45,8 @@ plugins {
     id 'com.gradle.enterprise' version '3.8.1'
 }
 
+rootProject.name = 'WCAndroid'
+
 include ':quicklogin'
 include ':libs:cardreader'
 include ':WooCommerce'
