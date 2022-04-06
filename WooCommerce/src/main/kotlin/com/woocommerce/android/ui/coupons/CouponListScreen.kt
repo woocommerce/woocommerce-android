@@ -128,7 +128,7 @@ fun CouponListItem(
             )
         }
 
-        CouponListItemInfo(coupon.formattedDiscount, coupon.affectedArticles)
+        CouponListItemInfo(coupon.summary)
 
         CouponExpirationLabel(coupon.isActive)
     }
@@ -136,11 +136,10 @@ fun CouponListItem(
 
 @Composable
 fun CouponListItemInfo(
-    amount: String,
-    affectedArticles: String,
+    summary: String,
 ) {
     Text(
-        text = "$amount ${stringResource(id = R.string.coupon_list_item_label_off)} $affectedArticles",
+        text = summary,
         style = MaterialTheme.typography.body2,
         color = colorResource(id = R.color.color_surface_variant),
         fontSize = 14.sp,
@@ -157,24 +156,21 @@ fun CouponListPreview() {
         CouponListItem(
             id = 1,
             code = "ABCDE",
-            formattedDiscount = "USD 10.00",
-            affectedArticles = "all products",
+            summary = "USD 10.00 off all products",
             isActive = true
         ),
 
         CouponListItem(
             id = 2,
             code = "10off",
-            formattedDiscount = "5%",
-            affectedArticles = "1 product, 2 categories",
+            summary = "5% off 1 product, 2 categories",
             isActive = true
         ),
 
         CouponListItem(
             id = 3,
             code = "BlackFriday",
-            formattedDiscount = "USD 3.00",
-            affectedArticles = "all products",
+            summary = "USD 3.00 off all products",
             isActive = true
         ),
     )

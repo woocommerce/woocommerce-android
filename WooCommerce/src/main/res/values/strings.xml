@@ -1867,7 +1867,6 @@
     <string name="coupons">Coupons</string>
     <string name="coupon_list_item_label_active">Active</string>
     <string name="coupon_list_item_label_expired">Expired</string>
-    <string name="coupon_list_item_label_off">off</string>
     <string name="coupon_list_item_label_everything">everything</string>
     <string name="coupon_list_item_label_products_and_categories">%1s and %2s</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s excl. %2s</string>
