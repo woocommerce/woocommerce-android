@@ -6,13 +6,16 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CouponUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
+import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,18 +31,48 @@ class CouponDetailsViewModel @Inject constructor(
         wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
     }
 
-    private val couponDetails = couponDetailsRepository.loadCoupon(navArgs.couponId)
-        .stateIn(viewModelScope, started = SharingStarted.Lazily, initialValue = null)
+    private val coupon = couponDetailsRepository.observeCoupon(navArgs.couponId)
+        .toStateFlow(null)
 
+    private val couponUi = loadCouponDetails()
     private val couponPerformance = loadCouponPerformance()
 
-    val couponState = combine(couponDetails, couponPerformance) { details, couponPerformance ->
-        CouponDetailsState(coupon = details, couponPerformanceState = couponPerformance)
+    val couponState = combine(couponUi, couponPerformance) { couponUi, couponPerformance ->
+        CouponDetailsState(coupon = couponUi, couponPerformanceState = couponPerformance)
     }.onStart {
         emit(CouponDetailsState(isLoading = true))
-    }.catch {
-        // TODO trigger an error Snackbar and navigate up
     }.asLiveData()
+
+    init {
+        viewModelScope.launch {
+            couponDetailsRepository.fetchCoupon(navArgs.couponId).onFailure {
+                triggerEvent(ShowSnackbar(R.string.coupon_details_performance_loading_failure))
+                triggerEvent(Exit)
+            }
+        }
+    }
+
+    private fun loadCouponDetails(): Flow<CouponUi> {
+        return coupon
+            .filterNotNull()
+            .map {
+                CouponUi(
+                    formattedDiscount = couponUtils.formatDiscount(it.amount, it.type, currencyCode),
+                    formattedSpendingInfo = couponUtils.formatSpendingInfo(
+                        it.minimumAmount,
+                        it.maximumAmount,
+                        currencyCode
+                    ),
+                    affectedArticles = couponUtils.formatAffectedArticles(
+                        it.products.size,
+                        it.excludedProducts.size,
+                        it.categories.size,
+                        it.excludedCategories.size
+                    ),
+                    isActive = it.dateExpiresGmt?.after(Date()) ?: true
+                )
+            }
+    }
 
     private fun loadCouponPerformance() = flow {
         emit(CouponPerformanceState.Loading())
@@ -57,7 +90,7 @@ class CouponDetailsViewModel @Inject constructor(
                     emit(CouponPerformanceState.Failure())
                 }
             )
-    }.combine(couponDetails) { couponPerformanceState, couponDetails ->
+    }.combine(coupon) { couponPerformanceState, couponDetails ->
         when {
             couponPerformanceState !is CouponPerformanceState.Success && couponDetails?.usageCount == 0 -> {
                 // Shortcut for displaying 0 without loading
@@ -85,10 +118,7 @@ class CouponDetailsViewModel @Inject constructor(
     )
 
     data class CouponUi(
-        val id: Long,
         val code: String? = null,
-        val amount: BigDecimal? = null,
-        val usageCount: Int? = null,
         val formattedDiscount: String,
         val affectedArticles: String,
         val formattedSpendingInfo: String,
