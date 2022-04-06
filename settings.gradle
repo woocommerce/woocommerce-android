@@ -45,6 +45,10 @@ plugins {
     id 'com.gradle.enterprise' version '3.9'
 }
 
+gradleEnterprise {
+    server = "https://gradle.a8c.com"
+}
+
 rootProject.name = 'WCAndroid'
 
 include ':quicklogin'
