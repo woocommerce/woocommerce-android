@@ -41,6 +41,22 @@ class AppPrefsWrapper @Inject constructor() {
         )
     }
 
+    fun setCardReaderOnboardingPreferredPluginVersion(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long,
+        preferredPlugin: PluginType,
+        version: String
+    ) {
+        AppPrefs.setCardReaderOnboardingStatusAndPreferredPluginVersion(
+            localSiteId,
+            remoteSiteId,
+            selfHostedSiteId,
+            preferredPlugin,
+            version
+        )
+    }
+
     fun setCardReaderStatementDescriptor(
         statementDescriptor: String?,
         localSiteId: Int,

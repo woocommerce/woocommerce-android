@@ -54,6 +54,7 @@ object AppPrefs {
         RECEIPT_PREFIX,
         CARD_READER_ONBOARDING_COMPLETED_STATUS_V2,
         CARD_READER_PREFERRED_PLUGIN,
+        CARD_READER_PREFERRED_PLUGIN_VERSION,
         CARD_READER_STATEMENT_DESCRIPTOR,
         ORDER_FILTER_PREFIX,
         ORDER_FILTER_CUSTOM_DATE_RANGE_START,
@@ -407,7 +408,7 @@ object AppPrefs {
         return CardReaderOnboardingStatus.valueOf(
             PreferenceUtils.getString(
                 getPreferences(),
-                getCardReaderOnboardingKey(
+                getCardReaderOnboardingStatusKey(
                     localSiteId,
                     remoteSiteId,
                     selfHostedSiteId
@@ -443,6 +444,22 @@ object AppPrefs {
         return storedValue?.let { PluginType.valueOf(it) }
     }
 
+    fun getCardReaderPreferredPluginVersion(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long,
+        preferredPlugin: PluginType,
+    ) = PreferenceUtils.getString(
+            getPreferences(),
+            getCardReaderPreferredPluginVersionKey(
+                localSiteId,
+                remoteSiteId,
+                selfHostedSiteId,
+                preferredPlugin
+            ),
+            null
+        )
+
     fun setCardReaderOnboardingStatusAndPreferredPlugin(
         localSiteId: Int,
         remoteSiteId: Long,
@@ -452,7 +469,7 @@ object AppPrefs {
     ) {
         PreferenceUtils.setString(
             getPreferences(),
-            getCardReaderOnboardingKey(localSiteId, remoteSiteId, selfHostedSiteId),
+            getCardReaderOnboardingStatusKey(localSiteId, remoteSiteId, selfHostedSiteId),
             status.toString()
         )
         PreferenceUtils.setString(
@@ -462,7 +479,21 @@ object AppPrefs {
         )
     }
 
-    private fun getCardReaderOnboardingKey(
+    fun setCardReaderOnboardingStatusAndPreferredPluginVersion(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long,
+        preferredPlugin: PluginType,
+        version: String
+    ) {
+        PreferenceUtils.setString(
+            getPreferences(),
+            getCardReaderPreferredPluginVersionKey(localSiteId, remoteSiteId, selfHostedSiteId, preferredPlugin),
+            version
+        )
+    }
+
+    private fun getCardReaderOnboardingStatusKey(
         localSiteId: Int,
         remoteSiteId: Long,
         selfHostedSiteId: Long
@@ -473,6 +504,13 @@ object AppPrefs {
         remoteSiteId: Long,
         selfHostedSiteId: Long
     ) = "$CARD_READER_PREFERRED_PLUGIN:$localSiteId:$remoteSiteId:$selfHostedSiteId"
+
+    private fun getCardReaderPreferredPluginVersionKey(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long,
+        plugin: PluginType,
+    ) = "$CARD_READER_PREFERRED_PLUGIN_VERSION:$localSiteId:$remoteSiteId:$selfHostedSiteId:$plugin"
 
     fun setCardReaderStatementDescriptor(
         statementDescriptor: String?,

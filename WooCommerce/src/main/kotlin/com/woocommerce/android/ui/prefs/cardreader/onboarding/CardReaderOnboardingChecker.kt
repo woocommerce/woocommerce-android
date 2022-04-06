@@ -68,13 +68,15 @@ class CardReaderOnboardingChecker @Inject constructor(
 
         return fetchOnboardingState()
             .also {
+                val (status, version) = when (it) {
+                    is OnboardingCompleted -> CARD_READER_ONBOARDING_COMPLETED to it.version
+                    is StripeAccountPendingRequirement -> CARD_READER_ONBOARDING_PENDING to it.version
+                    else -> CARD_READER_ONBOARDING_NOT_COMPLETED to null
+                }
                 updateSharedPreferences(
-                    when (it) {
-                        is OnboardingCompleted -> CARD_READER_ONBOARDING_COMPLETED
-                        is StripeAccountPendingRequirement -> CARD_READER_ONBOARDING_PENDING
-                        else -> CARD_READER_ONBOARDING_NOT_COMPLETED
-                    },
+                    status,
                     it.preferredPlugin,
+                    version
                 )
             }
     }
@@ -134,12 +136,17 @@ class CardReaderOnboardingChecker @Inject constructor(
         if (isStripeAccountPendingRequirements(paymentAccount)) return StripeAccountPendingRequirement(
             paymentAccount.currentDeadline,
             preferredPlugin.type,
+            preferredPlugin.info?.version,
             requireNotNull(countryCode)
         )
         if (isStripeAccountRejected(paymentAccount)) return StripeAccountRejected(preferredPlugin.type)
         if (isInUndefinedState(paymentAccount)) return GenericError
 
-        return OnboardingCompleted(preferredPlugin.type, requireNotNull(countryCode))
+        return OnboardingCompleted(
+            preferredPlugin.type,
+            preferredPlugin.info?.version,
+            requireNotNull(countryCode)
+        )
     }
 
     private fun saveStatementDescriptor(statementDescriptor: String?) {
@@ -223,7 +230,11 @@ class CardReaderOnboardingChecker @Inject constructor(
     private fun isInUndefinedState(paymentAccount: WCPaymentAccountResult): Boolean =
         paymentAccount.status != COMPLETE
 
-    private fun updateSharedPreferences(status: CardReaderOnboardingStatus, preferredPlugin: PluginType?) {
+    private fun updateSharedPreferences(
+        status: CardReaderOnboardingStatus,
+        preferredPlugin: PluginType?,
+        version: String?,
+    ) {
         val site = selectedSite.get()
         appPrefsWrapper.setCardReaderOnboardingStatusAndPreferredPlugin(
             localSiteId = site.id,
@@ -232,6 +243,15 @@ class CardReaderOnboardingChecker @Inject constructor(
             status,
             preferredPlugin,
         )
+        if (version != null && preferredPlugin != null) {
+            appPrefsWrapper.setCardReaderOnboardingPreferredPluginVersion(
+                localSiteId = site.id,
+                remoteSiteId = site.siteId,
+                selfHostedSiteId = site.selfHostedSiteId,
+                preferredPlugin,
+                version
+            )
+        }
     }
 }
 
@@ -250,8 +270,11 @@ enum class PluginType(val minSupportedVersion: String) {
 sealed class CardReaderOnboardingState(
     open val preferredPlugin: PluginType? = null
 ) {
-    data class OnboardingCompleted(override val preferredPlugin: PluginType, val countryCode: String) :
-        CardReaderOnboardingState()
+    data class OnboardingCompleted(
+        override val preferredPlugin: PluginType,
+        val version: String?,
+        val countryCode: String
+    ) : CardReaderOnboardingState()
 
     /**
      * Store is not located in one of the supported countries.
@@ -313,6 +336,7 @@ sealed class CardReaderOnboardingState(
     data class StripeAccountPendingRequirement(
         val dueDate: Long?,
         override val preferredPlugin: PluginType,
+        val version: String?,
         val countryCode: String,
     ) : CardReaderOnboardingState()
 
