@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-03-11 11:54:03+0000
+Translation-Revision-Date: 2022-03-25 13:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="empty_inbox_description">Mağazanızı büyütmekle ilgili daha fazla ipucu ve bilgi için kısa süre sonra tekrar gelin</string>
+    <string name="empty_inbox_title">Tebrikler, her şeyi okudunuz!</string>
+    <string name="orderstatus_contentDesc_withStatus">Sipariş durumu: %s</string>
+    <string name="no_sku">SKU Yok</string>
+    <string name="count">Sayı: %s</string>
+    <string name="plus_one">Artı bir</string>
+    <string name="minus_one">Eksi bir</string>
+    <string name="more_menu_button_coupons">Kuponlar</string>
     <string name="dismiss_inbox_note">Kapat</string>
     <string name="login_error_xml_rpc_auth_error_communicating">Siteyle iletişimde bir sorun oluştu. Bir HTTP hata kodu 401 döndürüldü.</string>
     <string name="login_error_xml_rpc_cannot_read_site_auth_required">Bu sitede XML-RPC çağrıları engellenmiş görünüyor (hata kodu 401). Oturum açma girişimi başarısız olursa, SSS\'yi görüntülemek için yardım simgesine dokunun.</string>
@@ -144,8 +152,6 @@ Language: tr
     <string name="order_card_transition_name">order_card_%1$s</string>
     <string name="cash">Nakit</string>
     <string name="card">Kart</string>
-    <string name="plus">Artı</string>
-    <string name="minus">Eksi</string>
     <string name="tax">Vergi</string>
     <string name="email">E-posta</string>
     <string name="order_creation_add_customer_note">Not ekle</string>

@@ -200,27 +200,6 @@
             android:id="@+id/action_orderDetailFragment_to_createShippingLabelFragment"
             app:destination="@id/createShippingLabelFragment" />
         <action
-            android:id="@+id/action_orderDetailFragment_to_cardReaderPaymentDialog"
-            app:destination="@id/cardReaderPaymentDialog"
-            app:enterAnim="@anim/activity_fade_in"
-            app:exitAnim="@null"
-            app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out" />
-        <action
-            android:id="@+id/action_orderDetailFragment_to_cardReaderWelcomeDialog"
-            app:destination="@id/cardReaderWelcomeDialog"
-            app:enterAnim="@anim/activity_fade_in"
-            app:exitAnim="@null"
-            app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out" />
-        <action
-            android:id="@+id/action_orderDetailFragment_to_cardReaderConnectDialog"
-            app:destination="@id/cardReaderConnectDialogFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:exitAnim="@null"
-            app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out" />
-        <action
             android:id="@+id/action_orderDetailFragment_to_receiptPreviewFragment"
             app:destination="@id/receiptPreviewFragment" />
         <action
@@ -241,6 +220,15 @@
         <action
             android:id="@+id/action_orderDetailFragment_to_billingAddressEditingFragment"
             app:destination="@id/billingAddressEditingFragment" />
+
+        <action
+            android:id="@+id/action_orderDetailFragment_to_cardReaderFlow"
+            app:destination="@id/cardReaderFlow">
+            <argument
+                android:name="cardReaderFlowParam"
+                app:argType="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam"
+                app:nullable="false" />
+        </action>
     </fragment>
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
@@ -429,80 +417,9 @@
             android:name="selectedRates"
             app:argType="com.woocommerce.android.model.ShippingRate[]" />
     </fragment>
-    <dialog
-        android:id="@+id/cardReaderWelcomeDialog"
-        android:name="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderWelcomeDialog"
-        android:label="CardReaderWelcomeDialog">
-        <action
-            android:id="@+id/action_cardReaderWelcomeFragment_to_cardReaderOnboardingFragment"
-            app:destination="@id/cardReaderOnboardingFragment" />
-    </dialog>
-    <dialog
-        android:id="@+id/cardReaderPaymentDialog"
-        android:name="com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialogFragment"
-        android:label="CardReaderPaymentDialog">
-        <argument
-            android:name="orderId"
-            app:argType="long" />
-        <argument
-            android:name="isRefund"
-            app:argType="boolean" />
-    </dialog>
-    <dialog
-        android:id="@+id/cardReaderConnectDialogFragment"
-        android:name="com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectDialogFragment"
-        android:label="CardReaderConnectDialogFragment">
-        <argument
-            android:name="skipOnboarding"
-            app:argType="boolean"
-            app:nullable="false" />
-        <action
-            android:id="@+id/action_cardReaderConnectDialogFragment_to_cardReaderTutorialDialogFragment"
-            app:destination="@id/cardReaderTutorialDialogFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:exitAnim="@null"
-            app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out" />
-        <action
-            android:id="@+id/action_cardReaderConnectDialogFragment_to_cardReaderUpdateDialogFragment"
-            app:destination="@id/cardReaderUpdateDialogFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:exitAnim="@null"
-            app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out" />
-        <action
-            android:id="@+id/action_cardReaderConnectDialogFragment_to_cardReaderOnboardingFragment"
-            app:destination="@id/cardReaderOnboardingFragment" />
-    </dialog>
-    <dialog
-        android:id="@+id/cardReaderTutorialDialogFragment"
-        android:name="com.woocommerce.android.ui.prefs.cardreader.tutorial.CardReaderTutorialDialogFragment"
-        android:label="CardReaderTutorialDialogFragment" />
-    <dialog
-        android:id="@+id/cardReaderUpdateDialogFragment"
-        android:name="com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateDialogFragment"
-        android:label="CardReaderUpdateDialogFragment" >
-        <argument
-            android:name="requiredUpdate"
-            android:defaultValue="false"
-            app:argType="boolean" />
-    </dialog>
-    <fragment
-        android:id="@+id/cardReaderOnboardingFragment"
-        android:name="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingFragment"
-        android:label="CardReaderOnboardingFragment" >
-        <action
-            android:id="@+id/action_cardReaderOnboardingFragment_to_cardReaderHubFragment"
-            app:destination="@id/cardReaderHubFragment" >
-            <argument
-                android:name="storeCountryCode"
-                app:nullable="false"
-                app:argType="string" />
-        </action>
-    </fragment>
     <fragment
         android:id="@+id/receiptPreviewFragment"
-        android:name="com.woocommerce.android.ui.orders.cardreader.ReceiptPreviewFragment"
+        android:name="com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptPreviewFragment"
         android:label="ReceiptPreviewFragment"
         tools:layout="@layout/fragment_receipt_preview">
         <argument
@@ -620,4 +537,6 @@
             android:name="requestKey"
             app:argType="string" />
     </fragment>
+
+    <include app:graph="@navigation/nav_graph_card_reader_flow" />
 </navigation>

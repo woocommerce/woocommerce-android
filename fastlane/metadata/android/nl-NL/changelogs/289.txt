@@ -1,0 +1,4 @@
+8.8:
+Deze release heeft misschien geen verrassende nieuwe functies, maar we hebben er wel ons uiterste best op gedaan! We hebben wat bugs verholpen en de toegankelijkheid verbeterd met TalkBack.
+
+Wist je dat we een bèta-functie voor het aanmaken van bestellingen hebben uitgebracht? Ga naar het tabblad ‘Menu’, tik op het instellingenpictogram en scrol naar bèta-functies.

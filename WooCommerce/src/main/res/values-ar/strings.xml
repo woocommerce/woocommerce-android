@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-03-11 18:54:04+0000
+Translation-Revision-Date: 2022-03-24 17:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="empty_inbox_description">عد قريبًا للحصول على مزيد من النصائح والرؤى بشأن تكبير متجرك</string>
+    <string name="empty_inbox_title">تهانينا، لقد قرأت كل شيء!</string>
+    <string name="orderstatus_contentDesc_withStatus">حالة الطلب: %s</string>
+    <string name="no_sku">لا توجد وحدة SKU</string>
+    <string name="count">العدد: %s</string>
+    <string name="plus_one">زائد واحد</string>
+    <string name="minus_one">ناقص واحد</string>
+    <string name="more_menu_button_coupons">القسائم</string>
     <string name="dismiss_inbox_note">تجاهل</string>
     <string name="login_error_xml_rpc_auth_error_communicating">حدثت مشكلة في أثناء الاتصال بالموقع. تم إرجاع رمز خطأ HTTP رقم 401.</string>
     <string name="login_error_xml_rpc_cannot_read_site_auth_required">تبدو استدعاءات XML-RPC محظورة على هذا الموقع (رمز الخطأ 401). إذا فشلت محاولة تسجيل الدخول، فانقر على أيقونة المساعدة لعرض الأسئلة المتداولة.</string>
@@ -144,8 +152,6 @@ Language: ar
     <string name="order_card_transition_name">order_card_%1$s</string>
     <string name="cash">الأموال النقدية</string>
     <string name="card">بطاقة</string>
-    <string name="plus">زائد</string>
-    <string name="minus">ناقص</string>
     <string name="tax">الضرائب</string>
     <string name="email">البريد الإلكتروني</string>
     <string name="order_creation_add_customer_note">إضافة ملاحظة</string>

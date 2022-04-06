@@ -15,47 +15,6 @@
             app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right" />
     </dialog>
-    <dialog
-        android:id="@+id/cardReaderConnectDialog"
-        android:name="com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectDialogFragment"
-        android:label="CardReaderConnectDialogFragment">
-        <argument
-            android:name="skipOnboarding"
-            android:defaultValue="true"
-            app:argType="boolean" />
-        <action
-            android:id="@+id/action_cardReaderConnectDialogFragment_to_cardReaderTutorialDialogFragment"
-            app:destination="@id/cardReaderTutorialDialogFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:exitAnim="@null"
-            app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out" />
-        <action
-            android:id="@+id/action_cardReaderConnectDialogFragment_to_cardReaderUpdateDialogFragment"
-            app:destination="@id/cardReaderUpdateDialogFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:exitAnim="@null"
-            app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out" />
-        <action
-            android:id="@+id/action_cardReaderConnectDialogFragment_to_cardReaderOnboardingFragment"
-            app:destination="@id/cardReaderOnboardingFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
-    </dialog>
-    <dialog
-        android:id="@+id/cardReaderPaymentDialog"
-        android:name="com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialogFragment"
-        android:label="CardReaderPaymentDialog">
-        <argument
-            android:name="orderId"
-            app:argType="long" />
-        <argument
-            android:name="isRefund"
-            app:argType="boolean" />
-    </dialog>
     <fragment
         android:id="@+id/simplePaymentsFragment"
         android:name="com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsFragment"
@@ -97,41 +56,13 @@
             app:argType="com.woocommerce.android.model.Order"
             app:nullable="false" />
         <action
-            android:id="@+id/action_takePaymentFragment_to_cardReaderConnect_Dialog"
-            app:destination="@+id/cardReaderConnectDialog"
-            app:enterAnim="@anim/activity_fade_in"
-            app:exitAnim="@null"
-            app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out" />
-        <action
-            android:id="@+id/action_takePaymentFragment_to_cardReaderPayment_Dialog"
-            app:destination="@+id/cardReaderPaymentDialog"
-            app:enterAnim="@anim/activity_fade_in"
-            app:exitAnim="@null"
-            app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out" />
+            android:id="@+id/action_takePaymentFragment_to_cardReaderFlow"
+            app:destination="@id/cardReaderFlow">
+            <argument
+                android:name="cardReaderFlowParam"
+                app:argType="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam"
+                app:nullable="false" />
+        </action>
     </fragment>
-
-    <dialog
-        android:id="@+id/cardReaderWelcomeDialog"
-        android:name="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderWelcomeDialog"
-        android:label="CardReaderWelcomeDialog">
-        <action
-            android:id="@+id/action_cardReaderWelcomeFragment_to_cardReaderOnboardingFragment"
-            app:destination="@id/cardReaderOnboardingFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
-    </dialog>
-
-    <dialog
-        android:id="@+id/cardReaderUpdateDialogFragment"
-        android:name="com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateDialogFragment"
-        android:label="CardReaderUpdateDialogFragment">
-        <argument
-            android:name="requiredUpdate"
-            android:defaultValue="false"
-            app:argType="boolean" />
-    </dialog>
+    <include app:graph="@navigation/nav_graph_card_reader_flow" />
 </navigation>

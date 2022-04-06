@@ -41,7 +41,6 @@ object AppPrefs {
         DATABASE_DOWNGRADED,
         IS_PRODUCTS_FEATURE_ENABLED,
         IS_PRODUCT_ADDONS_ENABLED,
-        IS_ORDER_CREATION_ENABLED,
         LOGIN_USER_BYPASSED_JETPACK_REQUIRED,
         SELECTED_ORDER_LIST_TAB_POSITION,
         IMAGE_OPTIMIZE_ENABLED,
@@ -109,6 +108,9 @@ object AppPrefs {
 
         // The last version of the app where an announcement was shown,
         LAST_VERSION_WITH_ANNOUNCEMENT,
+
+        // card reader welcome dialog was shown
+        CARD_READER_WELCOME_SHOWN,
     }
 
     fun init(context: Context) {
@@ -151,10 +153,6 @@ object AppPrefs {
     var isProductAddonsEnabled: Boolean
         get() = getBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, false)
         set(value) = setBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, value)
-
-    var isOrderCreationEnabled: Boolean
-        get() = getBoolean(DeletablePrefKey.IS_ORDER_CREATION_ENABLED, false)
-        set(value) = setBoolean(DeletablePrefKey.IS_ORDER_CREATION_ENABLED, value)
 
     fun getLastAppVersionCode(): Int {
         return getDeletableInt(UndeletablePrefKey.LAST_APP_VERSION_CODE)
@@ -245,6 +243,9 @@ object AppPrefs {
 
     fun setLastVersionWithAnnouncement(version: String) =
         setString(UndeletablePrefKey.LAST_VERSION_WITH_ANNOUNCEMENT, version)
+
+    fun setCardReaderWelcomeDialogShown() =
+        setBoolean(UndeletablePrefKey.CARD_READER_WELCOME_SHOWN, true)
 
     /**
      * Flag to check products features are enabled
@@ -430,6 +431,8 @@ object AppPrefs {
         )
         return completedStatus == CARD_READER_ONBOARDING_COMPLETED
     }
+
+    fun isCardReaderWelcomeDialogShown() = getBoolean(UndeletablePrefKey.CARD_READER_WELCOME_SHOWN, false)
 
     fun getCardReaderPreferredPlugin(
         localSiteId: Int,
