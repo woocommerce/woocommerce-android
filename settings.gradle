@@ -53,6 +53,7 @@ gradleEnterprise {
         capture {
             taskInputFiles = true
         }
+        uploadInBackground = System.getenv("CI") == null
     }
 }
 
