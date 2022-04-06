@@ -53,7 +53,7 @@ fun CouponSummaryHeading(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 24.dp)
+            .padding(horizontal = 16.dp, vertical = 16.dp)
     ) {
         code?.let {
             Text(
