@@ -72,21 +72,32 @@ class InboxViewModel @Inject constructor(
 
     private fun InboxNote.mapToInboxActionUI(): List<InboxNoteActionUi> {
         val noteActionsUi = actions
-            .filter { it.label != DEFAULT_DISMISS_LABEL }
             .map { it.toInboxActionUi(id) }
             .toMutableList()
-        noteActionsUi.add(
-            InboxNoteActionUi(
-                id = 0,
-                parentNoteId = id,
-                label = DEFAULT_DISMISS_LABEL,
-                textColor = R.color.color_surface_variant,
-                url = "",
-                onClick = { _, noteId -> dismissNote(noteId) }
-            )
-        )
+
+        addDismissActionIfMissing(noteActionsUi)
+
         return noteActionsUi
     }
+
+    private fun InboxNote.addDismissActionIfMissing(noteActionsUi: MutableList<InboxNoteActionUi>) {
+        if (!actionsHaveDismiss(noteActionsUi)) {
+            noteActionsUi.add(
+                InboxNoteActionUi(
+                    id = 0,
+                    parentNoteId = id,
+                    label = DEFAULT_DISMISS_LABEL,
+                    textColor = R.color.color_surface_variant,
+                    url = "",
+                    isActioned = false,
+                    onClick = { _, noteId -> dismissNote(noteId) }
+                )
+            )
+        }
+    }
+
+    private fun actionsHaveDismiss(noteActionsUi: List<InboxNoteActionUi>) =
+        noteActionsUi.any { it.label == DEFAULT_DISMISS_LABEL }
 
     private fun InboxNoteAction.toInboxActionUi(parentNoteId: Long) =
         InboxNoteActionUi(
@@ -95,6 +106,7 @@ class InboxViewModel @Inject constructor(
             label = label,
             textColor = getActionTextColor(),
             url = url,
+            isActioned = isActioned,
             onClick = { actionId, noteId ->
                 val clickedNote = inboxState.value?.notes?.firstOrNull { noteId == it.id }
                 val clickedAction = clickedNote?.actions?.firstOrNull { actionId == it.id }
@@ -175,6 +187,7 @@ class InboxViewModel @Inject constructor(
         val label: String,
         @ColorRes val textColor: Int,
         val url: String,
+        val isActioned: Boolean,
         val onClick: (Long, Long) -> Unit
     )
 
