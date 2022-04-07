@@ -362,11 +362,10 @@ class IssueRefundViewModel @Inject constructor(
         if (wasConfirmed) {
             if (networkStatus.isConnected()) {
                 refundJob = launch {
-                    delay(1000)
                     refundSummaryState = refundSummaryState.copy(
                         isFormEnabled = false
                     )
-
+                    triggerEvent(IssueRefundEvent.NavigateToCardReaderScreen(order.id))
                     triggerEvent(
                         ShowSnackbar(
                             R.string.order_refunds_amount_refund_progress_message,
@@ -385,8 +384,6 @@ class IssueRefundViewModel @Inject constructor(
                             AnalyticsTracker.KEY_AMOUNT to commonState.refundTotal.toString()
                         )
                     )
-
-                    triggerEvent(IssueRefundEvent.NavigateToCardReaderScreen(order.id))
 
 //                    val resultCall = async(dispatchers.io) {
 //                        return@async when (commonState.refundType) {
