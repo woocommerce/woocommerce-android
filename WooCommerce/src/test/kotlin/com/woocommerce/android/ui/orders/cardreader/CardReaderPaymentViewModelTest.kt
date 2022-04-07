@@ -1840,7 +1840,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertThat((viewModel.viewStateData.value as InteracRefund.CollectRefundState).hintLabel)
-                .isEqualTo(R.string.card_reader_payment_collect_payment_hint)
+                .isEqualTo(R.string.card_reader_refund_payment_hint)
         }
 
     @Test
@@ -1860,7 +1860,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertThat((viewModel.viewStateData.value as InteracRefund.CollectRefundState).hintLabel)
-                .isEqualTo(R.string.card_reader_payment_collect_payment_hint)
+                .isEqualTo(R.string.card_reader_refund_payment_hint)
         }
 
     @Test
@@ -1880,7 +1880,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertThat((viewModel.viewStateData.value as InteracRefund.CollectRefundState).hintLabel)
-                .isEqualTo(R.string.card_reader_payment_collect_payment_hint)
+                .isEqualTo(R.string.card_reader_refund_payment_hint)
         }
 
     @Test
@@ -2118,7 +2118,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
                 .isEqualTo(R.dimen.major_275)
             assertThat(viewState.hintLabel).describedAs("hintLabel")
-                .isEqualTo(R.string.card_reader_payment_collect_payment_hint)
+                .isEqualTo(R.string.card_reader_refund_payment_hint)
         }
 
     @Test
