@@ -54,5 +54,5 @@ steps:
 
   - label: "🛠 Installable Build"
     command: ".buildkite/commands/installable-build.sh"
-    if: "build.pull_request.id != null || build.pull_request.draft"
+    if: build.pull_request.id != null
     plugins: *common_plugins

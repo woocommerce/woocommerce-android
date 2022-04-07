@@ -10,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -33,10 +34,6 @@ class ProductTagsFragment :
     BaseProductFragment(R.layout.fragment_product_tags),
     OnLoadMoreListener,
     OnProductTagClickListener {
-    companion object {
-        private const val SEARCH_TYPING_DELAY_MS = 250L
-    }
-
     private lateinit var productTagsAdapter: ProductTagsAdapter
 
     private val skeletonView = SkeletonView()
@@ -115,7 +112,7 @@ class ProductTagsFragment :
                     viewModel.setProductTagsFilter(filter)
                 }
             },
-            SEARCH_TYPING_DELAY_MS
+            AppConstants.SEARCH_TYPING_DELAY_MS
         )
     }
 

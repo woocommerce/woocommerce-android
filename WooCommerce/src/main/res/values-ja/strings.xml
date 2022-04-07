@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-03-10 09:54:12+0000
+Translation-Revision-Date: 2022-03-25 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="empty_inbox_description">ストアの成長に役立つその他のヒントやインサイトは今後も増えていきますので、ぜひまた訪問してください</string>
+    <string name="empty_inbox_title">すべて読み終えました !</string>
+    <string name="orderstatus_contentDesc_withStatus">注文ステータス: %s</string>
+    <string name="no_sku">SKU なし</string>
+    <string name="count">数量: %s</string>
+    <string name="plus_one">プラス1</string>
+    <string name="minus_one">マイナス1</string>
+    <string name="more_menu_button_coupons">クーポン</string>
     <string name="dismiss_inbox_note">非表示</string>
     <string name="login_error_xml_rpc_auth_error_communicating">サイトとの通信中に問題が発生しました。 HTTP エラーコード401が返されました。</string>
     <string name="login_error_xml_rpc_cannot_read_site_auth_required">このサイトでは XML-RPC コールがブロックされているようです (エラーコード401)。 ログインに失敗する場合は、ヘルプアイコンをタップして FAQ をご確認ください。</string>
@@ -144,8 +152,6 @@ Language: ja_JP
     <string name="order_card_transition_name">order_card_%1$s</string>
     <string name="cash">現金</string>
     <string name="card">カード</string>
-    <string name="plus">Plus</string>
-    <string name="minus">マイナス</string>
     <string name="tax">税金</string>
     <string name="email">メールアドレス</string>
     <string name="order_creation_add_customer_note">メモを追加</string>

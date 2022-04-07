@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.products.categories.ProductCategoryItemUiModel
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.WCProductCategoryModel
+import org.wordpress.android.fluxc.persistence.entity.ProductCategoryEntity
 import java.util.Locale
 import java.util.Stack
 
@@ -139,3 +140,10 @@ fun WCProductCategoryModel.toProductCategory(): ProductCategory {
         parentId = this.parent
     )
 }
+
+fun ProductCategoryEntity.toAppModel() = ProductCategory(
+    remoteCategoryId = id,
+    name = name ?: "",
+    parentId = parentId ?: 0L,
+    slug = slug ?: ""
+)

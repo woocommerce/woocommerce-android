@@ -1,4 +1,0 @@
-8.7:
-Sabia que lançamos uma funcionalidade beta para criação de pedidos? Acesse a guia Menu, toque no ícone de configuração e role a tela até as funcionalidades beta. Acabamos de adicionar preços de envio e taxas!
-
-Além disso, corrigimos uma falha rara em que as anotações de um pedido eram exibidas incorretamente. Obrigado por avisar!
