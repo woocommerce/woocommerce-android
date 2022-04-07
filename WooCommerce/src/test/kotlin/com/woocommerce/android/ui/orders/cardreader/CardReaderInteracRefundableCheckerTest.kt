@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.cardreader
 
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderTestUtils
+import com.woocommerce.android.ui.orders.cardreader.payment.CardReaderInteracRefundableChecker
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
