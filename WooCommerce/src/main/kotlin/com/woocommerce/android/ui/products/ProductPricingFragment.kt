@@ -15,7 +15,6 @@ import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.formatToMMMddYYYY
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithResult
-import com.woocommerce.android.extensions.offsetGmtDate
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
@@ -160,7 +159,7 @@ class ProductPricingFragment :
             }
         }
 
-        updateSaleStartDate(pricingData.saleStartDate, pricingData.saleEndDate, viewModel.parameters.gmtOffset)
+        updateSaleStartDate(pricingData.saleStartDate, pricingData.saleEndDate)
         with(binding.scheduleSaleStartDate) {
             setClickListener {
                 startDatePickerDialog = displayDatePickerDialog(
@@ -215,7 +214,7 @@ class ProductPricingFragment :
     }
 
     /**
-     * Method to update the start date of a sale using the [offset]
+     * Method to update the start date of a sale
      *
      * If the [selectedStartDate] is empty or null, then the default is set to the current date,
      * only if the [endDate] > the current date.
@@ -224,21 +223,21 @@ class ProductPricingFragment :
      * the discard dialog from being displayed when there have been no user initiated changes made
      * to the screen.
      */
-    private fun updateSaleStartDate(selectedStartDate: Date?, endDate: Date?, offset: Float) {
+    private fun updateSaleStartDate(selectedStartDate: Date?, endDate: Date?) {
         val currentDate = Date()
         val date = selectedStartDate
             ?: if (endDate?.after(currentDate) == true) {
                 currentDate
             } else null
 
-        date?.let { binding.scheduleSaleStartDate.setText(formatSaleDateForDisplay(it, offset)) }
+        date?.let { binding.scheduleSaleStartDate.setText(it.formatForDisplay()) }
         selectedStartDate?.let { viewModel.onDataChanged(saleStartDate = it) }
     }
 
     private fun updateSaleEndDate(selectedDate: Date?, offset: Float) {
         // The end sale date is optional => null is a valid value
         if (selectedDate != null) {
-            binding.scheduleSaleEndDate.setText(formatSaleDateForDisplay(selectedDate, offset))
+            binding.scheduleSaleEndDate.setText(selectedDate.formatForDisplay())
         } else {
             binding.scheduleSaleEndDate.setText("")
         }
@@ -299,15 +298,11 @@ class ProductPricingFragment :
     }
 
     /**
-     * Parses the given [date] and applies the passed [gmtOffset] and
-     * formats this formatted date to MMM dd, YYYY format
-     *
-     * If given [date] is null, current date is used
+     * Formats the given [date] or the current date if it's null to `'MMM dd, YYYY'`
      */
-    private fun formatSaleDateForDisplay(date: Date?, gmtOffset: Float): String {
-        val currentDate = DateUtils.offsetGmtDate(Date(), gmtOffset)
-        val dateOnSaleFrom = date?.offsetGmtDate(gmtOffset) ?: currentDate
-        return dateOnSaleFrom.formatToMMMddYYYY()
+    private fun Date?.formatForDisplay(): String {
+        val date = this ?: Date()
+        return date.formatToMMMddYYYY()
     }
 
     override fun onProductItemSelected(resultCode: Int, selectedItem: String?) {
