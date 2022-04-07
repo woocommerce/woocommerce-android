@@ -13,6 +13,11 @@ class MultipleCardReadersFoundAdapter : RecyclerView.Adapter<MultipleCardReaders
     companion object {
         private const val VIEW_TYPE_READER_ITEM = 0
         private const val VIEW_TYPE_PROGRESS_ITEM = 1
+        private const val ITEM_ID_PROGRESS_ITEM = -1L
+    }
+
+    init {
+        setHasStableIds(true)
     }
 
     var list: List<ListItemViewState> = ArrayList()
@@ -46,4 +51,11 @@ class MultipleCardReadersFoundAdapter : RecyclerView.Adapter<MultipleCardReaders
     }
 
     override fun getItemCount(): Int = list.size
+
+    override fun getItemId(position: Int): Long {
+        return when (list[position]) {
+            is ScanningInProgressListItem -> ITEM_ID_PROGRESS_ITEM
+            is CardReaderListItem -> (list[position] as CardReaderListItem).readerId.hashCode().toLong()
+        }
+    }
 }
