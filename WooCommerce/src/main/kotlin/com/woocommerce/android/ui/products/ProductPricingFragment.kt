@@ -174,7 +174,7 @@ class ProductPricingFragment :
             }
         }
 
-        updateSaleEndDate(pricingData.saleEndDate, viewModel.parameters.gmtOffset)
+        updateSaleEndDate(pricingData.saleEndDate)
         with(binding.scheduleSaleEndDate) {
             setClickListener {
                 endDatePickerDialog = displayDatePickerDialog(
@@ -234,7 +234,7 @@ class ProductPricingFragment :
         selectedStartDate?.let { viewModel.onDataChanged(saleStartDate = it) }
     }
 
-    private fun updateSaleEndDate(selectedDate: Date?, offset: Float) {
+    private fun updateSaleEndDate(selectedDate: Date?) {
         // The end sale date is optional => null is a valid value
         if (selectedDate != null) {
             binding.scheduleSaleEndDate.setText(selectedDate.formatForDisplay())
