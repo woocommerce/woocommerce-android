@@ -62,7 +62,6 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.parcelize.Parcelize
@@ -148,6 +147,7 @@ class IssueRefundViewModel @Inject constructor(
     private val maxQuantities: Map<Long, Float>
     private val formatCurrency: (BigDecimal) -> String
     private val gateway: PaymentGateway
+    private var cardType = PaymentMethodType.CARD_PRESENT
     private val arguments: RefundsArgs by savedState.navArgs()
 
     private val selectedQuantities: MutableMap<Long, Int> by lazy {
@@ -365,7 +365,11 @@ class IssueRefundViewModel @Inject constructor(
                     refundSummaryState = refundSummaryState.copy(
                         isFormEnabled = false
                     )
-                    triggerEvent(IssueRefundEvent.NavigateToCardReaderScreen(order.id))
+                    if (cardType == PaymentMethodType.INTERAC_PRESENT) {
+                        triggerEvent(IssueRefundEvent.NavigateToCardReaderScreen(order.id))
+                    } else {
+                        notifyRefundBackend()
+                    }
                     triggerEvent(
                         ShowSnackbar(
                             R.string.order_refunds_amount_refund_progress_message,
@@ -843,6 +847,7 @@ class IssueRefundViewModel @Inject constructor(
         launch {
             when (val result = paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)) {
                 is PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success -> {
+                    cardType = PaymentMethodType.fromValue(result.paymentMethodType ?: "card_present")
                     val refundMethodWithCard = result.run {
                         val brand = result.cardBrand.orEmpty().replaceFirstChar { it.uppercase() }
                         val last4 = result.cardLast4.orEmpty()
@@ -1025,5 +1030,16 @@ class IssueRefundViewModel @Inject constructor(
         data class OpenUrl(val url: String) : IssueRefundEvent()
         object HideValidationError : IssueRefundEvent()
         data class NavigateToCardReaderScreen(val orderId: Long) : IssueRefundEvent()
+    }
+
+    enum class PaymentMethodType(val paymentMethodType: String) {
+        CARD_PRESENT("card_present"),
+        INTERAC_PRESENT("interac_present");
+
+        companion object {
+            fun fromValue(paymentMethodType: String?): PaymentMethodType {
+                return values().firstOrNull { it.paymentMethodType == paymentMethodType } ?: CARD_PRESENT
+            }
+        }
     }
 }
