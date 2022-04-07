@@ -66,7 +66,7 @@ class PaymentChargeRepository @Inject constructor(
     }
 
     companion object {
-        private val INTERAC_PRESENT = "interac_present"
-        private val CARD_PRESENT = "card_present"
+        private const val INTERAC_PRESENT = "interac_present"
+        private const val CARD_PRESENT = "card_present"
     }
 }
