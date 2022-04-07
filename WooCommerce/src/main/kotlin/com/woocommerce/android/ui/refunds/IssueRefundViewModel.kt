@@ -365,7 +365,7 @@ class IssueRefundViewModel @Inject constructor(
                     refundSummaryState = refundSummaryState.copy(
                         isFormEnabled = false
                     )
-                    if (cardType == PaymentMethodType.INTERAC_PRESENT) {
+                    if (isInteracRefund()) {
                         triggerEvent(IssueRefundEvent.NavigateToCardReaderScreen(order.id))
                     } else {
                         notifyRefundBackend()
@@ -388,82 +388,6 @@ class IssueRefundViewModel @Inject constructor(
                             AnalyticsTracker.KEY_AMOUNT to commonState.refundTotal.toString()
                         )
                     )
-
-//                    val resultCall = async(dispatchers.io) {
-//                        return@async when (commonState.refundType) {
-//                            ITEMS -> {
-//                                val allItems = mutableListOf<WCRefundItem>()
-//                                refundItems.value?.let {
-//                                    it.forEach { item -> allItems.add(item.toDataModel()) }
-//                                }
-//
-//                                val selectedShipping = refundShippingLines.value?.filter {
-//                                    refundByItemsState.selectedShippingLines
-//                                        ?.contains(it.shippingLine.itemId)
-//                                        ?: false
-//                                }
-//                                selectedShipping?.forEach { allItems.add(it.toDataModel()) }
-//
-//                                val selectedFees = refundFeeLines.value?.filter {
-//                                    refundByItemsState.selectedFeeLines
-//                                        ?.contains(it.feeLine.id)
-//                                        ?: false
-//                                }
-//                                selectedFees?.forEach { allItems.add(it.toDataModel()) }
-//
-//                                refundStore.createItemsRefund(
-//                                    selectedSite.get(),
-//                                    order.id,
-//                                    refundSummaryState.refundReason ?: "",
-//                                    true,
-//                                    gateway.supportsRefunds,
-//                                    items = allItems
-//                                )
-//                            }
-//                            AMOUNT -> {
-//                                refundStore.createAmountRefund(
-//                                    selectedSite.get(),
-//                                    order.id,
-//                                    commonState.refundTotal,
-//                                    refundSummaryState.refundReason ?: "",
-//                                    gateway.supportsRefunds
-//                                )
-//                            }
-//                        }
-//                    }
-//
-//                    val result = resultCall.await()
-//                    if (result.isError) {
-//                        AnalyticsTracker.track(
-//                            REFUND_CREATE_FAILED,
-//                            mapOf(
-//                                AnalyticsTracker.KEY_ORDER_ID to order.id,
-//                                AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-//                                AnalyticsTracker.KEY_ERROR_TYPE to result.error.type.toString(),
-//                                AnalyticsTracker.KEY_ERROR_DESC to result.error.message
-//                            )
-//                        )
-//
-//                        triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_error))
-//                    } else {
-//                        AnalyticsTracker.track(
-//                            REFUND_CREATE_SUCCESS,
-//                            mapOf(
-//                                AnalyticsTracker.KEY_ORDER_ID to order.id,
-//                                AnalyticsTracker.KEY_ID to result.model?.id
-//                            )
-//                        )
-//
-//                        refundSummaryState.refundReason?.let { reason ->
-//                            if (reason.isNotBlank()) {
-//                                addOrderNote(reason)
-//                            }
-//                        }
-//
-//                        triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_successful))
-//                        triggerEvent(Exit)
-//                    }
-
                     refundSummaryState = refundSummaryState.copy(isFormEnabled = true)
                 }
             } else {
@@ -471,6 +395,8 @@ class IssueRefundViewModel @Inject constructor(
             }
         }
     }
+
+    private fun isInteracRefund() = cardType == PaymentMethodType.INTERAC_PRESENT
 
     fun notifyRefundBackend() {
         launch {
