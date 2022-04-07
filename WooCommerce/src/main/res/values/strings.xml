@@ -1884,7 +1884,7 @@
     <string name="coupon_type_percent">Percentage Discount</string>
     <string name="coupon_type_fixed_cart">Fixed Cart Discount</string>
     <string name="coupon_type_fixed_product">Fixed Product Discount</string>
-    <string name="coupon_type_other">Other</string>
+    <string name="coupon_type_custom">Custom Discount (%1$s)</string>
     <string name="coupon_summary_template">%1$s off %2$s</string>
     <string name="coupon_details_expiration_date">Expires %1$s</string>
     <string name="coupon_summary_loading_failure">Loading coupon summary failed</string>

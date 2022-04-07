@@ -48,7 +48,7 @@ class CouponUtils @Inject constructor(
         Coupon.Type.FixedCart -> resourceProvider.getString(R.string.coupon_type_fixed_cart)
         Coupon.Type.FixedProduct -> resourceProvider.getString(R.string.coupon_type_fixed_product)
         Coupon.Type.Percent -> resourceProvider.getString(R.string.coupon_type_percent)
-        is Coupon.Type.Custom -> couponType.value
+        is Coupon.Type.Custom -> resourceProvider.getString(R.string.coupon_type_custom, couponType.value)
     }
 
     /*
