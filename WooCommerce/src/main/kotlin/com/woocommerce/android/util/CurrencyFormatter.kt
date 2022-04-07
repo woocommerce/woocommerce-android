@@ -149,7 +149,11 @@ class CurrencyFormatter @Inject constructor(
     fun formatAmountWithCurrency(amount: Double, currencyCode: String = defaultCurrencyCode): String {
         val locale = localeProvider.provideLocale() ?: Locale.getDefault()
         val formatter = NumberFormat.getCurrencyInstance(locale)
-        formatter.currency = Currency.getInstance(currencyCode)
+        formatter.currency = if (currencyCode.isEmpty()) {
+            Currency.getInstance(locale)
+        } else {
+            Currency.getInstance(currencyCode)
+        }
         return formatter.format(amount)
     }
 }
