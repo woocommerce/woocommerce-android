@@ -369,4 +369,48 @@ class AppPrefsTest {
             )
         ).isEqualTo(null)
     }
+
+    @Test
+    fun givenSetCardReaderOnboardingStatusAndPreferredPluginVersionGetReturnsVersion() {
+        val version = "4.0.0"
+        val plugin = PluginType.WOOCOMMERCE_PAYMENTS
+        AppPrefs.setCardReaderOnboardingStatusAndPreferredPluginVersion(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            plugin,
+            version,
+        )
+
+        assertThat(
+            AppPrefs.getCardReaderPreferredPluginVersion(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L,
+                plugin,
+            )
+        ).isEqualTo(version)
+    }
+
+    @Test
+    fun givenSetCardReaderOnboardingStatusAndPreferredPluginVersionWithOnePluginGetWithAnotherReturnsNull() {
+        val version = "4.0.0"
+        val plugin = PluginType.WOOCOMMERCE_PAYMENTS
+        AppPrefs.setCardReaderOnboardingStatusAndPreferredPluginVersion(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            plugin,
+            version,
+        )
+
+        assertThat(
+            AppPrefs.getCardReaderPreferredPluginVersion(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L,
+                PluginType.STRIPE_EXTENSION_GATEWAY,
+            )
+        ).isNull()
+    }
 }
