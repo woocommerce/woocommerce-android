@@ -34,19 +34,22 @@ class PaymentChargeRepository @Inject constructor(
                     "interac_present" -> {
                         CardDataUsedForOrderPaymentResult.Success(
                             cardBrand = paymentMethodDetails.interacCardDetails?.brand,
-                            cardLast4 = paymentMethodDetails.interacCardDetails?.last4
+                            cardLast4 = paymentMethodDetails.interacCardDetails?.last4,
+                            paymentMethodType = "interac_present"
                         )
                     }
                     "card_present" -> {
                         CardDataUsedForOrderPaymentResult.Success(
                             cardBrand = paymentMethodDetails.cardDetails?.brand,
-                            cardLast4 = paymentMethodDetails.cardDetails?.last4
+                            cardLast4 = paymentMethodDetails.cardDetails?.last4,
+                            paymentMethodType = "card_present"
                         )
                     }
                     else ->
                         CardDataUsedForOrderPaymentResult.Success(
                             cardBrand = null,
-                            cardLast4 = null
+                            cardLast4 = null,
+                            paymentMethodType = null
                         )
                 }
             }
@@ -57,7 +60,8 @@ class PaymentChargeRepository @Inject constructor(
         object Error : CardDataUsedForOrderPaymentResult()
         data class Success(
             val cardBrand: String?,
-            val cardLast4: String?
+            val cardLast4: String?,
+            val paymentMethodType: String?
         ) : CardDataUsedForOrderPaymentResult()
     }
 }
