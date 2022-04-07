@@ -5,35 +5,10 @@ common_params:
     - automattic/bash-cache#2.1.0
 
 steps:
-  - label: "checkstyle"
-    command: |
-      echo "--- 🧹 Linting"
-      cp -v gradle.properties-example gradle.properties
-      ./gradlew checkstyle
-    plugins: *common_plugins
-    artifact_paths:
-      - "**/build/reports/checkstyle/checkstyle.*"
-
-  - label: "detekt"
-    command: |
-      echo "--- 🧹 Linting"
-      cp gradle.properties-example gradle.properties
-      ./gradlew detektAll
-    plugins: *common_plugins
-    artifact_paths:
-      - "**/build/reports/detekt/detekt.html"
-
-  - label: "lint"
-    command: |
-      echo "--- 🧹 Linting"
-      cp gradle.properties-example gradle.properties
-      ./gradlew lintJalapenoDebug
-    plugins: *common_plugins
-    artifact_paths:
-      - "**/build/reports/lint-results*.*"
 
   - label: "Unit tests"
     command: |
+      yum install shasum
       echo "--- 🧪 Testing"
       cp gradle.properties-example gradle.properties
       ./gradlew testJalapenoDebug
@@ -43,16 +18,4 @@ steps:
       curl -Os https://uploader.codecov.io/latest/linux/codecov
       chmod +x codecov
       ./codecov -t $CODECOV_TOKEN
-    plugins: *common_plugins
-
-  - label: "Ensure Screenshot Tests Build"
-    command: |
-      echo "--- ⚒️ Building"
-      cp gradle.properties-example gradle.properties
-      ./gradlew assembleJalapenoDebugAndroidTest
-    plugins: *common_plugins
-
-  - label: "🛠 Installable Build"
-    command: ".buildkite/commands/installable-build.sh"
-    if: build.pull_request.id != null
     plugins: *common_plugins
