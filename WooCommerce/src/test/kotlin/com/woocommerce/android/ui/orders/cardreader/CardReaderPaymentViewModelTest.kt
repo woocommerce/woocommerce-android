@@ -19,6 +19,8 @@ import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.cardreader.payment.InteracRefund
+import com.woocommerce.android.ui.orders.cardreader.payment.InteracRefundFlowError
 import com.woocommerce.android.ui.orders.cardreader.payment.*
 import com.woocommerce.android.ui.orders.cardreader.payment.PaymentFlowError.AmountTooSmall
 import com.woocommerce.android.ui.orders.cardreader.payment.PaymentFlowError.Unknown
