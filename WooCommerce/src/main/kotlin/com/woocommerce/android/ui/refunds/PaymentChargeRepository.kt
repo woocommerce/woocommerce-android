@@ -31,18 +31,18 @@ class PaymentChargeRepository @Inject constructor(
             } else {
                 val paymentMethodDetails = result.result?.paymentMethodDetails
                 when (paymentMethodDetails?.type) {
-                    "interac_present" -> {
+                    INTERAC_PRESENT -> {
                         CardDataUsedForOrderPaymentResult.Success(
                             cardBrand = paymentMethodDetails.interacCardDetails?.brand,
                             cardLast4 = paymentMethodDetails.interacCardDetails?.last4,
-                            paymentMethodType = "interac_present"
+                            paymentMethodType = INTERAC_PRESENT
                         )
                     }
-                    "card_present" -> {
+                    CARD_PRESENT -> {
                         CardDataUsedForOrderPaymentResult.Success(
                             cardBrand = paymentMethodDetails.cardDetails?.brand,
                             cardLast4 = paymentMethodDetails.cardDetails?.last4,
-                            paymentMethodType = "card_present"
+                            paymentMethodType = CARD_PRESENT
                         )
                     }
                     else ->
@@ -63,5 +63,10 @@ class PaymentChargeRepository @Inject constructor(
             val cardLast4: String?,
             val paymentMethodType: String?
         ) : CardDataUsedForOrderPaymentResult()
+    }
+
+    companion object {
+        private val INTERAC_PRESENT = "interac_present"
+        private val CARD_PRESENT = "card_present"
     }
 }
