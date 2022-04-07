@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.prefs.cardreader.connect
 
-import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
@@ -49,7 +49,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         on { readerStatus }.thenReturn(readerStatusFlow)
         on { softwareUpdateStatus }.thenReturn(flow { SoftwareUpdateStatus.Unknown })
     }
-    private val appPrefs: AppPrefs = mock()
+    private val appPrefs: AppPrefsWrapper = mock()
     private val reader = mock<CardReader>().also { whenever(it.id).thenReturn("Dummy1") }
     private val reader2 = mock<CardReader>().also { whenever(it.id).thenReturn("Dummy2") }
     private val locationRepository: CardReaderLocationRepository = mock()
