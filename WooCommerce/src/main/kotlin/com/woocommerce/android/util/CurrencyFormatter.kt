@@ -57,7 +57,12 @@ class CurrencyFormatter @Inject constructor(
             selectedSite.observe()
                 .onEach { defaultCurrencyCode = "" }
                 .filterNotNull()
-                .mapNotNull { site -> wcStore.getSiteSettings(site) }
+                .mapNotNull { site ->
+                    wcStore.getSiteSettings(site) ?: run {
+                        wcStore.fetchWooCommerceSite(site)
+                        wcStore.getSiteSettings(site)
+                    }
+                }
                 .map { settings -> settings.currencyCode }
                 .collect { currencyCode ->
                     defaultCurrencyCode = currencyCode
