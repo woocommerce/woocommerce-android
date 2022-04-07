@@ -22,7 +22,8 @@ class CurrencyFormatterTest : BaseUnitTest() {
             wcStore = mock(),
             selectedSite = mock(),
             localeProvider = localeProvider,
-            appCoroutineScope = TestCoroutineScope(coroutinesTestRule.testDispatcher)
+            appCoroutineScope = TestCoroutineScope(coroutinesTestRule.testDispatcher),
+            dispatchers = coroutinesTestRule.testDispatchers
         )
         whenever(localeProvider.provideLocale()).thenReturn(Locale.US)
     }

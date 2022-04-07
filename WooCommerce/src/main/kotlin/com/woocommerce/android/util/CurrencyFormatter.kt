@@ -22,7 +22,8 @@ class CurrencyFormatter @Inject constructor(
     private val wcStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
     private val localeProvider: LocaleProvider,
-    @AppCoroutineScope private val appCoroutineScope: CoroutineScope
+    @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
+    private val dispatchers: CoroutineDispatchers
 ) {
     companion object {
         private const val ONE_THOUSAND = 1000
@@ -64,6 +65,7 @@ class CurrencyFormatter @Inject constructor(
                     }
                 }
                 .map { settings -> settings.currencyCode }
+                .flowOn(dispatchers.io)
                 .collect { currencyCode ->
                     defaultCurrencyCode = currencyCode
                 }
