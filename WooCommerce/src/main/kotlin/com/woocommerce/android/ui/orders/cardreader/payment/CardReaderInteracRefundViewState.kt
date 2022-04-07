@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.cardreader
+package com.woocommerce.android.ui.orders.cardreader.payment
 
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
@@ -25,7 +25,7 @@ sealed class InteracRefund {
 
     data class CollectRefundState(
         override val amountWithCurrencyLabel: String,
-        override val hintLabel: Int = R.string.card_reader_payment_collect_payment_hint,
+        override val hintLabel: Int = R.string.card_reader_refund_payment_hint,
         override val headerLabel: Int = R.string.card_reader_payment_refund_payment,
     ) : ViewState(
         paymentStateLabel = R.string.card_reader_payment_collect_payment_state,

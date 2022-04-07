@@ -933,6 +933,7 @@
     <string name="card_reader_refund_failed_ok">OK</string>
     <string name="card_reader_refund_failed_cancelled">Refund cancelled</string>
     <string name="card_reader_refund_order_refunded_refund_cancelled">The order is already refunded</string>
+    <string name="card_reader_refund_payment_hint">Tap or insert to refund</string>
     <!--
         Card Reader Payments
     -->

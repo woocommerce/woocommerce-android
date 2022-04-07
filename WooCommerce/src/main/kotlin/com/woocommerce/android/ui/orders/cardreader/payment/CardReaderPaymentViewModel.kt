@@ -91,7 +91,7 @@ class CardReaderPaymentViewModel
 
     fun start() {
         if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected) {
-            if (arguments.isRefund && refundFlowJob == null) {
+            if (arguments.isInteracRefund && refundFlowJob == null) {
                 initRefundFlow(isRetry = false)
             } else if (paymentFlowJob == null) {
                 initPaymentFlow(isRetry = false)
@@ -105,7 +105,7 @@ class CardReaderPaymentViewModel
         cardReaderManager.displayBluetoothCardReaderMessages.collect { message ->
             when (message) {
                 is BluetoothCardReaderMessages.CardReaderDisplayMessage -> {
-                    when (arguments.isRefund) {
+                    when (arguments.isInteracRefund) {
                         true -> {
                             handleAdditionalInfoForInteracRefund(message.message)
                         }
@@ -425,7 +425,7 @@ class CardReaderPaymentViewModel
             viewState.value = collectRefundState.copy(
                 hintLabel = when (type) {
                     RETRY_CARD -> R.string.card_reader_payment_retry_card_prompt
-                    INSERT_CARD, INSERT_OR_SWIPE_CARD, SWIPE_CARD -> R.string.card_reader_payment_collect_payment_hint
+                    INSERT_CARD, INSERT_OR_SWIPE_CARD, SWIPE_CARD -> R.string.card_reader_refund_payment_hint
                     REMOVE_CARD -> R.string.card_reader_payment_remove_card_prompt
                     MULTIPLE_CONTACTLESS_CARDS_DETECTED ->
                         R.string.card_reader_payment_multiple_contactless_cards_detected_prompt
