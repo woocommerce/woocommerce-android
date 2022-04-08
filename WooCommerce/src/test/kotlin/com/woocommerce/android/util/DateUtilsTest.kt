@@ -12,7 +12,8 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
