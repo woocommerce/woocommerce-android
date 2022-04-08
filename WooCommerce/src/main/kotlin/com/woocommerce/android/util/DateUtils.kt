@@ -204,7 +204,7 @@ class DateUtils @Inject constructor(
             val originalFormat = SimpleDateFormat("yyyy-MM-dd HH", locale)
             val targetFormat = SimpleDateFormat("hha", locale)
             val date = originalFormat.parse(iso8601Date)
-            targetFormat.format(date!!).toLowerCase(locale).trimStart('0')
+            targetFormat.format(date!!).lowercase(locale).trimStart('0')
         } catch (e: Exception) {
             "Date string argument is not of format yyyy-MM-dd H: $iso8601Date".reportAsError(e)
             return null
