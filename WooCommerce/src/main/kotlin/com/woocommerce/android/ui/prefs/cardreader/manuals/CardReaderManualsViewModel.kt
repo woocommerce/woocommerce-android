@@ -9,6 +9,5 @@ import javax.inject.Inject
 class CardReaderManualsViewModel @Inject constructor(
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
-
     // TODO add manuals screen logic here
 }
