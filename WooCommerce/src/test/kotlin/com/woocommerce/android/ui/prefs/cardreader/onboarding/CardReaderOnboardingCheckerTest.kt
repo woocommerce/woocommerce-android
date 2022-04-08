@@ -670,13 +670,14 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
         checker.getOnboardingState()
 
-        verify(appPrefsWrapper).setCardReaderOnboardingStatusAndPreferredPlugin(
+        val captor = argumentCaptor<PersistentOnboardingData>()
+        verify(appPrefsWrapper).setCardReaderOnboardingData(
             anyInt(),
             anyLong(),
             anyLong(),
-            eq(CARD_READER_ONBOARDING_COMPLETED),
-            anyOrNull(),
+            captor.capture(),
         )
+        assertThat(captor.firstValue.status).isEqualTo(CARD_READER_ONBOARDING_COMPLETED)
     }
 
     @Test
@@ -696,13 +697,14 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
         checker.getOnboardingState()
 
-        verify(appPrefsWrapper).setCardReaderOnboardingStatusAndPreferredPlugin(
+        val captor = argumentCaptor<PersistentOnboardingData>()
+        verify(appPrefsWrapper).setCardReaderOnboardingData(
             anyInt(),
             anyLong(),
             anyLong(),
-            eq(CARD_READER_ONBOARDING_PENDING),
-            anyOrNull(),
+            captor.capture(),
         )
+        assertThat(captor.firstValue.status).isEqualTo(CARD_READER_ONBOARDING_PENDING)
     }
 
     @Test
@@ -722,13 +724,14 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
         checker.getOnboardingState()
 
-        verify(appPrefsWrapper).setCardReaderOnboardingPreferredPluginVersion(
+        val captor = argumentCaptor<PersistentOnboardingData>()
+        verify(appPrefsWrapper).setCardReaderOnboardingData(
             anyInt(),
             anyLong(),
             anyLong(),
-            anyOrNull(),
-            eq(wcPayPluginVersion)
+            captor.capture(),
         )
+        assertThat(captor.firstValue.version).isEqualTo(wcPayPluginVersion)
     }
 
     @Test
@@ -742,13 +745,14 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
         checker.getOnboardingState()
 
-        verify(appPrefsWrapper).setCardReaderOnboardingStatusAndPreferredPlugin(
+        val captor = argumentCaptor<PersistentOnboardingData>()
+        verify(appPrefsWrapper).setCardReaderOnboardingData(
             anyInt(),
             anyLong(),
             anyLong(),
-            eq(CARD_READER_ONBOARDING_COMPLETED),
-            anyOrNull(),
+            captor.capture(),
         )
+        assertThat(captor.firstValue.status).isEqualTo(CARD_READER_ONBOARDING_COMPLETED)
     }
 
     @Test
@@ -762,13 +766,14 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
         checker.getOnboardingState()
 
-        verify(appPrefsWrapper).setCardReaderOnboardingPreferredPluginVersion(
+        val captor = argumentCaptor<PersistentOnboardingData>()
+        verify(appPrefsWrapper).setCardReaderOnboardingData(
             anyInt(),
             anyLong(),
             anyLong(),
-            anyOrNull(),
-            eq(stripePluginVersion)
+            captor.capture(),
         )
+        assertThat(captor.firstValue.version).isEqualTo(stripePluginVersion)
     }
 
     @Test
@@ -788,13 +793,14 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
         checker.getOnboardingState()
 
-        verify(appPrefsWrapper).setCardReaderOnboardingStatusAndPreferredPlugin(
+        val captor = argumentCaptor<PersistentOnboardingData>()
+        verify(appPrefsWrapper).setCardReaderOnboardingData(
             anyInt(),
             anyLong(),
             anyLong(),
-            eq(CARD_READER_ONBOARDING_PENDING),
-            anyOrNull(),
+            captor.capture(),
         )
+        assertThat(captor.firstValue.status).isEqualTo(CARD_READER_ONBOARDING_PENDING)
     }
 
     @Test
@@ -822,13 +828,14 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         )
         checker.getOnboardingState()
 
-        verify(appPrefsWrapper).setCardReaderOnboardingStatusAndPreferredPlugin(
+        val captor = argumentCaptor<PersistentOnboardingData>()
+        verify(appPrefsWrapper).setCardReaderOnboardingData(
             anyInt(),
             anyLong(),
             anyLong(),
-            eq(CARD_READER_ONBOARDING_NOT_COMPLETED),
-            any()
+            captor.capture(),
         )
+        assertThat(captor.firstValue.status).isEqualTo(CARD_READER_ONBOARDING_NOT_COMPLETED)
     }
 
     @Test
@@ -842,13 +849,14 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
         checker.getOnboardingState()
 
-        verify(appPrefsWrapper).setCardReaderOnboardingStatusAndPreferredPlugin(
+        val captor = argumentCaptor<PersistentOnboardingData>()
+        verify(appPrefsWrapper).setCardReaderOnboardingData(
             anyInt(),
             anyLong(),
             anyLong(),
-            any(),
-            eq(PluginType.WOOCOMMERCE_PAYMENTS),
+            captor.capture(),
         )
+        assertThat(captor.firstValue.preferredPlugin).isEqualTo(PluginType.WOOCOMMERCE_PAYMENTS)
     }
 
     @Test
@@ -888,13 +896,14 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
         checker.getOnboardingState()
 
-        verify(appPrefsWrapper).setCardReaderOnboardingStatusAndPreferredPlugin(
+        val captor = argumentCaptor<PersistentOnboardingData>()
+        verify(appPrefsWrapper).setCardReaderOnboardingData(
             anyInt(),
             anyLong(),
             anyLong(),
-            eq(CARD_READER_ONBOARDING_COMPLETED),
-            any(),
+            captor.capture(),
         )
+        assertThat(captor.firstValue.status).isEqualTo(CARD_READER_ONBOARDING_COMPLETED)
     }
 
     @Test
@@ -908,13 +917,14 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
         checker.getOnboardingState()
 
-        verify(appPrefsWrapper).setCardReaderOnboardingStatusAndPreferredPlugin(
+        val captor = argumentCaptor<PersistentOnboardingData>()
+        verify(appPrefsWrapper).setCardReaderOnboardingData(
             anyInt(),
             anyLong(),
             anyLong(),
-            any(),
-            eq(PluginType.STRIPE_EXTENSION_GATEWAY),
+            captor.capture(),
         )
+        assertThat(captor.firstValue.preferredPlugin).isEqualTo(PluginType.STRIPE_EXTENSION_GATEWAY)
     }
 
     @Test
@@ -927,13 +937,14 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
         checker.getOnboardingState()
 
-        verify(appPrefsWrapper).setCardReaderOnboardingStatusAndPreferredPlugin(
+        val captor = argumentCaptor<PersistentOnboardingData>()
+        verify(appPrefsWrapper).setCardReaderOnboardingData(
             anyInt(),
             anyLong(),
             anyLong(),
-            eq(CARD_READER_ONBOARDING_NOT_COMPLETED),
-            anyOrNull(),
+            captor.capture(),
         )
+        assertThat(captor.firstValue.status).isEqualTo(CARD_READER_ONBOARDING_NOT_COMPLETED)
     }
 
     @Test

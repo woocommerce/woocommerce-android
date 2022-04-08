@@ -238,24 +238,20 @@ class CardReaderOnboardingChecker @Inject constructor(
         version: String?,
     ) {
         val site = selectedSite.get()
-        appPrefsWrapper.setCardReaderOnboardingStatusAndPreferredPlugin(
+        appPrefsWrapper.setCardReaderOnboardingData(
             localSiteId = site.id,
             remoteSiteId = site.siteId,
             selfHostedSiteId = site.selfHostedSiteId,
-            status,
-            preferredPlugin,
+            PersistentOnboardingData(status, preferredPlugin, version),
         )
-        if (version != null && preferredPlugin != null) {
-            appPrefsWrapper.setCardReaderOnboardingPreferredPluginVersion(
-                localSiteId = site.id,
-                remoteSiteId = site.siteId,
-                selfHostedSiteId = site.selfHostedSiteId,
-                preferredPlugin,
-                version
-            )
-        }
     }
 }
+
+data class PersistentOnboardingData(
+    val status: CardReaderOnboardingStatus,
+    val preferredPlugin: PluginType?,
+    val version: String?,
+)
 
 fun PluginType.toInPersonPaymentsPluginType(): InPersonPaymentsPluginType = when (this) {
     WOOCOMMERCE_PAYMENTS -> InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS

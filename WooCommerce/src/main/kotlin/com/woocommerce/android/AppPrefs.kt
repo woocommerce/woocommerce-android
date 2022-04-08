@@ -11,6 +11,7 @@ import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_O
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.*
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.util.PreferenceUtils
@@ -461,37 +462,34 @@ object AppPrefs {
         null
     )
 
-    fun setCardReaderOnboardingStatusAndPreferredPlugin(
+    fun setCardReaderOnboardingData(
         localSiteId: Int,
         remoteSiteId: Long,
         selfHostedSiteId: Long,
-        status: CardReaderOnboardingStatus,
-        preferredPlugin: PluginType?,
+        data: PersistentOnboardingData,
     ) {
         PreferenceUtils.setString(
             getPreferences(),
             getCardReaderOnboardingStatusKey(localSiteId, remoteSiteId, selfHostedSiteId),
-            status.toString()
+            data.status.toString()
         )
         PreferenceUtils.setString(
             getPreferences(),
             getCardReaderPreferredPluginKey(localSiteId, remoteSiteId, selfHostedSiteId),
-            preferredPlugin?.toString()
+            data.preferredPlugin?.toString()
         )
-    }
-
-    fun setCardReaderOnboardingStatusAndPreferredPluginVersion(
-        localSiteId: Int,
-        remoteSiteId: Long,
-        selfHostedSiteId: Long,
-        preferredPlugin: PluginType,
-        version: String
-    ) {
-        PreferenceUtils.setString(
-            getPreferences(),
-            getCardReaderPreferredPluginVersionKey(localSiteId, remoteSiteId, selfHostedSiteId, preferredPlugin),
-            version
-        )
+        data.preferredPlugin?.let { plugin ->
+            PreferenceUtils.setString(
+                getPreferences(),
+                getCardReaderPreferredPluginVersionKey(
+                    localSiteId,
+                    remoteSiteId,
+                    selfHostedSiteId,
+                    plugin
+                ),
+                data.version
+            )
+        }
     }
 
     private fun getCardReaderOnboardingStatusKey(
