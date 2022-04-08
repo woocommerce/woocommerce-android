@@ -1790,7 +1790,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             // Then
             verify(cardReaderManager).collectPayment(captor.capture())
-            assertThat(captor.firstValue.wcpayCanSendReceipt).isFalse()
+            assertThat(captor.firstValue.isPluginCanSendReceipt).isFalse()
         }
 
     @Test
@@ -1806,7 +1806,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             // Then
             verify(cardReaderManager).collectPayment(captor.capture())
-            assertThat(captor.firstValue.wcpayCanSendReceipt).isFalse()
+            assertThat(captor.firstValue.isPluginCanSendReceipt).isFalse()
         }
 
     @Test
@@ -1823,7 +1823,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             // Then
             verify(cardReaderManager).collectPayment(captor.capture())
-            assertThat(captor.firstValue.wcpayCanSendReceipt).isFalse()
+            assertThat(captor.firstValue.isPluginCanSendReceipt).isFalse()
         }
 
     @Test
@@ -1841,7 +1841,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             // Then
             verify(cardReaderManager).collectPayment(captor.capture())
-            assertThat(captor.firstValue.wcpayCanSendReceipt).isFalse()
+            assertThat(captor.firstValue.isPluginCanSendReceipt).isFalse()
         }
 
     @Test
@@ -1859,7 +1859,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             // Then
             verify(cardReaderManager).collectPayment(captor.capture())
-            assertThat(captor.firstValue.wcpayCanSendReceipt).isTrue()
+            assertThat(captor.firstValue.isPluginCanSendReceipt).isTrue()
         }
 
     @Test
@@ -1877,7 +1877,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             // Then
             verify(cardReaderManager).collectPayment(captor.capture())
-            assertThat(captor.firstValue.wcpayCanSendReceipt).isTrue()
+            assertThat(captor.firstValue.isPluginCanSendReceipt).isTrue()
         }
 
     private suspend fun simulateFetchOrderJobState(inProgress: Boolean) {

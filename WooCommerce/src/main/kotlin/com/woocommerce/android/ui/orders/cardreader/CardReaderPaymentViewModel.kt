@@ -161,7 +161,7 @@ class CardReaderPaymentViewModel
                 currency = order.currency,
                 orderKey = order.orderKey,
                 customerEmail = customerEmail.ifEmpty { null },
-                wcpayCanSendReceipt = isWCPayCanSendReceipts(site),
+                isPluginCanSendReceipt = isPluginCanSendReceipt(site),
                 customerName = "${order.billingAddress.firstName} ${order.billingAddress.lastName}".ifBlank { null },
                 storeName = selectedSite.get().name.ifEmpty { null },
                 siteUrl = selectedSite.get().url.ifEmpty { null },
@@ -456,7 +456,7 @@ class CardReaderPaymentViewModel
         }
     }
 
-    private fun isWCPayCanSendReceipts(site: SiteModel): Boolean {
+    private fun isPluginCanSendReceipt(site: SiteModel): Boolean {
         val preferredPlugin = appPrefsWrapper.getCardReaderPreferredPlugin(
             localSiteId = site.id,
             remoteSiteId = site.siteId,

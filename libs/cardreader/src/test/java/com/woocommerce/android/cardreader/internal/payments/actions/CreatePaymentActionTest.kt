@@ -407,7 +407,7 @@ internal class CreatePaymentActionTest {
             amount = amount,
             currency = currency,
             customerEmail = customerEmail,
-            wcpayCanSendReceipt = wcpayCanSendReceipt,
+            isPluginCanSendReceipt = wcpayCanSendReceipt,
             customerName = customerName,
             storeName = storeName,
             siteUrl = siteUrl,
