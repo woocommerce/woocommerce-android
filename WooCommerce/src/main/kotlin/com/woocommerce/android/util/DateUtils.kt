@@ -254,7 +254,7 @@ class DateUtils @Inject constructor(
      */
     fun getYearString(iso8601Month: String): String? {
         return try {
-            val (year, month) = iso8601Month.split("-")
+            val (year, _) = iso8601Month.split("-")
             year
         } catch (e: Exception) {
             "Date string argument is not of format yyyy-MM: $iso8601Month".reportAsError(e)
