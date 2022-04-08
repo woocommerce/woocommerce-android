@@ -534,25 +534,6 @@ class DateUtils @Inject constructor(
         const val THREE = 3
 
         /**
-         * Returns a date with the passed GMT offset applied - note that this assumes the passed date is GMT
-         *
-         * The [operator] can either be [Int::plus] or [Int::minus]
-         * [Int::plus] is passed when formatting gmtDate to local date
-         * [Int::minus] is passed when formatting local date to gmt
-         */
-        fun offsetGmtDate(dateGmt: Date, gmtOffset: Float, operator: (Int, Int) -> Int = Int::plus): Date {
-            if (gmtOffset == 0f) {
-                return dateGmt
-            }
-
-            val secondsOffset = (3600 * gmtOffset).toInt() // 3600 is the number of seconds in an hour
-            val calendar = Calendar.getInstance()
-            calendar.time = dateGmt
-            calendar.set(Calendar.SECOND, operator(calendar.get(Calendar.SECOND), secondsOffset))
-            return calendar.time
-        }
-
-        /**
          * Compares two dates to determine if [date2] is after [date1]. Note that
          * this method strips the time information from the comparison and is only comparing
          * the dates.
