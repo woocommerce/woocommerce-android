@@ -36,18 +36,10 @@ steps:
     command: |
       echo "--- 🧪 Testing"
       cp gradle.properties-example gradle.properties
-      ./gradlew testJalapenoDebug
-      ./gradlew lib:cardreader:testDebug
+      ./gradlew testJalapenoDebug lib:cardreader:testDebug
       echo "--- ⚒️ Generating and uploading code coverage"
       ./gradlew jacocoTestReport
-      curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --no-default-keyring --keyring trustedkeys.gpg --import
-      curl -Os https://uploader.codecov.io/latest/linux/codecov
-      curl -Os https://uploader.codecov.io/latest/linux/codecov.SHA256SUM
-      curl -Os https://uploader.codecov.io/latest/linux/codecov.SHA256SUM.sig
-      gpgv codecov.SHA256SUM.sig codecov.SHA256SUM
-      sha256sum -c codecov.SHA256SUM
-      chmod +x codecov
-      ./codecov -t $CODECOV_TOKEN
+      .buildkite/commands/upload-code-coverage.sh
     plugins: *common_plugins
 
   - label: "Ensure Screenshot Tests Build"
