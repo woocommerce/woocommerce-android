@@ -32,15 +32,19 @@ class InboxViewModel @Inject constructor(
     private val observeInboxNotes: ObserveInboxNotes,
     private val markNoteAsActioned: MarkNoteAsActioned,
     private val dismissNote: DismissNote,
+    private val dismissAllNotes: DismissAllNotes,
     savedState: SavedStateHandle,
 ) : ScopedViewModel(savedState) {
     private companion object {
         const val DEFAULT_DISMISS_LABEL = "Dismiss" // Inbox notes are not localised and always displayed in English
     }
 
+    private val mutableInboxState = MutableStateFlow(InboxState(isLoading = true))
+
     val inboxState: LiveData<InboxState> = merge(
         refreshInboxNotes(),
-        inboxNotesUpdates()
+        inboxNotesUpdates(),
+        mutableInboxState
     ).asLiveData()
 
     private fun inboxNotesUpdates() =
@@ -52,11 +56,18 @@ class InboxViewModel @Inject constructor(
             }
 
     private fun refreshInboxNotes(): Flow<InboxState> = flow {
-        emit(InboxState(isLoading = true))
+        InboxState(isLoading = true)
         val fetchResult = fetchInboxNotes()
         if (fetchResult == FetchInboxNotes.Fail) {
             emit(InboxState(isLoading = false, notes = emptyList()))
         }
+    }
+
+    fun dismissAllNotes() {
+        mutableInboxState.update { InboxState(isLoading = true) }
+//        viewModelScope.launch {
+//            dismissAllNotes.invoke()
+//        }
     }
 
     private fun InboxNote.toInboxNoteUi() =
