@@ -4,12 +4,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.extensions.formatToMMMddYYYY
 import com.woocommerce.android.extensions.isSet
-import com.woocommerce.android.extensions.offsetGmtDate
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
-import java.util.Date
+import java.util.*
 
 object PriceUtils {
     @Suppress("LongParameterList")
@@ -40,20 +39,20 @@ object PriceUtils {
                 )
             }
 
-            // display product sale dates using the site's timezone, if available
+            // display product sale dates
             if (isSaleScheduled) {
-                val dateOnSaleFrom = saleStartDateGmt?.offsetGmtDate(parameters.gmtOffset)
-                val dateOnSaleTo = saleEndDateGmt?.offsetGmtDate(parameters.gmtOffset)
-
                 val saleDates = when {
-                    (dateOnSaleFrom != null && dateOnSaleTo != null) -> {
-                        getProductSaleDates(dateOnSaleFrom, dateOnSaleTo, resources)
+                    // both dates are set
+                    (saleStartDateGmt != null && saleEndDateGmt != null) -> {
+                        getProductSaleDates(saleStartDateGmt, saleEndDateGmt, resources)
                     }
-                    (dateOnSaleFrom != null && dateOnSaleTo == null) -> {
-                        resources.getString(R.string.product_sale_date_from, dateOnSaleFrom.formatToMMMddYYYY())
+                    // only start date is set
+                    (saleStartDateGmt != null && saleEndDateGmt == null) -> {
+                        resources.getString(R.string.product_sale_date_from, saleStartDateGmt.formatToMMMddYYYY())
                     }
-                    (dateOnSaleFrom == null && dateOnSaleTo != null) -> {
-                        resources.getString(R.string.product_sale_date_to, dateOnSaleTo.formatToMMMddYYYY())
+                    // only end date is set
+                    (saleStartDateGmt == null && saleEndDateGmt != null) -> {
+                        resources.getString(R.string.product_sale_date_to, saleEndDateGmt.formatToMMMddYYYY())
                     }
                     else -> null
                 }
