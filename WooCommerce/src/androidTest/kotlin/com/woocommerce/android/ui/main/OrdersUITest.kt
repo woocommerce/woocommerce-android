@@ -41,10 +41,13 @@ class OrdersUITest : TestBase() {
     }
 
     @Test
-    fun createOrderTest() {
+    fun createEmptyOrderTest() {
         OrderListScreen()
-            .newOrder()
-            .createOrder()
+            .createFABTap()
+            .newOrderTap()
+            .assertNewOrderScreen()
+            .createEmptyOrder()
+            .assertSingleOrderScreenWithEmptyOrder()
             .goBackToOrdersScreen()
     }
 }

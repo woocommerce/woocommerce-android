@@ -1,5 +1,8 @@
 package com.woocommerce.android.screenshots.orders
 
+import androidx.test.espresso.Espresso
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers.*
 import com.woocommerce.android.R
 import com.woocommerce.android.screenshots.util.Screen
 
@@ -11,8 +14,17 @@ class OrderCreationScreen : Screen {
 
     constructor() : super(ORDER_CREATION)
 
-    fun createOrder(): SingleOrderScreen {
+    fun createEmptyOrder(): SingleOrderScreen {
         clickOn(CREATE_BUTTON)
         return SingleOrderScreen()
+    }
+
+    fun assertNewOrderScreen(): OrderCreationScreen {
+        Espresso.onView(withId(R.id.collapsing_toolbar))
+            .check(matches(hasDescendant(withText(R.string.order_creation_fragment_title))))
+            .check(matches(isDisplayed()))
+        Espresso.onView(withId(ORDER_CREATION)).check(matches(isDisplayed()))
+        Espresso.onView(withId(CREATE_BUTTON)).check(matches(isDisplayed()))
+        return this
     }
 }
