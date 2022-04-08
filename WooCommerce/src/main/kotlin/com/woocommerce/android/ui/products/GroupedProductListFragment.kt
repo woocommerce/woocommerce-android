@@ -16,9 +16,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -92,7 +90,7 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
         viewModel.productList.observe(
             viewLifecycleOwner,
             Observer {
-                productListAdapter.setProductList(it)
+                productListAdapter.submitList(it)
             }
         )
     }

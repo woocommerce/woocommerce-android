@@ -214,7 +214,7 @@ class AddressViewModel @Inject constructor(
             Field.City -> currentAddress.copy(city = value)
             Field.State -> currentAddress.copy(state = AmbiguousLocation.Raw(value))
             Field.Zip -> currentAddress.copy(postcode = value)
-            Field.Email -> currentAddress.copy(email = value)
+            Field.Email -> currentAddress.copy(email = value.trim())
         }
         viewState = viewState.copy(
             addressSelectionStates = viewState.addressSelectionStates.mapValues { entry ->

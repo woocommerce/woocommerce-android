@@ -18,7 +18,7 @@ pluginManagement {
         id 'com.google.gms.google-services' version '4.3.8'
         id 'io.github.wzieba.tracks.plugin' version '1.0.0'
         id 'io.gitlab.arturbosch.detekt' version gradle.ext.detektVersion
-        id 'io.sentry.android.gradle' version '2.1.5'
+        id 'io.sentry.android.gradle' version '3.0.1'
         id 'org.jetbrains.kotlin.android' version gradle.ext.kotlinVersion
         id 'org.jetbrains.kotlin.jvm' version gradle.ext.kotlinVersion
         id 'org.jetbrains.kotlin.kapt' version gradle.ext.kotlinVersion
@@ -42,8 +42,34 @@ pluginManagement {
 }
 
 plugins {
-    id 'com.gradle.enterprise' version '3.8.1'
+    id 'com.gradle.enterprise' version '3.9'
+    id 'com.gradle.common-custom-user-data-gradle-plugin' version '1.6.5'
 }
+
+gradleEnterprise {
+    server = "https://gradle.a8c.com"
+    allowUntrustedServer = false
+    buildScan {
+        publishAlways()
+        capture {
+            taskInputFiles = true
+        }
+        uploadInBackground = System.getenv("CI") == null
+    }
+}
+
+if (System.getenv().containsKey("CI")) {
+    buildCache {
+        remote(HttpBuildCache) {
+            url = "http://10.0.2.215:5071/cache/"
+            allowUntrustedServer = true
+            allowInsecureProtocol = true
+            push = true
+        }
+    }
+}
+
+rootProject.name = 'WCAndroid'
 
 include ':quicklogin'
 include ':libs:cardreader'
@@ -101,18 +127,6 @@ if (localBuilds.exists()) {
                 substitute module("$gradle.ext.mediaPickerSourceGifBinaryPath") with project(':mediapicker:source-gif')
                 substitute module("$gradle.ext.mediaPickerSourceWordPressBinaryPath") with project(':mediapicker:source-wordpress')
             }
-        }
-    }
-}
-
-// Use the build cache in CI
-if (System.getenv().containsKey("CI")) {
-    buildCache {
-        remote(HttpBuildCache) {
-            url = "http://10.0.2.215:5071/cache/"
-            allowUntrustedServer = true
-            allowInsecureProtocol = true
-            push = true
         }
     }
 }

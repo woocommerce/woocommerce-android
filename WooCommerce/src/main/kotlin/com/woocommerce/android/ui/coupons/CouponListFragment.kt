@@ -16,9 +16,10 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentCouponListBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.FeatureFeedbackSettings
-import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS
+import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.COUPONS
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListEvent.NavigateToCouponSummaryEvent
 import com.woocommerce.android.ui.feedback.SurveyType
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -31,7 +32,7 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
     private var _binding: FragmentCouponListBinding? = null
     private val binding get() = _binding!!
     private val feedbackState
-        get() = FeedbackPrefs.getFeatureFeedbackSettings(SIMPLE_PAYMENTS)?.feedbackState
+        get() = FeedbackPrefs.getFeatureFeedbackSettings(COUPONS)?.feedbackState
             ?: FeatureFeedbackSettings.FeedbackState.UNANSWERED
 
     private val viewModel: CouponListViewModel by viewModels()
@@ -56,9 +57,28 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
         return view
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupObservers()
+    }
+
+    private fun setupObservers() {
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is NavigateToCouponSummaryEvent -> navigateToCouponSummary(event.couponId)
+            }
+        }
+    }
+
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         displayCouponsWIPCard(true)
+    }
+
+    private fun navigateToCouponSummary(couponId: Long) {
+        findNavController().navigateSafely(
+            CouponListFragmentDirections.actionCouponListFragmentToCouponSummaryFragment(couponId)
+        )
     }
 
     private fun displayCouponsWIPCard(show: Boolean) {
@@ -108,7 +128,7 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
 
     private fun registerFeedbackSetting(state: FeatureFeedbackSettings.FeedbackState) {
         FeatureFeedbackSettings(
-            SIMPLE_PAYMENTS,
+            COUPONS,
             state
         ).registerItself()
     }

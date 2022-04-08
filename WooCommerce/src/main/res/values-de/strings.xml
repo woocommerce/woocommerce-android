@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-03-10 11:54:03+0000
+Translation-Revision-Date: 2022-03-23 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="empty_inbox_description">In Kürze bekommst du weitere Tipps und Einsichten zum Ausbau deines Shops</string>
+    <string name="empty_inbox_title">Glückwunsch, du hast alles gelesen!</string>
+    <string name="orderstatus_contentDesc_withStatus">Bestellstatus: %s</string>
+    <string name="no_sku">Keine SKU</string>
+    <string name="count">Anzahl: %s</string>
+    <string name="plus_one">Plus eins</string>
+    <string name="minus_one">Minus eins</string>
+    <string name="more_menu_button_coupons">Gutscheine</string>
     <string name="dismiss_inbox_note">Ausblenden</string>
     <string name="login_error_xml_rpc_auth_error_communicating">Bei dem Versuch, mit der Website zu kommunizieren, ist ein Problem aufgetreten. Es wurde ein HTTP-Fehlercode 401 zurückgegeben.</string>
     <string name="login_error_xml_rpc_cannot_read_site_auth_required">XML-RPC-Anrufe sind auf dieser Website anscheinend blockiert (Fehlercode 401). Wenn der Anmeldeversuch fehlschlägt, tippe auf das Hilfe-Icon, um die FAQ anzuzeigen.</string>
@@ -144,8 +152,6 @@ Language: de
     <string name="order_card_transition_name">order_card_%1$s</string>
     <string name="cash">Barzahlungen</string>
     <string name="card">Karte</string>
-    <string name="plus">Plus</string>
-    <string name="minus">Minus</string>
     <string name="tax">Steuer</string>
     <string name="email">E-Mail</string>
     <string name="order_creation_add_customer_note">Anmerkung hinzufügen</string>
