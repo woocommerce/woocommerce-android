@@ -252,7 +252,7 @@ class DateUtils @Inject constructor(
      *
      * return null if the argument is not a valid iso8601 date string.
      */
-    @Suppress("UNUSED_VARIABLE", "Applying the suggestion to rename 'month' to '_' makes the test fail")
+    @Suppress("UNUSED_VARIABLE") // Applying the suggestion to rename 'month' to '_' makes the test fail
     fun getYearString(iso8601Month: String): String? {
         return try {
             val (year, month) = iso8601Month.split("-")
