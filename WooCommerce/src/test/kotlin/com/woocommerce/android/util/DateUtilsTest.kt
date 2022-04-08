@@ -8,6 +8,7 @@ import com.woocommerce.android.extensions.formatDateToYear
 import com.woocommerce.android.extensions.formatDateToYearMonth
 import com.woocommerce.android.extensions.formatToDateOnly
 import com.woocommerce.android.extensions.formatToMonthDateOnly
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -583,5 +584,24 @@ class DateUtilsTest {
         }
 
         assertEquals(lastDayOfPreviousQuarter.time, dateUtilsUnderTest.getDateForLastDayOfPreviousQuarter(1, today))
+    }
+
+    @Test
+    fun `getDateAtStartOfDay() returns correct value`() {
+        val year = 1999
+        val month = 11
+        val day = 31
+
+        val calendar = Calendar.getInstance().apply {
+            time = dateUtilsUnderTest.getDateAtStartOfDay(1999, month, day)
+        }
+
+        assertEquals(year, calendar.get(Calendar.YEAR))
+        assertEquals(month, calendar.get(Calendar.MONTH))
+        assertEquals(day, calendar.get(Calendar.DAY_OF_MONTH))
+
+        assertThat(calendar.get(Calendar.MINUTE)).isZero
+        assertThat(calendar.get(Calendar.HOUR)).isZero
+        assertThat(calendar.get(Calendar.SECOND)).isZero
     }
 }
