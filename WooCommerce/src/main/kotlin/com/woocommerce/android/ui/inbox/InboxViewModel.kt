@@ -11,14 +11,16 @@ import com.woocommerce.android.R
 import com.woocommerce.android.compose.utils.toAnnotatedString
 import com.woocommerce.android.ui.inbox.domain.FetchInboxNotes
 import com.woocommerce.android.ui.inbox.domain.InboxNote
-import com.woocommerce.android.ui.inbox.domain.InboxNote.Status
 import com.woocommerce.android.ui.inbox.domain.InboxNoteAction
 import com.woocommerce.android.ui.inbox.domain.ObserveInboxNotes
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import org.wordpress.android.util.DateTimeUtils
 import java.util.Date
 import javax.inject.Inject
@@ -31,27 +33,26 @@ class InboxViewModel @Inject constructor(
     private val observeInboxNotes: ObserveInboxNotes,
     savedState: SavedStateHandle,
 ) : ScopedViewModel(savedState) {
-    val inboxState: LiveData<InboxState> = merge(
-        refreshInboxNotes(),
-        inboxNotesUpdates()
-    ).asLiveData()
+    val inboxState: LiveData<InboxState> =
+        refreshInboxNotes()
+            .combine(inboxNotesLocalUpdates()) { fetchInboxState, localInboxState ->
+                when {
+                    fetchInboxState.isLoading -> fetchInboxState
+                    else -> localInboxState
+                }
+            }.asLiveData()
 
-    private fun inboxNotesUpdates() =
+    private fun inboxNotesLocalUpdates() =
         observeInboxNotes()
-            .filter { it.isNotEmpty() }
             .map { inboxNotes ->
-                val notes = inboxNotes
-                    .filter { it.status == Status.Unactioned }
-                    .map { it.toInboxNoteUi() }
+                val notes = inboxNotes.map { it.toInboxNoteUi() }
                 InboxState(isLoading = false, notes = notes)
             }
 
     private fun refreshInboxNotes(): Flow<InboxState> = flow {
         emit(InboxState(isLoading = true))
-        val fetchResult = fetchInboxNotes()
-        if (fetchResult == FetchInboxNotes.Fail) {
-            emit(InboxState(isLoading = false, notes = emptyList()))
-        }
+        fetchInboxNotes()
+        emit(InboxState(isLoading = false))
     }
 
     private fun InboxNote.toInboxNoteUi() =
