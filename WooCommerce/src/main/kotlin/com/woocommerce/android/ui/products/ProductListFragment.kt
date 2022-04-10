@@ -108,7 +108,7 @@ class ProductListFragment :
         binding.productsRecycler.isMotionEventSplittingEnabled = false
 
         binding.productsRefreshLayout.apply {
-            scrollUpChild = binding.productsRecycler
+            scrollUpChild = binding.productsScrollView
             setOnRefreshListener {
                 viewModel.onRefreshRequested()
             }

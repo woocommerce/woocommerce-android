@@ -101,7 +101,7 @@ class ProductSelectionListFragment :
         productSelectionListAdapter.tracker = tracker
 
         binding.productsRefreshLayout.apply {
-            scrollUpChild = binding.productsRecycler
+            scrollUpChild = binding.productsScrollView
             setOnRefreshListener {
                 viewModel.onRefreshRequested()
             }
