@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCardReaderManualsBinding
 import com.woocommerce.android.ui.base.BaseFragment
@@ -17,7 +16,7 @@ class CardReaderManualsFragment : BaseFragment(R.layout.fragment_card_reader_man
     private var _binding: FragmentCardReaderManualsBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: CardReaderManualsViewModel by viewModels()
+//    private val viewModel: CardReaderManualsViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
