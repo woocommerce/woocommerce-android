@@ -52,10 +52,10 @@ android {
         minSdkVersion 21
         targetSdkVersion 31
 
-        missingDimensionStrategy 'buildType', 'jalapeno'
+        missingDimensionStrategy 'buildType', 'wasabi'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        testApplicationId "com.woocommerce.android.prealpha.quicklogin"
+        testApplicationId "com.woocommerce.android.dev.quicklogin"
 
         buildConfigField "String", "QUICK_LOGIN_WP_EMAIL", "\"${project.getProperties().get("quickLoginWpEmail")}\""
         buildConfigField "String", "QUICK_LOGIN_WP_PASSWORD", "\"${project.getProperties().get("quickLoginWpPassword")}\""

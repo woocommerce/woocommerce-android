@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-03-10 15:54:03+0000
+Translation-Revision-Date: 2022-03-25 11:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="empty_inbox_description">Зайдите позже, чтобы узнать больше советов и идей по развитию вашего магазина</string>
+    <string name="empty_inbox_title">Поздравляем, вы прочитали все примечания!</string>
+    <string name="orderstatus_contentDesc_withStatus">Статус заказа: %s</string>
+    <string name="no_sku">Артикула нет</string>
+    <string name="count">Счётчик: %s</string>
+    <string name="plus_one">Плюс один</string>
+    <string name="minus_one">Минус один</string>
+    <string name="more_menu_button_coupons">Купоны</string>
     <string name="dismiss_inbox_note">Закрыть</string>
     <string name="login_error_xml_rpc_auth_error_communicating">Возникла проблема при подключении к сайту. Получен код ошибки HTTP 401.</string>
     <string name="login_error_xml_rpc_cannot_read_site_auth_required">Вызовы XML-RPC на этом сайте заблокированы (код ошибки 401). Если войти не удалось, нажмите на значок справки, чтобы открыть часто задаваемые вопросы.</string>
@@ -144,8 +152,6 @@ Language: ru
     <string name="order_card_transition_name">order_card_%1$s</string>
     <string name="cash">Наличные</string>
     <string name="card">Карта</string>
-    <string name="plus">Plus</string>
-    <string name="minus">Минус</string>
     <string name="tax">Налог</string>
     <string name="email">Отправить email</string>
     <string name="order_creation_add_customer_note">Добавить примечание</string>

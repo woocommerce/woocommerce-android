@@ -88,7 +88,7 @@ class FeatureAnnouncementDialogFragment : DialogFragment() {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.announcement.takeIfNotEqualTo(old?.announcement) {
                 it?.let {
-                    listAdapter.updateData(it.features)
+                    listAdapter.submitList(it.features)
                 }
             }
         }

@@ -11,20 +11,18 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_089"
+msgid ""
+"8.9:\n"
+"Create orders on the go with products, shipping & billing information, and fees! You can quickly take an in-person credit card payment right after or send a link to a customer to pay for that order on their own device. You’ve asked for it, and now it’s here!\n"
+msgstr ""
+
 msgctxt "release_note_088"
 msgid ""
 "8.8:\n"
 "Even though this release doesn’t have any surprising new features, we still put a lot of love into it! We fixed a few bugs and made several improvements for accessibility using TalkBack.\n"
 "\n"
 "Did you know we’ve released a beta feature for creating orders? Head to the Menu tab, tap the settings icon, and scroll to beta features.\n"
-msgstr ""
-
-msgctxt "release_note_087"
-msgid ""
-"8.7:\n"
-"Did you know we’ve released a beta feature for creating orders? Head to the Menu tab, tap the settings icon, and scroll to beta features. We just added fees and shipping costs!\n"
-"\n"
-"We fixed a rare issue where sometimes the notes for an order appeared incorrectly. Thanks for letting us know!\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

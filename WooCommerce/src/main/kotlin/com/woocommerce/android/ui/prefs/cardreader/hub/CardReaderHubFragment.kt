@@ -42,7 +42,11 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
         ) { event ->
             when (event) {
                 is CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderDetail -> {
-                    findNavController().navigateSafely(R.id.action_cardReaderHubFragment_to_cardReaderDetailFragment)
+                    findNavController().navigateSafely(
+                        CardReaderHubFragmentDirections.actionCardReaderHubFragmentToCardReaderDetailFragment(
+                            event.cardReaderFlowParam
+                        )
+                    )
                 }
                 is CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow -> {
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
