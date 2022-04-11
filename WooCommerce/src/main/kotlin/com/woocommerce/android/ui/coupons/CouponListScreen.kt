@@ -104,6 +104,7 @@ fun CouponListItem(
     onCouponClick: (Long) -> Unit
 ) {
     Column(
+        verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier
             .fillMaxWidth()
             .clickable(
@@ -135,8 +136,7 @@ fun CouponListItemInfo(
     Text(
         text = summary,
         style = MaterialTheme.typography.caption,
-        color = colorResource(id = R.color.color_on_surface_medium),
-        modifier = Modifier.padding(vertical = 4.dp)
+        color = colorResource(id = R.color.color_on_surface_medium)
     )
 }
 
