@@ -81,7 +81,6 @@ fun CouponList(
     onCouponClick: (Long) -> Unit
 ) {
     LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(0.dp),
         modifier = Modifier
             .background(color = MaterialTheme.colors.surface)
     ) {
@@ -108,14 +107,13 @@ fun CouponListItem(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable(
                 enabled = true,
                 onClickLabel = stringResource(id = R.string.coupon_list_view_coupon),
                 role = Role.Button,
                 onClick = { onCouponClick(coupon.id) }
-            ),
-        verticalArrangement = Arrangement.spacedBy(0.dp)
+            )
+            .padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
         coupon.code?.let {
             Text(
