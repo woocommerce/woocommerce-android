@@ -38,6 +38,9 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
         binding.textCard.setOnClickListener {
             viewModel.onCardPaymentClicked()
         }
+        binding.textShare.setOnClickListener {
+            viewModel.onSharePaymentUrlClicked()
+        }
 
         setUpObservers(binding)
         setupResultHandlers()
@@ -47,6 +50,9 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.isCardPaymentEnabled.takeIfNotEqualTo(old?.isCardPaymentEnabled) {
                 binding.textCard.isVisible = it == true
+            }
+            new.isSharePaymentUrlEnabled.takeIfNotEqualTo(old?.isSharePaymentUrlEnabled) {
+                binding.textShare.isVisible = it == true
             }
         }
 

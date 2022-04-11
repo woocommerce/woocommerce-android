@@ -42,5 +42,8 @@ class ObserveInboxNotes @Inject constructor(
             LocalInboxNoteStatus.Unactioned -> InboxNote.Status.Unactioned
             LocalInboxNoteStatus.Actioned -> InboxNote.Status.Actioned
             LocalInboxNoteStatus.Snoozed -> InboxNote.Status.Snoozed
+            // TODO nbradbury - this else statement should be removed, it's
+            // only here to get the app to build
+            else -> InboxNote.Status.Unactioned
         }
 }

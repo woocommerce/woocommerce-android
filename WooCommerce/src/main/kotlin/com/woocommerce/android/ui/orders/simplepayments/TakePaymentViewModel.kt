@@ -51,7 +51,10 @@ class TakePaymentViewModel @Inject constructor(
         get() = order.total
 
     init {
-        viewState = viewState.copy(isCardPaymentEnabled = isCardReaderOnboardingCompleted())
+        viewState = viewState.copy(
+            isCardPaymentEnabled = isCardReaderOnboardingCompleted(),
+            isSharePaymentUrlEnabled = order.paymentUrl.isNotEmpty()
+        )
     }
 
     fun onCashPaymentClicked() {
@@ -92,6 +95,10 @@ class TakePaymentViewModel @Inject constructor(
         } else {
             triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
         }
+    }
+
+    fun onSharePaymentUrlClicked() {
+        // TODO nbradbury
     }
 
     fun onCardPaymentClicked() {
@@ -185,7 +192,8 @@ class TakePaymentViewModel @Inject constructor(
 
     @Parcelize
     data class ViewState(
-        val isCardPaymentEnabled: Boolean? = null
+        val isCardPaymentEnabled: Boolean? = null,
+        val isSharePaymentUrlEnabled: Boolean? = null
     ) : Parcelable
 
     companion object {
