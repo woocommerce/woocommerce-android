@@ -7,11 +7,9 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
 import androidx.preference.PreferenceManager
-import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_COMPLETED
-import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.*
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.*
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.util.PreferenceUtils
@@ -56,7 +54,6 @@ object AppPrefs {
         RECEIPT_PREFIX,
         CARD_READER_ONBOARDING_COMPLETED_STATUS_V2,
         CARD_READER_PREFERRED_PLUGIN,
-        CARD_READER_PREFERRED_PLUGIN_VERSION,
         CARD_READER_STATEMENT_DESCRIPTOR,
         ORDER_FILTER_PREFIX,
         ORDER_FILTER_CUSTOM_DATE_RANGE_START,
@@ -410,7 +407,7 @@ object AppPrefs {
         return CardReaderOnboardingStatus.valueOf(
             PreferenceUtils.getString(
                 getPreferences(),
-                getCardReaderOnboardingStatusKey(
+                getCardReaderOnboardingKey(
                     localSiteId,
                     remoteSiteId,
                     selfHostedSiteId
@@ -446,53 +443,26 @@ object AppPrefs {
         return storedValue?.let { PluginType.valueOf(it) }
     }
 
-    fun getCardReaderPreferredPluginVersion(
+    fun setCardReaderOnboardingStatusAndPreferredPlugin(
         localSiteId: Int,
         remoteSiteId: Long,
         selfHostedSiteId: Long,
-        preferredPlugin: PluginType,
-    ) = PreferenceUtils.getString(
-        getPreferences(),
-        getCardReaderPreferredPluginVersionKey(
-            localSiteId,
-            remoteSiteId,
-            selfHostedSiteId,
-            preferredPlugin
-        ),
-        null
-    )
-
-    fun setCardReaderOnboardingData(
-        localSiteId: Int,
-        remoteSiteId: Long,
-        selfHostedSiteId: Long,
-        data: PersistentOnboardingData,
+        status: CardReaderOnboardingStatus,
+        preferredPlugin: PluginType?,
     ) {
         PreferenceUtils.setString(
             getPreferences(),
-            getCardReaderOnboardingStatusKey(localSiteId, remoteSiteId, selfHostedSiteId),
-            data.status.toString()
+            getCardReaderOnboardingKey(localSiteId, remoteSiteId, selfHostedSiteId),
+            status.toString()
         )
         PreferenceUtils.setString(
             getPreferences(),
             getCardReaderPreferredPluginKey(localSiteId, remoteSiteId, selfHostedSiteId),
-            data.preferredPlugin?.toString()
+            preferredPlugin?.toString()
         )
-        data.preferredPlugin?.let { plugin ->
-            PreferenceUtils.setString(
-                getPreferences(),
-                getCardReaderPreferredPluginVersionKey(
-                    localSiteId,
-                    remoteSiteId,
-                    selfHostedSiteId,
-                    plugin
-                ),
-                data.version
-            )
-        }
     }
 
-    private fun getCardReaderOnboardingStatusKey(
+    private fun getCardReaderOnboardingKey(
         localSiteId: Int,
         remoteSiteId: Long,
         selfHostedSiteId: Long
@@ -503,13 +473,6 @@ object AppPrefs {
         remoteSiteId: Long,
         selfHostedSiteId: Long
     ) = "$CARD_READER_PREFERRED_PLUGIN:$localSiteId:$remoteSiteId:$selfHostedSiteId"
-
-    private fun getCardReaderPreferredPluginVersionKey(
-        localSiteId: Int,
-        remoteSiteId: Long,
-        selfHostedSiteId: Long,
-        plugin: PluginType,
-    ) = "$CARD_READER_PREFERRED_PLUGIN_VERSION:$localSiteId:$remoteSiteId:$selfHostedSiteId:$plugin"
 
     fun setCardReaderStatementDescriptor(
         statementDescriptor: String?,

@@ -60,14 +60,12 @@ internal class CreatePaymentAction(
             as CardReaderConfigForSupportedCountry
         val builder = paymentIntentParametersFactory.createBuilder(
             cardReaderConfig.paymentMethodType
-        ).setDescription(paymentInfo.paymentDescription)
+        )
+            .setDescription(paymentInfo.paymentDescription)
             .setAmount(amountInSmallestCurrencyUnit)
             .setCurrency(paymentInfo.currency)
             .setMetadata(createMetaData(paymentInfo))
         with(paymentInfo) {
-            customerEmail?.takeIf { it.isNotEmpty() }?.let {
-                if (!isPluginCanSendReceipt) builder.setReceiptEmail(it)
-            }
             statementDescriptor?.takeIf { it.isNotEmpty() }?.let { builder.setStatementDescriptor(it) }
         }
         return builder.build()

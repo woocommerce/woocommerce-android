@@ -16,7 +16,6 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalI
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.extensions.exhaustive
-import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
@@ -27,8 +26,6 @@ import com.woocommerce.android.ui.orders.cardreader.ViewState.*
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderTrackingInfoKeeper
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.WCPAY_RECEIPTS_SENDING_SUPPORT_VERSION
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult
@@ -47,7 +44,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
@@ -161,7 +157,6 @@ class CardReaderPaymentViewModel
                 currency = order.currency,
                 orderKey = order.orderKey,
                 customerEmail = customerEmail.ifEmpty { null },
-                isPluginCanSendReceipt = isPluginCanSendReceipt(site),
                 customerName = "${order.billingAddress.firstName} ${order.billingAddress.lastName}".ifBlank { null },
                 storeName = selectedSite.get().name.ifEmpty { null },
                 siteUrl = selectedSite.get().url.ifEmpty { null },
@@ -453,26 +448,6 @@ class CardReaderPaymentViewModel
             wooStore.getStoreCountryCode(
                 selectedSite.get()
             ) ?: throw IllegalStateException("Store's country code not found.")
-        }
-    }
-
-    private fun isPluginCanSendReceipt(site: SiteModel): Boolean {
-        val preferredPlugin = appPrefsWrapper.getCardReaderPreferredPlugin(
-            localSiteId = site.id,
-            remoteSiteId = site.siteId,
-            selfHostedSiteId = site.selfHostedSiteId
-        )
-        return if (preferredPlugin == null || preferredPlugin != PluginType.WOOCOMMERCE_PAYMENTS) {
-            false
-        } else {
-            val pluginVersion = appPrefsWrapper.getCardReaderPreferredPluginVersion(
-                localSiteId = site.id,
-                remoteSiteId = site.siteId,
-                selfHostedSiteId = site.selfHostedSiteId,
-                preferredPlugin,
-            ) ?: return false
-
-            pluginVersion.semverCompareTo(WCPAY_RECEIPTS_SENDING_SUPPORT_VERSION) >= 0
         }
     }
 
