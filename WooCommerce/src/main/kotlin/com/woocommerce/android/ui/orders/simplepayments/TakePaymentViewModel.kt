@@ -53,7 +53,7 @@ class TakePaymentViewModel @Inject constructor(
     init {
         viewState = viewState.copy(
             isCardPaymentEnabled = isCardReaderOnboardingCompleted(),
-            isSharePaymentUrlEnabled = order.paymentUrl.isNotEmpty()
+            isSharePaymentUrlEnabled = true // TODO order.paymentUrl.isNotEmpty()
         )
     }
 
@@ -98,7 +98,13 @@ class TakePaymentViewModel @Inject constructor(
     }
 
     fun onSharePaymentUrlClicked() {
-        // TODO nbradbury
+        triggerEvent(SharePaymentUrl(selectedSite.get().name, order.paymentUrl))
+    }
+
+    fun onSharePaymentUrlCompleted() {
+        launch {
+            markOrderCompleted()
+        }
     }
 
     fun onCardPaymentClicked() {
@@ -195,6 +201,11 @@ class TakePaymentViewModel @Inject constructor(
         val isCardPaymentEnabled: Boolean? = null,
         val isSharePaymentUrlEnabled: Boolean? = null
     ) : Parcelable
+
+    data class SharePaymentUrl(
+        val storeName: String,
+        val paymentUrl: String
+    ) : MultiLiveEvent.Event()
 
     companion object {
         private const val DELAY_MS = 1L

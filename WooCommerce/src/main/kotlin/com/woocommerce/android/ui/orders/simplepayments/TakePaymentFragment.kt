@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.orders.simplepayments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
@@ -27,6 +29,10 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
     private val sharedViewModel by hiltNavGraphViewModels<SimplePaymentsSharedViewModel>(R.id.nav_graph_main)
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+
+    private val sharePaymentUrlLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        viewModel.onSharePaymentUrlCompleted()
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -75,6 +81,9 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
                     )
                     findNavController().navigateSafely(action)
                 }
+                is TakePaymentViewModel.SharePaymentUrl -> {
+                    sharePaymentUrl(event.storeName, event.paymentUrl)
+                }
             }
         }
     }
@@ -93,6 +102,17 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
         ) {
             viewModel.onCardReaderPaymentCompleted()
         }
+    }
+
+    private fun sharePaymentUrl(storeName: String, paymentUrl: String) {
+        val title = getString(R.string.simple_payments_share_payment_dialog_title, storeName)
+        val shareIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TITLE, title)
+            putExtra(Intent.EXTRA_TEXT, paymentUrl)
+            type = "text/plain"
+        }
+        sharePaymentUrlLauncher.launch(shareIntent)
     }
 
     override fun onResume() {
