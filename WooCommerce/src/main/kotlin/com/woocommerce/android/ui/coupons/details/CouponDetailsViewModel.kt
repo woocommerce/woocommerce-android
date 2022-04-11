@@ -2,8 +2,10 @@ package com.woocommerce.android.ui.coupons.details
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -45,15 +47,17 @@ class CouponDetailsViewModel @Inject constructor(
     fun onCopyButtonClick() {
         couponState.value?.coupon?.code?.let {
             triggerEvent(CopyCodeEvent(it))
+        } ?: run {
+            triggerEvent(ShowSnackbar(R.string.coupon_details_share_coupon_missing))
         }
-        // todo handle error state
     }
 
     fun onShareButtonClick() {
         couponState.value?.coupon?.shareCodeMessage?.let {
             triggerEvent(ShareCodeEvent(it))
+        } ?: run {
+            triggerEvent(ShowSnackbar(R.string.coupon_details_share_coupon_missing))
         }
-        // todo handle error state
     }
 
     data class CouponDetailsState(

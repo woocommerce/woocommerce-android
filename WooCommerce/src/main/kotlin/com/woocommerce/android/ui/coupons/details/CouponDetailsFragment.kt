@@ -11,17 +11,22 @@ import androidx.navigation.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCouponDetailsBinding
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CopyCodeEvent
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.ShareCodeEvent
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.copyToClipboard
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ToastUtils
 import java.lang.IllegalStateException
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class CouponDetailsFragment : BaseFragment(R.layout.fragment_coupon_details) {
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
+
     private var _binding: FragmentCouponDetailsBinding? = null
     private val binding get() = _binding!!
 
@@ -59,6 +64,7 @@ class CouponDetailsFragment : BaseFragment(R.layout.fragment_coupon_details) {
             when (event) {
                 is CopyCodeEvent -> copyCodeToClipboard(event.couponCode)
                 is ShareCodeEvent -> shareCode(event.shareCodeMessage)
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
             }
         }
     }
