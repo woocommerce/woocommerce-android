@@ -66,7 +66,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `given payment flow, when onboarding completed, then navigates to card reader connection screen`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.OnboardingCompleted(WOOCOMMERCE_PAYMENTS, countryCode)
+                CardReaderOnboardingState.OnboardingCompleted(WOOCOMMERCE_PAYMENTS, pluginVersion, countryCode)
             )
 
             val viewModel = createVM(
@@ -662,6 +662,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     CardReaderOnboardingState.StripeAccountPendingRequirement(
                         0L,
                         WOOCOMMERCE_PAYMENTS,
+                        pluginVersion,
                         countryCode
                     )
                 )
@@ -682,6 +683,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     CardReaderOnboardingState.StripeAccountPendingRequirement(
                         0L,
                         WOOCOMMERCE_PAYMENTS,
+                        pluginVersion,
                         countryCode
                     )
                 )
