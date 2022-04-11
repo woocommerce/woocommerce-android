@@ -90,14 +90,12 @@ fun CouponList(
                 coupon = coupon,
                 onCouponClick = onCouponClick
             )
-            if (index < coupons.lastIndex) {
-                Divider(
-                    modifier = Modifier
-                        .offset(x = 16.dp),
-                    color = colorResource(id = R.color.divider_color),
-                    thickness = 1.dp
-                )
-            }
+            Divider(
+                modifier = Modifier
+                    .offset(x = 16.dp),
+                color = colorResource(id = R.color.divider_color),
+                thickness = 1.dp
+            )
         }
     }
 }
