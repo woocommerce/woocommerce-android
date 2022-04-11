@@ -39,8 +39,8 @@ fun CouponDetailsScreen(
 fun CouponDetailsScreen(
     state: CouponDetailsState,
     onBackPress: () -> Boolean,
-    onCopyButtonClick: (String) -> Unit,
-    onShareButtonClick: (String) -> Unit
+    onCopyButtonClick: () -> Unit,
+    onShareButtonClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -64,14 +64,10 @@ fun CouponDetailsScreen(
                     expanded = showMenu,
                     onDismissRequest = { showMenu = false }
                 ) {
-                    DropdownMenuItem(onClick = {
-                        onCopyButtonClick(state.coupon?.code ?: "")
-                    }) {
+                    DropdownMenuItem(onClick = { onCopyButtonClick() }) {
                         Text(stringResource(id = R.string.coupon_details_menu_copy))
                     }
-                    DropdownMenuItem(onClick = {
-                        onShareButtonClick(state.coupon?.shareCodeMessage ?: "")
-                    }) {
+                    DropdownMenuItem(onClick = { onShareButtonClick() }) {
                         Text(stringResource(id = R.string.coupon_details_menu_share))
                     }
                 }

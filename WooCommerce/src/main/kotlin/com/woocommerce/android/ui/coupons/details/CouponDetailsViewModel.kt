@@ -42,12 +42,18 @@ class CouponDetailsViewModel @Inject constructor(
         )
     }
 
-    fun onCopyButtonClick(couponCode: String) {
-        triggerEvent(CopyCodeEvent(couponCode))
+    fun onCopyButtonClick() {
+        couponState.value?.coupon?.code?.let {
+            triggerEvent(CopyCodeEvent(it))
+        }
+        // todo handle error state
     }
 
-    fun onShareButtonClick(shareCodeMessage: String) {
-        triggerEvent(ShareCodeEvent(shareCodeMessage))
+    fun onShareButtonClick() {
+        couponState.value?.coupon?.shareCodeMessage?.let {
+            triggerEvent(ShareCodeEvent(it))
+        }
+        // todo handle error state
     }
 
     data class CouponDetailsState(
