@@ -22,7 +22,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListItem
 import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListState
@@ -118,9 +117,8 @@ fun CouponListItem(
         coupon.code?.let {
             Text(
                 text = it,
-                style = MaterialTheme.typography.h6,
+                style = MaterialTheme.typography.subtitle1,
                 color = MaterialTheme.colors.onSurface,
-                fontSize = 20.sp
             )
         }
 
@@ -136,9 +134,8 @@ fun CouponListItemInfo(
 ) {
     Text(
         text = summary,
-        style = MaterialTheme.typography.body2,
-        color = colorResource(id = R.color.color_surface_variant),
-        fontSize = 14.sp,
+        style = MaterialTheme.typography.caption,
+        color = colorResource(id = R.color.color_on_surface_medium),
         modifier = Modifier.padding(vertical = 4.dp)
     )
 }
