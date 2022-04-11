@@ -1,3 +1,7 @@
 comment:
   require_changes: true
+coverage:
+  status:
+    project: off
+    patch: off
 
