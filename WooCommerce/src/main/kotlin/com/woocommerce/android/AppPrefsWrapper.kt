@@ -19,6 +19,8 @@ class AppPrefsWrapper @Inject constructor() {
     fun isCardReaderOnboardingCompleted(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
         AppPrefs.isCardReaderOnboardingCompleted(localSiteId, remoteSiteId, selfHostedSiteId)
 
+    fun isCardReaderWelcomeDialogShown() = AppPrefs.isCardReaderWelcomeDialogShown()
+
     fun getCardReaderPreferredPlugin(
         localSiteId: Int,
         remoteSiteId: Long,
@@ -68,6 +70,8 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getLastConnectedCardReaderId() = AppPrefs.getLastConnectedCardReaderId()
 
+    fun setCardReaderWelcomeDialogShown() = AppPrefs.setCardReaderWelcomeDialogShown()
+
     fun removeLastConnectedCardReaderId() = AppPrefs.removeLastConnectedCardReaderId()
 
     fun isOrderNotificationsEnabled() = AppPrefs.isOrderNotificationsEnabled()
@@ -103,4 +107,14 @@ class AppPrefsWrapper @Inject constructor() {
     }
 
     fun isUserEligible(): Boolean = AppPrefs.isUserEligible()
+
+    fun getFCMToken() = AppPrefs.getFCMToken()
+
+    fun setFCMToken(token: String) = AppPrefs.setFCMToken(token)
+
+    fun removeFCMToken() = AppPrefs.removeFCMToken()
+
+    fun getProductSortingChoice(siteId: Int) = AppPrefs.getProductSortingChoice(siteId)
+
+    fun setProductSortingChoice(siteId: Int, value: String) = AppPrefs.setProductSortingChoice(siteId, value)
 }

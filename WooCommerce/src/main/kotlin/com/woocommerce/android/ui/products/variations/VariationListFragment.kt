@@ -223,7 +223,7 @@ class VariationListFragment :
             adapter = binding.variationList.adapter as VariationListAdapter
         }
 
-        adapter.setVariationList(variations)
+        adapter.submitList(variations)
     }
 
     private fun handleEmptyViewChanges(isEmptyViewVisible: Boolean) {

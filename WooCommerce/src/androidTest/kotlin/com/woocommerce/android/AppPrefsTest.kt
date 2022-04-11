@@ -34,6 +34,25 @@ class AppPrefsTest {
     }
 
     @Test
+    fun whenFCMTokenIsSetThenGetReturnsStoredValue() {
+        val token = "fcm_token"
+
+        AppPrefs.setFCMToken(token)
+
+        assertThat(AppPrefs.getFCMToken()).isEqualTo(token)
+    }
+
+    @Test
+    fun whenFCMTokenIsRemovedThenGetReturnsEmptyString() {
+        val token = "fcm_token"
+        AppPrefs.setFCMToken(token)
+
+        AppPrefs.removeFCMToken()
+
+        assertThat(AppPrefs.getFCMToken()).isEmpty()
+    }
+
+    @Test
     fun whenCardReaderOnboardingCompletedWithStripeExtThenCorrectOnboardingStatusIsStored() {
         AppPrefs.setCardReaderOnboardingData(
             localSiteId = 0,
@@ -410,6 +429,18 @@ class AppPrefsTest {
                 selfHostedSiteId = 0L
             )
         ).isEqualTo(null)
+    }
+
+    @Test
+    fun givenSpecificSiteIdWhenProductSortingChoiceIsSetThenGetReturnsStoredValue() {
+        val siteIds = 1 to 2
+        val productSortingChoices = "TITLE_ASC" to "TITLE_DESC"
+
+        AppPrefs.setProductSortingChoice(siteIds.first, productSortingChoices.first)
+        AppPrefs.setProductSortingChoice(siteIds.second, productSortingChoices.second)
+
+        assertThat(AppPrefs.getProductSortingChoice(siteIds.first)).isEqualTo(productSortingChoices.first)
+        assertThat(AppPrefs.getProductSortingChoice(siteIds.second)).isEqualTo(productSortingChoices.second)
     }
 
     @Test

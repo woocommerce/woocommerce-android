@@ -10,6 +10,7 @@ import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.*
+import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
@@ -26,6 +27,9 @@ import java.util.Date
 @SuppressLint("StaticFieldLeak")
 object AppPrefs {
     interface PrefKey
+
+    @JvmInline
+    value class PrefKeyString(val key: String) : PrefKey
 
     private lateinit var context: Context
 
@@ -61,6 +65,7 @@ object AppPrefs {
         ORDER_FILTER_PREFIX,
         ORDER_FILTER_CUSTOM_DATE_RANGE_START,
         ORDER_FILTER_CUSTOM_DATE_RANGE_END,
+        PRODUCT_SORTING_PREFIX,
     }
 
     /**
@@ -68,7 +73,8 @@ object AppPrefs {
      */
     private enum class DeletableSitePrefKey : PrefKey {
         TRACKING_EXTENSION_AVAILABLE,
-        JETPACK_BENEFITS_BANNER_DISMISSAL_DATE
+        JETPACK_BENEFITS_BANNER_DISMISSAL_DATE,
+        WC_PREF_NOTIFICATIONS_TOKEN,
     }
 
     /**
@@ -111,6 +117,9 @@ object AppPrefs {
 
         // The last version of the app where an announcement was shown,
         LAST_VERSION_WITH_ANNOUNCEMENT,
+
+        // card reader welcome dialog was shown
+        CARD_READER_WELCOME_SHOWN,
     }
 
     fun init(context: Context) {
@@ -154,6 +163,15 @@ object AppPrefs {
         get() = getBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, false)
         set(value) = setBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, value)
 
+    fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
+
+    fun setProductSortingChoice(currentSiteId: Int, value: String) {
+        setString(getProductSortingKey(currentSiteId), value)
+    }
+
+    private fun getProductSortingKey(currentSiteId: Int) =
+        PrefKeyString("$PRODUCT_SORTING_PREFIX:$currentSiteId")
+
     fun getLastAppVersionCode(): Int {
         return getDeletableInt(UndeletablePrefKey.LAST_APP_VERSION_CODE)
     }
@@ -168,6 +186,16 @@ object AppPrefs {
 
     fun setCancelledAppVersionCode(versionCode: Int) {
         setDeletableInt(UndeletablePrefKey.CANCELLED_APP_VERSION_CODE, versionCode)
+    }
+
+    fun getFCMToken() = getString(DeletableSitePrefKey.WC_PREF_NOTIFICATIONS_TOKEN)
+
+    fun setFCMToken(token: String) {
+        setString(DeletableSitePrefKey.WC_PREF_NOTIFICATIONS_TOKEN, token)
+    }
+
+    fun removeFCMToken() {
+        remove(DeletableSitePrefKey.WC_PREF_NOTIFICATIONS_TOKEN)
     }
 
     fun setSupportEmail(email: String?) {
@@ -213,23 +241,21 @@ object AppPrefs {
     fun setUserEmail(email: String) = setString(DeletablePrefKey.USER_EMAIL, email)
 
     fun getReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
-        PreferenceUtils.getString(getPreferences(), getReceiptKey(localSiteId, remoteSiteId, selfHostedSiteId, orderId))
+        getString(getReceiptKey(localSiteId, remoteSiteId, selfHostedSiteId, orderId))
 
     fun setReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long, url: String) =
-        PreferenceUtils.setString(
-            getPreferences(),
+        setString(
             getReceiptKey(localSiteId, remoteSiteId, selfHostedSiteId, orderId),
             url
         )
 
     private fun getReceiptKey(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
-        "$RECEIPT_PREFIX:$localSiteId:$remoteSiteId:$selfHostedSiteId:$orderId"
+        PrefKeyString("$RECEIPT_PREFIX:$localSiteId:$remoteSiteId:$selfHostedSiteId:$orderId")
 
     fun setLastConnectedCardReaderId(readerId: String) =
         setString(UndeletablePrefKey.LAST_CONNECTED_CARD_READER_ID, readerId)
 
-    fun getLastConnectedCardReaderId() =
-        PreferenceUtils.getString(getPreferences(), UndeletablePrefKey.LAST_CONNECTED_CARD_READER_ID.toString(), null)
+    fun getLastConnectedCardReaderId() = getString(UndeletablePrefKey.LAST_CONNECTED_CARD_READER_ID).orNullIfEmpty()
 
     fun removeLastConnectedCardReaderId() = remove(UndeletablePrefKey.LAST_CONNECTED_CARD_READER_ID)
 
@@ -243,6 +269,9 @@ object AppPrefs {
 
     fun setLastVersionWithAnnouncement(version: String) =
         setString(UndeletablePrefKey.LAST_VERSION_WITH_ANNOUNCEMENT, version)
+
+    fun setCardReaderWelcomeDialogShown() =
+        setBoolean(UndeletablePrefKey.CARD_READER_WELCOME_SHOWN, true)
 
     /**
      * Flag to check products features are enabled
@@ -408,15 +437,14 @@ object AppPrefs {
         selfHostedSiteId: Long
     ): CardReaderOnboardingStatus {
         return CardReaderOnboardingStatus.valueOf(
-            PreferenceUtils.getString(
-                getPreferences(),
+            getString(
                 getCardReaderOnboardingStatusKey(
                     localSiteId,
                     remoteSiteId,
                     selfHostedSiteId
                 ),
                 CARD_READER_ONBOARDING_NOT_COMPLETED.name
-            ) ?: CARD_READER_ONBOARDING_NOT_COMPLETED.name
+            )
         )
     }
 
@@ -429,21 +457,21 @@ object AppPrefs {
         return completedStatus == CARD_READER_ONBOARDING_COMPLETED
     }
 
+    fun isCardReaderWelcomeDialogShown() = getBoolean(UndeletablePrefKey.CARD_READER_WELCOME_SHOWN, false)
+
     fun getCardReaderPreferredPlugin(
         localSiteId: Int,
         remoteSiteId: Long,
         selfHostedSiteId: Long
     ): PluginType? {
-        val storedValue = PreferenceUtils.getString(
-            getPreferences(),
+        val storedValue = getString(
             getCardReaderPreferredPluginKey(
                 localSiteId,
                 remoteSiteId,
                 selfHostedSiteId
-            ),
-            null
+            )
         )
-        return storedValue?.let { PluginType.valueOf(it) }
+        return storedValue.orNullIfEmpty()?.let { PluginType.valueOf(it) }
     }
 
     fun getCardReaderPreferredPluginVersion(
@@ -468,15 +496,13 @@ object AppPrefs {
         selfHostedSiteId: Long,
         data: PersistentOnboardingData,
     ) {
-        PreferenceUtils.setString(
-            getPreferences(),
+        setString(
             getCardReaderOnboardingStatusKey(localSiteId, remoteSiteId, selfHostedSiteId),
             data.status.toString()
         )
-        PreferenceUtils.setString(
-            getPreferences(),
+        setString(
             getCardReaderPreferredPluginKey(localSiteId, remoteSiteId, selfHostedSiteId),
-            data.preferredPlugin?.toString()
+            data.preferredPlugin?.toString().orEmpty()
         )
         data.preferredPlugin?.let { plugin ->
             PreferenceUtils.setString(
@@ -496,13 +522,13 @@ object AppPrefs {
         localSiteId: Int,
         remoteSiteId: Long,
         selfHostedSiteId: Long
-    ) = "$CARD_READER_ONBOARDING_COMPLETED_STATUS_V2:$localSiteId:$remoteSiteId:$selfHostedSiteId"
+    ) = PrefKeyString("$CARD_READER_ONBOARDING_COMPLETED_STATUS_V2:$localSiteId:$remoteSiteId:$selfHostedSiteId")
 
     private fun getCardReaderPreferredPluginKey(
         localSiteId: Int,
         remoteSiteId: Long,
         selfHostedSiteId: Long
-    ) = "$CARD_READER_PREFERRED_PLUGIN:$localSiteId:$remoteSiteId:$selfHostedSiteId"
+    ) = PrefKeyString("$CARD_READER_PREFERRED_PLUGIN:$localSiteId:$remoteSiteId:$selfHostedSiteId")
 
     private fun getCardReaderPreferredPluginVersionKey(
         localSiteId: Int,
@@ -517,10 +543,9 @@ object AppPrefs {
         remoteSiteId: Long,
         selfHostedSiteId: Long
     ) {
-        PreferenceUtils.setString(
-            getPreferences(),
+        setString(
             getCardReaderStatementDescriptorKey(localSiteId, remoteSiteId, selfHostedSiteId),
-            statementDescriptor
+            statementDescriptor.orEmpty()
         )
     }
 
@@ -528,21 +553,19 @@ object AppPrefs {
         localSiteId: Int,
         remoteSiteId: Long,
         selfHostedSiteId: Long
-    ): String? = PreferenceUtils.getString(
-        getPreferences(),
+    ): String? = getString(
         getCardReaderStatementDescriptorKey(
             localSiteId,
             remoteSiteId,
             selfHostedSiteId
-        ),
-        null
-    )
+        )
+    ).orNullIfEmpty()
 
     private fun getCardReaderStatementDescriptorKey(
         localSiteId: Int,
         remoteSiteId: Long,
         selfHostedSiteId: Long
-    ) = "$CARD_READER_STATEMENT_DESCRIPTOR:$localSiteId:$remoteSiteId:$selfHostedSiteId"
+    ) = PrefKeyString("$CARD_READER_STATEMENT_DESCRIPTOR:$localSiteId:$remoteSiteId:$selfHostedSiteId")
 
     fun getJetpackBenefitsDismissalDate(): Long {
         return getLong(DeletableSitePrefKey.JETPACK_BENEFITS_BANNER_DISMISSAL_DATE, 0L)
@@ -560,46 +583,34 @@ object AppPrefs {
         setBoolean(DeletableSitePrefKey.TRACKING_EXTENSION_AVAILABLE, isAvailable)
     }
 
-    fun setOrderFilters(currentSiteId: Int, filterCategory: String, filterValue: String) =
-        PreferenceUtils.setString(
-            getPreferences(),
-            getOrderFilterKey(currentSiteId, filterCategory),
-            filterValue
-        )
+    fun setOrderFilters(currentSiteId: Int, filterCategory: String, filterValue: String) {
+        setString(getOrderFilterKey(currentSiteId, filterCategory), filterValue)
+    }
 
-    fun getOrderFilters(currentSiteId: Int, filterCategory: String) =
-        PreferenceUtils.getString(
-            getPreferences(),
-            getOrderFilterKey(currentSiteId, filterCategory),
-            null
-        )
+    fun getOrderFilters(currentSiteId: Int, filterCategory: String) = getString(
+        getOrderFilterKey(currentSiteId, filterCategory)
+    )
 
     private fun getOrderFilterKey(currentSiteId: Int, filterCategory: String) =
-        "$ORDER_FILTER_PREFIX:$currentSiteId:$filterCategory"
+        PrefKeyString("$ORDER_FILTER_PREFIX:$currentSiteId:$filterCategory")
 
     fun getOrderFilterCustomDateRange(selectedSiteId: Int): Pair<Long, Long> {
-        val startDateMillis = PreferenceUtils.getLong(
-            getPreferences(),
-            key = "${DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_START}:$selectedSiteId",
-            default = 0
+        val startDateMillis = getLong(
+            PrefKeyString("$ORDER_FILTER_CUSTOM_DATE_RANGE_START:$selectedSiteId")
         )
-        val endDateMillis = PreferenceUtils.getLong(
-            getPreferences(),
-            key = "${DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_END}:$selectedSiteId",
-            default = 0
+        val endDateMillis = getLong(
+            PrefKeyString("$ORDER_FILTER_CUSTOM_DATE_RANGE_END:$selectedSiteId")
         )
         return Pair(startDateMillis, endDateMillis)
     }
 
     fun setOrderFilterCustomDateRange(selectedSiteId: Int, startDateMillis: Long, endDateMillis: Long) {
-        PreferenceUtils.setLong(
-            getPreferences(),
-            "${DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_START}:$selectedSiteId",
+        setLong(
+            PrefKeyString("$ORDER_FILTER_CUSTOM_DATE_RANGE_START:$selectedSiteId"),
             startDateMillis
         )
-        PreferenceUtils.setLong(
-            getPreferences(),
-            "${DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_END}:$selectedSiteId",
+        setLong(
+            PrefKeyString("$ORDER_FILTER_CUSTOM_DATE_RANGE_END:$selectedSiteId"),
             endDateMillis
         )
     }

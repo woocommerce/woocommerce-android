@@ -7,17 +7,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -29,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListItem
 import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListState
+import com.woocommerce.android.ui.coupons.components.CouponExpirationLabel
 
 @Composable
 fun CouponListScreen(viewModel: CouponListViewModel) {
@@ -117,7 +115,7 @@ fun CouponListItem(
                 enabled = true,
                 onClickLabel = stringResource(id = R.string.coupon_list_view_coupon),
                 role = Role.Button,
-                onClick = { onCouponClick(0L) }
+                onClick = { onCouponClick(coupon.id) }
             ),
         verticalArrangement = Arrangement.spacedBy(0.dp)
     ) {
@@ -130,51 +128,23 @@ fun CouponListItem(
             )
         }
 
-        CouponListItemInfo(coupon.formattedDiscount, coupon.affectedArticles)
+        CouponListItemInfo(coupon.summary)
 
-        CouponListExpirationLabel(coupon.isActive)
+        CouponExpirationLabel(coupon.isActive)
     }
 }
 
 @Composable
 fun CouponListItemInfo(
-    amount: String,
-    affectedArticles: String,
+    summary: String,
 ) {
     Text(
-        text = "$amount ${stringResource(id = R.string.coupon_list_item_label_off)} $affectedArticles",
+        text = summary,
         style = MaterialTheme.typography.body2,
         color = colorResource(id = R.color.color_surface_variant),
         fontSize = 14.sp,
         modifier = Modifier.padding(vertical = 4.dp)
     )
-}
-
-@Composable
-fun CouponListExpirationLabel(active: Boolean = true) {
-    // todo this should check a coupon's expiration date
-    // to show either "Active" or "Expired" Label
-    Surface(
-        modifier = Modifier
-            .clip(RoundedCornerShape(4.dp, 4.dp, 4.dp, 4.dp))
-    ) {
-        val status = if (active) {
-            stringResource(id = R.string.coupon_list_item_label_active)
-        } else {
-            stringResource(id = R.string.coupon_list_item_label_expired)
-        }
-
-        val color = if (active) colorResource(id = R.color.woo_celadon_5) else colorResource(id = R.color.woo_gray_5)
-
-        Text(
-            text = status,
-            style = MaterialTheme.typography.body1,
-            color = MaterialTheme.colors.onSecondary,
-            modifier = Modifier
-                .background(color = color)
-                .padding(horizontal = 6.dp, vertical = 2.dp)
-        )
-    }
 }
 
 @ExperimentalFoundationApi
@@ -186,24 +156,21 @@ fun CouponListPreview() {
         CouponListItem(
             id = 1,
             code = "ABCDE",
-            formattedDiscount = "USD 10.00",
-            affectedArticles = "all products",
+            summary = "USD 10.00 off all products",
             isActive = true
         ),
 
         CouponListItem(
             id = 2,
             code = "10off",
-            formattedDiscount = "5%",
-            affectedArticles = "1 product, 2 categories",
+            summary = "5% off 1 product, 2 categories",
             isActive = true
         ),
 
         CouponListItem(
             id = 3,
             code = "BlackFriday",
-            formattedDiscount = "USD 3.00",
-            affectedArticles = "all products",
+            summary = "USD 3.00 off all products",
             isActive = true
         ),
     )

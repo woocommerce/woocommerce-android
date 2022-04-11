@@ -2,7 +2,7 @@
 
 9.0
 -----
-
+- [*] Fixes a bug that caused the scheduled sale dates of a product to be different than the selected dates. [https://github.com/woocommerce/woocommerce-android/pull/6188]
 
 8.9
 -----

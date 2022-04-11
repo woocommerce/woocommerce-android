@@ -11,13 +11,12 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.CardReaderWelcomeDialogBinding
-import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderWelcomeViewModel.CardReaderWelcomeDialogEvent.NavigateToOnboardingFlow
 import com.woocommerce.android.util.UiHelpers
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CardReaderWelcomeDialog : DialogFragment(R.layout.card_reader_welcome_dialog) {
+class CardReaderWelcomeDialogFragment : DialogFragment(R.layout.card_reader_welcome_dialog) {
     val viewModel: CardReaderWelcomeViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -44,12 +43,15 @@ class CardReaderWelcomeDialog : DialogFragment(R.layout.card_reader_welcome_dial
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is NavigateToOnboardingFlow ->
+                is NavigateToOnboardingFlow -> {
                     findNavController()
-                        .navigateSafely(
-                            CardReaderWelcomeDialogDirections
-                                .actionCardReaderWelcomeFragmentToCardReaderOnboardingFragment()
+                        .navigate(
+                            CardReaderWelcomeDialogFragmentDirections
+                                .actionCardReaderWelcomeDialogFragmentToCardReaderConnectDialogFragment(
+                                    event.cardReaderFlowParam
+                                )
                         )
+                }
             }
         }
     }
