@@ -173,7 +173,7 @@ dependencies {
         exclude group: "com.google.guava", module: "guava"
     }
 
-    implementation 'com.google.firebase:firebase-messaging-ktx:23.0.0'
+    implementation 'com.google.firebase:firebase-messaging-ktx:23.0.2'
     implementation 'com.google.android.gms:play-services-auth:20.1.0'
 
     // Support library
