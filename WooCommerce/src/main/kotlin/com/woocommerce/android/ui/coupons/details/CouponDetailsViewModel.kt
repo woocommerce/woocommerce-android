@@ -43,11 +43,11 @@ class CouponDetailsViewModel @Inject constructor(
     }
 
     fun onCopyButtonClick(couponCode: String) {
-        triggerEvent(CouponDetailsEvent.CopyCodeEvent(couponCode))
+        triggerEvent(CopyCodeEvent(couponCode))
     }
 
     fun onShareButtonClick(shareCodeMessage: String) {
-        triggerEvent(CouponDetailsEvent.ShareCodeEvent(shareCodeMessage))
+        triggerEvent(ShareCodeEvent(shareCodeMessage))
     }
 
     data class CouponDetailsState(
@@ -66,8 +66,6 @@ class CouponDetailsViewModel @Inject constructor(
         val shareCodeMessage: String
     )
 
-    sealed class CouponDetailsEvent : MultiLiveEvent.Event() {
-        data class CopyCodeEvent(val couponCode: String) : MultiLiveEvent.Event()
-        data class ShareCodeEvent(val shareCodeMessage: String) : MultiLiveEvent.Event()
-    }
+    data class CopyCodeEvent(val couponCode: String) : MultiLiveEvent.Event()
+    data class ShareCodeEvent(val shareCodeMessage: String) : MultiLiveEvent.Event()
 }

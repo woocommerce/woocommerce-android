@@ -12,8 +12,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCouponDetailsBinding
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponDetailsEvent.CopyCodeEvent
-import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponDetailsEvent.ShareCodeEvent
+import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CopyCodeEvent
+import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.ShareCodeEvent
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.copyToClipboard
 import dagger.hilt.android.AndroidEntryPoint
