@@ -38,13 +38,14 @@ class InboxViewModel @Inject constructor(
     }
 
     val inboxState: LiveData<InboxState> =
-        refreshInboxNotes()
-            .combine(inboxNotesLocalUpdates()) { fetchInboxState, localInboxState ->
-                when {
-                    fetchInboxState.isLoading -> fetchInboxState
-                    else -> localInboxState
-                }
-            }.asLiveData()
+        loadInboxNotes().combine(
+            inboxNotesLocalUpdates()
+        ) { fetchInboxState, localInboxState ->
+            when {
+                fetchInboxState.isLoading -> fetchInboxState
+                else -> localInboxState
+            }
+        }.asLiveData()
 
     private fun inboxNotesLocalUpdates() =
         inboxRepository.observeInboxNotes()
@@ -53,7 +54,7 @@ class InboxViewModel @Inject constructor(
                 InboxState(isLoading = false, notes = notes)
             }
 
-    private fun refreshInboxNotes(): Flow<InboxState> = flow {
+    private fun loadInboxNotes(): Flow<InboxState> = flow {
         emit(InboxState(isLoading = true))
         inboxRepository.fetchInboxNotes()
         emit(InboxState(isLoading = false))
@@ -65,6 +66,7 @@ class InboxViewModel @Inject constructor(
             title = title,
             description = getContentFromHtml(description),
             dateCreated = formatNoteCreationDate(dateCreated),
+            isActioned = status == InboxNote.Status.ACTIONED,
             actions = mapToInboxActionUI(),
         )
 
@@ -109,7 +111,7 @@ class InboxViewModel @Inject constructor(
         triggerEvent(InboxNoteActionEvent.OpenUrlEvent(url))
     }
 
-    private fun dismissNote(noteId: Long) {
+    private fun dismissNote(noteId: Long): Flow<InboxState> = flow {
         viewModelScope.launch {
             inboxRepository.dismissNote(noteId)
         }
@@ -162,7 +164,8 @@ class InboxViewModel @Inject constructor(
         val title: String,
         val description: AnnotatedString,
         val dateCreated: String,
-        val actions: List<InboxNoteActionUi>
+        val isActioned: Boolean = false,
+        val actions: List<InboxNoteActionUi>,
     )
 
     data class InboxNoteActionUi(
@@ -171,6 +174,7 @@ class InboxViewModel @Inject constructor(
         val label: String,
         @ColorRes val textColor: Int,
         val url: String,
+        val isDismissing: Boolean = false,
         val onClick: (Long, Long) -> Unit
     )
 
