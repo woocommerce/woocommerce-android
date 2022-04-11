@@ -80,10 +80,7 @@ fun InboxEmptyCase() {
 
 @Composable
 fun InboxNotes(notes: List<InboxNoteUi>) {
-    LazyColumn(
-        Modifier.padding(top = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
+    LazyColumn {
         itemsIndexed(notes) { index, note ->
             InboxNoteRow(note = note)
             if (index < notes.lastIndex)
@@ -104,6 +101,7 @@ fun InboxNoteRow(note: InboxNoteUi) {
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
+            modifier = Modifier.padding(top = 16.dp),
             text = note.dateCreated,
             style = MaterialTheme.typography.subtitle2,
             color = colorResource(id = R.color.color_surface_variant)

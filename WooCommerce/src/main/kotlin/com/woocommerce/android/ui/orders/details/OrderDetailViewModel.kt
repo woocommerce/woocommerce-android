@@ -12,8 +12,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent.*
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
 import com.woocommerce.android.annotations.OpenClassOnDebug
-import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
@@ -25,7 +23,7 @@ import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.ProductImageMap.OnProductFetchedListener
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.*
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentCollectibilityChecker
+import com.woocommerce.android.ui.orders.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -39,12 +37,8 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
@@ -212,24 +206,9 @@ final class OrderDetailViewModel @Inject constructor(
         triggerEvent(IssueOrderRefund(remoteOrderId = order.id))
     }
 
-    fun onAcceptCardPresentPaymentClicked(cardReaderManager: CardReaderManager) {
+    fun onAcceptCardPresentPaymentClicked() {
         cardReaderTracker.trackCollectPaymentTapped()
-        val site = selectedSite.get()
-        when {
-            cardReaderManager.readerStatus.value is Connected -> {
-                triggerEvent(StartCardReaderPaymentFlow(order.id))
-            }
-            !appPrefs.isCardReaderOnboardingCompleted(site.id, site.siteId, site.selfHostedSiteId) -> {
-                triggerEvent(ShowCardReaderWelcomeDialog)
-            }
-            else -> {
-                triggerEvent(StartCardReaderConnectFlow(skipOnboarding = false))
-            }
-        }
-    }
-
-    fun onOnboardingSuccess() {
-        triggerEvent(StartCardReaderConnectFlow(skipOnboarding = true))
+        triggerEvent(StartCardReaderPaymentFlow(orderId = order.id))
     }
 
     fun onSeeReceiptClicked() {
@@ -260,17 +239,6 @@ final class OrderDetailViewModel @Inject constructor(
     private fun loadReceiptUrl(): String? {
         return selectedSite.getIfExists()?.let {
             appPrefs.getReceiptUrl(it.id, it.siteId, it.selfHostedSiteId, order.id)
-        }
-    }
-
-    fun onConnectToReaderResultReceived(connected: Boolean) {
-        launch {
-            // this dummy delay needs to be here since the navigation component hasn't finished the previous
-            // transaction when a result is received
-            delay(1)
-            if (connected) {
-                triggerEvent(StartCardReaderPaymentFlow(order.id))
-            }
         }
     }
 

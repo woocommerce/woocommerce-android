@@ -36,14 +36,17 @@ class InboxViewModel @Inject constructor(
         const val DEFAULT_DISMISS_LABEL = "Dismiss" // Inbox notes are not localised and always displayed in English
     }
 
-    val inboxState: LiveData<InboxState> = merge(
-        refreshInboxNotes(),
-        inboxNotesUpdates()
-    ).asLiveData()
+    val inboxState: LiveData<InboxState> =
+        refreshInboxNotes()
+            .combine(inboxNotesLocalUpdates()) { fetchInboxState, localInboxState ->
+                when {
+                    fetchInboxState.isLoading -> fetchInboxState
+                    else -> localInboxState
+                }
+            }.asLiveData()
 
-    private fun inboxNotesUpdates() =
+    private fun inboxNotesLocalUpdates() =
         observeInboxNotes()
-            .filter { it.isNotEmpty() }
             .map { inboxNotes ->
                 val notes = inboxNotes.map { it.toInboxNoteUi() }
                 InboxState(isLoading = false, notes = notes)
@@ -51,10 +54,8 @@ class InboxViewModel @Inject constructor(
 
     private fun refreshInboxNotes(): Flow<InboxState> = flow {
         emit(InboxState(isLoading = true))
-        val fetchResult = fetchInboxNotes()
-        if (fetchResult == FetchInboxNotes.Fail) {
-            emit(InboxState(isLoading = false, notes = emptyList()))
-        }
+        fetchInboxNotes()
+        emit(InboxState(isLoading = false))
     }
 
     private fun InboxNote.toInboxNoteUi() =

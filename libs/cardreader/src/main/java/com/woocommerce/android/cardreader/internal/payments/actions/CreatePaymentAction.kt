@@ -66,7 +66,6 @@ internal class CreatePaymentAction(
             .setCurrency(paymentInfo.currency)
             .setMetadata(createMetaData(paymentInfo))
         with(paymentInfo) {
-            customerEmail?.takeIf { it.isNotEmpty() }?.let { builder.setReceiptEmail(it) }
             statementDescriptor?.takeIf { it.isNotEmpty() }?.let { builder.setStatementDescriptor(it) }
         }
         return builder.build()

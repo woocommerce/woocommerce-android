@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -37,7 +38,6 @@ class ProductListViewModel @Inject constructor(
     mediaFileUploadHandler: MediaFileUploadHandler
 ) : ScopedViewModel(savedState) {
     companion object {
-        private const val SEARCH_TYPING_DELAY_MS = 500L
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
         private const val KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME = "key_product_filter_selected_category_name"
     }
@@ -237,7 +237,7 @@ class ProductListViewModel @Inject constructor(
             // the fetch until the user stops typing
             searchJob?.cancel()
             searchJob = launch {
-                delay(SEARCH_TYPING_DELAY_MS)
+                delay(AppConstants.SEARCH_TYPING_DELAY_MS)
                 if (checkConnection()) {
                     viewState = viewState.copy(
                         isLoading = true,

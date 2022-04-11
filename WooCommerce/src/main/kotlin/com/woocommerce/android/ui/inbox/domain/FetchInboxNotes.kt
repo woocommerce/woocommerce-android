@@ -8,15 +8,7 @@ class FetchInboxNotes @Inject constructor(
     private val inboxStore: WCInboxStore,
     private val selectedSite: SelectedSite
 ) {
-    suspend operator fun invoke(): FetchNotesResult {
-        val result = inboxStore.fetchInboxNotes(selectedSite.get())
-        return when {
-            result.isError -> Fail
-            else -> Success
-        }
+    suspend operator fun invoke() {
+        inboxStore.fetchInboxNotes(selectedSite.get())
     }
-
-    sealed class FetchNotesResult
-    object Fail : FetchNotesResult()
-    object Success : FetchNotesResult()
 }
