@@ -10,13 +10,17 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.compose.utils.toAnnotatedString
-import com.woocommerce.android.ui.inbox.domain.*
+import com.woocommerce.android.ui.inbox.domain.InboxNote
+import com.woocommerce.android.ui.inbox.domain.InboxNoteAction
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.wordpress.android.util.DateTimeUtils
 import java.util.Date
@@ -26,10 +30,7 @@ import javax.inject.Inject
 class InboxViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val dateUtils: DateUtils,
-    private val fetchInboxNotes: FetchInboxNotes,
-    private val observeInboxNotes: ObserveInboxNotes,
-    private val markNoteAsActioned: MarkNoteAsActioned,
-    private val dismissNote: DismissNote,
+    private val inboxRepository: InboxRepository,
     savedState: SavedStateHandle,
 ) : ScopedViewModel(savedState) {
     private companion object {
@@ -46,7 +47,7 @@ class InboxViewModel @Inject constructor(
             }.asLiveData()
 
     private fun inboxNotesLocalUpdates() =
-        observeInboxNotes()
+        inboxRepository.observeInboxNotes()
             .map { inboxNotes ->
                 val notes = inboxNotes.map { it.toInboxNoteUi() }
                 InboxState(isLoading = false, notes = notes)
@@ -54,7 +55,7 @@ class InboxViewModel @Inject constructor(
 
     private fun refreshInboxNotes(): Flow<InboxState> = flow {
         emit(InboxState(isLoading = true))
-        fetchInboxNotes()
+        inboxRepository.fetchInboxNotes()
         emit(InboxState(isLoading = false))
     }
 
@@ -103,14 +104,14 @@ class InboxViewModel @Inject constructor(
 
     private fun openUrl(noteId: Long, actionId: Long, url: String) {
         viewModelScope.launch {
-            markNoteAsActioned(noteId, actionId)
+            inboxRepository.markInboxNoteAsActioned(noteId, actionId)
         }
         triggerEvent(InboxNoteActionEvent.OpenUrlEvent(url))
     }
 
     private fun dismissNote(noteId: Long) {
         viewModelScope.launch {
-            dismissNote.invoke(noteId)
+            inboxRepository.dismissNote(noteId)
         }
     }
 
