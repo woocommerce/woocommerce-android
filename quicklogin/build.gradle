@@ -70,10 +70,11 @@ android {
     }
 
     targetProjectPath ':WooCommerce'
-    targetVariant 'debug'
 }
 
 dependencies {
+    implementation "androidx.lifecycle:lifecycle-process:$lifecycleVersion"
+
     implementation "androidx.test.uiautomator:uiautomator:2.2.0"
     implementation "junit:junit:$jUnitVersion"
     implementation "androidx.test.ext:junit:$jUnitExtVersion"
