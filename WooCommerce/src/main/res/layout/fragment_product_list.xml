@@ -24,13 +24,13 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content">
 
                 <!-- Products work in progress notice card -->
                 <com.woocommerce.android.ui.products.FeatureWIPNoticeCard
                     android:id="@+id/products_wip_card"
                     style="@style/Woo.Card.Expandable"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/minor_100"
                     android:visibility="gone"
@@ -44,7 +44,7 @@
                 <com.woocommerce.android.ui.products.ProductSortAndFiltersCard
                     android:id="@+id/products_sort_filter_card"
                     style="@style/Woo.Card"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/minor_00"
                     android:visibility="gone"
@@ -55,7 +55,7 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/productsRecycler"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:background="?attr/colorSurface"
                     android:nestedScrollingEnabled="true"
