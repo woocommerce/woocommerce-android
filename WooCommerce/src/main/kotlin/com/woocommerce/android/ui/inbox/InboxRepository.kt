@@ -1,9 +1,10 @@
 package com.woocommerce.android.ui.inbox
 
+import com.woocommerce.android.WooException
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.inbox.domain.InboxNote
+import com.woocommerce.android.ui.inbox.domain.InboxNote.Status
 import com.woocommerce.android.ui.inbox.domain.InboxNoteAction
-import com.woocommerce.android.ui.inbox.domain.MarkNoteAsActioned
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.wordpress.android.fluxc.persistence.entity.InboxNoteActionEntity
@@ -26,20 +27,24 @@ class InboxRepository @Inject constructor(
                 inboxNotesWithActions.map { it.toInboxNote() }
             }
 
-    suspend fun markInboxNoteAsActioned(noteId: Long, noteActionId: Long): MarkNoteAsActioned.MarkNoteActionedResult {
+    suspend fun markInboxNoteAsActioned(noteId: Long, noteActionId: Long): Result<Unit> {
         val result = inboxStore.markInboxNoteAsActioned(
             selectedSite.get(),
             noteId,
             noteActionId
         )
         return when {
-            result.isError -> MarkNoteAsActioned.Fail
-            else -> MarkNoteAsActioned.Success
+            result.isError -> Result.failure(WooException(result.error))
+            else -> Result.success(Unit)
         }
     }
 
-    suspend fun dismissNote(noteId: Long) {
-        inboxStore.deleteNote(selectedSite.get(), noteId)
+    suspend fun dismissNote(noteId: Long): Result<Unit> {
+        val result = inboxStore.deleteNote(selectedSite.get(), noteId)
+        return when {
+            result.isError -> Result.failure(WooException(result.error))
+            else -> Result.success(Unit)
+        }
     }
 
     private fun InboxNoteWithActions.toInboxNote() =
@@ -62,9 +67,9 @@ class InboxRepository @Inject constructor(
 
     private fun InboxNoteEntity.LocalInboxNoteStatus.toInboxNoteStatus() =
         when (this) {
-            InboxNoteEntity.LocalInboxNoteStatus.Unactioned -> InboxNote.Status.Unactioned
-            InboxNoteEntity.LocalInboxNoteStatus.Actioned -> InboxNote.Status.Actioned
-            InboxNoteEntity.LocalInboxNoteStatus.Snoozed -> InboxNote.Status.Snoozed
-            InboxNoteEntity.LocalInboxNoteStatus.Unknown -> InboxNote.Status.Unknown
+            InboxNoteEntity.LocalInboxNoteStatus.Unactioned -> Status.Unactioned
+            InboxNoteEntity.LocalInboxNoteStatus.Actioned -> Status.Actioned
+            InboxNoteEntity.LocalInboxNoteStatus.Snoozed -> Status.Snoozed
+            InboxNoteEntity.LocalInboxNoteStatus.Unknown -> Status.Unknown
         }
 }
