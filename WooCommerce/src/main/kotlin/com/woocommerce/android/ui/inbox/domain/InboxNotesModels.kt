@@ -9,10 +9,10 @@ data class InboxNote(
     val actions: List<InboxNoteAction>
 ) {
     enum class Status {
-        Unactioned,
-        Actioned,
-        Snoozed,
-        Unknown
+        UNACTIONED,
+        ACTIONED,
+        SNOOZED,
+        UNKNOWN
     }
 }
 

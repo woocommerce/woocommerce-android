@@ -67,9 +67,9 @@ class InboxRepository @Inject constructor(
 
     private fun InboxNoteEntity.LocalInboxNoteStatus.toInboxNoteStatus() =
         when (this) {
-            InboxNoteEntity.LocalInboxNoteStatus.Unactioned -> Status.Unactioned
-            InboxNoteEntity.LocalInboxNoteStatus.Actioned -> Status.Actioned
-            InboxNoteEntity.LocalInboxNoteStatus.Snoozed -> Status.Snoozed
-            InboxNoteEntity.LocalInboxNoteStatus.Unknown -> Status.Unknown
+            InboxNoteEntity.LocalInboxNoteStatus.Unactioned -> Status.UNACTIONED
+            InboxNoteEntity.LocalInboxNoteStatus.Actioned -> Status.ACTIONED
+            InboxNoteEntity.LocalInboxNoteStatus.Snoozed -> Status.SNOOZED
+            InboxNoteEntity.LocalInboxNoteStatus.Unknown -> Status.UNKNOWN
         }
 }

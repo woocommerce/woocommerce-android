@@ -39,9 +39,9 @@ class ObserveInboxNotes @Inject constructor(
 
     private fun LocalInboxNoteStatus.toInboxNoteStatus() =
         when (this) {
-            LocalInboxNoteStatus.Unactioned -> InboxNote.Status.Unactioned
-            LocalInboxNoteStatus.Actioned -> InboxNote.Status.Actioned
-            LocalInboxNoteStatus.Snoozed -> InboxNote.Status.Snoozed
-            LocalInboxNoteStatus.Unknown -> InboxNote.Status.Unknown
+            LocalInboxNoteStatus.Unactioned -> InboxNote.Status.UNACTIONED
+            LocalInboxNoteStatus.Actioned -> InboxNote.Status.ACTIONED
+            LocalInboxNoteStatus.Snoozed -> InboxNote.Status.SNOOZED
+            LocalInboxNoteStatus.Unknown -> InboxNote.Status.UNKNOWN
         }
 }
