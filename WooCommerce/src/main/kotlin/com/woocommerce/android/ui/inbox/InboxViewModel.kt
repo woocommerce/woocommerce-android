@@ -111,7 +111,7 @@ class InboxViewModel @Inject constructor(
         triggerEvent(InboxNoteActionEvent.OpenUrlEvent(url))
     }
 
-    private fun dismissNote(noteId: Long): Flow<InboxState> = flow {
+    private fun dismissNote(noteId: Long) {
         viewModelScope.launch {
             inboxRepository.dismissNote(noteId)
         }
