@@ -22,7 +22,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListItem
 import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListState
@@ -81,7 +80,6 @@ fun CouponList(
     onCouponClick: (Long) -> Unit
 ) {
     LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(0.dp),
         modifier = Modifier
             .background(color = MaterialTheme.colors.surface)
     ) {
@@ -90,14 +88,12 @@ fun CouponList(
                 coupon = coupon,
                 onCouponClick = onCouponClick
             )
-            if (index < coupons.lastIndex) {
-                Divider(
-                    modifier = Modifier
-                        .offset(x = 16.dp),
-                    color = colorResource(id = R.color.divider_color),
-                    thickness = 1.dp
-                )
-            }
+            Divider(
+                modifier = Modifier
+                    .offset(x = 16.dp),
+                color = colorResource(id = R.color.divider_color),
+                thickness = 1.dp
+            )
         }
     }
 }
@@ -108,23 +104,22 @@ fun CouponListItem(
     onCouponClick: (Long) -> Unit
 ) {
     Column(
+        verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable(
                 enabled = true,
                 onClickLabel = stringResource(id = R.string.coupon_list_view_coupon),
                 role = Role.Button,
                 onClick = { onCouponClick(coupon.id) }
-            ),
-        verticalArrangement = Arrangement.spacedBy(0.dp)
+            )
+            .padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
         coupon.code?.let {
             Text(
                 text = it,
-                style = MaterialTheme.typography.h6,
+                style = MaterialTheme.typography.subtitle1,
                 color = MaterialTheme.colors.onSurface,
-                fontSize = 20.sp
             )
         }
 
@@ -140,10 +135,8 @@ fun CouponListItemInfo(
 ) {
     Text(
         text = summary,
-        style = MaterialTheme.typography.body2,
-        color = colorResource(id = R.color.color_surface_variant),
-        fontSize = 14.sp,
-        modifier = Modifier.padding(vertical = 4.dp)
+        style = MaterialTheme.typography.caption,
+        color = colorResource(id = R.color.color_on_surface_medium)
     )
 }
 
