@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.feedback
 
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.BuildConfig
-import com.woocommerce.android.util.FeatureFlag
 
 @Suppress("MagicNumber")
 enum class SurveyType(private val untaggedUrl: String, private val milestone: Int? = null) {
@@ -11,9 +10,7 @@ enum class SurveyType(private val untaggedUrl: String, private val milestone: In
     SIMPLE_PAYMENTS(AppUrls.SIMPLE_PAYMENTS_SURVEY, 1),
     ORDER_CREATION(AppUrls.ORDER_CREATION_SURVEY, 1),
     MAIN(AppUrls.CROWDSIGNAL_MAIN_SURVEY),
-    COUPONS(
-        if (FeatureFlag.MORE_MENU_COUPONS.isEnabled()) { AppUrls.COUPONS_SURVEY_DEBUG } else { AppUrls.COUPONS_SURVEY }
-    );
+    COUPONS(AppUrls.COUPONS_SURVEY_DEBUG);
 
     val url
         get() = "$untaggedUrl?$platformTag$appVersionTag$milestoneTag"
