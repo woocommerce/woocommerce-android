@@ -1,13 +1,6 @@
 package com.woocommerce.android.ui.coupons.details
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -19,6 +12,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.coupons.components.CouponExpirationLabel
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.*
@@ -48,7 +42,7 @@ fun CouponDetailsScreen(
 
         TopAppBar(
             backgroundColor = MaterialTheme.colors.surface,
-            title = { Text(state.coupon?.code ?: "") },
+            title = { Text(state.couponSummary?.code ?: "") },
             navigationIcon = {
                 IconButton(onClick = { onBackPress() }) {
                     Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
@@ -72,7 +66,7 @@ fun CouponDetailsScreen(
             }
         )
 
-        state.coupon?.let { coupon ->
+        state.couponSummary?.let { coupon ->
             CouponSummaryHeading(
                 code = coupon.code,
                 isActive = state.couponSummary.isActive
@@ -123,6 +117,7 @@ fun CouponSummarySection(couponSummary: CouponSummaryUi) {
                 text = stringResource(id = R.string.coupon_details_heading),
                 style = MaterialTheme.typography.h2,
                 color = MaterialTheme.colors.onSurface,
+                fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
@@ -160,6 +155,7 @@ private fun CouponPerformanceSection(couponPerformanceState: CouponPerformanceSt
                 text = stringResource(id = R.string.coupon_details_performance_heading),
                 style = MaterialTheme.typography.h2,
                 color = MaterialTheme.colors.onSurface,
+                fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
             )
 
@@ -190,7 +186,7 @@ private fun CouponPerformanceCount(
         modifier = modifier
     ) {
         Text(
-            text = stringResource(id = R.string.coupon_summary_performance_discounted_order_heading),
+            text = stringResource(id = R.string.coupon_details_performance_discounted_order_heading),
             style = MaterialTheme.typography.subtitle1,
             color = colorResource(id = R.color.color_surface_variant)
         )
@@ -214,7 +210,7 @@ private fun CouponPerformanceAmount(
         modifier = modifier
     ) {
         Text(
-            text = stringResource(id = R.string.coupon_summary_performance_amount_heading),
+            text = stringResource(id = R.string.coupon_details_performance_amount_heading),
             style = MaterialTheme.typography.subtitle1,
             color = colorResource(id = R.color.color_surface_variant)
         )
