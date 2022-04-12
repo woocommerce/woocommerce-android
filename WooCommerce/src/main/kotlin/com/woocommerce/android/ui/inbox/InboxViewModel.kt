@@ -56,6 +56,12 @@ class InboxViewModel @Inject constructor(
         }
     }
 
+    fun dismissAllNotes() {
+        viewModelScope.launch {
+            inboxRepository.dismissAllNotesForCurrentSite()
+        }
+    }
+
     private fun inboxNotesLocalUpdates() =
         inboxRepository.observeInboxNotes()
             .map { inboxNotes ->
@@ -64,15 +70,9 @@ class InboxViewModel @Inject constructor(
             }
 
     private fun loadInboxNotes(): Flow<InboxState> = flow {
-        InboxState(isLoading = true)
+        emit(InboxState(isLoading = true))
         inboxRepository.fetchInboxNotes()
         emit(InboxState(isLoading = false))
-    }
-
-    fun dismissAllNotes() {
-//        viewModelScope.launch {
-//            dismissAllNotes.invoke()
-//        }
     }
 
     private fun InboxNote.toInboxNoteUi() =

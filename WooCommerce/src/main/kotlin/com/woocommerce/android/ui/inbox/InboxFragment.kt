@@ -1,7 +1,12 @@
 package com.woocommerce.android.ui.inbox
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
@@ -25,6 +30,7 @@ class InboxFragment : BaseFragment(R.layout.fragment_inbox) {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentInboxBinding.inflate(inflater, container, false)
+        setHasOptionsMenu(true)
 
         val view = binding.root
         binding.inboxComposeView.apply {
