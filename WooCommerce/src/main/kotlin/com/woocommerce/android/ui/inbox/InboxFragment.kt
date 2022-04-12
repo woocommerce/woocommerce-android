@@ -30,6 +30,7 @@ class InboxFragment : BaseFragment(R.layout.fragment_inbox) {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentInboxBinding.inflate(inflater, container, false)
+        requireActivity().title = getString(R.string.inbox_screen_title)
         setHasOptionsMenu(true)
 
         val view = binding.root

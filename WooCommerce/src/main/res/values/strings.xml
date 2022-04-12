@@ -1852,6 +1852,7 @@
     <string name="jetpack_install_progress_failed_option_contact_support">Contact Support</string>
 
     <!-- Inbox -->
+    <string name="inbox_screen_title">Inbox</string>
     <string name="dismiss_inbox_note">Dismiss</string>
     <string name="inbox_note_recency_now">Moments ago</string>
     <string name="inbox_note_recency_minutes">%d minutes ago</string>
