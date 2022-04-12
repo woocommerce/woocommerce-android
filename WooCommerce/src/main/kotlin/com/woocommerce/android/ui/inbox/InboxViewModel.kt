@@ -5,8 +5,8 @@ import android.text.Html
 import androidx.annotation.ColorRes
 import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.compose.utils.toAnnotatedString
@@ -19,6 +19,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -38,15 +39,24 @@ class InboxViewModel @Inject constructor(
         const val DEFAULT_DISMISS_LABEL = "Dismiss" // Inbox notes are not localised and always displayed in English
     }
 
-    val inboxState: LiveData<InboxState> =
-        loadInboxNotes().combine(
-            inboxNotesLocalUpdates()
-        ) { fetchInboxState, localInboxState ->
-            when {
-                fetchInboxState.isLoading -> fetchInboxState
-                else -> localInboxState
+    private val _inboxState = MutableLiveData<InboxState>()
+    val inboxState: LiveData<InboxState> = _inboxState
+
+    init {
+        viewModelScope.launch {
+            combine(
+                loadInboxNotes(),
+                inboxNotesLocalUpdates()
+            ) { fetchInboxState, localInboxState ->
+                when {
+                    fetchInboxState.isLoading -> fetchInboxState
+                    else -> localInboxState
+                }
+            }.collectLatest {
+                _inboxState.value = it
             }
-        }.asLiveData()
+        }
+    }
 
     private fun inboxNotesLocalUpdates() =
         inboxRepository.observeInboxNotes()
