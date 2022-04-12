@@ -14,7 +14,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
-private const val DEBUG_PACKAGE_NAME = "com.woocommerce.android.prealpha"
+private const val DEBUG_PACKAGE_NAME = "com.woocommerce.android.dev"
 private const val TIMEOUT = 5000L
 private const val LONG_TIMEOUT = 60000L
 

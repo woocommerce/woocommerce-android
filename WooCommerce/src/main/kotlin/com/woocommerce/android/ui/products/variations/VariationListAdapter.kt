@@ -9,7 +9,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.DiffUtil.Callback
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.VariationListItemBinding
@@ -19,9 +19,7 @@ import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.OnLoadMoreListener
-import com.woocommerce.android.ui.products.ProductStockStatus.InStock
-import com.woocommerce.android.ui.products.ProductStockStatus.OnBackorder
-import com.woocommerce.android.ui.products.ProductStockStatus.OutOfStock
+import com.woocommerce.android.ui.products.ProductStockStatus.*
 import com.woocommerce.android.ui.products.variations.VariationListAdapter.VariationViewHolder
 import org.wordpress.android.util.PhotonUtils
 
@@ -31,17 +29,14 @@ class VariationListAdapter(
     private val loadMoreListener: OnLoadMoreListener,
     private val parentProduct: Product?,
     private val onItemClick: (variation: ProductVariation) -> Unit
-) : RecyclerView.Adapter<VariationViewHolder>() {
+) : ListAdapter<ProductVariation, VariationViewHolder>(VariationItemDiffCallback) {
     private val imageSize = context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
-    private var variationList = listOf<ProductVariation>()
 
     init {
         setHasStableIds(true)
     }
 
-    override fun getItemId(position: Int) = variationList[position].remoteVariationId
-
-    override fun getItemCount() = variationList.size
+    override fun getItemId(position: Int) = getItem(position).remoteVariationId
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VariationViewHolder {
         val holder = VariationViewHolder(
@@ -53,13 +48,13 @@ class VariationListAdapter(
         )
 
         holder.itemView.setOnClickListener {
-            onItemClick(variationList[holder.adapterPosition])
+            onItemClick(getItem(holder.adapterPosition))
         }
         return holder
     }
 
     override fun onBindViewHolder(holder: VariationViewHolder, position: Int) {
-        val variation = variationList[position]
+        val variation = getItem(position)
         holder.bind(variation)
 
         if (position == itemCount - 1) {
@@ -95,35 +90,6 @@ class VariationListAdapter(
         return spannable
     }
 
-    private class VariationItemDiffUtil(
-        val oldList: List<ProductVariation>,
-        val newList: List<ProductVariation>
-    ) : Callback() {
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-            oldList[oldItemPosition].remoteVariationId == newList[newItemPosition].remoteVariationId
-
-        override fun getOldListSize(): Int = oldList.size
-
-        override fun getNewListSize(): Int = newList.size
-
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            val oldItem = oldList[oldItemPosition]
-            val newItem = newList[newItemPosition]
-            return oldItem == newItem
-        }
-    }
-
-    fun setVariationList(variations: List<ProductVariation>) {
-        val diffResult = DiffUtil.calculateDiff(
-            VariationItemDiffUtil(
-                variationList,
-                variations
-            )
-        )
-        variationList = variations
-        diffResult.dispatchUpdatesTo(this)
-    }
-
     inner class VariationViewHolder(val viewBinding: VariationListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
         fun bind(variation: ProductVariation) {
@@ -152,6 +118,22 @@ class VariationListAdapter(
                     .placeholder(R.drawable.ic_product)
                     .into(viewBinding.variationOptionImage)
             } ?: viewBinding.variationOptionImage.setImageResource(R.drawable.ic_product)
+        }
+    }
+
+    object VariationItemDiffCallback : DiffUtil.ItemCallback<ProductVariation>() {
+        override fun areItemsTheSame(
+            oldItem: ProductVariation,
+            newItem: ProductVariation
+        ): Boolean {
+            return oldItem.remoteVariationId == newItem.remoteVariationId
+        }
+
+        override fun areContentsTheSame(
+            oldItem: ProductVariation,
+            newItem: ProductVariation
+        ): Boolean {
+            return oldItem == newItem
         }
     }
 }

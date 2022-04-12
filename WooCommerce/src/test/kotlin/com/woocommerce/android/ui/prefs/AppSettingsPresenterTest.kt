@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.prefs
 
-import com.woocommerce.android.ui.orders.cardreader.ClearCardReaderData
+import com.woocommerce.android.ui.orders.cardreader.ClearCardReaderDataAction
 import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.util.FeatureFlag
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,7 +28,7 @@ class AppSettingsPresenterTest {
 
     private val dispatcher: Dispatcher = mock()
     private val accountStore: AccountStore = mock()
-    private val clearCardReaderData: ClearCardReaderData = mock()
+    private val clearCardReaderDataAction: ClearCardReaderDataAction = mock()
 
     private lateinit var appSettingsPresenter: AppSettingsPresenter
 
@@ -40,7 +40,7 @@ class AppSettingsPresenterTest {
             dispatcher,
             accountStore,
             mock(),
-            clearCardReaderData
+            clearCardReaderDataAction
         )
         appSettingsPresenter.takeView(appSettingsContractView)
 
@@ -77,7 +77,7 @@ class AppSettingsPresenterTest {
             coroutinesTestRule.testDispatcher.runBlockingTest {
                 appSettingsPresenter.logout()
 
-                verify(clearCardReaderData).invoke()
+                verify(clearCardReaderDataAction).invoke()
             }
         }
     }

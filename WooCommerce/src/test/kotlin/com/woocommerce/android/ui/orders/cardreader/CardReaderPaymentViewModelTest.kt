@@ -16,11 +16,12 @@ import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.cardreader.PaymentFlowError.AmountTooSmall
-import com.woocommerce.android.ui.orders.cardreader.PaymentFlowError.Unknown
-import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.PrintReceipt
-import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.SendReceipt
-import com.woocommerce.android.ui.orders.cardreader.ViewState.*
+import com.woocommerce.android.ui.orders.cardreader.payment.*
+import com.woocommerce.android.ui.orders.cardreader.payment.PaymentFlowError.AmountTooSmall
+import com.woocommerce.android.ui.orders.cardreader.payment.PaymentFlowError.Unknown
+import com.woocommerce.android.ui.orders.cardreader.payment.ViewState.*
+import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptEvent.PrintReceipt
+import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptEvent.SendReceipt
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderTrackingInfoKeeper
