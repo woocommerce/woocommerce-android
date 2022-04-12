@@ -19,8 +19,8 @@ import com.woocommerce.android.util.WooLog
 
 class FeatureAnnouncementListAdapter :
     ListAdapter<FeatureAnnouncementItem, FeatureAnnouncementViewHolder>(ItemDiffCallback) {
-    fun updateData(uiModels: List<FeatureAnnouncementItem>) {
-        submitList(uiModels)
+    init {
+        setHasStableIds(true)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FeatureAnnouncementViewHolder {
@@ -37,7 +37,7 @@ class FeatureAnnouncementListAdapter :
         holder.bind(getItem(position))
     }
 
-    override fun getItemId(position: Int) = position.toLong()
+    override fun getItemId(position: Int) = getItem(position).title.hashCode().toLong()
 
     class FeatureAnnouncementViewHolder(val viewBinding: FeatureAnnouncementListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {

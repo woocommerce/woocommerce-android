@@ -12,7 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import java.util.*
+import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -45,13 +45,7 @@ class CouponListViewModel @Inject constructor(
         return CouponListItem(
             id = id,
             code = code,
-            formattedDiscount = couponUtils.formatDiscount(amount, type, currencyCode),
-            affectedArticles = couponUtils.formatAffectedArticles(
-                products.size,
-                excludedProducts.size,
-                categories.size,
-                excludedCategories.size
-            ),
+            summary = couponUtils.generateSummary(this, currencyCode),
             isActive = dateExpiresGmt?.after(Date()) ?: true
         )
     }
@@ -68,8 +62,7 @@ class CouponListViewModel @Inject constructor(
     data class CouponListItem(
         val id: Long,
         val code: String? = null,
-        val formattedDiscount: String,
-        val affectedArticles: String,
+        val summary: String,
         val isActive: Boolean
     )
 

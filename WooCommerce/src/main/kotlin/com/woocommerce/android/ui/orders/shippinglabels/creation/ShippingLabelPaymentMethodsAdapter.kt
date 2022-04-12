@@ -4,7 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ShippingLabelPaymentMethodListItemBinding
@@ -13,19 +14,14 @@ import com.woocommerce.android.model.PaymentMethod
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.PaymentMethodUiModel
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelPaymentMethodsAdapter.PaymentMethodViewHolder
 import java.text.SimpleDateFormat
-import java.util.Locale
+import java.util.*
 
 class ShippingLabelPaymentMethodsAdapter(
     private val onPaymentMethodSelected: (PaymentMethod) -> Unit
-) : RecyclerView.Adapter<PaymentMethodViewHolder>() {
+) : ListAdapter<PaymentMethodUiModel, PaymentMethodViewHolder>(PaymentMethodDiffCallBack) {
     private val dateFormat by lazy {
         SimpleDateFormat("MM/yy", Locale.getDefault())
     }
-    var items: List<PaymentMethodUiModel> = emptyList()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
 
     var isEditingEnabled: Boolean = true
 
@@ -36,10 +32,8 @@ class ShippingLabelPaymentMethodsAdapter(
         )
     }
 
-    override fun getItemCount() = items.size
-
     override fun onBindViewHolder(holder: PaymentMethodViewHolder, position: Int) {
-        holder.bind(items[position])
+        holder.bind(getItem(position))
     }
 
     inner class PaymentMethodViewHolder(
@@ -76,5 +70,17 @@ class ShippingLabelPaymentMethodsAdapter(
                 }
             )
         }
+    }
+
+    object PaymentMethodDiffCallBack : DiffUtil.ItemCallback<PaymentMethodUiModel>() {
+        override fun areItemsTheSame(
+            oldItem: PaymentMethodUiModel,
+            newItem: PaymentMethodUiModel
+        ): Boolean = oldItem.paymentMethod.id == newItem.paymentMethod.id
+
+        override fun areContentsTheSame(
+            oldItem: PaymentMethodUiModel,
+            newItem: PaymentMethodUiModel
+        ): Boolean = oldItem == newItem
     }
 }

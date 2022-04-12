@@ -1,7 +1,7 @@
 package com.woocommerce.android.push
 
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.PreferencesWrapper
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.store.AccountStore
@@ -14,13 +14,13 @@ class NotificationRegistrationHandler @Inject constructor(
     private val accountStore: AccountStore,
     @Suppress("UnusedPrivateMember", "Required to ensure the notificationStore is initialized")
     private val notificationStore: NotificationStore,
-    private val preferencesWrapper: PreferencesWrapper,
+    private val appPrefsWrapper: AppPrefsWrapper,
     private val selectedSite: SelectedSite
 ) {
     fun onNewFCMTokenReceived(token: String) {
         // Register for WordPress.com notifications only if user is logged in & only if atleast one site exists
         if (accountStore.hasAccessToken() && selectedSite.exists()) {
-            preferencesWrapper.setFCMToken(token)
+            appPrefsWrapper.setFCMToken(token)
 
             val payload = RegisterDevicePayload(
                 gcmToken = token,
@@ -32,6 +32,6 @@ class NotificationRegistrationHandler @Inject constructor(
     }
 
     fun onEmptyFCMTokenReceived() {
-        preferencesWrapper.removeFCMToken()
+        appPrefsWrapper.removeFCMToken()
     }
 }

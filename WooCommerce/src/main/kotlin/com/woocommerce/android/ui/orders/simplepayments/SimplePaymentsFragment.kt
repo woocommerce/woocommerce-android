@@ -106,7 +106,7 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
                 binding.textSubtotal.text = subTotalStr
             }
             new.orderTaxes.takeIfNotEqualTo(old?.orderTaxes) { taxes ->
-                orderTaxesAdapter.updateTaxes(taxes)
+                orderTaxesAdapter.submitList(taxes)
             }
             new.orderTotal.takeIfNotEqualTo(old?.orderTotal) { total ->
                 val totalStr = currencyFormatter.formatCurrency(total, sharedViewModel.currencyCode)

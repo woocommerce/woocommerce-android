@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.cardreader
+package com.woocommerce.android.ui.orders.cardreader.payment
 
 import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
@@ -120,12 +120,14 @@ sealed class PaymentFlowError(@StringRes val message: Int) {
     object Server : PaymentFlowError(R.string.card_reader_payment_failed_server_error_state)
     object Generic : PaymentFlowError(R.string.card_reader_payment_failed_unexpected_error_state)
     object AmountTooSmall : Declined(R.string.card_reader_payment_failed_amount_too_small), NonRetryableError
+
     object Unknown : Declined(R.string.card_reader_payment_failed_unknown)
     sealed class Declined(message: Int) : PaymentFlowError(message) {
         object Temporary : Declined(R.string.card_reader_payment_failed_temporary)
         object Fraud : Declined(R.string.card_reader_payment_failed_fraud), NonRetryableError
         object Generic : Declined(R.string.card_reader_payment_failed_generic)
         object InvalidAccount : Declined(R.string.card_reader_payment_failed_invalid_account), NonRetryableError
+
         object CardNotSupported : Declined(R.string.card_reader_payment_failed_card_not_supported)
         object CurrencyNotSupported :
             Declined(R.string.card_reader_payment_failed_currency_not_supported), NonRetryableError
@@ -139,6 +141,7 @@ sealed class PaymentFlowError(@StringRes val message: Int) {
 
         object InsufficientFunds : Declined(R.string.card_reader_payment_failed_insufficient_funds)
         object InvalidAmount : Declined(R.string.card_reader_payment_failed_invalid_amount), NonRetryableError
+
         object PinRequired : Declined(R.string.card_reader_payment_failed_pin_required)
         object TooManyPinTries : Declined(R.string.card_reader_payment_failed_too_many_pin_tries)
         object TestCard : Declined(R.string.card_reader_payment_failed_test_card)

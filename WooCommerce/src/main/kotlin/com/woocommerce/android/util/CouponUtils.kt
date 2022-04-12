@@ -1,10 +1,12 @@
 package com.woocommerce.android.util
 
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.viewmodel.ResourceProvider
-import java.lang.StringBuilder
 import java.math.BigDecimal
+import java.text.SimpleDateFormat
+import java.util.Date
 import javax.inject.Inject
 
 class CouponUtils @Inject constructor(
@@ -22,13 +24,31 @@ class CouponUtils @Inject constructor(
         }
     }
 
-    private fun formatCurrency(amount: BigDecimal?, currencyCode: String?): String {
+    fun formatCurrency(amount: BigDecimal?, currencyCode: String?): String {
         return if (amount != null) {
             currencyCode?.let { currencyFormatter.formatCurrency(amount, it) }
                 ?: amount.toString()
         } else {
             ""
         }
+    }
+
+    fun generateSummary(coupon: Coupon, currencyCode: String?): String {
+        val amount = formatDiscount(coupon.amount, coupon.type, currencyCode)
+        val affectedArticles = formatAffectedArticles(
+            coupon.products.size,
+            coupon.excludedProducts.size,
+            coupon.categories.size,
+            coupon.excludedCategories.size
+        )
+        return resourceProvider.getString(R.string.coupon_summary_template, amount, affectedArticles)
+    }
+
+    fun localizeType(couponType: Coupon.Type): String = when (couponType) {
+        Coupon.Type.FixedCart -> resourceProvider.getString(R.string.coupon_type_fixed_cart)
+        Coupon.Type.FixedProduct -> resourceProvider.getString(R.string.coupon_type_fixed_product)
+        Coupon.Type.Percent -> resourceProvider.getString(R.string.coupon_type_percent)
+        is Coupon.Type.Custom -> resourceProvider.getString(R.string.coupon_type_custom, couponType.value)
     }
 
     /*
@@ -102,31 +122,24 @@ class CouponUtils @Inject constructor(
         } else ""
     }
 
-    fun formatSpendingInfo(
-        minimumAmount: BigDecimal?,
-        maximumAmount: BigDecimal?,
-        currencyCode: String?
-    ): String {
-        val sb = StringBuilder()
+    fun formatMinimumSpendingInfo(minimumAmount: BigDecimal?, currencyCode: String?): String? {
+        if (minimumAmount == null || minimumAmount.isEqualTo(BigDecimal.ZERO)) return null
+        return resourceProvider.getString(
+            R.string.coupon_summary_minimum_spend,
+            formatCurrency(minimumAmount, currencyCode)
+        )
+    }
 
-        if (minimumAmount != null) {
-            sb.append(
-                resourceProvider.getString(
-                    R.string.coupon_details_minimum_spend,
-                    formatCurrency(minimumAmount, currencyCode)
-                )
-            )
-        }
+    fun formatMaximumSpendingInfo(maximumAmount: BigDecimal?, currencyCode: String?): String? {
+        if (maximumAmount == null || maximumAmount.isEqualTo(BigDecimal.ZERO)) return null
+        return resourceProvider.getString(
+            R.string.coupon_summary_maximum_spend,
+            formatCurrency(maximumAmount, currencyCode)
+        )
+    }
 
-        if (maximumAmount != null) {
-            sb.append(
-                resourceProvider.getString(
-                    R.string.coupon_details_maximum_spend,
-                    formatCurrency(maximumAmount, currencyCode)
-                )
-            )
-        }
-
-        return sb.toString()
+    fun formatExpirationDate(expirationDate: Date): String {
+        val dateFormat = SimpleDateFormat.getDateInstance(SimpleDateFormat.LONG)
+        return resourceProvider.getString(R.string.coupon_details_expiration_date, dateFormat.format(expirationDate))
     }
 }

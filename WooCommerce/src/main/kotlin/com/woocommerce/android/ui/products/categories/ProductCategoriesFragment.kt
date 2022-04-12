@@ -65,7 +65,7 @@ class ProductCategoriesFragment :
 
         val activity = requireActivity()
 
-        productCategoriesAdapter = ProductCategoriesAdapter(activity.baseContext, this, this)
+        productCategoriesAdapter = ProductCategoriesAdapter(this, this)
         with(binding.productCategoriesRecycler) {
             layoutManager = LinearLayoutManager(activity)
             adapter = productCategoriesAdapter

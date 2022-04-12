@@ -2,21 +2,25 @@ package com.woocommerce.android.ui.inbox
 
 import android.os.Build
 import android.text.Html
+import androidx.annotation.ColorRes
 import androidx.compose.ui.text.AnnotatedString
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.compose.utils.toAnnotatedString
-import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.inbox.domain.FetchInboxNotes
+import com.woocommerce.android.ui.inbox.domain.InboxNote
+import com.woocommerce.android.ui.inbox.domain.InboxNoteAction
+import com.woocommerce.android.ui.inbox.domain.ObserveInboxNotes
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.inbox.InboxNoteActionDto
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.inbox.InboxNoteDto
-import org.wordpress.android.fluxc.store.WCInboxStore
+import kotlinx.coroutines.flow.map
 import org.wordpress.android.util.DateTimeUtils
 import java.util.Date
 import javax.inject.Inject
@@ -24,40 +28,54 @@ import javax.inject.Inject
 @HiltViewModel
 class InboxViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
-    private val inboxStore: WCInboxStore,
-    private val selectedSite: SelectedSite,
-    private val dateutils: DateUtils,
+    private val dateUtils: DateUtils,
+    private val fetchInboxNotes: FetchInboxNotes,
+    private val observeInboxNotes: ObserveInboxNotes,
     savedState: SavedStateHandle,
 ) : ScopedViewModel(savedState) {
-    val inboxState = loadInboxNotes().asLiveData()
+    val inboxState: LiveData<InboxState> =
+        refreshInboxNotes()
+            .combine(inboxNotesLocalUpdates()) { fetchInboxState, localInboxState ->
+                when {
+                    fetchInboxState.isLoading -> fetchInboxState
+                    else -> localInboxState
+                }
+            }.asLiveData()
 
-    private fun loadInboxNotes(): Flow<InboxState> = flow {
+    private fun inboxNotesLocalUpdates() =
+        observeInboxNotes()
+            .map { inboxNotes ->
+                val notes = inboxNotes.map { it.toInboxNoteUi() }
+                InboxState(isLoading = false, notes = notes)
+            }
+
+    private fun refreshInboxNotes(): Flow<InboxState> = flow {
         emit(InboxState(isLoading = true))
-        val result = inboxStore.fetchNotes(selectedSite.get())
-        val notes = when {
-            result.isError -> emptyList()
-            else -> result.model?.map { it.toInboxNoteUi() } ?: emptyList()
-        }
-        emit(InboxState(isLoading = false, notes = notes))
+        fetchInboxNotes()
+        emit(InboxState(isLoading = false))
     }
 
-    private fun InboxNoteDto.toInboxNoteUi() =
+    private fun InboxNote.toInboxNoteUi() =
         InboxNoteUi(
             id = id,
-            title = title!!,
-            description = getContentFromHtml(content!!),
-            updatedTime = formatNoteCreationDate(dateCreated!!),
+            title = title,
+            description = getContentFromHtml(description),
+            dateCreated = formatNoteCreationDate(dateCreated),
             actions = actions.map { it.toInboxActionUi() },
         )
 
-    private fun InboxNoteActionDto.toInboxActionUi() =
+    private fun InboxNoteAction.toInboxActionUi() =
         InboxNoteActionUi(
             id = id,
-            label = label!!,
-            primary = primary,
-            url = url!!,
-            onClick = {}
+            label = label,
+            textColor = getActionTextColor(),
+            url = url,
+            onClick = {} // TODO set action lambda
         )
+
+    private fun InboxNoteAction.getActionTextColor() =
+        if (isPrimary) R.color.color_secondary
+        else R.color.color_surface_variant
 
     private fun getContentFromHtml(htmlContent: String): AnnotatedString =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -68,7 +86,7 @@ class InboxViewModel @Inject constructor(
 
     @SuppressWarnings("MagicNumber", "ReturnCount")
     private fun formatNoteCreationDate(createdDate: String): String {
-        val creationDate = dateutils.getDateFromIso8601String(createdDate)
+        val creationDate = dateUtils.getDateFromIso8601String(createdDate)
         val now = Date()
 
         val minutes = DateTimeUtils.minutesBetween(now, creationDate)
@@ -88,7 +106,7 @@ class InboxViewModel @Inject constructor(
         }
         return resourceProvider.getString(
             R.string.inbox_note_recency_date_time,
-            dateutils.toDisplayMMMddYYYYDate(creationDate?.time ?: 0) ?: ""
+            dateUtils.toDisplayMMMddYYYYDate(creationDate?.time ?: 0) ?: ""
         )
     }
 
@@ -101,14 +119,14 @@ class InboxViewModel @Inject constructor(
         val id: Long,
         val title: String,
         val description: AnnotatedString,
-        val updatedTime: String,
+        val dateCreated: String,
         val actions: List<InboxNoteActionUi>
     )
 
     data class InboxNoteActionUi(
         val id: Long,
         val label: String,
-        val primary: Boolean = false,
+        @ColorRes val textColor: Int,
         val url: String,
         val onClick: (String) -> Unit
     )

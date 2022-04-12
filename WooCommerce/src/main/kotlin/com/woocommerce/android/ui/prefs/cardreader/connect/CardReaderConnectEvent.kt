@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.prefs.cardreader.connect
 
 import androidx.annotation.StringRes
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 
 sealed class CardReaderConnectEvent : MultiLiveEvent.Event() {
@@ -30,11 +31,11 @@ sealed class CardReaderConnectEvent : MultiLiveEvent.Event() {
 
     data class OpenLocationSettings(val onLocationSettingsClosed: () -> Unit) : CardReaderConnectEvent()
 
-    object ShowCardReaderTutorial : CardReaderConnectEvent()
+    data class ShowCardReaderTutorial(
+        val cardReaderFlowParam: CardReaderFlowParam
+    ) : CardReaderConnectEvent()
 
     object ShowUpdateInProgress : CardReaderConnectEvent()
-
-    object NavigateToOnboardingFlow : CardReaderConnectEvent()
 
     data class ShowToast(@StringRes val message: Int) : CardReaderConnectEvent()
 
