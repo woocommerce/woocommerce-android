@@ -6,9 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.inbox.domain.InboxNote
 import com.woocommerce.android.ui.inbox.domain.InboxNote.NoteType.SURVEY
 import com.woocommerce.android.ui.inbox.domain.InboxNote.Status.ACTIONED
-import com.woocommerce.android.ui.inbox.domain.InboxNote
 import com.woocommerce.android.ui.inbox.domain.InboxNoteAction
 import com.woocommerce.android.ui.inbox.domain.InboxRepository
 import com.woocommerce.android.util.DateUtils
@@ -75,10 +75,9 @@ class InboxViewModel @Inject constructor(
             title = title,
             description = description,
             dateCreated = formatNoteCreationDate(dateCreated),
-            isActioned = status == InboxNote.Status.ACTIONED,
-            actions = mapInboxActionsToUi(),
             isSurvey = type == SURVEY,
-            isActioned = status == ACTIONED
+            isActioned = status == ACTIONED,
+            actions = mapInboxActionsToUi(),
         )
 
     private fun InboxNote.mapInboxActionsToUi(): List<InboxNoteActionUi> {
@@ -120,23 +119,25 @@ class InboxViewModel @Inject constructor(
             label = label,
             textColor = getActionTextColor(),
             url = url,
-            onClick = { actionId, noteId ->
-                val clickedNote = inboxState.value?.notes?.firstOrNull { noteId == it.id }
-                clickedNote?.let {
-                    when {
-                        it.isSurvey -> markSurveyAsAnswered(clickedNote.id, actionId)
-                        else -> handleInboxNoteAction(clickedNote, actionId)
-                    }
-                }
-            }
+            onClick = ::handleInboxNoteAction
         )
 
-    private fun handleInboxNoteAction(clickedNote: InboxNoteUi, actionId: Long) {
+    private fun handleInboxNoteAction(actionId: Long, noteId: Long) {
+        val clickedNote = inboxState.value?.notes?.firstOrNull { noteId == it.id }
+        clickedNote?.let {
+            when {
+                it.isSurvey -> markSurveyAsAnswered(clickedNote.id, actionId)
+                else -> openActionUrl(clickedNote, actionId)
+            }
+        }
+    }
+
+    private fun openActionUrl(clickedNote: InboxNoteUi, actionId: Long) {
         val clickedAction = clickedNote.actions.firstOrNull { actionId == it.id }
         clickedAction?.let {
             if (it.url.isNotEmpty()) {
                 viewModelScope.launch {
-                    markNoteAsActioned(clickedNote.id, actionId)
+                    inboxRepository.markInboxNoteAsActioned(clickedNote.id, actionId)
                 }
                 triggerEvent(InboxNoteActionEvent.OpenUrlEvent(it.url))
             }
