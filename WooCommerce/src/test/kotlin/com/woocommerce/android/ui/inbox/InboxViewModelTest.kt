@@ -22,7 +22,6 @@ import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
 class InboxViewModelTest : BaseUnitTest() {
-
     private val savedState: SavedStateHandle = mock()
     private val resourceProvider: ResourceProvider = mock()
     private val dateUtils: DateUtils = mock()
@@ -39,7 +38,6 @@ class InboxViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when view model is created, inbox notes are fetched`() = testBlocking {
-
         whenViewModelIsCreated()
 
         verify(inboxRepository).fetchInboxNotes()
@@ -47,7 +45,6 @@ class InboxViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when view model is created, subscribe to inbox note changes`() = testBlocking {
-
         whenViewModelIsCreated()
 
         verify(inboxRepository).observeInboxNotes()
