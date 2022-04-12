@@ -36,4 +36,9 @@ class CardReaderManualsFragment : BaseFragment(R.layout.fragment_card_reader_man
         }
         return view
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }
