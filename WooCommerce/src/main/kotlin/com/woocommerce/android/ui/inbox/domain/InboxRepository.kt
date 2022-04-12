@@ -15,8 +15,12 @@ class InboxRepository @Inject constructor(
     private val inboxStore: WCInboxStore,
     private val selectedSite: SelectedSite
 ) {
-    suspend fun fetchInboxNotes() {
-        inboxStore.fetchInboxNotes(selectedSite.get())
+    suspend fun fetchInboxNotes(): Result<Unit> {
+        val result = inboxStore.fetchInboxNotes(selectedSite.get())
+        return when {
+            result.isError -> Result.failure(WooException(result.error))
+            else -> Result.success(Unit)
+        }
     }
 
     fun observeInboxNotes(): Flow<List<InboxNote>> =
