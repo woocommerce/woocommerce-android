@@ -44,7 +44,7 @@ class TakePaymentViewModel @Inject constructor(
     final val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     internal final var viewState by viewStateLiveData
 
-    val order: Order
+    final val order: Order
         get() = navArgs.order
 
     val orderTotal: BigDecimal
@@ -53,7 +53,7 @@ class TakePaymentViewModel @Inject constructor(
     init {
         viewState = viewState.copy(
             isCardPaymentEnabled = isCardReaderOnboardingCompleted(),
-            isSharePaymentUrlEnabled = true // TODO order.paymentUrl.isNotEmpty()
+            isSharePaymentUrlEnabled = order.paymentUrl.isNotEmpty()
         )
     }
 

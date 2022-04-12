@@ -11,7 +11,10 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentTakePaymentBinding
-import com.woocommerce.android.extensions.*
+import com.woocommerce.android.extensions.handleDialogNotice
+import com.woocommerce.android.extensions.handleDialogResult
+import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
@@ -30,7 +33,9 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private val sharePaymentUrlLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+    private val sharePaymentUrlLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
         viewModel.onSharePaymentUrlCompleted()
     }
 
@@ -108,11 +113,11 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
         val title = getString(R.string.simple_payments_share_payment_dialog_title, storeName)
         val shareIntent: Intent = Intent().apply {
             action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TITLE, title)
             putExtra(Intent.EXTRA_TEXT, paymentUrl)
+            putExtra(Intent.EXTRA_SUBJECT, title)
             type = "text/plain"
         }
-        sharePaymentUrlLauncher.launch(shareIntent)
+        sharePaymentUrlLauncher.launch(Intent.createChooser(shareIntent, title))
     }
 
     override fun onResume() {
