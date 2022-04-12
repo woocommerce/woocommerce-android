@@ -116,17 +116,24 @@ android {
     flavorDimensions "buildType"
 
     productFlavors {
-        vanilla { // Release version
+        // Used for release/beta builds. Usually shouldn't be build locally.
+        // AppName: WooCommerce
+        vanilla {
             dimension "buildType"
         }
 
-        wasabi { // Development only version, can be installed along release versions
+        // Used for local development - preferred variant for developers.
+        // AppName: WooCommerce (Dev)
+        wasabi {
             applicationId "com.woocommerce.android.dev"
             dimension "buildType"
             isDefault true
         }
 
-        jalapeno { // Pre-Alpha version, used for PR builds, can be installed along release and dev versions.
+        // Used for CI builds on PRs (downloadable apks). Can be used locally when a developer needs
+        // to install multiple versions of the app on the same device.
+        // AppName: WooCommerce (PreAlpha)
+        jalapeno {
             applicationId "com.woocommerce.android.prealpha"
             dimension "buildType"
         }
