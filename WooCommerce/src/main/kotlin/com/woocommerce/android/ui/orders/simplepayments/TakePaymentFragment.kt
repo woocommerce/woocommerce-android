@@ -59,9 +59,6 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
 
     private fun setUpObservers(binding: FragmentTakePaymentBinding) {
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
-            new.isCardPaymentEnabled.takeIfNotEqualTo(old?.isCardPaymentEnabled) {
-                binding.textCard.isVisible = it == true
-            }
             new.isSharePaymentUrlEnabled.takeIfNotEqualTo(old?.isSharePaymentUrlEnabled) {
                 binding.textShare.isVisible = it == true
             }
