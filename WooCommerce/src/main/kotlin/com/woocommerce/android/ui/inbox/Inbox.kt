@@ -29,7 +29,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,10 +36,12 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.compose.utils.toAnnotatedString
 import com.woocommerce.android.ui.compose.animations.skeletonAnimationBrush
 import com.woocommerce.android.ui.inbox.InboxViewModel.InboxNoteActionUi
 import com.woocommerce.android.ui.inbox.InboxViewModel.InboxNoteUi
 import com.woocommerce.android.ui.inbox.InboxViewModel.InboxState
+import com.woocommerce.android.util.StringUtils
 
 @Composable
 fun Inbox(viewModel: InboxViewModel) {
@@ -121,7 +122,7 @@ fun InboxNoteRow(note: InboxNoteUi) {
             style = MaterialTheme.typography.subtitle1
         )
         Text(
-            text = note.description,
+            text = StringUtils.fromHtml(note.description).toAnnotatedString(),
             style = MaterialTheme.typography.body2
         )
         InboxNoteActionsRow(note.actions)
@@ -255,10 +256,7 @@ class SampleInboxProvider : PreviewParameterProvider<InboxState> {
                 InboxNoteUi(
                     id = 1,
                     title = "Install the Facebook free extension",
-                    description = buildAnnotatedString {
-                        "Now that your store is set up, you’re ready to begin marketing it. " +
-                            "Head over to the WooCommerce marketing panel to get started."
-                    },
+                    description = "description",
                     dateCreated = "5h ago",
                     actions = listOf(
                         InboxNoteActionUi(
@@ -282,10 +280,7 @@ class SampleInboxProvider : PreviewParameterProvider<InboxState> {
                 InboxNoteUi(
                     id = 2,
                     title = "Connect with your audience",
-                    description = buildAnnotatedString {
-                        "Grow your customer base and increase your sales with marketing tools " +
-                            "built for WooCommerce."
-                    },
+                    description = "Description",
                     dateCreated = "22 minutes ago",
                     actions = listOf(
                         InboxNoteActionUi(

@@ -1,15 +1,11 @@
 package com.woocommerce.android.ui.inbox
 
-import android.os.Build
-import android.text.Html
 import androidx.annotation.ColorRes
-import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.compose.utils.toAnnotatedString
 import com.woocommerce.android.ui.inbox.domain.InboxNote
 import com.woocommerce.android.ui.inbox.domain.InboxNoteAction
 import com.woocommerce.android.ui.inbox.domain.InboxRepository
@@ -35,7 +31,7 @@ class InboxViewModel @Inject constructor(
     private val inboxRepository: InboxRepository,
     savedState: SavedStateHandle,
 ) : ScopedViewModel(savedState) {
-    private companion object {
+    companion object {
         const val DEFAULT_DISMISS_LABEL = "Dismiss" // Inbox notes are not localised and always displayed in English
     }
 
@@ -75,7 +71,7 @@ class InboxViewModel @Inject constructor(
         InboxNoteUi(
             id = id,
             title = title,
-            description = getContentFromHtml(description),
+            description = description,
             dateCreated = formatNoteCreationDate(dateCreated),
             isActioned = status == InboxNote.Status.ACTIONED,
             actions = mapToInboxActionUI(),
@@ -106,14 +102,16 @@ class InboxViewModel @Inject constructor(
             label = label,
             textColor = getActionTextColor(),
             url = url,
-            onClick = { actionId, noteId ->
-                val clickedNote = inboxState.value?.notes?.firstOrNull { noteId == it.id }
-                val clickedAction = clickedNote?.actions?.firstOrNull { actionId == it.id }
-                clickedAction?.let {
-                    if (url.isNotEmpty()) openUrl(noteId, actionId, url)
-                }
-            }
+            onClick = ::handleNoteAction
         )
+
+    private fun handleNoteAction(actionId: Long, noteId: Long) {
+        val clickedNote = inboxState.value?.notes?.firstOrNull { noteId == it.id }
+        val clickedAction = clickedNote?.actions?.firstOrNull { actionId == it.id }
+        clickedAction?.let { action ->
+            if (action.url.isNotEmpty()) openUrl(noteId, actionId, action.url)
+        }
+    }
 
     private fun openUrl(noteId: Long, actionId: Long, url: String) {
         viewModelScope.launch {
@@ -131,13 +129,6 @@ class InboxViewModel @Inject constructor(
     private fun InboxNoteAction.getActionTextColor() =
         if (isPrimary) R.color.color_secondary
         else R.color.color_surface_variant
-
-    private fun getContentFromHtml(htmlContent: String): AnnotatedString =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Html.fromHtml(htmlContent, Html.FROM_HTML_MODE_COMPACT)
-        } else {
-            Html.fromHtml(htmlContent)
-        }.toAnnotatedString()
 
     @SuppressWarnings("MagicNumber", "ReturnCount")
     private fun formatNoteCreationDate(createdDate: String): String {
@@ -173,7 +164,7 @@ class InboxViewModel @Inject constructor(
     data class InboxNoteUi(
         val id: Long,
         val title: String,
-        val description: AnnotatedString,
+        val description: String,
         val dateCreated: String,
         val isActioned: Boolean = false,
         val actions: List<InboxNoteActionUi>,
