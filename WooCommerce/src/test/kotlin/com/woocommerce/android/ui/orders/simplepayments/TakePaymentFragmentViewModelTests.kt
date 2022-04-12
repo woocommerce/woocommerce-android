@@ -7,9 +7,9 @@ import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
-import org.assertj.core.api.Assertions.assertThat
 
 @ExperimentalCoroutinesApi
 class TakePaymentFragmentViewModelTests : BaseUnitTest() {
@@ -19,7 +19,7 @@ class TakePaymentFragmentViewModelTests : BaseUnitTest() {
         private const val ORDER_PAYMENT_URL = "https://automattic.com"
     }
 
-    private val testOrder: Order
+    private val testOrderWithPaymentUrl: Order
         get() {
             return OrderTestUtils.generateTestOrder(ORDER_ID).copy(
                 number = REMOTE_ORDER_NUMBER,
@@ -27,19 +27,24 @@ class TakePaymentFragmentViewModelTests : BaseUnitTest() {
             )
         }
 
+    private val testOrderWithoutPaymentUrl: Order
+        get() {
+            return OrderTestUtils.generateTestOrder(ORDER_ID).copy(
+                number = REMOTE_ORDER_NUMBER
+            )
+        }
+
     private lateinit var viewModel: TakePaymentViewModel
 
-    private val savedState: SavedStateHandle =
-        TakePaymentFragmentArgs(order = testOrder).initSavedStateHandle()
-
-    private fun initViewModel() {
+    private fun initViewModel(order: Order) {
+        val savedState: SavedStateHandle = TakePaymentFragmentArgs(order = order).initSavedStateHandle()
         viewModel = TakePaymentViewModel(savedState, mock(), mock(), mock(), mock(), mock() )
     }
 
     @Test
     fun `when payment url exists, then share payment link is enabled`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            initViewModel()
+            initViewModel(testOrderWithPaymentUrl)
             var state: TakePaymentViewModel.ViewState? = null
             viewModel.viewStateLiveData.observeForever { _, viewState ->
                 state = viewState
@@ -48,4 +53,15 @@ class TakePaymentFragmentViewModelTests : BaseUnitTest() {
             assertThat(state!!.isSharePaymentUrlEnabled).isTrue()
         }
 
+    @Test
+    fun `when payment url is empty, then share payment link is not enabled`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            initViewModel(testOrderWithoutPaymentUrl)
+            var state: TakePaymentViewModel.ViewState? = null
+            viewModel.viewStateLiveData.observeForever { _, viewState ->
+                state = viewState
+            }
+            assertThat(state).isNotNull
+            assertThat(state!!.isSharePaymentUrlEnabled).isFalse()
+        }
 }
