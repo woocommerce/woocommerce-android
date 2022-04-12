@@ -12,6 +12,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.compose.utils.toAnnotatedString
 import com.woocommerce.android.ui.inbox.domain.InboxNote
 import com.woocommerce.android.ui.inbox.domain.InboxNoteAction
+import com.woocommerce.android.ui.inbox.domain.InboxRepository
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
