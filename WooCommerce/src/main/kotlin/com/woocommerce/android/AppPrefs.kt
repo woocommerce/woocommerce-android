@@ -45,6 +45,7 @@ object AppPrefs {
         DATABASE_DOWNGRADED,
         IS_PRODUCTS_FEATURE_ENABLED,
         IS_PRODUCT_ADDONS_ENABLED,
+        IS_COUPONS_ENABLED,
         LOGIN_USER_BYPASSED_JETPACK_REQUIRED,
         SELECTED_ORDER_LIST_TAB_POSITION,
         IMAGE_OPTIMIZE_ENABLED,
@@ -159,6 +160,10 @@ object AppPrefs {
     var isProductAddonsEnabled: Boolean
         get() = getBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, false)
         set(value) = setBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, value)
+
+    var isCouponsEnabled: Boolean
+        get() = getBoolean(IS_COUPONS_ENABLED, false)
+        set(value) = setBoolean(IS_COUPONS_ENABLED, value)
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 
