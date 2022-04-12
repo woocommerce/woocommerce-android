@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-03-09 09:54:04+0000
+Translation-Revision-Date: 2022-03-25 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="empty_inbox_description">Kembali lagi nanti untuk mendapatkan lebih banyak tips dan wawasan tentang cara mengembangkan toko Anda</string>
+    <string name="empty_inbox_title">Selamat, Anda telah membaca semuanya!</string>
+    <string name="orderstatus_contentDesc_withStatus">Status pesanan: %s</string>
+    <string name="no_sku">Tidak ada SKU</string>
+    <string name="count">Jumlah: %s</string>
+    <string name="plus_one">Tambah satu</string>
+    <string name="minus_one">Kurang satu</string>
+    <string name="more_menu_button_coupons">Kupon</string>
     <string name="dismiss_inbox_note">Tutup</string>
     <string name="login_error_xml_rpc_auth_error_communicating">Ada kendala saat berkomunikasi dengan situs. Kode error HTTP 401 dikembalikan.</string>
     <string name="login_error_xml_rpc_cannot_read_site_auth_required">Panggilan XML-RPC tampaknya diblok di situs ini (kode error 401). Jika upaya login gagal, ketuk ikon bantuan untuk melihat FAQ.</string>
@@ -144,8 +152,6 @@ Language: id
     <string name="order_card_transition_name">order_card_%1$s</string>
     <string name="cash">Uang Tunai</string>
     <string name="card">Kartu</string>
-    <string name="plus">Lebih</string>
-    <string name="minus">Kurang</string>
     <string name="tax">Pajak</string>
     <string name="email">Email</string>
     <string name="order_creation_add_customer_note">Tambahkan catatan</string>

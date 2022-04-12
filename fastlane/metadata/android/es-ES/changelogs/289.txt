@@ -1,0 +1,4 @@
+8.8:
+Aunque esta versión no tiene sorprendentes funciones nuevas, hemos puesto mucho empeño en desarrollarla. Hemos corregido algunos errores y realizado varias mejoras para la accesibilidad mediante TalkBack.
+
+¿Sabías que hemos lanzado una función beta para crear pedidos? Dirígete a la pestaña Menú, toca el icono de ajustes y desplázate hasta las funciones beta.

@@ -6,7 +6,6 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.navigation.findNavController
-import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
@@ -18,7 +17,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
 import com.woocommerce.android.util.AnalyticsUtils
-import com.woocommerce.android.util.PreferencesWrapper
 import dagger.android.DispatchingAndroidInjector
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale
@@ -40,7 +38,6 @@ class AppSettingsActivity :
     @Inject lateinit var prefs: AppPrefs
     @Inject lateinit var notificationMessageHandler: NotificationMessageHandler
 
-    private val sharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
     private var isBetaOptionChanged = false
 
     private lateinit var binding: ActivityAppSettingsBinding
@@ -105,14 +102,6 @@ class AppSettingsActivity :
         }
     }
 
-    override fun onOrderCreationOptionChanged(enabled: Boolean) {
-        if (AppPrefs.isOrderCreationEnabled != enabled) {
-            isBetaOptionChanged = true
-            AppPrefs.isOrderCreationEnabled = enabled
-            setResult(RESULT_CODE_BETA_OPTIONS_CHANGED)
-        }
-    }
-
     override fun finishLogout() {
         notificationMessageHandler.removeAllNotificationsFromSystemsBar()
 
@@ -160,6 +149,6 @@ class AppSettingsActivity :
     }
 
     override fun clearNotificationPreferences() {
-        sharedPreferences.edit().remove(PreferencesWrapper.WPCOM_PUSH_DEVICE_TOKEN).apply()
+        prefs.removeFCMToken()
     }
 }

@@ -132,7 +132,7 @@ class EditShippingLabelPaymentFragment :
                 binding.paymentMethodsSectionTitle.isEnabled = canManagePayments
             }
             new.paymentMethods.takeIfNotEqualTo(old?.paymentMethods) {
-                paymentMethodsAdapter.items = it
+                paymentMethodsAdapter.submitList(it)
                 it.isEmpty().let { isListEmpty ->
                     binding.paymentMethodsSectionTitle.isVisible = !isListEmpty
                     binding.paymentMethodsList.isVisible = !isListEmpty

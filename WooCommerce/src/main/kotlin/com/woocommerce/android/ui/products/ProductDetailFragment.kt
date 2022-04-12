@@ -13,9 +13,7 @@ import android.view.View
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
-import androidx.core.view.forEach
 import androidx.core.view.isVisible
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
@@ -33,8 +31,7 @@ import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_EDITOR_TEXT
 import com.woocommerce.android.ui.dialog.WooDialog
-import com.woocommerce.android.ui.products.ProductDetailViewModel.HideImageUploadErrorSnackbar
-import com.woocommerce.android.ui.products.ProductDetailViewModel.RefreshMenu
+import com.woocommerce.android.ui.products.ProductDetailViewModel.*
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
@@ -53,7 +50,6 @@ import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
-import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -80,8 +76,7 @@ class ProductDetailFragment :
 
     private var progressDialog: CustomProgressDialog? = null
     private var layoutManager: LayoutManager? = null
-    private var saveMenuItem: MenuItem? = null
-    private var publishMenuItem: MenuItem? = null
+    private var menu: Menu? = null
     private var imageUploadErrorsSnackbar: Snackbar? = null
 
     private var _binding: FragmentProductDetailBinding? = null
@@ -157,11 +152,9 @@ class ProductDetailFragment :
     private fun setupResultHandlers(viewModel: ProductDetailViewModel) {
         handleResult<ProductTypesBottomSheetUiItem>(ProductTypesBottomSheetFragment.KEY_PRODUCT_TYPE_RESULT) {
             viewModel.updateProductDraft(type = it.type.value, isVirtual = it.isVirtual)
-            changesMade()
         }
         handleResult<List<Long>>(GroupedProductListType.GROUPED.resultKey) {
             viewModel.updateProductDraft(groupedProductIds = it)
-            changesMade()
         }
         handleResult<PricingData>(BaseProductEditorFragment.KEY_PRICING_DIALOG_RESULT) {
             viewModel.updateProductDraft(
@@ -173,7 +166,6 @@ class ProductDetailFragment :
                 taxClass = it.taxClass,
                 taxStatus = it.taxStatus
             )
-            changesMade()
         }
         handleResult<InventoryData>(BaseProductEditorFragment.KEY_INVENTORY_DIALOG_RESULT) {
             viewModel.updateProductDraft(
@@ -184,7 +176,6 @@ class ProductDetailFragment :
                 backorderStatus = it.backorderStatus,
                 manageStock = it.isStockManaged
             )
-            changesMade()
         }
         handleResult<ShippingData>(BaseProductEditorFragment.KEY_SHIPPING_DIALOG_RESULT) {
             viewModel.updateProductDraft(
@@ -195,11 +186,9 @@ class ProductDetailFragment :
                 shippingClass = it.shippingClassSlug,
                 shippingClassId = it.shippingClassId
             )
-            changesMade()
         }
         handleResult<List<Image>>(BaseProductEditorFragment.KEY_IMAGES_DIALOG_RESULT) {
             viewModel.updateProductDraft(images = it)
-            changesMade()
         }
 
         handleResult<Bundle>(AztecEditorFragment.AZTEC_EDITOR_RESULT) { result ->
@@ -212,7 +201,6 @@ class ProductDetailFragment :
                     viewModel.updateProductDraft(shortDescription = result.getString(ARG_AZTEC_EDITOR_TEXT))
                 }
             }
-            changesMade()
         }
 
         handleResult<VariationListData>(VariationListFragment.KEY_VARIATION_LIST_RESULT) { data ->
@@ -227,7 +215,6 @@ class ProductDetailFragment :
     private fun setupObservers(viewModel: ProductDetailViewModel) {
         viewModel.productDetailViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.productDraft?.takeIfNotEqualTo(old?.productDraft) { showProductDetails(it) }
-            new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) { requireActivity().invalidateOptionsMenu() }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) {
                 if (it) {
@@ -254,36 +241,34 @@ class ProductDetailFragment :
             }
         }
 
-        viewModel.productDetailCards.observe(
-            viewLifecycleOwner,
-            Observer {
-                showProductCards(it)
-            }
-        )
+        viewModel.productDetailCards.observe(viewLifecycleOwner) {
+            showProductCards(it)
+        }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is LaunchUrlInChromeTab -> {
-                        ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
-                    }
-                    is RefreshMenu -> activity?.invalidateOptionsMenu()
-                    is ExitWithResult<*> -> {
-                        navigateBackWithResult(
-                            KEY_PRODUCT_DETAIL_RESULT,
-                            Bundle().also {
-                                it.putLong(KEY_REMOTE_PRODUCT_ID, event.data as Long)
-                                it.putBoolean(KEY_PRODUCT_DETAIL_DID_TRASH, true)
-                            }
-                        )
-                    }
-                    is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
-                    is HideImageUploadErrorSnackbar -> imageUploadErrorsSnackbar?.dismiss()
-                    else -> event.isHandled = false
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is LaunchUrlInChromeTab -> {
+                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 }
+                is RefreshMenu -> activity?.invalidateOptionsMenu()
+                is ExitWithResult<*> -> {
+                    navigateBackWithResult(
+                        KEY_PRODUCT_DETAIL_RESULT,
+                        Bundle().also {
+                            it.putLong(KEY_REMOTE_PRODUCT_ID, event.data as Long)
+                            it.putBoolean(KEY_PRODUCT_DETAIL_DID_TRASH, true)
+                        }
+                    )
+                }
+                is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
+                is HideImageUploadErrorSnackbar -> imageUploadErrorsSnackbar?.dismiss()
+                else -> event.isHandled = false
             }
-        )
+        }
+
+        viewModel.menuButtonsState.observe(viewLifecycleOwner) {
+            menu?.updateOptions(it)
+        }
     }
 
     private fun showProductDetails(product: Product) {
@@ -352,8 +337,6 @@ class ProductDetailFragment :
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_product_detail_fragment, menu)
-        saveMenuItem = menu.findItem(R.id.menu_save)
-        publishMenuItem = menu.findItem(R.id.menu_publish)
 
         super.onCreateOptionsMenu(menu, inflater)
     }
@@ -361,33 +344,6 @@ class ProductDetailFragment :
     @SuppressLint("ResourceAsColor")
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
-
-        fun Menu.printItems(): String = buildString {
-            this@printItems.forEach {
-                append("${resources.getResourceName(it.itemId)}\n")
-            }
-        }
-
-        // Some users are experiencing a crash because the entry R.id.menu_view_product is missing from the menu
-        // see: https://github.com/woocommerce/woocommerce-android/issues/3241
-        // If this happens, we will send the below report, and we avoid the crash using the null checks below
-        // TODO: remove the null checks once the root cause is identified is fixed
-        if (menu.findItem(R.id.menu_view_product) == null) {
-            val message = """menu.findItem(R.id.menu_view_product) is null
-                |User is ${if (viewModel.isProductUnderCreation) "creating a product" else "modifying a product"}
-                |menu elements:
-                |${menu.printItems()}
-            """.trimMargin()
-            crashLogging.sendReport(exception = NullPointerException(message))
-        }
-
-        // visibility of these menu items depends on whether we're in the add product flow
-        menu.findItem(R.id.menu_view_product)?.isVisible =
-            viewModel.isProductPublished &&
-            !viewModel.isProductUnderCreation
-
-        menu.findItem(R.id.menu_share)?.isVisible = !viewModel.isProductUnderCreation
-        menu.findItem(R.id.menu_product_settings)?.isVisible = true
 
         // change the font color of the trash menu item to red, and only show it if it should be enabled
         with(menu.findItem(R.id.menu_trash_product)) {
@@ -405,21 +361,11 @@ class ProductDetailFragment :
                 0
             )
             this.title = title
-            this.isVisible = viewModel.isTrashEnabled
         }
 
-        menu.findItem(R.id.menu_save_as_draft)?.isVisible = viewModel.canBeStoredAsDraft && viewModel.hasChanges()
-
-        saveMenuItem?.isVisible = viewModel.isSaveOptionNeeded
-        publishMenuItem?.isVisible = viewModel.isPublishOptionNeeded
-
-        if (saveMenuItem?.isVisible ?: false) {
-            publishMenuItem?.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER)
-            publishMenuItem?.title = getString(R.string.product_add_tool_bar_menu_button_done)
-        } else {
-            publishMenuItem?.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)
-            publishMenuItem?.title =
-                getString(R.string.product_add_tool_bar_menu_button_done).uppercase(Locale.getDefault())
+        this.menu = menu
+        viewModel.menuButtonsState.value?.let {
+            menu.updateOptions(it)
         }
     }
 
@@ -427,7 +373,7 @@ class ProductDetailFragment :
         return when (item.itemId) {
             R.id.menu_publish -> {
                 ActivityUtils.hideKeyboard(activity)
-                viewModel.onUpdateButtonClicked(isPublish = true)
+                viewModel.onPublishButtonClicked()
                 true
             }
 
@@ -443,7 +389,7 @@ class ProductDetailFragment :
 
             R.id.menu_save -> {
                 ActivityUtils.hideKeyboard(activity)
-                viewModel.onUpdateButtonClicked(isPublish = false)
+                viewModel.onSaveButtonClicked()
                 true
             }
 
@@ -464,10 +410,6 @@ class ProductDetailFragment :
 
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    private fun changesMade() {
-        requireActivity().invalidateOptionsMenu()
     }
 
     private fun showSkeleton(show: Boolean) {
@@ -524,6 +466,22 @@ class ProductDetailFragment :
     override fun onGalleryAddImageClicked() {
         AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
         viewModel.onAddImageButtonClicked()
+    }
+
+    private fun Menu.updateOptions(state: MenuButtonsState) {
+        findItem(R.id.menu_save)?.isVisible = state.saveOption
+        findItem(R.id.menu_save_as_draft)?.isVisible = state.saveAsDraftOption
+        findItem(R.id.menu_view_product)?.isVisible = state.viewProductOption
+        findItem(R.id.menu_publish)?.apply {
+            isVisible = state.publishOption
+            if (state.saveOption) {
+                setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER)
+            } else {
+                setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)
+            }
+        }
+        findItem(R.id.menu_share)?.isVisible = state.shareOption
+        findItem(R.id.menu_trash_product)?.isVisible = state.trashOption
     }
 
     override fun getFragmentTitle(): String = productName

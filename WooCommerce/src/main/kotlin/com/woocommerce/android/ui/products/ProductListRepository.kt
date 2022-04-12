@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.AppConstants
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_LOADED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_LOAD_ERROR
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -10,7 +11,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
-import com.woocommerce.android.util.PreferencesWrapper
 import com.woocommerce.android.util.WooLog
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -27,22 +27,19 @@ import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_ASC
 import javax.inject.Inject
 
 class ProductListRepository @Inject constructor(
-    prefsWrapper: PreferencesWrapper,
+    private val appPrefsWrapper: AppPrefsWrapper,
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite
 ) {
     companion object {
         private const val PRODUCT_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE
-        private const val PRODUCT_SORTING_PREF_KEY = "product_sorting_pref_key"
     }
 
     private var loadContinuation = ContinuationWrapper<Boolean>(WooLog.T.PRODUCTS)
     private var searchContinuation = ContinuationWrapper<List<Product>>(WooLog.T.PRODUCTS)
     private var trashContinuation = ContinuationWrapper<Boolean>(WooLog.T.PRODUCTS)
     private var offset = 0
-
-    private val sharedPreferences by lazy { prefsWrapper.sharedPreferences }
 
     var canLoadMoreProducts = true
         private set
@@ -53,11 +50,11 @@ class ProductListRepository @Inject constructor(
     var productSortingChoice: ProductSorting
         get() {
             return ProductSorting.valueOf(
-                sharedPreferences.getString(PRODUCT_SORTING_PREF_KEY, TITLE_ASC.name) ?: TITLE_ASC.name
+                appPrefsWrapper.getProductSortingChoice(selectedSite.getSelectedSiteId()) ?: TITLE_ASC.name
             )
         }
         set(value) {
-            sharedPreferences.edit().putString(PRODUCT_SORTING_PREF_KEY, value.name).commit()
+            appPrefsWrapper.setProductSortingChoice(selectedSite.getSelectedSiteId(), value.name)
         }
 
     init {

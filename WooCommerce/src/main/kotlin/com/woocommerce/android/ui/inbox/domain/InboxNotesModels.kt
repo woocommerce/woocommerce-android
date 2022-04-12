@@ -6,8 +6,8 @@ data class InboxNote(
     val description: String,
     val dateCreated: String,
     val status: Status,
-    val actions: List<InboxNoteAction>,
-    val type: NoteType
+    val type: NoteType,
+    val actions: List<InboxNoteAction>
 ) {
     enum class Status {
         UNACTIONED,
