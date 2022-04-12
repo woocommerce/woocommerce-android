@@ -31,7 +31,7 @@ fun CouponExpirationLabel(active: Boolean = true) {
 
         Text(
             text = status,
-            style = MaterialTheme.typography.body1,
+            style = MaterialTheme.typography.caption,
             color = MaterialTheme.colors.onSecondary,
             modifier = Modifier
                 .background(color = color)
