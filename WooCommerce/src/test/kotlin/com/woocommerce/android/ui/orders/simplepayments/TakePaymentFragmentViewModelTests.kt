@@ -38,7 +38,7 @@ class TakePaymentFragmentViewModelTests : BaseUnitTest() {
 
     private fun initViewModel(order: Order) {
         val savedState: SavedStateHandle = TakePaymentFragmentArgs(order = order).initSavedStateHandle()
-        viewModel = TakePaymentViewModel(savedState, mock(), mock(), mock(), mock(), mock())
+        viewModel = TakePaymentViewModel(savedState, mock(), mock(), mock(), mock())
     }
 
     @Test
