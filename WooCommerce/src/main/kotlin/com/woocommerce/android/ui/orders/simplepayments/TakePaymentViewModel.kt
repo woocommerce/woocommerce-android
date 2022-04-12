@@ -1,20 +1,16 @@
 package com.woocommerce.android.ui.orders.simplepayments
 
-import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_COLLECT_CARD
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_COLLECT_CASH
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -23,13 +19,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore
 import java.math.BigDecimal
 import javax.inject.Inject
 
-@OpenClassOnDebug
 @HiltViewModel
 class TakePaymentViewModel @Inject constructor(
     savedState: SavedStateHandle,
@@ -37,22 +31,14 @@ class TakePaymentViewModel @Inject constructor(
     private val orderStore: WCOrderStore,
     private val dispatchers: CoroutineDispatchers,
     private val networkStatus: NetworkStatus,
-    private val appPrefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedState) {
     private val navArgs: TakePaymentFragmentArgs by savedState.navArgs()
-
-    final val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
-    internal final var viewState by viewStateLiveData
 
     val order: Order
         get() = navArgs.order
 
     val orderTotal: BigDecimal
         get() = order.total
-
-    init {
-        viewState = viewState.copy(isCardPaymentEnabled = isCardReaderOnboardingCompleted())
-    }
 
     fun onCashPaymentClicked() {
         AnalyticsTracker.track(
@@ -77,7 +63,7 @@ class TakePaymentViewModel @Inject constructor(
     /**
      * User has confirmed the cash payment, so mark it as completed
      */
-    fun onCashPaymentConfirmed() {
+    private fun onCashPaymentConfirmed() {
         if (networkStatus.isConnected()) {
             launch {
                 AnalyticsTracker.track(
@@ -172,21 +158,6 @@ class TakePaymentViewModel @Inject constructor(
             }
         }
     }
-
-    private fun isCardReaderOnboardingCompleted(): Boolean {
-        return selectedSite.getIfExists()?.let {
-            appPrefsWrapper.isCardReaderOnboardingCompleted(
-                localSiteId = it.id,
-                remoteSiteId = it.siteId,
-                selfHostedSiteId = it.selfHostedSiteId
-            )
-        } ?: false
-    }
-
-    @Parcelize
-    data class ViewState(
-        val isCardPaymentEnabled: Boolean? = null
-    ) : Parcelable
 
     companion object {
         private const val DELAY_MS = 1L

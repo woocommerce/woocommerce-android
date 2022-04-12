@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders.simplepayments
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
@@ -39,17 +38,11 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
             viewModel.onCardPaymentClicked()
         }
 
-        setUpObservers(binding)
+        setUpObservers()
         setupResultHandlers()
     }
 
-    private fun setUpObservers(binding: FragmentTakePaymentBinding) {
-        viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
-            new.isCardPaymentEnabled.takeIfNotEqualTo(old?.isCardPaymentEnabled) {
-                binding.textCard.isVisible = it == true
-            }
-        }
-
+    private fun setUpObservers() {
         viewModel.event.observe(
             viewLifecycleOwner
         ) { event ->
