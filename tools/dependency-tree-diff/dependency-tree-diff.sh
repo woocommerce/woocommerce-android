@@ -38,6 +38,7 @@ echo "--> Generating dependencies to the file $CURRENT_TARGET_BRANCH_DEPENDENCIE
 echo "--> Generating dependencies to the file $TARGET_BRANCH_DEPENDENCIES_FILE"
 git checkout "$targetBranch"
 ./gradlew :WooCommerce:dependencies --configuration $CONFIGURATION >$TARGET_BRANCH_DEPENDENCIES_FILE
+git checkout "-"
 
 echo "--> Downloading dependency-tree-diff.jar"
 # https://github.com/JakeWharton/dependency-tree-diff
