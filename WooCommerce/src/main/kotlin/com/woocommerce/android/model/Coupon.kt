@@ -3,11 +3,10 @@ package com.woocommerce.android.model
 import com.woocommerce.android.extensions.parseFromIso8601DateFormat
 import org.wordpress.android.fluxc.persistence.entity.CouponDataModel
 import java.math.BigDecimal
-import java.util.*
+import java.util.Date
 
 data class Coupon(
     val id: Long,
-    val siteId: Long,
     val code: String? = null,
     val amount: BigDecimal? = null,
     val dateCreatedGmt: Date? = null,
@@ -53,7 +52,6 @@ data class Coupon(
 
 fun CouponDataModel.toAppModel() = Coupon(
     id = couponEntity.id,
-    siteId = couponEntity.siteId,
     code = couponEntity.code,
     amount = couponEntity.amount?.toBigDecimalOrNull(),
     dateCreatedGmt = couponEntity.dateCreatedGmt.parseFromIso8601DateFormat(),
