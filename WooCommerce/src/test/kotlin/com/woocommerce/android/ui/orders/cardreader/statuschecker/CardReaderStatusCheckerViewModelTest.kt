@@ -25,6 +25,8 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
     private val cardReaderChecker: CardReaderOnboardingChecker = mock()
     private val cardReaderTracker: CardReaderTracker = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
+    private val countryCode = "US"
+    private val pluginVersion = "4.0.0"
 
     @Test
     fun `given hub flow, when vm init, then navigates to onboarding`() = runBlockingTest {
@@ -81,7 +83,8 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
             whenever(cardReaderChecker.getOnboardingState()).thenReturn(
                 CardReaderOnboardingState.OnboardingCompleted(
                     PluginType.WOOCOMMERCE_PAYMENTS,
-                    "us"
+                    pluginVersion,
+                    countryCode
                 )
             )
 
@@ -102,7 +105,8 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
             whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
             val onboardingState = CardReaderOnboardingState.OnboardingCompleted(
                 PluginType.WOOCOMMERCE_PAYMENTS,
-                "us"
+                pluginVersion,
+                countryCode
             )
             whenever(appPrefsWrapper.isCardReaderWelcomeDialogShown()).thenReturn(true)
             whenever(cardReaderChecker.getOnboardingState()).thenReturn(onboardingState)
@@ -123,7 +127,8 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
             whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
             val onboardingState = CardReaderOnboardingState.OnboardingCompleted(
                 PluginType.WOOCOMMERCE_PAYMENTS,
-                "us"
+                pluginVersion,
+                countryCode
             )
             whenever(appPrefsWrapper.isCardReaderWelcomeDialogShown()).thenReturn(true)
             whenever(cardReaderChecker.getOnboardingState()).thenReturn(onboardingState)
