@@ -18,7 +18,12 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedButton
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -173,6 +178,7 @@ fun InboxNoteTextAction(inboxAction: InboxNoteActionUi) {
 }
 
 @Composable
+@SuppressWarnings("MagicNumber")
 fun InboxNoteSurveyAction(inboxAction: InboxNoteActionUi) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
