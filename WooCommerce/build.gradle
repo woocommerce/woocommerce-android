@@ -415,9 +415,11 @@ tasks.register("dependencyTreeDiffCommentToGitHub", ViolationCommentsToGitHubTas
 
 <details><summary>expand</summary>
 <p>
+
 ```diff
 {{{violation.message}}}
 ```
+
 </p>
 </details>
 
