@@ -112,7 +112,7 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
                 "Interac_success",
                 entryId = R.id.refundSummaryFragment
             ) {
-                viewModel.notifyRefundBackend()
+                viewModel.refund()
             }
         }
     }

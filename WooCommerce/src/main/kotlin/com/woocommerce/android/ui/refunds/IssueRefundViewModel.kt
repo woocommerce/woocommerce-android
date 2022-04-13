@@ -62,7 +62,6 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.parcelize.Parcelize
@@ -356,13 +355,10 @@ class IssueRefundViewModel @Inject constructor(
         }
     }
 
-    // TODO Refactor this method in a follow up PR
-    @Suppress("ComplexMethod", "LongMethod")
     fun onRefundConfirmed(wasConfirmed: Boolean) {
         if (wasConfirmed) {
             if (networkStatus.isConnected()) {
                 refundJob = launch {
-                    delay(1000)
                     refundSummaryState = refundSummaryState.copy(
                         isFormEnabled = false
                     )
@@ -387,82 +383,6 @@ class IssueRefundViewModel @Inject constructor(
                     )
 
                     triggerEvent(IssueRefundEvent.NavigateToCardReaderScreen(order.id))
-
-//                    val resultCall = async(dispatchers.io) {
-//                        return@async when (commonState.refundType) {
-//                            ITEMS -> {
-//                                val allItems = mutableListOf<WCRefundItem>()
-//                                refundItems.value?.let {
-//                                    it.forEach { item -> allItems.add(item.toDataModel()) }
-//                                }
-//
-//                                val selectedShipping = refundShippingLines.value?.filter {
-//                                    refundByItemsState.selectedShippingLines
-//                                        ?.contains(it.shippingLine.itemId)
-//                                        ?: false
-//                                }
-//                                selectedShipping?.forEach { allItems.add(it.toDataModel()) }
-//
-//                                val selectedFees = refundFeeLines.value?.filter {
-//                                    refundByItemsState.selectedFeeLines
-//                                        ?.contains(it.feeLine.id)
-//                                        ?: false
-//                                }
-//                                selectedFees?.forEach { allItems.add(it.toDataModel()) }
-//
-//                                refundStore.createItemsRefund(
-//                                    selectedSite.get(),
-//                                    order.id,
-//                                    refundSummaryState.refundReason ?: "",
-//                                    true,
-//                                    gateway.supportsRefunds,
-//                                    items = allItems
-//                                )
-//                            }
-//                            AMOUNT -> {
-//                                refundStore.createAmountRefund(
-//                                    selectedSite.get(),
-//                                    order.id,
-//                                    commonState.refundTotal,
-//                                    refundSummaryState.refundReason ?: "",
-//                                    gateway.supportsRefunds
-//                                )
-//                            }
-//                        }
-//                    }
-//
-//                    val result = resultCall.await()
-//                    if (result.isError) {
-//                        AnalyticsTracker.track(
-//                            REFUND_CREATE_FAILED,
-//                            mapOf(
-//                                AnalyticsTracker.KEY_ORDER_ID to order.id,
-//                                AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-//                                AnalyticsTracker.KEY_ERROR_TYPE to result.error.type.toString(),
-//                                AnalyticsTracker.KEY_ERROR_DESC to result.error.message
-//                            )
-//                        )
-//
-//                        triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_error))
-//                    } else {
-//                        AnalyticsTracker.track(
-//                            REFUND_CREATE_SUCCESS,
-//                            mapOf(
-//                                AnalyticsTracker.KEY_ORDER_ID to order.id,
-//                                AnalyticsTracker.KEY_ID to result.model?.id
-//                            )
-//                        )
-//
-//                        refundSummaryState.refundReason?.let { reason ->
-//                            if (reason.isNotBlank()) {
-//                                addOrderNote(reason)
-//                            }
-//                        }
-//
-//                        triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_successful))
-//                        triggerEvent(Exit)
-//                    }
-
                     refundSummaryState = refundSummaryState.copy(isFormEnabled = true)
                 }
             } else {
@@ -471,7 +391,17 @@ class IssueRefundViewModel @Inject constructor(
         }
     }
 
-    fun notifyRefundBackend() {
+    /*
+       This method does the actual refund in case of non-interac refund. In case of Interac refund, the actual
+       refund happens on the client-side and this method updates the WCPay backend about the refund success status and
+       does not process the refund itself.
+
+       For non-Interac refund -> Process the refund (Entire refund logic lives in the backend)
+       For Interac refund -> Update the backend of the successful refund. The actual refund happens on the client-side
+     */
+    // TODO Refactor this method in a follow up PR
+    @Suppress("ComplexMethod", "LongMethod")
+    fun refund() {
         launch {
             val resultCall = async(dispatchers.io) {
                 return@async when (commonState.refundType) {
