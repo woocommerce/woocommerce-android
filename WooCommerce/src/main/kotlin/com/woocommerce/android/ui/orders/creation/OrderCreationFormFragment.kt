@@ -74,7 +74,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.menu_order_creation, menu)
         createOrderMenuItem = menu.findItem(R.id.menu_create).apply {
-            isVisible = viewModel.viewStateData.liveData.value?.canCreateOrder ?: false
+            isEnabled = viewModel.viewStateData.liveData.value?.canCreateOrder ?: false
         }
     }
 
@@ -202,7 +202,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                 if (show) showProgressDialog() else hideProgressDialog()
             }
             new.canCreateOrder.takeIfNotEqualTo(old?.canCreateOrder) {
-                createOrderMenuItem?.isVisible = it
+                createOrderMenuItem?.isEnabled = it
             }
             new.isUpdatingOrderDraft.takeIfNotEqualTo(old?.isUpdatingOrderDraft) { show ->
                 binding.paymentSection.loadingProgress.isVisible = show
