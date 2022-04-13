@@ -356,8 +356,6 @@ class IssueRefundViewModel @Inject constructor(
         }
     }
 
-    // TODO Refactor this method in a follow up PR
-    @Suppress("ComplexMethod", "LongMethod")
     fun onRefundConfirmed(wasConfirmed: Boolean) {
         if (wasConfirmed) {
             if (networkStatus.isConnected()) {
@@ -398,7 +396,17 @@ class IssueRefundViewModel @Inject constructor(
 
     private fun isInteracRefund() = cardType == PaymentMethodType.INTERAC_PRESENT
 
-    fun notifyRefundBackend() {
+    /*
+       This method does the actual refund in case of non-interac refund. In case of Interac refund, the actual
+       refund happens on the client-side and this method updates the WCPay backend about the refund success status and
+       does not process the refund itself.
+
+       For non-Interac refund -> Process the refund (Entire refund logic lives in the backend)
+       For Interac refund -> Update the backend of the successful refund. The actual refund happens on the client-side
+     */
+    // TODO Refactor this method in a follow up PR
+    @Suppress("ComplexMethod", "LongMethod")
+    fun refund() {
         launch {
             val resultCall = async(dispatchers.io) {
                 return@async when (commonState.refundType) {
