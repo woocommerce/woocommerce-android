@@ -1885,7 +1885,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertThat((viewModel.viewStateData.value as InteracRefund.CollectRefundState).hintLabel)
-                .isEqualTo(R.string.card_reader_refund_payment_hint)
+                .isEqualTo(R.string.card_reader_interac_refund_refund_payment_hint)
         }
 
     @Test
@@ -1905,7 +1905,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertThat((viewModel.viewStateData.value as InteracRefund.CollectRefundState).hintLabel)
-                .isEqualTo(R.string.card_reader_refund_payment_hint)
+                .isEqualTo(R.string.card_reader_interac_refund_refund_payment_hint)
         }
 
     @Test
@@ -1925,7 +1925,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertThat((viewModel.viewStateData.value as InteracRefund.CollectRefundState).hintLabel)
-                .isEqualTo(R.string.card_reader_refund_payment_hint)
+                .isEqualTo(R.string.card_reader_interac_refund_refund_payment_hint)
         }
 
     @Test
@@ -2153,7 +2153,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             val viewState = viewModel.viewStateData.value!!
 
             assertThat(viewState.headerLabel).describedAs("headerLabel")
-                .isEqualTo(R.string.card_reader_payment_refund_payment)
+                .isEqualTo(R.string.card_reader_interac_refund_refund_payment)
             assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
                 .isEqualTo("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
             assertThat(viewState.illustration).describedAs("illustration")
@@ -2163,7 +2163,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
                 .isEqualTo(R.dimen.major_275)
             assertThat(viewState.hintLabel).describedAs("hintLabel")
-                .isEqualTo(R.string.card_reader_refund_payment_hint)
+                .isEqualTo(R.string.card_reader_interac_refund_refund_payment_hint)
         }
 
     @Test
@@ -2194,13 +2194,13 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             val viewState = viewModel.viewStateData.value!!
 
             assertThat(viewState.headerLabel).describedAs("headerLabel")
-                .isEqualTo(R.string.card_reader_payment_refund_payment)
+                .isEqualTo(R.string.card_reader_interac_refund_refund_payment)
             assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
                 .isEqualTo("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
             assertThat(viewState.illustration).describedAs("illustration")
                 .isEqualTo(R.drawable.img_card_reader_available)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
-                .isEqualTo(R.string.card_reader_payment_processing_refund_state)
+                .isEqualTo(R.string.card_reader_interac_refund_refund_processing_state)
             assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
                 .isEqualTo(R.dimen.major_275)
             assertThat(viewState.hintLabel).describedAs("hintLabel")
@@ -2258,12 +2258,12 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             val viewState = viewModel.viewStateData.value!!
 
             assertThat(viewState.headerLabel).describedAs("headerLabel")
-                .isEqualTo(R.string.card_reader_payment_refund_failed_header)
+                .isEqualTo(R.string.card_reader_interac_refund_refund_failed_header)
             assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
                 .isEqualTo("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
             assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.img_products_error)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
-                .isEqualTo(R.string.card_reader_payment_refund_failed_header)
+                .isEqualTo(R.string.card_reader_interac_refund_refund_failed_header)
             assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
                 .isEqualTo(R.dimen.major_100)
             assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()
@@ -2299,17 +2299,17 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             val viewState = viewModel.viewStateData.value!!
 
             assertThat(viewState.headerLabel).describedAs("headerLabel")
-                .isEqualTo(R.string.card_reader_payment_refund_failed_header)
+                .isEqualTo(R.string.card_reader_interac_refund_refund_failed_header)
             assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
                 .isEqualTo("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
             assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.img_products_error)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
-                .isEqualTo(R.string.card_reader_payment_refund_failed_header)
+                .isEqualTo(R.string.card_reader_interac_refund_refund_failed_header)
             assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
                 .isEqualTo(R.dimen.major_100)
             assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()
             assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel")
-                .isEqualTo(R.string.card_reader_refund_failed_ok)
+                .isEqualTo(R.string.card_reader_interac_refund_refund_failed_ok)
         }
 
     @Test
@@ -2324,7 +2324,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             val viewState = viewModel.viewStateData.value!!
 
             assertThat(viewState.headerLabel).describedAs("headerLabel")
-                .isEqualTo(R.string.card_reader_payment_completed_refund_header)
+                .isEqualTo(R.string.card_reader_interac_refund_refund_completed_header)
             assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
                 .isEqualTo("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
             assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.img_celebration)

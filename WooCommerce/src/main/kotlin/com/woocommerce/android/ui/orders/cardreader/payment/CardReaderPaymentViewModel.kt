@@ -162,7 +162,7 @@ class CardReaderPaymentViewModel
             }
             fetchOrder()?.let { order ->
                 if (!interacRefundableChecker.isRefundable(order)) {
-                    exitWithSnackbar(R.string.card_reader_refund_order_refunded_refund_cancelled)
+                    exitWithSnackbar(R.string.card_reader_interac_refund_order_refunded_refund_cancelled)
                     return@launch
                 }
                 launch {
@@ -324,7 +324,7 @@ class CardReaderPaymentViewModel
             viewState.postValue(
                 InteracRefund.FailedRefundState(
                     amountLabel,
-                    R.string.card_reader_refund_failed_ok,
+                    R.string.card_reader_interac_refund_refund_failed_ok,
                     onPrimaryActionClicked = { onBackPressed() }
                 )
             )
@@ -425,7 +425,7 @@ class CardReaderPaymentViewModel
             viewState.value = collectRefundState.copy(
                 hintLabel = when (type) {
                     RETRY_CARD -> R.string.card_reader_payment_retry_card_prompt
-                    INSERT_CARD, INSERT_OR_SWIPE_CARD, SWIPE_CARD -> R.string.card_reader_refund_payment_hint
+                    INSERT_CARD, INSERT_OR_SWIPE_CARD, SWIPE_CARD -> R.string.card_reader_interac_refund_refund_payment_hint
                     REMOVE_CARD -> R.string.card_reader_payment_remove_card_prompt
                     MULTIPLE_CONTACTLESS_CARDS_DETECTED ->
                         R.string.card_reader_payment_multiple_contactless_cards_detected_prompt
