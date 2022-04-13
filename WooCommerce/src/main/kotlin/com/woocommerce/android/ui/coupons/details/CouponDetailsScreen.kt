@@ -12,7 +12,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.coupons.components.CouponExpirationLabel
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.*
@@ -50,7 +49,11 @@ fun CouponDetailsScreen(
             },
             actions = {
                 IconButton(onClick = { showMenu = !showMenu }) {
-                    Icon(Icons.Filled.MoreVert, contentDescription = "Coupons Menu")
+                    Icon(
+                        Icons.Filled.MoreVert,
+                        contentDescription = "Coupons Menu",
+                        tint = colorResource(id = R.color.action_menu_fg_selector)
+                    )
                 }
                 DropdownMenu(
                     expanded = showMenu,
