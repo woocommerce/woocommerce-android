@@ -677,7 +677,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
             verify(trackerWrapper).track(
                 any(),
-                check { assertThat(it["plugin_slug"]).isEqualTo("woocommerce-gateway-stripe") }
+                check { assertThat(it["plugin_slug"]).isEqualTo("woocommerce-stripe") }
             )
         }
 
