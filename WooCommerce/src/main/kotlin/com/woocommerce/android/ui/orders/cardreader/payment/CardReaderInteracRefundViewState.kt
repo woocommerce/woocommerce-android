@@ -73,7 +73,8 @@ sealed class InteracRefundFlowError(@StringRes val message: Int) {
             Declined(R.string.card_reader_payment_failed_incorrect_postal_code), NonRetryableError
 
         object InsufficientFunds : Declined(R.string.card_reader_interac_refund_refund_failed_insufficient_funds)
-        object InvalidAmount : Declined(R.string.card_reader_interac_refund_refund_failed_invalid_amount), NonRetryableError
+        object InvalidAmount :
+            Declined(R.string.card_reader_interac_refund_refund_failed_invalid_amount), NonRetryableError
         object PinRequired : Declined(R.string.card_reader_payment_failed_pin_required)
         object TooManyPinTries : Declined(R.string.card_reader_payment_failed_too_many_pin_tries)
         object TestCard : Declined(R.string.card_reader_interac_refund_refund_failed_test_card)

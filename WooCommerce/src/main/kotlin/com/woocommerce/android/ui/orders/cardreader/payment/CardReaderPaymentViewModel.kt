@@ -425,7 +425,8 @@ class CardReaderPaymentViewModel
             viewState.value = collectRefundState.copy(
                 hintLabel = when (type) {
                     RETRY_CARD -> R.string.card_reader_payment_retry_card_prompt
-                    INSERT_CARD, INSERT_OR_SWIPE_CARD, SWIPE_CARD -> R.string.card_reader_interac_refund_refund_payment_hint
+                    INSERT_CARD, INSERT_OR_SWIPE_CARD, SWIPE_CARD ->
+                        R.string.card_reader_interac_refund_refund_payment_hint
                     REMOVE_CARD -> R.string.card_reader_payment_remove_card_prompt
                     MULTIPLE_CONTACTLESS_CARDS_DETECTED ->
                         R.string.card_reader_payment_multiple_contactless_cards_detected_prompt
