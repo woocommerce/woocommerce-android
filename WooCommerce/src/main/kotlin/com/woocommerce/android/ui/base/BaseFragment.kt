@@ -60,10 +60,18 @@ open class BaseFragment : Fragment, BaseFragmentView {
         }
     }
 
+    /**
+     * Returns the title which should be displayed in the Activity's Toolbar.
+     * This is not used if [shouldShowActivityToolbar] is false.
+     */
     override fun getFragmentTitle(): String {
         return activity?.title?.toString() ?: ""
     }
 
+    /**
+     * Returns the title which should be displayed as a subtitle in the Activity's Toolbar.
+     * This is not used if [shouldShowActivityToolbar] is false.
+     */
     override fun getFragmentSubtitle(): String = ""
 
     protected fun ShowDialog.showDialog() {
