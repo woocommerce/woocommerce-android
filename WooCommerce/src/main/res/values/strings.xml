@@ -1486,6 +1486,7 @@
     <string name="send_feedback">Send feedback</string>
     <string name="beta_features">Beta features</string>
     <string name="beta_features_add_ons">View Add-ons</string>
+    <string name="beta_features_coupons">Coupons Management</string>
     <string name="beta_features_simple_payments">Simple payments</string>
     <string name="settings_signout">Log out</string>
     <string name="settings_preferences">Preferences</string>
@@ -1867,7 +1868,6 @@
     <string name="coupons">Coupons</string>
     <string name="coupon_list_item_label_active">Active</string>
     <string name="coupon_list_item_label_expired">Expired</string>
-    <string name="coupon_list_item_label_off">off</string>
     <string name="coupon_list_item_label_everything">everything</string>
     <string name="coupon_list_item_label_products_and_categories">%1s and %2s</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s excl. %2s</string>
@@ -1883,6 +1883,16 @@
     <string name="coupon_details_performance_amount_heading">Amount</string>
     <string name="coupon_details_menu_copy">Copy Coupon Code</string>
     <string name="coupon_details_menu_share">Share Coupon</string>
+    <string name="coupon_details_performance_loading_failure">Loading coupon performance failed</string>
+    <string name="coupon_type_percent">Percentage Discount</string>
+    <string name="coupon_type_fixed_cart">Fixed Cart Discount</string>
+    <string name="coupon_type_fixed_product">Fixed Product Discount</string>
+    <string name="coupon_type_custom">Custom Discount (%1$s)</string>
+    <string name="coupon_summary_template">%1$s off %2$s</string>
+    <string name="coupon_details_expiration_date">Expires %1$s</string>
+    <string name="coupon_summary_loading_failure">Loading coupon summary failed</string>
+    <string name="coupon_beta_features_heading">Coupons Management</string>
+    <string name="coupon_beta_features_subheading">Test out managing coupons in the app</string>
     <string name="coupon_details_copy_clipboard_label">Coupon Code</string>
     <string name="coupon_details_copy_success">Coupon code copied to clipboard.</string>
     <string name="coupon_details_copy_error">Error copying coupon code to clipboard.</string>

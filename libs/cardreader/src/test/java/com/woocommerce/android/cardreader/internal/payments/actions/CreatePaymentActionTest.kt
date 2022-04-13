@@ -23,12 +23,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
-import org.mockito.kotlin.any
-import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
+import org.mockito.kotlin.*
 import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
@@ -120,13 +115,34 @@ internal class CreatePaymentActionTest {
     }
 
     @Test
-    fun `when customer email not empty, then PaymentIntent setReceiptEmail not invoked`() = runBlockingTest {
-        val expectedEmail = "test@test.cz"
+    fun `given wcpay can send emails, when customer email not empty, then PaymentIntent setReceiptEmail not invoked`() =
+        runBlockingTest {
+            val expectedEmail = "test@test.cz"
 
-        action.createPaymentIntent(createPaymentInfo(customerEmail = expectedEmail)).toList()
+            action.createPaymentIntent(
+                createPaymentInfo(
+                    customerEmail = expectedEmail,
+                    wcpayCanSendReceipt = true
+                )
+            ).toList()
 
-        verify(intentParametersBuilder, never()).setReceiptEmail(any())
-    }
+            verify(intentParametersBuilder, never()).setReceiptEmail(any())
+        }
+
+    @Test
+    fun `given wcpay can not send emails, when customer email not empty, then PaymentIntent setReceiptEmail invoked`() =
+        runBlockingTest {
+            val expectedEmail = "test@test.cz"
+
+            action.createPaymentIntent(
+                createPaymentInfo(
+                    customerEmail = expectedEmail,
+                    wcpayCanSendReceipt = false
+                )
+            ).toList()
+
+            verify(intentParametersBuilder).setReceiptEmail(expectedEmail)
+        }
 
     @Test
     fun `when customer email is null, then PaymentIntent setReceiptEmail not invoked`() = runBlockingTest {
@@ -377,6 +393,7 @@ internal class CreatePaymentActionTest {
         amount: BigDecimal = BigDecimal(0),
         currency: String = "USD",
         customerEmail: String? = "",
+        wcpayCanSendReceipt: Boolean = false,
         customerName: String? = "",
         storeName: String? = "",
         siteUrl: String? = "",
@@ -390,6 +407,7 @@ internal class CreatePaymentActionTest {
             amount = amount,
             currency = currency,
             customerEmail = customerEmail,
+            isPluginCanSendReceipt = wcpayCanSendReceipt,
             customerName = customerName,
             storeName = storeName,
             siteUrl = siteUrl,

@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.cardreader
+package com.woocommerce.android.ui.orders.cardreader.payment
 
 import android.app.Dialog
 import android.content.ContentResolver
@@ -20,9 +20,9 @@ import com.woocommerce.android.databinding.CardReaderPaymentDialogBinding
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentViewModel.ShowSnackbarInDialog
-import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.PrintReceipt
-import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.SendReceipt
+import com.woocommerce.android.ui.orders.cardreader.payment.CardReaderPaymentViewModel.ShowSnackbarInDialog
+import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptEvent.PrintReceipt
+import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptEvent.SendReceipt
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.PrintHtmlHelper
 import com.woocommerce.android.util.UiHelpers
@@ -71,62 +71,59 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
 
     private fun initObservers(binding: CardReaderPaymentDialogBinding) {
         viewModel.event.observe(
-            viewLifecycleOwner,
-            { event ->
-                when (event) {
-                    is PrintReceipt -> printHtmlHelper.printReceipt(
-                        requireActivity(),
-                        event.receiptUrl,
-                        event.documentName
-                    )
-                    is SendReceipt -> composeEmail(event.address, event.subject, event.content)
-                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    is ShowSnackbarInDialog -> Snackbar.make(
-                        requireView(), event.message, BaseTransientBottomBar.LENGTH_LONG
-                    ).show()
-                    is CardReaderPaymentViewModel.PlayChaChing -> playChaChing()
-                    else -> event.isHandled = false
-                }
+            viewLifecycleOwner
+        ) { event ->
+            when (event) {
+                is PrintReceipt -> printHtmlHelper.printReceipt(
+                    requireActivity(),
+                    event.receiptUrl,
+                    event.documentName
+                )
+                is SendReceipt -> composeEmail(event.address, event.subject, event.content)
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ShowSnackbarInDialog -> Snackbar.make(
+                    requireView(), event.message, BaseTransientBottomBar.LENGTH_LONG
+                ).show()
+                is CardReaderPaymentViewModel.PlayChaChing -> playChaChing()
+                else -> event.isHandled = false
             }
-        )
+        }
         viewModel.viewStateData.observe(
-            viewLifecycleOwner,
-            { viewState ->
-                announceForAccessibility(binding, viewState)
-                UiHelpers.setTextOrHide(binding.headerLabel, viewState.headerLabel)
-                UiHelpers.setTextOrHide(binding.amountLabel, viewState.amountWithCurrencyLabel)
-                UiHelpers.setImageOrHideInLandscape(binding.illustration, viewState.illustration)
-                UiHelpers.setTextOrHide(binding.paymentStateLabel, viewState.paymentStateLabel)
-                (binding.paymentStateLabel.layoutParams as ViewGroup.MarginLayoutParams)
-                    .topMargin = resources.getDimensionPixelSize(viewState.paymentStateLabelTopMargin)
-                UiHelpers.setTextOrHide(binding.hintLabel, viewState.hintLabel)
-                UiHelpers.setTextOrHide(binding.primaryActionBtn, viewState.primaryActionLabel)
-                UiHelpers.setTextOrHide(binding.secondaryActionBtn, viewState.secondaryActionLabel)
-                UiHelpers.setTextOrHide(binding.tertiaryActionBtn, viewState.tertiaryActionLabel)
-                UiHelpers.setTextOrHide(binding.receiptSentLabel, viewState.receiptSentAutomaticallyHint)
-                UiHelpers.updateVisibility(binding.progressBarWrapper, viewState.isProgressVisible)
-                binding.primaryActionBtn.setOnClickListener {
-                    viewState.onPrimaryActionClicked?.invoke()
-                }
-                binding.secondaryActionBtn.setOnClickListener {
-                    viewState.onSecondaryActionClicked?.invoke()
-                }
-                binding.tertiaryActionBtn.setOnClickListener {
-                    viewState.onTertiaryActionClicked?.invoke()
-                }
+            viewLifecycleOwner
+        ) { viewState ->
+            announceForAccessibility(binding, viewState)
+            UiHelpers.setTextOrHide(binding.headerLabel, viewState.headerLabel)
+            UiHelpers.setTextOrHide(binding.amountLabel, viewState.amountWithCurrencyLabel)
+            UiHelpers.setImageOrHideInLandscape(binding.illustration, viewState.illustration)
+            UiHelpers.setTextOrHide(binding.paymentStateLabel, viewState.paymentStateLabel)
+            (binding.paymentStateLabel.layoutParams as ViewGroup.MarginLayoutParams)
+                .topMargin = resources.getDimensionPixelSize(viewState.paymentStateLabelTopMargin)
+            UiHelpers.setTextOrHide(binding.hintLabel, viewState.hintLabel)
+            UiHelpers.setTextOrHide(binding.primaryActionBtn, viewState.primaryActionLabel)
+            UiHelpers.setTextOrHide(binding.secondaryActionBtn, viewState.secondaryActionLabel)
+            UiHelpers.setTextOrHide(binding.tertiaryActionBtn, viewState.tertiaryActionLabel)
+            UiHelpers.setTextOrHide(binding.receiptSentLabel, viewState.receiptSentAutomaticallyHint)
+            UiHelpers.updateVisibility(binding.progressBarWrapper, viewState.isProgressVisible)
+            binding.primaryActionBtn.setOnClickListener {
+                viewState.onPrimaryActionClicked?.invoke()
             }
-        )
+            binding.secondaryActionBtn.setOnClickListener {
+                viewState.onSecondaryActionClicked?.invoke()
+            }
+            binding.tertiaryActionBtn.setOnClickListener {
+                viewState.onTertiaryActionClicked?.invoke()
+            }
+        }
 
         viewModel.event.observe(
-            viewLifecycleOwner,
-            { event ->
-                when (event) {
-                    Exit -> {
-                        navigateBackWithNotice(KEY_CARD_PAYMENT_RESULT)
-                    }
+            viewLifecycleOwner
+        ) { event ->
+            when (event) {
+                Exit -> {
+                    navigateBackWithNotice(KEY_CARD_PAYMENT_RESULT)
                 }
             }
-        )
+        }
     }
 
     private fun announceForAccessibility(binding: CardReaderPaymentDialogBinding, viewState: ViewState) {

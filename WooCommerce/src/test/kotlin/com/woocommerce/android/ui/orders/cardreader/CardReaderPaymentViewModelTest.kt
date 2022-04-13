@@ -16,14 +16,16 @@ import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.cardreader.PaymentFlowError.AmountTooSmall
-import com.woocommerce.android.ui.orders.cardreader.PaymentFlowError.Unknown
-import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.PrintReceipt
-import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.SendReceipt
-import com.woocommerce.android.ui.orders.cardreader.ViewState.*
+import com.woocommerce.android.ui.orders.cardreader.payment.*
+import com.woocommerce.android.ui.orders.cardreader.payment.PaymentFlowError.AmountTooSmall
+import com.woocommerce.android.ui.orders.cardreader.payment.PaymentFlowError.Unknown
+import com.woocommerce.android.ui.orders.cardreader.payment.ViewState.*
+import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptEvent.PrintReceipt
+import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptEvent.SendReceipt
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderTrackingInfoKeeper
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.*
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -1775,6 +1777,108 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             // Then
             verify(cardReaderManager).collectPayment(captor.capture())
             assertThat(captor.firstValue.orderKey).isEqualTo("wc_order_j0LMK3bFhalEL")
+        }
+
+    @Test
+    fun `given null saved plugin, when flow started, then wc pay can send receipt is false`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // Given
+            whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any())).thenReturn(null)
+            val captor = argumentCaptor<PaymentInfo>()
+
+            // When
+            viewModel.start()
+
+            // Then
+            verify(cardReaderManager).collectPayment(captor.capture())
+            assertThat(captor.firstValue.isPluginCanSendReceipt).isFalse()
+        }
+
+    @Test
+    fun `given stripe saved plugin, when flow started, then wc pay can send receipt is false`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // Given
+            whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
+                .thenReturn(PluginType.STRIPE_EXTENSION_GATEWAY)
+            val captor = argumentCaptor<PaymentInfo>()
+
+            // When
+            viewModel.start()
+
+            // Then
+            verify(cardReaderManager).collectPayment(captor.capture())
+            assertThat(captor.firstValue.isPluginCanSendReceipt).isFalse()
+        }
+
+    @Test
+    fun `given null saved plugin version, when flow started, then wc pay can send receipt is false`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // Given
+            whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
+                .thenReturn(PluginType.WOOCOMMERCE_PAYMENTS)
+            whenever(appPrefsWrapper.getCardReaderPreferredPluginVersion(any(), any(), any(), any())).thenReturn(null)
+            val captor = argumentCaptor<PaymentInfo>()
+
+            // When
+            viewModel.start()
+
+            // Then
+            verify(cardReaderManager).collectPayment(captor.capture())
+            assertThat(captor.firstValue.isPluginCanSendReceipt).isFalse()
+        }
+
+    @Test
+    fun `given saved plugin version 3-9-9, when flow started, then wc pay can send receipt is false`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // Given
+            whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
+                .thenReturn(PluginType.WOOCOMMERCE_PAYMENTS)
+            whenever(appPrefsWrapper.getCardReaderPreferredPluginVersion(any(), any(), any(), any()))
+                .thenReturn("3.9.9")
+            val captor = argumentCaptor<PaymentInfo>()
+
+            // When
+            viewModel.start()
+
+            // Then
+            verify(cardReaderManager).collectPayment(captor.capture())
+            assertThat(captor.firstValue.isPluginCanSendReceipt).isFalse()
+        }
+
+    @Test
+    fun `given saved plugin version 4-0-0, when flow started, then wc pay can send receipt is true`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // Given
+            whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
+                .thenReturn(PluginType.WOOCOMMERCE_PAYMENTS)
+            whenever(appPrefsWrapper.getCardReaderPreferredPluginVersion(any(), any(), any(), any()))
+                .thenReturn("4.0.0")
+            val captor = argumentCaptor<PaymentInfo>()
+
+            // When
+            viewModel.start()
+
+            // Then
+            verify(cardReaderManager).collectPayment(captor.capture())
+            assertThat(captor.firstValue.isPluginCanSendReceipt).isTrue()
+        }
+
+    @Test
+    fun `given saved plugin version 16-3-13, when flow started, then wc pay can send receipt is true`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // Given
+            whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
+                .thenReturn(PluginType.WOOCOMMERCE_PAYMENTS)
+            whenever(appPrefsWrapper.getCardReaderPreferredPluginVersion(any(), any(), any(), any()))
+                .thenReturn("16.3.13")
+            val captor = argumentCaptor<PaymentInfo>()
+
+            // When
+            viewModel.start()
+
+            // Then
+            verify(cardReaderManager).collectPayment(captor.capture())
+            assertThat(captor.firstValue.isPluginCanSendReceipt).isTrue()
         }
 
     private suspend fun simulateFetchOrderJobState(inProgress: Boolean) {

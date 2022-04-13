@@ -1,7 +1,7 @@
 package com.woocommerce.android.push
 
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.PreferencesWrapper
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.*
@@ -14,7 +14,7 @@ class NotificationRegistrationHandlerTest {
     private val dispatcher: Dispatcher = mock()
     private val accountStore: AccountStore = mock()
     private val selectedSite: SelectedSite = mock()
-    private val preferencesWrapper: PreferencesWrapper = mock()
+    private val appPrefsWrapper: AppPrefsWrapper = mock()
 
     @Before
     fun setUp() {
@@ -22,7 +22,7 @@ class NotificationRegistrationHandlerTest {
             dispatcher = dispatcher,
             accountStore = accountStore,
             notificationStore = mock(),
-            preferencesWrapper = preferencesWrapper,
+            appPrefsWrapper = appPrefsWrapper,
             selectedSite = selectedSite
         )
     }
@@ -35,7 +35,7 @@ class NotificationRegistrationHandlerTest {
         notificationRegistrationHandler.onNewFCMTokenReceived(token = fcmToken)
 
         verify(accountStore, atLeastOnce()).hasAccessToken()
-        verify(preferencesWrapper, never()).setFCMToken(any())
+        verify(appPrefsWrapper, never()).setFCMToken(any())
         verify(dispatcher, never()).dispatch(any())
     }
 
@@ -49,7 +49,7 @@ class NotificationRegistrationHandlerTest {
 
         verify(accountStore, atLeastOnce()).hasAccessToken()
         verify(selectedSite, atLeastOnce()).exists()
-        verify(preferencesWrapper, never()).setFCMToken(any())
+        verify(appPrefsWrapper, never()).setFCMToken(any())
         verify(dispatcher, never()).dispatch(any())
     }
 
@@ -61,7 +61,7 @@ class NotificationRegistrationHandlerTest {
         val fcmToken = "123456"
         notificationRegistrationHandler.onNewFCMTokenReceived(token = fcmToken)
 
-        verify(preferencesWrapper, atLeastOnce()).setFCMToken(any())
+        verify(appPrefsWrapper, atLeastOnce()).setFCMToken(any())
         verify(dispatcher, atLeastOnce()).dispatch(any())
     }
 }

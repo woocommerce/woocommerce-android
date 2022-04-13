@@ -1,3 +1,1 @@
-Even though this release doesn’t have any surprising new features, we still put a lot of love into it! We fixed a few bugs and made several improvements for accessibility using TalkBack.
-
-Did you know we’ve released a beta feature for creating orders? Head to the Menu tab, tap the settings icon, and scroll to beta features.
+Create orders on the go with products, shipping & billing information, and fees! You can quickly take an in-person credit card payment right after or send a link to a customer to pay for that order on their own device. You’ve asked for it, and now it’s here!

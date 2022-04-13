@@ -168,7 +168,11 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         } else {
             ""
         }
-        binding.customerInfoCustomerNote.setText(text, R.string.order_detail_add_customer_note)
+        binding.customerInfoCustomerNote.setText(
+            text,
+            R.string.order_detail_add_customer_note,
+            context.resources.getInteger(R.integer.default_max_lines_read_more_textview)
+        )
         binding.customerInfoCustomerNote.setIsReadOnly(isReadOnly)
 
         if (!isReadOnly) {

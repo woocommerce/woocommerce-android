@@ -10,12 +10,14 @@ else
   adbPath='~/Library/Android/sdk/platform-tools/adb'
 fi
 
-eval $adbPath shell pm clear com.woocommerce.android.prealpha
+packageName="com.woocommerce.android.dev"
 
-./gradlew installJalapenoDebug
+eval $adbPath shell pm clear $packageName
+
+./gradlew installWasabiDebug
 ./gradlew :quicklogin:installDebug \
 -PquickLoginWpEmail="$WORDPRESS_EMAIL" \
 -PquickLoginWpPassword="$WORDPRESS_PASSWORD"
 
-eval $adbPath shell am instrument -w -r -e debug false -e class 'com.woocommerce.android.quicklogin.QuickLoginWordpress' com.woocommerce.android.prealpha.quicklogin/androidx.test.runner.AndroidJUnitRunner
-eval $adbPath shell am start -n com.woocommerce.android.prealpha/com.woocommerce.android.ui.main.MainActivity
+eval $adbPath shell am instrument -w -r -e debug false -e class 'com.woocommerce.android.quicklogin.QuickLoginWordpress' $packageName.quicklogin/androidx.test.runner.AndroidJUnitRunner
+eval $adbPath shell am start -n $packageName/com.woocommerce.android.ui.main.MainActivity

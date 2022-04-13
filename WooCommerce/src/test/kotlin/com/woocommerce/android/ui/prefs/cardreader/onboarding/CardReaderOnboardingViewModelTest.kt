@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
@@ -39,6 +40,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     }
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val countryCode = "US"
+    private val pluginVersion = "4.0.0"
 
     @Test
     fun `when screen initialized, then loading state shown`() {
@@ -48,16 +50,33 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when onboarding completed, then navigates to card reader hub screen`() =
+    fun `given hub flow, when onboarding completed, then navigates to card reader hub screen`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.OnboardingCompleted(WOOCOMMERCE_PAYMENTS, countryCode)
+                CardReaderOnboardingState.OnboardingCompleted(WOOCOMMERCE_PAYMENTS, pluginVersion, countryCode)
             )
 
             val viewModel = createVM()
 
             assertThat(viewModel.event.value)
-                .isInstanceOf(OnboardingEvent.Continue::class.java)
+                .isInstanceOf(OnboardingEvent.ContinueToHub::class.java)
+        }
+
+    @Test
+    fun `given payment flow, when onboarding completed, then navigates to card reader connection screen`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.OnboardingCompleted(WOOCOMMERCE_PAYMENTS, pluginVersion, countryCode)
+            )
+
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    cardReaderFlowParam = CardReaderFlowParam.ConnectAndAcceptPayment(1L)
+                ).initSavedStateHandle()
+            )
+
+            assertThat(viewModel.event.value)
+                .isInstanceOf(OnboardingEvent.ContinueToConnection::class.java)
         }
 
     @Test
@@ -623,6 +642,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     CardReaderOnboardingState.StripeAccountPendingRequirement(
                         0L,
                         WOOCOMMERCE_PAYMENTS,
+                        pluginVersion,
                         countryCode
                     )
                 )
@@ -635,6 +655,52 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given account pending requirements and hub, when button clicked, then continues to hub`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    CardReaderOnboardingState.StripeAccountPendingRequirement(
+                        0L,
+                        WOOCOMMERCE_PAYMENTS,
+                        pluginVersion,
+                        countryCode
+                    )
+                )
+
+            val viewModel = createVM()
+            (viewModel.viewStateData.value as StripeAcountError.StripeAccountPendingRequirementsState)
+                .onButtonActionClicked.invoke()
+
+            assertThat(viewModel.event.value)
+                .isInstanceOf(OnboardingEvent.ContinueToHub::class.java)
+        }
+
+    @Test
+    fun `given account pending requirements and payment, when button clicked, then continues to connection`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    CardReaderOnboardingState.StripeAccountPendingRequirement(
+                        0L,
+                        WOOCOMMERCE_PAYMENTS,
+                        pluginVersion,
+                        countryCode
+                    )
+                )
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    cardReaderFlowParam = CardReaderFlowParam.ConnectAndAcceptPayment(1L)
+                ).initSavedStateHandle()
+            )
+
+            (viewModel.viewStateData.value as StripeAcountError.StripeAccountPendingRequirementsState)
+                .onButtonActionClicked.invoke()
+
+            assertThat(viewModel.event.value)
+                .isInstanceOf(OnboardingEvent.ContinueToConnection::class.java)
+        }
+
+    @Test
     fun `when account pending requirements, then due date not empty`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             whenever(onboardingChecker.getOnboardingState())
@@ -642,6 +708,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     CardReaderOnboardingState.StripeAccountPendingRequirement(
                         0L,
                         WOOCOMMERCE_PAYMENTS,
+                        pluginVersion,
                         countryCode
                     )
                 )
@@ -727,9 +794,13 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
     // Tracking End
 
-    private fun createVM() =
+    private fun createVM(
+        savedState: SavedStateHandle = CardReaderOnboardingFragmentArgs(
+            cardReaderFlowParam = CardReaderFlowParam.CardReadersHub
+        ).initSavedStateHandle()
+    ) =
         CardReaderOnboardingViewModel(
-            SavedStateHandle(),
+            savedState,
             onboardingChecker,
             tracker,
             userEligibilityFetcher,

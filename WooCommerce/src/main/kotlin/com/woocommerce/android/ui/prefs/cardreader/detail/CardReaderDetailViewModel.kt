@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewMo
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.ConnectedState.ButtonState
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.Loading
 import com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModel.ViewState.NotConnectedState
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult
@@ -34,6 +35,7 @@ import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewMo
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
@@ -51,6 +53,8 @@ class CardReaderDetailViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
+    private val arguments: CardReaderDetailFragmentArgs by savedState.navArgs()
+
     private val viewState = MutableLiveData<ViewState>(Loading)
     val viewStateData: LiveData<ViewState> = viewState
 
@@ -158,7 +162,7 @@ class CardReaderDetailViewModel @Inject constructor(
 
     private fun onConnectBtnClicked() {
         tracker.trackDiscoveryTapped()
-        triggerEvent(CardReaderConnectScreen)
+        triggerEvent(CardReaderConnectScreen(arguments.cardReaderFlowParam))
     }
 
     private fun onUpdateReaderClicked() {
@@ -197,7 +201,7 @@ class CardReaderDetailViewModel @Inject constructor(
     }
 
     sealed class NavigationTarget : Event() {
-        object CardReaderConnectScreen : NavigationTarget()
+        data class CardReaderConnectScreen(val cardReaderFlowParam: CardReaderFlowParam) : NavigationTarget()
         object CardReaderUpdateScreen : NavigationTarget()
     }
 
