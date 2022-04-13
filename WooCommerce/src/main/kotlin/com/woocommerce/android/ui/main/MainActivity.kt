@@ -41,6 +41,7 @@ import com.woocommerce.android.model.Notification
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
@@ -149,10 +150,12 @@ class MainActivity :
     private val fragmentLifecycleObserver: FragmentLifecycleCallbacks = object : FragmentLifecycleCallbacks() {
         override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
             val currentDestination = navController.currentDestination!!
-            val isFullScreenFragment = currentDestination.id == R.id.productImageViewerFragment
             val isDialogDestination = currentDestination.navigatorName == DIALOG_NAVIGATOR_NAME
+            if (isDialogDestination) return
 
-            if (!isFullScreenFragment && !isDialogDestination) {
+            val shouldShowActivityToolbar = (f as? BaseFragment)?.shouldShowActivityToolbar ?: true
+            if (shouldShowActivityToolbar) {
+                showToolbar()
                 // re-expand the AppBar when returning to top level fragment, collapse it when entering a child fragment
                 if (f is TopLevelFragment) {
                     // We need to post this to the view handler to make sure shouldExpandToolbar returns the correct value
@@ -167,6 +170,8 @@ class MainActivity :
 
                 // collapsible toolbar should only be able to expand for top-level fragments
                 enableToolbarExpansion(f is TopLevelFragment)
+            } else {
+                hideToolbar()
             }
         }
     }

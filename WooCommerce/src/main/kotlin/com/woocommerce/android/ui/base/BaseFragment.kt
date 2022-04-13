@@ -16,6 +16,8 @@ open class BaseFragment : Fragment, BaseFragmentView {
         private const val KEY_TITLE = "title"
     }
 
+    open val shouldShowActivityToolbar: Boolean = true
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         savedInstanceState?.let {
