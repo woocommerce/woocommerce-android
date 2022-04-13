@@ -169,6 +169,11 @@ class MainActivity :
 
                 // collapsible toolbar should only be able to expand for top-level fragments
                 enableToolbarExpansion(f is TopLevelFragment)
+
+                val navigationIcon = (f as? BaseFragment)?.navigationIconForActivityToolbar
+                toolbar.navigationIcon = navigationIcon?.let {
+                    ContextCompat.getDrawable(this@MainActivity, it)
+                }
             } else {
                 hideToolbar()
             }
@@ -420,8 +425,6 @@ class MainActivity :
                 resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
 
             showCrossIcon = when (destination.id) {
-                R.id.productFilterListFragment,
-                R.id.issueRefundFragment,
                 R.id.addOrderShipmentTrackingFragment,
                 R.id.addOrderNoteFragment,
                 R.id.printShippingLabelInfoFragment,
@@ -444,13 +447,13 @@ class MainActivity :
             }
         }
 
-        if (isAtRoot) {
-            toolbar.navigationIcon = null
-        } else if (showCrossIcon) {
-            toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_gridicons_cross_24dp)
-        } else {
-            toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_back_24dp)
-        }
+//        if (isAtRoot) {
+//            toolbar.navigationIcon = null
+//        } else if (showCrossIcon) {
+//            toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_gridicons_cross_24dp)
+//        } else {
+//            toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_back_24dp)
+//        }
 
         // show bottom nav if this is a dialog destination from root or, just root itself
         if (isTopLevelNavigation) {

@@ -2,8 +2,10 @@ package com.woocommerce.android.ui.base
 
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.DrawableRes
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -17,6 +19,9 @@ open class BaseFragment : Fragment, BaseFragmentView {
     }
 
     open val shouldShowActivityToolbar: Boolean = true
+
+    @DrawableRes
+    open val navigationIconForActivityToolbar: Int? = R.drawable.ic_back_24dp
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

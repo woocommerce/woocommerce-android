@@ -30,6 +30,9 @@ class IssueRefundFragment : BaseFragment() {
 
     private val viewModel: IssueRefundViewModel by hiltNavGraphViewModels(R.id.nav_graph_refunds)
 
+    override val navigationIconForActivityToolbar: Int
+        get() = R.drawable.ic_gridicons_cross_24dp
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
         return inflater.inflate(R.layout.fragment_issue_refund, container, false)

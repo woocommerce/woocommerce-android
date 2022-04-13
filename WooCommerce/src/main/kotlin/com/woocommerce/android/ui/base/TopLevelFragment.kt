@@ -12,6 +12,9 @@ abstract class TopLevelFragment : BaseFragment, TopLevelFragmentView {
 
     abstract fun shouldExpandToolbar(): Boolean
 
+    override val navigationIconForActivityToolbar: Int?
+        get() = null
+
     /**
      * Called when the fragment shows or hides a search view so we can properly disable the collapsing
      * toolbar when a search is active
