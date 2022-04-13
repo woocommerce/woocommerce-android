@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.selection.SelectionTracker
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_PRODUCT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -15,7 +16,7 @@ typealias OnProductClickListener = (remoteProductId: Long, sharedView: View?) ->
 class ProductListAdapter(
     private inline val clickListener: OnProductClickListener? = null,
     private val loadMoreListener: OnLoadMoreListener
-) : ListAdapter<Product, ProductItemViewHolder>(ProductItemDiffCallback) {
+) : ListAdapter<Product, ProductItemViewHolder>(ProductListItemDiffCallback) {
     // allow the selection library to track the selections of the user
     var tracker: SelectionTracker<Long>? = null
 
@@ -48,5 +49,22 @@ class ProductListAdapter(
         if (position == itemCount - 1) {
             loadMoreListener.onRequestLoadMore()
         }
+    }
+
+    object ProductListItemDiffCallback : DiffUtil.ItemCallback<ListItem>() {
+        override fun areItemsTheSame(oldItem: ListItem, newItem: ListItem) = when (oldItem) {
+            is ListItem.SortFilterItem -> {
+                // There should be only one SortFilterItem
+                newItem is ListItem.SortFilterItem
+            }
+            is ListItem.ProductItem -> oldItem.product.remoteId == (newItem as? ListItem.ProductItem)?.product?.remoteId
+        }
+
+        override fun areContentsTheSame(oldItem: ListItem, newItem: ListItem) = oldItem == newItem
+    }
+
+    sealed class ListItem {
+        data class SortFilterItem(val title: String?, val show: Boolean?, val filterCount: Int?) : ListItem()
+        data class ProductItem(val product: Product) : ListItem()
     }
 }
