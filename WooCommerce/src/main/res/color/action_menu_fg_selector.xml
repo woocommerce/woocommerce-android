@@ -4,7 +4,7 @@
         android:state_enabled="false"
         android:color="@color/color_on_surface_disabled"/>
     <item
-        android:color="@color/woo_pink_50"/>
+        android:color="@color/woo_pink_30"/>
 </selector>
 
 
