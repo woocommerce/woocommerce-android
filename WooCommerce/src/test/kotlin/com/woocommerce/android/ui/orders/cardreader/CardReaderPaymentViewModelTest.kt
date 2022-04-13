@@ -2051,6 +2051,17 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given fetch order failed, when initializing interac refund, then ui updated to proper error state `() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(orderRepository.fetchOrderById(ORDER_ID)).thenReturn(null)
+
+            viewModel.start()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(InteracRefund.FailedRefundState::class.java)
+        }
+
+    @Test
     fun `when collecting interac refund, then ui updated to collecting refund state`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             setupViewModelForInteracRefund()
@@ -2093,6 +2104,11 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when interac refund fails, then ui updated to refund failed state`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             setupViewModelForInteracRefund()
+            whenever(
+                interacRefundErrorMapper.mapPaymentErrorToUiError(
+                    CardInteracRefundStatus.RefundStatusErrorType.Generic
+                )
+            ).thenReturn(InteracRefundFlowError.Generic)
             whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
                 flow {
                     emit(
@@ -2211,6 +2227,11 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when interac refund fails, then progress and secondary button are hidden`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             setupViewModelForInteracRefund()
+            whenever(
+                interacRefundErrorMapper.mapPaymentErrorToUiError(
+                    CardInteracRefundStatus.RefundStatusErrorType.Generic
+                )
+            ).thenReturn(InteracRefundFlowError.Generic)
             whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
                 flow {
                     emit(
@@ -2238,6 +2259,11 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when interac refund fails, then correct labels, illustration and button are shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             setupViewModelForInteracRefund()
+            whenever(
+                interacRefundErrorMapper.mapPaymentErrorToUiError(
+                    CardInteracRefundStatus.RefundStatusErrorType.Generic
+                )
+            ).thenReturn(InteracRefundFlowError.Generic)
             whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
                 flow {
                     emit(
@@ -2263,7 +2289,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 .isEqualTo("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
             assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.img_products_error)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
-                .isEqualTo(R.string.card_reader_interac_refund_refund_failed_header)
+                .isEqualTo(R.string.card_reader_interac_refund_refund_failed_unexpected_error_state)
             assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
                 .isEqualTo(R.dimen.major_100)
             assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()
@@ -2304,7 +2330,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 .isEqualTo("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
             assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.img_products_error)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
-                .isEqualTo(R.string.card_reader_interac_refund_refund_failed_header)
+                .isEqualTo(R.string.card_reader_interac_refund_refund_failed_invalid_amount)
             assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
                 .isEqualTo(R.dimen.major_100)
             assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()

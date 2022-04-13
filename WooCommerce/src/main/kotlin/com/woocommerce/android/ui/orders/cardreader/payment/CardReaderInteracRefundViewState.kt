@@ -12,12 +12,13 @@ sealed class InteracRefund {
     )
 
     data class FailedRefundState(
+        private val errorType: InteracRefundFlowError,
         override val amountWithCurrencyLabel: String?,
         private val primaryLabel: Int? = R.string.try_again,
         override val onPrimaryActionClicked: (() -> Unit)
     ) : ViewState(
         headerLabel = R.string.card_reader_interac_refund_refund_failed_header,
-        paymentStateLabel = R.string.card_reader_interac_refund_refund_failed_header,
+        paymentStateLabel = errorType.message,
         paymentStateLabelTopMargin = R.dimen.major_100,
         primaryActionLabel = primaryLabel,
         illustration = R.drawable.img_products_error

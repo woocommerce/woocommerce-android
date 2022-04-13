@@ -171,6 +171,15 @@ class CardReaderPaymentViewModel
                 launch {
                     listenForBluetoothCardReaderMessages()
                 }
+            } ?: run {
+                tracker.trackPaymentFailed("Fetching order failed")
+                viewState.postValue(
+                    InteracRefund.FailedRefundState(
+                        errorType = InteracRefundFlowError.FetchingOrderFailed,
+                        amountWithCurrencyLabel = null,
+                        onPrimaryActionClicked = { initRefundFlow(isRetry = true) }
+                    )
+                )
             }
         }
     }
@@ -281,7 +290,7 @@ class CardReaderPaymentViewModel
             }
             is InteracRefundFailure -> emitFailedInteracRefundState(
                 amountLabel,
-                refundStatus.type
+                refundStatus
             )
             CardInteracRefundStatus.WaitingForInput -> {
                 // noop
@@ -314,15 +323,16 @@ class CardReaderPaymentViewModel
     }
 
     private fun emitFailedInteracRefundState(
-        amountLabel: String,
-        type: CardInteracRefundStatus.RefundStatusErrorType
+        amountLabel: String?,
+        error: InteracRefundFailure
     ) {
         WooLog.e(WooLog.T.CARD_READER, "Refund failed")
         val onRetryClicked = { retryInteracRefund() }
-        val errorType = interacRefundErrorMapper.mapPaymentErrorToUiError(type)
+        val errorType = interacRefundErrorMapper.mapPaymentErrorToUiError(error.type)
         if (errorType is InteracRefundFlowError.NonRetryableError) {
             viewState.postValue(
                 InteracRefund.FailedRefundState(
+                    errorType,
                     amountLabel,
                     R.string.card_reader_interac_refund_refund_failed_ok,
                     onPrimaryActionClicked = { onBackPressed() }
@@ -331,6 +341,7 @@ class CardReaderPaymentViewModel
         } else {
             viewState.postValue(
                 InteracRefund.FailedRefundState(
+                    errorType,
                     amountLabel,
                     onPrimaryActionClicked = onRetryClicked
                 )
