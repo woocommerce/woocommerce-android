@@ -13,20 +13,15 @@ import com.woocommerce.android.databinding.FragmentCouponDetailsBinding
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.copyToClipboard
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CopyCodeEvent
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.ShareCodeEvent
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.copyToClipboard
-import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ToastUtils
-import java.lang.IllegalStateException
-import org.wordpress.android.util.ToastUtils
-import java.lang.IllegalStateException
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -93,10 +88,5 @@ class CouponDetailsFragment : BaseFragment(R.layout.fragment_coupon_details) {
             WooLog.e(WooLog.T.UTILS, e)
             ToastUtils.showToast(context, R.string.coupon_details_share_coupon_error)
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }
