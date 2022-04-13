@@ -366,7 +366,7 @@ class IssueRefundViewModel @Inject constructor(
                     if (isInteracRefund()) {
                         triggerEvent(IssueRefundEvent.NavigateToCardReaderScreen(order.id))
                     } else {
-                        notifyRefundBackend()
+                        refund()
                     }
                     triggerEvent(
                         ShowSnackbar(
