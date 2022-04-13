@@ -25,6 +25,9 @@ import javax.inject.Inject
 class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
     @Inject lateinit var selectedSite: SelectedSite
 
+    override val shouldShowActivityToolbar: Boolean
+        get() = false
+
     override fun getFragmentTitle() = getString(R.string.more_menu)
 
     override fun shouldExpandToolbar(): Boolean = false
@@ -44,7 +47,6 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMoreMenuBinding.inflate(inflater, container, false)
-        hideToolbar()
 
         val view = binding.root
         binding.menu.apply {

@@ -56,6 +56,9 @@ class ProductImageViewerFragment :
     private var _binding: FragmentProductImageViewerBinding? = null
     private val binding get() = _binding!!
 
+    override val shouldShowActivityToolbar: Boolean
+        get() = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
