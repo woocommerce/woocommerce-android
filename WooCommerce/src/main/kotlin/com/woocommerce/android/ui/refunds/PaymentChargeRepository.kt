@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.refunds
 
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.toInPersonPaymentsPluginType
+import com.woocommerce.android.ui.cardreader.onboarding.toInPersonPaymentsPluginType
 import com.woocommerce.android.util.WooLog
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import javax.inject.Inject

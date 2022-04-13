@@ -11,7 +11,7 @@ import com.woocommerce.android.push.NotificationChannelType.NEW_ORDER
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SelectedSite.SelectedSiteChangedEvent
-import com.woocommerce.android.ui.orders.cardreader.ClearCardReaderDataAction
+import com.woocommerce.android.ui.cardreader.ClearCardReaderDataAction
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.collect

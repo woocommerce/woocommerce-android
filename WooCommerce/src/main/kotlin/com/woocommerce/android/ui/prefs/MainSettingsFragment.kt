@@ -22,7 +22,7 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.util.*
 import com.woocommerce.android.util.FeatureFlag.CARD_READER
 import com.woocommerce.android.util.WooLog.T

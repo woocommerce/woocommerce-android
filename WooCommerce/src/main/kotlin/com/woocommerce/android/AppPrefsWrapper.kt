@@ -1,7 +1,7 @@
 package com.woocommerce.android
 
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.PersistentOnboardingData
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
+import com.woocommerce.android.ui.cardreader.onboarding.PersistentOnboardingData
+import com.woocommerce.android.ui.cardreader.onboarding.PluginType
 import javax.inject.Inject
 
 class AppPrefsWrapper @Inject constructor() {

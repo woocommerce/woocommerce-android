@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.prefs
 
-import com.woocommerce.android.ui.orders.cardreader.ClearCardReaderDataAction
+import com.woocommerce.android.ui.cardreader.ClearCardReaderDataAction
 import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.util.FeatureFlag
 import kotlinx.coroutines.ExperimentalCoroutinesApi

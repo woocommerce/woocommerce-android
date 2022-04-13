@@ -20,36 +20,23 @@ import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_DETAIL_PRODUCT_TAP
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.FragmentOrderDetailBinding
-import com.woocommerce.android.extensions.handleDialogNotice
-import com.woocommerce.android.extensions.handleDialogResult
-import com.woocommerce.android.extensions.handleNotice
-import com.woocommerce.android.extensions.handleResult
-import com.woocommerce.android.extensions.hide
-import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.show
-import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.extensions.whenNotNullNorEmpty
-import com.woocommerce.android.model.FeatureFeedbackSettings
-import com.woocommerce.android.model.FeatureFeedbackSettings.*
+import com.woocommerce.android.extensions.*
+import com.woocommerce.android.model.*
 import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.SHIPPING_LABEL_M4
+import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.UNANSWERED
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
-import com.woocommerce.android.model.OrderNote
-import com.woocommerce.android.model.OrderShipmentTracking
-import com.woocommerce.android.model.Refund
-import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.cardreader.payment.CardReaderPaymentDialogFragment
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
-import com.woocommerce.android.ui.orders.cardreader.payment.CardReaderPaymentDialogFragment
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.details.editing.OrderEditingViewModel
@@ -78,12 +65,18 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     private val viewModel: OrderDetailViewModel by viewModels()
     private val orderEditingViewModel by hiltNavGraphViewModels<OrderEditingViewModel>(R.id.nav_graph_orders)
 
-    @Inject lateinit var navigator: OrderNavigator
-    @Inject lateinit var currencyFormatter: CurrencyFormatter
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var productImageMap: ProductImageMap
-    @Inject lateinit var dateUtils: DateUtils
-    @Inject lateinit var cardReaderManager: CardReaderManager
+    @Inject
+    lateinit var navigator: OrderNavigator
+    @Inject
+    lateinit var currencyFormatter: CurrencyFormatter
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    lateinit var productImageMap: ProductImageMap
+    @Inject
+    lateinit var dateUtils: DateUtils
+    @Inject
+    lateinit var cardReaderManager: CardReaderManager
 
     private var _binding: FragmentOrderDetailBinding? = null
     private val binding get() = _binding!!
