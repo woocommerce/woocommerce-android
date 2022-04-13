@@ -1899,6 +1899,7 @@
     <string name="coupon_details_share_coupon_all">Apply %s off to all products with the promo code %s</string>
     <string name="coupon_details_share_coupon_some">Apply %s off to select products with the promo code %s</string>
     <string name="coupon_details_share_coupon_error">Error sharing coupon code.</string>
+    <string name="coupon_details_share_formatting_failure">Unable to generate coupon code sharing message</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>

@@ -124,6 +124,8 @@ class CouponDetailsViewModel @Inject constructor(
     fun onShareButtonClick() {
         couponState.value?.couponSummary?.shareCodeMessage?.let {
             triggerEvent(ShareCodeEvent(it))
+        } ?: run {
+            triggerEvent(ShowSnackbar(R.string.coupon_details_share_formatting_failure))
         }
     }
 

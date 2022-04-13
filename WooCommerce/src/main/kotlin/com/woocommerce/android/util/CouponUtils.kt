@@ -126,6 +126,16 @@ class CouponUtils @Inject constructor(
                 )
             }
         } else {
+            var params = ""
+            if (amount == null) params += "`amount` "
+            if (currencyCode == null) params += "`currencyCode` "
+            if (couponCode == null) params += "`couponCode`"
+
+            WooLog.e(
+                WooLog.T.COUPONS,
+                "Formatting coupon sharing message failed. null value found in $params"
+            )
+
             null
         }
     }
