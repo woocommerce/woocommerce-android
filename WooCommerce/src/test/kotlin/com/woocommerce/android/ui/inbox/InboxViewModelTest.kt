@@ -16,6 +16,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.reset
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -69,6 +70,19 @@ class InboxViewModelTest : BaseUnitTest() {
             viewModel.inboxState.value?.notes!!.forEach {
                 assertThat(it.actions.last().label).isEqualTo(DEFAULT_DISMISS_LABEL)
             }
+        }
+
+    @Test
+    fun `Given inbox notes loaded, when refresh notes, show is refreshing state and fetch notes`() =
+        testBlocking {
+            whenViewModelIsCreated()
+            givenObserveNotesEmits(listOf(NOTE))
+            reset(inboxRepository)
+
+            viewModel.inboxState.value?.onRefresh?.invoke()
+
+            assertThat(viewModel.inboxState.value?.isRefreshing).isTrue()
+            verify(inboxRepository).fetchInboxNotes()
         }
 
     private suspend fun givenFetchInboxNotesReturns(result: Result<Unit>) {
