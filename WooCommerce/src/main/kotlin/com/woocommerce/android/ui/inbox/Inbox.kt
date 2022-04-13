@@ -39,6 +39,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.woocommerce.android.R
 import com.woocommerce.android.compose.utils.toAnnotatedString
 import com.woocommerce.android.ui.compose.animations.skeletonAnimationBrush
@@ -58,7 +61,11 @@ fun Inbox(state: InboxState) {
     when {
         state.isLoading -> InboxSkeleton()
         state.notes.isEmpty() -> InboxEmptyCase()
-        state.notes.isNotEmpty() -> InboxNotes(notes = state.notes)
+        state.notes.isNotEmpty() -> InboxNotes(
+            notes = state.notes,
+            onRefresh = state.onRefresh,
+            isRefreshing = state.isRefreshing
+        )
     }
 }
 
@@ -93,15 +100,31 @@ fun InboxEmptyCase() {
 }
 
 @Composable
-fun InboxNotes(notes: List<InboxNoteUi>) {
-    LazyColumn {
-        itemsIndexed(notes) { index, note ->
-            InboxNoteRow(note = note)
-            if (index < notes.lastIndex)
-                Divider(
-                    color = colorResource(id = R.color.divider_color),
-                    thickness = 1.dp
-                )
+fun InboxNotes(
+    notes: List<InboxNoteUi>,
+    isRefreshing: Boolean,
+    onRefresh: () -> Unit
+) {
+    SwipeRefresh(
+        state = rememberSwipeRefreshState(isRefreshing),
+        onRefresh = { onRefresh.invoke() },
+        indicator = { state, trigger ->
+            SwipeRefreshIndicator(
+                state = state,
+                refreshTriggerDistance = trigger,
+                contentColor = MaterialTheme.colors.primary,
+            )
+        }
+    ) {
+        LazyColumn {
+            itemsIndexed(notes) { index, note ->
+                InboxNoteRow(note = note)
+                if (index < notes.lastIndex)
+                    Divider(
+                        color = colorResource(id = R.color.divider_color),
+                        thickness = 1.dp
+                    )
+            }
         }
     }
 }

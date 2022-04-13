@@ -62,11 +62,23 @@ class InboxViewModel @Inject constructor(
         }
     }
 
+    private fun refreshNotes() {
+        _inboxState.value = _inboxState.value?.copy(isRefreshing = true)
+        viewModelScope.launch {
+            inboxRepository.fetchInboxNotes()
+        }
+    }
+
     private fun inboxNotesLocalUpdates() =
         inboxRepository.observeInboxNotes()
             .map { inboxNotes ->
                 val notes = inboxNotes.map { it.toInboxNoteUi() }
-                InboxState(isLoading = false, notes = notes)
+                InboxState(
+                    isLoading = false,
+                    notes = notes,
+                    onRefresh = ::refreshNotes,
+                    isRefreshing = false
+                )
             }
 
     private fun loadInboxNotes(): Flow<InboxState> = flow {
@@ -194,7 +206,9 @@ class InboxViewModel @Inject constructor(
 
     data class InboxState(
         val isLoading: Boolean = false,
-        val notes: List<InboxNoteUi> = emptyList()
+        val notes: List<InboxNoteUi> = emptyList(),
+        val onRefresh: () -> Unit = {},
+        val isRefreshing: Boolean = false
     )
 
     data class InboxNoteUi(
