@@ -107,11 +107,11 @@ class CouponUtils @Inject constructor(
     fun formatSharingMessage(
         amount: BigDecimal?,
         currencyCode: String?,
-        couponCode: String,
+        couponCode: String?,
         includedProducts: Int,
         excludedProducts: Int
-    ): String {
-        return if (amount != null && currencyCode != null) {
+    ): String? {
+        return if (amount != null && currencyCode != null && couponCode != null) {
             if (includedProducts == 0 && excludedProducts == 0) {
                 resourceProvider.getString(
                     R.string.coupon_details_share_coupon_all,
@@ -126,7 +126,7 @@ class CouponUtils @Inject constructor(
                 )
             }
         } else {
-            ""
+            null
         }
     }
 
