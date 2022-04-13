@@ -115,9 +115,8 @@ fun CouponSummarySection(couponSummary: CouponSummaryUi) {
         ) {
             Text(
                 text = stringResource(id = R.string.coupon_details_heading),
-                style = MaterialTheme.typography.h2,
+                style = MaterialTheme.typography.subtitle1,
                 color = MaterialTheme.colors.onSurface,
-                fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
@@ -153,9 +152,8 @@ private fun CouponPerformanceSection(couponPerformanceState: CouponPerformanceSt
         ) {
             Text(
                 text = stringResource(id = R.string.coupon_details_performance_heading),
-                style = MaterialTheme.typography.h2,
+                style = MaterialTheme.typography.subtitle1,
                 color = MaterialTheme.colors.onSurface,
-                fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
             )
 
