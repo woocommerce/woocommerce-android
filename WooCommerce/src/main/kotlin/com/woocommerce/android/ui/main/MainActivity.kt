@@ -10,7 +10,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -451,19 +450,6 @@ class MainActivity :
             toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_gridicons_cross_24dp)
         } else {
             toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_back_24dp)
-        }
-
-        val isFullScreenFragment = destination.id == R.id.productImageViewerFragment
-
-        supportActionBar?.let {
-            // the image viewers should be shown full screen
-            if (isFullScreenFragment) {
-                window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-                hideToolbar()
-            } else {
-                window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-                showToolbar()
-            }
         }
 
         // show bottom nav if this is a dialog destination from root or, just root itself
