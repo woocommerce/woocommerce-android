@@ -10,6 +10,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentInboxBinding
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.inbox.InboxViewModel.InboxNoteActionEvent
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -39,8 +41,21 @@ class InboxFragment : BaseFragment(R.layout.fragment_inbox) {
         return view
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupObservers()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun setupObservers() {
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            if (event is InboxNoteActionEvent.OpenUrlEvent) {
+                ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+            }
+        }
     }
 }

@@ -19,7 +19,7 @@ import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.COUPONS
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListEvent.NavigateToCouponSummaryEvent
+import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListEvent.NavigateToCouponDetailsEvent
 import com.woocommerce.android.ui.feedback.SurveyType
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -65,7 +65,7 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is NavigateToCouponSummaryEvent -> navigateToCouponSummary(event.couponId)
+                is NavigateToCouponDetailsEvent -> navigateToCouponDetails(event.couponId)
             }
         }
     }
@@ -75,9 +75,9 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
         displayCouponsWIPCard(true)
     }
 
-    private fun navigateToCouponSummary(couponId: Long) {
+    private fun navigateToCouponDetails(couponId: Long) {
         findNavController().navigateSafely(
-            CouponListFragmentDirections.actionCouponListFragmentToCouponSummaryFragment(couponId)
+            CouponListFragmentDirections.actionCouponListFragmentToCouponDetailsFragment(couponId)
         )
     }
 
