@@ -14,10 +14,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.wordpress.android.util.DateTimeUtils
@@ -39,18 +36,10 @@ class InboxViewModel @Inject constructor(
     val inboxState: LiveData<InboxState> = _inboxState
 
     init {
+        _inboxState.value = InboxState(isLoading = true)
         viewModelScope.launch {
-            combine(
-                loadInboxNotes(),
-                inboxNotesLocalUpdates()
-            ) { fetchInboxState, localInboxState ->
-                when {
-                    fetchInboxState.isLoading -> fetchInboxState
-                    else -> localInboxState
-                }
-            }.collectLatest {
-                _inboxState.value = it
-            }
+            inboxRepository.fetchInboxNotes()
+            inboxNotesLocalUpdates().collectLatest { _inboxState.value = it }
         }
     }
 
@@ -60,12 +49,6 @@ class InboxViewModel @Inject constructor(
                 val notes = inboxNotes.map { it.toInboxNoteUi() }
                 InboxState(isLoading = false, notes = notes)
             }
-
-    private fun loadInboxNotes(): Flow<InboxState> = flow {
-        emit(InboxState(isLoading = true))
-        inboxRepository.fetchInboxNotes()
-        emit(InboxState(isLoading = false))
-    }
 
     private fun InboxNote.toInboxNoteUi() =
         InboxNoteUi(
