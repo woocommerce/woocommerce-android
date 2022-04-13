@@ -29,6 +29,7 @@ import javax.inject.Inject
 class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), BackPressListener {
     companion object {
         const val REFUND_ORDER_NOTICE_KEY = "refund_order_notice"
+        const val KEY_INTERAC_SUCCESS = "interac_success"
     }
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
@@ -109,7 +110,7 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
                 }
             }
             handleDialogNotice<String>(
-                "Interac_success",
+                KEY_INTERAC_SUCCESS,
                 entryId = R.id.refundSummaryFragment
             ) {
                 viewModel.refund()
