@@ -95,7 +95,7 @@ class ProductListAdapter(
             VIEW_TYPE_PRODUCT_ITEM -> {
                 ProductItemViewHolder(ProductListItemBinding.inflate(layoutInflater, parent, false))
             }
-            else -> throw  IllegalArgumentException()
+            else -> throw IllegalArgumentException("Unexpected view type in ProductListAdapter")
         }
     }
 
