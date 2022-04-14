@@ -184,7 +184,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/major_100"
-            android:layout_marginTop="@dimen/major_100"
+            android:layout_marginVertical="@dimen/major_100"
             android:hint="@string/shipping_label_edit_address_state"
             android:imeOptions="flagNoFullscreen"
             android:inputType="text"
