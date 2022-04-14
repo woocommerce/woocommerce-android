@@ -342,7 +342,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     private fun FragmentOrderCreationFormBinding.enableAddButtons(enable: Boolean) {
         paymentSection.shippingButton.isEnabled = enable
         paymentSection.feeButton.isEnabled = enable
-        productsSection.addButtonIsEnabled = enable
+        productsSection.isEachAddButtonEnabled = enable
     }
 
     private fun setupHandleResults() {
