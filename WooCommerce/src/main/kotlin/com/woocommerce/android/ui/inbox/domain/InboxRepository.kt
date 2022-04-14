@@ -51,9 +51,9 @@ class InboxRepository @Inject constructor(
     }
 
     suspend fun dismissAllNotesForCurrentSite(): Result<Unit> {
-        val result = inboxStore.deleteAllNotesForSite(selectedSite.get())
+        val results = inboxStore.deleteNotesForSite(selectedSite.get())
         return when {
-            result.isError -> Result.failure(WooException(result.error))
+            results.any { it.isError } -> Result.failure(WooException(results.first { it.isError }.error))
             else -> Result.success(Unit)
         }
     }
