@@ -13,7 +13,8 @@ import kotlinx.coroutines.flow.flow
 internal class InteracRefundManager(
     private val collectInteracRefundAction: CollectInteracRefundAction,
     private val processInteracRefundAction: ProcessInteracRefundAction,
-    private val refundErrorMapper: RefundErrorMapper
+    private val refundErrorMapper: RefundErrorMapper,
+    private val paymentUtils: PaymentUtils,
 ) {
     fun refundInteracPayment(refundParameters: RefundParams): Flow<CardInteracRefundStatus> = flow {
         emit(CardInteracRefundStatus.InitializingInteracRefund)
@@ -32,7 +33,7 @@ internal class InteracRefundManager(
         collectInteracRefundAction.collectRefund(
             RefundParameters.Builder(
                 chargeId = refundParameters.chargeId,
-                amount = refundParameters.amount.toLong(),
+                amount = paymentUtils.convertBigDecimalInDollarsToLongInCents(refundParameters.amount),
                 currency = refundParameters.currency
             ).build()
         ).collect { refundStatus ->

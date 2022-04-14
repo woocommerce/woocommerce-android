@@ -44,6 +44,7 @@ class InteracRefundManagerTest {
     private val collectInteracRefundAction: CollectInteracRefundAction = mock()
     private val processInteracRefundAction: ProcessInteracRefundAction = mock()
     private val refundErrorMapper: RefundErrorMapper = mock()
+    private val paymentUtils: PaymentUtils = mock()
 
     private val expectedInteracRefundSequence = listOf(
         CardInteracRefundStatus.InitializingInteracRefund::class,
@@ -57,7 +58,8 @@ class InteracRefundManagerTest {
         manager = InteracRefundManager(
             collectInteracRefundAction,
             processInteracRefundAction,
-            refundErrorMapper
+            refundErrorMapper,
+            paymentUtils,
         )
     }
 
