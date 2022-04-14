@@ -12,6 +12,8 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -32,17 +34,23 @@ class CouponListViewModel @Inject constructor(
 
     private var searchJob: Job? = null
 
+    private val isLoading = MutableStateFlow(false)
+
     val couponsState = couponRepository.couponsFlow
-        .map { coupons ->
+        .map { coupons -> coupons.map { it.toUiModel() } }
+        .combine(isLoading) { coupons, isLoading ->
             CouponListState(
-                coupons = coupons.map { it.toUiModel() }
+                isLoading = isLoading,
+                coupons = coupons
             )
         }
         .asLiveData()
 
     init {
         viewModelScope.launch {
+            isLoading.value = true
             couponRepository.fetchCoupons(forceRefresh = true)
+            isLoading.value = false
         }
     }
 
@@ -71,7 +79,9 @@ class CouponListViewModel @Inject constructor(
             if (!query.isNullOrEmpty()) {
                 delay(AppConstants.SEARCH_TYPING_DELAY_MS)
             }
+            isLoading.value = true
             couponRepository.fetchCoupons(query)
+            isLoading.value = false
         }
     }
 
