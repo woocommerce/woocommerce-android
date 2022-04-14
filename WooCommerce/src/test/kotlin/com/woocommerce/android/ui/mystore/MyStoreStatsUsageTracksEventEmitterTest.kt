@@ -6,7 +6,10 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.TestCoroutineExceptionHandler
 import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.createTestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 import org.mockito.kotlin.*
@@ -22,7 +25,7 @@ class MyStoreStatsUsageTracksEventEmitterTest : BaseUnitTest() {
     }
     private val usageTracksEventEmitter = MyStoreStatsUsageTracksEventEmitter(
         analyticsTrackerWrapper = analyticsTrackerWrapper,
-        appCoroutineScope = TestCoroutineScope(coroutinesTestRule.testDispatcher),
+        appCoroutineScope = createTestCoroutineScope(TestCoroutineDispatcher() + TestCoroutineExceptionHandler() + coroutinesTestRule.testDispatcher),
         selectedSite = selectedSite
     )
 

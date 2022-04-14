@@ -5,7 +5,10 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.TestCoroutineExceptionHandler
 import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.createTestCoroutineScope
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -22,7 +25,7 @@ class UnseenReviewsCountHandlerTests : BaseUnitTest() {
     fun setup(prepareMocks: () -> Unit) {
         prepareMocks()
         handler = UnseenReviewsCountHandler(
-            appCoroutineScope = TestCoroutineScope(coroutinesTestRule.testDispatcher),
+            appCoroutineScope = createTestCoroutineScope(TestCoroutineDispatcher() + TestCoroutineExceptionHandler() + coroutinesTestRule.testDispatcher),
             notificationStore = notificationStore,
             selectedSite = selectedSite
         )
