@@ -1,14 +1,19 @@
 package com.woocommerce.android.ui.prefs
 
 import com.woocommerce.android.ui.orders.cardreader.ClearCardReaderDataAction
-import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.KArgumentCaptor
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.action.NotificationAction
@@ -20,10 +25,7 @@ import org.wordpress.android.fluxc.store.NotificationStore.OnDeviceUnregistered
 import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
-class AppSettingsPresenterTest {
-    @Rule @JvmField
-    val coroutinesTestRule = CoroutineTestRule()
-
+class AppSettingsPresenterTest : BaseUnitTest() {
     private val appSettingsContractView: AppSettingsContract.View = mock()
 
     private val dispatcher: Dispatcher = mock()
@@ -74,7 +76,7 @@ class AppSettingsPresenterTest {
     @Test
     fun `cleanPaymentsData with initialized manager should disconnect reader`() {
         if (FeatureFlag.CARD_READER.isEnabled()) {
-            runTest(coroutinesTestRule.testDispatcher) {
+            testBlocking {
                 appSettingsPresenter.logout()
 
                 verify(clearCardReaderDataAction).invoke()
