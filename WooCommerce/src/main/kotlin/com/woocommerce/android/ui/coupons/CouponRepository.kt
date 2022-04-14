@@ -35,18 +35,11 @@ class CouponRepository @Inject constructor(
         it.map { couponDataModel -> couponDataModel.toAppModel() }
     }
 
-    suspend fun loadCoupons(loadMore: Boolean = false) {
-        if (!loadMore) {
-            page = 1
-        } else if (!canLoadMore) {
-            return
-        }
-        val result = store.fetchCoupons(site.get(), page++, PAGE_SIZE)
-        canLoadMore = result.model ?: false
-    }
-
-    suspend fun fetchCoupons(searchQuery: String?, forceRefresh: Boolean = false): Result<Unit> {
-        this.searchQuery.value = searchQuery
+    suspend fun fetchCoupons(
+        searchQuery: String? = null,
+        forceRefresh: Boolean = false
+    ): Result<Unit> {
+        // Reset pagination attributes
         page = 1
         canLoadMore = true
         return if (searchQuery.isNullOrEmpty()) {
