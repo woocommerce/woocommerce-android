@@ -412,8 +412,13 @@ class MainActivity :
             }
             showCrossIcon = false
         } else {
-            binding.appBarLayout.elevation =
-                resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
+            if (destination.id == R.id.productFilterListFragment) {
+                binding.appBarLayout.elevation = 0f
+                binding.appBarDivider.visibility = View.VISIBLE
+            } else {
+                binding.appBarDivider.visibility = View.GONE
+                binding.appBarLayout.elevation = resources.getDimensionPixelSize(dimen.appbar_elevation).toFloat()
+            }
 
             showCrossIcon = when (destination.id) {
                 R.id.productFilterListFragment,
