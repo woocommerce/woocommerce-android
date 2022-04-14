@@ -342,6 +342,8 @@ class OrderCreationViewModel @Inject constructor(
     ) : Parcelable {
         @IgnoredOnParcel
         val canCreateOrder: Boolean = !willUpdateOrderDraft && !isUpdatingOrderDraft && !showOrderUpdateSnackbar
+        @IgnoredOnParcel
+        val isEachAddButtonEnabled: Boolean = !isUpdatingOrderDraft && !willUpdateOrderDraft
     }
 }
 
