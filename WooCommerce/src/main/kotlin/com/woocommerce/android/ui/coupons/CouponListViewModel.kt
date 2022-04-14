@@ -9,17 +9,16 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getNullableStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.Date
 import javax.inject.Inject
 
+@FlowPreview
 @HiltViewModel
 class CouponListViewModel @Inject constructor(
     savedState: SavedStateHandle,
@@ -32,26 +31,33 @@ class CouponListViewModel @Inject constructor(
         wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
     }
 
-    private var searchJob: Job? = null
-
+    private val searchQuery = savedState.getNullableStateFlow(this, null, clazz = String::class.java)
     private val isLoading = MutableStateFlow(false)
 
-    val couponsState = couponRepository.couponsFlow
-        .map { coupons -> coupons.map { it.toUiModel() } }
-        .combine(isLoading) { coupons, isLoading ->
-            CouponListState(
-                isLoading = isLoading,
-                coupons = coupons
-            )
-        }
+    val couponsState = combine(
+        couponRepository.couponsFlow
+            .map { coupons -> coupons.map { it.toUiModel() } },
+        isLoading,
+        searchQuery
+    ) { coupons, isLoading, searchQuery ->
+        CouponListState(
+            isLoading = isLoading,
+            coupons = coupons,
+            searchQuery = searchQuery
+        )
+    }
         .asLiveData()
 
     init {
-        viewModelScope.launch {
-            isLoading.value = true
-            couponRepository.fetchCoupons(forceRefresh = true)
-            isLoading.value = false
+        if (searchQuery.value == null) {
+            viewModelScope.launch {
+                isLoading.value = true
+                couponRepository.fetchCoupons(forceRefresh = true)
+                isLoading.value = false
+            }
         }
+
+        monitorSearchQuery()
     }
 
     private fun Coupon.toUiModel(): CouponListItem {
@@ -74,19 +80,29 @@ class CouponListViewModel @Inject constructor(
     }
 
     fun onSearchQueryChanged(query: String?) {
-        searchJob?.cancel()
-        searchJob = viewModelScope.launch {
-            if (!query.isNullOrEmpty()) {
-                delay(AppConstants.SEARCH_TYPING_DELAY_MS)
-            }
-            isLoading.value = true
-            couponRepository.fetchCoupons(query)
-            isLoading.value = false
+        searchQuery.value = query.orEmpty()
+    }
+
+    private fun monitorSearchQuery() {
+        viewModelScope.launch {
+            searchQuery
+                .filterNotNull()
+                .debounce {
+                    if (it.isEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS
+                }.collectLatest {
+                    try {
+                        isLoading.value = true
+                        couponRepository.fetchCoupons(searchQuery = it)
+                    } finally {
+                        isLoading.value = false
+                    }
+                }
         }
     }
 
     data class CouponListState(
         val isLoading: Boolean = false,
+        val searchQuery: String? = null,
         val coupons: List<CouponListItem> = emptyList()
     )
 

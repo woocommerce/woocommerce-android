@@ -29,6 +29,7 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
         const val TAG: String = "CouponListFragment"
     }
 
+    private lateinit var searchView: SearchView
     private var _binding: FragmentCouponListBinding? = null
     private val binding get() = _binding!!
     private val feedbackState
@@ -64,6 +65,11 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
     }
 
     private fun setupObservers() {
+        viewModel.couponsState.observe(viewLifecycleOwner) {
+            if (::searchView.isInitialized) {
+                searchView.setQuery(it.searchQuery, false)
+            }
+        }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is NavigateToCouponDetailsEvent -> navigateToCouponDetails(event.couponId)
@@ -75,8 +81,11 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.menu_search, menu)
         val searchMenuItem = menu.findItem(R.id.menu_search)
-        val searchView = searchMenuItem?.actionView as SearchView
+        searchView = searchMenuItem?.actionView as SearchView
         searchView.queryHint = getString(R.string.coupons_list_search_hint)
+        val currentQuery = viewModel.couponsState.value?.searchQuery
+        searchView.setQuery(currentQuery, false)
+        searchView.isIconified = currentQuery.isNullOrEmpty()
         searchView.setOnCloseListener {
             viewModel.onSearchQueryChanged(null)
             true
