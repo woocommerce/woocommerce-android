@@ -6,7 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Divider
@@ -24,12 +23,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListItem
 import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListState
 import com.woocommerce.android.ui.coupons.components.CouponExpirationLabel
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 
 @Composable
 fun CouponListScreen(viewModel: CouponListViewModel) {
@@ -109,32 +106,6 @@ fun CouponList(
 
     InfiniteListHandler(listState = listState) {
         onLoadMore()
-    }
-}
-
-@Composable
-fun InfiniteListHandler(
-    listState: LazyListState,
-    buffer: Int = 1,
-    onLoadMore: () -> Unit
-) {
-    val loadMore = remember {
-        derivedStateOf {
-            val layoutInfo = listState.layoutInfo
-            val totalItemsNumber = layoutInfo.totalItemsCount
-            val lastVisibleItemIndex = (layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0) + 1
-
-            lastVisibleItemIndex > (totalItemsNumber - buffer)
-        }
-    }
-
-    LaunchedEffect(loadMore) {
-        snapshotFlow { loadMore.value }
-            .distinctUntilChanged()
-            .filter { it }
-            .collect {
-                onLoadMore()
-            }
     }
 }
 
