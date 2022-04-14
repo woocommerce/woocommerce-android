@@ -149,7 +149,10 @@ private fun InboxNoteActionsRow(actions: List<InboxNoteActionUi>) {
 
 @Composable
 private fun InboxNoteSurveyActionsRow(actions: List<InboxNoteActionUi>) {
-    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+    Row(
+        modifier = Modifier.padding(bottom = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
         if (actions.isEmpty()) {
             Text(
                 modifier = Modifier.padding(top = 16.dp, bottom = 16.dp),
