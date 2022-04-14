@@ -330,6 +330,8 @@
     <string name="simple_payments_cash_dlg_title">Mark as paid?</string>
     <string name="simple_payments_cash_dlg_message">This will create your order and mark it as paid if you received payment outside of WooCommerce</string>
     <string name="simple_payments_cash_dlg_button">Mark as paid</string>
+    <string name="simple_payments_share_payment_link">Share payment link</string>
+    <string name="simple_payments_share_payment_dialog_title">Checkout - %s</string>
     <!--
          Taxes
     -->
@@ -1862,6 +1864,7 @@
     <string name="inbox_note_recency_date_time">Created on %s</string>
     <string name="empty_inbox_title">Congrats, you’ve read everything!</string>
     <string name="empty_inbox_description">Come back soon for more tips and insights on growing your store</string>
+    <string name="inbox_note_survey_actioned">Thank you for your feedback!</string>
 
     <!-- coupons -->
     <string name="coupons">Coupons</string>

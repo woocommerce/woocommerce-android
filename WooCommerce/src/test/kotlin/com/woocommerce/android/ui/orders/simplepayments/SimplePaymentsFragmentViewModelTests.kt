@@ -33,7 +33,10 @@ class SimplePaymentsFragmentViewModelTests : BaseUnitTest() {
                     )
                 )
             }
-            return OrderTestUtils.generateTestOrder(ORDER_ID).copy(number = REMOTE_ORDER_NUMBER, taxLines = taxLines)
+            return OrderTestUtils.generateTestOrder(ORDER_ID).copy(
+                number = REMOTE_ORDER_NUMBER,
+                taxLines = taxLines
+            )
         }
 
     private lateinit var viewModel: SimplePaymentsFragmentViewModel

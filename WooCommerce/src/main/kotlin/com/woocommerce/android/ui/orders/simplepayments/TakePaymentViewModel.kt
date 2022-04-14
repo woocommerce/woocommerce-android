@@ -80,6 +80,16 @@ class TakePaymentViewModel @Inject constructor(
         }
     }
 
+    fun onSharePaymentUrlClicked() {
+        triggerEvent(SharePaymentUrl(selectedSite.get().name, order.paymentUrl))
+    }
+
+    fun onSharePaymentUrlCompleted() {
+        launch {
+            markOrderCompleted()
+        }
+    }
+
     fun onCardPaymentClicked() {
         AnalyticsTracker.track(
             AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_COLLECT,
@@ -158,6 +168,11 @@ class TakePaymentViewModel @Inject constructor(
             }
         }
     }
+
+    data class SharePaymentUrl(
+        val storeName: String,
+        val paymentUrl: String
+    ) : MultiLiveEvent.Event()
 
     companion object {
         private const val DELAY_MS = 1L

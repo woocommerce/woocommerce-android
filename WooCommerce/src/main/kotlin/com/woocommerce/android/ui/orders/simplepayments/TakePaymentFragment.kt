@@ -1,14 +1,19 @@
 package com.woocommerce.android.ui.orders.simplepayments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentTakePaymentBinding
-import com.woocommerce.android.extensions.*
+import com.woocommerce.android.extensions.handleDialogNotice
+import com.woocommerce.android.extensions.handleDialogResult
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
@@ -27,6 +32,12 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
+    private val sharePaymentUrlLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        viewModel.onSharePaymentUrlCompleted()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -36,6 +47,14 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
         }
         binding.textCard.setOnClickListener {
             viewModel.onCardPaymentClicked()
+        }
+
+        if (viewModel.order.paymentUrl.isNotEmpty()) {
+            binding.textShare.setOnClickListener {
+                viewModel.onSharePaymentUrlClicked()
+            }
+        } else {
+            binding.textShare.isVisible = false
         }
 
         setUpObservers()
@@ -62,6 +81,9 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
                     )
                     findNavController().navigateSafely(action)
                 }
+                is TakePaymentViewModel.SharePaymentUrl -> {
+                    sharePaymentUrl(event.storeName, event.paymentUrl)
+                }
             }
         }
     }
@@ -80,6 +102,17 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
         ) {
             viewModel.onCardReaderPaymentCompleted()
         }
+    }
+
+    private fun sharePaymentUrl(storeName: String, paymentUrl: String) {
+        val title = getString(R.string.simple_payments_share_payment_dialog_title, storeName)
+        val shareIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, paymentUrl)
+            putExtra(Intent.EXTRA_SUBJECT, title)
+            type = "text/plain"
+        }
+        sharePaymentUrlLauncher.launch(Intent.createChooser(shareIntent, title))
     }
 
     override fun onResume() {
