@@ -12,6 +12,7 @@ import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.OrderCreationProductsAdapter.ProductViewHolder
+import com.woocommerce.android.ui.products.ProductStockStatus
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
 
@@ -74,13 +75,13 @@ class OrderCreationProductsAdapter(
                 } else {
                     if (productModel.isStockManaged) {
                         append(
-                            if (productModel.stockQuantity > 0) {
+                            if (productModel.stockStatus == ProductStockStatus.InStock) {
                                 context.getString(
                                     R.string.order_creation_product_stock_quantity,
                                     productModel.stockQuantity.formatToString()
                                 )
                             } else {
-                                context.getString(R.string.product_stock_status_out_of_stock)
+                                context.getString(productModel.stockStatus.stringResource)
                             }
                         )
                     } else {
