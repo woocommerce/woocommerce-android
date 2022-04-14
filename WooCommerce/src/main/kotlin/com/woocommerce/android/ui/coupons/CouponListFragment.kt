@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.coupons
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.SearchView.OnQueryTextListener
+import androidx.appcompat.widget.SearchView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
@@ -42,6 +42,7 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        setHasOptionsMenu(true)
         _binding = FragmentCouponListBinding.inflate(inflater, container, false)
 
         val view = binding.root
@@ -68,6 +69,29 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
                 is NavigateToCouponDetailsEvent -> navigateToCouponDetails(event.couponId)
             }
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.menu_search, menu)
+        val searchMenuItem = menu.findItem(R.id.menu_search)
+        val searchView = searchMenuItem?.actionView as SearchView
+        searchView.queryHint = getString(R.string.coupons_list_search_hint)
+        searchView.setOnCloseListener {
+            viewModel.onSearchQueryChanged(null)
+            true
+        }
+        searchView.setOnQueryTextListener(object : OnQueryTextListener, SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                viewModel.onSearchQueryChanged(query)
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                viewModel.onSearchQueryChanged(newText)
+                return true
+            }
+        })
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {

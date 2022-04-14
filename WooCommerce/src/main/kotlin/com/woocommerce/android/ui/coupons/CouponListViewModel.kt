@@ -3,12 +3,15 @@ package com.woocommerce.android.ui.coupons
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -27,6 +30,8 @@ class CouponListViewModel @Inject constructor(
         wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
     }
 
+    private var searchJob: Job? = null
+
     val couponsState = couponRepository.couponsFlow
         .map { coupons ->
             CouponListState(
@@ -37,7 +42,7 @@ class CouponListViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            couponRepository.loadCoupons()
+            couponRepository.fetchCoupons(forceRefresh = true)
         }
     }
 
@@ -56,7 +61,17 @@ class CouponListViewModel @Inject constructor(
 
     fun onLoadMore() {
         viewModelScope.launch {
-            couponRepository.loadCoupons(loadMore = true)
+            couponRepository.loadMore()
+        }
+    }
+
+    fun onSearchQueryChanged(query: String?) {
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            if (!query.isNullOrEmpty()) {
+                delay(AppConstants.SEARCH_TYPING_DELAY_MS)
+            }
+            couponRepository.fetchCoupons(query)
         }
     }
 
