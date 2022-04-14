@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.coupons
 import com.woocommerce.android.WooException
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -71,6 +72,10 @@ class CouponRepository @Inject constructor(
     private suspend fun loadCoupons(): Result<Unit> {
         return store.fetchCoupons(site.get(), page, PAGE_SIZE).let { result ->
             if (result.isError) {
+                WooLog.w(
+                    WooLog.T.COUPONS,
+                    "Fetching coupons failed, error: ${result.error.type}: ${result.error.message}"
+                )
                 Result.failure(WooException(result.error))
             } else {
                 canLoadMore = result.model!!
@@ -89,6 +94,10 @@ class CouponRepository @Inject constructor(
         )
             .let { result ->
                 if (result.isError) {
+                    WooLog.w(
+                        WooLog.T.COUPONS,
+                        "Searching coupons failed, error: ${result.error.type}: ${result.error.message}"
+                    )
                     Result.failure(WooException(result.error))
                 } else {
                     val searchResult = result.model!!
