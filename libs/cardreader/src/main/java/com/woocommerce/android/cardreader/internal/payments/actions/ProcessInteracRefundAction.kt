@@ -27,7 +27,7 @@ internal class ProcessInteracRefundAction(private val terminal: TerminalWrapper)
                     close()
                 }
             })
-            awaitClose { }
+            awaitClose()
         }
     }
 }
