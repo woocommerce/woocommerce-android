@@ -7,6 +7,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.inbox.domain.InboxNote
+import com.woocommerce.android.ui.inbox.domain.InboxNote.NoteType.SURVEY
+import com.woocommerce.android.ui.inbox.domain.InboxNote.Status.ACTIONED
 import com.woocommerce.android.ui.inbox.domain.InboxNoteAction
 import com.woocommerce.android.ui.inbox.domain.InboxRepository
 import com.woocommerce.android.util.DateUtils
@@ -56,27 +58,42 @@ class InboxViewModel @Inject constructor(
             title = title,
             description = description,
             dateCreated = formatNoteCreationDate(dateCreated),
-            isActioned = status == InboxNote.Status.ACTIONED,
-            actions = mapToInboxActionUI(),
+            isSurvey = type == SURVEY,
+            isActioned = status == ACTIONED,
+            actions = mapInboxActionsToUi(),
         )
 
-    private fun InboxNote.mapToInboxActionUI(): List<InboxNoteActionUi> {
+    private fun InboxNote.mapInboxActionsToUi(): List<InboxNoteActionUi> {
+        if (type == SURVEY && status == ACTIONED) {
+            return emptyList()
+        }
+
         val noteActionsUi = actions
-            .filter { it.label != DEFAULT_DISMISS_LABEL }
             .map { it.toInboxActionUi(id) }
             .toMutableList()
-        noteActionsUi.add(
-            InboxNoteActionUi(
-                id = 0,
-                parentNoteId = id,
-                label = DEFAULT_DISMISS_LABEL,
-                textColor = R.color.color_surface_variant,
-                url = "",
-                onClick = { _, noteId -> dismissNote(noteId) }
-            )
-        )
+
+        addDismissActionIfMissing(noteActionsUi)
+
         return noteActionsUi
     }
+
+    private fun InboxNote.addDismissActionIfMissing(noteActionsUi: MutableList<InboxNoteActionUi>) {
+        if (!actionsHaveDismiss(noteActionsUi)) {
+            noteActionsUi.add(
+                InboxNoteActionUi(
+                    id = 0,
+                    parentNoteId = id,
+                    label = DEFAULT_DISMISS_LABEL,
+                    textColor = R.color.color_surface_variant,
+                    url = "",
+                    onClick = { _, noteId -> dismissNote(noteId) }
+                )
+            )
+        }
+    }
+
+    private fun actionsHaveDismiss(noteActionsUi: List<InboxNoteActionUi>) =
+        noteActionsUi.any { it.label == DEFAULT_DISMISS_LABEL }
 
     private fun InboxNoteAction.toInboxActionUi(parentNoteId: Long) =
         InboxNoteActionUi(
@@ -85,22 +102,35 @@ class InboxViewModel @Inject constructor(
             label = label,
             textColor = getActionTextColor(),
             url = url,
-            onClick = ::handleNoteAction
+            onClick = ::handleInboxNoteAction
         )
 
-    private fun handleNoteAction(actionId: Long, noteId: Long) {
+    private fun handleInboxNoteAction(actionId: Long, noteId: Long) {
         val clickedNote = inboxState.value?.notes?.firstOrNull { noteId == it.id }
-        val clickedAction = clickedNote?.actions?.firstOrNull { actionId == it.id }
-        clickedAction?.let { action ->
-            if (action.url.isNotEmpty()) openUrl(noteId, actionId, action.url)
+        clickedNote?.let {
+            when {
+                it.isSurvey -> markSurveyAsAnswered(clickedNote.id, actionId)
+                else -> openActionUrl(clickedNote, actionId)
+            }
         }
     }
 
-    private fun openUrl(noteId: Long, actionId: Long, url: String) {
+    private fun openActionUrl(clickedNote: InboxNoteUi, actionId: Long) {
+        val clickedAction = clickedNote.actions.firstOrNull { actionId == it.id }
+        clickedAction?.let {
+            if (it.url.isNotEmpty()) {
+                viewModelScope.launch {
+                    inboxRepository.markInboxNoteAsActioned(clickedNote.id, actionId)
+                }
+                triggerEvent(InboxNoteActionEvent.OpenUrlEvent(it.url))
+            }
+        }
+    }
+
+    private fun markSurveyAsAnswered(noteId: Long, actionId: Long) {
         viewModelScope.launch {
             inboxRepository.markInboxNoteAsActioned(noteId, actionId)
         }
-        triggerEvent(InboxNoteActionEvent.OpenUrlEvent(url))
     }
 
     private fun dismissNote(noteId: Long) {
@@ -149,8 +179,9 @@ class InboxViewModel @Inject constructor(
         val title: String,
         val description: String,
         val dateCreated: String,
-        val isActioned: Boolean = false,
-        val actions: List<InboxNoteActionUi>,
+        val isSurvey: Boolean,
+        val isActioned: Boolean,
+        val actions: List<InboxNoteActionUi>
     )
 
     data class InboxNoteActionUi(

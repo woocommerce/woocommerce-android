@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.inbox.InboxViewModel.Companion.DEFAULT_DISMISS_LABEL
 import com.woocommerce.android.ui.inbox.InboxViewModel.InboxNoteActionUi
-import com.woocommerce.android.ui.inbox.InboxViewModel.InboxNoteUi
 import com.woocommerce.android.ui.inbox.domain.InboxNote
 import com.woocommerce.android.ui.inbox.domain.InboxRepository
 import com.woocommerce.android.util.DateUtils
@@ -109,6 +108,7 @@ class InboxViewModelTest : BaseUnitTest() {
             description = "",
             dateCreated = "",
             status = InboxNote.Status.UNACTIONED,
+            type = InboxNote.NoteType.INFO,
             actions = listOf(NOTE_ACTION)
         )
         val DEFAULT_DISMISS_ACTION_UI =
@@ -120,22 +120,5 @@ class InboxViewModelTest : BaseUnitTest() {
                 onClick = { _, _ -> },
                 url = ""
             )
-        val NOTE_UI = InboxNoteUi(
-            id = 2,
-            title = "",
-            description = "",
-            dateCreated = "",
-            actions = listOf(
-                InboxNoteActionUi(
-                    id = 3,
-                    parentNoteId = 2,
-                    label = "",
-                    textColor = R.color.color_secondary,
-                    onClick = { _, _ -> },
-                    url = ""
-                ),
-                DEFAULT_DISMISS_ACTION_UI
-            )
-        )
     }
 }
