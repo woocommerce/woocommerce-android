@@ -6,7 +6,9 @@ import com.woocommerce.android.media.MediaFilesRepository.UploadResult.UploadPro
 import com.woocommerce.android.media.MediaFilesRepository.UploadResult.UploadSuccess
 import com.woocommerce.android.media.ProductImagesUploadWorker.Companion.DURATION_BEFORE_STOPPING_SERVICE
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event
-import com.woocommerce.android.media.ProductImagesUploadWorker.Event.MediaUploadEvent.*
+import com.woocommerce.android.media.ProductImagesUploadWorker.Event.MediaUploadEvent.FetchSucceeded
+import com.woocommerce.android.media.ProductImagesUploadWorker.Event.MediaUploadEvent.UploadFailed
+import com.woocommerce.android.media.ProductImagesUploadWorker.Event.MediaUploadEvent.UploadSucceeded
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event.ProductUpdateEvent.ProductUpdateFailed
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event.ProductUpdateEvent.ProductUpdateSucceeded
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event.ProductUploadsCompleted
@@ -20,14 +22,22 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType.GENERIC_ERROR
 import org.wordpress.android.util.DateTimeUtils
-import java.util.*
+import java.util.Date
 
 @ExperimentalCoroutinesApi
 class ProductImagesUploadWorkerTest : BaseUnitTest() {

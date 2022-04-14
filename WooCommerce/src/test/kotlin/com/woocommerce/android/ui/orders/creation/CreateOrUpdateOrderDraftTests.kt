@@ -6,6 +6,8 @@ import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.Order
 import com.woocommerce.android.util.InlineClassesAnswer
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.*
