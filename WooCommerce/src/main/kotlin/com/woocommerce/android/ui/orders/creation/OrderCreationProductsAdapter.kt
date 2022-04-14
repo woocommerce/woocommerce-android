@@ -73,19 +73,16 @@ class OrderCreationProductsAdapter(
                 if (productModel.item.isVariation && productModel.item.attributesDescription.isNotEmpty()) {
                     append(productModel.item.attributesDescription)
                 } else {
-                    if (productModel.isStockManaged) {
+                    if (productModel.isStockManaged && productModel.stockStatus == ProductStockStatus.InStock) {
                         append(
-                            if (productModel.stockStatus == ProductStockStatus.InStock) {
-                                context.getString(
-                                    R.string.order_creation_product_stock_quantity,
-                                    productModel.stockQuantity.formatToString()
-                                )
-                            } else {
-                                context.getString(productModel.stockStatus.stringResource)
-                            }
+                            context.getString(
+                                R.string.order_creation_product_stock_quantity,
+                                productModel.stockQuantity.formatToString()
+                            )
                         )
                     } else {
-                        append(context.getString(R.string.order_creation_product_instock))
+                        append(context.getString(productModel.stockStatus.stringResource))
+                        // append(context.getString(R.string.order_creation_product_instock))
                     }
                 }
                 append(" • ")
