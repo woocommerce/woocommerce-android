@@ -14,7 +14,6 @@ import com.woocommerce.android.databinding.FragmentTakePaymentBinding
 import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
@@ -49,21 +48,20 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
         binding.textCard.setOnClickListener {
             viewModel.onCardPaymentClicked()
         }
-        binding.textShare.setOnClickListener {
-            viewModel.onSharePaymentUrlClicked()
+
+        if (viewModel.order.paymentUrl.isNotEmpty()) {
+            binding.textShare.setOnClickListener {
+                viewModel.onSharePaymentUrlClicked()
+            }
+        } else {
+            binding.textShare.isVisible = false
         }
 
-        setUpObservers(binding)
+        setUpObservers()
         setupResultHandlers()
     }
 
-    private fun setUpObservers(binding: FragmentTakePaymentBinding) {
-        viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
-            new.isSharePaymentUrlEnabled.takeIfNotEqualTo(old?.isSharePaymentUrlEnabled) {
-                binding.textShare.isVisible = it == true
-            }
-        }
-
+    private fun setUpObservers() {
         viewModel.event.observe(
             viewLifecycleOwner
         ) { event ->
