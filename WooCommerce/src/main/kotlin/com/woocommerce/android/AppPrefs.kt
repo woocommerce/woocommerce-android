@@ -605,7 +605,7 @@ object AppPrefs {
 
     fun getOrderFilters(currentSiteId: Int, filterCategory: String) = getString(
         getOrderFilterKey(currentSiteId, filterCategory)
-    ).orNullIfEmpty()
+    )
 
     private fun getOrderFilterKey(currentSiteId: Int, filterCategory: String) =
         PrefKeyString("$ORDER_FILTER_PREFIX:$currentSiteId:$filterCategory")
