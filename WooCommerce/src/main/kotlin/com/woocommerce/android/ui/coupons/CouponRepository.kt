@@ -56,6 +56,15 @@ class CouponRepository @Inject constructor(
                 Result.success(Unit)
             }
         } else {
+            searchResults.value = emptyList()
+            searchCoupons()
+        }
+    }
+
+    suspend fun loadMore(): Result<Unit> {
+        return if (searchQuery.value.isNullOrEmpty()) {
+            loadCoupons()
+        } else {
             searchCoupons()
         }
     }
