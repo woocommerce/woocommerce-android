@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.Serializable
 
 /**
  * A helper function to create a [MutableStateFlow] that creates an entry in [SavedStateHandle] to persist value
@@ -22,12 +23,39 @@ import kotlinx.coroutines.withContext
  *  with the given [initialValue].
  *  @param key an optional key for the value
  */
-fun <T : Parcelable> SavedStateHandle.getStateFlow(
+fun <T : Any> SavedStateHandle.getStateFlow(
     scope: CoroutineScope,
     initialValue: T,
     key: String = initialValue.javaClass.name
 ): MutableStateFlow<T> = this.let { handle ->
-    val liveData = handle.getLiveData(key, initialValue).also { liveData ->
+    if (initialValue !is Parcelable && initialValue !is Serializable) {
+        error("getStateFlow supports only types that are either Parcelable or Serializable")
+    }
+
+    getStateFlowInternal(scope, initialValue, key)
+}
+
+fun <T : Any?> SavedStateHandle.getNullableStateFlow(
+    scope: CoroutineScope,
+    initialValue: T,
+    clazz: Class<out T>,
+    key: String = clazz.name
+): MutableStateFlow<T> {
+    if (!Parcelable::class.java.isAssignableFrom(clazz) &&
+        !Serializable::class.java.isAssignableFrom(clazz)
+    ) {
+        error("getStateFlow supports only types that are either Parcelable or Serializable")
+    }
+
+    return getStateFlowInternal(scope, initialValue, key)
+}
+
+private fun <T : Any?> SavedStateHandle.getStateFlowInternal(
+    scope: CoroutineScope,
+    initialValue: T,
+    key: String
+): MutableStateFlow<T> {
+    val liveData = this.getLiveData(key, initialValue).also { liveData ->
         if (liveData.value === initialValue) {
             liveData.value = initialValue
         }
@@ -54,5 +82,5 @@ fun <T : Parcelable> SavedStateHandle.getStateFlow(
             }
         }
     }
-    mutableStateFlow
+    return mutableStateFlow
 }
