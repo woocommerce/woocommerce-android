@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.ViewSta
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.*
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -606,7 +607,8 @@ class OrderCreationViewModelTest : BaseUnitTest() {
                 item = defaultOrderItem,
                 imageUrl = "",
                 isStockManaged = false,
-                stockQuantity = 0.0
+                stockQuantity = 0.0,
+                stockStatus = ProductStockStatus.InStock
             )
         }
     }
