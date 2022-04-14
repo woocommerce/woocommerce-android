@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -41,7 +41,7 @@ class DiscoverReadersActionTest {
     }
 
     @Test
-    fun `when discovery started, then Started is emitted`() = runBlockingTest {
+    fun `when discovery started, then Started is emitted`() = runTest {
         whenever(terminal.discoverReaders(any(), any(), any())).thenAnswer {
             mock<Cancelable>()
         }
@@ -52,7 +52,7 @@ class DiscoverReadersActionTest {
     }
 
     @Test
-    fun `when nearby readers found, then FoundReaders is emitted`() = runBlockingTest {
+    fun `when nearby readers found, then FoundReaders is emitted`() = runTest {
         whenever(terminal.discoverReaders(any(), any(), any())).thenAnswer {
             onUpdateDiscoveredReaders(args = it.arguments, readers = listOf(mock()))
             mock<Cancelable>()
@@ -65,7 +65,7 @@ class DiscoverReadersActionTest {
     }
 
     @Test
-    fun `when new readers found, then FoundReaders is emitted`() = runBlockingTest {
+    fun `when new readers found, then FoundReaders is emitted`() = runTest {
         whenever(terminal.discoverReaders(any(), any(), any())).thenAnswer {
             onUpdateDiscoveredReaders(args = it.arguments, readers = listOf(mock()))
             onUpdateDiscoveredReaders(args = it.arguments, readers = listOf(mock(), mock()))
@@ -81,7 +81,7 @@ class DiscoverReadersActionTest {
     }
 
     @Test
-    fun `when already found readers found, then FoundReaders is NOT emitted`() = runBlockingTest {
+    fun `when already found readers found, then FoundReaders is NOT emitted`() = runTest {
         whenever(terminal.discoverReaders(any(), any(), any())).thenAnswer {
             val reader = mock<Reader>()
             onUpdateDiscoveredReaders(args = it.arguments, readers = listOf(reader))
@@ -98,7 +98,7 @@ class DiscoverReadersActionTest {
     }
 
     @Test
-    fun `when reader discover succeeds, then Success is emitted`() = runBlockingTest {
+    fun `when reader discover succeeds, then Success is emitted`() = runTest {
         whenever(terminal.discoverReaders(any(), any(), any())).thenAnswer {
             onSuccess(args = it.arguments)
             mock<Cancelable>()
@@ -111,7 +111,7 @@ class DiscoverReadersActionTest {
     }
 
     @Test
-    fun `when reader discover fails, then Failure is emitted`() = runBlockingTest {
+    fun `when reader discover fails, then Failure is emitted`() = runTest {
         whenever(terminal.discoverReaders(any(), any(), any())).thenAnswer {
             onFailure(it.arguments)
             mock<Cancelable>()
@@ -124,7 +124,7 @@ class DiscoverReadersActionTest {
     }
 
     @Test
-    fun `when reader discover succeeds, then flow is terminated`() = runBlockingTest {
+    fun `when reader discover succeeds, then flow is terminated`() = runTest {
         whenever(terminal.discoverReaders(any(), any(), any())).thenAnswer {
             onSuccess(args = it.arguments)
             mock<Cancelable>()
@@ -137,7 +137,7 @@ class DiscoverReadersActionTest {
     }
 
     @Test
-    fun `when reader discover fails, then flow is terminated`() = runBlockingTest {
+    fun `when reader discover fails, then flow is terminated`() = runTest {
         whenever(terminal.discoverReaders(any(), any(), any())).thenAnswer {
             onFailure(it.arguments)
             mock<Cancelable>()
@@ -150,7 +150,7 @@ class DiscoverReadersActionTest {
     }
 
     @Test
-    fun `given flow not terminated, when job canceled, then reader discovery gets canceled`() = runBlockingTest {
+    fun `given flow not terminated, when job canceled, then reader discovery gets canceled`() = runTest {
         val cancelable = mock<Cancelable>()
         whenever(cancelable.isCompleted).thenReturn(false)
         whenever(terminal.discoverReaders(any(), any(), any())).thenAnswer { cancelable }
@@ -165,7 +165,7 @@ class DiscoverReadersActionTest {
     }
 
     @Test
-    fun `given flow already terminated, when job canceled, then reader discovery not canceled`() = runBlockingTest {
+    fun `given flow already terminated, when job canceled, then reader discovery not canceled`() = runTest {
         val cancelable = mock<Cancelable>()
         whenever(cancelable.isCompleted).thenReturn(true)
         whenever(terminal.discoverReaders(any(), any(), any())).thenAnswer {
@@ -183,7 +183,7 @@ class DiscoverReadersActionTest {
     }
 
     @Test
-    fun `given last event is terminal, when multiple events emitted, then flow terminates`() = runBlockingTest {
+    fun `given last event is terminal, when multiple events emitted, then flow terminates`() = runTest {
         whenever(terminal.discoverReaders(any(), any(), any())).thenAnswer {
             onUpdateDiscoveredReaders(args = it.arguments, readers = listOf(mock()))
             onUpdateDiscoveredReaders(args = it.arguments, readers = listOf(mock()))

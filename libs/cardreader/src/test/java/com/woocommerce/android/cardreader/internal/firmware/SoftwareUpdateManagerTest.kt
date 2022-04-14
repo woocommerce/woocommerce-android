@@ -9,7 +9,7 @@ import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceTimeBy
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -28,7 +28,7 @@ class SoftwareUpdateManagerTest {
     )
 
     @Test
-    fun `given update status changes to started, when start update, then function resumes`() = runBlockingTest {
+    fun `given update status changes to started, when start update, then function resumes`() = runTest {
         // GIVEN
         val availabilityEvents = MutableStateFlow<SoftwareUpdateStatus>(SoftwareUpdateStatus.Unknown)
         whenever(bluetoothReaderListener.updateStatusEvents).thenReturn(availabilityEvents)
@@ -45,7 +45,7 @@ class SoftwareUpdateManagerTest {
     }
 
     @Test
-    fun `given update status changes to installing, when start update, then function resumes`() = runBlockingTest {
+    fun `given update status changes to installing, when start update, then function resumes`() = runTest {
         // GIVEN
         val availabilityEvents = MutableStateFlow<SoftwareUpdateStatus>(SoftwareUpdateStatus.Unknown)
         whenever(bluetoothReaderListener.updateStatusEvents).thenReturn(availabilityEvents)
@@ -62,7 +62,7 @@ class SoftwareUpdateManagerTest {
     }
 
     @Test
-    fun `given update status changes to success, when start update, then function resumes`() = runBlockingTest {
+    fun `given update status changes to success, when start update, then function resumes`() = runTest {
         // GIVEN
         val availabilityEvents = MutableStateFlow<SoftwareUpdateStatus>(SoftwareUpdateStatus.Unknown)
         whenever(bluetoothReaderListener.updateStatusEvents).thenReturn(availabilityEvents)
@@ -79,7 +79,7 @@ class SoftwareUpdateManagerTest {
     }
 
     @Test
-    fun `given update status changes to failed, when start update, then function resumes`() = runBlockingTest {
+    fun `given update status changes to failed, when start update, then function resumes`() = runTest {
         // GIVEN
         val availabilityEvents = MutableStateFlow<SoftwareUpdateStatus>(SoftwareUpdateStatus.Unknown)
         whenever(bluetoothReaderListener.updateStatusEvents).thenReturn(availabilityEvents)
@@ -96,7 +96,7 @@ class SoftwareUpdateManagerTest {
     }
 
     @Test
-    fun `given update status is install started, when start update, then function resumes`() = runBlockingTest {
+    fun `given update status is install started, when start update, then function resumes`() = runTest {
         // GIVEN
         val availabilityEvents = MutableStateFlow<SoftwareUpdateStatus>(SoftwareUpdateStatus.InstallationStarted)
         whenever(bluetoothReaderListener.updateStatusEvents).thenReturn(availabilityEvents)
@@ -111,7 +111,7 @@ class SoftwareUpdateManagerTest {
     }
 
     @Test
-    fun `given unknown status and timeout, when start update, then function resumes`() = runBlockingTest {
+    fun `given unknown status and timeout, when start update, then function resumes`() = runTest {
         // GIVEN
         val availabilityEvents = MutableStateFlow<SoftwareUpdateStatus>(SoftwareUpdateStatus.Unknown)
         whenever(bluetoothReaderListener.updateStatusEvents).thenReturn(availabilityEvents)

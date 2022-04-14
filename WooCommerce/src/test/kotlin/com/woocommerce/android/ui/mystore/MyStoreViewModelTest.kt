@@ -143,7 +143,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
     @Test
     fun `Given network connection, When on swipe to refresh, Then stats are refreshed for selected granularity`() =
         testBlocking {
-            // TODO malinajirka This test is failing and I'm not sure why.
             whenViewModelIsCreated()
             givenNetworkConnectivity(connected = true)
 

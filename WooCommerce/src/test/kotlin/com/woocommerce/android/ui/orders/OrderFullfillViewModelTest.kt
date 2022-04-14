@@ -19,7 +19,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -243,7 +242,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `refresh shipping tracking items when an item is added`() = runBlockingTest {
+    fun `refresh shipping tracking items when an item is added`() = testBlocking {
         val shipmentTracking = OrderShipmentTracking(
             trackingProvider = "testProvider",
             trackingNumber = "123456",
@@ -270,7 +269,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `handle onBackButtonClicked when new shipment tracking is added`() = runBlockingTest {
+    fun `handle onBackButtonClicked when new shipment tracking is added`() = testBlocking {
         val shipmentTracking = OrderShipmentTracking(
             trackingProvider = "testProvider",
             trackingNumber = "123456",
@@ -312,7 +311,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `handle onBackButtonClicked when no shipment is added`() = runBlockingTest {
+    fun `handle onBackButtonClicked when no shipment is added`() = testBlocking {
         doReturn(order).whenever(repository).getOrderById(any())
         doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
 

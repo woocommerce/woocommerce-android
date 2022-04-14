@@ -103,7 +103,6 @@ class OrderCreationVariationSelectionViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when loading more is request, then fetch more variations`() = testBlocking {
-        // TODO malinajirka This is failing and I'm not sure why. Seems like nested collect is not launched.
         whenever(variationsRepository.canLoadMoreProductVariations).thenReturn(true)
 
         viewModel.viewState.observeForTesting {

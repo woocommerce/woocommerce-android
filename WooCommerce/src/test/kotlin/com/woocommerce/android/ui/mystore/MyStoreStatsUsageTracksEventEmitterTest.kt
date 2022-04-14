@@ -7,7 +7,6 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -52,7 +51,7 @@ class MyStoreStatsUsageTracksEventEmitterTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given some interactions, when the site is changed, then it will not emit an event`() = runBlockingTest {
+    fun `given some interactions, when the site is changed, then it will not emit an event`() = testBlocking {
         // Given
         usageTracksEventEmitter.interacted(
             "2021-11-23T00:00:00Z",

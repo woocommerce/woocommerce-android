@@ -10,11 +10,11 @@ import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultOrder
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultOrderModel
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultWCOrderItemList
 import com.woocommerce.android.ui.products.addons.AddonTestFixtures.defaultWCProductModel
+import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -28,7 +28,7 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import kotlin.test.fail
 
 @ExperimentalCoroutinesApi
-class AddonRepositoryTest {
+class AddonRepositoryTest: BaseUnitTest() {
     private lateinit var repositoryUnderTest: AddonRepository
 
     private lateinit var orderStoreMock: WCOrderStore
@@ -50,7 +50,6 @@ class AddonRepositoryTest {
     @Before
     fun setUp() {
         siteModelMock = mock {
-            on { id }.doReturn(321)
             on { siteId }.doReturn(321)
         }
         selectedSiteMock = mock {
@@ -69,7 +68,7 @@ class AddonRepositoryTest {
     }
 
     @Test
-    fun `fetchOrderAddonsData should return both order addons and product addons data`() = runBlockingTest {
+    fun `fetchOrderAddonsData should return both order addons and product addons data`() = testBlocking {
         configureSuccessfulOrderResponse()
         configureSuccessfulAddonResponse()
 
@@ -88,7 +87,7 @@ class AddonRepositoryTest {
     }
 
     @Test
-    fun `fetchOrderAddonsData should map and filter orderAddons keys as List correctly`() = runBlockingTest {
+    fun `fetchOrderAddonsData should map and filter orderAddons keys as List correctly`() = testBlocking {
         configureSuccessfulOrderResponse()
         configureSuccessfulAddonResponse()
 
@@ -108,7 +107,7 @@ class AddonRepositoryTest {
     }
 
     @Test
-    fun `fetchOrderAddonsData should map productAddons correctly`() = runBlockingTest {
+    fun `fetchOrderAddonsData should map productAddons correctly`() = testBlocking {
         configureSuccessfulOrderResponse()
         configureSuccessfulAddonResponse()
 
@@ -128,7 +127,7 @@ class AddonRepositoryTest {
     }
 
     @Test
-    fun `containsAddonsFrom should return true for valid OrderItem`() = runBlockingTest {
+    fun `containsAddonsFrom should return true for valid OrderItem`() = testBlocking {
         configureSuccessfulAddonResponse()
 
         val orderItem = defaultOrderModel.let { orderMapper.toAppModel(it) }.items.first()
@@ -137,7 +136,7 @@ class AddonRepositoryTest {
     }
 
     @Test
-    fun `containsAddonsFrom should return false when requested with invalid OrderItem`() = runBlockingTest {
+    fun `containsAddonsFrom should return false when requested with invalid OrderItem`() = testBlocking {
         configureSuccessfulAddonResponse()
 
         val orderItem = defaultOrderModel.let { orderMapper.toAppModel(it) }.items.first()
@@ -152,35 +151,35 @@ class AddonRepositoryTest {
     }
 
     @Test
-    fun `fetchOrderAddonsData should return null if product addon data fails`() = runBlockingTest {
+    fun `fetchOrderAddonsData should return null if product addon data fails`() = testBlocking {
         configureSuccessfulOrderResponse()
         val response = repositoryUnderTest.getOrderAddonsData(123, 999, 333)
         assertThat(response).isNull()
     }
 
     @Test
-    fun `fetchOrderAddonsData should return null if order addon data fails`() = runBlockingTest {
+    fun `fetchOrderAddonsData should return null if order addon data fails`() = testBlocking {
         configureSuccessfulAddonResponse()
         val response = repositoryUnderTest.getOrderAddonsData(123, 999, 333)
         assertThat(response).isNull()
     }
 
     @Test
-    fun `fetchOrderAddonsData should return null if order item ID is incorrect`() = runBlockingTest {
+    fun `fetchOrderAddonsData should return null if order item ID is incorrect`() = testBlocking {
         configureSuccessfulAddonResponse()
         val response = repositoryUnderTest.getOrderAddonsData(123, 0, 333)
         assertThat(response).isNull()
     }
 
     @Test
-    fun `hasAddons should return false if there's no add-ons for given product`() = runBlockingTest {
+    fun `hasAddons should return false if there's no add-ons for given product`() = testBlocking {
         whenever(addonStoreMock.observeProductSpecificAddons(any(), any())).thenReturn(emptyFlow())
 
         assertThat(repositoryUnderTest.hasAnyProductSpecificAddons(remoteProductID)).isEqualTo(false)
     }
 
     @Test
-    fun `hasAddons should return true if there are add-ons for given product`() = runBlockingTest {
+    fun `hasAddons should return true if there are add-ons for given product`() = testBlocking {
         whenever(addonStoreMock.observeProductSpecificAddons(any(), any())).thenReturn(flowOf(defaultAddonsList))
 
         assertThat(repositoryUnderTest.hasAnyProductSpecificAddons(remoteProductID)).isEqualTo(true)

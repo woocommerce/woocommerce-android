@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -35,7 +35,7 @@ internal class CollectPaymentActionTest {
     }
 
     @Test
-    fun `when collecting payment succeeds, then Success is emitted`() = runBlockingTest {
+    fun `when collecting payment succeeds, then Success is emitted`() = runTest {
         whenever(terminal.collectPaymentMethod(any(), any())).thenAnswer {
             (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
             mock<Cancelable>()
@@ -47,7 +47,7 @@ internal class CollectPaymentActionTest {
     }
 
     @Test
-    fun `when collecting payment fails, then Failure is emitted`() = runBlockingTest {
+    fun `when collecting payment fails, then Failure is emitted`() = runTest {
         whenever(terminal.collectPaymentMethod(any(), any())).thenAnswer {
             (it.arguments[1] as PaymentIntentCallback).onFailure(mock())
             mock<Cancelable>()
@@ -59,7 +59,7 @@ internal class CollectPaymentActionTest {
     }
 
     @Test
-    fun `when collecting payment succeeds, then updated paymentIntent is returned`() = runBlockingTest {
+    fun `when collecting payment succeeds, then updated paymentIntent is returned`() = runTest {
         val updatedPaymentIntent = mock<PaymentIntent>()
         whenever(terminal.collectPaymentMethod(any(), any())).thenAnswer {
             (it.arguments[1] as PaymentIntentCallback).onSuccess(updatedPaymentIntent)
@@ -72,7 +72,7 @@ internal class CollectPaymentActionTest {
     }
 
     @Test
-    fun `when collecting payment succeeds, then flow is terminated`() = runBlockingTest {
+    fun `when collecting payment succeeds, then flow is terminated`() = runTest {
         whenever(terminal.collectPaymentMethod(any(), any())).thenAnswer {
             (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
             mock<Cancelable>()
@@ -84,7 +84,7 @@ internal class CollectPaymentActionTest {
     }
 
     @Test
-    fun `when collecting payment fails, then flow is terminated`() = runBlockingTest {
+    fun `when collecting payment fails, then flow is terminated`() = runTest {
         whenever(terminal.collectPaymentMethod(any(), any())).thenAnswer {
             (it.arguments[1] as PaymentIntentCallback).onFailure(mock())
             mock<Cancelable>()
@@ -96,7 +96,7 @@ internal class CollectPaymentActionTest {
     }
 
     @Test
-    fun `given flow not terminated, when job canceled, then collect payment gets canceled`() = runBlockingTest {
+    fun `given flow not terminated, when job canceled, then collect payment gets canceled`() = runTest {
         val cancelable = mock<Cancelable>()
         whenever(cancelable.isCompleted).thenReturn(false)
         whenever(terminal.collectPaymentMethod(any(), any())).thenAnswer { cancelable }
