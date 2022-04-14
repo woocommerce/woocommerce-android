@@ -6,6 +6,7 @@ data class InboxNote(
     val description: String,
     val dateCreated: String,
     val status: Status,
+    val type: NoteType,
     val actions: List<InboxNoteAction>
 ) {
     enum class Status {
@@ -14,11 +15,18 @@ data class InboxNote(
         SNOOZED,
         UNKNOWN
     }
+
+    enum class NoteType {
+        INFO,
+        MARKETING,
+        UPDATE,
+        SURVEY
+    }
 }
 
 data class InboxNoteAction(
     val id: Long,
     val label: String,
     val isPrimary: Boolean,
-    val url: String
+    val url: String,
 )

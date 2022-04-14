@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.inbox
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -16,8 +17,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
@@ -105,48 +109,102 @@ fun InboxNotes(notes: List<InboxNoteUi>) {
 @Composable
 fun InboxNoteRow(note: InboxNoteUi) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+        modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text(
-            modifier = Modifier.padding(top = 16.dp),
-            text = note.dateCreated,
-            style = MaterialTheme.typography.subtitle2,
-            color = colorResource(id = R.color.color_surface_variant)
-        )
-        Text(
-            text = note.title,
-            fontWeight = if (note.isActioned) FontWeight.Normal else FontWeight.Bold,
-            style = MaterialTheme.typography.subtitle1
-        )
-        Text(
-            text = StringUtils.fromHtml(note.description).toAnnotatedString(),
-            style = MaterialTheme.typography.body2
-        )
-        InboxNoteActionsRow(note.actions)
-    }
-}
-
-@Composable
-private fun InboxNoteActionsRow(actions: List<InboxNoteActionUi>) {
-    LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-        items(actions) { action ->
-            InboxNoteAction(inboxAction = action)
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Text(
+                modifier = Modifier.padding(top = 16.dp),
+                text = note.dateCreated,
+                style = MaterialTheme.typography.subtitle2,
+                color = colorResource(id = R.color.color_surface_variant)
+            )
+            Text(
+                text = note.title,
+                fontWeight = if (note.isActioned) FontWeight.Normal else FontWeight.Bold,
+                style = MaterialTheme.typography.subtitle1
+            )
+            Text(
+                text = StringUtils.fromHtml(note.description).toAnnotatedString(),
+                style = MaterialTheme.typography.body2
+            )
+        }
+        when {
+            note.isSurvey -> InboxNoteSurveyActionsRow(note.actions)
+            else -> InboxNoteActionsRow(note.actions)
         }
     }
 }
 
 @Composable
-fun InboxNoteAction(inboxAction: InboxNoteActionUi) {
-    TextButton(
-        onClick = { inboxAction.onClick(inboxAction.id, inboxAction.parentNoteId) },
+private fun InboxNoteActionsRow(actions: List<InboxNoteActionUi>) {
+    LazyRow(
+        Modifier.padding(start = 8.dp, end = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
+        items(actions) { action ->
+            InboxNoteTextAction(inboxAction = action)
+        }
+    }
+}
+
+@Composable
+private fun InboxNoteSurveyActionsRow(actions: List<InboxNoteActionUi>) {
+    Row(
+        modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        if (actions.isEmpty()) {
+            Text(
+                modifier = Modifier.padding(top = 16.dp, bottom = 16.dp),
+                text = stringResource(id = R.string.inbox_note_survey_actioned),
+                style = MaterialTheme.typography.body2
+            )
+        } else {
+            actions.forEachIndexed { index, inboxNoteActionUi ->
+                when {
+                    index < 2 -> InboxNoteSurveyAction(inboxNoteActionUi)
+                    else -> InboxNoteTextAction(inboxNoteActionUi)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun InboxNoteTextAction(inboxAction: InboxNoteActionUi) {
+    TextButton(onClick = { inboxAction.onClick(inboxAction.id, inboxAction.parentNoteId) }) {
         Text(
             text = inboxAction.label.uppercase(),
             color = colorResource(id = inboxAction.textColor)
         )
+    }
+}
+
+@Composable
+@SuppressWarnings("MagicNumber")
+fun InboxNoteSurveyAction(inboxAction: InboxNoteActionUi) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        OutlinedButton(
+            onClick = { inboxAction.onClick(inboxAction.id, inboxAction.parentNoteId) },
+            border = BorderStroke(1.dp, colorResource(id = R.color.color_on_surface_disabled)),
+            shape = RoundedCornerShape(20),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = MaterialTheme.colors.background,
+            )
+        ) {
+            Text(
+                text = inboxAction.label,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.subtitle1
+            )
+        }
     }
 }
 
@@ -265,7 +323,7 @@ class SampleInboxProvider : PreviewParameterProvider<InboxState> {
                             label = "Open",
                             textColor = R.color.color_secondary,
                             onClick = { _, _ -> },
-                            url = ""
+                            url = "",
                         ),
                         InboxNoteActionUi(
                             id = 4,
@@ -273,9 +331,11 @@ class SampleInboxProvider : PreviewParameterProvider<InboxState> {
                             label = "Dismiss",
                             textColor = R.color.color_surface_variant,
                             onClick = { _, _ -> },
-                            url = ""
+                            url = "",
                         )
-                    )
+                    ),
+                    isActioned = false,
+                    isSurvey = false
                 ),
                 InboxNoteUi(
                     id = 2,
@@ -289,7 +349,7 @@ class SampleInboxProvider : PreviewParameterProvider<InboxState> {
                             label = "Open",
                             textColor = R.color.color_secondary,
                             onClick = { _, _ -> },
-                            url = ""
+                            url = "",
                         ),
                         InboxNoteActionUi(
                             id = 4,
@@ -297,9 +357,11 @@ class SampleInboxProvider : PreviewParameterProvider<InboxState> {
                             label = "Dismiss",
                             textColor = R.color.color_surface_variant,
                             onClick = { _, _ -> },
-                            url = ""
+                            url = "",
                         )
-                    )
+                    ),
+                    isActioned = false,
+                    isSurvey = true
                 )
             )
         )
