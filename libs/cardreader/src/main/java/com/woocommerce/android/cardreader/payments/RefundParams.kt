@@ -9,7 +9,7 @@ data class RefundParams(
     val currency: String
 )
 
-fun RefundParams.toStripeRefundParameters() = RefundParameters.Builder(
+internal fun RefundParams.toStripeRefundParameters() = RefundParameters.Builder(
     chargeId = this.chargeId,
     amount = this.amount.toLong(),
     currency = this.currency
