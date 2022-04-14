@@ -15,18 +15,12 @@ internal class InteracRefundManager(
     private val processInteracRefundAction: ProcessInteracRefundAction,
 ) {
     fun refundInteracPayment(refundParameters: RefundParams): Flow<CardInteracRefundStatus> = flow {
-        emit(CardInteracRefundStatus.InitializingInteracRefund)
-        val collectRefundStatus = collectInteracRefund(refundParameters)
-        if (collectRefundStatus == CollectInteracRefundAction.CollectInteracRefundStatus.Success) {
-            processInteracRefund()
-        }
+        collectInteracRefund(refundParameters)
     }
 
     private suspend fun FlowCollector<CardInteracRefundStatus>.collectInteracRefund(
         refundParameters: RefundParams
-    ): CollectInteracRefundAction.CollectInteracRefundStatus {
-        var collectInteracRefundStatus: CollectInteracRefundAction.CollectInteracRefundStatus =
-            CollectInteracRefundAction.CollectInteracRefundStatus.Success
+    ) {
         emit(CardInteracRefundStatus.CollectingInteracRefund)
         collectInteracRefundAction.collectRefund(
             RefundParameters.Builder(
@@ -35,17 +29,15 @@ internal class InteracRefundManager(
                 currency = refundParameters.currency
             ).build()
         ).collect { refundStatus ->
-            collectInteracRefundStatus = when (refundStatus) {
+            when (refundStatus) {
                 CollectInteracRefundAction.CollectInteracRefundStatus.Success -> {
-                    CollectInteracRefundAction.CollectInteracRefundStatus.Success
+                    processInteracRefund()
                 }
                 is CollectInteracRefundAction.CollectInteracRefundStatus.Failure -> {
                     emit(CardInteracRefundStatus.InteracRefundFailure(refundStatus.exception))
-                    CollectInteracRefundAction.CollectInteracRefundStatus.Failure(refundStatus.exception)
                 }
             }
         }
-        return collectInteracRefundStatus
     }
 
     private suspend fun FlowCollector<CardInteracRefundStatus>.processInteracRefund() {
