@@ -28,7 +28,7 @@ class OrderCreationProductsAdapter(
             diffResult.dispatchUpdatesTo(this)
         }
 
-    var isEnabled = false
+    var isEachQuantityButtonEnabled = false
         set(value) {
             if (value != field) {
                 field = value
@@ -71,8 +71,8 @@ class OrderCreationProductsAdapter(
 
         fun bind(productModel: ProductUIModel) {
             binding.productName.text = productModel.item.name
-            binding.stepperView.isMinusButtonEnabled = isEnabled
-            binding.stepperView.isPlusButtonEnabled = isEnabled
+            binding.stepperView.isMinusButtonEnabled = isEachQuantityButtonEnabled
+            binding.stepperView.isPlusButtonEnabled = isEachQuantityButtonEnabled
             binding.stepperView.apply {
                 value = productModel.item.quantity.toInt()
                 contentDescription = context.getString(R.string.count, value.toString())
