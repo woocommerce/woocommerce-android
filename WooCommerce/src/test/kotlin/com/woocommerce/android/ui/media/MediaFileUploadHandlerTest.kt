@@ -17,9 +17,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineExceptionHandler
-import kotlinx.coroutines.test.createTestCoroutineScope
+import kotlinx.coroutines.test.TestScope
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -65,7 +63,7 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
             worker = productImagesUploadWorker,
             resourceProvider = resourceProvider,
             productDetailRepository = productDetailRepository,
-            appCoroutineScope = createTestCoroutineScope(TestCoroutineDispatcher() + TestCoroutineExceptionHandler() + coroutinesTestRule.testDispatcher)
+            appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher)
         )
     }
 
