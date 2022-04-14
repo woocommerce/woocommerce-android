@@ -28,7 +28,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/major_75"
-                android:hint="@string/order_creation_fee_amount_hint"
+                android:hint="@string/amount"
                 android:imeOptions="flagNoFullscreen"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
