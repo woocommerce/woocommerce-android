@@ -58,7 +58,7 @@ class CardReaderTracker @Inject constructor(
         )
         properties["plugin_slug"] = when (preferredPlugin) {
             WOOCOMMERCE_PAYMENTS -> "woocommerce-payments"
-            STRIPE_EXTENSION_GATEWAY -> "woocommerce-gateway-stripe"
+            STRIPE_EXTENSION_GATEWAY -> "woocommerce-stripe"
             null -> "unknown"
         }
     }
