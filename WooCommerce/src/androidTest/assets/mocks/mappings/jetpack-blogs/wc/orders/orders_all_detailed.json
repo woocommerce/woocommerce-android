@@ -10,8 +10,8 @@
                 "matches": "/wc/v3/orders/(.*)"
             },
             "query": {
-                "matches": "(.*)include\":\"2789(.*)"
-            },             
+                "matches": "(.*)include(.*)"
+            },
             "locale": {
                 "matches": "(.*)"
             }
@@ -1093,7 +1093,7 @@
                 "date_created_gmt": "{{currentYear}}-01-27T10:09:44",
                 "date_modified_gmt": "{{currentYear}}-01-28T10:14:05",
                 "date_paid_gmt": "{{currentYear}}-01-28T10:10:19"
-            }]          
+            }]
         },
         "headers": {
             "Content-Type": "application/json",

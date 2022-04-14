@@ -140,6 +140,7 @@
     <string name="exclusive_or">or</string>
     <string name="count">Count: %s</string>
     <string name="no_sku">No SKU</string>
+    <string name="amount">Amount</string>
 
     <!--
         Date/Time Labels
@@ -371,14 +372,12 @@
     <string name="order_creation_success_snackbar">Order created</string>
     <string name="order_creation_payment_tax">Taxes</string>
     <string name="order_creation_price_calculation_failed">Couldn’t update pricing</string>
-    <string name="order_creation_shipping_amount">Amount</string>
     <string name="order_creation_shipping_name">Name</string>
     <string name="order_creation_shipping_title_add">Add Shipping</string>
     <string name="order_creation_add_shipping">Add shipping</string>
     <string name="order_creation_edit_shipping">Shipping</string>
     <string name="order_creation_remove_shipping">Remove shipping from order</string>
     <string name="order_creation_add_fee_removal_hint">Remove fee from order</string>
-    <string name="order_creation_fee_amount_hint">Amount ($)</string>
     <string name="order_creation_fee_percentage_hint">Percentage (%)</string>
     <string name="order_creation_fee_percentage_toggle_text">Percentage fee</string>
     <!--
@@ -1486,6 +1485,7 @@
     <string name="send_feedback">Send feedback</string>
     <string name="beta_features">Beta features</string>
     <string name="beta_features_add_ons">View Add-ons</string>
+    <string name="beta_features_coupons">Coupons Management</string>
     <string name="beta_features_simple_payments">Simple payments</string>
     <string name="settings_signout">Log out</string>
     <string name="settings_preferences">Preferences</string>
@@ -1874,12 +1874,14 @@
     <string name="coupon_list_wip_title">View and edit coupons</string>
     <string name="coupon_list_wip_message_enabled">We’ve been working on making it possible to view and edit coupons from your device!</string>
     <string name="coupon_list_view_coupon">View coupon summary</string>
-    <string name="coupon_summary_heading">Coupon Summary</string>
-    <string name="coupon_summary_minimum_spend">Minimum spend of %s</string>
-    <string name="coupon_summary_maximum_spend">Maximum spend of %s</string>
-    <string name="coupon_summary_performance_heading">Performance</string>
-    <string name="coupon_summary_performance_discounted_order_heading">Discounted Orders</string>
-    <string name="coupon_summary_performance_amount_heading">Amount</string>
+    <string name="coupon_details_heading">Coupon Summary</string>
+    <string name="coupon_details_minimum_spend">Minimum spend of %s</string>
+    <string name="coupon_details_maximum_spend">Maximum spend of %s</string>
+    <string name="coupon_details_performance_heading">Performance</string>
+    <string name="coupon_details_performance_discounted_order_heading">Discounted Orders</string>
+    <string name="coupon_details_performance_amount_heading">Amount</string>
+    <string name="coupon_details_menu_copy">Copy Coupon Code</string>
+    <string name="coupon_details_menu_share">Share Coupon</string>
     <string name="coupon_details_performance_loading_failure">Loading coupon performance failed</string>
     <string name="coupon_type_percent">Percentage Discount</string>
     <string name="coupon_type_fixed_cart">Fixed Cart Discount</string>
@@ -1888,6 +1890,8 @@
     <string name="coupon_summary_template">%1$s off %2$s</string>
     <string name="coupon_details_expiration_date">Expires %1$s</string>
     <string name="coupon_summary_loading_failure">Loading coupon summary failed</string>
+    <string name="coupon_beta_features_heading">Coupons Management</string>
+    <string name="coupon_beta_features_subheading">Test out managing coupons in the app</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>
