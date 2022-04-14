@@ -129,7 +129,6 @@ class ProductListAdapter(
     private inner class SortFilterItemViewHolder(
         private val binding: ProductsListSortFilterItemBinding
     ) : RecyclerView.ViewHolder(binding.root) {
-
         fun bind(sortFilterItem: ListItem.SortFilterItem) {
             productSortAndFilterListener?.let { binding.productsSortFilterCard.initView(it) }
 
