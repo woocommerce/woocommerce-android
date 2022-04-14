@@ -21,7 +21,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
     </style>
     <style name="Widget.Woo.Toolbar.Surface" parent="ThemeOverlay.MaterialComponents.Toolbar.Surface">
         <item name="actionMenuTextColor">@color/action_menu_fg_selector</item>
-        <item name="colorControlNormal">@color/woo_pink_50</item>
+        <item name="colorControlNormal">@color/woo_pink_30</item>
     </style>
     <style name="TextAppearance.Woo.CollapsingToolbar.Expanded" parent="TextAppearance.MaterialComponents.Headline4">
         <item name="android:textColor">@color/color_on_surface</item>
