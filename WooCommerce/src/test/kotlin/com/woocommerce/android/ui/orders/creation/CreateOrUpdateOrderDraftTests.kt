@@ -40,7 +40,7 @@ class CreateOrUpdateOrderDraftTests : BaseUnitTest() {
         advanceUntilIdle()
 
         assertThat(updateStatuses.size).isEqualTo(3)
-        assertThat(updateStatuses[0]).isEqualTo(OrderDraftUpdateStatus.WillStart)
+        assertThat(updateStatuses[0]).isEqualTo(OrderDraftUpdateStatus.PendingDebounce)
         assertThat(updateStatuses[1]).isEqualTo(OrderDraftUpdateStatus.Ongoing)
         assertThat(updateStatuses[2]).isInstanceOf(OrderDraftUpdateStatus.Succeeded::class.java)
         with(updateStatuses[2] as OrderDraftUpdateStatus.Succeeded) {
@@ -66,7 +66,7 @@ class CreateOrUpdateOrderDraftTests : BaseUnitTest() {
         advanceUntilIdle()
 
         assertThat(updateStatuses.size).isEqualTo(3)
-        assertThat(updateStatuses[0]).isEqualTo(OrderDraftUpdateStatus.WillStart)
+        assertThat(updateStatuses[0]).isEqualTo(OrderDraftUpdateStatus.PendingDebounce)
         assertThat(updateStatuses[1]).isEqualTo(OrderDraftUpdateStatus.Ongoing)
         assertThat(updateStatuses[2]).isInstanceOf(OrderDraftUpdateStatus.Failed::class.java)
 

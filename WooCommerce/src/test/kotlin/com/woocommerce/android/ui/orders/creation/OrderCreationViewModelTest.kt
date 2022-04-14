@@ -550,7 +550,7 @@ class OrderCreationViewModelTest : BaseUnitTest() {
     @Test
     fun `when OrderDraftUpdateStatus is WillStart, then adjust view state to reflect the loading preparation`() {
         createOrUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(WillStart)
+            onBlocking { invoke(any(), any()) } doReturn flowOf(PendingDebounce)
         }
         createSut()
 
