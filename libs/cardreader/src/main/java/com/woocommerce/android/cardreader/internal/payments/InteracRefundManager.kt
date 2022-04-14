@@ -1,10 +1,10 @@
 package com.woocommerce.android.cardreader.internal.payments
 
-import com.stripe.stripeterminal.external.models.RefundParameters
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectInteracRefundAction
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessInteracRefundAction
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus
 import com.woocommerce.android.cardreader.payments.RefundParams
+import com.woocommerce.android.cardreader.payments.toStripeRefundParameters
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.collect
@@ -23,11 +23,7 @@ internal class InteracRefundManager(
     ) {
         emit(CardInteracRefundStatus.CollectingInteracRefund)
         collectInteracRefundAction.collectRefund(
-            RefundParameters.Builder(
-                chargeId = refundParameters.chargeId,
-                amount = refundParameters.amount.toLong(),
-                currency = refundParameters.currency
-            ).build()
+            refundParameters.toStripeRefundParameters()
         ).collect { refundStatus ->
             when (refundStatus) {
                 CollectInteracRefundAction.CollectInteracRefundStatus.Success -> {
