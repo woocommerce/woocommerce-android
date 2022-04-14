@@ -87,7 +87,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
             is CardReaderOnboardingViewModel.OnboardingViewState.NoConnectionErrorState ->
                 showNetworkErrorState(layout, state)
             is CardReaderOnboardingViewModel.OnboardingViewState.LoadingState ->
-                showLoadingState(layout)
+                showLoadingState(layout, state)
             is CardReaderOnboardingViewModel.OnboardingViewState.UnsupportedErrorState ->
                 showCountryNotSupportedState(layout, state)
             is CardReaderOnboardingViewModel.OnboardingViewState.WCPayError ->
@@ -133,20 +133,14 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         }
     }
 
-    private fun showLoadingState(view: View) {
+    private fun showLoadingState(
+        view: View,
+        state: CardReaderOnboardingViewModel.OnboardingViewState.LoadingState,
+    ) {
         val binding = FragmentCardReaderOnboardingLoadingBinding.bind(view)
-        UiHelpers.setTextOrHide(
-            binding.textHeaderTv,
-            CardReaderOnboardingViewModel.OnboardingViewState.LoadingState.headerLabel
-        )
-        UiHelpers.setTextOrHide(
-            binding.hintTv,
-            CardReaderOnboardingViewModel.OnboardingViewState.LoadingState.hintLabel
-        )
-        UiHelpers.setImageOrHideInLandscape(
-            binding.illustrationIv,
-            CardReaderOnboardingViewModel.OnboardingViewState.LoadingState.illustration
-        )
+        UiHelpers.setTextOrHide(binding.textHeaderTv, state.headerLabel)
+        UiHelpers.setTextOrHide(binding.hintTv, state.hintLabel)
+        UiHelpers.setImageOrHideInLandscape(binding.illustrationIv, state.illustration)
     }
 
     private fun showGenericErrorState(
