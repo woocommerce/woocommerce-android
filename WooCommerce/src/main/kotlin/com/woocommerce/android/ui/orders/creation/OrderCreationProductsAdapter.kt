@@ -82,7 +82,6 @@ class OrderCreationProductsAdapter(
                         )
                     } else {
                         append(context.getString(productModel.stockStatus.stringResource))
-                        // append(context.getString(R.string.order_creation_product_instock))
                     }
                 }
                 append(" • ")
