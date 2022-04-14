@@ -7,6 +7,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.persistence.entity.CouponDataModel
 import org.wordpress.android.fluxc.store.CouponStore
 import javax.inject.Inject
@@ -19,6 +21,8 @@ class CouponRepository @Inject constructor(
         private const val PAGE_SIZE = 10
     }
 
+    private val mutex = Mutex()
+
     private var page = 1
     private var canLoadMore = true
 
@@ -27,9 +31,9 @@ class CouponRepository @Inject constructor(
 
     val couponsFlow = searchQuery.flatMapLatest {
         if (it.isNullOrEmpty()) {
-            searchResults
-        } else {
             store.observeCoupons(site.get())
+        } else {
+            searchResults
         }
     }.map {
         it.map { couponDataModel -> couponDataModel.toAppModel() }
@@ -38,10 +42,12 @@ class CouponRepository @Inject constructor(
     suspend fun fetchCoupons(
         searchQuery: String? = null,
         forceRefresh: Boolean = false
-    ): Result<Unit> {
+    ): Result<Unit> = mutex.withLock {
         // Reset pagination attributes
         page = 1
         canLoadMore = true
+
+        this.searchQuery.value = searchQuery
         return if (searchQuery.isNullOrEmpty()) {
             if (forceRefresh) {
                 loadCoupons()
@@ -54,7 +60,7 @@ class CouponRepository @Inject constructor(
         }
     }
 
-    suspend fun loadMore(): Result<Unit> {
+    suspend fun loadMore(): Result<Unit> = mutex.withLock {
         return if (searchQuery.value.isNullOrEmpty()) {
             loadCoupons()
         } else {
