@@ -102,7 +102,7 @@ class ProductPricingViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays the initial price information correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Displays the initial price information correctly`() = testBlocking {
         var state: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> state = new }
 
@@ -110,7 +110,7 @@ class ProductPricingViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays and hides the done button after data change`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Displays and hides the done button after data change`() = testBlocking {
         var state: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> state = new }
 
@@ -138,7 +138,7 @@ class ProductPricingViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays error message if there is validation error`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Displays error message if there is validation error`() = testBlocking {
         var state: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> state = new }
 
@@ -156,7 +156,7 @@ class ProductPricingViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Hides the tax section for variation pricing`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Hides the tax section for variation pricing`() = testBlocking {
         val savedState = ProductPricingFragmentArgs(RequestCodes.VARIATION_DETAIL_PRICING, pricingData)
             .initSavedStateHandle()
 
@@ -182,7 +182,7 @@ class ProductPricingViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Makes sale end date equal to start date if earlier`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Makes sale end date equal to start date if earlier`() = testBlocking {
         var state: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> state = new }
 
@@ -209,7 +209,7 @@ class ProductPricingViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Nulls the sale schedule dates if switch off`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Nulls the sale schedule dates if switch off`() = testBlocking {
         var state: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> state = new }
 
@@ -263,7 +263,7 @@ class ProductPricingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Displays sale price error message when sale price is greater than regular price`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             var state: ViewState? = null
             viewModel.viewStateData.observeForever { _, new -> state = new }
 
@@ -274,7 +274,7 @@ class ProductPricingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Hides sale price error message when sale price is less than regular price`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             var state: ViewState? = null
             viewModel.viewStateData.observeForever { _, new -> state = new }
 
@@ -288,7 +288,7 @@ class ProductPricingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Display sale price error message when sale price is zero and regular price has negative value`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             var state: ViewState? = null
             viewModel.viewStateData.observeForever { _, new -> state = new }
 
@@ -303,7 +303,7 @@ class ProductPricingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Hide sale price error message when sale price is null and regular price has any value`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             var state: ViewState? = null
             viewModel.viewStateData.observeForever { _, new -> state = new }
 

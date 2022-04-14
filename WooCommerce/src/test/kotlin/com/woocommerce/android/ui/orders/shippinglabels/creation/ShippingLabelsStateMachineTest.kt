@@ -56,7 +56,7 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Test the data login sequence of events after start`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Test the data login sequence of events after start`() = testBlocking {
         val expectedSideEffectCount = 3 // necessary to terminate the flow
         var transition: Transition? = null
         launch {
@@ -84,7 +84,7 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Test successful address verification`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Test successful address verification`() = testBlocking {
         val expectedSideEffectCount = 5 // necessary to terminate the flow
         var transition: Transition? = null
         launch {
@@ -110,7 +110,7 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
     }
 
     @Test
-    fun `test show packages step`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `test show packages step`() = testBlocking {
         val packagesList = listOf(
             ShippingLabelPackage(
                 position = 1,

@@ -40,7 +40,7 @@ class CardReaderPaymentCurrencySupportedCheckerTest : BaseUnitTest() {
 
     @Test
     fun `given usd currency, when store location in USA, then isCurrencySupported returns true`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(wooStore.getStoreCountryCode(site)).thenReturn("US")
             whenever(
                 cardReaderConfigFactory.getCardReaderConfigFor("US")
@@ -53,7 +53,7 @@ class CardReaderPaymentCurrencySupportedCheckerTest : BaseUnitTest() {
 
     @Test
     fun `given usd currency, when store location in Canada, then isCurrencySupported returns false`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(wooStore.getStoreCountryCode(site)).thenReturn("CA")
             whenever(
                 cardReaderConfigFactory.getCardReaderConfigFor("CA")
@@ -66,7 +66,7 @@ class CardReaderPaymentCurrencySupportedCheckerTest : BaseUnitTest() {
 
     @Test
     fun `given cad currency, when store location in Canada, then isCurrencySupported returns true`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(wooStore.getStoreCountryCode(site)).thenReturn("CA")
             whenever(
                 cardReaderConfigFactory.getCardReaderConfigFor("CA")
@@ -79,7 +79,7 @@ class CardReaderPaymentCurrencySupportedCheckerTest : BaseUnitTest() {
 
     @Test
     fun `given cad currency, when store location in USA, then isCurrencySupported returns false`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(wooStore.getStoreCountryCode(site)).thenReturn("US")
             whenever(
                 cardReaderConfigFactory.getCardReaderConfigFor("US")
@@ -92,7 +92,7 @@ class CardReaderPaymentCurrencySupportedCheckerTest : BaseUnitTest() {
 
     @Test
     fun `given usd currency, when store location in unsupported country, then isCurrencySupported returns false`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(wooStore.getStoreCountryCode(site)).thenReturn("IN")
             whenever(
                 cardReaderConfigFactory.getCardReaderConfigFor("IN")

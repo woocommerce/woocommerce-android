@@ -50,7 +50,7 @@ class ShippingPackageSelectorViewModelTest : BaseUnitTest() {
                 gmtOffset = 0f
             )
         )
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(shippingRepository.getShippingPackages()).thenReturn(WooResult(availablePackages))
         }
         viewModel = ShippingPackageSelectorViewModel(
@@ -61,7 +61,7 @@ class ShippingPackageSelectorViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `display list of packages`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `display list of packages`() = testBlocking {
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, state -> viewState = state }
 

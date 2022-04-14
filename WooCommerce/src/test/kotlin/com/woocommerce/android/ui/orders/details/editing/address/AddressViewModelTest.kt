@@ -67,7 +67,7 @@ class AddressViewModelTest : BaseUnitTest() {
     @Test
     fun `Should fetch countries and states on start if they've never been fetched`() {
         whenever(dataStore.getCountries()).thenReturn(emptyList())
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             addressViewModel.start(
                 mapOf(SHIPPING to shippingAddress)
             )
@@ -78,7 +78,7 @@ class AddressViewModelTest : BaseUnitTest() {
     @Test
     fun `Should NOT execute start more than once`() {
         whenever(dataStore.getCountries()).thenReturn(emptyList())
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             addressViewModel.start(
                 mapOf(SHIPPING to shippingAddress)
             )
@@ -92,7 +92,7 @@ class AddressViewModelTest : BaseUnitTest() {
     @Test
     fun `Should execute start again after onScreenDetached is called`() {
         whenever(dataStore.getCountries()).thenReturn(emptyList())
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             addressViewModel.start(
                 mapOf(SHIPPING to shippingAddress)
             )
@@ -114,7 +114,7 @@ class AddressViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Should NOT fetch countries and states on start if countries have already been fetched`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             addressViewModel.start(
                 mapOf(SHIPPING to shippingAddress)
             )

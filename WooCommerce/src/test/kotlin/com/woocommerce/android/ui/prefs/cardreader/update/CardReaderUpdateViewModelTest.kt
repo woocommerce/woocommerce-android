@@ -35,7 +35,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given required update, when view model created, then installation not started`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val requiredUpdate = true
 
@@ -48,7 +48,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given optional update, when view model created, then installation started`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val requiredUpdate = false
 
@@ -61,7 +61,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given installation started status, when view model created, then update about to start`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val status = InstallationStarted
 
@@ -81,7 +81,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given installation about to start, when view model created, then announce for accessibility`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val status = InstallationStarted
 
@@ -100,7 +100,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given installation 10 status, when view model created, then announce update progress for accessibility`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val status = Installing(.1f)
 
@@ -121,7 +121,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given installing 10 status, when view model created, then updating state with 10`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val status = Installing(.1f)
 
@@ -135,7 +135,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given failed status with failed type, when view model created, then exit with failed`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val reason = "reason"
             val status = Failed(SoftwareUpdateStatusErrorType.Failed, reason)
@@ -151,7 +151,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given failed status with battery low type, when view model created, then battery low status`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val reason = "reason"
             val batteryLevel = 0.3f
@@ -177,7 +177,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given failed status with battery low with battery level, when view model created, then special description`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val reason = "reason"
             val status = Failed(SoftwareUpdateStatusErrorType.BatteryLow(null), reason)
@@ -197,7 +197,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given success status, when view model created, then exit with success`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val status = Success
 
@@ -212,7 +212,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given success status for required update, when view model created, then success tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val status = Success
 
@@ -226,7 +226,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given success status for optional update, when view model created, then success tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val status = Success
 
@@ -240,7 +240,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given failed status for optional update, when view model created, then failed tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val status = Failed(SoftwareUpdateStatusErrorType.Failed, "Failed")
 
@@ -254,7 +254,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given required update started, when view model created, then started tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val status = InstallationStarted
 
@@ -268,7 +268,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given optional update started, when view model created, then started tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val status = InstallationStarted
 
@@ -282,7 +282,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given failed status for required update, when view model created, then failed tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val status = Failed(SoftwareUpdateStatusErrorType.Failed, "")
 
@@ -296,7 +296,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given user presses cancel, when optional update is shown, then cancel event is tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             softwareStatus.value = Installing(0.5f)
             val viewModel = createViewModel()
@@ -311,7 +311,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given user presses cancel, when required update is shown, then cancel event is tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             softwareStatus.value = Installing(0.5f)
             val viewModel = createViewModel(requiredUpdate = true)
@@ -326,7 +326,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given user presses back, when progress state shown, then dialog not dismissed`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             softwareStatus.value = InstallationStarted
             val viewModel = createViewModel()
@@ -340,7 +340,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given required update user presses back, when progress state shown, then updating canceling state shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val requiredUpdate = true
             val viewModel = createViewModel(requiredUpdate = requiredUpdate)
@@ -355,7 +355,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given optional update user presses back, when progress state shown, then updating canceling state shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val requiredUpdate = false
             val viewModel = createViewModel(requiredUpdate = requiredUpdate)
@@ -370,7 +370,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given user presses back, when canceling state shown, then cancel hid`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val viewModel = createViewModel()
             softwareStatus.value = Installing(0f)
@@ -385,7 +385,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given UpdatingState state shown, when update progresses, then progress percentage updated`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val currentProgress = 0.2f
             val viewModel = createViewModel()
@@ -401,7 +401,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given UpdatingCancelingState state shown, when update progresses, then progress percentage updated`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val currentProgress = 0.2f
             val viewModel = createViewModel()

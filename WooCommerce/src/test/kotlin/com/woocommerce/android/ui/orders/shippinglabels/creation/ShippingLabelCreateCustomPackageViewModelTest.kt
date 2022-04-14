@@ -156,7 +156,7 @@ class ShippingLabelCreateCustomPackageViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when a package is created successfully, then trigger success event`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(shippingRepository.createCustomPackage(any())).thenReturn(WooResult(true))
             setup()
             populateFields()
@@ -168,7 +168,7 @@ class ShippingLabelCreateCustomPackageViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when a package creation is not saved properly, then show Snackbar`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val error = WooError(API_ERROR, NETWORK_ERROR, "")
             whenever(shippingRepository.createCustomPackage(any())).thenReturn(WooResult(error = error))
             setup()

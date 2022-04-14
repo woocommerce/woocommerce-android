@@ -25,7 +25,7 @@ class CardReaderLocationRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `given store returns success, when get default location, then location returned`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val locationId = "locationId"
             whenever(store.getStoreLocationForSite(any(), any())).thenReturn(
@@ -46,7 +46,7 @@ class CardReaderLocationRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `given store returns generic error, when get default location, then other error returned`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             whenever(store.getStoreLocationForSite(any(), any())).thenReturn(
                 WCTerminalStoreLocationResult(
@@ -65,7 +65,7 @@ class CardReaderLocationRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `given store returns missing address error, when get default location, then missing address error returned`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val url = "https://wordpress.com"
             whenever(store.getStoreLocationForSite(any(), any())).thenReturn(
@@ -85,7 +85,7 @@ class CardReaderLocationRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `given store returns invalid postcode error, when get default location, then invalid pc error returned`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             whenever(store.getStoreLocationForSite(any(), any())).thenReturn(
                 WCTerminalStoreLocationResult(

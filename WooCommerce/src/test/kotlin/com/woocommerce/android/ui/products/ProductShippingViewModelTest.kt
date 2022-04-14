@@ -47,7 +47,7 @@ class ProductShippingViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Test that the initial data is displayed correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Test that the initial data is displayed correctly`() = testBlocking {
         var actual: ShippingData? = null
         viewModel.viewStateData.observeForever { _, new ->
             actual = new.shippingData
@@ -58,7 +58,7 @@ class ProductShippingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Test that when data is changed the view state is updated`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             var actual: ShippingData? = null
             viewModel.viewStateData.observeForever { _, new ->
                 actual = new.shippingData
@@ -78,7 +78,7 @@ class ProductShippingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Test that a discard dialog isn't shown if no data changed`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val events = mutableListOf<Event>()
             viewModel.event.observeForever {
                 events.add(it)
@@ -94,7 +94,7 @@ class ProductShippingViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Test that a the correct data is returned when exiting`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Test that a the correct data is returned when exiting`() = testBlocking {
         val events = mutableListOf<Event>()
         viewModel.event.observeForever {
             events.add(it)
@@ -121,7 +121,7 @@ class ProductShippingViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Test that the class section is visible for products`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Test that the class section is visible for products`() = testBlocking {
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new ->
             viewState = new
@@ -132,7 +132,7 @@ class ProductShippingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Test that the class section is not visible for variations`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             viewModel = createViewModel(RequestCodes.VARIATION_DETAIL_SHIPPING)
 
             var viewState: ViewState? = null

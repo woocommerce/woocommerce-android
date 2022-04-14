@@ -117,7 +117,7 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Do not print shipping label when not connected`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Do not print shipping label when not connected`() = testBlocking {
         initViewModel()
         doReturn(false).whenever(networkStatus).isConnected()
 
@@ -131,7 +131,7 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Print shipping label when api connected`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Print shipping label when api connected`() = testBlocking {
         val testString = "testString"
         doReturn(true).whenever(networkStatus).isConnected()
         doReturn(WooResult(testString)).whenever(repository).printShippingLabels(any(), any())
@@ -155,7 +155,7 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Print shipping label results in an error`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Print shipping label results in an error`() = testBlocking {
         doReturn(true).whenever(networkStatus).isConnected()
         doReturn(
             WooResult<Boolean>(WooError(API_ERROR, NETWORK_ERROR, ""))
@@ -186,7 +186,7 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `consider an anonymized label as expired`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `consider an anonymized label as expired`() = testBlocking {
         val label = OrderTestUtils.generateShippingLabel(shippingLabelId = REMOTE_SHIPPING_LABEL_ID)
             .copy(status = "ANONYMIZED")
         doReturn(label)
@@ -203,7 +203,7 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `disable printing if label expiry date passed`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `disable printing if label expiry date passed`() = testBlocking {
         val label = OrderTestUtils.generateShippingLabel(shippingLabelId = REMOTE_SHIPPING_LABEL_ID)
             .copy(expiryDate = Date(System.currentTimeMillis() - 60_000))
         doReturn(label)
@@ -220,7 +220,7 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `enable printing if label hasn't expired yet`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `enable printing if label hasn't expired yet`() = testBlocking {
         val label = OrderTestUtils.generateShippingLabel(shippingLabelId = REMOTE_SHIPPING_LABEL_ID)
             .copy(expiryDate = Date(System.currentTimeMillis() + 60_000))
         doReturn(label)

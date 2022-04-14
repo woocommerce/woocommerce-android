@@ -68,7 +68,7 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays the user eligibility error screen correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Displays the user eligibility error screen correctly`() = testBlocking {
         doReturn(testUser).whenever(userEligibilityFetcher).getUserByEmail(any())
         whenever(appPrefsWrapper.getUserEmail()).thenReturn(testUser.email)
 
@@ -83,7 +83,7 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Handles retry button correctly when user is not eligible`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             doReturn(testUser).whenever(userEligibilityFetcher).fetchUserInfo()
             doReturn(false).whenever(appPrefsWrapper).isUserEligible()
 
@@ -110,7 +110,7 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Handles retry button correctly when user is eligible`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Handles retry button correctly when user is eligible`() = testBlocking {
         testUser.roles = "[\"shop_manager\"]"
         doReturn(testUser).whenever(userEligibilityFetcher).fetchUserInfo()
         doReturn(true).whenever(appPrefsWrapper).isUserEligible()
