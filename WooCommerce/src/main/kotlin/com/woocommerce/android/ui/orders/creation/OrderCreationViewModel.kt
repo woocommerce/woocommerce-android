@@ -245,7 +245,7 @@ class OrderCreationViewModel @Inject constructor(
             createOrUpdateOrderDraft(_orderDraft, retryOrderDraftUpdateTrigger)
                 .collect { updateStatus ->
                     when (updateStatus) {
-                        OrderDraftUpdateStatus.WillStart ->
+                        OrderDraftUpdateStatus.PendingDebounce ->
                             viewState = viewState.copy(willUpdateOrderDraft = true, showOrderUpdateSnackbar = false)
                         OrderDraftUpdateStatus.Ongoing ->
                             viewState = viewState.copy(willUpdateOrderDraft = false, isUpdatingOrderDraft = true)
