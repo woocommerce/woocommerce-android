@@ -65,11 +65,8 @@ class ProductListAdapter(
         show: Boolean? = sortFilterItem?.show,
         filterCount: Int? = sortFilterItem?.filterCount
     ) {
-        sortFilterItem = if (sortFilterItem == null) {
-            ListItem.SortFilterItem(title, show, filterCount)
-        } else {
-            sortFilterItem?.copy(title = title, show = show, filterCount = filterCount)
-        }
+        sortFilterItem = sortFilterItem?.copy(title = title, show = show, filterCount = filterCount)
+            ?: ListItem.SortFilterItem(title, show, filterCount)
     }
 
     // allow the selection library to track the selections of the user
