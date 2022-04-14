@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.coupons
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,6 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListItem
 import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListState
 import com.woocommerce.android.ui.coupons.components.CouponExpirationLabel
@@ -54,7 +54,8 @@ fun CouponListScreen(
             onCouponClick = onCouponClick,
             onLoadMore = onLoadMore
         )
-        state.coupons.isEmpty() -> EmptyCouponList()
+        state.coupons.isEmpty() && state.isLoading -> CouponListSkeleton()
+        else -> EmptyCouponList()
     }
 }
 
@@ -180,7 +181,32 @@ fun CouponListItemInfo(
     )
 }
 
-@ExperimentalFoundationApi
+@Composable
+@Suppress("MagicNumber")
+private fun CouponListSkeleton() {
+    val numberOfInboxSkeletonRows = 10
+    LazyColumn(Modifier.background(color = MaterialTheme.colors.surface)) {
+        repeat(numberOfInboxSkeletonRows) {
+            item {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    SkeletonView(80.dp, 20.dp)
+                    SkeletonView(160.dp, 16.dp)
+                    SkeletonView(40.dp, 20.dp)
+                }
+                Divider(
+                    modifier = Modifier
+                        .offset(x = 16.dp),
+                    color = colorResource(id = R.color.divider_color),
+                    thickness = 1.dp
+                )
+            }
+        }
+    }
+}
+
 @Preview
 @Composable
 @Suppress("MagicNumber")
@@ -211,9 +237,14 @@ fun CouponListPreview() {
     CouponList(coupons = coupons, {}, {})
 }
 
-@ExperimentalFoundationApi
 @Preview
 @Composable
 fun CouponListEmptyPreview() {
     EmptyCouponList()
+}
+
+@Preview
+@Composable
+fun CouponListSkeletonPreview() {
+    CouponListSkeleton()
 }
