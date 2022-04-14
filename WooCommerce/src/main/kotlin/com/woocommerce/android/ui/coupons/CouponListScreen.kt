@@ -131,7 +131,7 @@ fun InfiniteListHandler(
     LaunchedEffect(loadMore) {
         snapshotFlow { loadMore.value }
             .distinctUntilChanged()
-            .filter{ it }
+            .filter { it }
             .collect {
                 onLoadMore()
             }
