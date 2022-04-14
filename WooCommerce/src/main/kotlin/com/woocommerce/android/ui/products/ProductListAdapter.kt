@@ -140,7 +140,7 @@ class ProductListAdapter(
     object ProductListItemDiffCallback : DiffUtil.ItemCallback<ListItem>() {
         override fun areItemsTheSame(oldItem: ListItem, newItem: ListItem) = when (oldItem) {
             is ListItem.SortFilterItem -> {
-                // There should be only one SortFilterItem
+                // There must be only one SortFilterItem
                 newItem is ListItem.SortFilterItem
             }
             is ListItem.ProductItem -> oldItem.product.remoteId == (newItem as? ListItem.ProductItem)?.product?.remoteId
