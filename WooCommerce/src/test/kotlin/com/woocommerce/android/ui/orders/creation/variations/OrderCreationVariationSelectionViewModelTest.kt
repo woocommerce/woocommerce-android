@@ -9,10 +9,15 @@ import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
 class OrderCreationVariationSelectionViewModelTest : BaseUnitTest() {
@@ -77,6 +82,7 @@ class OrderCreationVariationSelectionViewModelTest : BaseUnitTest() {
     @Test
     fun `when variations are loaded, then fetch network variations`() = testBlocking {
         viewModel.viewState.getOrAwaitValue()
+        advanceUntilIdle()
 
         verify(variationsRepository).fetchProductVariations(PRODUCT_ID)
     }
@@ -87,7 +93,7 @@ class OrderCreationVariationSelectionViewModelTest : BaseUnitTest() {
             .mapIndexed { index, productVariation ->
                 if (index == 0) productVariation.copy(price = null) else productVariation
             }
-        whenever(variationsRepository.fetchProductVariations(PRODUCT_ID))
+        whenever(variationsRepository.getProductVariationList(PRODUCT_ID))
             .thenReturn(variations)
 
         val displayedVariations = viewModel.viewState.getOrAwaitValue().variationsList
@@ -97,6 +103,7 @@ class OrderCreationVariationSelectionViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when loading more is request, then fetch more variations`() = testBlocking {
+        // TODO malinajirka This is failing and I'm not sure why. Seems like nested collect is not launched.
         whenever(variationsRepository.canLoadMoreProductVariations).thenReturn(true)
 
         viewModel.viewState.observeForTesting {

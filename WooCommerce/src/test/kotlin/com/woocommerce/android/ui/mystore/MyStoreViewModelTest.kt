@@ -12,10 +12,15 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -107,6 +112,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsForGranularityCached(ANY_SELECTED_STATS_GRANULARITY)
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            advanceUntilIdle()
 
             verify(getStats).invoke(refresh = false, ANY_SELECTED_STATS_GRANULARITY)
             verify(getTopPerformers).invoke(
@@ -124,6 +130,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsForGranularityNotCached(ANY_SELECTED_STATS_GRANULARITY)
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            advanceUntilIdle()
 
             verify(getStats).invoke(refresh = true, ANY_SELECTED_STATS_GRANULARITY)
             verify(getTopPerformers).invoke(
@@ -136,6 +143,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
     @Test
     fun `Given network connection, When on swipe to refresh, Then stats are refreshed for selected granularity`() =
         testBlocking {
+            // TODO malinajirka This test is failing and I'm not sure why.
             whenViewModelIsCreated()
             givenNetworkConnectivity(connected = true)
 
@@ -157,6 +165,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsLoadingResult(GetStats.LoadStatsResult.RevenueStatsSuccess(null))
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            advanceUntilIdle()
 
             assertThat(sut.revenueStatsState.value).isEqualTo(
                 MyStoreViewModel.RevenueStatsViewState.Content(
@@ -174,6 +183,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsLoadingResult(GetStats.LoadStatsResult.RevenueStatsError)
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            advanceUntilIdle()
 
             assertThat(sut.revenueStatsState.value).isEqualTo(
                 MyStoreViewModel.RevenueStatsViewState.GenericError
@@ -188,6 +198,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsLoadingResult(GetStats.LoadStatsResult.PluginNotActive)
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            advanceUntilIdle()
 
             assertThat(sut.revenueStatsState.value).isEqualTo(
                 MyStoreViewModel.RevenueStatsViewState.PluginNotActiveError
@@ -216,6 +227,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsLoadingResult(GetStats.LoadStatsResult.VisitorsStatsError)
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            advanceUntilIdle()
 
             assertThat(sut.visitorStatsState.value).isEqualTo(
                 MyStoreViewModel.VisitorStatsViewState.Error
@@ -230,6 +242,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsLoadingResult(GetStats.LoadStatsResult.IsJetPackCPEnabled)
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            advanceUntilIdle()
 
             assertThat(sut.visitorStatsState.value)
                 .isInstanceOf(MyStoreViewModel.VisitorStatsViewState.JetpackCpConnected::class.java)
@@ -243,6 +256,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsLoadingResult(GetStats.LoadStatsResult.HasOrders(hasOrder = true))
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            advanceUntilIdle()
 
             assertThat(sut.hasOrders.value).isEqualTo(
                 MyStoreViewModel.OrderState.AtLeastOne
@@ -257,6 +271,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsLoadingResult(GetStats.LoadStatsResult.HasOrders(hasOrder = false))
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            advanceUntilIdle()
 
             assertThat(sut.hasOrders.value).isEqualTo(
                 MyStoreViewModel.OrderState.Empty
@@ -271,6 +286,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenToPerformersResult(GetTopPerformers.TopPerformersResult.TopPerformersSuccess(emptyList()))
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            advanceUntilIdle()
 
             assertThat(sut.topPerformersState.value).isEqualTo(
                 MyStoreViewModel.TopPerformersViewState.Content(emptyList(), ANY_SELECTED_STATS_GRANULARITY)
@@ -285,6 +301,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenToPerformersResult(GetTopPerformers.TopPerformersResult.TopPerformersError)
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            advanceUntilIdle()
 
             assertThat(sut.topPerformersState.value).isEqualTo(
                 MyStoreViewModel.TopPerformersViewState.Error

@@ -30,6 +30,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -385,16 +386,17 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(product).whenever(productRepository).getProductAsync(any())
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
-
         var hasChanges: Boolean? = null
         viewModel.hasChanges.observeForever { hasChanges = it }
 
         viewModel.start()
+        advanceUntilIdle()
 
         assertThat(hasChanges).isFalse()
 
         val updatedDescription = "Updated product description"
         viewModel.updateProductDraft(updatedDescription)
+        advanceUntilIdle()
 
         assertThat(hasChanges).isTrue()
     }
@@ -759,12 +761,13 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     fun `Publish option shown when product is Draft`() = testBlocking {
         doReturn(product).whenever(productRepository).getProductAsync(any())
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
-
         var menuButtonsState: MenuButtonsState? = null
         viewModel.menuButtonsState.observeForever { menuButtonsState = it }
 
         viewModel.start()
         viewModel.updateProductDraft(productStatus = ProductStatus.DRAFT)
+        advanceUntilIdle()
+
         assertThat(menuButtonsState?.publishOption).isTrue
     }
 
@@ -772,12 +775,13 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     fun `Publish option shown when product is Pending Review`() = testBlocking {
         doReturn(product).whenever(productRepository).getProductAsync(any())
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
-
         var menuButtonsState: MenuButtonsState? = null
         viewModel.menuButtonsState.observeForever { menuButtonsState = it }
 
         viewModel.start()
         viewModel.updateProductDraft(productStatus = ProductStatus.PENDING)
+        advanceUntilIdle()
+
         assertThat(menuButtonsState?.publishOption).isTrue()
     }
 
@@ -793,6 +797,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             viewModel.start()
             // Trigger changes
             viewModel.updateProductDraft(title = product.name + "2")
+            advanceUntilIdle()
 
             assertThat(menuButtonsState?.saveOption).isTrue()
         }
@@ -808,6 +813,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         viewModel.hasChanges.observeForever { hasChanges = it }
 
         viewModel.start()
+        advanceUntilIdle()
 
         assertThat(hasChanges).isTrue
     }

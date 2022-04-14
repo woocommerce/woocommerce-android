@@ -31,6 +31,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -334,12 +335,12 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Save as draft shown in discard dialog when changes made in add flow`() {
+    fun `Save as draft shown in discard dialog when changes made in add flow`() = testBlocking {
         doReturn(true).whenever(viewModel).isProductUnderCreation
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
         viewModel.start()
-
+        advanceUntilIdle()
         // this will force the viewModel to consider the product as changed, so when we click the back button
         // below it will show the discard dialog
         viewModel.updateProductDraft(productStatus = DRAFT)
@@ -398,6 +399,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
             viewModel.start()
+            advanceUntilIdle()
             // Make some changes to trigger discard changes dialog
             viewModel.onProductTitleChanged("Product 2")
             viewModel.onBackButtonClickedProductDetail()
@@ -417,6 +419,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
             viewModel.start()
+            advanceUntilIdle()
             // Make some changes to trigger discard changes dialog
             viewModel.onProductTitleChanged("Product")
             viewModel.onBackButtonClickedProductDetail()
@@ -433,6 +436,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
             viewModel.start()
+            advanceUntilIdle()
             // Make some changes to trigger discard changes dialog
             viewModel.onProductTitleChanged("Product")
             viewModel.onBackButtonClickedProductDetail()
