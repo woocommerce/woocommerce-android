@@ -74,10 +74,14 @@ class OrderCreationProductsAdapter(
                 } else {
                     if (productModel.isStockManaged) {
                         append(
-                            context.getString(
-                                R.string.order_creation_product_stock_quantity,
-                                productModel.stockQuantity.formatToString()
-                            )
+                            if (productModel.stockQuantity > 0) {
+                                context.getString(
+                                    R.string.order_creation_product_stock_quantity,
+                                    productModel.stockQuantity.formatToString()
+                                )
+                            } else {
+                                context.getString(R.string.product_stock_status_out_of_stock)
+                            }
                         )
                     } else {
                         append(context.getString(R.string.order_creation_product_instock))
