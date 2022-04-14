@@ -86,10 +86,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     }
                 CardReaderOnboardingState.WcpayNotInstalled ->
                     viewState.value =
-                        OnboardingViewState.WCPayError.WCPayNotInstalledState(
-                            ::refreshState,
-                            ::onLearnMoreClicked
-                        )
+                        OnboardingViewState.WCPayError.WCPayNotInstalledState(::refreshState, ::onLearnMoreClicked)
                 is CardReaderOnboardingState.PluginUnsupportedVersion ->
                     when (state.preferredPlugin) {
                         WOOCOMMERCE_PAYMENTS ->
@@ -106,54 +103,44 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     }
                 CardReaderOnboardingState.WcpayNotActivated ->
                     viewState.value =
-                        OnboardingViewState.WCPayError.WCPayNotActivatedState(
-                            ::refreshState,
-                            ::onLearnMoreClicked
-                        )
+                        OnboardingViewState.WCPayError.WCPayNotActivatedState(::refreshState, ::onLearnMoreClicked)
                 is CardReaderOnboardingState.SetupNotCompleted ->
                     viewState.value = when (state.preferredPlugin) {
                         WOOCOMMERCE_PAYMENTS ->
-                            OnboardingViewState.WCPayError.WCPayNotSetupState(
-                                ::refreshState,
-                                ::onLearnMoreClicked
-                            )
+                            OnboardingViewState.WCPayError.WCPayNotSetupState(::refreshState, ::onLearnMoreClicked)
                         STRIPE_EXTENSION_GATEWAY ->
                             OnboardingViewState.StripeExtensionError.StripeExtensionNotSetupState(
                                 ::refreshState, ::onLearnMoreClicked
                             )
                     }
                 is CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount ->
-                    viewState.value =
-                        OnboardingViewState.StripeAcountError.PluginInTestModeWithLiveAccountState(
-                            onContactSupportActionClicked = ::onContactSupportClicked,
-                            onLearnMoreActionClicked = ::onLearnMoreClicked
-                        )
+                    viewState.value = OnboardingViewState.StripeAcountError.PluginInTestModeWithLiveAccountState(
+                        onContactSupportActionClicked = ::onContactSupportClicked,
+                        onLearnMoreActionClicked = ::onLearnMoreClicked
+                    )
                 is CardReaderOnboardingState.StripeAccountUnderReview ->
-                    viewState.value =
-                        OnboardingViewState.StripeAcountError.StripeAccountUnderReviewState(
-                            onContactSupportActionClicked = ::onContactSupportClicked,
-                            onLearnMoreActionClicked = ::onLearnMoreClicked
-                        )
+                    viewState.value = OnboardingViewState.StripeAcountError.StripeAccountUnderReviewState(
+                        onContactSupportActionClicked = ::onContactSupportClicked,
+                        onLearnMoreActionClicked = ::onLearnMoreClicked
+                    )
                 is CardReaderOnboardingState.StripeAccountPendingRequirement ->
-                    viewState.value =
-                        OnboardingViewState.StripeAcountError.StripeAccountPendingRequirementsState(
+                    viewState.value = OnboardingViewState.StripeAcountError
+                        .StripeAccountPendingRequirementsState(
                             onContactSupportActionClicked = ::onContactSupportClicked,
                             onLearnMoreActionClicked = ::onLearnMoreClicked,
                             onButtonActionClicked = { onSkipPendingRequirementsClicked(state.countryCode) },
                             dueDate = formatDueDate(state)
                         )
                 is CardReaderOnboardingState.StripeAccountOverdueRequirement ->
-                    viewState.value =
-                        OnboardingViewState.StripeAcountError.StripeAccountOverdueRequirementsState(
-                            onContactSupportActionClicked = ::onContactSupportClicked,
-                            onLearnMoreActionClicked = ::onLearnMoreClicked
-                        )
+                    viewState.value = OnboardingViewState.StripeAcountError.StripeAccountOverdueRequirementsState(
+                        onContactSupportActionClicked = ::onContactSupportClicked,
+                        onLearnMoreActionClicked = ::onLearnMoreClicked
+                    )
                 is CardReaderOnboardingState.StripeAccountRejected ->
-                    viewState.value =
-                        OnboardingViewState.StripeAcountError.StripeAccountRejectedState(
-                            onContactSupportActionClicked = ::onContactSupportClicked,
-                            onLearnMoreActionClicked = ::onLearnMoreClicked
-                        )
+                    viewState.value = OnboardingViewState.StripeAcountError.StripeAccountRejectedState(
+                        onContactSupportActionClicked = ::onContactSupportClicked,
+                        onLearnMoreActionClicked = ::onLearnMoreClicked
+                    )
                 CardReaderOnboardingState.GenericError ->
                     viewState.value = OnboardingViewState.GenericErrorState(
                         onContactSupportActionClicked = ::onContactSupportClicked,
@@ -164,12 +151,11 @@ class CardReaderOnboardingViewModel @Inject constructor(
                         onRetryButtonActionClicked = ::refreshState
                     )
                 is CardReaderOnboardingState.StripeAccountCountryNotSupported ->
-                    viewState.value =
-                        OnboardingViewState.UnsupportedErrorState.StripeAccountInUnsupportedCountry(
-                            convertCountryCodeToCountry(state.countryCode),
-                            ::onContactSupportClicked,
-                            ::onLearnMoreClicked
-                        )
+                    viewState.value = OnboardingViewState.UnsupportedErrorState.StripeAccountInUnsupportedCountry(
+                        convertCountryCodeToCountry(state.countryCode),
+                        ::onContactSupportClicked,
+                        ::onLearnMoreClicked
+                    )
                 CardReaderOnboardingState.WcpayAndStripeActivated ->
                     updateUiWithWcPayAndStripeActivated()
             }.exhaustive
@@ -232,12 +218,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
     private fun continueFlow(storeCountryCode: String) {
         when (arguments.cardReaderFlowParam) {
             CardReaderFlowParam.CardReadersHub -> {
-                triggerEvent(
-                    OnboardingEvent.ContinueToHub(
-                        arguments.cardReaderFlowParam,
-                        storeCountryCode
-                    )
-                )
+                triggerEvent(OnboardingEvent.ContinueToHub(arguments.cardReaderFlowParam, storeCountryCode))
             }
             is CardReaderFlowParam.ConnectAndAcceptPayment -> {
                 triggerEvent(OnboardingEvent.ContinueToConnection(arguments.cardReaderFlowParam))
