@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runBlockingTest
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -42,7 +42,7 @@ class CollectInteracRefundActionTest {
 
         val result = action.collectRefund(mock()).first()
 
-        Assertions.assertThat(result).isExactlyInstanceOf(Success::class.java)
+        assertThat(result).isExactlyInstanceOf(Success::class.java)
     }
 
     @Test
@@ -54,7 +54,7 @@ class CollectInteracRefundActionTest {
 
         val result = action.collectRefund(mock()).first()
 
-        Assertions.assertThat(result).isExactlyInstanceOf(Failure::class.java)
+        assertThat(result).isExactlyInstanceOf(Failure::class.java)
     }
 
     @Test
@@ -66,7 +66,7 @@ class CollectInteracRefundActionTest {
 
         val result = action.collectRefund(mock()).toList()
 
-        Assertions.assertThat(result.size).isEqualTo(1)
+        assertThat(result.size).isEqualTo(1)
     }
 
     @Test
@@ -78,7 +78,7 @@ class CollectInteracRefundActionTest {
 
         val result = action.collectRefund(mock()).toList()
 
-        Assertions.assertThat(result.size).isEqualTo(1)
+        assertThat(result.size).isEqualTo(1)
     }
 
     @Test
