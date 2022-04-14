@@ -46,7 +46,7 @@ class GroupedProductListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays the grouped product list view correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Displays the grouped product list view correctly`() = testBlocking {
         doReturn(productList).whenever(productRepository).fetchProductList(groupedProductIds)
 
         createViewModel()

@@ -57,7 +57,7 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `hide customer note checkbox if no email`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `hide customer note checkbox if no email`() = testBlocking {
         val testOrder = testOrder.let {
             val address = it.billingAddress.copy(email = "")
             it.copy(billingAddress = address)
@@ -74,7 +74,7 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `show customer note checkbox if no email`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `show customer note checkbox if no email`() = testBlocking {
         val testOrder = testOrder.let {
             val address = it.billingAddress.copy(email = "test@emai.com")
             it.copy(billingAddress = address)

@@ -190,7 +190,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays create shipping label view correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Displays create shipping label view correctly`() = testBlocking {
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
@@ -198,7 +198,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays data-loaded state correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Displays data-loaded state correctly`() = testBlocking {
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
@@ -217,7 +217,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays origin-address validated state correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Displays origin-address validated state correctly`() = testBlocking {
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
@@ -241,7 +241,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays shipping-address validated state correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Displays shipping-address validated state correctly`() = testBlocking {
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
@@ -270,7 +270,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Continue click in origin address triggers validation`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Continue click in origin address triggers validation`() = testBlocking {
         stateFlow.value = Transition(WaitingForInput(data), null)
 
         viewModel.onContinueButtonTapped(FlowStep.ORIGIN_ADDRESS)
@@ -306,7 +306,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Purchase a label successfully`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Purchase a label successfully`() = testBlocking {
         val purchasedLabels = listOf(
             OrderTestUtils.generateShippingLabel(shippingLabelId = 1)
         )
@@ -320,7 +320,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Show print screen after purchase`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Show print screen after purchase`() = testBlocking {
         val purchasedLabels = listOf(
             OrderTestUtils.generateShippingLabel(shippingLabelId = 1)
         )
@@ -336,7 +336,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `fulfill order after successful purchase`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `fulfill order after successful purchase`() = testBlocking {
         val purchasedLabels = listOf(
             OrderTestUtils.generateShippingLabel(shippingLabelId = 1)
         )
@@ -359,7 +359,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
 
     @Test
     fun `notify user if fulfilment fail after successful purchase`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val purchasedLabels = listOf(
                 OrderTestUtils.generateShippingLabel(shippingLabelId = 1)
             )

@@ -71,7 +71,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `test first opening of the screen`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `test first opening of the screen`() = testBlocking {
         whenever(shippingLabelRepository.getLastUsedPackage()).thenReturn(availablePackages.first())
 
         setup(emptyArray())
@@ -85,7 +85,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `test edit flow`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `test edit flow`() = testBlocking {
         val currentShippingPackages = arrayOf(
             CreateShippingLabelTestUtils.generateShippingLabelPackage(
                 selectedPackage = availablePackages[0]
@@ -101,7 +101,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `no last used package`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `no last used package`() = testBlocking {
         whenever(shippingLabelRepository.getLastUsedPackage()).thenReturn(null)
 
         setup(emptyArray())
@@ -112,7 +112,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `edit weight of package`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `edit weight of package`() = testBlocking {
         whenever(shippingLabelRepository.getLastUsedPackage()).thenReturn(availablePackages.first())
 
         setup(emptyArray())
@@ -125,7 +125,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `select a package`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `select a package`() = testBlocking {
         whenever(shippingLabelRepository.getLastUsedPackage()).thenReturn(availablePackages.first())
 
         setup(emptyArray())
@@ -138,7 +138,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `exit without saving changes`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `exit without saving changes`() = testBlocking {
         whenever(shippingLabelRepository.getLastUsedPackage()).thenReturn(availablePackages.first())
 
         setup(emptyArray())
@@ -151,7 +151,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
 
     @Suppress("UNCHECKED_CAST")
     @Test
-    fun `save changes and exit`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `save changes and exit`() = testBlocking {
         whenever(shippingLabelRepository.getLastUsedPackage()).thenReturn(availablePackages.first())
 
         setup(emptyArray())

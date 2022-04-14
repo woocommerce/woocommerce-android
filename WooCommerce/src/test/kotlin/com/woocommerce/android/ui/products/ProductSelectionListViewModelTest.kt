@@ -48,7 +48,7 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays the product list view correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Displays the product list view correctly`() = testBlocking {
         val expectedProductList = productList.toMutableList().apply {
             excludedProductIds.forEach { excludedIds ->
                 this.removeIf { it.remoteId == excludedIds }
@@ -72,7 +72,7 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Do not fetch product list from api when not connected`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Do not fetch product list from api when not connected`() = testBlocking {
         doReturn(false).whenever(networkStatus).isConnected()
 
         createViewModel()
@@ -89,7 +89,7 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Shows and hides product list skeleton correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Shows and hides product list skeleton correctly`() = testBlocking {
         doReturn(emptyList<Product>()).whenever(productRepository).getProductList(
             excludedProductIds = excludedProductIds
         )
@@ -109,7 +109,7 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Shows and hides product list load more progress correctly`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             doReturn(true).whenever(productRepository).canLoadMoreProducts
             doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList(
                 excludedProductIds = excludedProductIds
@@ -142,7 +142,7 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Should exclude the current product from product selection list`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val expectedProductList = productList.toMutableList().apply {
                 excludedProductIds.forEach { excludedIds ->
                     this.removeIf { it.remoteId == excludedIds }

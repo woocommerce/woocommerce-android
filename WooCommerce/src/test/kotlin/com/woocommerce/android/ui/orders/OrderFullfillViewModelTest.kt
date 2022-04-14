@@ -93,7 +93,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays the order detail view correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Displays the order detail view correctly`() = testBlocking {
         val nonRefundedOrder = order.copy(refundTotal = BigDecimal.ZERO)
         val expectedViewState = orderWithParameters.copy(order = order.copy(refundTotal = nonRefundedOrder.refundTotal))
 
@@ -129,7 +129,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
 
     @Test
     fun `hasVirtualProductsOnly returns false if there are no products for the order`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val order = order.copy(items = emptyList())
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
@@ -140,7 +140,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
 
     @Test
     fun `hasVirtualProductsOnly returns true if and only if there are no physical products for the order`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val item = OrderTestUtils.generateTestOrder().items.first().copy(productId = 1)
             val virtualItems = listOf(item.copy(productId = 3), item.copy(productId = 4))
             val virtualOrder = order.copy(items = virtualItems)
@@ -155,7 +155,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
 
     @Test
     fun `hasVirtualProductsOnly returns false if there are both virtual and physical products for the order`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val item = OrderTestUtils.generateTestOrder().items.first().copy(productId = 1)
             val mixedItems = listOf(item, item.copy(productId = 2))
             val mixedOrder = order.copy(items = mixedItems)
@@ -171,7 +171,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Do not display product list when all products are refunded`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
             doReturn(testOrderRefunds).whenever(repository).getOrderRefunds(any())
@@ -189,7 +189,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Do not display shipment tracking when shipping labels are available`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(orderShippingLabels).whenever(repository).getOrderShippingLabels(any())
 
@@ -201,7 +201,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Update order status when network connected`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Update order status when network connected`() = testBlocking {
         doReturn(order).whenever(repository).getOrderById(any())
         doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
 
@@ -225,7 +225,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Do not update order status when not connected`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Do not update order status when not connected`() = testBlocking {
         doReturn(false).whenever(networkStatus).isConnected()
 
         var snackbar: ShowSnackbar? = null

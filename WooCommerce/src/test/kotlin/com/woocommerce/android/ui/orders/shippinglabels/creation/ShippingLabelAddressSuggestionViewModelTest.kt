@@ -38,7 +38,7 @@ class ShippingLabelAddressSuggestionViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays entered and suggested address correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Displays entered and suggested address correctly`() = testBlocking {
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
@@ -46,7 +46,7 @@ class ShippingLabelAddressSuggestionViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Updates the selected address`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Updates the selected address`() = testBlocking {
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
@@ -60,7 +60,7 @@ class ShippingLabelAddressSuggestionViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Triggers the edit address event`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Triggers the edit address event`() = testBlocking {
         var event: Event? = null
         viewModel.event.observeForever { event = it }
 
@@ -71,7 +71,7 @@ class ShippingLabelAddressSuggestionViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Triggers the use address event`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Triggers the use address event`() = testBlocking {
         var event: Event? = null
         viewModel.event.observeForever { event = it }
 
@@ -82,7 +82,7 @@ class ShippingLabelAddressSuggestionViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Exits the screen with a exit event`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Exits the screen with a exit event`() = testBlocking {
         var event: Event? = null
         viewModel.event.observeForever { event = it }
 

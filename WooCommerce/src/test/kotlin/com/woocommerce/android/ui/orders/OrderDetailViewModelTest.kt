@@ -108,7 +108,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             it
         }
         doReturn(site).whenever(selectedSite).getIfExists()
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any())
         }
 
@@ -144,7 +144,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays the order detail view correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Displays the order detail view correctly`() = testBlocking {
         val nonRefundedOrder = order.copy(refundTotal = BigDecimal.ZERO)
 
         val expectedViewState = orderWithParameters.copy(orderInfo = orderInfo.copy(order = nonRefundedOrder))
@@ -221,7 +221,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `collect button hidden if payment is not collectable`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any())
             doReturn(order).whenever(repository).getOrderById(any())
@@ -238,7 +238,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `collect button shown if payment is collectable`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             doReturn(true).whenever(paymentCollectibilityChecker).isCollectable(any())
             doReturn(order).whenever(repository).getOrderById(any())
@@ -255,7 +255,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `hasVirtualProductsOnly returns false if there are no products for the order`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val order = order.copy(items = emptyList())
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(order).whenever(repository).fetchOrderById(any())
@@ -273,7 +273,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `hasVirtualProductsOnly returns true if and only if there are no physical products for the order`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val item = OrderTestUtils.generateTestOrder().items.first().copy(productId = 1)
             val virtualItems = listOf(item.copy(productId = 3), item.copy(productId = 4))
             val virtualOrder = order.copy(items = virtualItems)
@@ -296,7 +296,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `hasVirtualProductsOnly returns false if there are both virtual and physical products for the order`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val item = OrderTestUtils.generateTestOrder().items.first().copy(productId = 1)
             val mixedItems = listOf(item, item.copy(productId = 2))
             val mixedOrder = order.copy(items = mixedItems)
@@ -320,7 +320,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `don't fetch products if we have all products`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val item = OrderTestUtils.generateTestOrder().items.first().copy(productId = 1)
             val items = listOf(item, item.copy(productId = 2))
             val ids = items.map { it.productId }
@@ -335,7 +335,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `fetch products if there are some missing`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val item = OrderTestUtils.generateTestOrder().items.first().copy(productId = 1)
             val items = listOf(item, item.copy(productId = 2))
             val ids = items.map { it.productId }
@@ -360,7 +360,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Do not display product list when all products are refunded`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(order).whenever(repository).fetchOrderById(any())
 
@@ -394,7 +394,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Display product list when shipping labels are available`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(order).whenever(repository).fetchOrderById(any())
 
@@ -428,7 +428,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Hide Create shipping label button and show Products area menu when shipping labels are available`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(order).whenever(repository).fetchOrderById(any())
 
@@ -475,7 +475,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Show Create shipping label button and hide Products area menu when no shipping labels are available`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(order).whenever(repository).fetchOrderById(any())
 
@@ -523,7 +523,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Do not display shipment tracking when shipping labels are available`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(order).whenever(repository).fetchOrderById(any())
 
@@ -555,7 +555,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Do not display shipment tracking when order is eligible for in-person payments`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(order).whenever(repository).fetchOrderById(any())
             doReturn(true).whenever(paymentCollectibilityChecker).isCollectable(any())
@@ -603,7 +603,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Display error message on fetch order error`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Display error message on fetch order error`() = testBlocking {
         whenever(repository.fetchOrderById(ORDER_ID)).thenReturn(null)
         whenever(repository.getOrderById(ORDER_ID)).thenReturn(null)
 
@@ -621,7 +621,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Shows and hides order detail skeleton correctly`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             doReturn(null).whenever(repository).getOrderById(any())
 
             val isSkeletonShown = ArrayList<Boolean>()
@@ -636,7 +636,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Do not fetch order from api when not connected`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Do not fetch order from api when not connected`() = testBlocking {
         doReturn(null).whenever(repository).getOrderById(any())
         doReturn(false).whenever(networkStatus).isConnected()
 
@@ -654,7 +654,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Update order status and handle undo action`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Update order status and handle undo action`() = testBlocking {
         val newOrderStatus = OrderStatus(CoreOrderStatus.PROCESSING.value, CoreOrderStatus.PROCESSING.value)
 
         doReturn(order).whenever(repository).getOrderById(any())
@@ -706,7 +706,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Update order status when network connected`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Update order status when network connected`() = testBlocking {
         val newOrderStatus = OrderStatus(CoreOrderStatus.PROCESSING.value, CoreOrderStatus.PROCESSING.value)
 
         doReturn(order).whenever(repository).getOrderById(any())
@@ -743,7 +743,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Do not update order status when not connected`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Do not update order status when not connected`() = testBlocking {
         doReturn(order).whenever(repository).getOrderById(any())
         doReturn(false).whenever(networkStatus).isConnected()
 
@@ -802,7 +802,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `show shipping label creation if the order is eligible`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `show shipping label creation if the order is eligible`() = testBlocking {
         doReturn(order).whenever(repository).getOrderById(any())
         doReturn(order).whenever(repository).fetchOrderById(any())
 
@@ -830,7 +830,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `hide shipping label creation if wcs is older than supported version`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(order).whenever(repository).fetchOrderById(any())
 
@@ -858,7 +858,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `hide shipping label creation if the order is not eligible`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(order).whenever(repository).fetchOrderById(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
@@ -892,7 +892,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `hide shipping label creation if wcs plugin is not installed`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(order).whenever(repository).fetchOrderById(any())
 
@@ -922,7 +922,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `re-fetch order when payment flow completes`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `re-fetch order when payment flow completes`() = testBlocking {
         viewModel.start()
         val orderAfterPayment = order.copy(status = Status.fromDataModel(CoreOrderStatus.COMPLETED)!!)
         doReturn(orderAfterPayment).whenever(repository).getOrderById(any())
@@ -935,7 +935,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `show order status updated snackbar on updating status from dialog`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             doReturn(order).whenever(repository).fetchOrderById(any())
             doReturn(true).whenever(repository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
@@ -957,7 +957,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `show order status updated snackbar on updating status to completed from dialog`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             doReturn(order).whenever(repository).fetchOrderById(any())
             doReturn(true).whenever(repository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
@@ -979,7 +979,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `show order completed snackbar on updating status to completed from fulfill screen`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             doReturn(order).whenever(repository).fetchOrderById(any())
             doReturn(true).whenever(repository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
@@ -996,7 +996,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `show error changing order snackbar if updating status failed`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             doReturn(order).whenever(repository).fetchOrderById(any())
             doReturn(true).whenever(repository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
@@ -1020,7 +1020,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `do not show error changing order snackbar if updating status failed because of cancellation`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             doReturn(order).whenever(repository).fetchOrderById(any())
             doReturn(true).whenever(repository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
@@ -1040,7 +1040,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `do not show error changing order snackbar if updating status did not fail`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             doReturn(order).whenever(repository).fetchOrderById(any())
             doReturn(true).whenever(repository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
@@ -1059,7 +1059,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given receipt url available, when user taps on see receipt, then preview receipt screen shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(order).whenever(repository).fetchOrderById(any())
             doReturn(false).whenever(repository).fetchOrderNotes(any())
@@ -1075,7 +1075,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when user presses collect payment button, then start card reader payment flow`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // Given
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(order).whenever(repository).fetchOrderById(any())
@@ -1092,7 +1092,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when user presses collect payment button, then event tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // Given
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(order).whenever(repository).fetchOrderById(any())

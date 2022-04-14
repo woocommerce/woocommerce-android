@@ -83,7 +83,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when order has zero taxes and no shipping and fees, then refund notice is not visible`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(OrderTestUtils.generateOrder())
 
             initViewModel()
@@ -97,7 +97,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when order has taxes and no shipping and fees, then only the taxes are mentioned in the notice`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val orderWithTax = OrderTestUtils.generateOrder().copy(totalTax = "4.00")
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithTax)
 
@@ -113,7 +113,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when order has one shipping and fees without taxes, then the notice not visible`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val orderWithFeesAndShipping = OrderTestUtils.generateOrderWithFee()
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithFeesAndShipping)
 
@@ -128,7 +128,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when order has one shipping, and fees and taxes, then taxes are mentioned in the notice`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val orderWithFeesAndShipping = OrderTestUtils.generateOrderWithFee().copy(totalTax = "4.00")
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithFeesAndShipping)
 
@@ -144,7 +144,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when order has multiple shipping, multiple shipping are mentioned in the notice`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines()
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
 
@@ -160,7 +160,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given non cash order, when successfully charge data loaded, then card info is visible`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val chargeId = "charge_id"
             val cardBrand = "visa"
             val cardLast4 = "1234"
@@ -189,7 +189,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given non cash order, when charge data loaded with error, then card info is not visible`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val chargeId = "charge_id"
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
                 paymentMethod = "cod",
@@ -213,7 +213,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given non cash order and non charge id in order, when charge data loading, then card info is not visible`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
                 paymentMethod = "cod",
                 metaData = "[]"

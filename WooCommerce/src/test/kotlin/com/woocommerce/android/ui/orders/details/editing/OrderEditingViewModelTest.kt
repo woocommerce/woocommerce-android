@@ -45,7 +45,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `should replicate billing to shipping when toggle is activated`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             orderEditingRepository.stub {
                 onBlocking {
                     updateBothOrderAddresses(any(), any(), any())
@@ -68,7 +68,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `should replicate shipping to billing when toggle is activated`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             orderEditingRepository.stub {
                 onBlocking {
                     updateBothOrderAddresses(any(), any(), any())
@@ -131,7 +131,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `should replace email info with original one when empty`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val originalOrder = testOrder.copy(
                 billingAddress = addressToUpdate.copy(email = "original@email.com")
             )

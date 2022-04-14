@@ -64,7 +64,7 @@ class ShippingLabelRefundViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays the refund shipping label view correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Displays the refund shipping label view correctly`() = testBlocking {
         var shippingLabelData: ShippingLabelRefundViewState? = null
         viewModel.shippingLabelRefundViewStateData.observeForever { _, new -> shippingLabelData = new }
 
@@ -73,7 +73,7 @@ class ShippingLabelRefundViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Refunds the shipping label correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Refunds the shipping label correctly`() = testBlocking {
         doReturn(WooResult(true)).whenever(repository).refundShippingLabel(any(), any())
 
         var snackBar: ShowSnackbar? = null
@@ -92,7 +92,7 @@ class ShippingLabelRefundViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Refunds the shipping label results in an error`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Refunds the shipping label results in an error`() = testBlocking {
         doReturn(
             WooResult<Boolean>(WooError(API_ERROR, NETWORK_ERROR, ""))
         ).whenever(repository).refundShippingLabel(any(), any())
@@ -113,7 +113,7 @@ class ShippingLabelRefundViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `disable refund if label is anonymized`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `disable refund if label is anonymized`() = testBlocking {
         doReturn(shippingLabel.copy(status = "ANONYMIZED"))
             .whenever(repository).getShippingLabelByOrderIdAndLabelId(any(), any())
 
@@ -126,7 +126,7 @@ class ShippingLabelRefundViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `disable refund if label is older than 30 days`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `disable refund if label is older than 30 days`() = testBlocking {
         doReturn(shippingLabel.copy(createdDate = Date(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(31))))
             .whenever(repository).getShippingLabelByOrderIdAndLabelId(any(), any())
 
@@ -139,7 +139,7 @@ class ShippingLabelRefundViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `enable refund if label is recent than 30 days`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `enable refund if label is recent than 30 days`() = testBlocking {
         doReturn(shippingLabel.copy(createdDate = Date(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(29))))
             .whenever(repository).getShippingLabelByOrderIdAndLabelId(any(), any())
 

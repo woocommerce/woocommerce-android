@@ -58,7 +58,7 @@ class UserEligibilityFetcherTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Fetches user info correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Fetches user info correctly`() = testBlocking {
         doReturn(expectedUser.isUserEligible()).whenever(appPrefsWrapper).isUserEligible()
         doReturn(expectedUser.email).whenever(appPrefsWrapper).getUserEmail()
 
@@ -81,7 +81,7 @@ class UserEligibilityFetcherTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Do not update prefs when request failed`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Do not update prefs when request failed`() = testBlocking {
         doReturn(true).whenever(appPrefsWrapper).isUserEligible()
         doReturn(null).whenever(appPrefsWrapper).getUserEmail()
 

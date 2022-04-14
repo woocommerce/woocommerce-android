@@ -63,7 +63,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when view model init with connected state and update up to date should emit connected view state`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             initConnectedState()
 
@@ -76,7 +76,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when view model init with connected state should emit correct values of connected state`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             initConnectedState()
 
@@ -98,7 +98,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when view model init with connected state and battery should emit correct values of connected state`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             initConnectedState(batteryLevel = 0.325f)
 
@@ -120,7 +120,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when view model init with connected state and empty name should emit connected view state with fallbacks`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             initConnectedState(readersName = null, batteryLevel = null)
 
@@ -182,7 +182,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when view model init with connected state should invoke software update availability`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val status = MutableStateFlow(CardReaderStatus.Connected(mock()))
             whenever(cardReaderManager.readerStatus).thenReturn(status)
@@ -196,7 +196,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when view model init with connected state and update available should emit connected state with update`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             initConnectedState(updateAvailable = SoftwareUpdateAvailability.Available)
 
@@ -231,7 +231,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given up to date software, when on update result successful, then connected state without update emitted`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val viewModel = createViewModel()
             initConnectedState()
@@ -255,7 +255,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given connected state, when click on reader name, then copy and snackbar event triggers`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             initConnectedState()
             val viewModel = createViewModel()
@@ -277,7 +277,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given software update available, when on update result successful, then connected without update emitted`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val viewModel = createViewModel()
             initConnectedState(updateAvailable = SoftwareUpdateAvailability.Available)
@@ -314,7 +314,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when on disconnect button clicked with success should do nothing`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             initConnectedState()
             whenever(cardReaderManager.disconnectReader()).thenReturn(true)
@@ -329,7 +329,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when on disconnect button clicked with fail should change to not connected state`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             initConnectedState()
             whenever(cardReaderManager.disconnectReader()).thenReturn(false)
@@ -344,7 +344,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given not connected state, when connect button clicked should track event`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val status = MutableStateFlow(CardReaderStatus.NotConnected())
             whenever(cardReaderManager.readerStatus).thenReturn(status)
@@ -359,7 +359,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when disconnect button clicked should track event`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             initConnectedState()
             whenever(cardReaderManager.disconnectReader()).thenReturn(true)
@@ -374,7 +374,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when card reader disconnected successfully, then trigger accessibility announcement`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val status = MutableStateFlow(CardReaderStatus.NotConnected())
             whenever(cardReaderManager.readerStatus).thenReturn(status)
@@ -391,7 +391,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when card reader disconnection fails, then do not trigger accessibility announcement`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val status = MutableStateFlow(CardReaderStatus.Connected(mock()))
             whenever(cardReaderManager.readerStatus).thenReturn(status)
@@ -408,7 +408,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when card reader connected successfully, then trigger accessibility announcement`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val status = MutableStateFlow(CardReaderStatus.Connected(mock()))
             whenever(cardReaderManager.readerStatus).thenReturn(status)
@@ -425,7 +425,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when card reader connection fails, then do not trigger accessibility announcement`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val status = MutableStateFlow(CardReaderStatus.Connecting)
             whenever(cardReaderManager.readerStatus).thenReturn(status)
@@ -442,7 +442,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given wcpay active and reader not connected, when user taps on learn more, then show wcpay docs`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val status = MutableStateFlow(CardReaderStatus.NotConnected())
             whenever(cardReaderManager.readerStatus).thenReturn(status)
@@ -459,7 +459,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given wcpay active and reader connected, when user taps on learn more, then show wcpay docs`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             initConnectedState()
             whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any())).thenReturn(WOOCOMMERCE_PAYMENTS)
@@ -475,7 +475,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given stripe active and reader not connected, when user taps on learn more, then show stripe docs`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val status = MutableStateFlow(CardReaderStatus.NotConnected())
             whenever(cardReaderManager.readerStatus).thenReturn(status)
@@ -493,7 +493,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given stripe active and reader connected, when user taps on learn more, then show stripe docs`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             initConnectedState()
             whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
@@ -561,7 +561,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         batteryLevel: Float? = 0.65F,
         firmwareVersion: String = DUMMY_FIRMWARE_VERSION,
         updateAvailable: SoftwareUpdateAvailability = SoftwareUpdateAvailability.NotAvailable
-    ) = coroutinesTestRule.testDispatcher.runBlockingTest {
+    ) = testBlocking {
         val reader: CardReader = mock {
             on { this.id }.thenReturn(readersName)
             on { this.currentBatteryLevel }.thenReturn(batteryLevel)
