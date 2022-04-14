@@ -4,7 +4,7 @@ import com.woocommerce.android.ui.orders.cardreader.ClearCardReaderDataAction
 import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.util.FeatureFlag
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -74,7 +74,7 @@ class AppSettingsPresenterTest {
     @Test
     fun `cleanPaymentsData with initialized manager should disconnect reader`() {
         if (FeatureFlag.CARD_READER.isEnabled()) {
-            coroutinesTestRule.testDispatcher.runBlockingTest {
+            runTest(coroutinesTestRule.testDispatcher) {
                 appSettingsPresenter.logout()
 
                 verify(clearCardReaderDataAction).invoke()

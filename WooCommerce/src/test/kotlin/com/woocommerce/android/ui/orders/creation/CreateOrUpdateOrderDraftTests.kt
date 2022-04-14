@@ -8,6 +8,7 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.*
@@ -84,6 +85,8 @@ class CreateOrUpdateOrderDraftTests : BaseUnitTest() {
 
         verify(orderCreationRepository, never()).createOrUpdateDraft(any())
         advanceTimeBy(CreateOrUpdateOrderDraft.DEBOUNCE_DURATION_MS)
+        runCurrent()
+
         verify(orderCreationRepository, times(1)).createOrUpdateDraft(any())
 
         job.cancel()

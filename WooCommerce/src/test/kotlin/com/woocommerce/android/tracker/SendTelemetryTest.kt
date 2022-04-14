@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.runCurrent
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -33,7 +34,7 @@ class SendTelemetryTest : BaseUnitTest() {
     private val trackerStore = mock<TrackerStore>()
     private val trackerRepository = FakeTrackerRepository()
     private val currentTimeProvider = mock<CurrentTimeProvider> {
-        on { currentDate() } doAnswer { Date(coroutinesTestRule.testDispatcher.currentTime) }
+        on { currentDate() } doAnswer { Date(coroutinesTestRule.testDispatcher.scheduler.currentTime) }
     }
     private val selectedSite = mock<SelectedSite> {
         on { observe() } doReturn flowOf(site)
@@ -113,6 +114,7 @@ class SendTelemetryTest : BaseUnitTest() {
             }
         }
         advanceTimeBy(SendTelemetry.UPDATE_INTERVAL.toLong() * 3)
+        runCurrent()
 
         // then
         assertThat(results).containsExactly(SENT, NOT_SENT, SENT, NOT_SENT, SENT, NOT_SENT, SENT)
