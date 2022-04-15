@@ -137,10 +137,12 @@ final class OrderDetailViewModel @Inject constructor(
     private suspend fun fetchAndDisplayOrderDetails() {
         fetchOrderNotes()
         fetchProductAndShippingDetails()
-        displayOrderDetails()
+        launch {
+            displayOrderDetails()
+        }
     }
 
-    private fun displayOrderDetails() {
+    private suspend fun displayOrderDetails() {
         updateOrderState()
         loadOrderNotes()
         displayProductAndShippingDetails()
@@ -456,32 +458,26 @@ final class OrderDetailViewModel @Inject constructor(
         )
     }
 
-    private fun updateOrderState() {
-        launch {
-            val isPaymentCollectable = isPaymentCollectable(order)
-            withContext(coroutineDispatchers.main) {
-                val orderStatus = orderDetailRepository.getOrderStatus(order.status.value)
-                viewState = viewState.copy(
-                    orderInfo = OrderInfo(
-                        order = order,
-                        isPaymentCollectableWithCardReader = isPaymentCollectable,
-                        isReceiptButtonsVisible = FeatureFlag.CARD_READER.isEnabled() &&
-                            !loadReceiptUrl().isNullOrEmpty()
-                    ),
-                    orderStatus = orderStatus,
-                    toolbarTitle = resourceProvider.getString(
-                        string.orderdetail_orderstatus_ordernum, order.number
-                    )
+    private suspend fun updateOrderState() {
+        val isPaymentCollectable = isPaymentCollectable(order)
+        withContext(coroutineDispatchers.main) {
+            val orderStatus = orderDetailRepository.getOrderStatus(order.status.value)
+            viewState = viewState.copy(
+                orderInfo = OrderInfo(
+                    order = order,
+                    isPaymentCollectableWithCardReader = isPaymentCollectable,
+                    isReceiptButtonsVisible = FeatureFlag.CARD_READER.isEnabled() &&
+                        !loadReceiptUrl().isNullOrEmpty()
+                ),
+                orderStatus = orderStatus,
+                toolbarTitle = resourceProvider.getString(
+                    string.orderdetail_orderstatus_ordernum, order.number
                 )
-            }
+            )
         }
     }
 
-    private suspend fun isPaymentCollectable(order: Order): Boolean {
-        return async {
-            paymentCollectibilityChecker.isCollectable(order)
-        }.await()
-    }
+    private suspend fun isPaymentCollectable(order: Order) = paymentCollectibilityChecker.isCollectable(order)
 
     private fun loadOrderNotes() {
         launch {
