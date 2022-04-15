@@ -7,7 +7,6 @@ import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUns
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.cardreader.payment.CardReaderPaymentCurrencySupportedChecker
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock

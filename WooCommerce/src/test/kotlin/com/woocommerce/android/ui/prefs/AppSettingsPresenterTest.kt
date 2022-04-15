@@ -18,7 +18,7 @@ import org.wordpress.android.fluxc.store.NotificationStore.OnDeviceUnregistered
 import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
-class AppSettingsPresenterTest: BaseUnitTest() {
+class AppSettingsPresenterTest : BaseUnitTest() {
 
     private val appSettingsContractView: AppSettingsContract.View = mock()
 
