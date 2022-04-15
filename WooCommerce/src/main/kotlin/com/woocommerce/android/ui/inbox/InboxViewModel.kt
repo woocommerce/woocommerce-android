@@ -60,8 +60,8 @@ class InboxViewModel @Inject constructor(
 
     private fun trackInboxNotesLoaded(result: Result<Unit>, isLoadingMore: Boolean = false) {
         val event = when {
-            result.isFailure -> INBOX_NOTES_LOADED
-            else -> INBOX_NOTES_LOAD_FAILED
+            result.isFailure -> INBOX_NOTES_LOAD_FAILED
+            else -> INBOX_NOTES_LOADED
         }
         val properties = when {
             result.isFailure -> {
