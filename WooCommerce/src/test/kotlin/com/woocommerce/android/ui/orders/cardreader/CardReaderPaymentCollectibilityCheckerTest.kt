@@ -32,7 +32,7 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
     @Before
     fun setUp() {
         doReturn(false).whenever(repository).hasSubscriptionProducts(any())
-        runBlockingTest {
+        testBlocking {
             whenever(cardReaderPaymentCurrencySupportedChecker.isCurrencySupported(any())).thenReturn(true)
         }
     }
