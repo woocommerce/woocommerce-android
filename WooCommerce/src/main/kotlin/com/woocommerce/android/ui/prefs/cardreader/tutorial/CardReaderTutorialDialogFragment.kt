@@ -16,7 +16,6 @@ import com.woocommerce.android.databinding.CardReaderTutorialDialogBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam
 import dagger.hilt.android.AndroidEntryPoint
-import java.math.BigDecimal
 import javax.inject.Inject
 
 @AndroidEntryPoint

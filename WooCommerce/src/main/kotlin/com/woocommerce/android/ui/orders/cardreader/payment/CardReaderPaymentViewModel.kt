@@ -240,7 +240,8 @@ class CardReaderPaymentViewModel
                 when (paymentStatus.paymentMethodType) {
                     // Interac payments done in one step, without capturing. That's why we track success here
                     PaymentMethodType.INTERAC_PRESENT -> tracker.trackInteracPaymentSucceeded()
-                    else -> {}
+                    else -> {
+                    }
                 }
             }
             CapturingPayment -> viewState.postValue(CapturingPaymentState(amountLabel))
@@ -272,9 +273,9 @@ class CardReaderPaymentViewModel
                 )
             ).collect { refundStatus ->
                 onRefundStatusChanged(
-                    refundStatus, currencyFormatter.formatAmountWithCurrency(
-                        order.currency,
-                        arguments.refundAmount!!.toDouble()
+                    refundStatus,
+                    currencyFormatter.formatAmountWithCurrency(
+                        order.currency, arguments.refundAmount!!.toDouble()
                     )
                 )
             }
