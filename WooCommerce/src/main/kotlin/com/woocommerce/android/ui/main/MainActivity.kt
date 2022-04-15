@@ -412,12 +412,19 @@ class MainActivity :
             }
             showCrossIcon = false
         } else {
-            if (destination.id == R.id.productFilterListFragment) {
-                binding.appBarLayout.elevation = 0f
-                binding.appBarDivider.visibility = View.VISIBLE
-            } else {
-                binding.appBarDivider.visibility = View.GONE
-                binding.appBarLayout.elevation = resources.getDimensionPixelSize(dimen.appbar_elevation).toFloat()
+            // Add divider and remove shadow under the app bar for some screens
+            when (destination.id) {
+                R.id.productFilterListFragment,
+                R.id.productFilterOptionListFragment,
+                R.id.orderFilterCategoriesFragment,
+                R.id.orderFilterOptionsFragment -> {
+                    binding.appBarLayout.elevation = 0f
+                    binding.appBarDivider.visibility = View.VISIBLE
+                }
+                else -> {
+                    binding.appBarDivider.visibility = View.GONE
+                    binding.appBarLayout.elevation = resources.getDimensionPixelSize(dimen.appbar_elevation).toFloat()
+                }
             }
 
             showCrossIcon = when (destination.id) {
