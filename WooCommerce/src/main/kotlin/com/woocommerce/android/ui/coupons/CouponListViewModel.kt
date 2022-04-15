@@ -79,16 +79,19 @@ class CouponListViewModel @Inject constructor(
         }
     }
 
-    fun onSearchQueryChanged(query: String?) {
-        searchQuery.value = query.orEmpty()
+    fun onSearchQueryChanged(query: String) {
+        searchQuery.value = query
+    }
+
+    fun onSearchStateChanged(open: Boolean) {
+        searchQuery.value = if (open) searchQuery.value.orEmpty() else null
     }
 
     private fun monitorSearchQuery() {
         viewModelScope.launch {
             searchQuery
-                .filterNotNull()
                 .debounce {
-                    if (it.isEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS
+                    if (it.isNullOrEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS
                 }.collectLatest {
                     try {
                         isLoading.value = true
@@ -104,7 +107,9 @@ class CouponListViewModel @Inject constructor(
         val isLoading: Boolean = false,
         val searchQuery: String? = null,
         val coupons: List<CouponListItem> = emptyList()
-    )
+    ) {
+        val isSearchOpen = searchQuery != null
+    }
 
     data class CouponListItem(
         val id: Long,

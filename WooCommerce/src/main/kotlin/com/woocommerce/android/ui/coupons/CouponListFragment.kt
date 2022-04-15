@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.coupons
 
 import android.os.Bundle
 import android.view.*
+import android.view.MenuItem.OnActionExpandListener
 import android.widget.SearchView.OnQueryTextListener
 import androidx.appcompat.widget.SearchView
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -29,6 +30,7 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
         const val TAG: String = "CouponListFragment"
     }
 
+    private lateinit var searchMenuItem: MenuItem
     private lateinit var searchView: SearchView
     private var _binding: FragmentCouponListBinding? = null
     private val binding get() = _binding!!
@@ -65,11 +67,6 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
     }
 
     private fun setupObservers() {
-        viewModel.couponsState.observe(viewLifecycleOwner) {
-            if (::searchView.isInitialized) {
-                searchView.setQuery(it.searchQuery, false)
-            }
-        }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is NavigateToCouponDetailsEvent -> navigateToCouponDetails(event.couponId)
@@ -80,32 +77,48 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.menu_search, menu)
-        val searchMenuItem = menu.findItem(R.id.menu_search)
-        searchView = searchMenuItem?.actionView as SearchView
-        searchView.queryHint = getString(R.string.coupons_list_search_hint)
-        val currentQuery = viewModel.couponsState.value?.searchQuery
-        searchView.setQuery(currentQuery, false)
-        searchView.isIconified = currentQuery.isNullOrEmpty()
-        searchView.setOnCloseListener {
-            viewModel.onSearchQueryChanged(null)
-            true
-        }
-        searchView.setOnQueryTextListener(object : OnQueryTextListener, SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                viewModel.onSearchQueryChanged(query)
-                return true
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                viewModel.onSearchQueryChanged(newText)
-                return true
-            }
-        })
+        searchMenuItem = menu.findItem(R.id.menu_search)
+        initSearch()
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         displayCouponsWIPCard(true)
+    }
+
+    private fun initSearch() {
+        searchView = searchMenuItem.actionView as SearchView
+        searchView.queryHint = getString(R.string.coupons_list_search_hint)
+        viewModel.couponsState.value?.let {
+            if (it.isSearchOpen) {
+                searchMenuItem.expandActionView()
+                searchView.setQuery(it.searchQuery, false)
+            } else {
+                searchMenuItem.collapseActionView()
+            }
+        }
+        searchMenuItem.setOnActionExpandListener(object : OnActionExpandListener {
+            override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+                viewModel.onSearchStateChanged(open = true)
+                return true
+            }
+
+            override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+                viewModel.onSearchStateChanged(open = false)
+                return true
+            }
+        })
+        searchView.setOnQueryTextListener(object : OnQueryTextListener, SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                viewModel.onSearchQueryChanged(query.orEmpty())
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                viewModel.onSearchQueryChanged(newText.orEmpty())
+                return true
+            }
+        })
     }
 
     private fun navigateToCouponDetails(couponId: Long) {

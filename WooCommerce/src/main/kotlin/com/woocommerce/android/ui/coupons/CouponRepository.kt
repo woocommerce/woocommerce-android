@@ -31,7 +31,7 @@ class CouponRepository @Inject constructor(
     private val searchResults = MutableStateFlow(emptyList<CouponDataModel>())
 
     val couponsFlow = searchQuery.flatMapLatest {
-        if (it.isNullOrEmpty()) {
+        if (it == null) {
             store.observeCoupons(site.get())
         } else {
             searchResults
@@ -49,7 +49,7 @@ class CouponRepository @Inject constructor(
         canLoadMore = true
 
         this.searchQuery.value = searchQuery
-        return if (searchQuery.isNullOrEmpty()) {
+        return if (searchQuery == null) {
             if (forceRefresh) {
                 loadCoupons()
             } else {
@@ -57,12 +57,18 @@ class CouponRepository @Inject constructor(
             }
         } else {
             searchResults.value = emptyList()
-            searchCoupons()
+            if (searchQuery.isEmpty()) {
+                // If the query is empty, clear search results directly
+                canLoadMore = false
+                Result.success(Unit)
+            } else {
+                searchCoupons()
+            }
         }
     }
 
     suspend fun loadMore(): Result<Unit> = mutex.withLock {
-        return if (searchQuery.value.isNullOrEmpty()) {
+        return if (searchQuery.value == null) {
             loadCoupons()
         } else {
             searchCoupons()
@@ -88,7 +94,7 @@ class CouponRepository @Inject constructor(
     private suspend fun searchCoupons(): Result<Unit> {
         return store.searchCoupons(
             site.get(),
-            searchString = searchQuery.value.orEmpty(),
+            searchString = searchQuery.value!!,
             page = page,
             pageSize = PAGE_SIZE
         )
