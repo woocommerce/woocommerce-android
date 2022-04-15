@@ -59,24 +59,24 @@ class InboxViewModel @Inject constructor(
     }
 
     private fun trackInboxNotesLoaded(result: Result<Unit>, isLoadingMore: Boolean = false) {
-        val event = when {
-            result.isFailure -> INBOX_NOTES_LOAD_FAILED
-            else -> INBOX_NOTES_LOADED
-        }
-        val properties = when {
-            result.isFailure -> {
-                val errorProperties = mutableMapOf(
-                    KEY_ERROR_TYPE to result.exceptionOrNull(),
-                    KEY_ERROR_DESC to result.exceptionOrNull()?.message
+        result.fold(
+            onSuccess = {
+                AnalyticsTracker.track(
+                    INBOX_NOTES_LOADED,
+                    mapOf(KEY_IS_LOADING_MORE to isLoadingMore.toString())
                 )
-                result.exceptionOrNull()?.let {
-                    errorProperties[KEY_ERROR_CONTEXT] = it::class.java.simpleName
-                }
-                errorProperties
+            },
+            onFailure = {
+                AnalyticsTracker.track(
+                    INBOX_NOTES_LOAD_FAILED,
+                    mapOf(
+                        KEY_ERROR_CONTEXT to it::class.java.simpleName,
+                        KEY_ERROR_TYPE to it,
+                        KEY_ERROR_DESC to it.message
+                    )
+                )
             }
-            else -> mapOf(KEY_IS_LOADING_MORE to isLoadingMore.toString())
-        }
-        AnalyticsTracker.track(event, properties)
+        )
     }
 
     private fun trackInboxNoteActionClicked(actionValue: String) {
