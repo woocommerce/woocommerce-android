@@ -156,7 +156,7 @@ class CardReaderPaymentViewModel
 
     private fun initRefundFlow(isRetry: Boolean) {
         refundFlowJob = launch {
-            viewState.postValue((InteracRefund.RefundLoadingDataState))
+            onRefundStatusChanged(InitializingInteracRefund, "")
             if (isRetry) {
                 delay(ARTIFICIAL_RETRY_DELAY)
             }
@@ -275,7 +275,8 @@ class CardReaderPaymentViewModel
                 onRefundStatusChanged(
                     refundStatus,
                     currencyFormatter.formatAmountWithCurrency(
-                        order.currency, arguments.refundAmount!!.toDouble()
+                        order.currency,
+                        arguments.refundAmount!!.toDouble()
                     )
                 )
             }
