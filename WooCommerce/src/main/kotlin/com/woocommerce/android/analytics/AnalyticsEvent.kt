@@ -588,7 +588,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     HUB_MENU_OPTION_TAPPED,
     HUB_MENU_SETTINGS_TAPPED,
 
-    //Inbox
+    // Inbox
     INBOX_NOTES_LOADED,
     INBOX_NOTES_LOAD_FAILED,
     INBOX_NOTE_ACTION,
