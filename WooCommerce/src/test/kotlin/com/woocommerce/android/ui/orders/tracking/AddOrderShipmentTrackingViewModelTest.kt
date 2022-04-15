@@ -51,7 +51,7 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Add order shipment tracking when network is available - success`() = runBlockingTest {
+    fun `Add order shipment tracking when network is available - success`() = testBlocking {
         doReturn(OnOrderChanged()).whenever(repository).addOrderShipmentTracking(any(), any())
 
         val events = mutableListOf<Event>()
@@ -75,7 +75,7 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Add order shipment tracking fails`() = runBlockingTest {
+    fun `Add order shipment tracking fails`() = testBlocking {
         doReturn(OnOrderChanged().also { it.error = OrderError(type = GENERIC_ERROR, message = "") })
             .whenever(repository).addOrderShipmentTracking(any(), any())
 
@@ -99,7 +99,7 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Add order shipment tracking when network offline`() = runBlockingTest {
+    fun `Add order shipment tracking when network offline`() = testBlocking {
         doReturn(false).whenever(networkStatus).isConnected()
 
         var event: Event? = null

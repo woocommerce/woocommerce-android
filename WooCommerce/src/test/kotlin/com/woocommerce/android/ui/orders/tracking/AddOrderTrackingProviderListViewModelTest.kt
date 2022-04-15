@@ -46,7 +46,7 @@ class AddOrderTrackingProviderListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Shows and hides the provider list skeleton correctly`() = runBlockingTest {
+    fun `Shows and hides the provider list skeleton correctly`() = testBlocking {
         doReturn(testShipmentProvider).whenever(shipmentProvidersRepository)
             .fetchOrderShipmentProviders(ORDER_ID)
 
@@ -62,7 +62,7 @@ class AddOrderTrackingProviderListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Display error snackbar when provider list is empty`() = runBlockingTest {
+    fun `Display error snackbar when provider list is empty`() = testBlocking {
         doReturn(emptyList<OrderShipmentProvider>()).whenever(shipmentProvidersRepository)
             .fetchOrderShipmentProviders(ORDER_ID)
 
@@ -78,7 +78,7 @@ class AddOrderTrackingProviderListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Display error snackbar when error occurs`() = runBlockingTest {
+    fun `Display error snackbar when error occurs`() = testBlocking {
         doReturn(null).whenever(shipmentProvidersRepository)
             .fetchOrderShipmentProviders(ORDER_ID)
 
@@ -94,7 +94,7 @@ class AddOrderTrackingProviderListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `filter results`() = runBlockingTest {
+    fun `filter results`() = testBlocking {
         doReturn(testShipmentProvider).whenever(shipmentProvidersRepository)
             .fetchOrderShipmentProviders(ORDER_ID)
 
@@ -111,7 +111,7 @@ class AddOrderTrackingProviderListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `handle carrier selection`() = runBlockingTest {
+    fun `handle carrier selection`() = testBlocking {
         doReturn(testShipmentProvider).whenever(shipmentProvidersRepository)
             .fetchOrderShipmentProviders(ORDER_ID)
 

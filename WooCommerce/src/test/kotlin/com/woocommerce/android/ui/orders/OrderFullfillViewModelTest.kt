@@ -243,7 +243,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `refresh shipping tracking items when an item is added`() = runBlockingTest {
+    fun `refresh shipping tracking items when an item is added`() = testBlocking {
         val shipmentTracking = OrderShipmentTracking(
             trackingProvider = "testProvider",
             trackingNumber = "123456",
@@ -270,7 +270,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `handle onBackButtonClicked when new shipment tracking is added`() = runBlockingTest {
+    fun `handle onBackButtonClicked when new shipment tracking is added`() = testBlocking {
         val shipmentTracking = OrderShipmentTracking(
             trackingProvider = "testProvider",
             trackingNumber = "123456",
@@ -312,7 +312,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `handle onBackButtonClicked when no shipment is added`() = runBlockingTest {
+    fun `handle onBackButtonClicked when no shipment is added`() = testBlocking {
         doReturn(order).whenever(repository).getOrderById(any())
         doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
 

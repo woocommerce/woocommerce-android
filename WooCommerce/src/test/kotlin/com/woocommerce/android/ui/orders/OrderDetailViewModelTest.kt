@@ -767,7 +767,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `refresh shipping tracking items when an item is added`() = runBlockingTest {
+    fun `refresh shipping tracking items when an item is added`() = testBlocking {
         val shipmentTracking = OrderShipmentTracking(
             trackingProvider = "testProvider",
             trackingNumber = "123456",

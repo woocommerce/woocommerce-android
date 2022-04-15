@@ -46,7 +46,7 @@ class MyStoreStatsUsageTracksEventEmitterTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given some interactions, when the site is changed, then it will not emit an event`() = runBlockingTest {
+    fun `given some interactions, when the site is changed, then it will not emit an event`() = testBlocking {
         // Given
         usageTracksEventEmitter.interacted(
             "2021-11-23T00:00:00Z",

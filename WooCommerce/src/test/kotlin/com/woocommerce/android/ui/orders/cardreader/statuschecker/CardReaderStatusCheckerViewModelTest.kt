@@ -29,7 +29,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
     private val pluginVersion = "4.0.0"
 
     @Test
-    fun `given hub flow, when vm init, then navigates to onboarding`() = runBlockingTest {
+    fun `given hub flow, when vm init, then navigates to onboarding`() = testBlocking {
         // GIVEN
         val param = CardReaderFlowParam.CardReadersHub
 
@@ -42,7 +42,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given payment flow and connected reader, when vm init, then navigates to payment`() = runBlockingTest {
+    fun `given payment flow and connected reader, when vm init, then navigates to payment`() = testBlocking {
         // GIVEN
         val orderId = 1L
         val param = CardReaderFlowParam.ConnectAndAcceptPayment(orderId = orderId)
