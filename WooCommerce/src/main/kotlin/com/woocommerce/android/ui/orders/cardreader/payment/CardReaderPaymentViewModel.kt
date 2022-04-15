@@ -328,7 +328,7 @@ class CardReaderPaymentViewModel
     ) {
         WooLog.e(WooLog.T.CARD_READER, "Refund failed")
         val onRetryClicked = { retryInteracRefund() }
-        val errorType = interacRefundErrorMapper.mapPaymentErrorToUiError(error.type)
+        val errorType = interacRefundErrorMapper.mapRefundErrorToUiError(error.type)
         if (errorType is InteracRefundFlowError.NonRetryableError) {
             viewState.postValue(
                 FailedRefundState(

@@ -2111,7 +2111,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             setupViewModelForInteracRefund()
             whenever(
-                interacRefundErrorMapper.mapPaymentErrorToUiError(
+                interacRefundErrorMapper.mapRefundErrorToUiError(
                     CardInteracRefundStatus.RefundStatusErrorType.Generic
                 )
             ).thenReturn(InteracRefundFlowError.Generic)
@@ -2234,7 +2234,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             setupViewModelForInteracRefund()
             whenever(
-                interacRefundErrorMapper.mapPaymentErrorToUiError(
+                interacRefundErrorMapper.mapRefundErrorToUiError(
                     CardInteracRefundStatus.RefundStatusErrorType.Generic
                 )
             ).thenReturn(InteracRefundFlowError.Generic)
@@ -2266,7 +2266,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             setupViewModelForInteracRefund()
             whenever(
-                interacRefundErrorMapper.mapPaymentErrorToUiError(
+                interacRefundErrorMapper.mapRefundErrorToUiError(
                     CardInteracRefundStatus.RefundStatusErrorType.Generic
                 )
             ).thenReturn(InteracRefundFlowError.Generic)
@@ -2309,7 +2309,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             val nonRetryableError = CardDeclined.InvalidAccount
             setupViewModelForInteracRefund()
             whenever(
-                interacRefundErrorMapper.mapPaymentErrorToUiError(CardDeclined.InvalidAccount)
+                interacRefundErrorMapper.mapRefundErrorToUiError(CardDeclined.InvalidAccount)
             ).thenReturn(InteracRefundFlowError.Declined.InvalidAmount)
             whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
                 flow {
@@ -2388,7 +2388,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             setupViewModelForInteracRefund()
             whenever(
-                interacRefundErrorMapper.mapPaymentErrorToUiError(
+                interacRefundErrorMapper.mapRefundErrorToUiError(
                     CardInteracRefundStatus.RefundStatusErrorType.Generic
                 )
             ).thenReturn(InteracRefundFlowError.Generic)

@@ -5,11 +5,11 @@ import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.Refun
 import javax.inject.Inject
 
 class CardReaderInteracRefundErrorMapper @Inject constructor() {
-    fun mapPaymentErrorToUiError(errorType: CardInteracRefundStatus.RefundStatusErrorType): InteracRefundFlowError =
+    fun mapRefundErrorToUiError(errorType: CardInteracRefundStatus.RefundStatusErrorType): InteracRefundFlowError =
         when (errorType) {
             CardInteracRefundStatus.RefundStatusErrorType.NoNetwork -> InteracRefundFlowError.NoNetwork
             is DeclinedByBackendError ->
-                mapPaymentDeclinedErrorType(errorType)
+                mapRefundDeclinedErrorType(errorType)
             CardInteracRefundStatus.RefundStatusErrorType.Generic -> InteracRefundFlowError.Generic
             CardInteracRefundStatus.RefundStatusErrorType.Server -> InteracRefundFlowError.Server
             CardInteracRefundStatus.RefundStatusErrorType.Cancelled -> InteracRefundFlowError.Cancelled
@@ -17,7 +17,7 @@ class CardReaderInteracRefundErrorMapper @Inject constructor() {
         }
 
     @Suppress("ComplexMethod")
-    private fun mapPaymentDeclinedErrorType(
+    private fun mapRefundDeclinedErrorType(
         interacRefundStatusErrorType: DeclinedByBackendError
     ) = when (interacRefundStatusErrorType) {
         DeclinedByBackendError.AmountTooSmall -> InteracRefundFlowError.AmountTooSmall
