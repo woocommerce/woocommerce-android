@@ -57,7 +57,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given payment flow and not connected and onboarding error, when vm init, then navigates to onboarding`() =
-        runBlockingTest {
+        testBlocking {
             // GIVEN
             val orderId = 1L
             val param = CardReaderFlowParam.ConnectAndAcceptPayment(orderId = orderId)
@@ -74,7 +74,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given payment flow and not connected and onboarding success, when vm init, then navigates to welcome`() =
-        runBlockingTest {
+        testBlocking {
             // GIVEN
             val orderId = 1L
             val param = CardReaderFlowParam.ConnectAndAcceptPayment(orderId = orderId)
@@ -97,7 +97,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given payment flow and not connected and onboarding success, when vm init, then tracks onboarding state`() =
-        runBlockingTest {
+        testBlocking {
             // GIVEN
             val orderId = 1L
             val param = CardReaderFlowParam.ConnectAndAcceptPayment(orderId = orderId)
@@ -119,7 +119,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given payment flow onboarding success welcome shown, when vm init, then navigates to connection`() =
-        runBlockingTest {
+        testBlocking {
             // GIVEN
             val orderId = 1L
             val param = CardReaderFlowParam.ConnectAndAcceptPayment(orderId = orderId)
