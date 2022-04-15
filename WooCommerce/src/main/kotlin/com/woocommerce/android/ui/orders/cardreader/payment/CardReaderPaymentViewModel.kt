@@ -91,10 +91,10 @@ class CardReaderPaymentViewModel
 
     fun start() {
         if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected) {
-            if (arguments.isInteracRefund && refundFlowJob == null) {
-                initRefundFlow(isRetry = false)
-            } else if (paymentFlowJob == null) {
-                initPaymentFlow(isRetry = false)
+            if (arguments.isInteracRefund) {
+                if (refundFlowJob == null) initRefundFlow(isRetry = false)
+            } else {
+                if (paymentFlowJob == null) initPaymentFlow(isRetry = false)
             }
         } else {
             exitWithSnackbar(R.string.card_reader_payment_reader_not_connected)
