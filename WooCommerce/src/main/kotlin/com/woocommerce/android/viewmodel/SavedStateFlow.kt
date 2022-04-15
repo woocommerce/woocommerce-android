@@ -27,12 +27,12 @@ fun <T : Any> SavedStateHandle.getStateFlow(
     scope: CoroutineScope,
     initialValue: T,
     key: String = initialValue.javaClass.name
-): MutableStateFlow<T> = this.let { handle ->
+): MutableStateFlow<T> {
     if (initialValue !is Parcelable && initialValue !is Serializable) {
         error("getStateFlow supports only types that are either Parcelable or Serializable")
     }
 
-    getStateFlowInternal(scope, initialValue, key)
+    return getStateFlowInternal(scope, initialValue, key)
 }
 
 fun <T : Any?> SavedStateHandle.getNullableStateFlow(
@@ -56,7 +56,9 @@ private fun <T : Any?> SavedStateHandle.getStateFlowInternal(
     key: String
 ): MutableStateFlow<T> {
     val liveData = this.getLiveData(key, initialValue).also { liveData ->
-        if (liveData.value === initialValue) {
+        if (initialValue != null && liveData.value === initialValue) {
+            // this is a false positive, we are already checking that the value is non-null before assigning it
+            @Suppress("NullSafeMutableLiveData")
             liveData.value = initialValue
         }
     }
