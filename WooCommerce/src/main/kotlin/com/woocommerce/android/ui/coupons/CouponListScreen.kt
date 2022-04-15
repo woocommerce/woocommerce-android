@@ -55,12 +55,13 @@ fun CouponListScreen(
             onLoadMore = onLoadMore
         )
         state.coupons.isEmpty() && state.isLoading -> CouponListSkeleton()
+        state.isSearchOpen -> SearchEmptyList(searchQuery = state.searchQuery.orEmpty())
         else -> EmptyCouponList()
     }
 }
 
 @Composable
-fun EmptyCouponList() {
+private fun EmptyCouponList() {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -83,7 +84,7 @@ fun EmptyCouponList() {
 }
 
 @Composable
-fun CouponList(
+private fun CouponList(
     coupons: List<CouponListItem>,
     onCouponClick: (Long) -> Unit,
     onLoadMore: () -> Unit
@@ -140,7 +141,7 @@ fun InfiniteListHandler(
 }
 
 @Composable
-fun CouponListItem(
+private fun CouponListItem(
     coupon: CouponListItem,
     onCouponClick: (Long) -> Unit
 ) {
@@ -171,7 +172,7 @@ fun CouponListItem(
 }
 
 @Composable
-fun CouponListItemInfo(
+private fun CouponListItemInfo(
     summary: String,
 ) {
     Text(
@@ -204,6 +205,31 @@ private fun CouponListSkeleton() {
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun SearchEmptyList(searchQuery: String) {
+    if (searchQuery.isEmpty()) return
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 32.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = stringResource(id = R.string.empty_message_with_search, searchQuery),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.h6,
+            modifier = Modifier.padding(start = 24.dp, end = 24.dp)
+        )
+        Spacer(Modifier.size(54.dp))
+        Image(
+            painter = painterResource(id = R.drawable.img_empty_search),
+            contentDescription = null,
+        )
     }
 }
 

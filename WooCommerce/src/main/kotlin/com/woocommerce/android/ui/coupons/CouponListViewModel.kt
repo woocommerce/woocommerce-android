@@ -90,11 +90,13 @@ class CouponListViewModel @Inject constructor(
     private fun monitorSearchQuery() {
         viewModelScope.launch {
             searchQuery
+                .onEach {
+                    isLoading.value = true
+                }
                 .debounce {
                     if (it.isNullOrEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS
                 }.collectLatest {
                     try {
-                        isLoading.value = true
                         couponRepository.fetchCoupons(searchQuery = it)
                     } finally {
                         isLoading.value = false
