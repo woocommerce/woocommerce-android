@@ -35,8 +35,8 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
     val productListData: LiveData<List<Product>> = productList.map { products ->
         products.filter {
             it.isPurchasable &&
-            it.status == PUBLISH &&
-            it.stockStatus != ProductStockStatus.OutOfStock
+                it.status == PUBLISH &&
+                it.stockStatus != ProductStockStatus.OutOfStock
         }
     }
 
