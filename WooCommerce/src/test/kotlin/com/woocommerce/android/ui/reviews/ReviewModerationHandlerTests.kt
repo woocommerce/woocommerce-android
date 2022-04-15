@@ -1,16 +1,20 @@
 package com.woocommerce.android.ui.reviews
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.HOLD
-import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.util.LegacyCoroutineTestRule
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
@@ -24,8 +28,14 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ER
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCProductStore
 
-// TODO malinajirka these tests keep failing and need modifications.
-class ReviewModerationHandlerTests : BaseUnitTest() {
+class ReviewModerationHandlerTests {
+    @Rule @JvmField
+    val rule = InstantTaskExecutorRule()
+
+    @ExperimentalCoroutinesApi
+    @Rule @JvmField
+    val coroutinesTestRule = LegacyCoroutineTestRule()
+
     private val selectedSite: SelectedSite = mock() {
         on { get() } doReturn SiteModel()
     }
@@ -40,198 +50,208 @@ class ReviewModerationHandlerTests : BaseUnitTest() {
         handler = ReviewModerationHandler(
             selectedSite = selectedSite,
             productStore = productStore,
-            appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher)
+            appCoroutineScope = TestCoroutineScope(coroutinesTestRule.testDispatcher)
         )
     }
 
     @Test
-    fun `when moderating a review, then start with a pending state`() = testBlocking {
-        setup()
+    fun `when moderating a review, then start with a pending state`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setup()
 
-        val status = runTestAndCollectLastStatus {
-            handler.postModerationRequest(review, HOLD)
+            val status = runTestAndCollectLastStatus {
+                handler.postModerationRequest(review, HOLD)
+            }
+
+            assertThat(status.actionStatus).isEqualTo(ActionStatus.PENDING)
+            assertThat(status.review).isEqualTo(review)
         }
 
-        assertThat(status.actionStatus).isEqualTo(ActionStatus.PENDING)
-        assertThat(status.review).isEqualTo(review)
-    }
-
     @Test
-    fun `given moderating a review, when the undo delay is passed, then change status to submitted`() = testBlocking {
-        setup()
+    fun `given moderating a review, when the undo delay is passed, then change status to submitted`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setup()
 
-        val latestStatus = runTestAndCollectLastStatus {
-            handler.postModerationRequest(review, HOLD)
-            advanceTimeBy(ReviewModerationHandler.UNDO_DELAY)
+            val latestStatus = runTestAndCollectLastStatus {
+                handler.postModerationRequest(review, HOLD)
+                advanceTimeBy(ReviewModerationHandler.UNDO_DELAY)
+            }
+
+            assertThat(latestStatus.actionStatus).isEqualTo(ActionStatus.SUBMITTED)
         }
 
-        assertThat(latestStatus.actionStatus).isEqualTo(ActionStatus.SUBMITTED)
-    }
-
     @Test
-    fun `given moderating a review, when the undo delay is passed, then submit status to the API`() = testBlocking {
-        setup {
-            whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(
-                WooResult(
-                    WCProductReviewModel(0).apply {
-                        remoteProductReviewId = this@ReviewModerationHandlerTests.review.remoteId
-                        status = HOLD.toString()
-                    }
+    fun `given moderating a review, when the undo delay is passed, then submit status to the API`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setup {
+                whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(
+                    WooResult(
+                        WCProductReviewModel(0).apply {
+                            remoteProductReviewId = this@ReviewModerationHandlerTests.review.remoteId
+                            status = HOLD.toString()
+                        }
+                    )
                 )
-            )
-        }
+            }
 
-        val latestStatus = runTestAndCollectLastStatus {
-            handler.postModerationRequest(review, HOLD)
-            advanceTimeBy(ReviewModerationHandler.UNDO_DELAY)
-        }
+            val latestStatus = runTestAndCollectLastStatus {
+                handler.postModerationRequest(review, HOLD)
+                advanceTimeBy(ReviewModerationHandler.UNDO_DELAY)
+            }
 
-        assertThat(latestStatus.actionStatus).isEqualTo(ActionStatus.SUCCESS)
-    }
+            assertThat(latestStatus.actionStatus).isEqualTo(ActionStatus.SUCCESS)
+        }
 
     @Test
-    fun `when review status update succeeds, then status removed after a given time`() = testBlocking {
-        setup {
-            whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(
-                WooResult(
-                    WCProductReviewModel(0).apply {
-                        remoteProductReviewId = this@ReviewModerationHandlerTests.review.remoteId
-                        status = HOLD.toString()
-                    }
+    fun `when review status update succeeds, then status removed after a given time`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setup {
+                whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(
+                    WooResult(
+                        WCProductReviewModel(0).apply {
+                            remoteProductReviewId = this@ReviewModerationHandlerTests.review.remoteId
+                            status = HOLD.toString()
+                        }
+                    )
                 )
-            )
-        }
+            }
 
-        val statusList = runTestAndReturnLastEmittedStatusList {
-            handler.postModerationRequest(review, HOLD)
-            advanceTimeBy(ReviewModerationHandler.UNDO_DELAY)
-            advanceTimeBy(ReviewModerationHandler.SUCCESS_DELAY)
-        }
+            val statusList = runTestAndReturnLastEmittedStatusList {
+                handler.postModerationRequest(review, HOLD)
+                advanceTimeBy(ReviewModerationHandler.UNDO_DELAY)
+                advanceTimeBy(ReviewModerationHandler.SUCCESS_DELAY)
+            }
 
-        assertThat(statusList).isEmpty()
-    }
+            assertThat(statusList).isEmpty()
+        }
 
     @Test
-    fun `when review status update fails, then change status to error`() = testBlocking {
-        setup {
-            whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(
-                WooResult(
-                    WooError(GENERIC_ERROR, UNKNOWN, "")
+    fun `when review status update fails, then change status to error`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setup {
+                whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(
+                    WooResult(
+                        WooError(GENERIC_ERROR, UNKNOWN, "")
+                    )
                 )
-            )
-        }
+            }
 
-        val latestStatus = runTestAndCollectLastStatus {
-            handler.postModerationRequest(review, HOLD)
-            advanceTimeBy(ReviewModerationHandler.UNDO_DELAY)
-        }
+            val latestStatus = runTestAndCollectLastStatus {
+                handler.postModerationRequest(review, HOLD)
+                advanceTimeBy(ReviewModerationHandler.UNDO_DELAY)
+            }
 
-        assertThat(latestStatus.actionStatus).isEqualTo(ActionStatus.ERROR)
-    }
+            assertThat(latestStatus.actionStatus).isEqualTo(ActionStatus.ERROR)
+        }
 
     @Test
-    fun `when review status update fails, then status removed after a given time`() = testBlocking {
-        setup {
-            whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(
-                WooResult(
-                    WooError(GENERIC_ERROR, UNKNOWN, "")
+    fun `when review status update fails, then status removed after a given time`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setup {
+                whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(
+                    WooResult(
+                        WooError(GENERIC_ERROR, UNKNOWN, "")
+                    )
                 )
-            )
-        }
+            }
 
-        val statusList = runTestAndReturnLastEmittedStatusList {
-            handler.postModerationRequest(review, HOLD)
-            advanceTimeBy(ReviewModerationHandler.UNDO_DELAY)
-            advanceTimeBy(ReviewModerationHandler.ERROR_SNACKBAR_DELAY)
-        }
+            val statusList = runTestAndReturnLastEmittedStatusList {
+                handler.postModerationRequest(review, HOLD)
+                advanceTimeBy(ReviewModerationHandler.UNDO_DELAY)
+                advanceTimeBy(ReviewModerationHandler.ERROR_SNACKBAR_DELAY)
+            }
 
-        assertThat(statusList).isEmpty()
-    }
+            assertThat(statusList).isEmpty()
+        }
 
     @Test
-    fun `when moderation is canceled, then submit success with original status`() = testBlocking {
-        setup()
+    fun `when moderation is canceled, then submit success with original status`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setup()
 
-        val latestStatus = runTestAndCollectLastStatus {
-            handler.postModerationRequest(review, HOLD)
-            advanceTimeBy(ReviewModerationHandler.UNDO_DELAY / 2)
-            handler.undoOperation(review)
+            val latestStatus = runTestAndCollectLastStatus {
+                handler.postModerationRequest(review, HOLD)
+                advanceTimeBy(ReviewModerationHandler.UNDO_DELAY / 2)
+                handler.undoOperation(review)
+            }
+
+            assertThat(latestStatus.actionStatus).isEqualTo(ActionStatus.SUCCESS)
+            assertThat(latestStatus.review.status).isEqualTo(review.status)
         }
 
-        assertThat(latestStatus.actionStatus).isEqualTo(ActionStatus.SUCCESS)
-        assertThat(latestStatus.review.status).isEqualTo(review.status)
-    }
-
     @Test
-    fun `when queuing a second moderation request, then skip delay for the previous one`() = testBlocking {
-        setup {
-            whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(
-                WooResult(
-                    WCProductReviewModel(0).apply {
-                        remoteProductReviewId = this@ReviewModerationHandlerTests.review.remoteId
-                        status = HOLD.toString()
-                    }
+    fun `when queuing a second moderation request, then skip delay for the previous one`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setup {
+                whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(
+                    WooResult(
+                        WCProductReviewModel(0).apply {
+                            remoteProductReviewId = this@ReviewModerationHandlerTests.review.remoteId
+                            status = HOLD.toString()
+                        }
+                    )
                 )
-            )
-        }
-        val review1 = review.copy(remoteId = 1L)
-        val review2 = review.copy(remoteId = 2L)
+            }
+            val review1 = review.copy(remoteId = 1L)
+            val review2 = review.copy(remoteId = 2L)
 
-        val statusList = runTestAndCollectAllStatuses {
-            handler.postModerationRequest(review1, HOLD)
-            handler.postModerationRequest(review2, HOLD)
-        }
+            val statusList = runTestAndCollectAllStatuses {
+                handler.postModerationRequest(review1, HOLD)
+                handler.postModerationRequest(review2, HOLD)
+            }
 
-        val statusForReview1 = statusList.last { it.review == review1 }
-        assertThat(statusForReview1.actionStatus).isEqualTo(ActionStatus.SUCCESS)
-    }
+            val statusForReview1 = statusList.last { it.review == review1 }
+            assertThat(statusForReview1.actionStatus).isEqualTo(ActionStatus.SUCCESS)
+        }
 
     @Test
-    fun `when adding a second moderation request, then queue it after the previous one`() = testBlocking {
-        setup {
-            whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(
-                WooResult(
-                    WCProductReviewModel(0).apply {
-                        remoteProductReviewId = this@ReviewModerationHandlerTests.review.remoteId
-                        status = HOLD.toString()
-                    }
+    fun `when adding a second moderation request, then queue it after the previous one`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setup {
+                whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(
+                    WooResult(
+                        WCProductReviewModel(0).apply {
+                            remoteProductReviewId = this@ReviewModerationHandlerTests.review.remoteId
+                            status = HOLD.toString()
+                        }
+                    )
                 )
-            )
-        }
-        val review1 = review.copy(remoteId = 1L)
-        val review2 = review.copy(remoteId = 2L)
+            }
+            val review1 = review.copy(remoteId = 1L)
+            val review2 = review.copy(remoteId = 2L)
 
-        val statusList = runTestAndCollectAllStatuses {
-            handler.postModerationRequest(review1, HOLD)
-            handler.postModerationRequest(review2, HOLD)
-        }
+            val statusList = runTestAndCollectAllStatuses {
+                handler.postModerationRequest(review1, HOLD)
+                handler.postModerationRequest(review2, HOLD)
+            }
 
-        val statusForReview2 = statusList.last { it.review == review2 }
-        assertThat(statusForReview2.actionStatus).isEqualTo(ActionStatus.PENDING)
-    }
+            val statusForReview2 = statusList.last { it.review == review2 }
+            assertThat(statusForReview2.actionStatus).isEqualTo(ActionStatus.PENDING)
+        }
 
     @Test
-    fun `when queuing moderations, then make sure the pending status list is ordered`() = testBlocking {
-        setup {
-            whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(
-                WooResult(
-                    WCProductReviewModel(0).apply {
-                        remoteProductReviewId = this@ReviewModerationHandlerTests.review.remoteId
-                        status = HOLD.toString()
-                    }
+    fun `when queuing moderations, then make sure the pending status list is ordered`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setup {
+                whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(
+                    WooResult(
+                        WCProductReviewModel(0).apply {
+                            remoteProductReviewId = this@ReviewModerationHandlerTests.review.remoteId
+                            status = HOLD.toString()
+                        }
+                    )
                 )
-            )
-        }
-        val review1 = review.copy(remoteId = 1L)
-        val review2 = review.copy(remoteId = 2L)
+            }
+            val review1 = review.copy(remoteId = 1L)
+            val review2 = review.copy(remoteId = 2L)
 
-        val statusList = runTestAndReturnLastEmittedStatusList {
-            handler.postModerationRequest(review1, HOLD)
-            handler.postModerationRequest(review2, HOLD)
-        }
+            val statusList = runTestAndReturnLastEmittedStatusList {
+                handler.postModerationRequest(review1, HOLD)
+                handler.postModerationRequest(review2, HOLD)
+            }
 
-        assertThat(statusList).isSorted
-    }
+            assertThat(statusList).isSorted
+        }
 
     private suspend fun runTestAndReturnLastEmittedStatusList(
         operation: suspend () -> Unit
