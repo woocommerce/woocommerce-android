@@ -23,6 +23,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.cardreader.payment.CardReaderPaymentViewModel.ShowSnackbarInDialog
 import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptEvent.SendReceipt
+import com.woocommerce.android.ui.refunds.RefundSummaryFragment.Companion.KEY_INTERAC_SUCCESS
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.PrintHtmlHelper
 import com.woocommerce.android.util.UiHelpers
@@ -196,6 +197,5 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
 
     companion object {
         const val KEY_CARD_PAYMENT_RESULT = "key_card_payment_result"
-        const val KEY_INTERAC_SUCCESS = "interac_success"
     }
 }
