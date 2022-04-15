@@ -82,9 +82,6 @@ internal class RefundErrorMapper {
             "testmode_decline" -> DeclinedByBackendError.CardDeclined.TestCard
 
             "test_mode_live_card" -> DeclinedByBackendError.CardDeclined.TestModeLiveCard
-            else -> when (exception.apiError?.code) {
-                "amount_too_small" -> DeclinedByBackendError.AmountTooSmall
-                else -> DeclinedByBackendError.Unknown
-            }
+            else -> DeclinedByBackendError.Unknown
         }
 }
