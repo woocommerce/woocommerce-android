@@ -32,7 +32,7 @@ class OrderCreationCustomerNoteFragment : BaseFragment(R.layout.fragment_edit_cu
         }
         binding.customerOrderNoteEditor.doAfterTextChanged {
             if (::doneMenuItem.isInitialized) {
-                doneMenuItem.isVisible = hasChanges()
+                doneMenuItem.isEnabled = hasChanges()
             }
         }
     }
@@ -42,7 +42,7 @@ class OrderCreationCustomerNoteFragment : BaseFragment(R.layout.fragment_edit_cu
         menu.clear()
         inflater.inflate(R.menu.menu_done, menu)
         doneMenuItem = menu.findItem(R.id.menu_done)
-        doneMenuItem.isVisible = hasChanges()
+        doneMenuItem.isEnabled = hasChanges()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

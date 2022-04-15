@@ -19,7 +19,10 @@ import com.woocommerce.android.ui.prefs.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.*
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ListItemViewState.CardReaderListItem
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.ListItemViewState.ScanningInProgressListItem
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.*
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.FAILED
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.MULTIPLE_READERS_FOUND
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.READER_FOUND
+import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.SCANNING
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.*
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
