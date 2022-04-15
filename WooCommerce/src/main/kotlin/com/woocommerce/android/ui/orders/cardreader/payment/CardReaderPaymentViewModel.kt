@@ -174,7 +174,7 @@ class CardReaderPaymentViewModel
             } ?: run {
                 tracker.trackPaymentFailed("Fetching order failed")
                 viewState.postValue(
-                    InteracRefund.FailedRefundState(
+                    FailedRefundState(
                         errorType = InteracRefundFlowError.FetchingOrderFailed,
                         amountWithCurrencyLabel = null,
                         onPrimaryActionClicked = { initRefundFlow(isRetry = true) }
@@ -288,11 +288,11 @@ class CardReaderPaymentViewModel
         amountLabel: String
     ) {
         when (refundStatus) {
-            InitializingInteracRefund -> viewState.postValue(InteracRefund.RefundLoadingDataState)
-            CollectingInteracRefund -> viewState.postValue(InteracRefund.CollectRefundState(amountLabel))
-            ProcessingInteracRefund -> viewState.postValue(InteracRefund.ProcessingRefundState(amountLabel))
+            InitializingInteracRefund -> viewState.postValue(RefundLoadingDataState)
+            CollectingInteracRefund -> viewState.postValue(CollectRefundState(amountLabel))
+            ProcessingInteracRefund -> viewState.postValue(ProcessingRefundState(amountLabel))
             is InteracRefundSuccess -> {
-                viewState.postValue(InteracRefund.RefundSuccessfulState(amountLabel))
+                viewState.postValue(RefundSuccessfulState(amountLabel))
                 triggerEvent(InteracRefundSuccessful)
             }
             is InteracRefundFailure -> emitFailedInteracRefundState(
@@ -338,7 +338,7 @@ class CardReaderPaymentViewModel
         val errorType = interacRefundErrorMapper.mapPaymentErrorToUiError(error.type)
         if (errorType is InteracRefundFlowError.NonRetryableError) {
             viewState.postValue(
-                InteracRefund.FailedRefundState(
+                FailedRefundState(
                     errorType,
                     amountLabel,
                     R.string.card_reader_interac_refund_refund_failed_ok,
@@ -347,7 +347,7 @@ class CardReaderPaymentViewModel
             )
         } else {
             viewState.postValue(
-                InteracRefund.FailedRefundState(
+                FailedRefundState(
                     errorType,
                     amountLabel,
                     onPrimaryActionClicked = onRetryClicked
@@ -439,7 +439,7 @@ class CardReaderPaymentViewModel
     }
 
     private fun handleAdditionalInfoForInteracRefund(type: AdditionalInfoType) {
-        (viewState.value as? InteracRefund.CollectRefundState)?.let { collectRefundState ->
+        (viewState.value as? CollectRefundState)?.let { collectRefundState ->
             viewState.value = collectRefundState.copy(
                 hintLabel = when (type) {
                     RETRY_CARD -> R.string.card_reader_payment_retry_card_prompt

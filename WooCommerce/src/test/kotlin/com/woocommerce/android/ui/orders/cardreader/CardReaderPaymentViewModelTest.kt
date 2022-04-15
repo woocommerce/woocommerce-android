@@ -43,20 +43,24 @@ import com.woocommerce.android.ui.orders.cardreader.payment.CardReaderPaymentCol
 import com.woocommerce.android.ui.orders.cardreader.payment.CardReaderPaymentDialogFragmentArgs
 import com.woocommerce.android.ui.orders.cardreader.payment.CardReaderPaymentErrorMapper
 import com.woocommerce.android.ui.orders.cardreader.payment.CardReaderPaymentViewModel
-import com.woocommerce.android.ui.orders.cardreader.payment.InteracRefund
 import com.woocommerce.android.ui.orders.cardreader.payment.InteracRefundFlowError
 import com.woocommerce.android.ui.orders.cardreader.payment.PaymentFlowError
 import com.woocommerce.android.ui.orders.cardreader.payment.PaymentFlowError.AmountTooSmall
 import com.woocommerce.android.ui.orders.cardreader.payment.PaymentFlowError.Unknown
 import com.woocommerce.android.ui.orders.cardreader.payment.ViewState.CapturingPaymentState
 import com.woocommerce.android.ui.orders.cardreader.payment.ViewState.CollectPaymentState
+import com.woocommerce.android.ui.orders.cardreader.payment.ViewState.CollectRefundState
 import com.woocommerce.android.ui.orders.cardreader.payment.ViewState.FailedPaymentState
+import com.woocommerce.android.ui.orders.cardreader.payment.ViewState.FailedRefundState
 import com.woocommerce.android.ui.orders.cardreader.payment.ViewState.LoadingDataState
 import com.woocommerce.android.ui.orders.cardreader.payment.ViewState.PaymentSuccessfulReceiptSentAutomaticallyState
 import com.woocommerce.android.ui.orders.cardreader.payment.ViewState.PaymentSuccessfulState
 import com.woocommerce.android.ui.orders.cardreader.payment.ViewState.PrintingReceiptState
 import com.woocommerce.android.ui.orders.cardreader.payment.ViewState.ProcessingPaymentState
+import com.woocommerce.android.ui.orders.cardreader.payment.ViewState.ProcessingRefundState
 import com.woocommerce.android.ui.orders.cardreader.payment.ViewState.ReFetchingOrderState
+import com.woocommerce.android.ui.orders.cardreader.payment.ViewState.RefundLoadingDataState
+import com.woocommerce.android.ui.orders.cardreader.payment.ViewState.RefundSuccessfulState
 import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptEvent.SendReceipt
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
@@ -1866,7 +1870,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            assertThat((viewModel.viewStateData.value as InteracRefund.CollectRefundState).hintLabel)
+            assertThat((viewModel.viewStateData.value as CollectRefundState).hintLabel)
                 .isEqualTo(R.string.card_reader_payment_retry_card_prompt)
         }
 
@@ -1886,7 +1890,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            assertThat((viewModel.viewStateData.value as InteracRefund.CollectRefundState).hintLabel)
+            assertThat((viewModel.viewStateData.value as CollectRefundState).hintLabel)
                 .isEqualTo(R.string.card_reader_interac_refund_refund_payment_hint)
         }
 
@@ -1906,7 +1910,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            assertThat((viewModel.viewStateData.value as InteracRefund.CollectRefundState).hintLabel)
+            assertThat((viewModel.viewStateData.value as CollectRefundState).hintLabel)
                 .isEqualTo(R.string.card_reader_interac_refund_refund_payment_hint)
         }
 
@@ -1926,7 +1930,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            assertThat((viewModel.viewStateData.value as InteracRefund.CollectRefundState).hintLabel)
+            assertThat((viewModel.viewStateData.value as CollectRefundState).hintLabel)
                 .isEqualTo(R.string.card_reader_interac_refund_refund_payment_hint)
         }
 
@@ -1946,7 +1950,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            assertThat((viewModel.viewStateData.value as InteracRefund.CollectRefundState).hintLabel)
+            assertThat((viewModel.viewStateData.value as CollectRefundState).hintLabel)
                 .isEqualTo(R.string.card_reader_payment_remove_card_prompt)
         }
 
@@ -1966,7 +1970,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            assertThat((viewModel.viewStateData.value as InteracRefund.CollectRefundState).hintLabel)
+            assertThat((viewModel.viewStateData.value as CollectRefundState).hintLabel)
                 .isEqualTo(R.string.card_reader_payment_multiple_contactless_cards_detected_prompt)
         }
 
@@ -1986,7 +1990,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            assertThat((viewModel.viewStateData.value as InteracRefund.CollectRefundState).hintLabel)
+            assertThat((viewModel.viewStateData.value as CollectRefundState).hintLabel)
                 .isEqualTo(R.string.card_reader_payment_try_another_read_method_prompt)
         }
 
@@ -2006,7 +2010,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            assertThat((viewModel.viewStateData.value as InteracRefund.CollectRefundState).hintLabel)
+            assertThat((viewModel.viewStateData.value as CollectRefundState).hintLabel)
                 .isEqualTo(R.string.card_reader_payment_try_another_card_prompt)
         }
 
@@ -2026,7 +2030,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            assertThat((viewModel.viewStateData.value as InteracRefund.CollectRefundState).hintLabel)
+            assertThat((viewModel.viewStateData.value as CollectRefundState).hintLabel)
                 .isEqualTo(R.string.card_reader_payment_check_mobile_device_prompt)
         }
 
@@ -2036,7 +2040,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        assertThat(viewModel.viewStateData.value).isInstanceOf(InteracRefund.RefundLoadingDataState::class.java)
+        assertThat(viewModel.viewStateData.value).isInstanceOf(RefundLoadingDataState::class.java)
     }
 
     @Test
@@ -2049,7 +2053,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(InteracRefund.RefundLoadingDataState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(RefundLoadingDataState::class.java)
         }
 
     @Test
@@ -2060,7 +2064,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(InteracRefund.FailedRefundState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(FailedRefundState::class.java)
         }
 
     @Test
@@ -2073,7 +2077,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(InteracRefund.CollectRefundState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(CollectRefundState::class.java)
         }
 
     @Test
@@ -2086,7 +2090,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(InteracRefund.ProcessingRefundState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ProcessingRefundState::class.java)
         }
 
     @Test
@@ -2099,7 +2103,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(InteracRefund.RefundSuccessfulState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(RefundSuccessfulState::class.java)
         }
 
     @Test
@@ -2129,7 +2133,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(InteracRefund.FailedRefundState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(FailedRefundState::class.java)
         }
 
     @Test
@@ -2405,7 +2409,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
             viewModel.start()
 
-            (viewModel.viewStateData.value as InteracRefund.FailedRefundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as FailedRefundState).onPrimaryActionClicked.invoke()
             advanceUntilIdle()
 
             // Times 2 because, refundInteracPayment() method gets called when refund is initiated
