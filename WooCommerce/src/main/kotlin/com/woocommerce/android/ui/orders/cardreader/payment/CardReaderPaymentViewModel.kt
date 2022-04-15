@@ -105,14 +105,7 @@ class CardReaderPaymentViewModel
         cardReaderManager.displayBluetoothCardReaderMessages.collect { message ->
             when (message) {
                 is BluetoothCardReaderMessages.CardReaderDisplayMessage -> {
-                    when (arguments.isInteracRefund) {
-                        true -> {
-                            handleAdditionalInfoForInteracRefund(message.message)
-                        }
-                        false -> {
-                            handleAdditionalInfo(message.message)
-                        }
-                    }
+                    handleAdditionalInfo(message.message)
                 }
                 is BluetoothCardReaderMessages.CardReaderInputMessage -> { /* no-op*/
                 }
@@ -420,41 +413,38 @@ class CardReaderPaymentViewModel
     }
 
     private fun handleAdditionalInfo(type: AdditionalInfoType) {
-        (viewState.value as? CollectPaymentState)?.let { collectPaymentState ->
-            viewState.value = collectPaymentState.copy(
-                hintLabel = when (type) {
-                    RETRY_CARD -> R.string.card_reader_payment_retry_card_prompt
-                    INSERT_CARD, INSERT_OR_SWIPE_CARD, SWIPE_CARD -> R.string.card_reader_payment_collect_payment_hint
-                    REMOVE_CARD -> R.string.card_reader_payment_remove_card_prompt
-                    MULTIPLE_CONTACTLESS_CARDS_DETECTED ->
-                        R.string.card_reader_payment_multiple_contactless_cards_detected_prompt
-                    TRY_ANOTHER_READ_METHOD -> R.string.card_reader_payment_try_another_read_method_prompt
-                    TRY_ANOTHER_CARD -> R.string.card_reader_payment_try_another_card_prompt
-                    CHECK_MOBILE_DEVICE -> R.string.card_reader_payment_check_mobile_device_prompt
-                }
+        when (val state = viewState.value) {
+            is CollectRefundState -> {
+                viewState.value = state.copy(
+                    hintLabel = getStringResourceFor(type, isInteracRefund = true)
+                )
+            }
+            is CollectPaymentState -> {
+                viewState.value = state.copy(
+                    hintLabel = getStringResourceFor(type, isInteracRefund = false)
+                )
+            }
+            else -> WooLog.e(
+                WooLog.T.CARD_READER, "Got SDK message when cardReaderPaymentViewModel is in ${viewState.value}"
             )
-        } ?: run {
-            WooLog.e(WooLog.T.CARD_READER, "Got SDK message when cardReaderPaymentViewModel is in ${viewState.value}")
         }
     }
 
-    private fun handleAdditionalInfoForInteracRefund(type: AdditionalInfoType) {
-        (viewState.value as? CollectRefundState)?.let { collectRefundState ->
-            viewState.value = collectRefundState.copy(
-                hintLabel = when (type) {
-                    RETRY_CARD -> R.string.card_reader_payment_retry_card_prompt
-                    INSERT_CARD, INSERT_OR_SWIPE_CARD, SWIPE_CARD ->
-                        R.string.card_reader_interac_refund_refund_payment_hint
-                    REMOVE_CARD -> R.string.card_reader_payment_remove_card_prompt
-                    MULTIPLE_CONTACTLESS_CARDS_DETECTED ->
-                        R.string.card_reader_payment_multiple_contactless_cards_detected_prompt
-                    TRY_ANOTHER_READ_METHOD -> R.string.card_reader_payment_try_another_read_method_prompt
-                    TRY_ANOTHER_CARD -> R.string.card_reader_payment_try_another_card_prompt
-                    CHECK_MOBILE_DEVICE -> R.string.card_reader_payment_check_mobile_device_prompt
+    private fun getStringResourceFor(type: AdditionalInfoType, isInteracRefund: Boolean): Int {
+        return when (type) {
+            RETRY_CARD -> R.string.card_reader_payment_retry_card_prompt
+            INSERT_CARD, INSERT_OR_SWIPE_CARD, SWIPE_CARD ->
+                if (isInteracRefund) {
+                    R.string.card_reader_interac_refund_refund_payment_hint
+                } else {
+                    R.string.card_reader_payment_collect_payment_hint
                 }
-            )
-        } ?: run {
-            WooLog.e(WooLog.T.CARD_READER, "Got SDK message when cardReaderPaymentViewModel is in ${viewState.value}")
+            REMOVE_CARD -> R.string.card_reader_payment_remove_card_prompt
+            MULTIPLE_CONTACTLESS_CARDS_DETECTED ->
+                R.string.card_reader_payment_multiple_contactless_cards_detected_prompt
+            TRY_ANOTHER_READ_METHOD -> R.string.card_reader_payment_try_another_read_method_prompt
+            TRY_ANOTHER_CARD -> R.string.card_reader_payment_try_another_card_prompt
+            CHECK_MOBILE_DEVICE -> R.string.card_reader_payment_check_mobile_device_prompt
         }
     }
 
