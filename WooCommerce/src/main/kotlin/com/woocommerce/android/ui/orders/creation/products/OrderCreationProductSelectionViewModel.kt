@@ -11,6 +11,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.ShowProductVariations
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
+import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -32,7 +33,11 @@ class OrderCreationProductSelectionViewModel @Inject constructor(
 
     private val productList = MutableLiveData<List<Product>>()
     val productListData: LiveData<List<Product>> = productList.map { products ->
-        products.filter { it.isPurchasable && it.status == PUBLISH }
+        products.filter {
+            it.isPurchasable &&
+            it.status == PUBLISH &&
+            it.stockStatus != ProductStockStatus.OutOfStock
+        }
     }
 
     val isSearchActive
