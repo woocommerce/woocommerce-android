@@ -28,7 +28,7 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import kotlin.test.fail
 
 @ExperimentalCoroutinesApi
-class AddonRepositoryTest: BaseUnitTest() {
+class AddonRepositoryTest : BaseUnitTest() {
     private lateinit var repositoryUnderTest: AddonRepository
 
     private lateinit var orderStoreMock: WCOrderStore

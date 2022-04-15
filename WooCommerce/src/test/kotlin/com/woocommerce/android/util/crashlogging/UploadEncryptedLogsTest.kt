@@ -11,7 +11,7 @@ import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.store.EncryptedLogStore
 
 @RunWith(MockitoJUnitRunner::class)
-class UploadEncryptedLogsTest: BaseUnitTest() {
+class UploadEncryptedLogsTest : BaseUnitTest() {
     private lateinit var sut: UploadEncryptedLogs
 
     private val encryptedLogStore: EncryptedLogStore = mock()
