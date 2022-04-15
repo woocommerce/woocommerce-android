@@ -168,6 +168,10 @@
             android:name="orderId"
             app:argType="long" />
         <argument
+            android:name="refundAmount"
+            app:nullable="true"
+            app:argType="java.math.BigDecimal" />
+        <argument
             android:name="isInteracRefund"
             android:defaultValue="false"
             app:argType="boolean" />

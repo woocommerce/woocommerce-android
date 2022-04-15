@@ -366,7 +366,7 @@ class IssueRefundViewModel @Inject constructor(
                         isFormEnabled = false
                     )
                     if (isInteracRefund() && inPersonPaymentsCanadaFeatureFlag.isEnabled()) {
-                        triggerEvent(IssueRefundEvent.NavigateToCardReaderScreen(order.id))
+                        triggerEvent(IssueRefundEvent.NavigateToCardReaderScreen(order.id, commonState.refundTotal))
                     } else {
                         refund()
                     }
@@ -965,7 +965,7 @@ class IssueRefundViewModel @Inject constructor(
 
         data class OpenUrl(val url: String) : IssueRefundEvent()
         object HideValidationError : IssueRefundEvent()
-        data class NavigateToCardReaderScreen(val orderId: Long) : IssueRefundEvent()
+        data class NavigateToCardReaderScreen(val orderId: Long, val refundAmount: BigDecimal) : IssueRefundEvent()
     }
 
     enum class PaymentMethodType(val paymentMethodType: String) {

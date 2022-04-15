@@ -30,7 +30,10 @@ class RefundConfirmationDialog : ConfirmationDialog() {
                 is IssueRefundViewModel.IssueRefundEvent.NavigateToCardReaderScreen -> {
                     val action =
                         RefundConfirmationDialogDirections.actionRefundConfirmationDialogToCardReaderFlow(
-                            cardReaderFlowParam = CardReaderFlowParam.ConnectAndInteracRefund(event.orderId)
+                            cardReaderFlowParam = CardReaderFlowParam.ConnectAndInteracRefund(
+                                event.orderId,
+                                event.refundAmount
+                            )
                         )
                     findNavController().navigateSafely(action)
                 }

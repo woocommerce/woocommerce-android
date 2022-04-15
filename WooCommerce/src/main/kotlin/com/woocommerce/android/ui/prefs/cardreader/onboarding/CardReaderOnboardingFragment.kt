@@ -18,6 +18,7 @@ import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.parcelize.Parcelize
+import java.math.BigDecimal
 
 @AndroidEntryPoint
 class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_onboarding) {
@@ -260,5 +261,5 @@ sealed class CardReaderFlowParam : Parcelable {
     data class ConnectAndAcceptPayment(val orderId: Long) : CardReaderFlowParam()
 
     @Parcelize
-    data class ConnectAndInteracRefund(val orderId: Long) : CardReaderFlowParam()
+    data class ConnectAndInteracRefund(val orderId: Long, val refundAmount: BigDecimal) : CardReaderFlowParam()
 }

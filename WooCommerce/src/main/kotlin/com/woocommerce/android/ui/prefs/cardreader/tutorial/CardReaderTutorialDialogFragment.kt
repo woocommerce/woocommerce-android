@@ -16,6 +16,7 @@ import com.woocommerce.android.databinding.CardReaderTutorialDialogBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam
 import dagger.hilt.android.AndroidEntryPoint
+import java.math.BigDecimal
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -63,13 +64,15 @@ class CardReaderTutorialDialogFragment : DialogFragment(R.layout.card_reader_tut
             CardReaderFlowParam.CardReadersHub -> findNavController().popBackStack()
             is CardReaderFlowParam.ConnectAndAcceptPayment -> {
                 val action = CardReaderTutorialDialogFragmentDirections
-                    .actionCardReaderTutorialDialogFragmentToCardReaderPaymentDialogFragment(param.orderId)
+                    .actionCardReaderTutorialDialogFragmentToCardReaderPaymentDialogFragment(
+                        param.orderId, refundAmount = null
+                    )
                 findNavController().navigateSafely(action, skipThrottling = true)
             }
             is CardReaderFlowParam.ConnectAndInteracRefund -> {
                 val action = CardReaderTutorialDialogFragmentDirections
                     .actionCardReaderTutorialDialogFragmentToCardReaderPaymentDialogFragment(
-                        param.orderId, isInteracRefund = true
+                        param.orderId, isInteracRefund = true, refundAmount = param.refundAmount
                     )
                 findNavController().navigateSafely(action, skipThrottling = true)
             }

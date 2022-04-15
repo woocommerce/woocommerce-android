@@ -133,12 +133,14 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     private val savedState: SavedStateHandle = CardReaderPaymentDialogFragmentArgs(
         ORDER_ID,
-        isInteracRefund = false
+        isInteracRefund = false,
+        refundAmount = null
     ).initSavedStateHandle()
 
     private val interacRefundSavedState: SavedStateHandle = CardReaderPaymentDialogFragmentArgs(
         ORDER_ID,
-        isInteracRefund = true
+        isInteracRefund = true,
+        refundAmount = null
     ).initSavedStateHandle()
 
     private val errorMapper: CardReaderPaymentErrorMapper = mock()

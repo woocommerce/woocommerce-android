@@ -267,11 +267,16 @@ class CardReaderPaymentViewModel
             cardReaderManager.refundInteracPayment(
                 RefundParams(
                     chargeId = chargeId,
-                    amount = order.total,
+                    amount = arguments.refundAmount!!,
                     currency = order.currency
                 )
             ).collect { refundStatus ->
-                onRefundStatusChanged(refundStatus, order.getAmountLabel())
+                onRefundStatusChanged(
+                    refundStatus, currencyFormatter.formatAmountWithCurrency(
+                        order.currency,
+                        arguments.refundAmount!!.toDouble()
+                    )
+                )
             }
         } ?: triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_error))
     }
