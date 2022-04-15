@@ -54,7 +54,6 @@ class AddonRepositoryTest: BaseUnitTest() {
     @Before
     fun setUp() {
         siteModelMock = mock {
-            on { id }.doReturn(321)
             on { siteId }.doReturn(321)
         }
         selectedSiteMock = mock {
