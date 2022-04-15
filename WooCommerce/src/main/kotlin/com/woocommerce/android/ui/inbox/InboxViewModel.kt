@@ -12,14 +12,11 @@ import com.woocommerce.android.ui.inbox.domain.InboxNote.Status.ACTIONED
 import com.woocommerce.android.ui.inbox.domain.InboxNoteAction
 import com.woocommerce.android.ui.inbox.domain.InboxRepository
 import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.wordpress.android.util.DateTimeUtils
@@ -41,32 +38,38 @@ class InboxViewModel @Inject constructor(
     val inboxState: LiveData<InboxState> = _inboxState
 
     init {
+        _inboxState.value = InboxState(isLoading = true)
         viewModelScope.launch {
-            combine(
-                loadInboxNotes(),
-                inboxNotesLocalUpdates()
-            ) { fetchInboxState, localInboxState ->
-                when {
-                    fetchInboxState.isLoading -> fetchInboxState
-                    else -> localInboxState
-                }
-            }.collectLatest {
-                _inboxState.value = it
-            }
+            refreshNotes()
+            inboxNotesLocalUpdates().collectLatest { _inboxState.value = it }
         }
     }
 
     fun dismissAllNotes() {
         viewModelScope.launch {
-            inboxRepository.dismissAllNotesForCurrentSite()
+            inboxRepository
+                .dismissAllNotesForCurrentSite()
+                .fold(
+                    onFailure = { showSyncError() },
+                    onSuccess = {}
+                )
         }
     }
 
-    private fun refreshNotes() {
+    private fun onSwipeToRefresh() {
         _inboxState.value = _inboxState.value?.copy(isRefreshing = true)
         viewModelScope.launch {
-            inboxRepository.fetchInboxNotes()
+            refreshNotes()
         }
+    }
+
+    private suspend fun refreshNotes() {
+        inboxRepository
+            .fetchInboxNotes()
+            .fold(
+                onFailure = { showSyncError() },
+                onSuccess = {}
+            )
     }
 
     private fun inboxNotesLocalUpdates() =
@@ -76,16 +79,10 @@ class InboxViewModel @Inject constructor(
                 InboxState(
                     isLoading = false,
                     notes = notes,
-                    onRefresh = ::refreshNotes,
+                    onRefresh = ::onSwipeToRefresh,
                     isRefreshing = false
                 )
             }
-
-    private fun loadInboxNotes(): Flow<InboxState> = flow {
-        emit(InboxState(isLoading = true))
-        inboxRepository.fetchInboxNotes()
-        emit(InboxState(isLoading = false))
-    }
 
     private fun InboxNote.toInboxNoteUi() =
         InboxNoteUi(
@@ -170,8 +167,17 @@ class InboxViewModel @Inject constructor(
 
     private fun dismissNote(noteId: Long) {
         viewModelScope.launch {
-            inboxRepository.dismissNote(noteId)
+            inboxRepository
+                .dismissNote(noteId)
+                .fold(
+                    onFailure = { showSyncError() },
+                    onSuccess = {}
+                )
         }
+    }
+
+    private fun showSyncError() {
+        triggerEvent(Event.ShowSnackbar(R.string.inbox_screen_sync_error))
     }
 
     private fun InboxNoteAction.getActionTextColor() =
@@ -231,7 +237,7 @@ class InboxViewModel @Inject constructor(
         val onClick: (Long, Long) -> Unit
     )
 
-    sealed class InboxNoteActionEvent : MultiLiveEvent.Event() {
+    sealed class InboxNoteActionEvent : Event() {
         data class OpenUrlEvent(val url: String) : InboxNoteActionEvent()
     }
 }

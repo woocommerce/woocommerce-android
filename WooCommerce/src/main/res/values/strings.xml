@@ -1865,6 +1865,7 @@
     <string name="empty_inbox_description">Come back soon for more tips and insights on growing your store</string>
     <string name="inbox_note_survey_actioned">Thank you for your feedback!</string>
     <string name="inbox_note_dismiss_all_notes">Dismiss all</string>
+    <string name="inbox_screen_sync_error">Error syncing inbox</string>
 
     <!-- coupons -->
     <string name="coupons">Coupons</string>
