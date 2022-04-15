@@ -8,7 +8,7 @@ import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.Refun
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.RefundStatusErrorType.NoNetwork
 import com.woocommerce.android.cardreader.payments.RefundParams
 
-class RefundErrorMapper {
+internal class RefundErrorMapper {
     fun mapTerminalError(
         refundParams: RefundParams,
         exception: TerminalException
