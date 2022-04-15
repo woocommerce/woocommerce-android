@@ -19,7 +19,6 @@ import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
 class AppSettingsPresenterTest : BaseUnitTest() {
-
     private val appSettingsContractView: AppSettingsContract.View = mock()
 
     private val dispatcher: Dispatcher = mock()
