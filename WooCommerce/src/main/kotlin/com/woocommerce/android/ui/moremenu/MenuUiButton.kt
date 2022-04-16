@@ -9,7 +9,7 @@ data class MenuUiButton(
     @DrawableRes val icon: Int,
     val badgeCount: Int = 0,
     val isEnabled: Boolean = true,
-    val onClick: () -> Unit = {},
+    val onClick: (MenuButtonType) -> Unit = {},
 )
 
 enum class MenuButtonType {

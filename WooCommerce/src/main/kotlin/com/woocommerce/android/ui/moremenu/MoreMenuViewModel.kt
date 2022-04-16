@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.moremenu
 import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -24,8 +25,8 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import javax.inject.Inject
@@ -37,6 +38,10 @@ class MoreMenuViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     unseenReviewsCountHandler: UnseenReviewsCountHandler
 ) : ScopedViewModel(savedState) {
+    companion object {
+        const val CLICK_TIMEOUT = 500L
+    }
+
     val moreMenuViewState =
         combine(
             unseenReviewsCountHandler.observeUnseenCount(),
@@ -50,40 +55,64 @@ class MoreMenuViewModel @Inject constructor(
             )
         }.asLiveData()
 
+    private val debounceState = MutableStateFlow<MenuButtonType?>(null)
+
+    init {
+        viewModelScope.launch {
+            debounceState
+                .debounce(CLICK_TIMEOUT)
+                .collect { buttonType ->
+                    buttonType?.let {
+                        when (it) {
+                            VIEW_ADMIN -> onViewAdminButtonClick()
+                            VIEW_STORE -> onViewStoreButtonClick()
+                            COUPONS -> onCouponsButtonClick()
+                            PRODUCT_REVIEWS -> onReviewsButtonClick()
+                            INBOX -> onInboxButtonClick()
+                        }
+                    }
+                }
+        }
+    }
+
+    private fun onMenuItemClick(type: MenuButtonType) {
+        debounceState.value = type
+    }
+
     private fun generateMenuButtons(unseenReviewsCount: Int): List<MenuUiButton> =
         listOf(
             MenuUiButton(
                 type = VIEW_ADMIN,
                 text = R.string.more_menu_button_woo_admin,
                 icon = R.drawable.ic_more_menu_wp_admin,
-                onClick = ::onViewAdminButtonClick
+                onClick = ::onMenuItemClick
             ),
             MenuUiButton(
                 type = VIEW_STORE,
                 text = R.string.more_menu_button_store,
                 icon = R.drawable.ic_more_menu_store,
-                onClick = ::onViewStoreButtonClick
+                onClick = ::onMenuItemClick
             ),
             MenuUiButton(
                 type = COUPONS,
                 text = R.string.more_menu_button_coupons,
                 icon = R.drawable.ic_more_menu_coupons,
                 isEnabled = AppPrefs.isCouponsEnabled,
-                onClick = ::onCouponsButtonClick
+                onClick = ::onMenuItemClick
             ),
             MenuUiButton(
                 type = PRODUCT_REVIEWS,
                 text = R.string.more_menu_button_reviews,
                 icon = R.drawable.ic_more_menu_reviews,
                 badgeCount = unseenReviewsCount,
-                onClick = ::onReviewsButtonClick
+                onClick = ::onMenuItemClick
             ),
             MenuUiButton(
                 type = INBOX,
                 text = R.string.more_menu_button_inbox,
                 icon = R.drawable.ic_more_menu_inbox,
                 isEnabled = FeatureFlag.MORE_MENU_INBOX.isEnabled(),
-                onClick = ::onInboxButtonClick
+                onClick = ::onMenuItemClick
             )
         )
 

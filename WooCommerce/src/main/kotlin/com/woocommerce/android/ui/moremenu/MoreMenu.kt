@@ -97,7 +97,7 @@ fun MoreMenu(
                     text = item.text,
                     iconDrawable = item.icon,
                     badgeCount = item.badgeCount,
-                    onClick = item.onClick
+                    onClick = { item.onClick(item.type) }
                 )
             }
         }
