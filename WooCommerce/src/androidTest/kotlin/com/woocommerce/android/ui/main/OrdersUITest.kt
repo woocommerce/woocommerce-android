@@ -8,6 +8,7 @@ import com.woocommerce.android.helpers.TestBase
 import com.woocommerce.android.screenshots.TabNavComponent
 import com.woocommerce.android.screenshots.login.WelcomeScreen
 import com.woocommerce.android.screenshots.orders.OrderListScreen
+import com.woocommerce.android.screenshots.orders.OrderSelectProductScreen
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Before
@@ -48,6 +49,22 @@ class OrdersUITest : TestBase() {
             .assertNewOrderScreen()
             .createOrder()
             .assertSingleOrderScreenWithEmptyOrder()
+            .goBackToOrdersScreen()
+    }
+
+    @Test
+    fun createOrderWithProductTest() {
+        val productName = OrderSelectProductScreen.SIMPLE_PRODUCT_NAME
+        OrderListScreen()
+            .createFABTap()
+            .newOrderTap()
+            .assertNewOrderScreen()
+            .addProduct()
+            .assertOrderSelectProductScreen()
+            .selectProduct(productName)
+            .assertNewOrderScreenWithProduct(productName)
+            .createOrder()
+            .assertSingleOrderScreenWithProduct(productName)
             .goBackToOrdersScreen()
     }
 }

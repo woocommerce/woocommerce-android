@@ -47,4 +47,9 @@ class SingleOrderScreen : Screen {
         ).check(ViewAssertions.matches(isDisplayed()))
         return assertSingleOrderScreen()
     }
+
+    fun assertSingleOrderScreenWithProduct(productName: String): SingleOrderScreen {
+        Espresso.onView(withText(productName)).check(ViewAssertions.matches(isDisplayed()))
+        return assertSingleOrderScreen()
+    }
 }
