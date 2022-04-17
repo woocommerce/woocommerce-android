@@ -165,6 +165,9 @@
         <action
             android:id="@+id/action_moreMenu_to_couponListFragment"
             app:destination="@id/couponListFragment" />
+        <action
+            android:id="@+id/action_moreMenu_to_sitePickerFragment"
+            app:destination="@id/sitePickerFragment"/>
     </fragment>
     <fragment
         android:id="@+id/feedbackSurveyFragment"
@@ -304,6 +307,9 @@
         app:exitAnim="@null"
         app:popEnterAnim="@null"
         app:popExitAnim="@anim/activity_fade_out" />
+    <action
+        android:id="@+id/action_global_login_to_sitePickerFragment"
+        app:destination="@id/sitePickerFragment"/>
     <dialog
         android:id="@+id/productTypesBottomSheetFragment"
         android:name="com.woocommerce.android.ui.products.ProductTypesBottomSheetFragment"
@@ -371,5 +377,15 @@
         <argument
             android:name="couponId"
             app:argType="long" />
+    </fragment>
+    <fragment
+        android:id="@+id/sitePickerFragment"
+        android:name="com.woocommerce.android.ui.sitepicker.SitePickerFragment"
+        android:label="fragment_site_picker"
+        tools:layout="@layout/fragment_site_picker">
+        <argument
+            android:name="openedFromLogin"
+            app:argType="boolean"
+            android:defaultValue="true" />
     </fragment>
 </navigation>
