@@ -35,7 +35,7 @@ class OrderCreationScreen : Screen {
         return this
     }
 
-    fun assertNewOrderScreenWithProduct(productName:String): OrderCreationScreen{
+    fun assertNewOrderScreenWithProduct(productName: String): OrderCreationScreen {
         Espresso.onView(withText(productName)).check(matches(isDisplayed()))
         return assertNewOrderScreen()
     }
