@@ -46,7 +46,7 @@ class OrdersUITest : TestBase() {
             .createFABTap()
             .newOrderTap()
             .assertNewOrderScreen()
-            .createEmptyOrder()
+            .createOrder()
             .assertSingleOrderScreenWithEmptyOrder()
             .goBackToOrdersScreen()
     }

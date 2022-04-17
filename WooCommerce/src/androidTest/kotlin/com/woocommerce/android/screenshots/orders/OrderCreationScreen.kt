@@ -14,7 +14,7 @@ class OrderCreationScreen : Screen {
 
     constructor() : super(ORDER_CREATION)
 
-    fun createEmptyOrder(): SingleOrderScreen {
+    fun createOrder(): SingleOrderScreen {
         clickOn(CREATE_BUTTON)
         return SingleOrderScreen()
     }
