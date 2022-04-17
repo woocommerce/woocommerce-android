@@ -26,7 +26,8 @@ object WooLog {
         LOGIN,
         REVIEWS,
         MEDIA,
-        CARD_READER
+        CARD_READER,
+        SITE_PICKER
     }
 
     // Breaking convention to be consistent with org.wordpress.android.util.AppLog
