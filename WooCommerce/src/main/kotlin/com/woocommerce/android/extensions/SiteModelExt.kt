@@ -1,5 +1,7 @@
 package com.woocommerce.android.extensions
 
+import android.text.TextUtils
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SiteUiModel
 import org.wordpress.android.fluxc.model.SiteModel
 
 val SiteModel.logInformation: String
@@ -19,3 +21,14 @@ val SiteModel.stateLogInformation: String
             else -> "Self-hosted + Jetpack"
         }
     }
+
+fun SiteModel.getSiteName(): String = if (!TextUtils.isEmpty(name)) name else ""
+
+fun List<SiteModel>.toAppUiModel(selectedSite: SiteModel): List<SiteUiModel> {
+    return this.map {
+        SiteUiModel(
+            site = it,
+            isSelected = selectedSite.id == it.id
+        )
+    }
+}
