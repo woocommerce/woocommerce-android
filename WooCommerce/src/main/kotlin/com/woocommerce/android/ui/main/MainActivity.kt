@@ -151,12 +151,13 @@ class MainActivity :
             val isDialogDestination = currentDestination.navigatorName == DIALOG_NAVIGATOR_NAME
             if (isDialogDestination) return
 
-            when(val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
+            when (val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
                 is AppBarStatus.Visible -> {
                     showToolbar()
-                    // re-expand the AppBar when returning to top level fragment, collapse it when entering a child fragment
+                    // re-expand the AppBar when returning to top level fragment,
+                    // collapse it when entering a child fragment
                     if (f is TopLevelFragment) {
-                        // We need to post this to the view handler to make sure shouldExpandToolbar returns the correct value
+                        // Post this to the view handler to make sure shouldExpandToolbar returns the correct value
                         f.view?.post {
                             if (f.view != null) {
                                 expandToolbar(expand = f.shouldExpandToolbar(), animate = false)
