@@ -1230,7 +1230,6 @@ Language: nl
     <string name="login_jetpack_installed_sign_in">Heb je Jetpack al? %1$s</string>
     <string name="login_refresh_app_progress_jetpack">Proberen in te loggen met Jetpack…</string>
     <string name="login_refresh_app_continue">vernieuw de app om door te gaan</string>
-    <string name="login_not_connected_jetpack">Om deze app te gebruiken voor %1$s, moet de Jetpack-plugin ingesteld zijn en gekoppeld zijn aan dit account. \n\nZodra dit is ingesteld, %2$s</string>
     <string name="login_try_another_store">Probeer een andere winkel</string>
     <string name="database_downgraded">Database gedowngraded; tabellen worden opnieuw gemaakt en winkels worden geladen</string>
     <string name="loading_stores">Winkels worden geladen</string>
@@ -1246,7 +1245,6 @@ Language: nl
     <string name="orderdetail_copy_tracking_number">Volgnummer kopiëren</string>
     <string name="login_refresh_app_progress">Controleert op WooCommerce…</string>
     <string name="login_refresh_app">de app vernieuwen</string>
-    <string name="login_not_woo_store">Het lijkt erop dat %1$s geen WooCommerce-site is. Installeer de WooCommerce-plug-in op je site en %2$s</string>
     <string name="orderdetail_empty_address">Geen adres opgegeven.</string>
     <string name="login_need_help_finding_connected_email">Heb je hulp nodig bij het vinden van de e-mail waarmee je hebt ingelogd?</string>
     <string name="enter_wordpress_site">De website op dit adres is geen WordPress-site. Om er verbinding mee te kunnen maken, moet WordPress geïnstalleerd zijn.</string>

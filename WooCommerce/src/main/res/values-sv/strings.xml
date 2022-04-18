@@ -1230,7 +1230,6 @@ Language: sv_SE
     <string name="login_jetpack_installed_sign_in">Har du redan Jetpack? %1$s</string>
     <string name="login_refresh_app_progress_jetpack">Försöker logga in med Jetpack …</string>
     <string name="login_refresh_app_continue">uppdatera appen för att fortsätta</string>
-    <string name="login_not_connected_jetpack">För att använda den här appen för %1$s behöver du installera Jetpack-tillägget och ansluta det till det här kontot. \n\nEfter installationen %2$s</string>
     <string name="login_try_another_store">Försök med en annan butik</string>
     <string name="database_downgraded">Databasen har nedgraderats, återskapar tabeller och läser in butiker</string>
     <string name="loading_stores">Läser in butiker</string>
@@ -1246,7 +1245,6 @@ Language: sv_SE
     <string name="orderdetail_copy_tracking_number">Kopiera spårningsnummer</string>
     <string name="login_refresh_app_progress">Kollar efter WooCommerce …</string>
     <string name="login_refresh_app">uppdatera appen</string>
-    <string name="login_not_woo_store">Det ser ut som att %1$s inte är en WooCommerce-webbplats. Installera WooCommerce-pluginet på din webbplats och därefter %2$s</string>
     <string name="orderdetail_empty_address">Ingen adress specificerad</string>
     <string name="login_need_help_finding_connected_email">Behöver du hjälp med att hitta e-postadressen som du använde för att ansluta?</string>
     <string name="enter_wordpress_site">Webbplatsen på den här adressen är inte en WordPress-webbplats. Webbplatsen måste använda WordPress för att vi ska kunna ansluta till den.</string>

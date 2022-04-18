@@ -670,7 +670,7 @@ class SitePickerActivity :
         }
     }
 
-    @SuppressLint("StringFormatMatches")
+    @SuppressLint("LongMethod")
     override fun showSiteNotConnectedJetpackView(url: String) {
         AnalyticsTracker.track(
             AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_JETPACK,
@@ -757,7 +757,6 @@ class SitePickerActivity :
      * to a site that does not have WooCommerce installed.
      */
     @Suppress("LongMethod")
-    @SuppressLint("StringFormatMatches")
     override fun showSiteNotWooStore(site: SiteModel) {
         AnalyticsTracker.track(
             AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_WOO_STORE,

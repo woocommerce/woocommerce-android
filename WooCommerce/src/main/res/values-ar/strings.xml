@@ -1230,7 +1230,6 @@ Language: ar
     <string name="login_jetpack_installed_sign_in">هل لديك Jetpack بالفعل؟ %1$s</string>
     <string name="login_refresh_app_progress_jetpack">جارٍ محاولة تسجيل الدخول باستخدام Jetpack…</string>
     <string name="login_refresh_app_continue">تحديث التطبيق للاستمرار</string>
-    <string name="login_not_connected_jetpack">لاستخدام هذا التطبيق مقابل %1$s، سيتعين عليك إعداد إضافة Jetpack وربطها بهذا الحساب. \n\nبعد الإعداد، %2$s</string>
     <string name="login_try_another_store">تجربة متجر آخر</string>
     <string name="database_downgraded">تم تخفيض قاعدة البيانات إلى المستوى الأدنى وإنشاء الجداول مجددًا وتحميل المتاجر</string>
     <string name="loading_stores">تحميل المتاجر</string>
@@ -1246,7 +1245,6 @@ Language: ar
     <string name="orderdetail_copy_tracking_number">نسخ رقم التعقُّب</string>
     <string name="login_refresh_app_progress">جارٍ التحقُّق من WooCommerce…</string>
     <string name="login_refresh_app">تحديث التطبيق</string>
-    <string name="login_not_woo_store">يبدو أنَّ %1$s ليس موقع WooCommerce. ثبِّت إضافة WooCommerce على موقعك ثم %2$s</string>
     <string name="orderdetail_empty_address">لم يتم تحديد أي عنوان</string>
     <string name="login_need_help_finding_connected_email">هل تحتاج إلى مساعدة على العثور على البريد الإلكتروني التي تواصلت معه؟</string>
     <string name="enter_wordpress_site">موقع الويب الموجود على هذا العنوان ليس موقع وردبرس. لكي نتصل بالموقع، يجب تثبيته على وردبرس.</string>

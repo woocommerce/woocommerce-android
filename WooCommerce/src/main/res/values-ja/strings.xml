@@ -1230,7 +1230,6 @@ Language: ja_JP
     <string name="login_jetpack_installed_sign_in">Jetpack はインストール済みですか ?%1$s</string>
     <string name="login_refresh_app_progress_jetpack">Jetpack でログインを試行しています…</string>
     <string name="login_refresh_app_continue">続行するにはアプリを再読み込みします</string>
-    <string name="login_not_connected_jetpack">%1$s にこのアプリを使用するには、Jetpack プラグインを設定し、このアカウントと連携する必要があります。\n\n設定が完了したら、%2$s</string>
     <string name="login_try_another_store">ほかのストアでお試しください</string>
     <string name="database_downgraded">データベースのダウングレードに伴い、テーブルを再作成し、ストアを読み込んでいます</string>
     <string name="loading_stores">ストアを読み込んでいます</string>
@@ -1246,7 +1245,6 @@ Language: ja_JP
     <string name="orderdetail_copy_tracking_number">追跡番号をコピー</string>
     <string name="login_refresh_app_progress">WooCommerce をチェックしています…</string>
     <string name="login_refresh_app">アプリを再読み込み</string>
-    <string name="login_not_woo_store">%1$s は WooCommerce サイトではないようです。サイトに WooCommerce プラグインをインストールして%2$s</string>
     <string name="orderdetail_empty_address">住所が指定されていません</string>
     <string name="login_need_help_finding_connected_email">関連付けられているメールアドレスをお忘れですか ?</string>
     <string name="enter_wordpress_site">このアドレスのサイトは WordPress のサイトではありません。接続するには、接続先のサイトに WordPress がインストールされている必要があります。</string>
