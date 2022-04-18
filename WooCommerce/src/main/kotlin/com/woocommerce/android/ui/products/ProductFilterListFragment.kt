@@ -42,7 +42,9 @@ class ProductFilterListFragment :
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Visible(
-            navigationIcon = R.drawable.ic_gridicons_cross_24dp
+            navigationIcon = R.drawable.ic_gridicons_cross_24dp,
+            hasShadow = false,
+            hasDivider = true
         )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
