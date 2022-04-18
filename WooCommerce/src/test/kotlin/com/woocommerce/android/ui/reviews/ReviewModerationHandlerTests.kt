@@ -8,7 +8,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -39,7 +39,7 @@ class ReviewModerationHandlerTests : BaseUnitTest() {
         handler = ReviewModerationHandler(
             selectedSite = selectedSite,
             productStore = productStore,
-            appCoroutineScope = TestCoroutineScope(coroutinesTestRule.testDispatcher)
+            appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher)
         )
     }
 

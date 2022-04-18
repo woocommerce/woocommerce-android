@@ -21,7 +21,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
@@ -69,7 +69,7 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
             productDetailRepository = productDetailRepository,
             productImagesServiceWrapper = productImagesServiceWrapper,
             notificationHandler = notificationHandler,
-            appCoroutineScope = TestCoroutineScope(coroutinesTestRule.testDispatcher)
+            appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher)
         )
     }
 
