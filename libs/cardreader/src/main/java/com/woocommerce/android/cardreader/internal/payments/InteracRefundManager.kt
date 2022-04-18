@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.flow
 internal class InteracRefundManager(
     private val collectInteracRefundAction: CollectInteracRefundAction,
     private val processInteracRefundAction: ProcessInteracRefundAction,
+    private val refundErrorMapper: RefundErrorMapper
 ) {
     fun refundInteracPayment(refundParameters: RefundParams): Flow<CardInteracRefundStatus> = flow {
         collectInteracRefund(refundParameters)
@@ -27,16 +28,16 @@ internal class InteracRefundManager(
         ).collect { refundStatus ->
             when (refundStatus) {
                 CollectInteracRefundAction.CollectInteracRefundStatus.Success -> {
-                    processInteracRefund()
+                    processInteracRefund(refundParameters)
                 }
                 is CollectInteracRefundAction.CollectInteracRefundStatus.Failure -> {
-                    emit(CardInteracRefundStatus.InteracRefundFailure(refundStatus.exception))
+                    emit(refundErrorMapper.mapTerminalError(refundParameters, refundStatus.exception))
                 }
             }
         }
     }
 
-    private suspend fun FlowCollector<CardInteracRefundStatus>.processInteracRefund() {
+    private suspend fun FlowCollector<CardInteracRefundStatus>.processInteracRefund(refundParameters: RefundParams) {
         emit(CardInteracRefundStatus.ProcessingInteracRefund)
         processInteracRefundAction.processRefund().collect { status ->
             when (status) {
@@ -44,7 +45,7 @@ internal class InteracRefundManager(
                     emit(CardInteracRefundStatus.InteracRefundSuccess)
                 }
                 is ProcessInteracRefundAction.ProcessRefundStatus.Failure -> {
-                    emit(CardInteracRefundStatus.InteracRefundFailure(status.exception))
+                    emit(refundErrorMapper.mapTerminalError(refundParameters, status.exception))
                 }
             }
         }
