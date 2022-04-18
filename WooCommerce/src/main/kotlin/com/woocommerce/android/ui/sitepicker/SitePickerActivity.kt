@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.sitepicker
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -670,7 +669,7 @@ class SitePickerActivity :
         }
     }
 
-    @SuppressLint("LongMethod")
+    @Suppress("LongMethod")
     override fun showSiteNotConnectedJetpackView(url: String) {
         AnalyticsTracker.track(
             AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_JETPACK,
