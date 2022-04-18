@@ -33,7 +33,7 @@ class SendTelemetryTest : BaseUnitTest() {
     private val trackerStore = mock<TrackerStore>()
     private val trackerRepository = FakeTrackerRepository()
     private val currentTimeProvider = mock<CurrentTimeProvider> {
-        on { currentDate() } doAnswer { Date(coroutinesTestRule.testDispatcher.currentTime) }
+        on { currentDate() } doAnswer { Date(coroutinesTestRule.testDispatcher.scheduler.currentTime) }
     }
     private val selectedSite = mock<SelectedSite> {
         on { observe() } doReturn flowOf(site)
