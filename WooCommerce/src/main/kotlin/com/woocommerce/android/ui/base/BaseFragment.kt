@@ -18,8 +18,6 @@ open class BaseFragment : Fragment, BaseFragmentView {
         private const val KEY_TITLE = "title"
     }
 
-    open val shouldShowActivityToolbar: Boolean = true
-
     @DrawableRes
     open val navigationIconForActivityToolbar: Int? = R.drawable.ic_back_24dp
 
@@ -65,7 +63,7 @@ open class BaseFragment : Fragment, BaseFragmentView {
 
     /**
      * Returns the title which should be displayed in the Activity's Toolbar.
-     * This is not used if [shouldShowActivityToolbar] is false.
+     * This is not used if [activityAppBarStatus] returns [AppBarStatus.Hidden].
      */
     override fun getFragmentTitle(): String {
         return activity?.title?.toString() ?: ""
@@ -73,7 +71,7 @@ open class BaseFragment : Fragment, BaseFragmentView {
 
     /**
      * Returns the title which should be displayed as a subtitle in the Activity's Toolbar.
-     * This is not used if [shouldShowActivityToolbar] is false.
+     * This is not used if [activityAppBarStatus] returns [AppBarStatus.Hidden].
      */
     override fun getFragmentSubtitle(): String = ""
 
