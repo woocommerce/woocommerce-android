@@ -79,7 +79,7 @@ class InboxViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given inbox notes loaded, when refresh notes, show is refreshing state and fetch notes`() =
+    fun `given inbox notes loaded, when refresh notes, show is refreshing state and fetch notes`() =
         testBlocking {
             whenViewModelIsCreated()
             givenObserveNotesEmits(listOf(NOTE))
