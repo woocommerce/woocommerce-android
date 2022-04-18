@@ -9,10 +9,10 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCouponDetailsBinding
-import com.woocommerce.android.ui.base.AppBarStatus
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint

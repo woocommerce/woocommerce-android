@@ -4,7 +4,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentBaseEditAddressBinding
 import com.woocommerce.android.model.Address
-import com.woocommerce.android.ui.base.AppBarStatus
+import com.woocommerce.android.ui.main.AppBarStatus
 
 class BillingAddressEditingFragment : BaseAddressEditingFragment() {
     override val analyticsValue: String = AnalyticsTracker.ORDER_EDIT_BILLING_ADDRESS

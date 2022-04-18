@@ -16,10 +16,10 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAddOrderNoteBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.ui.base.AppBarStatus
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.widgets.CustomProgressDialog

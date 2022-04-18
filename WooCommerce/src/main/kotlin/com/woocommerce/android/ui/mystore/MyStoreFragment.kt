@@ -24,9 +24,9 @@ import com.woocommerce.android.databinding.FragmentMyStoreBinding
 import com.woocommerce.android.extensions.*
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.base.AppBarStatus
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.*
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenTopPerformer

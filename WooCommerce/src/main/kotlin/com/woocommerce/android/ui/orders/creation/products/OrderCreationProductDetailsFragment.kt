@@ -10,8 +10,8 @@ import com.woocommerce.android.databinding.FragmentOrderCreationProductDetailsBi
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.ProductImageMap
-import com.woocommerce.android.ui.base.AppBarStatus
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.hilt.android.AndroidEntryPoint

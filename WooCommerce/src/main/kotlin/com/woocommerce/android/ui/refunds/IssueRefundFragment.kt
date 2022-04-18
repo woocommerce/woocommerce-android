@@ -15,9 +15,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.ui.base.AppBarStatus
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundType
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundType.AMOUNT

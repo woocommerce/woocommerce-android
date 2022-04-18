@@ -5,8 +5,8 @@ import android.view.View
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentPrintShippingLabelInfoBinding
-import com.woocommerce.android.ui.base.AppBarStatus
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.util.StringUtils
 
 class PrintShippingLabelInfoFragment : BaseFragment(R.layout.fragment_print_shipping_label_info) {

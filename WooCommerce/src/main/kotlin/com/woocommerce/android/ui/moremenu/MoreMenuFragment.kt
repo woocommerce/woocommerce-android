@@ -12,9 +12,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentMoreMenuBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.base.AppBarStatus
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.*
 import com.woocommerce.android.util.ChromeCustomTabUtils

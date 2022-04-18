@@ -23,9 +23,9 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentProductImageViewerBinding
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.base.AppBarStatus
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ImageViewerFragment.Companion.ImageViewerListener
 import com.woocommerce.android.util.WooAnimUtils

@@ -5,7 +5,7 @@ import android.view.View
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentEditCustomerOrderNoteBinding
-import com.woocommerce.android.ui.base.AppBarStatus
+import com.woocommerce.android.ui.main.AppBarStatus
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 

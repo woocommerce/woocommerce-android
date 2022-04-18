@@ -41,7 +41,6 @@ import com.woocommerce.android.model.Notification
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.base.AppBarStatus
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver

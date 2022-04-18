@@ -15,10 +15,10 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.base.AppBarStatus
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator

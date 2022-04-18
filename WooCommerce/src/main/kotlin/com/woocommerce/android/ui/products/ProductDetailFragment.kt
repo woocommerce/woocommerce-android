@@ -31,8 +31,8 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_EDITOR_TEXT
-import com.woocommerce.android.ui.base.AppBarStatus
 import com.woocommerce.android.ui.dialog.WooDialog
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.products.ProductDetailViewModel.*
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet

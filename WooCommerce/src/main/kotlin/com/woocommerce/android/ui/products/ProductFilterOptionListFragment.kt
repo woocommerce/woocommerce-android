@@ -16,8 +16,8 @@ import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.ui.base.AppBarStatus
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListOptionItemUiModel
 import com.woocommerce.android.ui.products.ProductFilterOptionListAdapter.OnProductFilterOptionClickListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
