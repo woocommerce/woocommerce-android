@@ -67,6 +67,14 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
     }
 
     private fun setupObservers() {
+        viewModel.couponsState.observe(viewLifecycleOwner) { state ->
+            if (::searchMenuItem.isInitialized && state.isSearchOpen != searchMenuItem.isActionViewExpanded) {
+                if (state.isSearchOpen) searchMenuItem.expandActionView() else searchMenuItem.collapseActionView()
+            }
+            if (::searchView.isInitialized && state.isSearchOpen && state.searchQuery != searchView.query?.toString()) {
+                searchView.setQuery(state.searchQuery, false)
+            }
+        }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is NavigateToCouponDetailsEvent -> navigateToCouponDetails(event.couponId)
