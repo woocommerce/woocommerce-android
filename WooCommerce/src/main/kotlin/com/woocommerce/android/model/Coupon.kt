@@ -52,7 +52,6 @@ data class Coupon(
 
 fun CouponDataModel.toAppModel() = Coupon(
     id = coupon.id,
-    siteId = coupon.siteId,
     code = coupon.code,
     amount = coupon.amount?.toBigDecimalOrNull(),
     dateCreatedGmt = coupon.dateCreatedGmt.parseFromIso8601DateFormat(),
