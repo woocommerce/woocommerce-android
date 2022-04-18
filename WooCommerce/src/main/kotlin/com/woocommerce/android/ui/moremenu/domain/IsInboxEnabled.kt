@@ -12,7 +12,7 @@ class IsInboxEnabled @Inject constructor(
     private val wooCommerceStore: WooCommerceStore
 ) {
     companion object {
-        private const val INBOX_MINIMUM_SUPPORTED_VERSION = "5.0.0"
+        private const val INBOX_MINIMUM_SUPPORTED_VERSION = "6.4.0"
     }
 
     operator fun invoke(): Boolean {
