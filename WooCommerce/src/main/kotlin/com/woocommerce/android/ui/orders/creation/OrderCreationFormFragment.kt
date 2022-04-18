@@ -296,7 +296,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                     itemAnimator = animator
                 }
             }
-            ((productsSection.content as RecyclerView).adapter as OrderCreationProductsAdapter).products = products
+            ((productsSection.content as RecyclerView).adapter as OrderCreationProductsAdapter).submitList(products)
         }
     }
 
