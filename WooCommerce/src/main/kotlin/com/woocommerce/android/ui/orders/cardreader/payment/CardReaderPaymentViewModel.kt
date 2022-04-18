@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptEvent.SendRec
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderTrackingInfoKeeper
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult
@@ -69,6 +70,15 @@ class CardReaderPaymentViewModel
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderPaymentDialogFragmentArgs by savedState.navArgs()
+
+    private val orderId = when (val param = arguments.paymentOrRefund as CardReaderFlowParam.PaymentOrRefund) {
+        is CardReaderFlowParam.PaymentOrRefund.Payment -> {
+            param.orderId
+        }
+        is CardReaderFlowParam.PaymentOrRefund.Refund -> {
+            param.orderId
+        }
+    }
 
     // The app shouldn't store the state as payment flow gets canceled when the vm dies
     private val viewState = MutableLiveData<ViewState>(LoadingDataState)
@@ -225,7 +235,7 @@ class CardReaderPaymentViewModel
     }
 
     private suspend fun fetchOrder(): Order? {
-        return orderRepository.fetchOrderById(arguments.orderId)
+        return orderRepository.fetchOrderById(orderId)
     }
 
     private fun emitFailedPaymentState(orderId: Long, billingEmail: String, error: PaymentFailed, amountLabel: String) {
@@ -256,7 +266,7 @@ class CardReaderPaymentViewModel
 
     private fun showPaymentSuccessfulState() {
         launch {
-            val order = orderRepository.getOrderById(arguments.orderId)
+            val order = orderRepository.getOrderById(orderId)
                 ?: throw IllegalStateException("Order URL not available.")
             val amountLabel = order.getAmountLabel()
             val receiptUrl = getReceiptUrl(order.id)
@@ -330,7 +340,7 @@ class CardReaderPaymentViewModel
 
     private fun startPrintingFlow() {
         launch {
-            val order = orderRepository.getOrderById(arguments.orderId)
+            val order = orderRepository.getOrderById(orderId)
                 ?: throw IllegalStateException("Order URL not available.")
             triggerEvent(PrintReceipt(getReceiptUrl(order.id), order.getReceiptDocumentName()))
         }

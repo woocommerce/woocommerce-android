@@ -381,7 +381,6 @@ class IssueRefundViewModel @Inject constructor(
                             AnalyticsTracker.KEY_AMOUNT to commonState.refundTotal.toString()
                         )
                     )
-
                     triggerEvent(IssueRefundEvent.NavigateToCardReaderScreen(order.id))
                     refundSummaryState = refundSummaryState.copy(isFormEnabled = true)
                 }

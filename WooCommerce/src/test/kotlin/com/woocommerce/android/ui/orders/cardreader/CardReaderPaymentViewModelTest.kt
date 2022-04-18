@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptEvent.SendRec
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderTrackingInfoKeeper
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.*
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -82,8 +83,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     )
 
     private val savedState: SavedStateHandle = CardReaderPaymentDialogFragmentArgs(
-        ORDER_ID,
-        false
+        CardReaderFlowParam.PaymentOrRefund.Payment(ORDER_ID)
     ).initSavedStateHandle()
 
     private val errorMapper: CardReaderPaymentErrorMapper = mock()

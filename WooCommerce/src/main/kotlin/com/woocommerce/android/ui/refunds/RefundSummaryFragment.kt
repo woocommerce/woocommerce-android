@@ -68,7 +68,7 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
                 is IssueRefundViewModel.IssueRefundEvent.NavigateToCardReaderScreen -> {
                     val action =
                         RefundSummaryFragmentDirections.actionRefundSummaryFragmentToCardReaderFlow(
-                            cardReaderFlowParam = CardReaderFlowParam.ConnectAndInteracRefund(event.orderId)
+                            cardReaderFlowParam = CardReaderFlowParam.PaymentOrRefund.Refund(event.orderId)
                         )
                     findNavController().navigateSafely(action)
                 }
