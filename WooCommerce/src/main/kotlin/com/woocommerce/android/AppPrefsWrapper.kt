@@ -117,8 +117,4 @@ class AppPrefsWrapper @Inject constructor() {
     fun getProductSortingChoice(siteId: Int) = AppPrefs.getProductSortingChoice(siteId)
 
     fun setProductSortingChoice(siteId: Int, value: String) = AppPrefs.setProductSortingChoice(siteId, value)
-
-    fun resetSitePreferences() {
-        AppPrefs.resetSitePreferences()
-    }
 }
