@@ -181,6 +181,12 @@ class MainActivity :
                 }
                 AppBarStatus.Hidden -> hideToolbar()
             }
+
+            if (f is TopLevelFragment) {
+                showBottomNav()
+            } else {
+                hideBottomNav()
+            }
         }
     }
 
@@ -415,13 +421,6 @@ class MainActivity :
         if ((isAtRoot && previousDestinationId == null) || isDialogDestination(destination)) {
             previousDestinationId = destination.id
             return
-        }
-
-        // show bottom nav if this is a dialog destination from root or, just root itself
-        if (isTopLevelNavigation) {
-            showBottomNav()
-        } else {
-            hideBottomNav()
         }
 
         previousDestinationId = destination.id
