@@ -2,11 +2,8 @@ package com.woocommerce.android
 
 import android.app.Application
 import android.content.Context
-import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
-import androidx.lifecycle.Lifecycle.State.STARTED
-import androidx.lifecycle.ProcessLifecycleOwner
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -22,11 +19,9 @@ import com.woocommerce.android.tools.RateLimitedTask
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.SendTelemetry
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
-import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.*
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
 import com.woocommerce.android.util.WooLog.T
-import com.woocommerce.android.util.WooLog.T.DASHBOARD
 import com.woocommerce.android.util.WooLog.T.UTILS
 import com.woocommerce.android.util.crashlogging.UploadEncryptedLogs
 import com.woocommerce.android.util.encryptedlogging.ObserveEncryptedLogsUploadResult
