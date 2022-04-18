@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.woocommerce.android.databinding.ProductListItemBinding
 import com.woocommerce.android.model.Product
@@ -30,5 +31,21 @@ class GroupedProductListAdapter(
 
         holder.bind(product)
         holder.setOnDeleteClickListener(product, onItemDeleted)
+    }
+
+    object ProductItemDiffCallback : DiffUtil.ItemCallback<Product>() {
+        override fun areItemsTheSame(
+            oldItem: Product,
+            newItem: Product
+        ): Boolean {
+            return oldItem.remoteId == newItem.remoteId
+        }
+
+        override fun areContentsTheSame(
+            oldItem: Product,
+            newItem: Product
+        ): Boolean {
+            return oldItem == newItem
+        }
     }
 }
