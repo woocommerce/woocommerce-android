@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.base
 
 import androidx.annotation.LayoutRes
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 
 /**
