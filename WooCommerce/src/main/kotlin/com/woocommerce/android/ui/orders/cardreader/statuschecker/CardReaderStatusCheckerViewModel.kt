@@ -40,14 +40,14 @@ class CardReaderStatusCheckerViewModel
     private suspend fun checkStatus() {
         when (val param = arguments.cardReaderFlowParam) {
             CardReaderFlowParam.CardReadersHub -> triggerEvent(StatusCheckerEvent.NavigateToOnboarding(param))
-            is CardReaderFlowParam.ConnectAndAcceptPayment -> {
+            is CardReaderFlowParam.PaymentOrRefund.Payment -> {
                 if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected) {
                     triggerEvent(StatusCheckerEvent.NavigateToPayment(param))
                 } else {
                     handleOnboardingStatus(param)
                 }
             }
-            is CardReaderFlowParam.ConnectAndInteracRefund -> {
+            is CardReaderFlowParam.PaymentOrRefund.Refund -> {
                 if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected) {
                     triggerEvent(StatusCheckerEvent.NavigateToPayment(param))
                 } else {

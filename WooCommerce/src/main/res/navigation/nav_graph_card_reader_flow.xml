@@ -165,15 +165,8 @@
         android:name="com.woocommerce.android.ui.orders.cardreader.payment.CardReaderPaymentDialogFragment"
         android:label="CardReaderPaymentDialogFragment">
         <argument
-            android:name="orderId"
-            app:argType="long" />
-        <argument
-            android:name="refundAmount"
-            app:nullable="true"
-            app:argType="java.math.BigDecimal" />
-        <argument
-            android:name="isInteracRefund"
-            android:defaultValue="false"
-            app:argType="boolean" />
+            android:name="paymentOrRefund"
+            app:argType="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam$PaymentOrRefund"
+            app:nullable="false" />
     </dialog>
 </navigation>

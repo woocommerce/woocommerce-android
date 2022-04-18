@@ -28,6 +28,7 @@ import javax.inject.Inject
 class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), BackPressListener {
     companion object {
         const val REFUND_ORDER_NOTICE_KEY = "refund_order_notice"
+        const val KEY_INTERAC_SUCCESS = "interac_refund_success"
     }
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
@@ -63,6 +64,13 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.getSnack(event.message, *event.args).show()
                 is Exit -> navigateBackWithNotice(REFUND_ORDER_NOTICE_KEY, R.id.orderDetailFragment)
+                is IssueRefundViewModel.IssueRefundEvent.NavigateToCardReaderScreen -> {
+                    val action =
+                        RefundSummaryFragmentDirections.actionRefundSummaryFragmentToCardReaderFlow(
+                            cardReaderFlowParam = CardReaderFlowParam.PaymentOrRefund.Refund(event.orderId)
+                        )
+                    findNavController().navigateSafely(action)
+                }
                 is ShowRefundConfirmation -> {
                     val action =
                         RefundSummaryFragmentDirections.actionRefundSummaryFragmentToRefundConfirmationDialog(
@@ -101,7 +109,7 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
                 }
             }
             handleDialogNotice<String>(
-                "Interac_success",
+                KEY_INTERAC_SUCCESS,
                 entryId = R.id.refundSummaryFragment
             ) {
                 viewModel.refund()
