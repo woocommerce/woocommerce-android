@@ -72,7 +72,9 @@ class InboxRepository @Inject constructor(
     private fun inboxNoteTypeFromString(typeName: String?): NoteType =
         when (typeName) {
             null -> NoteType.INFO
-            else -> enumValueOf(typeName.uppercase())
+            else -> runCatching {
+                enumValueOf(typeName.uppercase()) as NoteType
+            }.getOrDefault(NoteType.INFO)
         }
 
     private fun InboxNoteActionEntity.toInboxAction() =

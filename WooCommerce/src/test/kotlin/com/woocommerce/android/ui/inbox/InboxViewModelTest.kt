@@ -1,9 +1,11 @@
 package com.woocommerce.android.ui.inbox
 
+import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.inbox.InboxViewModel.Companion.DEFAULT_DISMISS_LABEL
 import com.woocommerce.android.ui.inbox.InboxViewModel.InboxNoteActionUi
+import com.woocommerce.android.ui.inbox.InboxViewModel.InboxState
 import com.woocommerce.android.ui.inbox.domain.InboxNote
 import com.woocommerce.android.ui.inbox.domain.InboxRepository
 import com.woocommerce.android.util.DateUtils
@@ -14,7 +16,9 @@ import kotlinx.coroutines.flow.flow
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.verify
@@ -28,6 +32,8 @@ class InboxViewModelTest : BaseUnitTest() {
     private val inboxRepository: InboxRepository = mock()
 
     private lateinit var viewModel: InboxViewModel
+    private var observer: Observer<InboxState> = mock()
+    private val captor = argumentCaptor<InboxState>()
 
     @Before
     fun setup() = testBlocking {
@@ -79,9 +85,12 @@ class InboxViewModelTest : BaseUnitTest() {
             givenObserveNotesEmits(listOf(NOTE))
             reset(inboxRepository)
 
+            viewModel.inboxState.observeForever(observer)
             viewModel.inboxState.value?.onRefresh?.invoke()
 
-            assertThat(viewModel.inboxState.value?.isRefreshing).isTrue()
+            verify(observer, Mockito.times(3)).onChanged(captor.capture())
+            assertThat(captor.allValues[1].isRefreshing).isTrue
+            assertThat(captor.allValues.last().isRefreshing).isFalse
             verify(inboxRepository).fetchInboxNotes()
         }
 
