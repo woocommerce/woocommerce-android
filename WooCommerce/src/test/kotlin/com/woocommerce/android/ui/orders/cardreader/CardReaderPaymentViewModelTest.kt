@@ -186,6 +186,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
                 flow {
+                    delay(1) // make sure it's run after collecting payment starts
                     emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(RETRY_CARD))
                 }
             }
@@ -195,6 +196,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
 
             viewModel.start()
+            advanceUntilIdle()
 
             assertThat((viewModel.viewStateData.value as CollectPaymentState).hintLabel)
                 .isEqualTo(R.string.card_reader_payment_retry_card_prompt)
@@ -262,6 +264,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
                 flow {
+                    delay(1) // make sure it's run after collecting payment starts
                     emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(REMOVE_CARD))
                 }
             }
@@ -271,6 +274,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
 
             viewModel.start()
+            advanceUntilIdle()
 
             assertThat((viewModel.viewStateData.value as CollectPaymentState).hintLabel)
                 .isEqualTo(R.string.card_reader_payment_remove_card_prompt)
@@ -281,6 +285,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
                 flow {
+                    delay(1) // make sure it's run after collecting payment starts
                     emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(TRY_ANOTHER_CARD))
                 }
             }
@@ -290,6 +295,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
 
             viewModel.start()
+            advanceUntilIdle()
 
             assertThat((viewModel.viewStateData.value as CollectPaymentState).hintLabel)
                 .isEqualTo(R.string.card_reader_payment_try_another_card_prompt)
@@ -300,6 +306,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
                 flow {
+                    delay(1) // make sure it's run after collecting payment starts
                     emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(TRY_ANOTHER_READ_METHOD))
                 }
             }
@@ -309,6 +316,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
 
             viewModel.start()
+            advanceUntilIdle()
 
             assertThat((viewModel.viewStateData.value as CollectPaymentState).hintLabel)
                 .isEqualTo(R.string.card_reader_payment_try_another_read_method_prompt)
@@ -319,6 +327,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
                 flow {
+                    delay(1) // make sure it's run after collecting payment starts
                     emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(MULTIPLE_CONTACTLESS_CARDS_DETECTED))
                 }
             }
@@ -328,6 +337,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
 
             viewModel.start()
+            advanceUntilIdle()
 
             assertThat((viewModel.viewStateData.value as CollectPaymentState).hintLabel)
                 .isEqualTo(R.string.card_reader_payment_multiple_contactless_cards_detected_prompt)
