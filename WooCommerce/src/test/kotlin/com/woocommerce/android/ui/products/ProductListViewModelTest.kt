@@ -14,7 +14,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -51,7 +50,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays the product list view correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Displays the product list view correctly`() = testBlocking {
         doReturn(productList).whenever(productRepository).fetchProductList(productFilterOptions = emptyMap())
 
         createViewModel()
@@ -65,7 +64,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Do not fetch product list from api when not connected`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Do not fetch product list from api when not connected`() = testBlocking {
         doReturn(false).whenever(networkStatus).isConnected()
 
         createViewModel()
@@ -82,7 +81,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Shows and hides product list skeleton correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Shows and hides product list skeleton correctly`() = testBlocking {
         doReturn(emptyList<Product>()).whenever(productRepository).getProductList()
         doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
 
@@ -100,7 +99,7 @@ class ProductListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Shows and hides product list load more progress correctly`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             doReturn(true).whenever(productRepository).canLoadMoreProducts
             doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
 
@@ -117,7 +116,7 @@ class ProductListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Shows and hides add product button correctly when loading list of products`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // when
             doReturn(productList).whenever(productRepository).fetchProductList()
 
@@ -138,7 +137,7 @@ class ProductListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Hides add product button when list of products is empty`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // when
             doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
 
@@ -159,7 +158,7 @@ class ProductListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Hides add product button when searching`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // when
             doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
 
@@ -182,7 +181,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     @Test
     /* We show the Add Product FAB after searching is completed. */
     fun `Shows add product button after opening and closing search`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // when
             doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
 
@@ -206,7 +205,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     @Test
     /* We hide the filters when searching. */
     fun `Hides filters buttons when searching`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // when
             doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
 
@@ -228,7 +227,7 @@ class ProductListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Shows filters buttons after opening and closing search`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // when
             doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
 
