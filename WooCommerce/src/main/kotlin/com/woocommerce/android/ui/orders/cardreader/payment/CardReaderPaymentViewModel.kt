@@ -55,6 +55,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.math.BigDecimal
 import javax.inject.Inject
 
 private const val ARTIFICIAL_RETRY_DELAY = 500L
@@ -80,14 +81,11 @@ class CardReaderPaymentViewModel
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderPaymentDialogFragmentArgs by savedState.navArgs()
 
-    private val orderId = when (val param = arguments.paymentOrRefund as CardReaderFlowParam.PaymentOrRefund) {
-        is CardReaderFlowParam.PaymentOrRefund.Payment -> {
-            param.orderId
-        }
-        is CardReaderFlowParam.PaymentOrRefund.Refund -> {
-            param.orderId
-        }
-    }
+    private val orderId: Long
+        get() = getOrderIdAndRefundAmountPair().first
+
+    private val refundAmount: BigDecimal?
+        get() = getOrderIdAndRefundAmountPair().second
 
     // The app shouldn't store the state as payment flow gets canceled when the vm dies
     private val viewState = MutableLiveData<ViewState>(LoadingDataState)
@@ -99,12 +97,26 @@ class CardReaderPaymentViewModel
 
     private var refetchOrderJob: Job? = null
 
+    private fun getOrderIdAndRefundAmountPair() : Pair<Long, BigDecimal?> {
+        return when (val param = arguments.paymentOrRefund as CardReaderFlowParam.PaymentOrRefund) {
+            is CardReaderFlowParam.PaymentOrRefund.Payment -> {
+                Pair(param.orderId, null)
+            }
+            is CardReaderFlowParam.PaymentOrRefund.Refund -> {
+                Pair(param.orderId, param.refundAmount)
+            }
+        }
+    }
+
     fun start() {
         if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected) {
-            if (arguments.isInteracRefund) {
-                if (refundFlowJob == null) initRefundFlow(isRetry = false)
-            } else {
-                if (paymentFlowJob == null) initPaymentFlow(isRetry = false)
+            when (arguments.paymentOrRefund) {
+                is CardReaderFlowParam.PaymentOrRefund.Payment -> {
+                    if (paymentFlowJob == null) initPaymentFlow(isRetry = false)
+                }
+                is CardReaderFlowParam.PaymentOrRefund.Refund -> {
+                    if (refundFlowJob == null) initRefundFlow(isRetry = false)
+                }
             }
         } else {
             exitWithSnackbar(R.string.card_reader_payment_reader_not_connected)
@@ -271,7 +283,7 @@ class CardReaderPaymentViewModel
             cardReaderManager.refundInteracPayment(
                 RefundParams(
                     chargeId = chargeId,
-                    amount = arguments.refundAmount!!,
+                    amount = refundAmount!!,
                     currency = order.currency
                 )
             ).collect { refundStatus ->
@@ -279,7 +291,7 @@ class CardReaderPaymentViewModel
                     refundStatus,
                     currencyFormatter.formatAmountWithCurrency(
                         order.currency,
-                        arguments.refundAmount!!.toDouble()
+                        refundAmount!!.toDouble()
                     )
                 )
             }

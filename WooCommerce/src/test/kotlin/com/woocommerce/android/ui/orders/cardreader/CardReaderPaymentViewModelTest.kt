@@ -141,7 +141,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     ).initSavedStateHandle()
 
     private val interacRefundSavedState: SavedStateHandle = CardReaderPaymentDialogFragmentArgs(
-        CardReaderFlowParam.PaymentOrRefund.Refund(ORDER_ID)
+        CardReaderFlowParam.PaymentOrRefund.Refund(ORDER_ID, refundAmount = BigDecimal(10.72))
     ).initSavedStateHandle()
 
     private val errorMapper: CardReaderPaymentErrorMapper = mock()
