@@ -40,6 +40,9 @@ import com.woocommerce.android.model.Notification
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.base.AppBarStatus
+import com.woocommerce.android.ui.base.AppBarStatus.Hidden
+import com.woocommerce.android.ui.base.AppBarStatus.Visible
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -152,30 +155,34 @@ class MainActivity :
             val isDialogDestination = currentDestination.navigatorName == DIALOG_NAVIGATOR_NAME
             if (isDialogDestination) return
 
-            val shouldShowActivityToolbar = (f as? BaseFragment)?.shouldShowActivityToolbar ?: true
-            if (shouldShowActivityToolbar) {
-                showToolbar()
-                // re-expand the AppBar when returning to top level fragment, collapse it when entering a child fragment
-                if (f is TopLevelFragment) {
-                    // We need to post this to the view handler to make sure shouldExpandToolbar returns the correct value
-                    f.view?.post {
-                        if (f.view != null) {
-                            expandToolbar(expand = f.shouldExpandToolbar(), animate = false)
+            val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()
+
+            when(appBarStatus) {
+                is Visible -> {
+                    showToolbar()
+                    // re-expand the AppBar when returning to top level fragment, collapse it when entering a child fragment
+                    if (f is TopLevelFragment) {
+                        // We need to post this to the view handler to make sure shouldExpandToolbar returns the correct value
+                        f.view?.post {
+                            if (f.view != null) {
+                                expandToolbar(expand = f.shouldExpandToolbar(), animate = false)
+                            }
                         }
+                        enableToolbarExpansion(true)
+                    } else {
+                        expandToolbar(expand = false, animate = false)
+                        enableToolbarExpansion(false)
                     }
-                } else {
-                    expandToolbar(expand = false, animate = false)
-                }
 
-                // collapsible toolbar should only be able to expand for top-level fragments
-                enableToolbarExpansion(f is TopLevelFragment)
-
-                val navigationIcon = (f as? BaseFragment)?.navigationIconForActivityToolbar
-                toolbar.navigationIcon = navigationIcon?.let {
-                    ContextCompat.getDrawable(this@MainActivity, it)
+                    toolbar.navigationIcon = appBarStatus.navigationIcon?.let {
+                        ContextCompat.getDrawable(this@MainActivity, it)
+                    }
+                    binding.appBarLayout.elevation = if (appBarStatus.hasShadow) {
+                        resources.getDimensionPixelSize(dimen.appbar_elevation).toFloat()
+                    } else 0f
+                    binding.appBarDivider.isVisible = appBarStatus.hasDivider
                 }
-            } else {
-                hideToolbar()
+                Hidden -> hideToolbar()
             }
         }
     }

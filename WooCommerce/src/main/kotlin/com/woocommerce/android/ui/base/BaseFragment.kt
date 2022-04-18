@@ -23,6 +23,9 @@ open class BaseFragment : Fragment, BaseFragmentView {
     @DrawableRes
     open val navigationIconForActivityToolbar: Int? = R.drawable.ic_back_24dp
 
+    open val activityAppBarStatus: AppBarStatus = AppBarStatus.Visible(
+    )
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         savedInstanceState?.let {
@@ -85,4 +88,13 @@ open class BaseFragment : Fragment, BaseFragmentView {
             negBtnAction = this.negativeBtnAction
         )
     }
+}
+
+sealed class AppBarStatus {
+    object Hidden: AppBarStatus()
+    data class Visible(
+        val navigationIcon: Int? = R.drawable.ic_back_24dp,
+        val hasShadow: Boolean = true,
+        val hasDivider: Boolean = false
+    ): AppBarStatus()
 }
