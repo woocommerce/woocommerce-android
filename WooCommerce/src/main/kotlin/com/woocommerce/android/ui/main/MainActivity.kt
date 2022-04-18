@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
@@ -41,8 +42,6 @@ import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.AppBarStatus
-import com.woocommerce.android.ui.base.AppBarStatus.Hidden
-import com.woocommerce.android.ui.base.AppBarStatus.Visible
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -158,7 +157,7 @@ class MainActivity :
             val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()
 
             when(appBarStatus) {
-                is Visible -> {
+                is AppBarStatus.Visible -> {
                     showToolbar()
                     // re-expand the AppBar when returning to top level fragment, collapse it when entering a child fragment
                     if (f is TopLevelFragment) {
@@ -182,7 +181,7 @@ class MainActivity :
                     } else 0f
                     binding.appBarDivider.isVisible = appBarStatus.hasDivider
                 }
-                Hidden -> hideToolbar()
+                AppBarStatus.Hidden -> hideToolbar()
             }
         }
     }
@@ -420,27 +419,27 @@ class MainActivity :
             return
         }
 
-        if (isTopLevelNavigation) {
-            if (destination.id != R.id.dashboard) {
-                // MyStoreFragment handle the elevation by themselves
-                binding.appBarLayout.elevation = 0f
-            }
-        } else {
-            // Add divider and remove shadow under the app bar for some screens
-            when (destination.id) {
-                R.id.productFilterListFragment,
-                R.id.productFilterOptionListFragment,
-                R.id.orderFilterCategoriesFragment,
-                R.id.orderFilterOptionsFragment -> {
-                    binding.appBarLayout.elevation = 0f
-                    binding.appBarDivider.visibility = View.VISIBLE
-                }
-                else -> {
-                    binding.appBarDivider.visibility = View.GONE
-                    binding.appBarLayout.elevation = resources.getDimensionPixelSize(dimen.appbar_elevation).toFloat()
-                }
-            }
-        }
+//        if (isTopLevelNavigation) {
+//            if (destination.id != R.id.dashboard) {
+//                // MyStoreFragment handle the elevation by themselves
+//                binding.appBarLayout.elevation = 0f
+//            }
+//        } else {
+//            // Add divider and remove shadow under the app bar for some screens
+//            when (destination.id) {
+//                R.id.productFilterListFragment,
+//                R.id.productFilterOptionListFragment,
+//                R.id.orderFilterCategoriesFragment,
+//                R.id.orderFilterOptionsFragment -> {
+//                    binding.appBarLayout.elevation = 0f
+//                    binding.appBarDivider.visibility = View.VISIBLE
+//                }
+//                else -> {
+//                    binding.appBarDivider.visibility = View.GONE
+//                    binding.appBarLayout.elevation = resources.getDimensionPixelSize(dimen.appbar_elevation).toFloat()
+//                }
+//            }
+//        }
 
         // show bottom nav if this is a dialog destination from root or, just root itself
         if (isTopLevelNavigation) {
