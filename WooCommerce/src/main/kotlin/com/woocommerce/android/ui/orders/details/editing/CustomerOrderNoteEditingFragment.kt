@@ -20,6 +20,9 @@ class CustomerOrderNoteEditingFragment :
 
     override val analyticsValue: String = AnalyticsTracker.ORDER_EDIT_CUSTOMER_NOTE
 
+    override val navigationIconForActivityToolbar: Int
+        get() = R.drawable.ic_gridicons_cross_24dp
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

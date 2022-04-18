@@ -14,6 +14,7 @@ import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
@@ -81,6 +82,15 @@ class ProductDetailFragment :
 
     private var _binding: FragmentProductDetailBinding? = null
     private val binding get() = _binding!!
+
+    override val navigationIconForActivityToolbar: Int
+        get() {
+            return if (findNavController().backQueue.any { it.destination.id == R.id.products }) {
+                R.drawable.ic_back_24dp
+            } else {
+                R.drawable.ic_gridicons_cross_24dp
+            }
+        }
 
     @Inject lateinit var crashLogging: CrashLogging
 

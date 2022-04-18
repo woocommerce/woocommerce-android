@@ -39,6 +39,9 @@ class OrderFilterCategoriesFragment :
 
     private var clearAllMenuItem: MenuItem? = null
 
+    override val navigationIconForActivityToolbar: Int
+        get() = R.drawable.ic_gridicons_cross_24dp
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

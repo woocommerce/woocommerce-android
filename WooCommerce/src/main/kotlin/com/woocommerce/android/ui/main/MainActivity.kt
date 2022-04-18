@@ -413,13 +413,11 @@ class MainActivity :
             return
         }
 
-        val showCrossIcon: Boolean
         if (isTopLevelNavigation) {
             if (destination.id != R.id.dashboard) {
                 // MyStoreFragment handle the elevation by themselves
                 binding.appBarLayout.elevation = 0f
             }
-            showCrossIcon = false
         } else {
             // Add divider and remove shadow under the app bar for some screens
             when (destination.id) {
@@ -435,37 +433,7 @@ class MainActivity :
                     binding.appBarLayout.elevation = resources.getDimensionPixelSize(dimen.appbar_elevation).toFloat()
                 }
             }
-
-            showCrossIcon = when (destination.id) {
-                R.id.addOrderShipmentTrackingFragment,
-                R.id.addOrderNoteFragment,
-                R.id.printShippingLabelInfoFragment,
-                R.id.shippingLabelFormatOptionsFragment,
-                R.id.printingInstructionsFragment,
-                R.id.editCustomerOrderNoteFragment,
-                R.id.shippingAddressEditingFragment,
-                R.id.billingAddressEditingFragment,
-                R.id.orderFilterCategoriesFragment,
-                R.id.orderCreationProductDetailsFragment -> {
-                    true
-                }
-                R.id.productDetailFragment -> {
-                    // show Cross icon only when product detail isn't opened from the product list
-                    binding.bottomNav.currentPosition != PRODUCTS
-                }
-                else -> {
-                    false
-                }
-            }
         }
-
-//        if (isAtRoot) {
-//            toolbar.navigationIcon = null
-//        } else if (showCrossIcon) {
-//            toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_gridicons_cross_24dp)
-//        } else {
-//            toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_back_24dp)
-//        }
 
         // show bottom nav if this is a dialog destination from root or, just root itself
         if (isTopLevelNavigation) {

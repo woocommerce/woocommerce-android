@@ -25,6 +25,9 @@ class OrderCreationProductDetailsFragment : BaseFragment(R.layout.fragment_order
     @Inject lateinit var productImageMap: ProductImageMap
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
+    override val navigationIconForActivityToolbar: Int
+        get() = R.drawable.ic_gridicons_cross_24dp
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = FragmentOrderCreationProductDetailsBinding.bind(view)

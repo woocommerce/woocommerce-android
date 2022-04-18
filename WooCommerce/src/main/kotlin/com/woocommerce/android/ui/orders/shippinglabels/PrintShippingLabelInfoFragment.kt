@@ -2,13 +2,16 @@ package com.woocommerce.android.ui.orders.shippinglabels
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.Fragment
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentPrintShippingLabelInfoBinding
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.util.StringUtils
 
-class PrintShippingLabelInfoFragment : Fragment(R.layout.fragment_print_shipping_label_info) {
+class PrintShippingLabelInfoFragment : BaseFragment(R.layout.fragment_print_shipping_label_info) {
+    override val navigationIconForActivityToolbar: Int
+        get() = R.drawable.ic_gridicons_cross_24dp
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = FragmentPrintShippingLabelInfoBinding.bind(view)
@@ -27,8 +30,7 @@ class PrintShippingLabelInfoFragment : Fragment(R.layout.fragment_print_shipping
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-        activity?.let {
-            it.title = getString(R.string.print_shipping_label_info_title)
-        }
     }
+
+    override fun getFragmentTitle(): String = getString(R.string.print_shipping_label_info_title)
 }

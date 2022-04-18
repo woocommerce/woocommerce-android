@@ -8,6 +8,9 @@ import com.woocommerce.android.model.Address
 class BillingAddressEditingFragment : BaseAddressEditingFragment() {
     override val analyticsValue: String = AnalyticsTracker.ORDER_EDIT_BILLING_ADDRESS
 
+    override val navigationIconForActivityToolbar: Int
+        get() = R.drawable.ic_gridicons_cross_24dp
+
     override val storedAddress: Address
         get() = sharedViewModel.order.billingAddress
 

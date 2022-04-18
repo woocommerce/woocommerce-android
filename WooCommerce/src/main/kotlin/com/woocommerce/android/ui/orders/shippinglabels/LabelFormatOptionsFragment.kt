@@ -1,15 +1,17 @@
 package com.woocommerce.android.ui.orders.shippinglabels
 
-import androidx.fragment.app.Fragment
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.ui.base.BaseFragment
 
-class LabelFormatOptionsFragment : Fragment(R.layout.fragment_label_format_options) {
+class LabelFormatOptionsFragment : BaseFragment(R.layout.fragment_label_format_options) {
+    override val navigationIconForActivityToolbar: Int
+        get() = R.drawable.ic_gridicons_cross_24dp
+
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-        activity?.let {
-            it.title = getString(R.string.print_shipping_label_format_options_title)
-        }
     }
+
+    override fun getFragmentTitle(): String = getString(R.string.print_shipping_label_format_options_title)
 }
