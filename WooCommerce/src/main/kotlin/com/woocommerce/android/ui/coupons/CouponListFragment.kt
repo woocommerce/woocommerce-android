@@ -99,23 +99,31 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
         }
         searchMenuItem.setOnActionExpandListener(object : OnActionExpandListener {
             override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
-                viewModel.onSearchStateChanged(open = true)
+                if (isAdded) {
+                    viewModel.onSearchStateChanged(open = true)
+                }
                 return true
             }
 
             override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
-                viewModel.onSearchStateChanged(open = false)
+                if (isAdded) {
+                    viewModel.onSearchStateChanged(open = false)
+                }
                 return true
             }
         })
         searchView.setOnQueryTextListener(object : OnQueryTextListener, SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                viewModel.onSearchQueryChanged(query.orEmpty())
+                if (isAdded) {
+                    viewModel.onSearchQueryChanged(query.orEmpty())
+                }
                 return true
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                viewModel.onSearchQueryChanged(newText.orEmpty())
+                if (isAdded) {
+                    viewModel.onSearchQueryChanged(newText.orEmpty())
+                }
                 return true
             }
         })
