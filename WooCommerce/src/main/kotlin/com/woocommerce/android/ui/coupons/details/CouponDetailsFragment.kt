@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCouponDetailsBinding
+import com.woocommerce.android.ui.base.AppBarStatus
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -22,8 +23,8 @@ class CouponDetailsFragment : BaseFragment(R.layout.fragment_coupon_details) {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     private val viewModel: CouponDetailsViewModel by viewModels()
 
-    override val shouldShowActivityToolbar: Boolean
-        get() = false
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     override fun onCreateView(
         inflater: LayoutInflater,

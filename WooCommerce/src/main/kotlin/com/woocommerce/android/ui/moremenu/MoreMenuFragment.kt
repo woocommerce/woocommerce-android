@@ -12,6 +12,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentMoreMenuBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.base.AppBarStatus
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.MainActivity
@@ -25,8 +26,8 @@ import javax.inject.Inject
 class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
     @Inject lateinit var selectedSite: SelectedSite
 
-    override val shouldShowActivityToolbar: Boolean
-        get() = false
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     override fun getFragmentTitle() = getString(R.string.more_menu)
 
