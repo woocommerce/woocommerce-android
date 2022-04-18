@@ -59,7 +59,12 @@ class InboxViewModel @Inject constructor(
     private fun onSwipeToRefresh() {
         viewModelScope.launch {
             _inboxState.value = _inboxState.value?.copy(isRefreshing = true)
-            inboxRepository.fetchInboxNotes()
+            inboxRepository
+                .fetchInboxNotes()
+                .fold(
+                    onFailure = { showSyncError() },
+                    onSuccess = {}
+                )
             _inboxState.value = _inboxState.value?.copy(isRefreshing = false)
         }
     }
