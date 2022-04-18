@@ -63,9 +63,10 @@ class InboxViewModel @Inject constructor(
     }
 
     private fun refreshNotes() {
-        _inboxState.value = _inboxState.value?.copy(isRefreshing = true)
         viewModelScope.launch {
+            _inboxState.value = _inboxState.value?.copy(isRefreshing = true)
             inboxRepository.fetchInboxNotes()
+            _inboxState.value = _inboxState.value?.copy(isRefreshing = false)
         }
     }
 
