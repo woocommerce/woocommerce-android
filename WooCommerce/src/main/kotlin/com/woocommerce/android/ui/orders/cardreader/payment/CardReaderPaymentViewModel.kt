@@ -26,7 +26,6 @@ import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptEvent.SendRec
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderTrackingInfoKeeper
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult
@@ -71,14 +70,7 @@ class CardReaderPaymentViewModel
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderPaymentDialogFragmentArgs by savedState.navArgs()
 
-    private val orderId = when (val param = arguments.paymentOrRefund as CardReaderFlowParam.PaymentOrRefund) {
-        is CardReaderFlowParam.PaymentOrRefund.Payment -> {
-            param.orderId
-        }
-        is CardReaderFlowParam.PaymentOrRefund.Refund -> {
-            param.orderId
-        }
-    }
+    private val orderId = arguments.paymentOrRefund.orderId
 
     // The app shouldn't store the state as payment flow gets canceled when the vm dies
     private val viewState = MutableLiveData<ViewState>(LoadingDataState)

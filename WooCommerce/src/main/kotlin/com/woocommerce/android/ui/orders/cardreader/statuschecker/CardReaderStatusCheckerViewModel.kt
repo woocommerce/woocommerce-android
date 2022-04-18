@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
+import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingChecker
@@ -40,21 +41,14 @@ class CardReaderStatusCheckerViewModel
     private suspend fun checkStatus() {
         when (val param = arguments.cardReaderFlowParam) {
             CardReaderFlowParam.CardReadersHub -> triggerEvent(StatusCheckerEvent.NavigateToOnboarding(param))
-            is CardReaderFlowParam.PaymentOrRefund.Payment -> {
+            is CardReaderFlowParam.PaymentOrRefund -> {
                 if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected) {
                     triggerEvent(StatusCheckerEvent.NavigateToPayment(param))
                 } else {
                     handleOnboardingStatus(param)
                 }
             }
-            is CardReaderFlowParam.PaymentOrRefund.Refund -> {
-                if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected) {
-                    triggerEvent(StatusCheckerEvent.NavigateToPayment(param))
-                } else {
-                    handleOnboardingStatus(param)
-                }
-            }
-        }
+        }.exhaustive
     }
 
     private suspend fun handleOnboardingStatus(param: CardReaderFlowParam) {
