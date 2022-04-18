@@ -170,13 +170,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             dispatcher.dispatch(AccountActionBuilder.newFetchSettingsAction())
             appCoroutineScope.launch {
                 wooCommerceStore.fetchWooCommerceSites()
-                if (!selectedSite.exists() && ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(STARTED)) {
-                    // The previously selected site is not connected anymore, take the user to the site picker
-                    WooLog.i(DASHBOARD, "Selected site no longer exists, showing site picker")
-                    val intent = Intent(application, MainActivity::class.java)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    application.startActivity(intent)
-                }
             }
 
             // Update the user info for the currently logged in user
