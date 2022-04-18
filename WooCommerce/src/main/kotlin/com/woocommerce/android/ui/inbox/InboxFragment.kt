@@ -24,13 +24,14 @@ class InboxFragment : BaseFragment(R.layout.fragment_inbox) {
 
     private val viewModel: InboxViewModel by viewModels()
 
+    override fun getFragmentTitle() = getString(R.string.inbox_screen_title)
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentInboxBinding.inflate(inflater, container, false)
-        requireActivity().title = getString(R.string.inbox_screen_title)
         setHasOptionsMenu(true)
 
         val view = binding.root
