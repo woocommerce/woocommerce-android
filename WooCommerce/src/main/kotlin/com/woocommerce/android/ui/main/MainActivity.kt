@@ -210,7 +210,13 @@ class MainActivity :
         toolbar.navigationIcon = null
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
+        val graphInflater = navHostFragment.navController.navInflater
+
+        val navGraph = graphInflater.inflate(R.navigation.nav_graph_main)
+        navGraph.setStartDestination(viewModel.startDestination)
+
         navController = navHostFragment.navController
+        navController.graph = navGraph
         navController.addOnDestinationChangedListener(this@MainActivity)
         navHostFragment.childFragmentManager.registerFragmentLifecycleCallbacks(fragmentLifecycleObserver, false)
         binding.bottomNav.init(navController, this)
