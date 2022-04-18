@@ -24,14 +24,12 @@ import com.woocommerce.android.databinding.FragmentMyStoreBinding
 import com.woocommerce.android.extensions.*
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.base.AppBarStatus
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.*
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenTopPerformer
-import com.woocommerce.android.ui.mystore.MyStoreViewModel.OrderState
-import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState
-import com.woocommerce.android.ui.mystore.MyStoreViewModel.TopPerformersViewState
-import com.woocommerce.android.ui.mystore.MyStoreViewModel.VisitorStatsViewState
 import com.woocommerce.android.util.*
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.WooClickableSpan
@@ -42,7 +40,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.NetworkUtils
-import java.util.*
+import java.util.Calendar
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -80,6 +78,12 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
 
     private val mainNavigationRouter
         get() = activity as? MainNavigationRouter
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Visible(
+            navigationIcon = null,
+            hasShadow = true
+        )
 
     private var isEmptyViewVisible: Boolean = false
     private var wasPreviouslyStopped = false
