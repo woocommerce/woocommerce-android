@@ -18,11 +18,7 @@ open class BaseFragment : Fragment, BaseFragmentView {
         private const val KEY_TITLE = "title"
     }
 
-    @DrawableRes
-    open val navigationIconForActivityToolbar: Int? = R.drawable.ic_back_24dp
-
-    open val activityAppBarStatus: AppBarStatus = AppBarStatus.Visible(
-    )
+    open val activityAppBarStatus: AppBarStatus = AppBarStatus.Visible()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -91,6 +87,7 @@ open class BaseFragment : Fragment, BaseFragmentView {
 sealed class AppBarStatus {
     object Hidden: AppBarStatus()
     data class Visible(
+        @DrawableRes
         val navigationIcon: Int? = R.drawable.ic_back_24dp,
         val hasShadow: Boolean = true,
         val hasDivider: Boolean = false

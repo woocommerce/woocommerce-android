@@ -31,6 +31,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_EDITOR_TEXT
+import com.woocommerce.android.ui.base.AppBarStatus
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.products.ProductDetailViewModel.*
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
@@ -83,13 +84,16 @@ class ProductDetailFragment :
     private var _binding: FragmentProductDetailBinding? = null
     private val binding get() = _binding!!
 
-    override val navigationIconForActivityToolbar: Int
+    override val activityAppBarStatus: AppBarStatus
         get() {
-            return if (findNavController().backQueue.any { it.destination.id == R.id.products }) {
+            val navigationIcon = if (findNavController().backQueue.any { it.destination.id == R.id.products }) {
                 R.drawable.ic_back_24dp
             } else {
                 R.drawable.ic_gridicons_cross_24dp
             }
+            return AppBarStatus.Visible(
+                navigationIcon = navigationIcon
+            )
         }
 
     @Inject lateinit var crashLogging: CrashLogging

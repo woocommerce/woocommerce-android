@@ -12,9 +12,6 @@ abstract class TopLevelFragment : BaseFragment, TopLevelFragmentView {
 
     abstract fun shouldExpandToolbar(): Boolean
 
-    override val navigationIconForActivityToolbar: Int?
-        get() = null
-
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Visible(
             navigationIcon = null,

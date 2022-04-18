@@ -15,6 +15,7 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.base.AppBarStatus
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
@@ -49,8 +50,10 @@ class AddOrderShipmentTrackingFragment :
     private var dateShippedPickerDialog: DatePickerDialog? = null
     private var progressDialog: CustomProgressDialog? = null
 
-    override val navigationIconForActivityToolbar: Int
-        get() = R.drawable.ic_gridicons_cross_24dp
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Visible(
+            navigationIcon = R.drawable.ic_gridicons_cross_24dp
+        )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
