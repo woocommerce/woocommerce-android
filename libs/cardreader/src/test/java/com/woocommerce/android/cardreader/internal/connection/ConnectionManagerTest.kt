@@ -78,15 +78,12 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
             val dummyReaderId = "12345"
             val discoveredReaders = listOf<Reader>(
                 mock {
-                    on { serialNumber }.thenReturn(dummyReaderId)
                     on { deviceType }.thenReturn(DeviceType.CHIPPER_2X)
                 },
                 mock {
-                    on { serialNumber }.thenReturn(dummyReaderId)
                     on { deviceType }.thenReturn(DeviceType.STRIPE_M2)
                 },
                 mock {
-                    on { serialNumber }.thenReturn(dummyReaderId)
                     on { deviceType }.thenReturn(DeviceType.WISEPOS_E)
                 }
             )
@@ -106,15 +103,12 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
             val dummyReaderId = "12345"
             val discoveredReaders = listOf<Reader>(
                 mock {
-                    on { serialNumber }.thenReturn(dummyReaderId)
                     on { deviceType }.thenReturn(DeviceType.CHIPPER_2X)
                 },
                 mock {
-                    on { serialNumber }.thenReturn(dummyReaderId)
                     on { deviceType }.thenReturn(DeviceType.STRIPE_M2)
                 },
                 mock {
-                    on { serialNumber }.thenReturn(dummyReaderId)
                     on { deviceType }.thenReturn(DeviceType.WISEPOS_E)
                 }
             )
@@ -185,7 +179,6 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
         testBlocking {
             val reader: Reader = mock()
             val cardReader: CardReaderImpl = mock {
-                on { locationId }.thenReturn("location_id")
                 on { cardReader }.thenReturn(reader)
             }
             whenever(terminalWrapper.connectToReader(any(), any(), any(), any())).thenAnswer {
@@ -202,7 +195,6 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
         testBlocking {
             val reader: Reader = mock()
             val cardReader: CardReaderImpl = mock {
-                on { locationId }.thenReturn("location_id")
                 on { cardReader }.thenReturn(reader)
             }
             val message = "error_message"
@@ -223,7 +215,6 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
         testBlocking {
             val reader: Reader = mock()
             val cardReader: CardReaderImpl = mock {
-                on { locationId }.thenReturn("location_id")
                 on { cardReader }.thenReturn(reader)
             }
             whenever(terminalWrapper.connectToReader(any(), any(), any(), any())).thenAnswer {
