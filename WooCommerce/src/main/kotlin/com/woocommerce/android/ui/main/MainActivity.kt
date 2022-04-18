@@ -73,8 +73,7 @@ class MainActivity :
     AppUpgradeActivity(),
     MainContract.View,
     MainNavigationRouter,
-    MainBottomNavigationView.MainNavigationListener,
-    NavController.OnDestinationChangedListener {
+    MainBottomNavigationView.MainNavigationListener {
     companion object {
         private const val MAGIC_LOGIN = "magic-login"
 
@@ -105,7 +104,6 @@ class MainActivity :
     private val viewModel: MainActivityViewModel by viewModels()
 
     private var isBottomNavShowing = true
-    private var previousDestinationId: Int? = null
     private var unfilledOrderCount: Int = 0
     private var isMainThemeApplied = false
     private var restoreToolbarHeight = 0
@@ -230,7 +228,6 @@ class MainActivity :
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
         navController = navHostFragment.navController
-        navController.addOnDestinationChangedListener(this@MainActivity)
         navHostFragment.childFragmentManager.registerFragmentLifecycleCallbacks(fragmentLifecycleObserver, false)
         binding.bottomNav.init(navController, this)
 
@@ -407,23 +404,6 @@ class MainActivity :
             return navHostFragment.childFragmentManager.fragments[0]
         }
         return null
-    }
-
-    /**
-     * The current fragment in the nav controller has changed
-     */
-    override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
-        val isAtRoot = isAtNavigationRoot()
-        val isTopLevelNavigation = isAtTopLevelNavigation(isAtRoot = isAtRoot, destination = destination)
-
-        // go no further if this is the initial navigation to the root fragment, or if the destination is
-        // a dialog (since we don't need to change anything for dialogs)
-        if ((isAtRoot && previousDestinationId == null) || isDialogDestination(destination)) {
-            previousDestinationId = destination.id
-            return
-        }
-
-        previousDestinationId = destination.id
     }
 
     private fun showToolbar() {
