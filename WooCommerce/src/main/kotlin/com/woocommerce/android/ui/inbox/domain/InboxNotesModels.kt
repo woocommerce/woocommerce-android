@@ -19,8 +19,8 @@ data class InboxNote(
     enum class NoteType {
         INFO,
         MARKETING,
-        UPDATE,
-        SURVEY
+        SURVEY,
+        WARNING
     }
 }
 
