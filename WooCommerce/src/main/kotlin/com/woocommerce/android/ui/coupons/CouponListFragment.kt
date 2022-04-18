@@ -75,6 +75,8 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
         displayCouponsWIPCard(true)
     }
 
+    override fun getFragmentTitle(): String = getString(R.string.coupons)
+
     private fun navigateToCouponDetails(couponId: Long) {
         findNavController().navigateSafely(
             CouponListFragmentDirections.actionCouponListFragmentToCouponDetailsFragment(couponId)

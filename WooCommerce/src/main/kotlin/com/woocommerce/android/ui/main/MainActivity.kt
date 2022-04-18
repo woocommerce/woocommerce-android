@@ -154,9 +154,7 @@ class MainActivity :
             val isDialogDestination = currentDestination.navigatorName == DIALOG_NAVIGATOR_NAME
             if (isDialogDestination) return
 
-            val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()
-
-            when(appBarStatus) {
+            when(val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
                 is AppBarStatus.Visible -> {
                     showToolbar()
                     // re-expand the AppBar when returning to top level fragment, collapse it when entering a child fragment
@@ -419,40 +417,11 @@ class MainActivity :
             return
         }
 
-//        if (isTopLevelNavigation) {
-//            if (destination.id != R.id.dashboard) {
-//                // MyStoreFragment handle the elevation by themselves
-//                binding.appBarLayout.elevation = 0f
-//            }
-//        } else {
-//            // Add divider and remove shadow under the app bar for some screens
-//            when (destination.id) {
-//                R.id.productFilterListFragment,
-//                R.id.productFilterOptionListFragment,
-//                R.id.orderFilterCategoriesFragment,
-//                R.id.orderFilterOptionsFragment -> {
-//                    binding.appBarLayout.elevation = 0f
-//                    binding.appBarDivider.visibility = View.VISIBLE
-//                }
-//                else -> {
-//                    binding.appBarDivider.visibility = View.GONE
-//                    binding.appBarLayout.elevation = resources.getDimensionPixelSize(dimen.appbar_elevation).toFloat()
-//                }
-//            }
-//        }
-
         // show bottom nav if this is a dialog destination from root or, just root itself
         if (isTopLevelNavigation) {
             showBottomNav()
         } else {
             hideBottomNav()
-        }
-
-        // Compose-specific title bar updates
-        val currentTitle = title
-        title = when (destination.id) {
-            R.id.couponListFragment -> getString(R.string.coupons)
-            else -> currentTitle
         }
 
         previousDestinationId = destination.id
