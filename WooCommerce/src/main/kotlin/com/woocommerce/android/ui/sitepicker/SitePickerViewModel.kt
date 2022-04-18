@@ -257,7 +257,11 @@ class SitePickerViewModel @Inject constructor(
     fun onViewConnectedStoresButtonClick() {
         analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_VIEW_CONNECTED_STORES_BUTTON_TAPPED)
         trackLoginEvent(clickEvent = UnifiedLoginTracker.Click.VIEW_CONNECTED_STORES)
-        loadAndDisplaySites()
+        sitePickerViewState = sitePickerViewState.copy(
+            isNoStoresViewVisible = false,
+            primaryBtnText = resourceProvider.getString(string.continue_button)
+        )
+        triggerEvent(SitePickerView.StoreListView)
     }
 
     fun onNeedHelpFindingEmailButtonClick() {

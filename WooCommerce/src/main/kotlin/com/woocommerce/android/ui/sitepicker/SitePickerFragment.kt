@@ -28,7 +28,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginMode
 
 @AndroidEntryPoint
-class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker) {
+class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEmailHelpDialogFragment.Listener {
     private var _binding: FragmentSitePickerBinding? = null
     private val binding get() = _binding!!
 
@@ -84,7 +84,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker) {
                 binding.buttonHelp.isVisible = it
             }
             new.isPrimaryBtnVisible.takeIfNotEqualTo(old?.isPrimaryBtnVisible) {
-                binding.loginEpilogueButtonBar.loginEpilogueButtonBar.isVisible = it
+                binding.loginEpilogueButtonBar.buttonPrimary.isVisible = it
             }
             new.isSecondaryBtnVisible.takeIfNotEqualTo(old?.isSecondaryBtnVisible) {
                 binding.loginEpilogueButtonBar.buttonSecondary.isVisible = it
@@ -221,7 +221,9 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker) {
     }
 
     private fun navigateToNeedHelpFindingEmailScreen() {
-        LoginEmailHelpDialogFragment().show(parentFragmentManager, LoginEmailHelpDialogFragment.TAG)
+        LoginEmailHelpDialogFragment.newInstance(this).also {
+            it.show(parentFragmentManager, LoginEmailHelpDialogFragment.TAG)
+        }
     }
 
     private fun onLogout() {
@@ -230,5 +232,9 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker) {
         LoginMode.WOO_LOGIN_MODE.putInto(intent)
         startActivity(intent)
         activity?.finish()
+    }
+
+    override fun onEmailNeedMoreHelpClicked() {
+        startActivity(HelpActivity.createIntent(requireContext(), HelpActivity.Origin.LOGIN_CONNECTED_EMAIL_HELP, null))
     }
 }

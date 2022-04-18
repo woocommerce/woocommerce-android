@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.login
 
 import android.app.Dialog
-import android.content.Context
 import android.os.Bundle
 import android.text.Html
 import android.view.ContextThemeWrapper
@@ -19,6 +18,14 @@ import javax.inject.Inject
 class LoginEmailHelpDialogFragment : DialogFragment() {
     companion object {
         const val TAG = "LoginEmailHelpDialogFragment"
+
+        fun newInstance(
+            listener: Listener
+        ): LoginEmailHelpDialogFragment {
+            return LoginEmailHelpDialogFragment().apply {
+                this.listener = listener
+            }
+        }
     }
 
     interface Listener {
@@ -28,8 +35,8 @@ class LoginEmailHelpDialogFragment : DialogFragment() {
     private var listener: Listener? = null
     @Inject lateinit var analyticsListener: LoginAnalyticsListener
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onStart() {
+        super.onStart()
         dialog?.window?.attributes?.windowAnimations = R.style.Woo_Animations_Dialog
     }
 
@@ -52,14 +59,6 @@ class LoginEmailHelpDialogFragment : DialogFragment() {
             }
             .setCancelable(true)
             .create()
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-
-        if (context is Listener) {
-            listener = context
-        }
     }
 
     override fun onDetach() {
