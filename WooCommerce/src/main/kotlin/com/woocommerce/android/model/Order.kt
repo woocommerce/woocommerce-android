@@ -46,6 +46,7 @@ data class Order(
     val taxLines: List<TaxLine>,
     val chargeId: String?,
     val shippingPhone: String,
+    val paymentUrl: String,
 ) : Parcelable {
     @IgnoredOnParcel
     val isOrderPaid = datePaid != null
@@ -312,6 +313,7 @@ data class Order(
                 feesLines = emptyList(),
                 taxLines = emptyList(),
                 shippingPhone = "",
+                paymentUrl = ""
             )
         }
     }

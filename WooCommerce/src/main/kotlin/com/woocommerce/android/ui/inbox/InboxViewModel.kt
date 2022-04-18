@@ -1,26 +1,24 @@
 package com.woocommerce.android.ui.inbox
 
-import android.os.Build
-import android.text.Html
 import androidx.annotation.ColorRes
-import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.compose.utils.toAnnotatedString
-import com.woocommerce.android.ui.inbox.domain.FetchInboxNotes
 import com.woocommerce.android.ui.inbox.domain.InboxNote
+import com.woocommerce.android.ui.inbox.domain.InboxNote.NoteType.SURVEY
+import com.woocommerce.android.ui.inbox.domain.InboxNote.Status.ACTIONED
 import com.woocommerce.android.ui.inbox.domain.InboxNoteAction
-import com.woocommerce.android.ui.inbox.domain.ObserveInboxNotes
+import com.woocommerce.android.ui.inbox.domain.InboxRepository
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import org.wordpress.android.util.DateTimeUtils
 import java.util.Date
 import javax.inject.Inject
@@ -29,60 +27,121 @@ import javax.inject.Inject
 class InboxViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val dateUtils: DateUtils,
-    private val fetchInboxNotes: FetchInboxNotes,
-    private val observeInboxNotes: ObserveInboxNotes,
+    private val inboxRepository: InboxRepository,
     savedState: SavedStateHandle,
 ) : ScopedViewModel(savedState) {
-    val inboxState: LiveData<InboxState> =
-        refreshInboxNotes()
-            .combine(inboxNotesLocalUpdates()) { fetchInboxState, localInboxState ->
-                when {
-                    fetchInboxState.isLoading -> fetchInboxState
-                    else -> localInboxState
-                }
-            }.asLiveData()
+    companion object {
+        const val DEFAULT_DISMISS_LABEL = "Dismiss" // Inbox notes are not localised and always displayed in English
+    }
+
+    private val _inboxState = MutableLiveData<InboxState>()
+    val inboxState: LiveData<InboxState> = _inboxState
+
+    init {
+        _inboxState.value = InboxState(isLoading = true)
+        viewModelScope.launch {
+            inboxRepository.fetchInboxNotes()
+            inboxNotesLocalUpdates().collectLatest { _inboxState.value = it }
+        }
+    }
 
     private fun inboxNotesLocalUpdates() =
-        observeInboxNotes()
+        inboxRepository.observeInboxNotes()
             .map { inboxNotes ->
                 val notes = inboxNotes.map { it.toInboxNoteUi() }
                 InboxState(isLoading = false, notes = notes)
             }
 
-    private fun refreshInboxNotes(): Flow<InboxState> = flow {
-        emit(InboxState(isLoading = true))
-        fetchInboxNotes()
-        emit(InboxState(isLoading = false))
-    }
-
     private fun InboxNote.toInboxNoteUi() =
         InboxNoteUi(
             id = id,
             title = title,
-            description = getContentFromHtml(description),
+            description = description,
             dateCreated = formatNoteCreationDate(dateCreated),
-            actions = actions.map { it.toInboxActionUi() },
+            isSurvey = type == SURVEY,
+            isActioned = status == ACTIONED,
+            actions = mapInboxActionsToUi(),
         )
 
-    private fun InboxNoteAction.toInboxActionUi() =
+    private fun InboxNote.mapInboxActionsToUi(): List<InboxNoteActionUi> {
+        if (type == SURVEY && status == ACTIONED) {
+            return emptyList()
+        }
+
+        val noteActionsUi = actions
+            .map { it.toInboxActionUi(id) }
+            .toMutableList()
+
+        addDismissActionIfMissing(noteActionsUi)
+
+        return noteActionsUi
+    }
+
+    private fun InboxNote.addDismissActionIfMissing(noteActionsUi: MutableList<InboxNoteActionUi>) {
+        if (!actionsHaveDismiss(noteActionsUi)) {
+            noteActionsUi.add(
+                InboxNoteActionUi(
+                    id = 0,
+                    parentNoteId = id,
+                    label = DEFAULT_DISMISS_LABEL,
+                    textColor = R.color.color_surface_variant,
+                    url = "",
+                    onClick = { _, noteId -> dismissNote(noteId) }
+                )
+            )
+        }
+    }
+
+    private fun actionsHaveDismiss(noteActionsUi: List<InboxNoteActionUi>) =
+        noteActionsUi.any { it.label == DEFAULT_DISMISS_LABEL }
+
+    private fun InboxNoteAction.toInboxActionUi(parentNoteId: Long) =
         InboxNoteActionUi(
             id = id,
+            parentNoteId = parentNoteId,
             label = label,
             textColor = getActionTextColor(),
             url = url,
-            onClick = {} // TODO set action lambda
+            onClick = ::handleInboxNoteAction
         )
+
+    private fun handleInboxNoteAction(actionId: Long, noteId: Long) {
+        val clickedNote = inboxState.value?.notes?.firstOrNull { noteId == it.id }
+        clickedNote?.let {
+            when {
+                it.isSurvey -> markSurveyAsAnswered(clickedNote.id, actionId)
+                else -> openActionUrl(clickedNote, actionId)
+            }
+        }
+    }
+
+    private fun openActionUrl(clickedNote: InboxNoteUi, actionId: Long) {
+        val clickedAction = clickedNote.actions.firstOrNull { actionId == it.id }
+        clickedAction?.let {
+            if (it.url.isNotEmpty()) {
+                viewModelScope.launch {
+                    inboxRepository.markInboxNoteAsActioned(clickedNote.id, actionId)
+                }
+                triggerEvent(InboxNoteActionEvent.OpenUrlEvent(it.url))
+            }
+        }
+    }
+
+    private fun markSurveyAsAnswered(noteId: Long, actionId: Long) {
+        viewModelScope.launch {
+            inboxRepository.markInboxNoteAsActioned(noteId, actionId)
+        }
+    }
+
+    private fun dismissNote(noteId: Long) {
+        viewModelScope.launch {
+            inboxRepository.dismissNote(noteId)
+        }
+    }
 
     private fun InboxNoteAction.getActionTextColor() =
         if (isPrimary) R.color.color_secondary
         else R.color.color_surface_variant
-
-    private fun getContentFromHtml(htmlContent: String): AnnotatedString =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Html.fromHtml(htmlContent, Html.FROM_HTML_MODE_COMPACT)
-        } else {
-            Html.fromHtml(htmlContent)
-        }.toAnnotatedString()
 
     @SuppressWarnings("MagicNumber", "ReturnCount")
     private fun formatNoteCreationDate(createdDate: String): String {
@@ -118,16 +177,24 @@ class InboxViewModel @Inject constructor(
     data class InboxNoteUi(
         val id: Long,
         val title: String,
-        val description: AnnotatedString,
+        val description: String,
         val dateCreated: String,
+        val isSurvey: Boolean,
+        val isActioned: Boolean,
         val actions: List<InboxNoteActionUi>
     )
 
     data class InboxNoteActionUi(
         val id: Long,
+        val parentNoteId: Long,
         val label: String,
         @ColorRes val textColor: Int,
         val url: String,
-        val onClick: (String) -> Unit
+        val isDismissing: Boolean = false,
+        val onClick: (Long, Long) -> Unit
     )
+
+    sealed class InboxNoteActionEvent : MultiLiveEvent.Event() {
+        data class OpenUrlEvent(val url: String) : InboxNoteActionEvent()
+    }
 }
