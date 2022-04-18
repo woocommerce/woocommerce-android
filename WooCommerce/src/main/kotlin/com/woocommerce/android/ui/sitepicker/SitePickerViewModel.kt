@@ -238,7 +238,7 @@ class SitePickerViewModel @Inject constructor(
             isPrimaryBtnVisible = sitePickerViewState.hasConnectedStores == true,
             primaryBtnText = resourceProvider.getString(string.login_view_connected_stores),
             noStoresLabelText = resourceProvider.getString(string.login_not_woo_store, url),
-            noStoresBtnText = resourceProvider.getString(string.refresh_button)
+            noStoresBtnText = resourceProvider.getString(string.login_refresh_app)
         )
         triggerEvent(SitePickerView.WooNotFoundView)
     }
@@ -273,7 +273,7 @@ class SitePickerViewModel @Inject constructor(
     fun onRefreshButtonClick() {
         analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_NOT_CONNECTED_JETPACK_REFRESH_APP_LINK_TAPPED)
         sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = true)
-        loadAndDisplaySites()
+        launch { fetchSitesFromApi(showSkeleton = false) }
     }
 
     fun onWhatIsJetpackButtonClick() {
