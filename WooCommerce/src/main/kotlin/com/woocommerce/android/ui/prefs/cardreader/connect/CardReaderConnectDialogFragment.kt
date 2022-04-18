@@ -181,7 +181,8 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
             when (event) {
                 is CheckLocationPermissions -> {
                     event.onLocationPermissionsCheckResult(
-                        WooPermissionUtils.hasFineLocationPermission(requireContext())
+                        WooPermissionUtils.hasFineLocationPermission(requireContext()),
+                        WooPermissionUtils.shouldShowFineLocationPermissionRationale(requireActivity())
                     )
                 }
                 is RequestLocationPermissions -> {
