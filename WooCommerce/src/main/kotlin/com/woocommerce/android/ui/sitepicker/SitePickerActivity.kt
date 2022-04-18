@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.sitepicker
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -669,6 +670,7 @@ class SitePickerActivity :
         }
     }
 
+    @SuppressLint("StringFormatMatches")
     override fun showSiteNotConnectedJetpackView(url: String) {
         AnalyticsTracker.track(
             AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_JETPACK,
@@ -688,8 +690,7 @@ class SitePickerActivity :
             val refreshAppText = getString(R.string.login_refresh_app_continue)
             val notConnectedText = getString(
                 R.string.login_not_connected_jetpack,
-                url,
-                refreshAppText
+                url
             )
 
             val spannable = SpannableString(notConnectedText)
@@ -756,6 +757,7 @@ class SitePickerActivity :
      * to a site that does not have WooCommerce installed.
      */
     @Suppress("LongMethod")
+    @SuppressLint("StringFormatMatches")
     override fun showSiteNotWooStore(site: SiteModel) {
         AnalyticsTracker.track(
             AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_WOO_STORE,
@@ -780,7 +782,7 @@ class SitePickerActivity :
             // clickable. When clicked, we'll fetch a fresh copy of the active site from the API.
             val siteName = site.name.takeIf { !it.isNullOrEmpty() } ?: site.url
             val refreshAppText = getString(R.string.login_refresh_app)
-            val notWooMessage = getString(R.string.login_not_woo_store, siteName, refreshAppText)
+            val notWooMessage = getString(R.string.login_not_woo_store, siteName)
 
             val spannable = SpannableString(notWooMessage)
             spannable.setSpan(
