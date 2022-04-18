@@ -54,6 +54,12 @@ class CouponListViewModel @Inject constructor(
         triggerEvent(CouponListEvent.NavigateToCouponDetailsEvent(couponId))
     }
 
+    fun onLoadMore() {
+        viewModelScope.launch {
+            couponRepository.loadCoupons(loadMore = true)
+        }
+    }
+
     data class CouponListState(
         val isLoading: Boolean = false,
         val coupons: List<CouponListItem> = emptyList()
