@@ -457,6 +457,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
     fun `Given user is logging in, when refresh button is clicked, refresh the screen`() =
         testBlocking {
             givenTheScreenIsFromLogin(true)
+            whenSitesAreFetched()
             whenViewModelIsCreated()
 
             val isProgressShown = ArrayList<Boolean>()
@@ -469,7 +470,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
             verify(analyticsTrackerWrapper, times(1)).track(
                 AnalyticsEvent.SITE_PICKER_NOT_CONNECTED_JETPACK_REFRESH_APP_LINK_TAPPED
             )
-            verify(repository, atLeastOnce()).getWooCommerceSites()
             verify(repository, atLeastOnce()).fetchWooCommerceSites()
             assertThat(isProgressShown).containsExactly(false, true, false)
         }
@@ -512,16 +512,28 @@ class SitePickerViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given user is logging in, when view connected sites is clicked, screen is refreshed`() = testBlocking {
+    fun `Given user is logging in, when view connected sites is clicked, site list is displayed`() = testBlocking {
+        val expectedSite = expectedSiteList[1].apply { hasWooCommerce = false }
+        givenThatUserLoggedInFromEnteringSiteAddress(expectedSite)
         givenTheScreenIsFromLogin(true)
+        whenSitesAreFetched()
         whenViewModelIsCreated()
+
+        var sitePickerData: SitePickerViewModel.SitePickerViewState? = null
+        viewModel.sitePickerViewStateData.observeForever { _, new -> sitePickerData = new }
+
+        var view: StoreListView? = null
+        viewModel.event.observeForever {
+            if (it is StoreListView) view = it
+        }
 
         viewModel.onViewConnectedStoresButtonClick()
 
         verify(analyticsTrackerWrapper, times(1)).track(
             AnalyticsEvent.SITE_PICKER_VIEW_CONNECTED_STORES_BUTTON_TAPPED
         )
-        verify(repository, times(1)).fetchWooCommerceSites()
-        verify(repository, times(1)).getWooCommerceSites()
+        assertThat(sitePickerData?.isNoStoresViewVisible).isFalse
+        assertThat(sitePickerData?.primaryBtnText).isEqualTo(resourceProvider.getString(R.string.continue_button))
+        assertThat(view).isEqualTo(StoreListView)
     }
 }
