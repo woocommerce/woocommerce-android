@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.runCurrent
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -113,6 +114,7 @@ class SendTelemetryTest : BaseUnitTest() {
             }
         }
         advanceTimeBy(SendTelemetry.UPDATE_INTERVAL.toLong() * 3)
+        runCurrent()
 
         // then
         assertThat(results).containsExactly(SENT, NOT_SENT, SENT, NOT_SENT, SENT, NOT_SENT, SENT)

@@ -12,7 +12,11 @@ import kotlinx.coroutines.delay
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
 class OrderCreationVariationSelectionViewModelTest : BaseUnitTest() {
@@ -87,7 +91,7 @@ class OrderCreationVariationSelectionViewModelTest : BaseUnitTest() {
             .mapIndexed { index, productVariation ->
                 if (index == 0) productVariation.copy(price = null) else productVariation
             }
-        whenever(variationsRepository.fetchProductVariations(PRODUCT_ID))
+        whenever(variationsRepository.getProductVariationList(PRODUCT_ID))
             .thenReturn(variations)
 
         val displayedVariations = viewModel.viewState.getOrAwaitValue().variationsList
