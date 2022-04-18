@@ -24,9 +24,10 @@ class OrderFiltersRepository @Inject constructor(
     }
 
     fun getCurrentFilterSelection(filterCategory: OrderListFilterCategory): List<String> =
-        selectedSite.getIfExists()?.let {
-            appSharedPrefs.getOrderFilters(it.id, filterCategory.name)
-                ?.split(",")
+        selectedSite.getIfExists()?.let { site ->
+            appSharedPrefs.getOrderFilters(site.id, filterCategory.name)
+                .split(",")
+                .filter { it.isNotBlank() }
         } ?: emptyList()
 
     fun getCustomDateRangeFilter(): Pair<Long, Long> =
