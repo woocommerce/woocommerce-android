@@ -97,7 +97,7 @@ class CardReaderPaymentViewModel
 
     private var refetchOrderJob: Job? = null
 
-    private fun getOrderIdAndRefundAmountPair() : Pair<Long, BigDecimal?> {
+    private fun getOrderIdAndRefundAmountPair(): Pair<Long, BigDecimal?> {
         return when (val param = arguments.paymentOrRefund as CardReaderFlowParam.PaymentOrRefund) {
             is CardReaderFlowParam.PaymentOrRefund.Payment -> {
                 Pair(param.orderId, null)
