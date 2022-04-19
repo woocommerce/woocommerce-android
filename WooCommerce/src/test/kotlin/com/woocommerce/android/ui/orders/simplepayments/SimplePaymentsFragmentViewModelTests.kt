@@ -6,7 +6,6 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -50,7 +49,7 @@ class SimplePaymentsFragmentViewModelTests : BaseUnitTest() {
 
     @Test
     fun `when charging taxes is enabled, then taxes are applied to the total amount of the order`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             initViewModel()
             viewModel.onChargeTaxesChanged(chargeTaxes = true)
             assertThat(viewModel.orderDraft.total).isGreaterThan(viewModel.orderDraft.feesTotal)
@@ -58,7 +57,7 @@ class SimplePaymentsFragmentViewModelTests : BaseUnitTest() {
 
     @Test
     fun `when charging taxes is NOT enabled, then total amount is equal to the total fee`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             initViewModel()
             viewModel.onChargeTaxesChanged(chargeTaxes = false)
             assertThat(viewModel.orderDraft.total).isEqualTo(viewModel.orderDraft.feesTotal)

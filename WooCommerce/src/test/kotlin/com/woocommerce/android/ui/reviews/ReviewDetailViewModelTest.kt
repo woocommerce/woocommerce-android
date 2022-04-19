@@ -13,7 +13,6 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
@@ -105,7 +104,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
      * a review is processed successfully by the detail view.
      */
     @Test
-    fun `Handle successful review moderation correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Handle successful review moderation correctly`() = testBlocking {
         doReturn(notification).whenever(repository).getCachedNotificationForReview(any())
         doReturn(review).whenever(repository).getCachedProductReview(any())
         doReturn(RequestResult.SUCCESS).whenever(repository).fetchProductReview(any())
@@ -134,7 +133,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
      */
     @Test
     fun `Handle review moderation failed due to offline correctly`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             doReturn(false).whenever(networkStatus).isConnected()
 
             doReturn(review).whenever(repository).getCachedProductReview(any())

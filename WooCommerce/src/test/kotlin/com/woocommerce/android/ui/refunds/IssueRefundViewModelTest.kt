@@ -82,7 +82,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when order has no shipping, then refund notice is not visible`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(OrderTestUtils.generateOrder())
 
             initViewModel()
@@ -96,7 +96,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when order has one shipping, then the notice not visible`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val orderWithShipping = OrderTestUtils.generateOrderWithOneShipping()
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithShipping)
 
@@ -111,7 +111,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when order has multiple shipping, multiple shipping are mentioned in the notice`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines()
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
 
@@ -127,7 +127,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given non cash order, when successfully charge data loaded, then card info is visible`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val chargeId = "charge_id"
             val cardBrand = "visa"
             val cardLast4 = "1234"
@@ -156,7 +156,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given non cash order, when charge data loaded with error, then card info is not visible`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val chargeId = "charge_id"
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
                 paymentMethod = "cod",
@@ -180,7 +180,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given non cash order and non charge id in order, when charge data loading, then card info is not visible`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
                 paymentMethod = "cod",
                 metaData = "[]"

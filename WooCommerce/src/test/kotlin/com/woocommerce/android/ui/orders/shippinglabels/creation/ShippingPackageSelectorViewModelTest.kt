@@ -12,7 +12,6 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -50,7 +49,7 @@ class ShippingPackageSelectorViewModelTest : BaseUnitTest() {
                 gmtOffset = 0f
             )
         )
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(shippingRepository.getShippingPackages()).thenReturn(WooResult(availablePackages))
         }
         viewModel = ShippingPackageSelectorViewModel(
@@ -61,7 +60,7 @@ class ShippingPackageSelectorViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `display list of packages`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `display list of packages`() = testBlocking {
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, state -> viewState = state }
 
