@@ -4,11 +4,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.annotation.ColorRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Divider
@@ -19,12 +21,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
-import androidx.core.text.HtmlCompat
-import androidx.core.text.HtmlCompat.FROM_HTML_MODE_LEGACY
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ScreenLogviewerBinding
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.util.AppThemeUtils
+import com.woocommerce.android.util.RollingLogEntries
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.copyToClipboard
@@ -38,6 +39,10 @@ class WooLogViewerScreen : AppCompatActivity() {
         private const val ID_COPY_TO_CLIPBOARD = 2
     }
 
+    private val isDarkThemeEnabled: Boolean by lazy {
+        AppThemeUtils.isDarkThemeActive(this@WooLogViewerScreen)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -47,20 +52,18 @@ class WooLogViewerScreen : AppCompatActivity() {
         setSupportActionBar(binding.toolbar.toolbar as Toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val entries = WooLog.toHtmlList(AppThemeUtils.isDarkThemeActive(this@WooLogViewerScreen))
-
         binding.composeView.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    LogViewerEntries(entries)
+                    LogViewerEntries(WooLog.logEntries)
                 }
             }
         }
     }
 
     @Composable
-    fun LogViewerEntries(entries: List<String>) {
+    fun LogViewerEntries(entries: RollingLogEntries) {
         LazyColumn {
             itemsIndexed(entries) { index, entry ->
                 LogViewerEntry(index, entry)
@@ -74,19 +77,40 @@ class WooLogViewerScreen : AppCompatActivity() {
     }
 
     @Composable
-    fun LogViewerEntry(index: Int, item: String) {
+    fun LogViewerEntry(index: Int, entry: RollingLogEntries.LogEntry) {
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Text(
-                text = format(Locale.US, "%02d", index + 1),
-                style = MaterialTheme.typography.body2,
-            )
-            Text(
-                text = HtmlCompat.fromHtml(item, FROM_HTML_MODE_LEGACY).toString(),
-                style = MaterialTheme.typography.body2
-            )
+            Column(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                Text(
+                    text = format(Locale.US, "%02d", index + 1),
+                    style = MaterialTheme.typography.body2,
+                )
+                Text(
+                    text = entry.text ?: "",
+                    style = MaterialTheme.typography.body2,
+                    color = colorResource(id = logColor(entry.level))
+                )
+            }
+        }
+    }
+
+    @ColorRes
+    private fun logColor(level: WooLog.LogLevel): Int {
+        if (isDarkThemeEnabled) {
+            return R.color.white
+        }
+
+        return when (level) {
+            WooLog.LogLevel.v -> R.color.grey
+            WooLog.LogLevel.d -> R.color.blue_medium
+            WooLog.LogLevel.i -> R.color.woo_black
+            WooLog.LogLevel.w -> R.color.woo_purple_30
+            WooLog.LogLevel.e -> R.color.woo_red_30
         }
     }
 
