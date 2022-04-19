@@ -83,7 +83,11 @@ class CardReaderPaymentViewModel
 
     private val orderId = arguments.paymentOrRefund.orderId
 
-    private val refundAmount: BigDecimal? = getInteracRefundAmount()
+    private val refundAmount: BigDecimal
+        get() = when (val param = arguments.paymentOrRefund) {
+            is CardReaderFlowParam.PaymentOrRefund.Refund -> param.refundAmount
+            else -> throw IllegalStateException("Accessing refund account on $param flow")
+        }
 
     // The app shouldn't store the state as payment flow gets canceled when the vm dies
     private val viewState = MutableLiveData<ViewState>(LoadingDataState)
@@ -94,17 +98,6 @@ class CardReaderPaymentViewModel
     private var paymentDataForRetry: PaymentData? = null
 
     private var refetchOrderJob: Job? = null
-
-    private fun getInteracRefundAmount(): BigDecimal? {
-        return when (val param = arguments.paymentOrRefund as CardReaderFlowParam.PaymentOrRefund) {
-            is CardReaderFlowParam.PaymentOrRefund.Payment -> {
-                null
-            }
-            is CardReaderFlowParam.PaymentOrRefund.Refund -> {
-                param.refundAmount
-            }
-        }
-    }
 
     fun start() {
         if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected) {
@@ -281,7 +274,7 @@ class CardReaderPaymentViewModel
             cardReaderManager.refundInteracPayment(
                 RefundParams(
                     chargeId = chargeId,
-                    amount = refundAmount!!,
+                    amount = refundAmount,
                     currency = order.currency
                 )
             ).collect { refundStatus ->
@@ -289,7 +282,7 @@ class CardReaderPaymentViewModel
                     refundStatus,
                     currencyFormatter.formatAmountWithCurrency(
                         order.currency,
-                        refundAmount!!.toDouble()
+                        refundAmount.toDouble()
                     )
                 )
             }
@@ -297,7 +290,7 @@ class CardReaderPaymentViewModel
             emitFailedInteracRefundState(
                 currencyFormatter.formatAmountWithCurrency(
                     order.currency,
-                    refundAmount!!.toDouble()
+                    refundAmount.toDouble()
                 ),
                 InteracRefundFailure(
                     type = CardInteracRefundStatus.RefundStatusErrorType.NonRetryable,
