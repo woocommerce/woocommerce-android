@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
-import androidx.constraintlayout.widget.ConstraintLayout
+import android.widget.LinearLayout
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
@@ -18,7 +18,7 @@ class WCProductPropertyReadMoreView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0
-) : ConstraintLayout(context, attrs, defStyle) {
+) : LinearLayout(context, attrs, defStyle) {
     private var textCaption: MaterialTextView
     private var textContent: MaterialTextView
     private var btnReadMore: MaterialButton

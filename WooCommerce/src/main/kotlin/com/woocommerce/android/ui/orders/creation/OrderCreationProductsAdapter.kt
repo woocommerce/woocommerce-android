@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.orders.creation
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.NO_POSITION
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
@@ -12,6 +12,7 @@ import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.OrderCreationProductsAdapter.ProductViewHolder
+import com.woocommerce.android.ui.products.ProductStockStatus
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
 
@@ -20,13 +21,10 @@ class OrderCreationProductsAdapter(
     private val currencyFormatter: (BigDecimal) -> String,
     private val onIncreaseQuantity: (Long) -> Unit,
     private val onDecreaseQuantity: (Long) -> Unit
-) : RecyclerView.Adapter<ProductViewHolder>() {
-    var products: List<ProductUIModel> = emptyList()
-        set(value) {
-            val diffResult = DiffUtil.calculateDiff(ProductUIModelDiffCallback(field, value))
-            field = value
-            diffResult.dispatchUpdatesTo(this)
-        }
+) : ListAdapter<ProductUIModel, ProductViewHolder>(ProductUIModelDiffCallback) {
+    init {
+        setHasStableIds(true)
+    }
 
     var isEachQuantityButtonEnabled = false
         set(value) {
@@ -43,10 +41,10 @@ class OrderCreationProductsAdapter(
     }
 
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
-        holder.bind(products[position])
+        holder.bind(getItem(position))
     }
 
-    override fun getItemCount(): Int = products.size
+    override fun getItemId(position: Int): Long = getItem(position).item.uniqueId
 
     inner class ProductViewHolder(private val binding: OrderCreationProductItemBinding) : ViewHolder(binding.root) {
         private val context = binding.root.context
@@ -56,15 +54,15 @@ class OrderCreationProductsAdapter(
         init {
             binding.root.setOnClickListener {
                 safePosition?.let {
-                    onProductClicked(products[it].item)
+                    onProductClicked(getItem(it).item)
                 }
             }
             binding.stepperView.init(
                 onPlusButtonClick = {
-                    safePosition?.let { onIncreaseQuantity(products[it].item.itemId) }
+                    safePosition?.let { onIncreaseQuantity(getItem(it).item.itemId) }
                 },
                 onMinusButtonClick = {
-                    safePosition?.let { onDecreaseQuantity(products[it].item.itemId) }
+                    safePosition?.let { onDecreaseQuantity(getItem(it).item.itemId) }
                 }
             )
         }
@@ -82,7 +80,7 @@ class OrderCreationProductsAdapter(
                 if (productModel.item.isVariation && productModel.item.attributesDescription.isNotEmpty()) {
                     append(productModel.item.attributesDescription)
                 } else {
-                    if (productModel.isStockManaged) {
+                    if (productModel.isStockManaged && productModel.stockStatus == ProductStockStatus.InStock) {
                         append(
                             context.getString(
                                 R.string.order_creation_product_stock_quantity,
@@ -90,7 +88,7 @@ class OrderCreationProductsAdapter(
                             )
                         )
                     } else {
-                        append(context.getString(R.string.order_creation_product_instock))
+                        append(context.getString(productModel.stockStatus.stringResource))
                     }
                 }
                 append(" • ")
@@ -113,20 +111,15 @@ class OrderCreationProductsAdapter(
         }
     }
 
-    private data class ProductUIModelDiffCallback(
-        private val oldItems: List<ProductUIModel>,
-        private val newItems: List<ProductUIModel>
-    ) : DiffUtil.Callback() {
-        override fun getOldListSize(): Int = oldItems.size
+    object ProductUIModelDiffCallback : DiffUtil.ItemCallback<ProductUIModel>() {
+        override fun areItemsTheSame(
+            oldItem: ProductUIModel,
+            newItem: ProductUIModel
+        ): Boolean = oldItem.item.uniqueId == newItem.item.uniqueId
 
-        override fun getNewListSize(): Int = newItems.size
-
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldItems[oldItemPosition].item.uniqueId == newItems[newItemPosition].item.uniqueId
-        }
-
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldItems[oldItemPosition] == newItems[newItemPosition]
-        }
+        override fun areContentsTheSame(
+            oldItem: ProductUIModel,
+            newItem: ProductUIModel
+        ): Boolean = oldItem == newItem
     }
 }

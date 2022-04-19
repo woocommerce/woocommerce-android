@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.ViewSta
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.*
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -18,7 +19,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.Before
@@ -157,7 +157,7 @@ class OrderCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when hitting the edit order status button, then trigger ViewOrderStatusSelector event`() = runBlockingTest {
+    fun `when hitting the edit order status button, then trigger ViewOrderStatusSelector event`() = testBlocking {
         var lastReceivedEvent: Event? = null
         sut.event.observeForever {
             lastReceivedEvent = it
@@ -177,7 +177,7 @@ class OrderCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when decreasing product quantity to zero, then call the full product view`() = runBlockingTest {
+    fun `when decreasing product quantity to zero, then call the full product view`() = testBlocking {
         var lastReceivedEvent: Event? = null
         sut.event.observeForever {
             lastReceivedEvent = it
@@ -266,7 +266,7 @@ class OrderCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when adding products, then update product liveData when quantity is one or more`() = runBlockingTest {
+    fun `when adding products, then update product liveData when quantity is one or more`() = testBlocking {
         var products: List<ProductUIModel> = emptyList()
         sut.products.observeForever {
             products = it
@@ -292,7 +292,7 @@ class OrderCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when remove a product, then update orderDraft liveData with the quantity set to zero`() = runBlockingTest {
+    fun `when remove a product, then update orderDraft liveData with the quantity set to zero`() = testBlocking {
         var orderDraft: Order? = null
         var addedProductItem: Order.Item? = null
         sut.orderDraft.observeForever { order ->
@@ -715,7 +715,8 @@ class OrderCreationViewModelTest : BaseUnitTest() {
                 item = defaultOrderItem,
                 imageUrl = "",
                 isStockManaged = false,
-                stockQuantity = 0.0
+                stockQuantity = 0.0,
+                stockStatus = ProductStockStatus.InStock
             )
         }
     }

@@ -57,7 +57,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?attr/textAppearanceBody2"
-        android:textColor="@color/woo_black"
         app:layout_constraintStart_toStartOf="@id/shipping_header"
         app:layout_constraintTop_toBottomOf="@id/shipping_header"
         tools:text="George Costanza\n2270 Oak Street\nNew York, NY 13420\nUnited States" />
@@ -86,7 +85,6 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textAppearance="?attr/textAppearanceBody2"
-        android:textColor="@color/woo_black"
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="@id/shipping_address_details"
         app:layout_constraintTop_toBottomOf="@id/billing_header"

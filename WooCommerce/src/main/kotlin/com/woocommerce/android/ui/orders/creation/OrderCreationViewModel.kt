@@ -31,6 +31,7 @@ import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.Order
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.*
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
@@ -351,5 +352,6 @@ data class ProductUIModel(
     val item: Order.Item,
     val imageUrl: String,
     val isStockManaged: Boolean,
-    val stockQuantity: Double
+    val stockQuantity: Double,
+    val stockStatus: ProductStockStatus
 )

@@ -1,11 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-03-10 11:54:03+0000
+Translation-Revision-Date: 2022-04-08 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="coupon_summary_performance_amount_heading">Betrag</string>
+    <string name="coupon_summary_performance_discounted_order_heading">Rabattierte Bestellungen</string>
+    <string name="coupon_summary_performance_heading">Performance</string>
+    <string name="coupon_summary_maximum_spend">Höchstbestellwert: %s</string>
+    <string name="coupon_summary_minimum_spend">Mindestbestellwert: %s</string>
+    <string name="coupon_summary_heading">Gutscheinübersicht</string>
+    <string name="coupon_list_view_coupon">Gutscheinübersicht anzeigen</string>
+    <string name="coupon_list_wip_message_enabled">Wir haben daran gearbeitet, das Anzeigen und Bearbeiten von Gutscheinen von deinem Gerät aus zu ermöglichen!</string>
+    <string name="coupon_list_wip_title">Gutscheine anzeigen und bearbeiten</string>
+    <string name="coupon_list_empty_heading">Keine Gutscheine gefunden</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1s außer %2s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1s und %2s</string>
+    <string name="coupon_list_item_label_everything">alles</string>
+    <string name="coupon_list_item_label_off">off</string>
+    <string name="coupon_list_item_label_expired">Abgelaufen</string>
+    <string name="coupon_list_item_label_active">Aktiv</string>
+    <string name="coupons">Gutscheine</string>
+    <string name="inbox_note_recency_date_time">Erstellt am %s</string>
+    <string name="inbox_note_recency_days">Vor %d Tagen</string>
+    <string name="inbox_note_recency_one_day">Vor einem Tag</string>
+    <string name="inbox_note_recency_hours">Vor %d Stunden</string>
+    <string name="inbox_note_recency_one_hour">Vor einer Stunde</string>
+    <string name="inbox_note_recency_minutes">Vor %d Minuten</string>
+    <string name="inbox_note_recency_now">Gerade eben</string>
+    <string name="category_count_many">%d Kategorien</string>
+    <string name="category_count_one">%d Kategorie</string>
+    <string name="product_ratings_count_zero">\u2022  keine genehmigten Rezensionen</string>
+    <string name="product_ratings_count_one">\u2022  eine genehmigte Rezension</string>
+    <string name="product_ratings_count">\u2022  %d genehmigte Rezensionen</string>
+    <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">Wir haben daran gearbeitet, das Erstellen von Bestellungen und Annehmen von Zahlungen auf deinem Gerät zu ermöglichen! Du kannst diese Funktionen durch Tippen auf den „+“-Button ausprobieren</string>
+    <string name="orderlist_simple_payments_wip_title">Erstelle Bestellungen und nimm Zahlungen an!</string>
+    <string name="empty_inbox_description">In Kürze bekommst du weitere Tipps und Einsichten zum Ausbau deines Shops</string>
+    <string name="empty_inbox_title">Glückwunsch, du hast alles gelesen!</string>
+    <string name="orderstatus_contentDesc_withStatus">Bestellstatus: %s</string>
+    <string name="no_sku">Keine SKU</string>
+    <string name="count">Anzahl: %s</string>
+    <string name="plus_one">Plus eins</string>
+    <string name="minus_one">Minus eins</string>
+    <string name="more_menu_button_coupons">Gutscheine</string>
     <string name="dismiss_inbox_note">Ausblenden</string>
     <string name="login_error_xml_rpc_auth_error_communicating">Bei dem Versuch, mit der Website zu kommunizieren, ist ein Problem aufgetreten. Es wurde ein HTTP-Fehlercode 401 zurückgegeben.</string>
     <string name="login_error_xml_rpc_cannot_read_site_auth_required">XML-RPC-Anrufe sind auf dieser Website anscheinend blockiert (Fehlercode 401). Wenn der Anmeldeversuch fehlschlägt, tippe auf das Hilfe-Icon, um die FAQ anzuzeigen.</string>
@@ -144,8 +184,6 @@ Language: de
     <string name="order_card_transition_name">order_card_%1$s</string>
     <string name="cash">Barzahlungen</string>
     <string name="card">Karte</string>
-    <string name="plus">Plus</string>
-    <string name="minus">Minus</string>
     <string name="tax">Steuer</string>
     <string name="email">E-Mail</string>
     <string name="order_creation_add_customer_note">Anmerkung hinzufügen</string>
@@ -181,9 +219,6 @@ Language: de
     <string name="date_timeframe_last_quarter">Letztes Quartal</string>
     <string name="date_timeframe_last_month">Letzter Monat</string>
     <string name="date_timeframe_last_week">Letzte Woche</string>
-    <string name="settings_enable_order_creation_teaser_message">Versuche, Bestellungen mit vollständigen Informationen zu erstellen, während wir uns auf den Launch vorbereiten</string>
-    <string name="settings_enable_order_creation_teaser_title">Erstellung von Bestellungen</string>
-    <string name="beta_features_order_creation">Erstellung von Bestellungen</string>
     <string name="beta_features_simple_payments">Einfaches Bezahlen</string>
     <string name="beta_features_add_ons">Add-ons anzeigen</string>
     <string name="orders_empty_message_for_filtered_orders">Leider wurden keine Bestellungen gefunden.</string>
@@ -204,7 +239,6 @@ Language: de
     <string name="simple_payments_enter_amount">Betrag eingeben</string>
     <string name="simple_payments_dialog_title">Zahlung erhalten</string>
     <string name="orderlist_simple_payments_menu">Einfaches Bezahlen</string>
-    <string name="orderlist_simple_payments_wip_title">Nimm Zahlungen mit deinem Gerät entgegen!</string>
     <string name="analytics">Statistiken</string>
     <string name="jetpack_install_progress_step_four_message">Erledigt</string>
     <string name="jetpack_install_progress_step_three_message">Dein Store wird verbunden</string>
@@ -239,7 +273,6 @@ Language: de
     <string name="orderfilters_default_filter_option">Alle</string>
     <string name="orderfilters_filter_card_title_filtered_orders">Gefilterte Bestellungen</string>
     <string name="orderfilters_filter_card_title_all_orders">Alle Bestellungen</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">Wir arbeiten daran, es dir einfacher zu machen, Zahlungen mit deinem Gerät entgegenzunehmen! Im Moment kannst du eine Bestellung mit dem von dir gewünschten Betrag erstellen, indem du auf den „+“-Button tippst.</string>
     <string name="jetpack_benefits_modal_dismiss">Nicht jetzt</string>
     <string name="jetpack_benefits_modal_install_jetpack">Jetpack installieren</string>
     <string name="jetpack_benefits_modal_user_profiles_subtitle">Erlaube mehreren Benutzen, auf WooCommerce Mobile zuzugreifen. </string>
@@ -807,9 +840,6 @@ Language: de
     <string name="product_detail_no_variations">Dieses Produkt weist noch keine Varianten auf</string>
     <string name="product_variant_list_empty">Das Hinzufügen von Optionen wie Größe und Farbe ist derzeit nur im Web verfügbar. Diese werden als Optionen auf der Produktseite deiner Website angezeigt.</string>
     <string name="product_adding_wip_title">Erstelle Produkte mit der App!</string>
-    <string name="product_ratings_count_zero">\u2022 keine Bewertungen</string>
-    <string name="product_ratings_count_one">\u2022 einmal bewertet</string>
-    <string name="product_ratings_count">\u2022 %d Mal bewertet</string>
     <string name="product_detail_fetch_product_invalid_id_error">Produkt nicht gefunden</string>
     <string name="print_shipping_label_info_step_5">Wenn beim Drucken von diesem Gerät weiterhin Probleme auftreten, kannst du &lt;b&gt;dein Etikett als PDF speichern&lt;/b&gt; und es per E-Mail versenden, um es von einem anderen Gerät zu drucken.</string>
     <string name="print_shipping_label_info_step_2">Nach der Auswahl &lt;b&gt;„Versandetikett drucken“&lt;/b&gt; musst du möglicherweise einen Drucker auswählen und hinzufügen, wenn du noch nie von diesem Gerät gedruckt hast.</string>
@@ -1833,12 +1863,6 @@ Language: de
     <string name="dashboard_top_performers_empty">Keine Aktivitäten in diesem Zeitraum</string>
     <string name="dashboard_top_performers_total_orders">Bestellungen gesamt: %s</string>
     <string name="dashboard_top_performers_title">Topseller</string>
-    <string name="dashboard_stats_updated_date_time">Am %s aktualisiert</string>
-    <string name="dashboard_stats_updated_one_day">Vor 1 Tag aktualisiert</string>
-    <string name="dashboard_stats_updated_hours">Vor %d Stunden aktualisiert</string>
-    <string name="dashboard_stats_updated_one_hour">Vor 1 Stunde aktualisiert</string>
-    <string name="dashboard_stats_updated_minutes">Vor %d Minuten aktualisiert</string>
-    <string name="dashboard_stats_updated_now">Gerade aktualisiert</string>
     <string name="dashboard_stats_error_content_description">Fehlerbild</string>
     <string name="dashboard_stats_error">Fehler beim Abrufen der Daten</string>
     <string name="dashboard_stats_revenue">Umsatz</string>

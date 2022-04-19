@@ -1,11 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-03-11 11:54:03+0000
+Translation-Revision-Date: 2022-04-08 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="coupon_summary_performance_amount_heading">Montant</string>
+    <string name="coupon_summary_performance_discounted_order_heading">Commandes avec réduction</string>
+    <string name="coupon_summary_performance_heading">Performances</string>
+    <string name="coupon_summary_maximum_spend">Dépense maximale de %s</string>
+    <string name="coupon_summary_minimum_spend">Dépense minimale de %s</string>
+    <string name="coupon_summary_heading">Résumé du code promo</string>
+    <string name="coupon_list_view_coupon">Voir le résumé du code promo</string>
+    <string name="coupon_list_wip_message_enabled">Il sera bientôt possible d’afficher et de modifier les codes promo depuis votre appareil.</string>
+    <string name="coupon_list_wip_title">Afficher et modifier les codes promo</string>
+    <string name="coupon_list_empty_heading">Aucun code promo trouvé</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1s sauf %2s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1s et %2s</string>
+    <string name="coupon_list_item_label_everything">tout</string>
+    <string name="coupon_list_item_label_off">off</string>
+    <string name="coupon_list_item_label_expired">Expiré</string>
+    <string name="coupon_list_item_label_active">Actif</string>
+    <string name="coupons">Codes promo</string>
+    <string name="inbox_note_recency_date_time">Créés le %s</string>
+    <string name="inbox_note_recency_days">Il y a %d jours</string>
+    <string name="inbox_note_recency_one_day">Il y a un jour</string>
+    <string name="inbox_note_recency_hours">Il y a %d heures</string>
+    <string name="inbox_note_recency_one_hour">Il y a une heure</string>
+    <string name="inbox_note_recency_minutes">Il y a %d minutes</string>
+    <string name="inbox_note_recency_now">Il y a quelques instants</string>
+    <string name="category_count_many">%d catégories</string>
+    <string name="category_count_one">%d catégorie</string>
+    <string name="product_ratings_count_zero">\u2022  aucun avis approuvé</string>
+    <string name="product_ratings_count_one">\u2022  un avis approuvé</string>
+    <string name="product_ratings_count">\u2022  %d avis approuvés</string>
+    <string name="tax_name_with_tax_percent"> %1$s (%2$s%%)</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">Nous avons fait en sorte qu’il soit possible de créer des commandes et de recevoir des paiements depuis votre appareil ! Vous pouvez essayer ces fonctionnalités en appuyant sur le bouton « + »</string>
+    <string name="orderlist_simple_payments_wip_title">Créez des commandes et recevez des paiements !</string>
+    <string name="empty_inbox_description">Revenez bientôt pour découvrir d’autres conseils et idées sur le développement de votre boutique.</string>
+    <string name="empty_inbox_title">Féliciations, vous avez tout lu !</string>
+    <string name="orderstatus_contentDesc_withStatus">État de la commande : %s</string>
+    <string name="no_sku">Pas d’UGS</string>
+    <string name="count">Nombre : %s</string>
+    <string name="plus_one">Plus un</string>
+    <string name="minus_one">Moins un</string>
+    <string name="more_menu_button_coupons">Codes promo</string>
     <string name="dismiss_inbox_note">Ignorer</string>
     <string name="login_error_xml_rpc_auth_error_communicating">Un problème est survenu lors de la communication avec le site. Un code d’erreur HTTP 401 a été reçu.</string>
     <string name="login_error_xml_rpc_cannot_read_site_auth_required">Les appels XML-RPC sont bloqués sur ce site (code d’erreur 401). Si la tentative de connexion échoue, appuyez sur l’icône d’aide pour afficher la FAQ.</string>
@@ -144,8 +184,6 @@ Language: fr
     <string name="order_card_transition_name">order_card_%1$s</string>
     <string name="cash">Espèces</string>
     <string name="card">Carte</string>
-    <string name="plus">Plus</string>
-    <string name="minus">Moins</string>
     <string name="tax">TVA</string>
     <string name="email">Email</string>
     <string name="order_creation_add_customer_note">Ajouter une note</string>
@@ -181,9 +219,6 @@ Language: fr
     <string name="date_timeframe_last_quarter">Trimestre dernier</string>
     <string name="date_timeframe_last_month">Mois dernier</string>
     <string name="date_timeframe_last_week">Semaine dernière</string>
-    <string name="settings_enable_order_creation_teaser_message">Testez la création de commandes détaillées, car cette fonctionnalité est prête à être lancée.</string>
-    <string name="settings_enable_order_creation_teaser_title">Création d’une commande</string>
-    <string name="beta_features_order_creation">Création d’une commande</string>
     <string name="beta_features_simple_payments">Paiements simplifiés</string>
     <string name="beta_features_add_ons">Voir les modules</string>
     <string name="orders_empty_message_for_filtered_orders">Désolés, nous n’avons trouvé aucune commande.</string>
@@ -204,7 +239,6 @@ Language: fr
     <string name="simple_payments_enter_amount">Saisir le montant</string>
     <string name="simple_payments_dialog_title">Accepter le paiement</string>
     <string name="orderlist_simple_payments_menu">Paiement simplifié</string>
-    <string name="orderlist_simple_payments_wip_title">Acceptez les paiements sur votre appareil !</string>
     <string name="analytics">Statistiques</string>
     <string name="jetpack_install_progress_step_four_message">Terminé</string>
     <string name="jetpack_install_progress_step_three_message">Connexion à votre boutique</string>
@@ -239,7 +273,6 @@ Language: fr
     <string name="orderfilters_default_filter_option">Tous</string>
     <string name="orderfilters_filter_card_title_filtered_orders">Commandes filtrées</string>
     <string name="orderfilters_filter_card_title_all_orders">Toutes les commandes</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">Nous mettons tout en œuvre pour vous permettre d’accepter les paiements plus facilement sur votre appareil. En attendant, appuyez sur le bouton « + » pour créer une commande avec le montant que vous souhaitez percevoir.</string>
     <string name="jetpack_benefits_modal_dismiss">Pas maintenant</string>
     <string name="jetpack_benefits_modal_install_jetpack">Configurer Jetpack</string>
     <string name="jetpack_benefits_modal_user_profiles_subtitle">Autorisez plusieurs utilisateurs à accéder à l’application mobile WooCommerce.</string>
@@ -807,9 +840,6 @@ Language: fr
     <string name="product_detail_no_variations">Le produit n’a aucune variante pour le moment</string>
     <string name="product_variant_list_empty">L’ajout d’options, comme la taille et la couleur, n’est actuellement disponible que sur le Web. Ces options apparaîtront sur la page de produit de votre site.</string>
     <string name="product_adding_wip_title">Créez des produits dans l’application !</string>
-    <string name="product_ratings_count_zero">\u2022 pas de notes</string>
-    <string name="product_ratings_count_one">\u2022 noté une fois</string>
-    <string name="product_ratings_count">\u2022 noté %d fois</string>
     <string name="product_detail_fetch_product_invalid_id_error">Produit introuvable</string>
     <string name="print_shipping_label_info_step_5">Si vous rencontrez toujours des difficultés d’impression à partir de votre appareil, vous pouvez &lt;b&gt;enregistrer votre étiquette au format PDF&lt;/b&gt; et l’envoyer par e-mail pour pouvoir l’imprimer depuis un autre appareil.</string>
     <string name="print_shipping_label_info_step_2">Après avoir sélectionné &lt;b&gt;« Imprimer l’étiquette d’expédition »&lt;/b&gt;, vous devrez peut-être sélectionner et ajouter une imprimante si vous n’avez jamais imprimé depuis cet appareil auparavant.</string>
@@ -1833,12 +1863,6 @@ Language: fr
     <string name="dashboard_top_performers_empty">Aucune activité sur cette période</string>
     <string name="dashboard_top_performers_total_orders">Commandes totales : %s</string>
     <string name="dashboard_top_performers_title">Produits les plus performants</string>
-    <string name="dashboard_stats_updated_date_time">Mises à jour le %s</string>
-    <string name="dashboard_stats_updated_one_day">Mises à jour il y a un an</string>
-    <string name="dashboard_stats_updated_hours">Mises à jour il y a %d heures</string>
-    <string name="dashboard_stats_updated_one_hour">Mises à jour il y a une heure</string>
-    <string name="dashboard_stats_updated_minutes">Mises à jour il y a %d minutes</string>
-    <string name="dashboard_stats_updated_now">Mises à jour il y a quelques instants</string>
     <string name="dashboard_stats_error_content_description">Image d’erreur</string>
     <string name="dashboard_stats_error">Erreur lors de l’extraction des données</string>
     <string name="dashboard_stats_revenue">Revenu</string>

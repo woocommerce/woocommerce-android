@@ -10,8 +10,13 @@
         android:name="com.woocommerce.android.ui.prefs.MainSettingsFragment"
         android:label="MainSettingsFragment">
         <action
-            android:id="@+id/action_mainSettingsFragment_to_cardReaderOnboardingFragment"
-            app:destination="@id/cardReaderOnboardingFragment" />
+            android:id="@+id/action_mainSettingsFragment_to_cardReaderFlow"
+            app:destination="@id/cardReaderFlow" >
+            <argument
+                android:name="cardReaderFlowParam"
+                app:argType="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam"
+                app:nullable="false" />
+        </action>
         <action
             android:id="@+id/action_mainSettingsFragment_to_privacySettingsFragment"
             app:destination="@id/privacySettingsFragment" />
@@ -34,83 +39,6 @@
         <action
             android:id="@+id/action_mainSettingsFragment_to_nav_graph_jetpack_install"
             app:destination="@id/nav_graph_jetpack_install" />
-    </fragment>
-    <dialog
-        android:id="@+id/cardReaderConnectDialogFragment"
-        android:name="com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectDialogFragment"
-        android:label="CardReaderConnectDialogFragment">
-        <argument
-            android:name="skipOnboarding"
-            app:argType="boolean"
-            app:nullable="false" />
-        <action
-            android:id="@+id/action_cardReaderConnectDialogFragment_to_cardReaderTutorialDialogFragment"
-            app:destination="@id/cardReaderTutorialDialogFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:exitAnim="@null"
-            app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out" />
-        <action
-            android:id="@+id/action_cardReaderConnectDialogFragment_to_cardReaderUpdateDialogFragment"
-            app:destination="@id/cardReaderUpdateDialogFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:exitAnim="@null"
-            app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out" />
-    </dialog>
-    <dialog
-        android:id="@+id/cardReaderUpdateDialogFragment"
-        android:name="com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateDialogFragment"
-        android:label="CardReaderUpdateDialogFragment" >
-        <argument
-            android:name="requiredUpdate"
-            android:defaultValue="false"
-            app:argType="boolean" />
-    </dialog>
-    <dialog
-        android:id="@+id/cardReaderTutorialDialogFragment"
-        android:name="com.woocommerce.android.ui.prefs.cardreader.tutorial.CardReaderTutorialDialogFragment"
-        android:label="CardReaderTutorialDialogFragment" />
-    <fragment
-        android:id="@+id/cardReaderDetailFragment"
-        android:name="com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailFragment"
-        android:label="CardReaderDetailFragment" >
-        <action
-            android:id="@+id/action_cardReaderDetailFragment_to_cardReaderConnectFragment"
-            app:destination="@id/cardReaderConnectDialogFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:exitAnim="@null"
-            app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out" />
-        <action
-            android:id="@+id/action_cardReaderDetailFragment_to_cardReaderUpdateDialogFragment"
-            app:destination="@id/cardReaderUpdateDialogFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:exitAnim="@null"
-            app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out" />
-    </fragment>
-    <fragment
-        android:id="@+id/cardReaderOnboardingFragment"
-        android:name="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingFragment"
-        android:label="CardReaderOnboardingFragment">
-        <action
-            android:id="@+id/action_cardReaderOnboardingFragment_to_cardReaderHubFragment"
-            app:destination="@id/cardReaderHubFragment"
-            app:popUpTo="@+id/mainSettingsFragment"
-            app:popUpToInclusive="false" />
-    </fragment>
-    <fragment
-        android:id="@+id/cardReaderHubFragment"
-        android:name="com.woocommerce.android.ui.prefs.cardreader.hub.CardReaderHubFragment"
-        android:label="CardReaderHubFragment">
-        <action
-            android:id="@+id/action_cardReaderHubFragment_to_cardReaderDetailFragment"
-            app:destination="@id/cardReaderDetailFragment" />
-        <argument
-            android:name="storeCountryCode"
-            app:nullable="false"
-            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/privacySettingsFragment"
@@ -178,4 +106,5 @@
     </fragment>
     <action android:id="@+id/action_global_WPComWebViewFragment" app:destination="@id/WPComWebViewFragment"/>
     <include app:graph="@navigation/nav_graph_jetpack_install" />
+    <include app:graph="@navigation/nav_graph_card_reader_flow" />
 </navigation>

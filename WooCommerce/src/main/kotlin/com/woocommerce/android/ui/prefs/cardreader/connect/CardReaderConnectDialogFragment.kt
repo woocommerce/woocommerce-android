@@ -26,10 +26,9 @@ import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.CardReaderConnectDialogBinding
-import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.navigateToParentWithResult
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckBluetoothEnabled
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckBluetoothPermissionsGiven
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.CheckLocationEnabled
@@ -41,7 +40,6 @@ import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEven
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.RequestLocationPermissions
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.ShowCardReaderTutorial
 import com.woocommerce.android.ui.prefs.cardreader.connect.adapter.MultipleCardReadersFoundAdapter
-import com.woocommerce.android.ui.prefs.cardreader.tutorial.CardReaderTutorialDialogFragment
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateDialogFragment
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.UpdateResult
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -129,9 +127,6 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
     }
 
     private fun setupResultHandlers(viewModel: CardReaderConnectViewModel) {
-        handleNotice(CardReaderTutorialDialogFragment.KEY_READER_TUTORIAL_RESULT) {
-            viewModel.onTutorialClosed()
-        }
         handleResult<UpdateResult>(CardReaderUpdateDialogFragment.KEY_READER_UPDATE_RESULT) {
             viewModel.onUpdateReaderResult(it)
         }
@@ -186,7 +181,8 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
             when (event) {
                 is CheckLocationPermissions -> {
                     event.onLocationPermissionsCheckResult(
-                        WooPermissionUtils.hasFineLocationPermission(requireContext())
+                        WooPermissionUtils.hasFineLocationPermission(requireContext()),
+                        WooPermissionUtils.shouldShowFineLocationPermissionRationale(requireActivity())
                     )
                 }
                 is RequestLocationPermissions -> {
@@ -219,8 +215,12 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
                     requestEnableBluetoothLauncher.launch(enableBtIntent)
                 }
                 is ShowCardReaderTutorial -> {
-                    findNavController()
-                        .navigateSafely(R.id.action_cardReaderConnectDialogFragment_to_cardReaderTutorialDialogFragment)
+                    findNavController().navigateSafely(
+                        CardReaderConnectDialogFragmentDirections
+                            .actionCardReaderConnectDialogFragmentToCardReaderTutorialDialogFragment(
+                                event.cardReaderFlowParam
+                            )
+                    )
                 }
                 is CardReaderConnectEvent.ShowUpdateInProgress -> {
                     findNavController().navigateSafely(
@@ -230,15 +230,10 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
                             )
                     )
                 }
-                is CardReaderConnectEvent.NavigateToOnboardingFlow -> {
-                    findNavController()
-                        .navigateSafely(R.id.action_cardReaderConnectDialogFragment_to_cardReaderOnboardingFragment)
-                }
                 is ExitWithResult<*> -> {
-                    navigateToParentWithResult(
+                    navigateBackWithResult(
                         key = KEY_CONNECT_TO_READER_RESULT,
                         result = event.data as Boolean,
-                        childId = R.id.cardReaderConnectDialogFragment,
                     )
                 }
                 is CardReaderConnectEvent.ShowToast ->

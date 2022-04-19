@@ -1,11 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-03-11 11:54:03+0000
+Translation-Revision-Date: 2022-04-11 11:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="coupon_summary_performance_amount_heading">Miktar</string>
+    <string name="coupon_summary_performance_discounted_order_heading">İndirimli siparişler</string>
+    <string name="coupon_summary_performance_heading">Performans</string>
+    <string name="coupon_summary_maximum_spend">Maksimum harcama %s</string>
+    <string name="coupon_summary_minimum_spend">Minimum harcama %s</string>
+    <string name="coupon_summary_heading">Kupon Özeti</string>
+    <string name="coupon_list_view_coupon">Kupon özetini görüntüle</string>
+    <string name="coupon_list_wip_message_enabled">Kuponları cihazınızdan görüntüleyip düzenleyebilmeniz için çalışıyoruz!</string>
+    <string name="coupon_list_wip_title">Kuponları görüntüle ve düzenle</string>
+    <string name="coupon_list_empty_heading">Kupon bulunamadı</string>
+    <string name="coupon_list_item_label_included_and_excluded">%2s hariç, %1s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1s ve %2s</string>
+    <string name="coupon_list_item_label_everything">her şey</string>
+    <string name="coupon_list_item_label_off">off</string>
+    <string name="coupon_list_item_label_expired">Süresi doldu</string>
+    <string name="coupon_list_item_label_active">Etkin</string>
+    <string name="coupons">Kuponlar</string>
+    <string name="inbox_note_recency_date_time">Oluşturma tarihi %s</string>
+    <string name="inbox_note_recency_days">%d gün önce</string>
+    <string name="inbox_note_recency_one_day">Bir gün önce</string>
+    <string name="inbox_note_recency_hours">%d saat önce</string>
+    <string name="inbox_note_recency_one_hour">Bir saat önce</string>
+    <string name="inbox_note_recency_minutes">%d dakika önce</string>
+    <string name="inbox_note_recency_now">Az önce</string>
+    <string name="category_count_many">%d kategori</string>
+    <string name="category_count_one">%d kategori</string>
+    <string name="product_ratings_count_zero">\u2022  onaylanmış yorum yok</string>
+    <string name="product_ratings_count_one">\u2022  bir onaylanmış yorum</string>
+    <string name="product_ratings_count">\u2022  %d onaylanmış yorum</string>
+    <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">Cihazınızdan sipariş oluşturmanızı ve ödeme almanızı sağlamak için çalışıyoruz! \"+\" düğmesine dokunarak bu özellikleri deneyebilirsiniz.</string>
+    <string name="orderlist_simple_payments_wip_title">Sipariş oluşturun ve ödeme alın!</string>
+    <string name="empty_inbox_description">Mağazanızı büyütmekle ilgili daha fazla ipucu ve bilgi için kısa süre sonra tekrar gelin</string>
+    <string name="empty_inbox_title">Tebrikler, her şeyi okudunuz!</string>
+    <string name="orderstatus_contentDesc_withStatus">Sipariş durumu: %s</string>
+    <string name="no_sku">SKU Yok</string>
+    <string name="count">Sayı: %s</string>
+    <string name="plus_one">Artı bir</string>
+    <string name="minus_one">Eksi bir</string>
+    <string name="more_menu_button_coupons">Kuponlar</string>
     <string name="dismiss_inbox_note">Kapat</string>
     <string name="login_error_xml_rpc_auth_error_communicating">Siteyle iletişimde bir sorun oluştu. Bir HTTP hata kodu 401 döndürüldü.</string>
     <string name="login_error_xml_rpc_cannot_read_site_auth_required">Bu sitede XML-RPC çağrıları engellenmiş görünüyor (hata kodu 401). Oturum açma girişimi başarısız olursa, SSS\'yi görüntülemek için yardım simgesine dokunun.</string>
@@ -144,8 +184,6 @@ Language: tr
     <string name="order_card_transition_name">order_card_%1$s</string>
     <string name="cash">Nakit</string>
     <string name="card">Kart</string>
-    <string name="plus">Artı</string>
-    <string name="minus">Eksi</string>
     <string name="tax">Vergi</string>
     <string name="email">E-posta</string>
     <string name="order_creation_add_customer_note">Not ekle</string>
@@ -181,9 +219,6 @@ Language: tr
     <string name="date_timeframe_last_quarter">Geçen çeyrek</string>
     <string name="date_timeframe_last_month">Geçen ay</string>
     <string name="date_timeframe_last_week">Geçen hafta</string>
-    <string name="settings_enable_order_creation_teaser_message">Biz lansmana hazırlanırken yeni manuel siparişler oluşturmayı deneyin</string>
-    <string name="settings_enable_order_creation_teaser_title">Sipariş Oluştur</string>
-    <string name="beta_features_order_creation">Sipariş oluşturma</string>
     <string name="beta_features_simple_payments">Basit ödemeler</string>
     <string name="beta_features_add_ons">Eklentileri Görüntüle</string>
     <string name="orders_empty_message_for_filtered_orders">Maalesef hiç sipariş bulunamadı</string>
@@ -204,7 +239,6 @@ Language: tr
     <string name="simple_payments_enter_amount">Miktar gir</string>
     <string name="simple_payments_dialog_title">Ödeme al</string>
     <string name="orderlist_simple_payments_menu">Basit ödeme</string>
-    <string name="orderlist_simple_payments_wip_title">Cihazınızdan ödeme alın.</string>
     <string name="analytics">Analiz</string>
     <string name="jetpack_install_progress_step_four_message">Her şey hazır</string>
     <string name="jetpack_install_progress_step_three_message">Mağazanızı bağlama</string>
@@ -239,7 +273,6 @@ Language: tr
     <string name="orderfilters_default_filter_option">Tümü</string>
     <string name="orderfilters_filter_card_title_filtered_orders">Filtrelenmiş siparişler</string>
     <string name="orderfilters_filter_card_title_all_orders">Tüm siparişler</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">Cihazınızdan ödeme almanızı kolaylaştırmak için çalışıyoruz. Şimdilik \"+\" düğmesine dokunun; tahsil etmek istediğiniz tutarla bir sipariş oluşturabilirsiniz.</string>
     <string name="jetpack_benefits_modal_dismiss">Şimdi değil</string>
     <string name="jetpack_benefits_modal_install_jetpack">Jetpack\'i Kur</string>
     <string name="jetpack_benefits_modal_user_profiles_subtitle">Birden fazla kullanıcının WooCommerce Mobile\'a erişmesine izin verin.</string>
@@ -807,9 +840,6 @@ Language: tr
     <string name="product_detail_no_variations">Bu ürünün henüz hiç varyasyonu yok</string>
     <string name="product_variant_list_empty">Boyut/beden/büyüklük ve renk gibi seçenekler eklemek şu anda yalnızca web\'de mevcuttur. Bunlar, sitenizin ürün sayfasında seçenekler olarak görünecektir.</string>
     <string name="product_adding_wip_title">Uygulamayı kullanarak ürünler oluşturun!</string>
-    <string name="product_ratings_count_zero">\u2022 puan yok</string>
-    <string name="product_ratings_count_one">\u2022 bir kez değerlendirildi</string>
-    <string name="product_ratings_count">\u2022 %d kez değerlendirildi</string>
     <string name="product_detail_fetch_product_invalid_id_error">Ürün bulunamadı</string>
     <string name="print_shipping_label_info_step_5">Hâlâ cihazınızdan yazdırırken sorun yaşıyorsanız, &lt;b&gt;etiketinizi PDF olarak kaydedebilir&lt;/b&gt; ve başka bir cihazdan yazdırmak için e-posta ile gönderebilirsiniz.</string>
     <string name="print_shipping_label_info_step_2"> &lt;b&gt;\"Gönderim etiketi yazdır\"&lt;/b&gt; öğesini seçtikten sonra, daha önce bu cihazdan yazdırmadıysanız bir yazıcı seçmeniz ve eklemeniz gerekebilir.</string>
@@ -1833,12 +1863,6 @@ Language: tr
     <string name="dashboard_top_performers_empty">Bu dönemde hiç etkinlik yok</string>
     <string name="dashboard_top_performers_total_orders">Toplam sipariş: %s</string>
     <string name="dashboard_top_performers_title">En yüksek performans gösterenler</string>
-    <string name="dashboard_stats_updated_date_time">%s tarihinde güncellendi</string>
-    <string name="dashboard_stats_updated_one_day">1 gün önce güncellendi</string>
-    <string name="dashboard_stats_updated_hours">%d saat önce güncellendi</string>
-    <string name="dashboard_stats_updated_one_hour">1 saat önce güncellendi</string>
-    <string name="dashboard_stats_updated_minutes">%d dakika önce güncellendi</string>
-    <string name="dashboard_stats_updated_now">Az önce güncellendi</string>
     <string name="dashboard_stats_error_content_description">Görsel hatası</string>
     <string name="dashboard_stats_error">Veri almada hata</string>
     <string name="dashboard_stats_revenue">Kazanç</string>

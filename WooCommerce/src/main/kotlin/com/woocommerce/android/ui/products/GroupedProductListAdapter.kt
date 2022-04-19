@@ -3,23 +3,18 @@ package com.woocommerce.android.ui.products
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.ListAdapter
 import com.woocommerce.android.databinding.ProductListItemBinding
-import com.woocommerce.android.extensions.areSameProductsAs
 import com.woocommerce.android.model.Product
 
 class GroupedProductListAdapter(
     private val onItemDeleted: (product: Product) -> Unit
-) : RecyclerView.Adapter<ProductItemViewHolder>() {
-    private val productList = ArrayList<Product>()
-
+) : ListAdapter<Product, ProductItemViewHolder>(ProductItemDiffCallback) {
     init {
         setHasStableIds(true)
     }
 
-    override fun getItemId(position: Int) = productList[position].remoteId
-
-    override fun getItemCount() = productList.size
+    override fun getItemId(position: Int) = getItem(position).remoteId
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductItemViewHolder {
         return ProductItemViewHolder(
@@ -32,18 +27,25 @@ class GroupedProductListAdapter(
     }
 
     override fun onBindViewHolder(holder: ProductItemViewHolder, position: Int) {
-        val product = productList[position]
+        val product = getItem(position)
 
         holder.bind(product)
         holder.setOnDeleteClickListener(product, onItemDeleted)
     }
 
-    fun setProductList(products: List<Product>) {
-        if (!productList.areSameProductsAs(products)) {
-            val diffResult = DiffUtil.calculateDiff(ProductItemDiffUtil(productList, products))
-            productList.clear()
-            productList.addAll(products)
-            diffResult.dispatchUpdatesTo(this)
+    object ProductItemDiffCallback : DiffUtil.ItemCallback<Product>() {
+        override fun areItemsTheSame(
+            oldItem: Product,
+            newItem: Product
+        ): Boolean {
+            return oldItem.remoteId == newItem.remoteId
+        }
+
+        override fun areContentsTheSame(
+            oldItem: Product,
+            newItem: Product
+        ): Boolean {
+            return oldItem == newItem
         }
     }
 }
