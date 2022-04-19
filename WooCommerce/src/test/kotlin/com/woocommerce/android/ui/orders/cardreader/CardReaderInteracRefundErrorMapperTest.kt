@@ -58,16 +58,6 @@ class CardReaderInteracRefundErrorMapperTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given refund status AMOUNT_TOO_SMALL, when map payment error called, then correct ui error is mapped`() {
-        val errorType = DeclinedByBackendError.AmountTooSmall
-        val expectedErrorType = InteracRefundFlowError.AmountTooSmall
-
-        val actualErrorType = cardReaderInteracRefundErrorMapper.mapRefundErrorToUiError(errorType)
-
-        assertThat(actualErrorType).isEqualTo(expectedErrorType)
-    }
-
-    @Test
     fun `given refund status UNKNOWN, when map payment error called, then correct ui error is mapped`() {
         val errorType = DeclinedByBackendError.Unknown
         val expectedErrorType = InteracRefundFlowError.Unknown

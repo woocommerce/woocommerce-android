@@ -20,7 +20,6 @@ class CardReaderInteracRefundErrorMapper @Inject constructor() {
     private fun mapRefundDeclinedErrorType(
         interacRefundStatusErrorType: DeclinedByBackendError
     ) = when (interacRefundStatusErrorType) {
-        DeclinedByBackendError.AmountTooSmall -> InteracRefundFlowError.AmountTooSmall
         DeclinedByBackendError.Unknown -> InteracRefundFlowError.Unknown
 
         DeclinedByBackendError.CardDeclined.CardNotSupported -> InteracRefundFlowError.Declined.CardNotSupported

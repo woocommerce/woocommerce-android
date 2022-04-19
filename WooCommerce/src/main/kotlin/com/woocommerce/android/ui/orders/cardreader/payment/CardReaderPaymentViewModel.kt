@@ -33,6 +33,7 @@ import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptEvent.SendRec
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderTrackingInfoKeeper
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult
@@ -82,6 +83,8 @@ class CardReaderPaymentViewModel
 
     private val orderId = arguments.paymentOrRefund.orderId
 
+    private val refundAmount: BigDecimal? = getInteracRefundAmount()
+
     // The app shouldn't store the state as payment flow gets canceled when the vm dies
     private val viewState = MutableLiveData<ViewState>(LoadingDataState)
     val viewStateData: LiveData<ViewState> = viewState
@@ -91,6 +94,17 @@ class CardReaderPaymentViewModel
     private var paymentDataForRetry: PaymentData? = null
 
     private var refetchOrderJob: Job? = null
+
+    private fun getInteracRefundAmount(): BigDecimal? {
+        return when (val param = arguments.paymentOrRefund as CardReaderFlowParam.PaymentOrRefund) {
+            is CardReaderFlowParam.PaymentOrRefund.Payment -> {
+                null
+            }
+            is CardReaderFlowParam.PaymentOrRefund.Refund -> {
+                param.refundAmount
+            }
+        }
+    }
 
     fun start() {
         if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected) {
@@ -297,9 +311,6 @@ class CardReaderPaymentViewModel
                 amountLabel,
                 refundStatus
             )
-            CardInteracRefundStatus.WaitingForInput -> {
-                // noop
-            }
         }
     }
 
