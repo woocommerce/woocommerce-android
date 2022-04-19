@@ -17,7 +17,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -60,8 +62,7 @@ fun Inbox(viewModel: InboxViewModel) {
 fun Inbox(state: InboxState) {
     when {
         state.isLoading -> InboxSkeleton()
-        state.notes.isEmpty() -> InboxEmptyCase()
-        state.notes.isNotEmpty() -> InboxNotes(
+        else -> InboxNotes(
             notes = state.notes,
             onRefresh = state.onRefresh,
             isRefreshing = state.isRefreshing
@@ -74,7 +75,8 @@ fun InboxEmptyCase() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 32.dp),
+            .padding(horizontal = 32.dp)
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -116,14 +118,18 @@ fun InboxNotes(
             )
         }
     ) {
-        LazyColumn {
-            itemsIndexed(notes) { index, note ->
-                InboxNoteRow(note = note)
-                if (index < notes.lastIndex)
-                    Divider(
-                        color = colorResource(id = R.color.divider_color),
-                        thickness = 1.dp
-                    )
+        if (notes.isEmpty()) {
+            InboxEmptyCase()
+        } else {
+            LazyColumn {
+                itemsIndexed(notes) { index, note ->
+                    InboxNoteRow(note = note)
+                    if (index < notes.lastIndex)
+                        Divider(
+                            color = colorResource(id = R.color.divider_color),
+                            thickness = 1.dp
+                        )
+                }
             }
         }
     }
