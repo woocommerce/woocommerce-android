@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.moremenu
 import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -20,12 +21,13 @@ import com.woocommerce.android.ui.moremenu.MenuButtonType.INBOX
 import com.woocommerce.android.ui.moremenu.MenuButtonType.PRODUCT_REVIEWS
 import com.woocommerce.android.ui.moremenu.MenuButtonType.VIEW_ADMIN
 import com.woocommerce.android.ui.moremenu.MenuButtonType.VIEW_STORE
-import com.woocommerce.android.ui.moremenu.domain.IsInboxEnabled
+import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import javax.inject.Inject
@@ -35,7 +37,7 @@ class MoreMenuViewModel @Inject constructor(
     savedState: SavedStateHandle,
     accountStore: AccountStore,
     private val selectedSite: SelectedSite,
-    private val isInboxEnabled: IsInboxEnabled,
+    private val moreMenuRepository: MoreMenuRepository,
     unseenReviewsCountHandler: UnseenReviewsCountHandler
 ) : ScopedViewModel(savedState) {
     val moreMenuViewState =
@@ -51,7 +53,7 @@ class MoreMenuViewModel @Inject constructor(
             )
         }.asLiveData()
 
-    private fun generateMenuButtons(unseenReviewsCount: Int): List<MenuUiButton> =
+    private suspend fun generateMenuButtons(unseenReviewsCount: Int): List<MenuUiButton> =
         listOf(
             MenuUiButton(
                 type = VIEW_ADMIN,
@@ -87,6 +89,11 @@ class MoreMenuViewModel @Inject constructor(
                 onClick = ::onInboxButtonClick
             )
         )
+
+    private suspend fun isInboxEnabled(): Boolean =
+        withContext(viewModelScope.coroutineContext) {
+            moreMenuRepository.isInboxEnabled()
+        }
 
     private fun SiteModel.getSelectedSiteName(): String =
         if (!displayName.isNullOrBlank()) {
