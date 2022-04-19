@@ -1,29 +1,28 @@
 package com.woocommerce.android.support
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.*
-import android.widget.TextView
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
 import androidx.core.text.HtmlCompat.FROM_HTML_MODE_LEGACY
-import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
-import com.woocommerce.android.R.layout
 import com.woocommerce.android.databinding.ScreenLogviewerBinding
-import com.woocommerce.android.extensions.setHtmlText
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.WooLog
@@ -64,7 +63,7 @@ class WooLogViewerScreen : AppCompatActivity() {
     fun LogViewerEntries(entries: List<String>) {
         LazyColumn {
             itemsIndexed(entries) { index, entry ->
-                LogViewerEntry(entry)
+                LogViewerEntry(index, entry)
                 if (index < entries.lastIndex)
                     Divider(
                         color = colorResource(id = R.color.divider_color),
@@ -75,11 +74,18 @@ class WooLogViewerScreen : AppCompatActivity() {
     }
 
     @Composable
-    fun LogViewerEntry(item: String) {
-        Column {
+    fun LogViewerEntry(index: Int, item: String) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Text(
+                text = format(Locale.US, "%02d", index + 1),
+                style = MaterialTheme.typography.body2,
+            )
             Text(
                 text = HtmlCompat.fromHtml(item, FROM_HTML_MODE_LEGACY).toString(),
-                style = MaterialTheme.typography.subtitle1
+                style = MaterialTheme.typography.body2
             )
         }
     }
@@ -144,29 +150,5 @@ class WooLogViewerScreen : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    private inner class LogAdapter constructor(context: Context) : RecyclerView.Adapter<LogViewHolder>() {
-        private val entries: List<String> =
-            WooLog.toHtmlList(AppThemeUtils.isDarkThemeActive(this@WooLogViewerScreen))
-        private val inflater: LayoutInflater = LayoutInflater.from(context)
-
-        override fun getItemCount() = entries.size
-
-        override fun getItemId(position: Int) = position.toLong()
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LogViewHolder {
-            return LogViewHolder(inflater.inflate(layout.logviewer_listitem, parent, false))
-        }
-
-        override fun onBindViewHolder(holder: LogViewHolder, position: Int) {
-            holder.txtLineNumber.text = format(Locale.US, "%02d", position + 1)
-            holder.txtLogEntry.setHtmlText(entries[position])
-        }
-    }
-
-    private inner class LogViewHolder internal constructor(view: View) : RecyclerView.ViewHolder(view) {
-        val txtLineNumber: TextView = view.findViewById(R.id.text_line) as TextView
-        val txtLogEntry: TextView = view.findViewById(R.id.text_log) as TextView
     }
 }

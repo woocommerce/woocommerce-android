@@ -75,6 +75,11 @@
             android:theme="@style/Theme.Woo.DayNight"/>
 
         <activity
+            android:label="@string/logviewer_activity_title"
+            android:name=".support.WooLogViewerScreen"
+            android:theme="@style/Theme.Woo.DayNight"/>
+
+        <activity
             android:label="@string/support_system_status_report"
             android:name=".support.SSRActivity"
             android:theme="@style/Theme.Woo.DayNight"/>
