@@ -445,12 +445,12 @@ class CardReaderPaymentViewModel
         when (val state = viewState.value) {
             is CollectRefundState -> {
                 viewState.value = state.copy(
-                    hintLabel = getStringResourceFor(type, isInteracRefund = true)
+                    hintLabel = type.toHintLabel(true)
                 )
             }
             is CollectPaymentState -> {
                 viewState.value = state.copy(
-                    hintLabel = getStringResourceFor(type, isInteracRefund = false)
+                    hintLabel = type.toHintLabel(false)
                 )
             }
             else -> WooLog.e(
@@ -459,8 +459,9 @@ class CardReaderPaymentViewModel
         }
     }
 
-    private fun getStringResourceFor(type: AdditionalInfoType, isInteracRefund: Boolean): Int {
-        return when (type) {
+    @StringRes
+    private fun AdditionalInfoType.toHintLabel(isInteracRefund: Boolean) =
+        when (this) {
             RETRY_CARD -> R.string.card_reader_payment_retry_card_prompt
             INSERT_CARD, INSERT_OR_SWIPE_CARD, SWIPE_CARD ->
                 if (isInteracRefund) {
@@ -475,7 +476,6 @@ class CardReaderPaymentViewModel
             TRY_ANOTHER_CARD -> R.string.card_reader_payment_try_another_card_prompt
             CHECK_MOBILE_DEVICE -> R.string.card_reader_payment_check_mobile_device_prompt
         }
-    }
 
     private fun onSaveForLaterClicked() {
         onBackPressed()
