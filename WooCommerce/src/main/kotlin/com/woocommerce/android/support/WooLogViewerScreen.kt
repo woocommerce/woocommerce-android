@@ -102,16 +102,16 @@ class WooLogViewerScreen : AppCompatActivity() {
 
     @ColorRes
     private fun logColor(level: WooLog.LogLevel): Int {
-        if (isDarkThemeEnabled) {
-            return R.color.white
-        }
-
-        return when (level) {
-            WooLog.LogLevel.v -> R.color.grey
-            WooLog.LogLevel.d -> R.color.blue_medium
-            WooLog.LogLevel.i -> R.color.woo_black
-            WooLog.LogLevel.w -> R.color.woo_purple_30
-            WooLog.LogLevel.e -> R.color.woo_red_30
+        return if (isDarkThemeEnabled) {
+            R.color.white
+        } else {
+            when (level) {
+                WooLog.LogLevel.v -> R.color.grey
+                WooLog.LogLevel.d -> R.color.blue_30
+                WooLog.LogLevel.i -> R.color.woo_black
+                WooLog.LogLevel.w -> R.color.woo_purple_30
+                WooLog.LogLevel.e -> R.color.woo_red_30
+            }
         }
     }
 
