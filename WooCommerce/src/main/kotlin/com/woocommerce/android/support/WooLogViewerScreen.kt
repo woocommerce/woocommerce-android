@@ -10,6 +10,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -88,11 +89,13 @@ class WooLogViewerScreen : AppCompatActivity() {
                     modifier = Modifier.padding(end = 16.dp),
                     color = colorResource(id = R.color.grey)
                 )
-                Text(
-                    text = entry.text ?: "",
-                    style = MaterialTheme.typography.body2,
-                    color = colorResource(id = logColor(entry.level))
-                )
+                SelectionContainer {
+                    Text(
+                        text = entry.toString(),
+                        style = MaterialTheme.typography.body2,
+                        color = colorResource(id = logColor(entry.level))
+                    )
+                }
             }
         }
     }
