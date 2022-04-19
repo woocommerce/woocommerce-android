@@ -71,7 +71,7 @@ class SingleProductScreen : Screen {
             ).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         }
 
-        return SingleProductScreen()
+        return this
     }
 
     // Checks that label and actual value are siblings in view hierarchy:
