@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
@@ -15,7 +16,6 @@ import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.STRIPE_
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.*
@@ -39,6 +39,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     }
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val countryCode = "US"
+    private val pluginVersion = "4.0.0"
 
     @Test
     fun `when screen initialized, then loading state shown`() {
@@ -48,21 +49,38 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when onboarding completed, then navigates to card reader hub screen`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `given hub flow, when onboarding completed, then navigates to card reader hub screen`() =
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.OnboardingCompleted(WOOCOMMERCE_PAYMENTS, countryCode)
+                CardReaderOnboardingState.OnboardingCompleted(WOOCOMMERCE_PAYMENTS, pluginVersion, countryCode)
             )
 
             val viewModel = createVM()
 
             assertThat(viewModel.event.value)
-                .isInstanceOf(OnboardingEvent.Continue::class.java)
+                .isInstanceOf(OnboardingEvent.ContinueToHub::class.java)
+        }
+
+    @Test
+    fun `given payment flow, when onboarding completed, then navigates to card reader connection screen`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.OnboardingCompleted(WOOCOMMERCE_PAYMENTS, pluginVersion, countryCode)
+            )
+
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    cardReaderFlowParam = CardReaderFlowParam.ConnectAndAcceptPayment(1L)
+                ).initSavedStateHandle()
+            )
+
+            assertThat(viewModel.event.value)
+                .isInstanceOf(OnboardingEvent.ContinueToConnection::class.java)
         }
 
     @Test
     fun `when store country not supported, then country not supported state shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(CardReaderOnboardingState.StoreCountryNotSupported(""))
 
@@ -73,7 +91,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given wcpay is not supported in country, when init, then wcpay in country not supported state shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(
                     CardReaderOnboardingState.PluginIsNotSupportedInTheCountry(
@@ -89,7 +107,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given stripe is not supported in country, when init, then stripe in country not supported state shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(
                     CardReaderOnboardingState.PluginIsNotSupportedInTheCountry(
@@ -105,7 +123,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when stripe account country not supported, then country not supported state shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(CardReaderOnboardingState.StripeAccountCountryNotSupported(mock(), ""))
 
@@ -118,7 +136,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given wcpay not supported in country, when init, then current store country name shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(
                     CardReaderOnboardingState.PluginIsNotSupportedInTheCountry(
@@ -138,7 +156,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when country not supported, then current store country name shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(CardReaderOnboardingState.StoreCountryNotSupported("US"))
             val viewModel = createVM()
@@ -153,7 +171,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given wcpay not supported in country, when learn more clicked, then app shows learn more section`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(
                     CardReaderOnboardingState.PluginIsNotSupportedInTheCountry(
@@ -172,7 +190,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given store country not supported, when learn more clicked, then app shows learn more section`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(CardReaderOnboardingState.StoreCountryNotSupported(""))
             val viewModel = createVM()
@@ -186,7 +204,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given store country not supported, when contact support clicked, then app navigates to support screen`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(CardReaderOnboardingState.StoreCountryNotSupported(""))
             val viewModel = createVM()
@@ -199,7 +217,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given wcpay in not supported in country, when contact support clicked, then app nav to support screen`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(
                     CardReaderOnboardingState.PluginIsNotSupportedInTheCountry(
@@ -218,7 +236,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given preferred plugin Stripe, when learn more clicked, then app navigates to Stripe docs`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(CardReaderOnboardingState.StoreCountryNotSupported(""))
             whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
@@ -234,7 +252,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given preferred plugin WCPay, when learn more clicked, then app navigates to wcpay docs`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(CardReaderOnboardingState.StoreCountryNotSupported(""))
             whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
@@ -250,7 +268,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given preferred plugin null, when learn more clicked, then app navigates to wcpay docs`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(CardReaderOnboardingState.StoreCountryNotSupported(""))
             whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
@@ -266,7 +284,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given stripe account country not supported, when learn more clicked, then app shows learn more section`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(CardReaderOnboardingState.StripeAccountCountryNotSupported(mock(), ""))
             val viewModel = createVM()
@@ -280,7 +298,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given stripe account country not supported, when contact support clicked, then app navs to support screen`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(CardReaderOnboardingState.StripeAccountCountryNotSupported(mock(), ""))
             val viewModel = createVM()
@@ -293,7 +311,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when wcpay not installed, then wcpay not installed state shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(CardReaderOnboardingState.WcpayNotInstalled)
 
             val viewModel = createVM()
@@ -303,7 +321,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when wcpay not activated, then wcpay not activated state shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(CardReaderOnboardingState.WcpayNotActivated)
 
             val viewModel = createVM()
@@ -313,7 +331,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when wcpay not setup, then wcpay not setup state shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(CardReaderOnboardingState.SetupNotCompleted(WOOCOMMERCE_PAYMENTS))
 
@@ -324,7 +342,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when stripe extension not setup, then stripe extension not setup state shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(CardReaderOnboardingState.SetupNotCompleted(STRIPE_EXTENSION_GATEWAY))
 
@@ -337,7 +355,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when stripe extension not setup, then correct labels and illustrations shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(CardReaderOnboardingState.SetupNotCompleted(STRIPE_EXTENSION_GATEWAY))
 
@@ -362,7 +380,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when unsupported wcpay version installed, then unsupported wcpay version state shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(CardReaderOnboardingState.PluginUnsupportedVersion(WOOCOMMERCE_PAYMENTS))
 
@@ -373,7 +391,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when wcpay in test mode with live stripe account, then wcpay in test mode state shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount(mock()))
 
@@ -386,7 +404,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when unsupported stripe extension installed, then unsupported stripe extension state shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
                 CardReaderOnboardingState.PluginUnsupportedVersion(STRIPE_EXTENSION_GATEWAY)
             )
@@ -400,7 +418,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when stripe extension outdated, then correct labels and illustrations shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
                 CardReaderOnboardingState.PluginUnsupportedVersion(STRIPE_EXTENSION_GATEWAY)
             )
@@ -438,7 +456,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when wcpay and stripe extension installed-activated, then wcpay and stripe extension activated state shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
                 CardReaderOnboardingState.WcpayAndStripeActivated
             )
@@ -452,7 +470,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given user is admin, when wcpay and stripe extension active, then open wpadmin button shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
                 CardReaderOnboardingState.WcpayAndStripeActivated
             )
@@ -466,7 +484,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when wcpay and stripe extension active, then refresh screen button shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
                 CardReaderOnboardingState.WcpayAndStripeActivated
             )
@@ -479,7 +497,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when refresh clicked, then loading screen shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
                 CardReaderOnboardingState.WcpayAndStripeActivated
             )
@@ -497,7 +515,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given site is self-hosted, when user taps on Go To Plugin Admin, then generic webview shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(selectedSite.get())
                 .thenReturn(
                     SiteModel()
@@ -521,7 +539,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given site is wpcom, when user taps on Go To Plugin Admin, then wpcom webview shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(selectedSite.get()).thenReturn(
                 SiteModel()
                     .apply {
@@ -543,7 +561,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given site is atomic, when user taps on Go To Plugin Admin, then wpcom webview shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(selectedSite.get()).thenReturn(
                 SiteModel().apply {
                     setIsWPComAtomic(true)
@@ -564,7 +582,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when user taps on Go To Plugin Admin, then app navigates to Plugin Admin url`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(selectedSite.get()).thenReturn(
                 SiteModel().apply {
                     url = DUMMY_SITE_URL
@@ -585,7 +603,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given user is NOT admin, when wcpay and stripe extension active, then open wpadmin button NOT shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(userEligibilityFetcher.fetchUserInfo()).thenAnswer {
                 val model = mock<WCUserModel>()
                 whenever(model.getUserRoles())
@@ -605,7 +623,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when account rejected, then account rejected state shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(CardReaderOnboardingState.StripeAccountRejected(mock()))
 
@@ -617,12 +635,13 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when account pending requirements, then account pending requirements state shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(
                     CardReaderOnboardingState.StripeAccountPendingRequirement(
                         0L,
                         WOOCOMMERCE_PAYMENTS,
+                        pluginVersion,
                         countryCode
                     )
                 )
@@ -635,13 +654,60 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when account pending requirements, then due date not empty`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `given account pending requirements and hub, when button clicked, then continues to hub`() =
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(
                     CardReaderOnboardingState.StripeAccountPendingRequirement(
                         0L,
                         WOOCOMMERCE_PAYMENTS,
+                        pluginVersion,
+                        countryCode
+                    )
+                )
+
+            val viewModel = createVM()
+            (viewModel.viewStateData.value as StripeAcountError.StripeAccountPendingRequirementsState)
+                .onButtonActionClicked.invoke()
+
+            assertThat(viewModel.event.value)
+                .isInstanceOf(OnboardingEvent.ContinueToHub::class.java)
+        }
+
+    @Test
+    fun `given account pending requirements and payment, when button clicked, then continues to connection`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    CardReaderOnboardingState.StripeAccountPendingRequirement(
+                        0L,
+                        WOOCOMMERCE_PAYMENTS,
+                        pluginVersion,
+                        countryCode
+                    )
+                )
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    cardReaderFlowParam = CardReaderFlowParam.ConnectAndAcceptPayment(1L)
+                ).initSavedStateHandle()
+            )
+
+            (viewModel.viewStateData.value as StripeAcountError.StripeAccountPendingRequirementsState)
+                .onButtonActionClicked.invoke()
+
+            assertThat(viewModel.event.value)
+                .isInstanceOf(OnboardingEvent.ContinueToConnection::class.java)
+        }
+
+    @Test
+    fun `when account pending requirements, then due date not empty`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    CardReaderOnboardingState.StripeAccountPendingRequirement(
+                        0L,
+                        WOOCOMMERCE_PAYMENTS,
+                        pluginVersion,
                         countryCode
                     )
                 )
@@ -655,7 +721,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when account overdue requirements, then account overdue requirements state shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(CardReaderOnboardingState.StripeAccountOverdueRequirement(mock()))
 
@@ -668,7 +734,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when account under review, then account under review state shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(CardReaderOnboardingState.StripeAccountUnderReview(mock()))
 
@@ -681,7 +747,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when onboarding check fails, then generic state shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(CardReaderOnboardingState.GenericError)
 
@@ -692,7 +758,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when network not available, then no connection error shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(CardReaderOnboardingState.NoConnectionError)
 
@@ -704,7 +770,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     // Tracking Begin
     @Test
     fun `when learn more tapped, then event tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(CardReaderOnboardingState.GenericError)
             val viewModel = createVM()
@@ -716,7 +782,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when onboarding state checked, then event propagated to tracker`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val onboardingState: CardReaderOnboardingState = mock()
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(onboardingState)
@@ -727,9 +793,13 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
     // Tracking End
 
-    private fun createVM() =
+    private fun createVM(
+        savedState: SavedStateHandle = CardReaderOnboardingFragmentArgs(
+            cardReaderFlowParam = CardReaderFlowParam.CardReadersHub
+        ).initSavedStateHandle()
+    ) =
         CardReaderOnboardingViewModel(
-            SavedStateHandle(),
+            savedState,
             onboardingChecker,
             tracker,
             userEligibilityFetcher,

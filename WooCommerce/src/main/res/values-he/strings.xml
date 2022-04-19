@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-03-10 09:54:11+0000
+Translation-Revision-Date: 2022-03-25 16:54:02+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="empty_inbox_description">כדאי לחזור בקרוב כדי לקבל עצות ותובנות נוספות להגדלת החנות שלך</string>
+    <string name="empty_inbox_title">ברכותינו, קראת הכול!</string>
+    <string name="orderstatus_contentDesc_withStatus">סטטוס הזמנה: %s</string>
+    <string name="no_sku">ללא SKU</string>
+    <string name="count">ספירה: %s</string>
+    <string name="plus_one">עוד אחד</string>
+    <string name="minus_one">פחות אחד</string>
+    <string name="more_menu_button_coupons">קופונים</string>
     <string name="dismiss_inbox_note">ביטול</string>
     <string name="login_error_xml_rpc_auth_error_communicating">הייתה בעיה בתקשורת עם האתר הזה. הוחזר קוד שגיאה של HTTP מסוג 401.</string>
     <string name="login_error_xml_rpc_cannot_read_site_auth_required">נראה שקריאות XML-RPC חסומות באתר הזה (קוד שגיאה 401). אם הניסיון להתחברות נכשל, יש להקיש על סמל העזרה כדי להציג את השאלות הנפוצות.</string>
@@ -144,8 +152,6 @@ Language: he_IL
     <string name="order_card_transition_name">order_card_%1$s</string>
     <string name="cash">מזומן</string>
     <string name="card">כרטיס</string>
-    <string name="plus">ועוד</string>
-    <string name="minus">פחות</string>
     <string name="tax">מס</string>
     <string name="email">לשלוח מייל</string>
     <string name="order_creation_add_customer_note">להוסיף הערה</string>

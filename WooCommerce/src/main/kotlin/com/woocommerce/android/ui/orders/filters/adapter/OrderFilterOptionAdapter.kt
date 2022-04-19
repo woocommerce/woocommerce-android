@@ -35,7 +35,7 @@ class OrderFilterOptionAdapter(
         }
     }
 
-    override fun getItemId(position: Int) = position.toLong()
+    override fun getItemId(position: Int) = getItem(position).key.hashCode().toLong()
 
     class OrderFilterOptionViewHolder(val viewBinding: OrderFilterOptionItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {

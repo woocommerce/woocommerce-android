@@ -204,7 +204,7 @@ class DateUtils @Inject constructor(
             val originalFormat = SimpleDateFormat("yyyy-MM-dd HH", locale)
             val targetFormat = SimpleDateFormat("hha", locale)
             val date = originalFormat.parse(iso8601Date)
-            targetFormat.format(date!!).toLowerCase(locale).trimStart('0')
+            targetFormat.format(date!!).lowercase(locale).trimStart('0')
         } catch (e: Exception) {
             "Date string argument is not of format yyyy-MM-dd H: $iso8601Date".reportAsError(e)
             return null
@@ -252,6 +252,7 @@ class DateUtils @Inject constructor(
      *
      * return null if the argument is not a valid iso8601 date string.
      */
+    @Suppress("UNUSED_VARIABLE") // Applying the suggestion to rename 'month' to '_' makes the test fail
     fun getYearString(iso8601Month: String): String? {
         return try {
             val (year, month) = iso8601Month.split("-")
@@ -263,52 +264,14 @@ class DateUtils @Inject constructor(
     }
 
     /**
-     * Converts the given [year] [month] [day] to a [Date] object
-     * and applies the passed [gmtOffset] to the date
-     *
-     * [timeAtStartOfDay] is set to true for start date and set to false for end dates
+     * Converts the given [year], [month], [day] to a [Date] object at midnight
      */
-    fun localDateToGmt(
+    fun getDateAtStartOfDay(
         year: Int,
         month: Int,
-        day: Int,
-        gmtOffset: Float,
-        timeAtStartOfDay: Boolean
+        day: Int
     ): Date {
-        val hour = if (timeAtStartOfDay) 0 else 23
-        val minuteSecond = if (timeAtStartOfDay) 0 else 59
-        val operator: (Int, Int) -> Int = if (timeAtStartOfDay) Int::minus else Int::plus
-        val date = GregorianCalendar(year, month, day, hour, minuteSecond, minuteSecond).time
-        return offsetGmtDate(date, gmtOffset, operator)
-    }
-
-    /**
-     * Converts the given [dateString] to a [Date] object
-     * and applies the passed [gmtOffset] to the date
-     */
-    fun localDateToGmt(
-        dateString: String,
-        gmtOffset: Float,
-        timeAtStartOfDay: Boolean
-    ): Date? {
-        return try {
-            val dateFormat = SimpleDateFormat("MMM dd, yyyy", locale)
-            val date = dateFormat.parse(dateString) ?: Date()
-
-            val calendar = Calendar.getInstance()
-            calendar.time = date
-
-            localDateToGmt(
-                year = calendar.get(Calendar.YEAR),
-                month = calendar.get(Calendar.MONTH),
-                day = calendar.get(Calendar.DATE),
-                gmtOffset = gmtOffset,
-                timeAtStartOfDay = timeAtStartOfDay
-            )
-        } catch (e: Exception) {
-            "Date string argument is not of format MMM dd, yyyy: $dateString".reportAsError(e)
-            return null
-        }
+        return GregorianCalendar(year, month, day).time
     }
 
     /**
@@ -570,25 +533,6 @@ class DateUtils @Inject constructor(
         const val ZERO = 0
         const val ONE = 1
         const val THREE = 3
-
-        /**
-         * Returns a date with the passed GMT offset applied - note that this assumes the passed date is GMT
-         *
-         * The [operator] can either be [Int::plus] or [Int::minus]
-         * [Int::plus] is passed when formatting gmtDate to local date
-         * [Int::minus] is passed when formatting local date to gmt
-         */
-        fun offsetGmtDate(dateGmt: Date, gmtOffset: Float, operator: (Int, Int) -> Int = Int::plus): Date {
-            if (gmtOffset == 0f) {
-                return dateGmt
-            }
-
-            val secondsOffset = (3600 * gmtOffset).toInt() // 3600 is the number of seconds in an hour
-            val calendar = Calendar.getInstance()
-            calendar.time = dateGmt
-            calendar.set(Calendar.SECOND, operator(calendar.get(Calendar.SECOND), secondsOffset))
-            return calendar.time
-        }
 
         /**
          * Compares two dates to determine if [date2] is after [date1]. Note that

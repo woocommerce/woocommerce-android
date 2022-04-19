@@ -82,7 +82,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = 'trunk-23e8fe682e21e4e045cf365a06ca8be46f55d425'
+    fluxCVersion = 'trunk-932709e8a1cec570c3d89f93b92bb35f36301f7e'
     glideVersion = '4.12.0'
     testRunnerVersion = '1.0.1'
     espressoVersion = '3.4.0'
@@ -93,7 +93,7 @@ ext {
     eventBusVersion = '3.3.1'
     googlePlayCoreVersion = '1.10.3'
     coroutinesVersion = '1.5.2'
-    lifecycleVersion = '2.4.0'
+    lifecycleVersion = '2.4.1'
     assertjVersion = '3.11.1'
     aztecVersion = 'v1.3.45'
     flipperVersion = '0.138.0'
@@ -106,7 +106,7 @@ ext {
     hiltJetpackVersion = '1.0.0'
     wordPressUtilsVersion = "2.3.0"
     mediapickerVersion = 'trunk-d0db2634cf27511bec3ef9b837f9cfe27c5ab601'
-    wordPressLoginVersion = 'trunk-d4f9830a9e2d2cbf7e1edec2886af687363b0980'
+    wordPressLoginVersion = '0.13.0'
     aboutAutomatticVersion = '0.0.4'
 
     // Compose and its module versions need to be consistent with each other (for example 'compose-theme-adapter')
@@ -176,18 +176,6 @@ tasks.register("configureApply") {
     dependsOn applyCredentials
     doLast {
         println("Done")
-    }
-}
-
-buildScan {
-    // Always run Gradle scan on CI builds
-    if (System.getenv('CI')) {
-        termsOfServiceUrl = 'https://gradle.com/terms-of-service'
-        termsOfServiceAgree = 'yes'
-        tag 'CI'
-        publishAlways()
-        // Otherwise CI might shut down before it's uploaded
-        uploadInBackground = false
     }
 }
 

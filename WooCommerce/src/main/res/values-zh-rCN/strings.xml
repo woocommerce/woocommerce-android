@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-03-11 09:54:03+0000
+Translation-Revision-Date: 2022-03-25 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="empty_inbox_description">请稍后回来查看，届时将提供更多关于发展您商店的贴士和数据分析</string>
+    <string name="empty_inbox_title">恭喜您，已全部阅读！</string>
+    <string name="orderstatus_contentDesc_withStatus">订单状态： %s</string>
+    <string name="no_sku">无 SKU</string>
+    <string name="count">计数：%s</string>
+    <string name="plus_one">添加一个</string>
+    <string name="minus_one">减少一个</string>
+    <string name="more_menu_button_coupons">优惠券</string>
     <string name="dismiss_inbox_note">忽略</string>
     <string name="login_error_xml_rpc_auth_error_communicating">与站点通信时出现问题。 返回了 HTTP 错误代码 401。</string>
     <string name="login_error_xml_rpc_cannot_read_site_auth_required">XML-RPC 调用似乎已被该站点屏蔽（错误代码 401）。 如果尝试登录失败，可点击帮助图标查看常见问题解答。</string>
@@ -144,8 +152,6 @@ Language: zh_CN
     <string name="order_card_transition_name">order_card_%1$s</string>
     <string name="cash">现金</string>
     <string name="card">卡片</string>
-    <string name="plus">加号</string>
-    <string name="minus">减号</string>
     <string name="tax">税费</string>
     <string name="email">电子邮件</string>
     <string name="order_creation_add_customer_note">添加备注</string>

@@ -7,19 +7,20 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.core.view.isVisible
-import androidx.core.widget.TextViewCompat
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationFormBinding
 import com.woocommerce.android.databinding.LayoutOrderCreationCustomerInfoBinding
 import com.woocommerce.android.databinding.OrderCreationPaymentSectionBinding
-import com.woocommerce.android.extensions.*
+import com.woocommerce.android.extensions.handleDialogResult
+import com.woocommerce.android.extensions.isNotEqualTo
+import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.base.BaseFragment
@@ -37,6 +38,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.widgets.CustomProgressDialog
+import com.woocommerce.android.widgets.WCReadMoreTextView
 import dagger.hilt.android.AndroidEntryPoint
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -71,8 +73,9 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.menu_order_creation, menu)
+
         createOrderMenuItem = menu.findItem(R.id.menu_create).apply {
-            isVisible = viewModel.viewStateData.liveData.value?.canCreateOrder ?: false
+            isEnabled = viewModel.viewStateData.liveData.value?.canCreateOrder ?: false
         }
     }
 
@@ -200,7 +203,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                 if (show) showProgressDialog() else hideProgressDialog()
             }
             new.canCreateOrder.takeIfNotEqualTo(old?.canCreateOrder) {
-                createOrderMenuItem?.isVisible = it
+                createOrderMenuItem?.isEnabled = it
             }
             new.isUpdatingOrderDraft.takeIfNotEqualTo(old?.isUpdatingOrderDraft) { show ->
                 binding.paymentSection.loadingProgress.isVisible = show
@@ -260,14 +263,14 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
 
     private fun bindNotesSection(notesSection: OrderCreationSectionView, customerNote: String) {
         customerNote.takeIf { it.isNotBlank() }
-            ?.let {
-                val textView = MaterialTextView(requireContext())
-                TextViewCompat.setTextAppearance(textView, R.style.TextAppearance_Woo_Subtitle1)
-                textView.text = it
-                textView
-            }
-            .let {
-                notesSection.content = it
+            ?.let { noteText ->
+                WCReadMoreTextView(requireContext()).also {
+                    it.show(
+                        content = noteText,
+                        dialogCaptionId = R.string.order_creation_customer_note
+                    )
+                    notesSection.content = it
+                }
             }
     }
 
@@ -293,7 +296,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                     itemAnimator = animator
                 }
             }
-            ((productsSection.content as RecyclerView).adapter as OrderCreationProductsAdapter).products = products
+            ((productsSection.content as RecyclerView).adapter as OrderCreationProductsAdapter).submitList(products)
         }
     }
 

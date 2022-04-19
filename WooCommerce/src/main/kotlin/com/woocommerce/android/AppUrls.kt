@@ -31,7 +31,11 @@ object AppUrls {
 
     const val SIMPLE_PAYMENTS_SURVEY = "https://automattic.survey.fm/woo-app-quick-order-production"
 
+    const val ORDER_CREATION_SURVEY = "https://automattic.survey.fm/woo-app-order-creation-production"
+
     const val COUPONS_SURVEY_DEBUG = "https://automattic.survey.fm/woo-app-coupon-management-testing"
+
+    // Will be used later when the feature is fully launched.
     const val COUPONS_SURVEY = "https://automattic.survey.fm/woo-app-coupon-management-production"
 
     const val WOOCOMMERCE_USER_ROLES =
