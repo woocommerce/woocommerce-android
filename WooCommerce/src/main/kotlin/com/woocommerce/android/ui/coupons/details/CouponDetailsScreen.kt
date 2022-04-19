@@ -66,7 +66,7 @@ fun CouponDetailsScreen(
                     expanded = showMenu,
                     onDismissRequest = { showMenu = false }
                 ) {
-                    DropdownMenuItem(onClick = onCopyButtonClick)  {
+                    DropdownMenuItem(onClick = onCopyButtonClick) {
                         Text(stringResource(id = R.string.coupon_details_menu_copy))
                     }
                     DropdownMenuItem(onClick = onShareButtonClick) {
