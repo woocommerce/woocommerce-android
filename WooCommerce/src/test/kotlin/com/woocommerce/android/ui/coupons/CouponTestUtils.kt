@@ -9,6 +9,7 @@ object CouponTestUtils {
     fun generateTestCoupon(couponId: Long): Coupon {
         return Coupon(
             id = couponId,
+            code = "code1337",
             amount = BigDecimal.TEN,
             minimumAmount = BigDecimal.TEN,
             maximumAmount = BigDecimal("100"),
