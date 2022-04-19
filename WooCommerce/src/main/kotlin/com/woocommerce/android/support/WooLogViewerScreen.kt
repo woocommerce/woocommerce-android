@@ -7,6 +7,7 @@ import android.view.MenuItem
 import androidx.annotation.ColorRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -77,7 +78,9 @@ class WooLogViewerScreen : AppCompatActivity() {
     @Composable
     fun LogViewerEntry(index: Int, entry: RollingLogEntries.LogEntry) {
         Column(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(color = MaterialTheme.colors.surface),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Row(
