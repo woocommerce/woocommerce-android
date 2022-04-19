@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
@@ -141,12 +139,14 @@ fun InboxNoteRow(note: InboxNoteUi) {
 
 @Composable
 private fun InboxNoteActionsRow(actions: List<InboxNoteActionUi>) {
-    LazyRow(
-        Modifier.padding(start = 8.dp, end = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+    Row(
+        modifier = Modifier
+            .padding(start = 8.dp, end = 8.dp)
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.Start,
     ) {
-        items(actions) { action ->
-            InboxNoteTextAction(inboxAction = action)
+        actions.forEach {
+            InboxNoteTextAction(inboxAction = it)
         }
     }
 }
@@ -176,7 +176,10 @@ private fun InboxNoteSurveyActionsRow(actions: List<InboxNoteActionUi>) {
 
 @Composable
 fun InboxNoteTextAction(inboxAction: InboxNoteActionUi) {
-    TextButton(onClick = { inboxAction.onClick(inboxAction.id, inboxAction.parentNoteId) }) {
+    TextButton(
+        modifier = Modifier.padding(end = 8.dp),
+        onClick = { inboxAction.onClick(inboxAction.id, inboxAction.parentNoteId) }
+    ) {
         Text(
             text = inboxAction.label.uppercase(),
             color = colorResource(id = inboxAction.textColor)
