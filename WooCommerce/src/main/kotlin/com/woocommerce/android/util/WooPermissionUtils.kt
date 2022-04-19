@@ -9,10 +9,9 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
-import android.os.Build.VERSION
-import android.os.Build.VERSION_CODES
 import android.provider.Settings
 import androidx.activity.result.ActivityResultLauncher
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
 object WooPermissionUtils {
@@ -35,11 +34,7 @@ object WooPermissionUtils {
     fun shouldShowFineLocationPermissionRationale(activity: Activity): Boolean {
         if (hasFineLocationPermission(activity)) return false
 
-        return if (VERSION.SDK_INT >= VERSION_CODES.M) {
-            activity.shouldShowRequestPermissionRationale(ACCESS_FINE_LOCATION)
-        } else {
-            true
-        }
+        return ActivityCompat.shouldShowRequestPermissionRationale(activity, ACCESS_FINE_LOCATION)
     }
 
     fun hasBluetoothScanPermission(context: Context) =
