@@ -1898,8 +1898,8 @@
     <string name="coupon_details_copy_clipboard_label">Coupon Code</string>
     <string name="coupon_details_copy_success">Coupon code copied to clipboard.</string>
     <string name="coupon_details_copy_error">Error copying coupon code to clipboard.</string>
-    <string name="coupon_details_share_coupon_all">Apply %$1s off to all products with the promo code %$2s</string>
-    <string name="coupon_details_share_coupon_some">Apply %$1s off to select products with the promo code %$2s</string>
+    <string name="coupon_details_share_coupon_all">Apply %1$s off to all products with the promo code %2$s</string>
+    <string name="coupon_details_share_coupon_some">Apply %1$s off to select products with the promo code %2$s</string>
     <string name="coupon_details_share_coupon_error">Error sharing coupon code.</string>
     <string name="coupon_details_share_formatting_failure">Unable to generate coupon code sharing message</string>
 
