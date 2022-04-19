@@ -12,7 +12,6 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -45,7 +44,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `should replicate billing to shipping when toggle is activated`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             orderEditingRepository.stub {
                 onBlocking {
                     updateBothOrderAddresses(any(), any(), any())
@@ -68,7 +67,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `should replicate shipping to billing when toggle is activated`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             orderEditingRepository.stub {
                 onBlocking {
                     updateBothOrderAddresses(any(), any(), any())
@@ -131,7 +130,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `should replace email info with original one when empty`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val originalOrder = testOrder.copy(
                 billingAddress = addressToUpdate.copy(email = "original@email.com")
             )
