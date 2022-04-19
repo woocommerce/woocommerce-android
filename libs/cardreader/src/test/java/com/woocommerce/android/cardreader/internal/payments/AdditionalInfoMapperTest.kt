@@ -15,7 +15,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 
-class AdditionalInfoMapperTest: CardReaderBaseUnitTest() {
+class AdditionalInfoMapperTest : CardReaderBaseUnitTest() {
     private lateinit var additionalInfoMapper: AdditionalInfoMapper
 
     @Before

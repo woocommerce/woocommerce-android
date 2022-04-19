@@ -17,7 +17,7 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
-class PaymentErrorMapperTest: CardReaderBaseUnitTest() {
+class PaymentErrorMapperTest : CardReaderBaseUnitTest() {
     private lateinit var mapper: PaymentErrorMapper
 
     private val terminalException = mock<TerminalException>().also {

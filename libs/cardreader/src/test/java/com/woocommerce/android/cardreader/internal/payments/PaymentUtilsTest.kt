@@ -10,7 +10,7 @@ import java.math.BigDecimal
 private const val NONE_USD_CURRENCY = "CZK"
 private const val USD_CURRENCY = "USD"
 
-class PaymentUtilsTest : CardReaderBaseUnitTest(){
+class PaymentUtilsTest : CardReaderBaseUnitTest() {
     private val paymentUtils = PaymentUtils()
 
     @Test

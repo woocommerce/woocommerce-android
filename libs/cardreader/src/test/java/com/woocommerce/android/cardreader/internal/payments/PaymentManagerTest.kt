@@ -69,7 +69,7 @@ private const val DUMMY_SITE_URL = "www.test.test/test"
 private const val DUMMY_STORE_NAME = "Test store"
 
 @ExperimentalCoroutinesApi
-class PaymentManagerTest: CardReaderBaseUnitTest() {
+class PaymentManagerTest : CardReaderBaseUnitTest() {
     private lateinit var manager: PaymentManager
     private val terminalWrapper: TerminalWrapper = mock()
     private val cardReaderStore: CardReaderStore = mock()
