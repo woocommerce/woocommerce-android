@@ -200,6 +200,8 @@ class CardReaderManagerImplTest {
             verify(connectionManager).resetBluetoothCardReaderDisplayMessage()
         }
 
+    // Interac Refund tests
+
     @Test
     fun `given terminal not initialized when interac refund, then exception is thrown`() {
         whenever(terminalWrapper.isInitialized()).thenReturn(false)

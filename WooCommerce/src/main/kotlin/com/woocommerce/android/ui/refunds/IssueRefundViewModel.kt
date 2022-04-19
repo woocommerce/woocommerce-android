@@ -33,6 +33,7 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.prefs.cardreader.InPersonPaymentsCanadaFeatureFlag
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.TOO_HIGH
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.TOO_LOW
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.VALID
@@ -94,6 +95,7 @@ class IssueRefundViewModel @Inject constructor(
     private val refundStore: WCRefundStore,
     private val paymentChargeRepository: PaymentChargeRepository,
     private val orderMapper: OrderMapper,
+    private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DEFAULT_DECIMAL_PRECISION = 2
@@ -147,6 +149,7 @@ class IssueRefundViewModel @Inject constructor(
     private val maxQuantities: Map<Long, Float>
     private val formatCurrency: (BigDecimal) -> String
     private val gateway: PaymentGateway
+    private var cardType = PaymentMethodType.CARD_PRESENT
     private val arguments: RefundsArgs by savedState.navArgs()
 
     private val selectedQuantities: MutableMap<Long, Int> by lazy {
@@ -362,7 +365,11 @@ class IssueRefundViewModel @Inject constructor(
                     refundSummaryState = refundSummaryState.copy(
                         isFormEnabled = false
                     )
-
+                    if (isInteracRefund() && inPersonPaymentsCanadaFeatureFlag.isEnabled()) {
+                        triggerEvent(IssueRefundEvent.NavigateToCardReaderScreen(order.id, commonState.refundTotal))
+                    } else {
+                        refund()
+                    }
                     triggerEvent(
                         ShowSnackbar(
                             R.string.order_refunds_amount_refund_progress_message,
@@ -381,7 +388,6 @@ class IssueRefundViewModel @Inject constructor(
                             AnalyticsTracker.KEY_AMOUNT to commonState.refundTotal.toString()
                         )
                     )
-                    triggerEvent(IssueRefundEvent.NavigateToCardReaderScreen(order.id))
                     refundSummaryState = refundSummaryState.copy(isFormEnabled = true)
                 }
             } else {
@@ -389,6 +395,8 @@ class IssueRefundViewModel @Inject constructor(
             }
         }
     }
+
+    private fun isInteracRefund() = cardType == PaymentMethodType.INTERAC_PRESENT
 
     /*
        This method does the actual refund in case of non-interac refund. In case of Interac refund, the actual
@@ -775,6 +783,7 @@ class IssueRefundViewModel @Inject constructor(
         launch {
             when (val result = paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)) {
                 is PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success -> {
+                    cardType = PaymentMethodType.fromValue(result.paymentMethodType ?: "card_present")
                     val refundMethodWithCard = result.run {
                         val brand = result.cardBrand.orEmpty().replaceFirstChar { it.uppercase() }
                         val last4 = result.cardLast4.orEmpty()
@@ -956,6 +965,17 @@ class IssueRefundViewModel @Inject constructor(
 
         data class OpenUrl(val url: String) : IssueRefundEvent()
         object HideValidationError : IssueRefundEvent()
-        data class NavigateToCardReaderScreen(val orderId: Long) : IssueRefundEvent()
+        data class NavigateToCardReaderScreen(val orderId: Long, val refundAmount: BigDecimal) : IssueRefundEvent()
+    }
+
+    enum class PaymentMethodType(val paymentMethodType: String) {
+        CARD_PRESENT("card_present"),
+        INTERAC_PRESENT("interac_present");
+
+        companion object {
+            fun fromValue(paymentMethodType: String?): PaymentMethodType {
+                return values().firstOrNull { it.paymentMethodType == paymentMethodType } ?: CARD_PRESENT
+            }
+        }
     }
 }

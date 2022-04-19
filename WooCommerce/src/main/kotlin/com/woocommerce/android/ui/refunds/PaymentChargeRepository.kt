@@ -31,22 +31,25 @@ class PaymentChargeRepository @Inject constructor(
             } else {
                 val paymentMethodDetails = result.result?.paymentMethodDetails
                 when (paymentMethodDetails?.type) {
-                    "interac_present" -> {
+                    INTERAC_PRESENT -> {
                         CardDataUsedForOrderPaymentResult.Success(
                             cardBrand = paymentMethodDetails.interacCardDetails?.brand,
-                            cardLast4 = paymentMethodDetails.interacCardDetails?.last4
+                            cardLast4 = paymentMethodDetails.interacCardDetails?.last4,
+                            paymentMethodType = INTERAC_PRESENT
                         )
                     }
-                    "card_present" -> {
+                    CARD_PRESENT -> {
                         CardDataUsedForOrderPaymentResult.Success(
                             cardBrand = paymentMethodDetails.cardDetails?.brand,
-                            cardLast4 = paymentMethodDetails.cardDetails?.last4
+                            cardLast4 = paymentMethodDetails.cardDetails?.last4,
+                            paymentMethodType = CARD_PRESENT
                         )
                     }
                     else ->
                         CardDataUsedForOrderPaymentResult.Success(
                             cardBrand = null,
-                            cardLast4 = null
+                            cardLast4 = null,
+                            paymentMethodType = null
                         )
                 }
             }
@@ -57,7 +60,13 @@ class PaymentChargeRepository @Inject constructor(
         object Error : CardDataUsedForOrderPaymentResult()
         data class Success(
             val cardBrand: String?,
-            val cardLast4: String?
+            val cardLast4: String?,
+            val paymentMethodType: String?
         ) : CardDataUsedForOrderPaymentResult()
+    }
+
+    companion object {
+        private const val INTERAC_PRESENT = "interac_present"
+        private const val CARD_PRESENT = "card_present"
     }
 }

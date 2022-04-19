@@ -13,7 +13,8 @@ import kotlinx.coroutines.flow.flow
 internal class InteracRefundManager(
     private val collectInteracRefundAction: CollectInteracRefundAction,
     private val processInteracRefundAction: ProcessInteracRefundAction,
-    private val refundErrorMapper: RefundErrorMapper
+    private val refundErrorMapper: RefundErrorMapper,
+    private val paymentUtils: PaymentUtils,
 ) {
     fun refundInteracPayment(refundParameters: RefundParams): Flow<CardInteracRefundStatus> = flow {
         collectInteracRefund(refundParameters)
@@ -24,7 +25,7 @@ internal class InteracRefundManager(
     ) {
         emit(CardInteracRefundStatus.CollectingInteracRefund)
         collectInteracRefundAction.collectRefund(
-            refundParameters.toStripeRefundParameters()
+            refundParameters.toStripeRefundParameters(paymentUtils)
         ).collect { refundStatus ->
             when (refundStatus) {
                 CollectInteracRefundAction.CollectInteracRefundStatus.Success -> {

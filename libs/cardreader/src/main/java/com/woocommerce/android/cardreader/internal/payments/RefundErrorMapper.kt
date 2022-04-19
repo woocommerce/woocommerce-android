@@ -14,11 +14,8 @@ internal class RefundErrorMapper {
         exception: TerminalException
     ): InteracRefundFailure {
         val type = when (exception.errorCode) {
-            // If charge id is empty, If card used for refund is different than the one used for transaction.
             TerminalException.TerminalErrorCode.DECLINED_BY_STRIPE_API -> mapDeclinedByStripeApiError(exception)
-            // If no network
             TerminalException.TerminalErrorCode.STRIPE_API_CONNECTION_ERROR -> NoNetwork
-            // If merchant manually cancelled the refund, timeout
             TerminalException.TerminalErrorCode.CANCELED -> Cancelled
             else -> Generic
         }
