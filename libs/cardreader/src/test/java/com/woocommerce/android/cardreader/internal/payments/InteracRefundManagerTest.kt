@@ -47,7 +47,6 @@ class InteracRefundManagerTest {
     private val paymentUtils: PaymentUtils = mock()
 
     private val expectedInteracRefundSequence = listOf(
-        CardInteracRefundStatus.InitializingInteracRefund::class,
         CardInteracRefundStatus.CollectingInteracRefund::class,
         CardInteracRefundStatus.ProcessingInteracRefund::class,
         CardInteracRefundStatus.InteracRefundSuccess::class
@@ -61,14 +60,6 @@ class InteracRefundManagerTest {
             refundErrorMapper,
             paymentUtils,
         )
-    }
-
-    @Test
-    fun `when interac refund starts, then InitializingInteracRefund is emitted`() = runBlockingTest {
-        val result = manager.refundInteracPayment(createRefundParams())
-            .takeUntil(CardInteracRefundStatus.InitializingInteracRefund::class).toList()
-
-        assertThat(result.last()).isInstanceOf(CardInteracRefundStatus.InitializingInteracRefund::class.java)
     }
 
     @Test

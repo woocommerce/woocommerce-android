@@ -3,7 +3,6 @@ package com.woocommerce.android.cardreader.payments
 sealed class CardInteracRefundStatus {
     object InitializingInteracRefund : CardInteracRefundStatus()
     object CollectingInteracRefund : CardInteracRefundStatus()
-    object WaitingForInput : CardInteracRefundStatus()
     object ProcessingInteracRefund : CardInteracRefundStatus()
     object InteracRefundSuccess : CardInteracRefundStatus()
     data class InteracRefundFailure(
@@ -19,11 +18,6 @@ sealed class CardInteracRefundStatus {
         object Generic : RefundStatusErrorType()
 
         sealed class DeclinedByBackendError : RefundStatusErrorType() {
-            /**
-             * The specified amount is less than the minimum amount allowed (50 cents at the moment)
-             */
-            object AmountTooSmall : DeclinedByBackendError()
-
             /**
              * Declined by stripe api with unknown reason
              */

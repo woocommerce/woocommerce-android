@@ -258,10 +258,12 @@ sealed class CardReaderFlowParam : Parcelable {
     object CardReadersHub : CardReaderFlowParam()
 
     sealed class PaymentOrRefund : CardReaderFlowParam() {
-        @Parcelize
-        data class Payment(val orderId: Long) : PaymentOrRefund()
+        abstract val orderId: Long
 
         @Parcelize
-        data class Refund(val orderId: Long, val refundAmount: BigDecimal) : PaymentOrRefund()
+        data class Payment(override val orderId: Long) : PaymentOrRefund()
+
+        @Parcelize
+        data class Refund(override val orderId: Long) : PaymentOrRefund()
     }
 }

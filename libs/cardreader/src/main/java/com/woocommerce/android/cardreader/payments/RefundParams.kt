@@ -1,5 +1,6 @@
 package com.woocommerce.android.cardreader.payments
 
+import com.stripe.stripeterminal.external.models.RefundParameters
 import java.math.BigDecimal
 
 data class RefundParams(
@@ -7,3 +8,9 @@ data class RefundParams(
     val amount: BigDecimal,
     val currency: String
 )
+
+internal fun RefundParams.toStripeRefundParameters() = RefundParameters.Builder(
+    chargeId = this.chargeId,
+    amount = this.amount.toLong(),
+    currency = this.currency
+).build()

@@ -33,7 +33,6 @@ import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptEvent.SendRec
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderTrackingInfoKeeper
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult
@@ -81,11 +80,7 @@ class CardReaderPaymentViewModel
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderPaymentDialogFragmentArgs by savedState.navArgs()
 
-    private val orderId: Long
-        get() = getOrderIdAndRefundAmountPair().first
-
-    private val refundAmount: BigDecimal?
-        get() = getOrderIdAndRefundAmountPair().second
+    private val orderId = arguments.paymentOrRefund.orderId
 
     // The app shouldn't store the state as payment flow gets canceled when the vm dies
     private val viewState = MutableLiveData<ViewState>(LoadingDataState)
@@ -96,17 +91,6 @@ class CardReaderPaymentViewModel
     private var paymentDataForRetry: PaymentData? = null
 
     private var refetchOrderJob: Job? = null
-
-    private fun getOrderIdAndRefundAmountPair(): Pair<Long, BigDecimal?> {
-        return when (val param = arguments.paymentOrRefund as CardReaderFlowParam.PaymentOrRefund) {
-            is CardReaderFlowParam.PaymentOrRefund.Payment -> {
-                Pair(param.orderId, null)
-            }
-            is CardReaderFlowParam.PaymentOrRefund.Refund -> {
-                Pair(param.orderId, param.refundAmount)
-            }
-        }
-    }
 
     fun start() {
         if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected) {
@@ -255,8 +239,7 @@ class CardReaderPaymentViewModel
                 when (paymentStatus.paymentMethodType) {
                     // Interac payments done in one step, without capturing. That's why we track success here
                     PaymentMethodType.INTERAC_PRESENT -> tracker.trackInteracPaymentSucceeded()
-                    else -> {
-                    }
+                    else -> {}
                 }
             }
             CapturingPayment -> viewState.postValue(CapturingPaymentState(amountLabel))

@@ -86,34 +86,9 @@ class RefundErrorMapperTest {
     }
 
     @Test
-    fun `when AMOUNT_TOO_SMALL Terminal exception thrown, then AmountTooSmall type returned`() {
-        whenever(terminalException.errorCode).thenReturn(TerminalException.TerminalErrorCode.DECLINED_BY_STRIPE_API)
-        whenever(terminalException.apiError).thenReturn(mock())
-        whenever(terminalException.apiError?.code).thenReturn("amount_too_small")
-
-        val result = mapper.mapTerminalError(refundParameters, terminalException)
-
-        Assertions.assertThat(result.type)
-            .isEqualTo(DeclinedByBackendError.AmountTooSmall)
-    }
-
-    @Test
-    fun `when PAYMENT_DECLINED with code other than amount_too_small is thrown, then unknown type returned`() {
-        whenever(terminalException.errorCode).thenReturn(TerminalException.TerminalErrorCode.DECLINED_BY_STRIPE_API)
-        whenever(terminalException.apiError).thenReturn(mock())
-        whenever(terminalException.apiError?.code).thenReturn("error")
-
-        val result = mapper.mapTerminalError(refundParameters, terminalException)
-
-        Assertions.assertThat(result.type)
-            .isEqualTo(DeclinedByBackendError.Unknown)
-    }
-
-    @Test
     fun `when PAYMENT_DECLINED Terminal exception throw with null code, then unknown type returned`() {
         whenever(terminalException.errorCode).thenReturn(TerminalException.TerminalErrorCode.DECLINED_BY_STRIPE_API)
         whenever(terminalException.apiError).thenReturn(mock())
-        whenever(terminalException.apiError?.code).thenReturn(null)
 
         val result = mapper.mapTerminalError(refundParameters, terminalException)
 
@@ -544,7 +519,6 @@ class RefundErrorMapperTest {
     private fun setupStripeApiCardDeclined(declineCode: String?) {
         whenever(terminalException.errorCode).thenReturn(TerminalException.TerminalErrorCode.DECLINED_BY_STRIPE_API)
         whenever(terminalException.apiError).thenReturn(mock())
-        whenever(terminalException.apiError?.code).thenReturn("card_declined")
         whenever(terminalException.apiError?.declineCode).thenReturn(declineCode)
     }
 }
