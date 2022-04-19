@@ -89,7 +89,7 @@ class WooLogViewerScreen : AppCompatActivity() {
                 Text(
                     text = format(Locale.US, "%02d", index + 1),
                     style = MaterialTheme.typography.body2,
-                    modifier = Modifier.padding(end = 16.dp),
+                    modifier = Modifier.padding(end = 8.dp),
                     color = colorResource(id = R.color.grey)
                 )
                 SelectionContainer {
