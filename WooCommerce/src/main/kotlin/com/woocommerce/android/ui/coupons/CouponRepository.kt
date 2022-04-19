@@ -10,11 +10,23 @@ class CouponRepository @Inject constructor(
     private val store: CouponStore,
     private val site: SelectedSite
 ) {
+    companion object {
+        private const val PAGE_SIZE = 10
+    }
+    private var page = 1
+    private var canLoadMore = true
+
     val couponsFlow = store.observeCoupons(site.get()).map {
         it.map { couponDataModel -> couponDataModel.toAppModel() }
     }
 
-    suspend fun loadCoupons() {
-        store.fetchCoupons(site.get())
+    suspend fun loadCoupons(loadMore: Boolean = false) {
+        if (!loadMore) {
+            page = 1
+        } else if (!canLoadMore) {
+            return
+        }
+        val result = store.fetchCoupons(site.get(), page++, PAGE_SIZE)
+        canLoadMore = result.model ?: false
     }
 }

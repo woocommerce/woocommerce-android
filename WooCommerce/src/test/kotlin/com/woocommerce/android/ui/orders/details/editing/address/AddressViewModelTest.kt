@@ -13,7 +13,6 @@ import com.woocommerce.android.ui.orders.details.editing.address.AddressViewMode
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelTestUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -67,7 +66,7 @@ class AddressViewModelTest : BaseUnitTest() {
     @Test
     fun `Should fetch countries and states on start if they've never been fetched`() {
         whenever(dataStore.getCountries()).thenReturn(emptyList())
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             addressViewModel.start(
                 mapOf(SHIPPING to shippingAddress)
             )
@@ -78,7 +77,7 @@ class AddressViewModelTest : BaseUnitTest() {
     @Test
     fun `Should NOT execute start more than once`() {
         whenever(dataStore.getCountries()).thenReturn(emptyList())
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             addressViewModel.start(
                 mapOf(SHIPPING to shippingAddress)
             )
@@ -92,7 +91,7 @@ class AddressViewModelTest : BaseUnitTest() {
     @Test
     fun `Should execute start again after onScreenDetached is called`() {
         whenever(dataStore.getCountries()).thenReturn(emptyList())
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             addressViewModel.start(
                 mapOf(SHIPPING to shippingAddress)
             )
@@ -114,7 +113,7 @@ class AddressViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Should NOT fetch countries and states on start if countries have already been fetched`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             addressViewModel.start(
                 mapOf(SHIPPING to shippingAddress)
             )

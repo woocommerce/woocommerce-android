@@ -19,7 +19,7 @@ import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.COUPONS
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListEvent.NavigateToCouponDetailsEvent
+import com.woocommerce.android.ui.coupons.CouponListViewModel.NavigateToCouponDetailsEvent
 import com.woocommerce.android.ui.feedback.SurveyType
 import dagger.hilt.android.AndroidEntryPoint
 
