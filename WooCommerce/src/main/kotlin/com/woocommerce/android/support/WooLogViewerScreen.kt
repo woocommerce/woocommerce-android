@@ -7,10 +7,7 @@ import android.view.MenuItem
 import androidx.annotation.ColorRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Divider
@@ -82,13 +79,14 @@ class WooLogViewerScreen : AppCompatActivity() {
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Column(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+            Row(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             ) {
                 Text(
                     text = format(Locale.US, "%02d", index + 1),
                     style = MaterialTheme.typography.body2,
+                    modifier = Modifier.padding(end = 16.dp),
+                    color = colorResource(id = R.color.grey)
                 )
                 Text(
                     text = entry.text ?: "",
