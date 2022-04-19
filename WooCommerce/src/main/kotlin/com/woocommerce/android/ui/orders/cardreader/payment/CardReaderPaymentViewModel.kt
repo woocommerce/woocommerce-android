@@ -311,7 +311,7 @@ class CardReaderPaymentViewModel
                 amountLabel,
                 refundStatus
             )
-        }
+        }.exhaustive
     }
 
     private fun onPaymentCompleted(
