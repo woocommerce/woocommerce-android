@@ -2134,14 +2134,65 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given chargeId is null, when interac refund initiated, then show snackbar event is triggered`() =
+    fun `given chargeId is null, when interac refund initiated, then proper state is shown`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             setupViewModelForInteracRefund()
             whenever(mockedOrder.chargeId).thenReturn(null)
+            whenever(
+                interacRefundErrorMapper.mapRefundErrorToUiError(
+                    CardInteracRefundStatus.RefundStatusErrorType.NonRetryable
+                )
+            ).thenReturn(InteracRefundFlowError.NonRetryableGeneric)
 
             viewModel.start()
 
-            assertThat(viewModel.event.value).isInstanceOf(ShowSnackbar::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(FailedRefundState::class.java)
+        }
+
+    @Test
+    fun `given non retryable error, when interac refund initiated, then correct labels and illustration is shown`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(mockedOrder.chargeId).thenReturn(null)
+            whenever(
+                interacRefundErrorMapper.mapRefundErrorToUiError(
+                    CardInteracRefundStatus.RefundStatusErrorType.NonRetryable
+                )
+            ).thenReturn(InteracRefundFlowError.NonRetryableGeneric)
+
+            viewModel.start()
+            val viewState = viewModel.viewStateData.value!!
+
+            assertThat(viewState.headerLabel).describedAs("headerLabel")
+                .isEqualTo(R.string.card_reader_interac_refund_refund_failed_header)
+            assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
+                .isEqualTo("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
+            assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.img_products_error)
+            assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
+                .isEqualTo(R.string.card_reader_interac_refund_refund_failed_unexpected_error_state)
+            assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
+                .isEqualTo(R.dimen.major_100)
+            assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()
+            assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel")
+                .isEqualTo(R.string.card_reader_interac_refund_refund_failed_ok)
+        }
+
+    @Test
+    fun `given non retryable error, when interac refund initiated, then primary action is back press`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(mockedOrder.chargeId).thenReturn(null)
+            whenever(
+                interacRefundErrorMapper.mapRefundErrorToUiError(
+                    CardInteracRefundStatus.RefundStatusErrorType.NonRetryable
+                )
+            ).thenReturn(InteracRefundFlowError.NonRetryableGeneric)
+
+            viewModel.start()
+            val viewState = viewModel.viewStateData.value!!
+            (viewState as FailedRefundState).onPrimaryActionClicked.invoke()
+
+            assertThat(viewModel.event.value).isInstanceOf(Exit::class.java)
         }
 
     @Test
@@ -2327,16 +2378,16 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
             val viewState = viewModel.viewStateData.value!!
 
-//            assertThat(viewState.headerLabel).describedAs("headerLabel")
-//                .isEqualTo(R.string.card_reader_interac_refund_refund_failed_header)
-//            assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
-//                .isEqualTo("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
-//            assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.img_products_error)
-//            assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
-//                .isEqualTo(R.string.card_reader_interac_refund_refund_failed_invalid_amount)
-//            assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
-//                .isEqualTo(R.dimen.major_100)
-//            assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()
+            assertThat(viewState.headerLabel).describedAs("headerLabel")
+                .isEqualTo(R.string.card_reader_interac_refund_refund_failed_header)
+            assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
+                .isEqualTo("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
+            assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.img_products_error)
+            assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
+                .isEqualTo(R.string.card_reader_interac_refund_refund_failed_invalid_amount)
+            assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
+                .isEqualTo(R.dimen.major_100)
+            assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()
             assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel")
                 .isEqualTo(R.string.card_reader_interac_refund_refund_failed_ok)
         }

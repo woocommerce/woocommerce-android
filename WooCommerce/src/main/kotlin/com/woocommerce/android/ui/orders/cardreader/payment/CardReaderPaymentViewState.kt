@@ -204,8 +204,12 @@ sealed class InteracRefundFlowError(@StringRes val message: Int) {
     object NoNetwork : InteracRefundFlowError(R.string.card_reader_payment_failed_no_network_state)
     object Server : InteracRefundFlowError(R.string.card_reader_payment_failed_server_error_state)
     object Generic : InteracRefundFlowError(R.string.card_reader_interac_refund_refund_failed_unexpected_error_state)
+    object NonRetryableGeneric :
+        InteracRefundFlowError(
+            R.string.card_reader_interac_refund_refund_failed_unexpected_error_state
+        ),
+        NonRetryableError
     object Cancelled : InteracRefundFlowError(R.string.card_reader_interac_refund_refund_failed_cancelled)
-    object AmountTooSmall : Declined(R.string.card_reader_payment_failed_amount_too_small), NonRetryableError
     object Unknown : Declined(R.string.card_reader_interac_refund_refund_failed_header)
     sealed class Declined(message: Int) : InteracRefundFlowError(message) {
         object Temporary : Declined(R.string.card_reader_payment_failed_temporary)

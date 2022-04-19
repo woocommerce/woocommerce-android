@@ -8,7 +8,7 @@ sealed class CardInteracRefundStatus {
     data class InteracRefundFailure(
         val type: RefundStatusErrorType,
         val errorMessage: String,
-        val refundParams: RefundParams
+        val refundParams: RefundParams?
     ) : CardInteracRefundStatus()
 
     sealed class RefundStatusErrorType {
@@ -16,6 +16,7 @@ sealed class CardInteracRefundStatus {
         object Cancelled : RefundStatusErrorType()
         object Server : RefundStatusErrorType()
         object Generic : RefundStatusErrorType()
+        object NonRetryable : RefundStatusErrorType()
 
         sealed class DeclinedByBackendError : RefundStatusErrorType() {
             /**

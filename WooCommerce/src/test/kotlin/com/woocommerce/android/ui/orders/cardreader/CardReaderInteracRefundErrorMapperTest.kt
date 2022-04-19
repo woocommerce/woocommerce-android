@@ -58,6 +58,16 @@ class CardReaderInteracRefundErrorMapperTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given refund status NonRetryable, when map payment error called, then correct ui error is mapped`() {
+        val errorType = CardInteracRefundStatus.RefundStatusErrorType.NonRetryable
+        val expectedErrorType = InteracRefundFlowError.NonRetryableGeneric
+
+        val actualErrorType = cardReaderInteracRefundErrorMapper.mapRefundErrorToUiError(errorType)
+
+        assertThat(actualErrorType).isEqualTo(expectedErrorType)
+    }
+
+    @Test
     fun `given refund status UNKNOWN, when map payment error called, then correct ui error is mapped`() {
         val errorType = DeclinedByBackendError.Unknown
         val expectedErrorType = InteracRefundFlowError.Unknown

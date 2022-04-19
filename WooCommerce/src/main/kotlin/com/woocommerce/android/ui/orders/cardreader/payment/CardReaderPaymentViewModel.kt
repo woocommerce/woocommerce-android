@@ -253,7 +253,8 @@ class CardReaderPaymentViewModel
                 when (paymentStatus.paymentMethodType) {
                     // Interac payments done in one step, without capturing. That's why we track success here
                     PaymentMethodType.INTERAC_PRESENT -> tracker.trackInteracPaymentSucceeded()
-                    else -> {}
+                    else -> {
+                    }
                 }
             }
             CapturingPayment -> viewState.postValue(CapturingPaymentState(amountLabel))
@@ -292,7 +293,19 @@ class CardReaderPaymentViewModel
                     )
                 )
             }
-        } ?: triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_error))
+        } ?: run {
+            emitFailedInteracRefundState(
+                currencyFormatter.formatAmountWithCurrency(
+                    order.currency,
+                    refundAmount!!.toDouble()
+                ),
+                InteracRefundFailure(
+                    type = CardInteracRefundStatus.RefundStatusErrorType.NonRetryable,
+                    errorMessage = "Charge id is null for the order.",
+                    refundParams = null
+                )
+            )
+        }
     }
 
     private fun onRefundStatusChanged(
@@ -342,7 +355,7 @@ class CardReaderPaymentViewModel
         amountLabel: String?,
         error: InteracRefundFailure
     ) {
-        WooLog.e(WooLog.T.CARD_READER, "Refund failed")
+        WooLog.e(WooLog.T.CARD_READER, "Refund failed: ${error.errorMessage}")
         val onRetryClicked = { retryInteracRefund() }
         val errorType = interacRefundErrorMapper.mapRefundErrorToUiError(error.type)
         if (errorType is InteracRefundFlowError.NonRetryableError) {
