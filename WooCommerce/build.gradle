@@ -71,7 +71,7 @@ android {
         } else {
             versionName "9.0-rc-1"
         }
-        versionCode 293
+        versionCode 294
 
         minSdkVersion 21
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
