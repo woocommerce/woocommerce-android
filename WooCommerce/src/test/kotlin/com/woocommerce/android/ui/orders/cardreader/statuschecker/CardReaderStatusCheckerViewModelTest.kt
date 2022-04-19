@@ -43,7 +43,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
     fun `given payment flow and connected reader, when vm init, then navigates to payment`() = runBlockingTest {
         // GIVEN
         val orderId = 1L
-        val param = CardReaderFlowParam.ConnectAndAcceptPayment(orderId = orderId)
+        val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId)
         whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connected(mock())))
 
         // WHEN
@@ -59,7 +59,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
         runBlockingTest {
             // GIVEN
             val orderId = 1L
-            val param = CardReaderFlowParam.ConnectAndAcceptPayment(orderId = orderId)
+            val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId)
             whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
             whenever(cardReaderChecker.getOnboardingState()).thenReturn(CardReaderOnboardingState.GenericError)
 
@@ -76,7 +76,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
         runBlockingTest {
             // GIVEN
             val orderId = 1L
-            val param = CardReaderFlowParam.ConnectAndAcceptPayment(orderId = orderId)
+            val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId)
             whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
             whenever(cardReaderChecker.getOnboardingState()).thenReturn(
                 CardReaderOnboardingState.OnboardingCompleted(
@@ -98,7 +98,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
         runBlockingTest {
             // GIVEN
             val orderId = 1L
-            val param = CardReaderFlowParam.ConnectAndAcceptPayment(orderId = orderId)
+            val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId)
             whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
             val onboardingState = CardReaderOnboardingState.OnboardingCompleted(
                 PluginType.WOOCOMMERCE_PAYMENTS,
@@ -119,7 +119,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
         runBlockingTest {
             // GIVEN
             val orderId = 1L
-            val param = CardReaderFlowParam.ConnectAndAcceptPayment(orderId = orderId)
+            val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId)
             whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
             val onboardingState = CardReaderOnboardingState.OnboardingCompleted(
                 PluginType.WOOCOMMERCE_PAYMENTS,

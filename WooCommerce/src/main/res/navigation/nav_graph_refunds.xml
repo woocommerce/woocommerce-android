@@ -11,6 +11,14 @@
         <action
             android:id="@+id/action_refundSummaryFragment_to_refundConfirmationDialog"
             app:destination="@id/refundConfirmationDialog" />
+        <action
+            android:id="@+id/action_refundSummaryFragment_to_cardReaderFlow"
+            app:destination="@id/cardReaderFlow">
+            <argument
+                android:name="cardReaderFlowParam"
+                app:argType="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam"
+                app:nullable="false" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/issueRefundFragment"

@@ -70,6 +70,8 @@ class CardReaderPaymentViewModel
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderPaymentDialogFragmentArgs by savedState.navArgs()
 
+    private val orderId = arguments.paymentOrRefund.orderId
+
     // The app shouldn't store the state as payment flow gets canceled when the vm dies
     private val viewState = MutableLiveData<ViewState>(LoadingDataState)
     val viewStateData: LiveData<ViewState> = viewState
@@ -225,7 +227,7 @@ class CardReaderPaymentViewModel
     }
 
     private suspend fun fetchOrder(): Order? {
-        return orderRepository.fetchOrderById(arguments.orderId)
+        return orderRepository.fetchOrderById(orderId)
     }
 
     private fun emitFailedPaymentState(orderId: Long, billingEmail: String, error: PaymentFailed, amountLabel: String) {
@@ -256,7 +258,7 @@ class CardReaderPaymentViewModel
 
     private fun showPaymentSuccessfulState() {
         launch {
-            val order = orderRepository.getOrderById(arguments.orderId)
+            val order = orderRepository.getOrderById(orderId)
                 ?: throw IllegalStateException("Order URL not available.")
             val amountLabel = order.getAmountLabel()
             val receiptUrl = getReceiptUrl(order.id)
@@ -330,7 +332,7 @@ class CardReaderPaymentViewModel
 
     private fun startPrintingFlow() {
         launch {
-            val order = orderRepository.getOrderById(arguments.orderId)
+            val order = orderRepository.getOrderById(orderId)
                 ?: throw IllegalStateException("Order URL not available.")
             triggerEvent(PrintReceipt(getReceiptUrl(order.id), order.getReceiptDocumentName()))
         }
@@ -456,4 +458,6 @@ class CardReaderPaymentViewModel
     class ShowSnackbarInDialog(@StringRes val message: Int) : Event()
 
     object PlayChaChing : MultiLiveEvent.Event()
+
+    object InteracRefundSuccessful : MultiLiveEvent.Event()
 }

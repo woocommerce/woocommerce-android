@@ -9,6 +9,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentRefundSummaryBinding
+import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateSafely
@@ -17,6 +18,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundConfirmation
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -27,6 +29,7 @@ import javax.inject.Inject
 class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), BackPressListener {
     companion object {
         const val REFUND_ORDER_NOTICE_KEY = "refund_order_notice"
+        const val KEY_INTERAC_SUCCESS = "interac_refund_success"
     }
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
@@ -62,6 +65,13 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.getSnack(event.message, *event.args).show()
                 is Exit -> navigateBackWithNotice(REFUND_ORDER_NOTICE_KEY, R.id.orderDetailFragment)
+                is IssueRefundViewModel.IssueRefundEvent.NavigateToCardReaderScreen -> {
+                    val action =
+                        RefundSummaryFragmentDirections.actionRefundSummaryFragmentToCardReaderFlow(
+                            cardReaderFlowParam = CardReaderFlowParam.PaymentOrRefund.Refund(event.orderId)
+                        )
+                    findNavController().navigateSafely(action)
+                }
                 is ShowRefundConfirmation -> {
                     val action =
                         RefundSummaryFragmentDirections.actionRefundSummaryFragmentToRefundConfirmationDialog(
@@ -98,6 +108,12 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
                 } else {
                     binding.refundSummaryMethodDescription.hide()
                 }
+            }
+            handleDialogNotice<String>(
+                KEY_INTERAC_SUCCESS,
+                entryId = R.id.refundSummaryFragment
+            ) {
+                viewModel.refund()
             }
         }
     }
