@@ -22,3 +22,4 @@ updates:
       - dependency-name: "org.wordpress:fluxc"
       - dependency-name: "org.wordpress.fluxc.plugins:woocommerce"
       - dependency-name: "org.wordpress:login"
+      - dependency-name: "com.automattic:Automattic-Tracks-Android"
