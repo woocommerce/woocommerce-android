@@ -42,18 +42,7 @@ class OrdersUITest : TestBase() {
     }
 
     @Test
-    fun createEmptyOrderTest() {
-        OrderListScreen()
-            .createFABTap()
-            .newOrderTap()
-            .assertNewOrderScreen()
-            .createOrder()
-            .assertSingleOrderScreenWithEmptyOrder()
-            .goBackToOrdersScreen()
-    }
-
-    @Test
-    fun createOrderWithProductTest() {
+    fun createOrderTest() {
         val productName = OrderSelectProductScreen.SIMPLE_PRODUCT_NAME
         OrderListScreen()
             .createFABTap()
