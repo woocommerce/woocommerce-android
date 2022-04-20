@@ -110,10 +110,10 @@ class WooLogViewerActivity : AppCompatActivity() {
         } else {
             when (level) {
                 WooLog.LogLevel.v -> R.color.grey
-                WooLog.LogLevel.d -> R.color.blue_30
+                WooLog.LogLevel.d -> R.color.blue_50
                 WooLog.LogLevel.i -> R.color.woo_black
-                WooLog.LogLevel.w -> R.color.woo_purple_30
-                WooLog.LogLevel.e -> R.color.woo_red_30
+                WooLog.LogLevel.w -> R.color.woo_purple_50
+                WooLog.LogLevel.e -> R.color.woo_red_50
             }
         }
     }
