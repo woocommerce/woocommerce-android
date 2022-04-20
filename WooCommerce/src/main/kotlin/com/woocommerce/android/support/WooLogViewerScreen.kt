@@ -28,6 +28,7 @@ private var isDarkTheme: Boolean = false
 
 @Composable
 fun WooLogViewerScreen(
+    entries: RollingLogEntries,
     isDarkThemeActive: Boolean,
     onBackPress: () -> Unit,
     onCopyButtonClick: () -> Unit,
@@ -67,7 +68,7 @@ fun WooLogViewerScreen(
             )
         }
     ) {
-        LogViewerEntries(WooLog.logEntries)
+        LogViewerEntries(entries)
     }
 }
 
@@ -135,7 +136,25 @@ private fun logLevelColor(level: WooLog.LogLevel): Int {
 @Preview
 @Composable
 fun WooLogViewerScreenPreview() {
+    val entries = RollingLogEntries(99).also {
+        it.add(
+            RollingLogEntries.LogEntry(WooLog.T.ORDERS, WooLog.LogLevel.v, "Verbose")
+        )
+        it.add(
+            RollingLogEntries.LogEntry(WooLog.T.PRODUCTS, WooLog.LogLevel.d, "Debug")
+        )
+        it.add(
+            RollingLogEntries.LogEntry(WooLog.T.REVIEWS, WooLog.LogLevel.i, "Informational")
+        )
+        it.add(
+            RollingLogEntries.LogEntry(WooLog.T.SUPPORT, WooLog.LogLevel.w, "Warning")
+        )
+        it.add(
+            RollingLogEntries.LogEntry(WooLog.T.DASHBOARD, WooLog.LogLevel.e, "Error")
+        )
+    }
     WooLogViewerScreen(
+        entries,
         isDarkThemeActive = false,
         onBackPress = {},
         onShareButtonClick = {},
