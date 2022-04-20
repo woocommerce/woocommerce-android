@@ -47,12 +47,14 @@ class InboxViewModel @Inject constructor(
 
     fun dismissAllNotes() {
         viewModelScope.launch {
+            _inboxState.value = _inboxState.value?.copy(isLoading = true)
             inboxRepository
                 .dismissAllNotesForCurrentSite()
                 .fold(
                     onFailure = { showSyncError() },
                     onSuccess = {}
                 )
+            _inboxState.value = _inboxState.value?.copy(isLoading = false)
         }
     }
 
