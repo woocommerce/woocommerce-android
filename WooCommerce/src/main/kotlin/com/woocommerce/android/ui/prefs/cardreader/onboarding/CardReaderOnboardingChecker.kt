@@ -79,6 +79,16 @@ class CardReaderOnboardingChecker @Inject constructor(
             }
     }
 
+    suspend fun fetchPreferredPlugin(): PreferredPluginResult {
+        val fetchSitePluginsResult = wooStore.fetchSitePlugins(selectedSite.get())
+        if (fetchSitePluginsResult.isError) {
+            return PreferredPluginResult.Error
+        }
+        val wcPayPluginInfo = wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_PAYMENTS)
+        val stripePluginInfo = wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY)
+        return PreferredPluginResult.Success(getPreferredPlugin(stripePluginInfo, wcPayPluginInfo).type)
+    }
+
     @Suppress("ReturnCount", "ComplexMethod")
     private suspend fun fetchOnboardingState(): CardReaderOnboardingState {
         val countryCode = getStoreCountryCode().also { cardReaderTrackingInfoKeeper.setCountry(it) }
@@ -343,4 +353,9 @@ sealed class CardReaderOnboardingState(
      * Internet connection is not available.
      */
     object NoConnectionError : CardReaderOnboardingState()
+}
+
+sealed class PreferredPluginResult {
+    data class Success(val type: PluginType) : PreferredPluginResult()
+    object Error : PreferredPluginResult()
 }

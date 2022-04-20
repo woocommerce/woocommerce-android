@@ -130,7 +130,7 @@ class IssueRefundViewModel @Inject constructor(
             updateRefundTotal(new.enteredAmount)
         }
     )
-    val productsRefundLiveData = LiveDataDelegate(savedState, ProductsRefundViewState())
+    private val productsRefundLiveData = LiveDataDelegate(savedState, ProductsRefundViewState())
 
     private var commonState by commonStateLiveData
     private var refundByAmountState by refundByAmountStateLiveData
@@ -161,6 +161,8 @@ class IssueRefundViewModel @Inject constructor(
     private var refundJob: Job? = null
     val isRefundInProgress: Boolean
         get() = refundJob?.isActive ?: false
+
+    private var isSummaryTextTooLong = false
 
     init {
         order = runBlocking { loadOrder(arguments.orderId) }
@@ -542,6 +544,7 @@ class IssueRefundViewModel @Inject constructor(
      * surpassed, the button should be disabled until the text is brought within the maximum length.
      */
     fun onRefundSummaryTextChanged(maxLength: Int, currLength: Int) {
+        isSummaryTextTooLong = currLength > maxLength
         refundSummaryState = refundSummaryState.copy(isSubmitButtonEnabled = currLength <= maxLength)
     }
 
@@ -781,7 +784,12 @@ class IssueRefundViewModel @Inject constructor(
 
     private fun loadCardDetails(chargeId: String, refundMethod: String) {
         launch {
-            when (val result = paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)) {
+            refundSummaryState = refundSummaryState.copy(isSubmitButtonEnabled = false)
+            val result = paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)
+            if (!isSummaryTextTooLong) {
+                refundSummaryState = refundSummaryState.copy(isSubmitButtonEnabled = true)
+            }
+            when (result) {
                 is PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success -> {
                     cardType = PaymentMethodType.fromValue(result.paymentMethodType ?: "card_present")
                     val refundMethodWithCard = result.run {
@@ -792,6 +800,7 @@ class IssueRefundViewModel @Inject constructor(
                     updateRefundSummaryState(refundMethodWithCard, isMethodDescriptionVisible = false)
                 }
                 PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Error -> {
+                    cardType = PaymentMethodType.CARD_PRESENT
                     updateRefundSummaryState(refundMethod, isMethodDescriptionVisible = false)
                 }
             }.exhaustive

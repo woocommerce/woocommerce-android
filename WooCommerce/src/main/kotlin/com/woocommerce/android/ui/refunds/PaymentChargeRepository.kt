@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.refunds
 
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingChecker
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PreferredPluginResult
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.toInPersonPaymentsPluginType
 import com.woocommerce.android.util.WooLog
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
@@ -10,7 +12,8 @@ import javax.inject.Inject
 class PaymentChargeRepository @Inject constructor(
     private val ippStore: WCInPersonPaymentsStore,
     private val selectedSite: SelectedSite,
-    private val appPrefs: AppPrefs
+    private val appPrefs: AppPrefs,
+    private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
 ) {
     private val activePlugin: WCInPersonPaymentsStore.InPersonPaymentsPluginType?
         get() = appPrefs.getCardReaderPreferredPlugin(
@@ -21,7 +24,15 @@ class PaymentChargeRepository @Inject constructor(
             ?: null.also { WooLog.e(WooLog.T.ORDERS, "Active Payment Plugin is not set") }
 
     suspend fun fetchCardDataUsedForOrderPayment(chargeId: String): CardDataUsedForOrderPaymentResult {
-        val plugin = activePlugin
+        val plugin = if (activePlugin == null) {
+            when (val prefferedPluginResult = cardReaderOnboardingChecker.fetchPreferredPlugin()) {
+                is PreferredPluginResult.Success -> prefferedPluginResult.type.toInPersonPaymentsPluginType()
+                else -> null
+            }
+        } else {
+            activePlugin
+        }
+
         return if (plugin == null) CardDataUsedForOrderPaymentResult.Error
         else {
             val result = ippStore.fetchPaymentCharge(plugin, selectedSite.get(), chargeId)
