@@ -19,16 +19,16 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.Dp
 import com.woocommerce.android.R
 
-const val SKELETON_ANIMATION_ALPHA = 0.15F
+const val SKELETON_ANIMATION_ALPHA = 0.2F
 
 @Composable
 fun skeletonAnimationBrush(): Brush {
     val transition = rememberInfiniteTransition()
     val translateAnim by transition.animateFloat(
         initialValue = 0f,
-        targetValue = 1000f,
+        targetValue = 4000f,
         animationSpec = infiniteRepeatable(
-            tween(durationMillis = 1200, easing = FastOutSlowInEasing),
+            tween(durationMillis = 1700, easing = FastOutSlowInEasing),
             RepeatMode.Restart
         )
     )
@@ -41,7 +41,7 @@ fun skeletonAnimationBrush(): Brush {
 
     return Brush.linearGradient(
         colors = shimmerColorShades,
-        start = Offset(0f, 0f),
+        start = Offset(10f, 10f),
         end = Offset(translateAnim, translateAnim)
     )
 }
