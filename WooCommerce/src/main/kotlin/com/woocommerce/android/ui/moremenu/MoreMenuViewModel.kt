@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.moremenu
 import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -27,7 +26,6 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import javax.inject.Inject
@@ -85,15 +83,10 @@ class MoreMenuViewModel @Inject constructor(
                 type = INBOX,
                 text = R.string.more_menu_button_inbox,
                 icon = R.drawable.ic_more_menu_inbox,
-                isEnabled = isInboxEnabled(),
+                isEnabled = moreMenuRepository.isInboxEnabled(),
                 onClick = ::onInboxButtonClick
             )
         )
-
-    private suspend fun isInboxEnabled(): Boolean =
-        withContext(viewModelScope.coroutineContext) {
-            moreMenuRepository.isInboxEnabled()
-        }
 
     private fun SiteModel.getSelectedSiteName(): String =
         if (!displayName.isNullOrBlank()) {
