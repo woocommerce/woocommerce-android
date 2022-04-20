@@ -7,10 +7,23 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
 import androidx.preference.PreferenceManager
-import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.*
-import com.woocommerce.android.AppPrefs.DeletablePrefKey.*
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_COMPLETED
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_ONBOARDING_COMPLETED_STATUS_V2
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_PREFERRED_PLUGIN
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_PREFERRED_PLUGIN_VERSION
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_STATEMENT_DESCRIPTOR
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.DATABASE_DOWNGRADED
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.IMAGE_OPTIMIZE_ENABLED
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.IS_COUPONS_ENABLED
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_END
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_START
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_PREFIX
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.PRODUCT_SORTING_PREFIX
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
 import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.util.PreferenceUtils
@@ -45,6 +58,7 @@ object AppPrefs {
         DATABASE_DOWNGRADED,
         IS_PRODUCTS_FEATURE_ENABLED,
         IS_PRODUCT_ADDONS_ENABLED,
+        IS_COUPONS_ENABLED,
         LOGIN_USER_BYPASSED_JETPACK_REQUIRED,
         SELECTED_ORDER_LIST_TAB_POSITION,
         IMAGE_OPTIMIZE_ENABLED,
@@ -58,6 +72,7 @@ object AppPrefs {
         RECEIPT_PREFIX,
         CARD_READER_ONBOARDING_COMPLETED_STATUS_V2,
         CARD_READER_PREFERRED_PLUGIN,
+        CARD_READER_PREFERRED_PLUGIN_VERSION,
         CARD_READER_STATEMENT_DESCRIPTOR,
         ORDER_FILTER_PREFIX,
         ORDER_FILTER_CUSTOM_DATE_RANGE_START,
@@ -159,6 +174,10 @@ object AppPrefs {
     var isProductAddonsEnabled: Boolean
         get() = getBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, false)
         set(value) = setBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, value)
+
+    var isCouponsEnabled: Boolean
+        get() = getBoolean(IS_COUPONS_ENABLED, false)
+        set(value) = setBoolean(IS_COUPONS_ENABLED, value)
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 
@@ -435,7 +454,7 @@ object AppPrefs {
     ): CardReaderOnboardingStatus {
         return CardReaderOnboardingStatus.valueOf(
             getString(
-                getCardReaderOnboardingKey(
+                getCardReaderOnboardingStatusKey(
                     localSiteId,
                     remoteSiteId,
                     selfHostedSiteId
@@ -471,24 +490,51 @@ object AppPrefs {
         return storedValue.orNullIfEmpty()?.let { PluginType.valueOf(it) }
     }
 
-    fun setCardReaderOnboardingStatusAndPreferredPlugin(
+    fun getCardReaderPreferredPluginVersion(
         localSiteId: Int,
         remoteSiteId: Long,
         selfHostedSiteId: Long,
-        status: CardReaderOnboardingStatus,
-        preferredPlugin: PluginType?,
+        preferredPlugin: PluginType,
+    ) = PreferenceUtils.getString(
+        getPreferences(),
+        getCardReaderPreferredPluginVersionKey(
+            localSiteId,
+            remoteSiteId,
+            selfHostedSiteId,
+            preferredPlugin
+        ),
+        null
+    )
+
+    fun setCardReaderOnboardingData(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long,
+        data: PersistentOnboardingData,
     ) {
         setString(
-            getCardReaderOnboardingKey(localSiteId, remoteSiteId, selfHostedSiteId),
-            status.toString()
+            getCardReaderOnboardingStatusKey(localSiteId, remoteSiteId, selfHostedSiteId),
+            data.status.toString()
         )
         setString(
             getCardReaderPreferredPluginKey(localSiteId, remoteSiteId, selfHostedSiteId),
-            preferredPlugin?.toString().orEmpty()
+            data.preferredPlugin?.toString().orEmpty()
         )
+        data.preferredPlugin?.let { plugin ->
+            PreferenceUtils.setString(
+                getPreferences(),
+                getCardReaderPreferredPluginVersionKey(
+                    localSiteId,
+                    remoteSiteId,
+                    selfHostedSiteId,
+                    plugin
+                ),
+                data.version
+            )
+        }
     }
 
-    private fun getCardReaderOnboardingKey(
+    private fun getCardReaderOnboardingStatusKey(
         localSiteId: Int,
         remoteSiteId: Long,
         selfHostedSiteId: Long
@@ -499,6 +545,13 @@ object AppPrefs {
         remoteSiteId: Long,
         selfHostedSiteId: Long
     ) = PrefKeyString("$CARD_READER_PREFERRED_PLUGIN:$localSiteId:$remoteSiteId:$selfHostedSiteId")
+
+    private fun getCardReaderPreferredPluginVersionKey(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long,
+        plugin: PluginType,
+    ) = "$CARD_READER_PREFERRED_PLUGIN_VERSION:$localSiteId:$remoteSiteId:$selfHostedSiteId:$plugin"
 
     fun setCardReaderStatementDescriptor(
         statementDescriptor: String?,

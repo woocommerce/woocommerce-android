@@ -102,6 +102,14 @@ class AppSettingsActivity :
         }
     }
 
+    override fun onCouponsOptionChanged(enabled: Boolean) {
+        if (AppPrefs.isCouponsEnabled != enabled) {
+            isBetaOptionChanged = true
+            AppPrefs.isCouponsEnabled = enabled
+            setResult(RESULT_CODE_BETA_OPTIONS_CHANGED)
+        }
+    }
+
     override fun finishLogout() {
         notificationMessageHandler.removeAllNotificationsFromSystemsBar()
 

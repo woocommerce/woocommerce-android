@@ -44,6 +44,12 @@
                     android:id="@+id/toolbar"
                     layout="@layout/view_toolbar" />
             </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+            <View
+                android:id="@+id/app_bar_divider"
+                android:layout_gravity="bottom"
+                style="@style/Woo.Divider"
+                android:visibility="gone" />
         </com.google.android.material.appbar.AppBarLayout>
 
         <FrameLayout

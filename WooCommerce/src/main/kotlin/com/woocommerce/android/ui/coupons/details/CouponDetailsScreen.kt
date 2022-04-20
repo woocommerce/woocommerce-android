@@ -1,12 +1,11 @@
 package com.woocommerce.android.ui.coupons.details
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -20,18 +19,63 @@ import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponP
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponPerformanceState.Success
 
 @Composable
-fun CouponDetailsScreen(viewModel: CouponDetailsViewModel) {
+fun CouponDetailsScreen(
+    viewModel: CouponDetailsViewModel,
+    onBackPress: () -> Boolean
+) {
     val couponSummaryState by viewModel.couponState.observeAsState(CouponDetailsState())
 
-    CouponDetailsScreen(state = couponSummaryState)
+    CouponDetailsScreen(
+        couponSummaryState,
+        onBackPress,
+        viewModel::onCopyButtonClick,
+        viewModel::onShareButtonClick
+    )
 }
 
 @Composable
-fun CouponDetailsScreen(state: CouponDetailsState) {
+fun CouponDetailsScreen(
+    state: CouponDetailsState,
+    onBackPress: () -> Boolean,
+    onCopyButtonClick: () -> Unit,
+    onShareButtonClick: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
     ) {
+        var showMenu by remember { mutableStateOf(false) }
+
+        TopAppBar(
+            backgroundColor = MaterialTheme.colors.surface,
+            title = { Text(state.couponSummary?.code ?: "") },
+            navigationIcon = {
+                IconButton(onClick = { onBackPress() }) {
+                    Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                }
+            },
+            actions = {
+                IconButton(onClick = { showMenu = !showMenu }) {
+                    Icon(
+                        Icons.Filled.MoreVert,
+                        contentDescription = "Coupons Menu",
+                        tint = colorResource(id = R.color.action_menu_fg_selector)
+                    )
+                }
+                DropdownMenu(
+                    expanded = showMenu,
+                    onDismissRequest = { showMenu = false }
+                ) {
+                    DropdownMenuItem(onClick = onCopyButtonClick) {
+                        Text(stringResource(id = R.string.coupon_details_menu_copy))
+                    }
+                    DropdownMenuItem(onClick = onShareButtonClick) {
+                        Text(stringResource(id = R.string.coupon_details_menu_share))
+                    }
+                }
+            }
+        )
+
         state.couponSummary?.let { coupon ->
             CouponSummaryHeading(
                 code = coupon.code,
@@ -80,7 +124,7 @@ fun CouponSummarySection(couponSummary: CouponSummaryUi) {
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = stringResource(id = R.string.coupon_summary_heading),
+                text = stringResource(id = R.string.coupon_details_heading),
                 style = MaterialTheme.typography.subtitle1,
                 color = MaterialTheme.colors.onSurface,
                 fontWeight = FontWeight.Bold,
@@ -117,7 +161,7 @@ private fun CouponPerformanceSection(couponPerformanceState: CouponPerformanceSt
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = stringResource(id = R.string.coupon_summary_performance_heading),
+                text = stringResource(id = R.string.coupon_details_performance_heading),
                 style = MaterialTheme.typography.subtitle1,
                 color = MaterialTheme.colors.onSurface,
                 fontWeight = FontWeight.Bold
@@ -150,7 +194,7 @@ private fun CouponPerformanceCount(
         modifier = modifier
     ) {
         Text(
-            text = stringResource(id = R.string.coupon_summary_performance_discounted_order_heading),
+            text = stringResource(id = R.string.coupon_details_performance_discounted_order_heading),
             style = MaterialTheme.typography.subtitle1,
             color = colorResource(id = R.color.color_surface_variant)
         )
@@ -174,7 +218,7 @@ private fun CouponPerformanceAmount(
         modifier = modifier
     ) {
         Text(
-            text = stringResource(id = R.string.coupon_summary_performance_amount_heading),
+            text = stringResource(id = R.string.coupon_details_performance_amount_heading),
             style = MaterialTheme.typography.subtitle1,
             color = colorResource(id = R.color.color_surface_variant)
         )

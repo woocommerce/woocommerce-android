@@ -36,7 +36,7 @@ class ProductSortingListAdapter(
         holder.bind(options[position], onItemClicked, selectedOption)
     }
 
-    override fun getItemId(position: Int) = position.toLong()
+    override fun getItemId(position: Int) = options[position].value.ordinal.toLong()
 
     override fun getItemCount() = options.size
 
