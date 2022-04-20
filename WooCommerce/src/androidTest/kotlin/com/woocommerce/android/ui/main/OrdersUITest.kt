@@ -59,7 +59,7 @@ class OrdersUITest : TestBase() {
             .createFABTap()
             .newOrderTap()
             .assertNewOrderScreen()
-            .addProduct()
+            .addProductTap()
             .assertOrderSelectProductScreen()
             .selectProduct(productName)
             .assertNewOrderScreenWithProduct(productName)

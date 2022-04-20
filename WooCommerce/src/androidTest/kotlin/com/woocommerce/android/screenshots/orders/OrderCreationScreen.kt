@@ -20,7 +20,7 @@ class OrderCreationScreen : Screen {
         return SingleOrderScreen()
     }
 
-    fun addProduct(): OrderSelectProductScreen {
+    fun addProductTap(): OrderSelectProductScreen {
         waitForElementToBeDisplayed(R.id.products_section)
         Espresso.onView(withText(R.string.order_creation_add_products)).perform(click())
         return OrderSelectProductScreen()
