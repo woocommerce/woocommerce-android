@@ -3,7 +3,6 @@ package com.woocommerce.android.support
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ActivityLogviewerBinding
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -21,7 +20,6 @@ class WooLogViewerActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.composeView.apply {
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnDetachedFromWindow)
             setContent {
                 WooThemeWithBackground {
                     WooLogViewerScreen(
