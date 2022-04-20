@@ -72,13 +72,15 @@ class WooLogViewerActivity : AppCompatActivity() {
                         IconButton(onClick = { copyAppLogToClipboard() }) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_copy_white_24dp),
-                                contentDescription = stringResource(id = R.string.copy)
+                                contentDescription = stringResource(id = R.string.copy),
+                                tint = colorResource(id = R.color.color_icon_menu)
                             )
                         }
                         IconButton(onClick = { shareAppLog() }) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_share_white_24dp),
-                                contentDescription = stringResource(id = R.string.share)
+                                contentDescription = stringResource(id = R.string.share),
+                                tint = colorResource(id = R.color.color_icon_menu)
                             )
                         }
                     }
