@@ -256,12 +256,17 @@ class MainActivity :
 
     override fun showProgressDialog(@StringRes stringId: Int) {
         hideProgressDialog()
+
+
+
         progressDialog = ProgressDialog.show(this, "", getString(stringId), true)
     }
 
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+
+        val test = 324
 
         updateOrderBadge(false)
 
