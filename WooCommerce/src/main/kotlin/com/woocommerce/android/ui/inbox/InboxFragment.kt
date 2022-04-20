@@ -29,13 +29,14 @@ class InboxFragment : BaseFragment(R.layout.fragment_inbox) {
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
+    override fun getFragmentTitle() = getString(R.string.inbox_screen_title)
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentInboxBinding.inflate(inflater, container, false)
-        requireActivity().title = getString(R.string.inbox_screen_title)
         setHasOptionsMenu(true)
 
         val view = binding.root

@@ -40,7 +40,7 @@ class InboxViewModel @Inject constructor(
     init {
         _inboxState.value = InboxState(isLoading = true)
         viewModelScope.launch {
-            refreshNotes()
+            inboxRepository.fetchInboxNotes()
             inboxNotesLocalUpdates().collectLatest { _inboxState.value = it }
         }
     }

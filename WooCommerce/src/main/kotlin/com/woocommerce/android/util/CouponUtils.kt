@@ -125,7 +125,7 @@ class CouponUtils @Inject constructor(
     fun formatMinimumSpendingInfo(minimumAmount: BigDecimal?, currencyCode: String?): String? {
         if (minimumAmount == null || minimumAmount.isEqualTo(BigDecimal.ZERO)) return null
         return resourceProvider.getString(
-            R.string.coupon_summary_minimum_spend,
+            R.string.coupon_details_minimum_spend,
             formatCurrency(minimumAmount, currencyCode)
         )
     }
@@ -133,7 +133,7 @@ class CouponUtils @Inject constructor(
     fun formatMaximumSpendingInfo(maximumAmount: BigDecimal?, currencyCode: String?): String? {
         if (maximumAmount == null || maximumAmount.isEqualTo(BigDecimal.ZERO)) return null
         return resourceProvider.getString(
-            R.string.coupon_summary_maximum_spend,
+            R.string.coupon_details_maximum_spend,
             formatCurrency(maximumAmount, currencyCode)
         )
     }

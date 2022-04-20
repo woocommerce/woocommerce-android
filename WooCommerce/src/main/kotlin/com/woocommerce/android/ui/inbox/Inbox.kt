@@ -17,7 +17,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -60,8 +62,7 @@ fun Inbox(viewModel: InboxViewModel) {
 fun Inbox(state: InboxState) {
     when {
         state.isLoading -> InboxSkeleton()
-        state.notes.isEmpty() -> InboxEmptyCase()
-        state.notes.isNotEmpty() -> InboxNotes(
+        else -> InboxNotes(
             notes = state.notes,
             onRefresh = state.onRefresh,
             isRefreshing = state.isRefreshing
@@ -74,7 +75,8 @@ fun InboxEmptyCase() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 32.dp),
+            .padding(horizontal = 32.dp)
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -116,14 +118,18 @@ fun InboxNotes(
             )
         }
     ) {
-        LazyColumn {
-            itemsIndexed(notes) { index, note ->
-                InboxNoteRow(note = note)
-                if (index < notes.lastIndex)
-                    Divider(
-                        color = colorResource(id = R.color.divider_color),
-                        thickness = 1.dp
-                    )
+        if (notes.isEmpty()) {
+            InboxEmptyCase()
+        } else {
+            LazyColumn {
+                itemsIndexed(notes) { index, note ->
+                    InboxNoteRow(note = note)
+                    if (index < notes.lastIndex)
+                        Divider(
+                            color = colorResource(id = R.color.divider_color),
+                            thickness = 1.dp
+                        )
+                }
             }
         }
     }
@@ -132,26 +138,29 @@ fun InboxNotes(
 @Composable
 fun InboxNoteRow(note: InboxNoteUi) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+        modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text(
-            modifier = Modifier.padding(top = 16.dp),
-            text = note.dateCreated,
-            style = MaterialTheme.typography.subtitle2,
-            color = colorResource(id = R.color.color_surface_variant)
-        )
-        Text(
-            text = note.title,
-            fontWeight = if (note.isActioned) FontWeight.Normal else FontWeight.Bold,
-            style = MaterialTheme.typography.subtitle1
-        )
-        Text(
-            text = StringUtils.fromHtml(note.description).toAnnotatedString(),
-            style = MaterialTheme.typography.body2
-        )
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Text(
+                modifier = Modifier.padding(top = 16.dp),
+                text = note.dateCreated,
+                style = MaterialTheme.typography.subtitle2,
+                color = colorResource(id = R.color.color_surface_variant)
+            )
+            Text(
+                text = note.title,
+                fontWeight = if (note.isActioned) FontWeight.Normal else FontWeight.Bold,
+                style = MaterialTheme.typography.subtitle1
+            )
+            Text(
+                text = StringUtils.fromHtml(note.description).toAnnotatedString(),
+                style = MaterialTheme.typography.body2
+            )
+        }
         when {
             note.isSurvey -> InboxNoteSurveyActionsRow(note.actions)
             else -> InboxNoteActionsRow(note.actions)
@@ -162,6 +171,7 @@ fun InboxNoteRow(note: InboxNoteUi) {
 @Composable
 private fun InboxNoteActionsRow(actions: List<InboxNoteActionUi>) {
     LazyRow(
+        Modifier.padding(start = 8.dp, end = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         items(actions) { action ->
@@ -172,7 +182,10 @@ private fun InboxNoteActionsRow(actions: List<InboxNoteActionUi>) {
 
 @Composable
 private fun InboxNoteSurveyActionsRow(actions: List<InboxNoteActionUi>) {
-    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+    Row(
+        modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
         if (actions.isEmpty()) {
             Text(
                 modifier = Modifier.padding(top = 16.dp, bottom = 16.dp),
