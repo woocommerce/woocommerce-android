@@ -9,6 +9,7 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -41,7 +42,10 @@ fun WooLogViewerScreen(
                 title = { Text(stringResource(id = R.string.logviewer_activity_title)) },
                 navigationIcon = {
                     IconButton(onClick = { onBackPress() }) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(id = R.string.back))
+                        Icon(
+                            Icons.Filled.ArrowBack,
+                            contentDescription = stringResource(id = R.string.back)
+                        )
                     }
                 },
                 actions = {
@@ -54,7 +58,7 @@ fun WooLogViewerScreen(
                     }
                     IconButton(onClick = { onShareButtonClick() }) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_share_white_24dp),
+                            Icons.Filled.Share,
                             contentDescription = stringResource(id = R.string.share),
                             tint = colorResource(id = R.color.color_icon_menu)
                         )
@@ -72,11 +76,12 @@ fun LogViewerEntries(entries: RollingLogEntries) {
     LazyColumn {
         itemsIndexed(entries) { index, entry ->
             LogViewerEntry(index, entry)
-            if (index < entries.lastIndex)
+            if (index < entries.lastIndex) {
                 Divider(
                     color = colorResource(id = R.color.divider_color),
                     thickness = 1.dp
                 )
+            }
         }
     }
 }

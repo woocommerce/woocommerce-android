@@ -21,7 +21,7 @@ class WooLogViewerActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.composeView.apply {
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnDetachedFromWindow)
             setContent {
                 WooThemeWithBackground {
                     WooLogViewerScreen(
