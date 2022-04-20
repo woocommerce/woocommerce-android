@@ -26,12 +26,12 @@ private var isDarkTheme: Boolean = false
 
 @Composable
 fun WooLogViewerScreen(
-    isDarkThemeEnabled: Boolean,
+    isDarkThemeActive: Boolean,
     onBackPress: () -> Unit,
     onCopyButtonClick: () -> Unit,
     onShareButtonClick: () -> Unit
 ) {
-    isDarkTheme = isDarkThemeEnabled
+    isDarkTheme = isDarkThemeActive
 
     Scaffold(
         topBar = {
@@ -86,7 +86,7 @@ fun LogViewerEntry(index: Int, entry: RollingLogEntries.LogEntry) {
         modifier = Modifier
             .fillMaxWidth()
             .background(color = MaterialTheme.colors.surface),
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_75)),
+        verticalArrangement = Arrangement.Top,
     ) {
         Row(
             modifier = Modifier.padding(
@@ -97,7 +97,7 @@ fun LogViewerEntry(index: Int, entry: RollingLogEntries.LogEntry) {
             Text(
                 text = format(Locale.US, "%02d", index + 1),
                 style = MaterialTheme.typography.body2,
-                modifier = Modifier.padding(dimensionResource(R.dimen.minor_100)),
+                modifier = Modifier.padding(end = dimensionResource(R.dimen.minor_100)),
                 color = colorResource(id = R.color.grey)
             )
             SelectionContainer {

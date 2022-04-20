@@ -25,7 +25,7 @@ class WooLogViewerActivity : AppCompatActivity() {
             setContent {
                 WooThemeWithBackground {
                     WooLogViewerScreen(
-                        isDarkThemeEnabled = AppThemeUtils.isDarkThemeActive(this@WooLogViewerActivity),
+                        isDarkThemeActive = AppThemeUtils.isDarkThemeActive(this@WooLogViewerActivity),
                         onBackPress = { finish() },
                         onCopyButtonClick = { copyAppLogToClipboard() },
                         onShareButtonClick = { shareAppLog() }
