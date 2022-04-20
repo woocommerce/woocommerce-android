@@ -44,7 +44,7 @@ class OrderCreationProductsAdapter(
         holder.bind(getItem(position))
     }
 
-    override fun getItemId(position: Int): Long = getItem(position).item.uniqueId
+    override fun getItemId(position: Int): Long = getItem(position).item.itemId
 
     inner class ProductViewHolder(private val binding: OrderCreationProductItemBinding) : ViewHolder(binding.root) {
         private val context = binding.root.context
