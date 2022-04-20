@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ActivityLogviewerBinding
@@ -81,15 +82,18 @@ class WooLogViewerActivity : AppCompatActivity() {
             modifier = Modifier
                 .fillMaxWidth()
                 .background(color = MaterialTheme.colors.surface),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_75)),
         ) {
             Row(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                modifier = Modifier.padding(
+                    horizontal = dimensionResource(R.dimen.major_100),
+                    vertical = dimensionResource(R.dimen.minor_100)
+                ),
             ) {
                 Text(
                     text = format(Locale.US, "%02d", index + 1),
                     style = MaterialTheme.typography.body2,
-                    modifier = Modifier.padding(end = 8.dp),
+                    modifier = Modifier.padding(dimensionResource(R.dimen.minor_100)),
                     color = colorResource(id = R.color.grey)
                 )
                 SelectionContainer {
