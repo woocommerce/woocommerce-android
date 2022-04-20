@@ -323,6 +323,52 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given non cash order, when charge data loaded, then button enabled`() {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val chargeId = "charge_id"
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+            )
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Error
+            )
+
+            initViewModel()
+
+            var viewState: IssueRefundViewModel.RefundSummaryViewState? = null
+            viewModel.refundSummaryStateLiveData.observeForever { _, new -> viewState = new }
+
+            assertThat(viewState!!.isSubmitButtonEnabled).isTrue()
+        }
+    }
+
+    @Test
+    fun `given non cash order and text summary to long, when charge data loaded, then button not enabled`() {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val chargeId = "charge_id"
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+            )
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Error
+            )
+
+            initViewModel()
+
+            viewModel.onRefundSummaryTextChanged(10, 100)
+
+            var viewState: IssueRefundViewModel.RefundSummaryViewState? = null
+            viewModel.refundSummaryStateLiveData.observeForever { _, new -> viewState = new }
+
+            assertThat(viewState!!.isSubmitButtonEnabled).isFalse()
+        }
+    }
+
+    @Test
     fun `given non cash order and non charge id in order, when charge data loading, then card info is not visible`() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
