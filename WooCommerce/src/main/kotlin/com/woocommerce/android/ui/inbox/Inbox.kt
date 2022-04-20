@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.inbox
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,7 +26,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -40,7 +37,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.compose.utils.toAnnotatedString
-import com.woocommerce.android.ui.compose.animations.skeletonAnimationBrush
+import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.inbox.InboxViewModel.InboxNoteActionUi
 import com.woocommerce.android.ui.inbox.InboxViewModel.InboxNoteUi
 import com.woocommerce.android.ui.inbox.InboxViewModel.InboxState
@@ -55,7 +52,7 @@ fun Inbox(viewModel: InboxViewModel) {
 @Composable
 fun Inbox(state: InboxState) {
     when {
-        state.isLoading -> InboxSkeleton()
+        state.isLoading -> InboxSkeletons()
         state.notes.isEmpty() -> InboxEmptyCase()
         state.notes.isNotEmpty() -> InboxNotes(notes = state.notes)
     }
@@ -221,12 +218,12 @@ fun InboxNoteSurveyAction(inboxAction: InboxNoteActionUi) {
 
 @Composable
 @Suppress("MagicNumber")
-fun InboxSkeleton() {
+fun InboxSkeletons() {
     val numberOfInboxSkeletonRows = 4
     LazyColumn {
         repeat(numberOfInboxSkeletonRows) {
             item {
-                InboxNoteItemSkeleton(brush = skeletonAnimationBrush())
+                InboxNoteItemSkeleton()
                 Divider(
                     color = colorResource(id = R.color.divider_color),
                     thickness = 1.dp
@@ -237,77 +234,52 @@ fun InboxSkeleton() {
 }
 
 @Composable
-fun InboxNoteItemSkeleton(
-    brush: Brush
-) {
+fun InboxNoteItemSkeleton() {
     Column(modifier = Modifier.padding(16.dp)) {
-        InboxNoteHeaderSkeleton(brush)
+        InboxNoteHeaderSkeleton()
         Spacer(modifier = Modifier.padding(top = 16.dp))
-        InboxNoteContentRowsSkeleton(brush)
+        InboxNoteContentRowsSkeleton()
         Spacer(modifier = Modifier.padding(top = 14.dp))
-        InboxNoteButtonsSkeleton(brush)
+        InboxNoteButtonsSkeleton()
     }
 }
 
 @Composable
-private fun InboxNoteHeaderSkeleton(brush: Brush) {
-    Spacer(
-        modifier = Modifier
-            .width(96.dp)
-            .height(16.dp)
-            .background(brush = brush)
-    )
+private fun InboxNoteHeaderSkeleton() {
+    SkeletonView(width = 96.dp, height = 16.dp)
     Spacer(modifier = Modifier.padding(top = 20.dp))
-    Spacer(
+    SkeletonView(width = 190.dp, height = 16.dp)
+}
+
+@Composable
+private fun InboxNoteContentRowsSkeleton() {
+    SkeletonView(
         modifier = Modifier
-            .width(190.dp)
+            .fillMaxWidth()
             .height(16.dp)
-            .background(brush = brush)
+    )
+    Spacer(modifier = Modifier.padding(top = 6.dp))
+    SkeletonView(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(16.dp)
+    )
+    Spacer(modifier = Modifier.padding(top = 6.dp))
+    SkeletonView(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(16.dp)
     )
 }
 
 @Composable
-private fun InboxNoteContentRowsSkeleton(brush: Brush) {
-    Spacer(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(16.dp)
-            .background(brush = brush)
-    )
-    Spacer(modifier = Modifier.padding(top = 6.dp))
-    Spacer(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(16.dp)
-            .background(brush = brush)
-    )
-    Spacer(modifier = Modifier.padding(top = 6.dp))
-    Spacer(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(16.dp)
-            .background(brush = brush)
-    )
-}
-
-@Composable
-private fun InboxNoteButtonsSkeleton(brush: Brush) {
+private fun InboxNoteButtonsSkeleton() {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Spacer(
-            modifier = Modifier
-                .width(150.dp)
-                .height(16.dp)
-                .background(brush = brush)
-        )
-        Spacer(
-            modifier = Modifier
-                .width(60.dp)
-                .height(16.dp)
-                .background(brush = brush)
-        )
+        SkeletonView(width = 150.dp, height = 16.dp)
+        SkeletonView(width = 60.dp, height = 16.dp)
     }
 }
 
