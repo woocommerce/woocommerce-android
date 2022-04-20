@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
@@ -177,13 +178,20 @@ private fun InboxNoteSurveyActionsRow(actions: List<InboxNoteActionUi>) {
 @Composable
 fun InboxNoteTextAction(inboxAction: InboxNoteActionUi) {
     TextButton(
-        modifier = Modifier.padding(end = 8.dp),
-        onClick = { inboxAction.onClick(inboxAction.id, inboxAction.parentNoteId) }
+        onClick = { inboxAction.onClick(inboxAction.id, inboxAction.parentNoteId) },
+        enabled = !inboxAction.isDismissing
     ) {
-        Text(
-            text = inboxAction.label.uppercase(),
-            color = colorResource(id = inboxAction.textColor)
-        )
+        if (inboxAction.isDismissing) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(24.dp),
+                color = colorResource(id = inboxAction.textColor)
+            )
+        } else {
+            Text(
+                text = inboxAction.label.uppercase(),
+                color = colorResource(id = inboxAction.textColor)
+            )
+        }
     }
 }
 

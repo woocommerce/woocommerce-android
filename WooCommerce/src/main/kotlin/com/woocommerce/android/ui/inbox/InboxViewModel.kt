@@ -86,7 +86,7 @@ class InboxViewModel @Inject constructor(
                     label = DEFAULT_DISMISS_LABEL,
                     textColor = R.color.color_surface_variant,
                     url = "",
-                    onClick = { _, noteId -> dismissNote(noteId) }
+                    onClick = { actionId, noteId -> dismissNote(actionId, noteId) }
                 )
             )
         }
@@ -133,10 +133,30 @@ class InboxViewModel @Inject constructor(
         }
     }
 
-    private fun dismissNote(noteId: Long) {
+    private fun dismissNote(actionId: Long, noteId: Long) {
         viewModelScope.launch {
+            updateDismissingActionState(noteId, actionId, isDimissing = true)
             inboxRepository.dismissNote(noteId)
+            updateDismissingActionState(noteId, actionId, isDimissing = false)
         }
+    }
+
+    private fun updateDismissingActionState(noteId: Long, actionId: Long, isDimissing: Boolean) {
+        _inboxState.value = _inboxState.value?.copy(
+            notes = _inboxState.value?.notes?.map { note ->
+                if (note.id == noteId) {
+                    val updatedActions =
+                        note.actions.map { action ->
+                            if (action.id == actionId) {
+                                action.copy(isDismissing = isDimissing)
+                            } else {
+                                action
+                            }
+                        }
+                    note.copy(actions = updatedActions)
+                } else note
+            } ?: emptyList()
+        )
     }
 
     private fun InboxNoteAction.getActionTextColor() =
