@@ -2,9 +2,9 @@ package com.woocommerce.android.support
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import com.woocommerce.android.R
-import com.woocommerce.android.databinding.ActivityLogviewerBinding
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.WooLog
@@ -12,24 +12,19 @@ import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.copyToClipboard
 import org.wordpress.android.util.ToastUtils
 
-class WooLogViewerActivity : AppCompatActivity() {
+class WooLogViewerActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val binding = ActivityLogviewerBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        binding.composeView.apply {
-            setContent {
-                WooThemeWithBackground {
-                    WooLogViewerScreen(
-                        WooLog.logEntries,
-                        isDarkThemeActive = AppThemeUtils.isDarkThemeActive(this@WooLogViewerActivity),
-                        onBackPress = { onBackPressed() },
-                        onCopyButtonClick = { copyAppLogToClipboard() },
-                        onShareButtonClick = { shareAppLog() }
-                    )
-                }
+        setContent {
+            WooThemeWithBackground {
+                WooLogViewerScreen(
+                    WooLog.logEntries,
+                    isDarkThemeActive = AppThemeUtils.isDarkThemeActive(this@WooLogViewerActivity),
+                    onBackPress = { onBackPressed() },
+                    onCopyButtonClick = { copyAppLogToClipboard() },
+                    onShareButtonClick = { shareAppLog() }
+                )
             }
         }
     }
