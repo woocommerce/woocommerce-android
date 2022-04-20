@@ -1,0 +1,2 @@
+8.9:
+Crea ordini in movimento con prodotti, informazioni su spedizione e di fatturazione e commissioni. Puoi accettare rapidamente un pagamento con carta di credito di persona o inviare un link a un cliente per pagare quell'ordine sul proprio dispositivo. Lo hai richiesto e ora è qui.

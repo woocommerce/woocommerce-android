@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-03-25 09:54:03+0000
+Translation-Revision-Date: 2022-04-08 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="coupon_summary_performance_amount_heading">合計</string>
+    <string name="coupon_summary_performance_discounted_order_heading">割引注文</string>
+    <string name="coupon_summary_performance_heading">パフォーマンス</string>
+    <string name="coupon_summary_maximum_spend">%sの利用上限額</string>
+    <string name="coupon_summary_minimum_spend">%sの利用最小額</string>
+    <string name="coupon_summary_heading">クーポンの概要</string>
+    <string name="coupon_list_view_coupon">クーポンの概要を表示</string>
+    <string name="coupon_list_wip_message_enabled">デバイスからクーポンを表示、編集できる機能を開発中です !</string>
+    <string name="coupon_list_wip_title">クーポンを表示して編集する</string>
+    <string name="coupon_list_empty_heading">クーポンが見つかりません</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1s (%2s を除く)</string>
+    <string name="coupon_list_item_label_everything">すべて</string>
+    <string name="coupon_list_item_label_off">オフ</string>
+    <string name="coupon_list_item_label_expired">期限切れ</string>
+    <string name="coupon_list_item_label_active">有効</string>
+    <string name="coupons">クーポン</string>
+    <string name="inbox_note_recency_date_time">%sに作成</string>
+    <string name="inbox_note_recency_days">%d日前</string>
+    <string name="inbox_note_recency_one_day">1日前</string>
+    <string name="inbox_note_recency_hours">%d時間前</string>
+    <string name="inbox_note_recency_one_hour">1時間前</string>
+    <string name="inbox_note_recency_minutes">%d分前</string>
+    <string name="inbox_note_recency_now">数秒前</string>
+    <string name="category_count_many">%dカテゴリー</string>
+    <string name="category_count_one">%dカテゴリー</string>
+    <string name="product_ratings_count_zero">\u2022  承認済みのレビューはありません</string>
+    <string name="product_ratings_count_one">\u2022  1件の承認済みのレビュー</string>
+    <string name="product_ratings_count">\u2022  %d件の承認済みのレビュー</string>
+    <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">デバイスから注文を作成し、支払いを受け取れるようにする機能を開発中です ! 「+」ボタンをタップしてこれらの機能を試すことができます</string>
+    <string name="orderlist_simple_payments_wip_title">注文を作成して支払いを受け取りましょう !</string>
     <string name="empty_inbox_description">ストアの成長に役立つその他のヒントやインサイトは今後も増えていきますので、ぜひまた訪問してください</string>
     <string name="empty_inbox_title">すべて読み終えました !</string>
     <string name="orderstatus_contentDesc_withStatus">注文ステータス: %s</string>
@@ -187,9 +218,6 @@ Language: ja_JP
     <string name="date_timeframe_last_quarter">前四半期</string>
     <string name="date_timeframe_last_month">先月</string>
     <string name="date_timeframe_last_week">先週</string>
-    <string name="settings_enable_order_creation_teaser_message">リリースの準備ができ次第、詳細情報で注文の作成をテストしてください</string>
-    <string name="settings_enable_order_creation_teaser_title">注文の作成</string>
-    <string name="beta_features_order_creation">注文の作成</string>
     <string name="beta_features_simple_payments">シンプルペイメント</string>
     <string name="beta_features_add_ons">アドオンを表示</string>
     <string name="orders_empty_message_for_filtered_orders">注文が見つかりませんでした</string>
@@ -210,7 +238,6 @@ Language: ja_JP
     <string name="simple_payments_enter_amount">金額を入力</string>
     <string name="simple_payments_dialog_title">支払いを受け取る</string>
     <string name="orderlist_simple_payments_menu">シンプルペイメント</string>
-    <string name="orderlist_simple_payments_wip_title">端末で支払いを受ける</string>
     <string name="analytics">アナリティクス</string>
     <string name="jetpack_install_progress_step_four_message">すべて完了</string>
     <string name="jetpack_install_progress_step_three_message">ストアを接続しています</string>
@@ -245,7 +272,6 @@ Language: ja_JP
     <string name="orderfilters_default_filter_option">すべて</string>
     <string name="orderfilters_filter_card_title_filtered_orders">絞り込み済み注文</string>
     <string name="orderfilters_filter_card_title_all_orders">すべての注文</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">お使いの端末からより簡単に支払いを受けることができるように取り組んでいます。 現在は「+」ボタンをタップすると、希望の金額で注文を作成できます。</string>
     <string name="jetpack_benefits_modal_dismiss">後で</string>
     <string name="jetpack_benefits_modal_install_jetpack">Jetpack をインストール</string>
     <string name="jetpack_benefits_modal_user_profiles_subtitle">複数のユーザーに WooCommerce モバイルへのアクセスを許可します。</string>
@@ -813,9 +839,6 @@ Language: ja_JP
     <string name="product_detail_no_variations">この商品にはまだバリエーションがありません</string>
     <string name="product_variant_list_empty">サイズ、色といったオプションの追加は、現在 Web でのみ可能です。 サイトの商品ページにオプションとして表示されます。</string>
     <string name="product_adding_wip_title">アプリから商品を作成しましょう !</string>
-    <string name="product_ratings_count_zero">\u2022 評価なし</string>
-    <string name="product_ratings_count_one">\u2022 1件の評価</string>
-    <string name="product_ratings_count">\u2022 %d件の評価</string>
     <string name="product_detail_fetch_product_invalid_id_error">商品が見つかりません</string>
     <string name="print_shipping_label_info_step_5">端末からの印刷で引き続き問題が発生している場合は、&lt;b&gt;ラベルを PDF として保存&lt;/b&gt;し、メールで別の端末に送信して印刷できます。</string>
     <string name="print_shipping_label_info_step_2">&lt;b&gt;「配送ラベルを印刷」&lt;/b&gt;を選択後、この端末からの印刷が初めての場合は、プリンターを選択して追加する必要がある可能性があります。</string>
@@ -1839,12 +1862,6 @@ Language: ja_JP
     <string name="dashboard_top_performers_empty">この期間のアクティビティはありません</string>
     <string name="dashboard_top_performers_total_orders">注文合計: %s</string>
     <string name="dashboard_top_performers_title">成績優秀者</string>
-    <string name="dashboard_stats_updated_date_time">%sに更新</string>
-    <string name="dashboard_stats_updated_one_day">1日前に更新</string>
-    <string name="dashboard_stats_updated_hours">%d時間前に更新</string>
-    <string name="dashboard_stats_updated_one_hour">1時間前に更新</string>
-    <string name="dashboard_stats_updated_minutes">%d分前に更新</string>
-    <string name="dashboard_stats_updated_now">さっき更新</string>
     <string name="dashboard_stats_error_content_description">エラー画像</string>
     <string name="dashboard_stats_error">データを取得する際にエラーが発生しました</string>
     <string name="dashboard_stats_revenue">収益</string>

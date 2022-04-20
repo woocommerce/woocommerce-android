@@ -1,11 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-03-22 13:25:51+0000
+Translation-Revision-Date: 2022-04-08 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="coupon_summary_performance_amount_heading">Belopp</string>
+    <string name="coupon_summary_performance_discounted_order_heading">Rabatterade beställningar</string>
+    <string name="coupon_summary_performance_heading">Prestanda</string>
+    <string name="coupon_summary_maximum_spend">Maximalt beställningsbelopp på %s</string>
+    <string name="coupon_summary_minimum_spend">Minsta beställningsbelopp på %s</string>
+    <string name="coupon_summary_heading">Rabattkodssammanfattning</string>
+    <string name="coupon_list_view_coupon">Visa rabattkodssammanfattning</string>
+    <string name="coupon_list_wip_message_enabled">Vi har jobbat på att göra det möjligt att visa och redigera rabattkoder från din enhet.</string>
+    <string name="coupon_list_wip_title">Visa och redigera rabattkoder</string>
+    <string name="coupon_list_empty_heading">Inga rabattkoder hittades</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1s exkl. %2s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1s och %2s</string>
+    <string name="coupon_list_item_label_everything">allt</string>
+    <string name="coupon_list_item_label_off">rabatt</string>
+    <string name="coupon_list_item_label_expired">Har löpt ut</string>
+    <string name="coupon_list_item_label_active">Aktiva</string>
+    <string name="coupons">Rabattkoder</string>
+    <string name="inbox_note_recency_date_time">Skapades den %s</string>
+    <string name="inbox_note_recency_days">För %d dagar sedan</string>
+    <string name="inbox_note_recency_one_day">För en dag sedan</string>
+    <string name="inbox_note_recency_hours">För %d timmar sedan</string>
+    <string name="inbox_note_recency_one_hour">För en timme sedan</string>
+    <string name="inbox_note_recency_minutes">För %d minuter sedan</string>
+    <string name="inbox_note_recency_now">För en stund sedan</string>
+    <string name="category_count_many">%d kategorier</string>
+    <string name="category_count_one">%d kategori</string>
+    <string name="product_ratings_count_zero">\u2022  inga godkända recensioner</string>
+    <string name="product_ratings_count_one">\u2022  en godkänd recension</string>
+    <string name="product_ratings_count">\u2022  %d godkända recensioner</string>
+    <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">Vi har jobbat på att göra det möjligt att skapa beställningar och ta emot betalningar från din enhet. Du kan prova dessa funktioner genom att trycka på \"+\"-knappen</string>
+    <string name="orderlist_simple_payments_wip_title">Skapa beställningar och ta emot betalningar.</string>
     <string name="empty_inbox_description">Kom tillbaka snart för fler tips och insikter om hur du får din butik att växa</string>
     <string name="empty_inbox_title">Grattis, du har läst allt!</string>
     <string name="orderstatus_contentDesc_withStatus">Beställningsstatus: %s</string>
@@ -187,9 +219,6 @@ Language: sv_SE
     <string name="date_timeframe_last_quarter">Förra kvartalet</string>
     <string name="date_timeframe_last_month">Förra månaden</string>
     <string name="date_timeframe_last_week">Förra veckan</string>
-    <string name="settings_enable_order_creation_teaser_message">Testa att skapa beställningar med fullständig information medan vi gör oss redo för lansering</string>
-    <string name="settings_enable_order_creation_teaser_title">Skapande av beställning</string>
-    <string name="beta_features_order_creation">Skapande av beställning</string>
     <string name="beta_features_simple_payments">Enkla betalningar</string>
     <string name="beta_features_add_ons">Visa utökningar</string>
     <string name="orders_empty_message_for_filtered_orders">Vi kunde inte hitta några beställningar</string>
@@ -210,7 +239,6 @@ Language: sv_SE
     <string name="simple_payments_enter_amount">Ange belopp</string>
     <string name="simple_payments_dialog_title">Ta emot betalning</string>
     <string name="orderlist_simple_payments_menu">Enkel betalning</string>
-    <string name="orderlist_simple_payments_wip_title">Ta emot betalningar från din enhet!</string>
     <string name="analytics">Analys</string>
     <string name="jetpack_install_progress_step_four_message">Allt klart</string>
     <string name="jetpack_install_progress_step_three_message">Ansluter din butik</string>
@@ -245,7 +273,6 @@ Language: sv_SE
     <string name="orderfilters_default_filter_option">Alla</string>
     <string name="orderfilters_filter_card_title_filtered_orders">Filtrerade beställningar</string>
     <string name="orderfilters_filter_card_title_all_orders">Alla beställningar</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">Vi arbetar på att göra det enklare för dig att ta emot betalningar från din enhet! För tillfället kan du trycka på \"+\"-knappen för att skapa en beställning med det belopp som du vill ta emot.</string>
     <string name="jetpack_benefits_modal_dismiss">Inte nu</string>
     <string name="jetpack_benefits_modal_install_jetpack">Installera Jetpack</string>
     <string name="jetpack_benefits_modal_user_profiles_subtitle">Tillåt flera användare att komma åt WooCommerce Mobile.</string>
@@ -813,9 +840,6 @@ Language: sv_SE
     <string name="product_detail_no_variations">Denna produkt har inga variationer än</string>
     <string name="product_variant_list_empty">Det går endast att lägga till alternativ som storlek och färg på webben. Dessa kommer att visas som alternativ på produktsidan på din webbplats.</string>
     <string name="product_adding_wip_title">Skapa produkter från appen!</string>
-    <string name="product_ratings_count_zero">\u2022 inga betyg</string>
-    <string name="product_ratings_count_one">\u2022 betygsatt en gång</string>
-    <string name="product_ratings_count">\u2022 betygsatt %d gånger</string>
     <string name="product_detail_fetch_product_invalid_id_error">Produkt hittades inte</string>
     <string name="print_shipping_label_info_step_5">Om du fortfarande har problem med att skriva ut från din enhet kan du &lt;b&gt;spara din etikett som en PDF-fil&lt;/b&gt; och skicka den med e-post för att skriva ut den från en annan enhet.</string>
     <string name="print_shipping_label_info_step_2">När du har valt &lt;b&gt;\"Skriv ut fraktetikett\"&lt;/b&gt; kan du behöva välja och lägga till en skrivare om du inte har skrivit ut från den här enheten tidigare.</string>
@@ -1839,12 +1863,6 @@ Language: sv_SE
     <string name="dashboard_top_performers_empty">Ingen aktivitet denna period</string>
     <string name="dashboard_top_performers_total_orders">Totalt antal beställningar: %s</string>
     <string name="dashboard_top_performers_title">Toppresterande</string>
-    <string name="dashboard_stats_updated_date_time">Uppdaterad den %s</string>
-    <string name="dashboard_stats_updated_one_day">Uppdaterad för 1 dag sedan</string>
-    <string name="dashboard_stats_updated_hours">Uppdaterad  för %d timmar sedan</string>
-    <string name="dashboard_stats_updated_one_hour">Uppdaterad för 1 timme sedan</string>
-    <string name="dashboard_stats_updated_minutes">Uppdaterad för %d minuter sedan</string>
-    <string name="dashboard_stats_updated_now">Uppdaterad alldeles nyss</string>
     <string name="dashboard_stats_error_content_description">Felbild</string>
     <string name="dashboard_stats_error">Det gick inte att hämta data</string>
     <string name="dashboard_stats_revenue">Intäkter</string>
