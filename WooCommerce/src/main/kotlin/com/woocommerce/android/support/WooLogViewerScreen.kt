@@ -98,7 +98,7 @@ fun LogViewerEntry(index: Int, entry: RollingLogEntries.LogEntry) {
                 text = format(Locale.US, "%02d", index + 1),
                 style = MaterialTheme.typography.body2,
                 modifier = Modifier.padding(end = dimensionResource(R.dimen.minor_100)),
-                color = colorResource(id = R.color.grey)
+                color = colorResource(id = R.color.woo_gray_40)
             )
             SelectionContainer {
                 Text(
