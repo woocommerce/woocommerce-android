@@ -344,7 +344,7 @@ class OrderCreationViewModel @Inject constructor(
         @IgnoredOnParcel
         val canCreateOrder: Boolean = !willUpdateOrderDraft && !isUpdatingOrderDraft && !showOrderUpdateSnackbar
         @IgnoredOnParcel
-        val isEachAddButtonEnabled: Boolean = !isUpdatingOrderDraft && !willUpdateOrderDraft
+        val isIdle: Boolean = !isUpdatingOrderDraft && !willUpdateOrderDraft
     }
 }
 

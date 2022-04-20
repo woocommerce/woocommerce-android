@@ -209,13 +209,13 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             new.canCreateOrder.takeIfNotEqualTo(old?.canCreateOrder) {
                 createOrderMenuItem?.isEnabled = it
             }
-            new.isEachAddButtonEnabled.takeIfNotEqualTo(old?.isEachAddButtonEnabled) { enabled ->
+            new.isIdle.takeIfNotEqualTo(old?.isIdle) { enabled ->
                 binding.paymentSection.loadingProgress.isVisible = !enabled
                 binding.paymentSection.feeButton.isEnabled = enabled
                 binding.productsSection.isEachAddButtonEnabled = enabled
             }
             new.isUpdatingOrderDraft.takeIfNotEqualTo(old?.isUpdatingOrderDraft) { show ->
-                binding.productsSection.content.productsAdapter?.isQuantityStepperEnabled = show.not()
+                binding.productsSection.content.productsAdapter?.isQuantityButtonsEnabled = show.not()
             }
             new.showOrderUpdateSnackbar.takeIfNotEqualTo(old?.showOrderUpdateSnackbar) { show ->
                 showOrHideErrorSnackBar(show)
