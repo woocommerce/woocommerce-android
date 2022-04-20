@@ -17,7 +17,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -39,6 +41,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.woocommerce.android.R
 import com.woocommerce.android.compose.utils.toAnnotatedString
 import com.woocommerce.android.ui.compose.animations.skeletonAnimationBrush
@@ -57,8 +62,11 @@ fun Inbox(viewModel: InboxViewModel) {
 fun Inbox(state: InboxState) {
     when {
         state.isLoading -> InboxSkeleton()
-        state.notes.isEmpty() -> InboxEmptyCase()
-        state.notes.isNotEmpty() -> InboxNotes(notes = state.notes)
+        else -> InboxNotes(
+            notes = state.notes,
+            onRefresh = state.onRefresh,
+            isRefreshing = state.isRefreshing
+        )
     }
 }
 
@@ -67,7 +75,8 @@ fun InboxEmptyCase() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 32.dp),
+            .padding(horizontal = 32.dp)
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -93,15 +102,35 @@ fun InboxEmptyCase() {
 }
 
 @Composable
-fun InboxNotes(notes: List<InboxNoteUi>) {
-    LazyColumn {
-        itemsIndexed(notes) { index, note ->
-            InboxNoteRow(note = note)
-            if (index < notes.lastIndex)
-                Divider(
-                    color = colorResource(id = R.color.divider_color),
-                    thickness = 1.dp
-                )
+fun InboxNotes(
+    notes: List<InboxNoteUi>,
+    isRefreshing: Boolean,
+    onRefresh: () -> Unit
+) {
+    SwipeRefresh(
+        state = rememberSwipeRefreshState(isRefreshing),
+        onRefresh = { onRefresh.invoke() },
+        indicator = { state, trigger ->
+            SwipeRefreshIndicator(
+                state = state,
+                refreshTriggerDistance = trigger,
+                contentColor = MaterialTheme.colors.primary,
+            )
+        }
+    ) {
+        if (notes.isEmpty()) {
+            InboxEmptyCase()
+        } else {
+            LazyColumn {
+                itemsIndexed(notes) { index, note ->
+                    InboxNoteRow(note = note)
+                    if (index < notes.lastIndex)
+                        Divider(
+                            color = colorResource(id = R.color.divider_color),
+                            thickness = 1.dp
+                        )
+                }
+            }
         }
     }
 }
