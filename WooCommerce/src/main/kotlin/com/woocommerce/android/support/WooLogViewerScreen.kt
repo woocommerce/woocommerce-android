@@ -15,6 +15,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.util.RollingLogEntries
@@ -124,4 +125,15 @@ private fun logLevelColor(level: WooLog.LogLevel): Int {
             WooLog.LogLevel.e -> R.color.woo_red_50
         }
     }
+}
+
+@Preview
+@Composable
+fun WooLogViewerScreenPreview() {
+    WooLogViewerScreen(
+        isDarkThemeActive = false,
+        onBackPress = {},
+        onShareButtonClick = {},
+        onCopyButtonClick = {}
+    )
 }
