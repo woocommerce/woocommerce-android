@@ -174,7 +174,7 @@ class HelpActivity : AppCompatActivity() {
 
     private fun showApplicationLog() {
         AnalyticsTracker.track(AnalyticsEvent.SUPPORT_APPLICATION_LOG_VIEWED)
-        startActivity(Intent(this, WooLogViewerScreen::class.java))
+        startActivity(Intent(this, WooLogViewerActivity::class.java))
     }
 
     private fun showSSR() {

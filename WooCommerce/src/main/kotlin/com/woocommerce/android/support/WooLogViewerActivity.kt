@@ -1,29 +1,33 @@
 package com.woocommerce.android.support
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
-import android.widget.TextView
+import androidx.annotation.ColorRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.R.layout
 import com.woocommerce.android.databinding.ActivityLogviewerBinding
-import com.woocommerce.android.extensions.setHtmlText
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.util.AppThemeUtils
+import com.woocommerce.android.util.RollingLogEntries
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.copyToClipboard
-import com.woocommerce.android.widgets.AlignedDividerDecoration
 import org.wordpress.android.util.ToastUtils
 import java.lang.String.format
 import java.util.*
@@ -32,6 +36,10 @@ class WooLogViewerActivity : AppCompatActivity() {
     companion object {
         private const val ID_SHARE = 1
         private const val ID_COPY_TO_CLIPBOARD = 2
+    }
+
+    private val isDarkThemeEnabled: Boolean by lazy {
+        AppThemeUtils.isDarkThemeActive(this@WooLogViewerActivity)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,24 +51,71 @@ class WooLogViewerActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar.toolbar as Toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        setupRecyclerView(binding, setupRecyclerDivider())
-    }
-
-    private fun setupRecyclerDivider(): AlignedDividerDecoration {
-        val divider = AlignedDividerDecoration(
-            this,
-            DividerItemDecoration.VERTICAL, 0, clipToMargin = false
-        )
-        ContextCompat.getDrawable(this, R.drawable.list_divider)?.let { drawable ->
-            divider.setDrawable(drawable)
+        binding.composeView.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                WooThemeWithBackground {
+                    LogViewerEntries(WooLog.logEntries)
+                }
+            }
         }
-        return divider
     }
 
-    private fun setupRecyclerView(binding: ActivityLogviewerBinding, divider: AlignedDividerDecoration) {
-        binding.recycler.layoutManager = LinearLayoutManager(this)
-        binding.recycler.addItemDecoration(divider)
-        binding.recycler.adapter = LogAdapter(this)
+    @Composable
+    fun LogViewerEntries(entries: RollingLogEntries) {
+        LazyColumn {
+            itemsIndexed(entries) { index, entry ->
+                LogViewerEntry(index, entry)
+                if (index < entries.lastIndex)
+                    Divider(
+                        color = colorResource(id = R.color.divider_color),
+                        thickness = 1.dp
+                    )
+            }
+        }
+    }
+
+    @Composable
+    fun LogViewerEntry(index: Int, entry: RollingLogEntries.LogEntry) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(color = MaterialTheme.colors.surface),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            ) {
+                Text(
+                    text = format(Locale.US, "%02d", index + 1),
+                    style = MaterialTheme.typography.body2,
+                    modifier = Modifier.padding(end = 8.dp),
+                    color = colorResource(id = R.color.grey)
+                )
+                SelectionContainer {
+                    Text(
+                        text = entry.toString(),
+                        style = MaterialTheme.typography.body2,
+                        color = colorResource(id = logLevelColor(entry.level))
+                    )
+                }
+            }
+        }
+    }
+
+    @ColorRes
+    private fun logLevelColor(level: WooLog.LogLevel): Int {
+        return if (isDarkThemeEnabled) {
+            R.color.white
+        } else {
+            when (level) {
+                WooLog.LogLevel.v -> R.color.grey
+                WooLog.LogLevel.d -> R.color.blue_30
+                WooLog.LogLevel.i -> R.color.woo_black
+                WooLog.LogLevel.w -> R.color.woo_purple_30
+                WooLog.LogLevel.e -> R.color.woo_red_30
+            }
+        }
     }
 
     private fun shareAppLog() {
@@ -123,29 +178,5 @@ class WooLogViewerActivity : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    private inner class LogAdapter constructor(context: Context) : RecyclerView.Adapter<LogViewHolder>() {
-        private val entries: List<String> =
-            WooLog.toHtmlList(AppThemeUtils.isDarkThemeActive(this@WooLogViewerActivity))
-        private val inflater: LayoutInflater = LayoutInflater.from(context)
-
-        override fun getItemCount() = entries.size
-
-        override fun getItemId(position: Int) = position.toLong()
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LogViewHolder {
-            return LogViewHolder(inflater.inflate(layout.logviewer_listitem, parent, false))
-        }
-
-        override fun onBindViewHolder(holder: LogViewHolder, position: Int) {
-            holder.txtLineNumber.text = format(Locale.US, "%02d", position + 1)
-            holder.txtLogEntry.setHtmlText(entries[position])
-        }
-    }
-
-    private inner class LogViewHolder internal constructor(view: View) : RecyclerView.ViewHolder(view) {
-        val txtLineNumber: TextView = view.findViewById(R.id.text_line) as TextView
-        val txtLogEntry: TextView = view.findViewById(R.id.text_log) as TextView
     }
 }

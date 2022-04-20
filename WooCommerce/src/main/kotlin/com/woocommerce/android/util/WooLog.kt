@@ -176,7 +176,5 @@ object WooLog {
         return errors.toString()
     }
 
-    fun toHtmlList(isDarkTheme: Boolean) = logEntries.toHtmlList(isDarkTheme)
-
     override fun toString() = logEntries.toString()
 }
