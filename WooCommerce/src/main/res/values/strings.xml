@@ -306,8 +306,8 @@
     <string name="orderlist_loading">Looking up your orders…</string>
     <string name="orderlist_no_filters_title">All Orders</string>
     <string name="orderlist_filters_title">Filtered Orders</string>
-    <string name="orderlist_simple_payments_wip_title">Take payments from your device!</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">We are working on making it easier for you to take payments from your device! For now, tap the "+" button and you\'ll be able to create an order with the amount you want to collect.</string>
+    <string name="orderlist_simple_payments_wip_title">Create orders &amp; take payments!</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">We\'ve been working on making it possible to create orders and take payments from your device! You can try these features out by tapping on the "+" button</string>
     <string name="orderlist_simple_payments_menu">Simple payment</string>
     <string name="order_card_transition_name">order_card_%1$s</string>
     <string name="order_card_detail_transition_name">order_card_detail</string>
@@ -916,22 +916,24 @@
     <!--
             Card Reader Interac refund
         -->
-    <string name="card_reader_payment_refund_payment_loading_header">Getting ready to refund payment</string>
-    <string name="card_reader_payment_refund_failed_header">Refund failed</string>
-    <string name="card_reader_payment_refund_payment">Refund payment</string>
-    <string name="card_reader_payment_processing_refund_state">Processing refund</string>
-    <string name="card_reader_payment_completed_refund_header">Refund successful</string>
-    <string name="card_reader_refund_failed_unexpected_error_state">Sorry, this refund couldn\’t be processed</string>
-    <string name="card_reader_refund_failed_unknown">Refund was declined for an unknown reason</string>
-    <string name="card_reader_refund_failed_fraud">Try another means of refund</string>
-    <string name="card_reader_refund_failed_generic">Refund was declined for an unspecified reason</string>
-    <string name="card_reader_refund_failed_card_not_supported">The card does not support this type of refund</string>
-    <string name="card_reader_refund_failed_duplicate_transaction">An identical refund was submitted recently</string>
-    <string name="card_reader_refund_failed_insufficient_funds">Refund declined due to insufficient funds</string>
-    <string name="card_reader_refund_failed_invalid_amount">The refund amount is not allowed for the card presented</string>
-    <string name="card_reader_refund_failed_test_card">System test cards are not permitted for refund</string>
-    <string name="card_reader_refund_failed_ok">OK</string>
-    <string name="card_reader_refund_failed_cancelled">Refund cancelled</string>
+    <string name="card_reader_interac_refund_refund_loading_header">Getting ready to refund payment</string>
+    <string name="card_reader_interac_refund_refund_failed_header">Refund failed</string>
+    <string name="card_reader_interac_refund_refund_payment">Refund payment</string>
+    <string name="card_reader_interac_refund_refund_processing_state">Processing refund</string>
+    <string name="card_reader_interac_refund_refund_completed_header">Refund successful</string>
+    <string name="card_reader_interac_refund_refund_failed_unexpected_error_state">Sorry, this refund couldn\’t be processed</string>
+    <string name="card_reader_interac_refund_refund_failed_unknown">Refund was declined for an unknown reason</string>
+    <string name="card_reader_interac_refund_refund_failed_fraud">Try another means of refund</string>
+    <string name="card_reader_interac_refund_refund_failed_generic">Refund was declined for an unspecified reason</string>
+    <string name="card_reader_interac_refund_refund_failed_card_not_supported">The card does not support this type of refund</string>
+    <string name="card_reader_interac_refund_refund_failed_duplicate_transaction">An identical refund was submitted recently</string>
+    <string name="card_reader_interac_refund_refund_failed_insufficient_funds">Refund declined due to insufficient funds</string>
+    <string name="card_reader_interac_refund_refund_failed_invalid_amount">The refund amount is not allowed for the card presented</string>
+    <string name="card_reader_interac_refund_refund_failed_test_card">System test cards are not permitted for refund</string>
+    <string name="card_reader_interac_refund_refund_failed_ok">OK</string>
+    <string name="card_reader_interac_refund_refund_failed_cancelled">Refund cancelled</string>
+    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">The order is already refunded</string>
+    <string name="card_reader_interac_refund_refund_payment_hint">Tap or insert to refund</string>
     <!--
         Card Reader Payments
     -->
@@ -1411,6 +1413,8 @@
     <string name="product_add_ons_details_info_notice">You can edit product add-ons in the web dashboard.</string>
     <string name="product_count_one">%d product</string>
     <string name="product_count_many">%d products</string>
+    <string name="category_count_one">%d category</string>
+    <string name="category_count_many">%d categories</string>
     <string name="cross_sell_product_count_one">%d cross-sell product</string>
     <string name="cross_sell_product_count_many">%d cross-sell products</string>
     <string name="upsell_product_count_one">%d upsell product</string>
@@ -1505,7 +1509,6 @@
     <string name="beta_features">Beta features</string>
     <string name="beta_features_add_ons">View Add-ons</string>
     <string name="beta_features_simple_payments">Simple payments</string>
-    <string name="beta_features_order_creation">Order creation</string>
     <string name="settings_signout">Log out</string>
     <string name="settings_preferences">Preferences</string>
     <string name="settings_confirm_logout">Are you sure you want to logout from the account %s?</string>
@@ -1516,8 +1519,6 @@
     <string name="settings_enable_product_adding_teaser_message">Test out the new simple, linked and grouped product creation as we get ready to launch</string>
     <string name="settings_enable_product_addons_teaser_title">View Add-ons</string>
     <string name="settings_enable_product_addons_teaser_message">Test out viewing Order Add-ons as we get ready to launch</string>
-    <string name="settings_enable_order_creation_teaser_title">Order Creation</string>
-    <string name="settings_enable_order_creation_teaser_message">Test out creating orders with full details as we get ready to launch</string>
     <string name="settings_enable_product_teaser_title">Product editing</string>
     <string name="settings_enable_product_teaser_message">Test out the new product editing functionality as we get ready to launch</string>
     <string name="settings_send_stats_detail">Share information with our analytics tool about your use of services while logged in to your WordPress account</string>
@@ -1888,11 +1889,20 @@
     <string name="coupons">Coupons</string>
     <string name="coupon_list_item_label_active">Active</string>
     <string name="coupon_list_item_label_expired">Expired</string>
-    <string name="coupon_list_item_label_off">Off</string>
-    <string name="coupon_list_item_label_all_products">All Products</string>
+    <string name="coupon_list_item_label_off">off</string>
+    <string name="coupon_list_item_label_everything">everything</string>
+    <string name="coupon_list_item_label_products_and_categories">%1s and %2s</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1s excl. %2s</string>
     <string name="coupon_list_empty_heading">No coupons found</string>
     <string name="coupon_list_wip_title">View and edit coupons</string>
     <string name="coupon_list_wip_message_enabled">We’ve been working on making it possible to view and edit coupons from your device!</string>
+    <string name="coupon_list_view_coupon">View coupon summary</string>
+    <string name="coupon_summary_heading">Coupon Summary</string>
+    <string name="coupon_summary_minimum_spend">Minimum spend of %s</string>
+    <string name="coupon_summary_maximum_spend">Maximum spend of %s</string>
+    <string name="coupon_summary_performance_heading">Performance</string>
+    <string name="coupon_summary_performance_discounted_order_heading">Discounted Orders</string>
+    <string name="coupon_summary_performance_amount_heading">Amount</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>

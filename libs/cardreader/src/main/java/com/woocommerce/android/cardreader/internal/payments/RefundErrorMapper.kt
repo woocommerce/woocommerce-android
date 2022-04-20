@@ -8,7 +8,7 @@ import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.Refun
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.RefundStatusErrorType.NoNetwork
 import com.woocommerce.android.cardreader.payments.RefundParams
 
-class RefundErrorMapper {
+internal class RefundErrorMapper {
     fun mapTerminalError(
         refundParams: RefundParams,
         exception: TerminalException
@@ -79,9 +79,6 @@ class RefundErrorMapper {
             "testmode_decline" -> DeclinedByBackendError.CardDeclined.TestCard
 
             "test_mode_live_card" -> DeclinedByBackendError.CardDeclined.TestModeLiveCard
-            else -> when (exception.apiError?.code) {
-                "amount_too_small" -> DeclinedByBackendError.AmountTooSmall
-                else -> DeclinedByBackendError.Unknown
-            }
+            else -> DeclinedByBackendError.Unknown
         }
 }

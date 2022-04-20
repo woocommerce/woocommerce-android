@@ -2,13 +2,14 @@ package com.woocommerce.android.ui.orders.cardreader
 
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.RefundStatusErrorType.DeclinedByBackendError
+import com.woocommerce.android.ui.orders.cardreader.payment.CardReaderInteracRefundErrorMapper
+import com.woocommerce.android.ui.orders.cardreader.payment.InteracRefundFlowError
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 
 class CardReaderInteracRefundErrorMapperTest : BaseUnitTest() {
-
     private lateinit var cardReaderInteracRefundErrorMapper: CardReaderInteracRefundErrorMapper
 
     @Before
@@ -21,7 +22,7 @@ class CardReaderInteracRefundErrorMapperTest : BaseUnitTest() {
         val errorType = CardInteracRefundStatus.RefundStatusErrorType.NoNetwork
         val expectedErrorType = InteracRefundFlowError.NoNetwork
 
-        val actualErrorType = cardReaderInteracRefundErrorMapper.mapPaymentErrorToUiError(errorType)
+        val actualErrorType = cardReaderInteracRefundErrorMapper.mapRefundErrorToUiError(errorType)
 
         assertThat(actualErrorType).isEqualTo(expectedErrorType)
     }
@@ -31,7 +32,7 @@ class CardReaderInteracRefundErrorMapperTest : BaseUnitTest() {
         val errorType = CardInteracRefundStatus.RefundStatusErrorType.Generic
         val expectedErrorType = InteracRefundFlowError.Generic
 
-        val actualErrorType = cardReaderInteracRefundErrorMapper.mapPaymentErrorToUiError(errorType)
+        val actualErrorType = cardReaderInteracRefundErrorMapper.mapRefundErrorToUiError(errorType)
 
         assertThat(actualErrorType).isEqualTo(expectedErrorType)
     }
@@ -41,7 +42,7 @@ class CardReaderInteracRefundErrorMapperTest : BaseUnitTest() {
         val errorType = CardInteracRefundStatus.RefundStatusErrorType.Server
         val expectedErrorType = InteracRefundFlowError.Server
 
-        val actualErrorType = cardReaderInteracRefundErrorMapper.mapPaymentErrorToUiError(errorType)
+        val actualErrorType = cardReaderInteracRefundErrorMapper.mapRefundErrorToUiError(errorType)
 
         assertThat(actualErrorType).isEqualTo(expectedErrorType)
     }
@@ -51,17 +52,17 @@ class CardReaderInteracRefundErrorMapperTest : BaseUnitTest() {
         val errorType = CardInteracRefundStatus.RefundStatusErrorType.Cancelled
         val expectedErrorType = InteracRefundFlowError.Cancelled
 
-        val actualErrorType = cardReaderInteracRefundErrorMapper.mapPaymentErrorToUiError(errorType)
+        val actualErrorType = cardReaderInteracRefundErrorMapper.mapRefundErrorToUiError(errorType)
 
         assertThat(actualErrorType).isEqualTo(expectedErrorType)
     }
 
     @Test
-    fun `given refund status AMOUNT_TOO_SMALL, when map payment error called, then correct ui error is mapped`() {
-        val errorType = DeclinedByBackendError.AmountTooSmall
-        val expectedErrorType = InteracRefundFlowError.AmountTooSmall
+    fun `given refund status NonRetryable, when map payment error called, then correct ui error is mapped`() {
+        val errorType = CardInteracRefundStatus.RefundStatusErrorType.NonRetryable
+        val expectedErrorType = InteracRefundFlowError.NonRetryableGeneric
 
-        val actualErrorType = cardReaderInteracRefundErrorMapper.mapPaymentErrorToUiError(errorType)
+        val actualErrorType = cardReaderInteracRefundErrorMapper.mapRefundErrorToUiError(errorType)
 
         assertThat(actualErrorType).isEqualTo(expectedErrorType)
     }
@@ -71,7 +72,7 @@ class CardReaderInteracRefundErrorMapperTest : BaseUnitTest() {
         val errorType = DeclinedByBackendError.Unknown
         val expectedErrorType = InteracRefundFlowError.Unknown
 
-        val actualErrorType = cardReaderInteracRefundErrorMapper.mapPaymentErrorToUiError(errorType)
+        val actualErrorType = cardReaderInteracRefundErrorMapper.mapRefundErrorToUiError(errorType)
 
         assertThat(actualErrorType).isEqualTo(expectedErrorType)
     }
@@ -81,7 +82,7 @@ class CardReaderInteracRefundErrorMapperTest : BaseUnitTest() {
         val errorType = DeclinedByBackendError.CardDeclined.CardNotSupported
         val expectedErrorType = InteracRefundFlowError.Declined.CardNotSupported
 
-        val actualErrorType = cardReaderInteracRefundErrorMapper.mapPaymentErrorToUiError(errorType)
+        val actualErrorType = cardReaderInteracRefundErrorMapper.mapRefundErrorToUiError(errorType)
 
         assertThat(actualErrorType).isEqualTo(expectedErrorType)
     }
@@ -91,7 +92,7 @@ class CardReaderInteracRefundErrorMapperTest : BaseUnitTest() {
         val errorType = DeclinedByBackendError.CardDeclined.CurrencyNotSupported
         val expectedErrorType = InteracRefundFlowError.Declined.CurrencyNotSupported
 
-        val actualErrorType = cardReaderInteracRefundErrorMapper.mapPaymentErrorToUiError(errorType)
+        val actualErrorType = cardReaderInteracRefundErrorMapper.mapRefundErrorToUiError(errorType)
 
         assertThat(actualErrorType).isEqualTo(expectedErrorType)
     }
@@ -101,7 +102,7 @@ class CardReaderInteracRefundErrorMapperTest : BaseUnitTest() {
         val errorType = DeclinedByBackendError.CardDeclined.DuplicateTransaction
         val expectedErrorType = InteracRefundFlowError.Declined.DuplicateTransaction
 
-        val actualErrorType = cardReaderInteracRefundErrorMapper.mapPaymentErrorToUiError(errorType)
+        val actualErrorType = cardReaderInteracRefundErrorMapper.mapRefundErrorToUiError(errorType)
 
         assertThat(actualErrorType).isEqualTo(expectedErrorType)
     }
@@ -111,7 +112,7 @@ class CardReaderInteracRefundErrorMapperTest : BaseUnitTest() {
         val errorType = DeclinedByBackendError.CardDeclined.ExpiredCard
         val expectedErrorType = InteracRefundFlowError.Declined.ExpiredCard
 
-        val actualErrorType = cardReaderInteracRefundErrorMapper.mapPaymentErrorToUiError(errorType)
+        val actualErrorType = cardReaderInteracRefundErrorMapper.mapRefundErrorToUiError(errorType)
 
         assertThat(actualErrorType).isEqualTo(expectedErrorType)
     }
@@ -121,7 +122,7 @@ class CardReaderInteracRefundErrorMapperTest : BaseUnitTest() {
         val errorType = DeclinedByBackendError.CardDeclined.Fraud
         val expectedErrorType = InteracRefundFlowError.Declined.Fraud
 
-        val actualErrorType = cardReaderInteracRefundErrorMapper.mapPaymentErrorToUiError(errorType)
+        val actualErrorType = cardReaderInteracRefundErrorMapper.mapRefundErrorToUiError(errorType)
 
         assertThat(actualErrorType).isEqualTo(expectedErrorType)
     }
@@ -131,7 +132,7 @@ class CardReaderInteracRefundErrorMapperTest : BaseUnitTest() {
         val errorType = DeclinedByBackendError.CardDeclined.Generic
         val expectedErrorType = InteracRefundFlowError.Declined.Generic
 
-        val actualErrorType = cardReaderInteracRefundErrorMapper.mapPaymentErrorToUiError(errorType)
+        val actualErrorType = cardReaderInteracRefundErrorMapper.mapRefundErrorToUiError(errorType)
 
         assertThat(actualErrorType).isEqualTo(expectedErrorType)
     }
@@ -141,7 +142,7 @@ class CardReaderInteracRefundErrorMapperTest : BaseUnitTest() {
         val errorType = DeclinedByBackendError.CardDeclined.IncorrectPostalCode
         val expectedErrorType = InteracRefundFlowError.Declined.IncorrectPostalCode
 
-        val actualErrorType = cardReaderInteracRefundErrorMapper.mapPaymentErrorToUiError(errorType)
+        val actualErrorType = cardReaderInteracRefundErrorMapper.mapRefundErrorToUiError(errorType)
 
         assertThat(actualErrorType).isEqualTo(expectedErrorType)
     }
@@ -151,7 +152,7 @@ class CardReaderInteracRefundErrorMapperTest : BaseUnitTest() {
         val errorType = DeclinedByBackendError.CardDeclined.InsufficientFunds
         val expectedErrorType = InteracRefundFlowError.Declined.InsufficientFunds
 
-        val actualErrorType = cardReaderInteracRefundErrorMapper.mapPaymentErrorToUiError(errorType)
+        val actualErrorType = cardReaderInteracRefundErrorMapper.mapRefundErrorToUiError(errorType)
 
         assertThat(actualErrorType).isEqualTo(expectedErrorType)
     }
@@ -161,7 +162,7 @@ class CardReaderInteracRefundErrorMapperTest : BaseUnitTest() {
         val errorType = DeclinedByBackendError.CardDeclined.InvalidAccount
         val expectedErrorType = InteracRefundFlowError.Declined.InvalidAccount
 
-        val actualErrorType = cardReaderInteracRefundErrorMapper.mapPaymentErrorToUiError(errorType)
+        val actualErrorType = cardReaderInteracRefundErrorMapper.mapRefundErrorToUiError(errorType)
 
         assertThat(actualErrorType).isEqualTo(expectedErrorType)
     }
@@ -171,7 +172,7 @@ class CardReaderInteracRefundErrorMapperTest : BaseUnitTest() {
         val errorType = DeclinedByBackendError.CardDeclined.InvalidAmount
         val expectedErrorType = InteracRefundFlowError.Declined.InvalidAmount
 
-        val actualErrorType = cardReaderInteracRefundErrorMapper.mapPaymentErrorToUiError(errorType)
+        val actualErrorType = cardReaderInteracRefundErrorMapper.mapRefundErrorToUiError(errorType)
 
         assertThat(actualErrorType).isEqualTo(expectedErrorType)
     }
@@ -181,7 +182,7 @@ class CardReaderInteracRefundErrorMapperTest : BaseUnitTest() {
         val errorType = DeclinedByBackendError.CardDeclined.PinRequired
         val expectedErrorType = InteracRefundFlowError.Declined.PinRequired
 
-        val actualErrorType = cardReaderInteracRefundErrorMapper.mapPaymentErrorToUiError(errorType)
+        val actualErrorType = cardReaderInteracRefundErrorMapper.mapRefundErrorToUiError(errorType)
 
         assertThat(actualErrorType).isEqualTo(expectedErrorType)
     }
@@ -191,7 +192,7 @@ class CardReaderInteracRefundErrorMapperTest : BaseUnitTest() {
         val errorType = DeclinedByBackendError.CardDeclined.Temporary
         val expectedErrorType = InteracRefundFlowError.Declined.Temporary
 
-        val actualErrorType = cardReaderInteracRefundErrorMapper.mapPaymentErrorToUiError(errorType)
+        val actualErrorType = cardReaderInteracRefundErrorMapper.mapRefundErrorToUiError(errorType)
 
         assertThat(actualErrorType).isEqualTo(expectedErrorType)
     }
@@ -201,7 +202,7 @@ class CardReaderInteracRefundErrorMapperTest : BaseUnitTest() {
         val errorType = DeclinedByBackendError.CardDeclined.TestCard
         val expectedErrorType = InteracRefundFlowError.Declined.TestCard
 
-        val actualErrorType = cardReaderInteracRefundErrorMapper.mapPaymentErrorToUiError(errorType)
+        val actualErrorType = cardReaderInteracRefundErrorMapper.mapRefundErrorToUiError(errorType)
 
         assertThat(actualErrorType).isEqualTo(expectedErrorType)
     }
@@ -211,7 +212,7 @@ class CardReaderInteracRefundErrorMapperTest : BaseUnitTest() {
         val errorType = DeclinedByBackendError.CardDeclined.TestModeLiveCard
         val expectedErrorType = InteracRefundFlowError.Declined.TestModeLiveCard
 
-        val actualErrorType = cardReaderInteracRefundErrorMapper.mapPaymentErrorToUiError(errorType)
+        val actualErrorType = cardReaderInteracRefundErrorMapper.mapRefundErrorToUiError(errorType)
 
         assertThat(actualErrorType).isEqualTo(expectedErrorType)
     }
@@ -221,7 +222,7 @@ class CardReaderInteracRefundErrorMapperTest : BaseUnitTest() {
         val errorType = DeclinedByBackendError.CardDeclined.TooManyPinTries
         val expectedErrorType = InteracRefundFlowError.Declined.TooManyPinTries
 
-        val actualErrorType = cardReaderInteracRefundErrorMapper.mapPaymentErrorToUiError(errorType)
+        val actualErrorType = cardReaderInteracRefundErrorMapper.mapRefundErrorToUiError(errorType)
 
         assertThat(actualErrorType).isEqualTo(expectedErrorType)
     }

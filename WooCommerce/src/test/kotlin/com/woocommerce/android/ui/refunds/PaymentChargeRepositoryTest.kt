@@ -175,4 +175,92 @@ class PaymentChargeRepositoryTest : BaseUnitTest() {
             )
         }
     }
+
+    @Test
+    fun `given interac transaction, when fetching data, then card details returned`() {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val chargeId = "charge_id"
+            whenever(appPrefs.getCardReaderPreferredPlugin(siteModel.id, siteModel.siteId, siteModel.selfHostedSiteId))
+                .thenReturn(PluginType.STRIPE_EXTENSION_GATEWAY)
+            whenever(cardDetails.last4).thenReturn("2345")
+            whenever(cardDetails.brand).thenReturn("mastercard")
+            whenever(paymentMethodDetails.type).thenReturn("interac_present")
+            whenever(
+                ippStore.fetchPaymentCharge(
+                    WCInPersonPaymentsStore.InPersonPaymentsPluginType.STRIPE,
+                    siteModel,
+                    chargeId
+                )
+            ).thenReturn(WooPayload(apiResult))
+
+            // WHEN
+            val result = repo.fetchCardDataUsedForOrderPayment(chargeId)
+
+            // THEN
+            assertThat(result).isInstanceOf(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success::class.java
+            )
+            assertThat((result as PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success).paymentMethodType)
+                .isEqualTo("interac_present")
+        }
+    }
+
+    @Test
+    fun `given non-interac transaction, when fetching data, then card details returned`() {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val chargeId = "charge_id"
+            whenever(appPrefs.getCardReaderPreferredPlugin(siteModel.id, siteModel.siteId, siteModel.selfHostedSiteId))
+                .thenReturn(PluginType.STRIPE_EXTENSION_GATEWAY)
+            whenever(cardDetails.last4).thenReturn("2345")
+            whenever(cardDetails.brand).thenReturn("mastercard")
+            whenever(paymentMethodDetails.type).thenReturn("card_present")
+            whenever(
+                ippStore.fetchPaymentCharge(
+                    WCInPersonPaymentsStore.InPersonPaymentsPluginType.STRIPE,
+                    siteModel,
+                    chargeId
+                )
+            ).thenReturn(WooPayload(apiResult))
+
+            // WHEN
+            val result = repo.fetchCardDataUsedForOrderPayment(chargeId)
+
+            // THEN
+            assertThat(result).isInstanceOf(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success::class.java
+            )
+            assertThat((result as PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success).paymentMethodType)
+                .isEqualTo("card_present")
+        }
+    }
+
+    @Test
+    fun `given unknown transaction, when fetching data, then card details returned`() {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // GIVEN
+            val chargeId = "charge_id"
+            whenever(appPrefs.getCardReaderPreferredPlugin(siteModel.id, siteModel.siteId, siteModel.selfHostedSiteId))
+                .thenReturn(PluginType.STRIPE_EXTENSION_GATEWAY)
+            whenever(paymentMethodDetails.type).thenReturn("unknown")
+            whenever(
+                ippStore.fetchPaymentCharge(
+                    WCInPersonPaymentsStore.InPersonPaymentsPluginType.STRIPE,
+                    siteModel,
+                    chargeId
+                )
+            ).thenReturn(WooPayload(apiResult))
+
+            // WHEN
+            val result = repo.fetchCardDataUsedForOrderPayment(chargeId)
+
+            // THEN
+            assertThat(result).isInstanceOf(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success::class.java
+            )
+            assertThat((result as PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success).paymentMethodType)
+                .isNull()
+        }
+    }
 }

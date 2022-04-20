@@ -69,9 +69,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "8.8-rc-2"
+            versionName "8.9-rc-1"
         }
-        versionCode 288
+        versionCode 290
 
         minSdkVersion 21
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
@@ -123,6 +123,7 @@ android {
         wasabi { // Development only version, can be installed along release versions
             applicationId "com.woocommerce.android.dev"
             dimension "buildType"
+            isDefault true
         }
 
         jalapeno { // Pre-Alpha version, used for PR builds, can be installed along release and dev versions.
@@ -142,6 +143,7 @@ android {
         debug {
             minifyEnabled false
             pseudoLocalesEnabled true
+            isDefault true
         }
     }
 

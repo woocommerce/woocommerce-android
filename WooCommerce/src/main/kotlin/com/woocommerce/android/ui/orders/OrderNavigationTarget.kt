@@ -50,8 +50,6 @@ sealed class OrderNavigationTarget : Event() {
     object ViewShippingLabelFormatOptions : OrderNavigationTarget()
     data class ViewPrintCustomsForm(val invoices: List<String>, val isReprint: Boolean) : OrderNavigationTarget()
     data class StartShippingLabelCreationFlow(val orderId: Long) : OrderNavigationTarget()
-    data class StartCardReaderConnectFlow(val skipOnboarding: Boolean) : OrderNavigationTarget()
-    object ShowCardReaderWelcomeDialog : OrderNavigationTarget()
     data class StartCardReaderPaymentFlow(val orderId: Long) : OrderNavigationTarget()
     object ViewPrintingInstructions : OrderNavigationTarget()
     data class PreviewReceipt(val billingEmail: String, val receiptUrl: String, val orderId: Long) :
