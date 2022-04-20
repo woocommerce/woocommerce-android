@@ -15,13 +15,11 @@ import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
-import org.wordpress.android.fluxc.generated.WCCoreActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import org.wordpress.android.fluxc.store.WooCommerceStore.OnApiVersionFetched
 import org.wordpress.android.login.util.SiteUtils
 import javax.inject.Inject
 
@@ -140,12 +138,32 @@ class SitePickerPresenter
     }
 
     override fun verifySiteApiVersion(site: SiteModel) {
-        dispatcher.dispatch(WCCoreActionBuilder.newFetchSiteApiVersionAction(site))
+        coroutineScope.launch {
+            val result = wooCommerceStore.fetchSupportedApiVersion(site)
+            when {
+                result.isError -> {
+                    WooLog.e(
+                        T.LOGIN,
+                        "Error fetching apiVersion for site [${site.siteId} : ${site.name}]! " +
+                            "${result.error?.type} - ${result.error?.message}"
+                    )
+                    view?.siteVerificationError(site)
+                }
+                result.model?.apiVersion.isNullOrBlank() -> {
+                    WooLog.e(T.LOGIN, "Empty apiVersion for site [${site.siteId} : ${site.name}]!")
+                    view?.siteVerificationError(site)
+                }
+                result.model?.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3 -> {
+                    view?.siteVerificationPassed(site)
+                }
+                else -> view?.siteVerificationFailed(site)
+            }
+        }
     }
 
     override fun updateWooSiteSettings(site: SiteModel) {
         appPrefs.resetSitePreferences()
-        dispatcher.dispatch(WCCoreActionBuilder.newFetchSiteSettingsAction(site))
+        coroutineScope.launch { wooCommerceStore.fetchSiteGeneralSettings(site) }
     }
 
     override fun getSitesForLocalIds(siteIdList: IntArray): List<SiteModel> {
@@ -168,33 +186,6 @@ class SitePickerPresenter
             )
         } else if (!userIsLoggedIn()) {
             view?.didLogout()
-        }
-    }
-
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onApiVersionFetched(event: OnApiVersionFetched) {
-        if (event.isError) {
-            WooLog.e(
-                T.LOGIN,
-                "Error fetching apiVersion for site [${event.site.siteId} : ${event.site.name}]! " +
-                    "${event.error?.type} - ${event.error?.message}"
-            )
-            view?.siteVerificationError(event.site)
-            return
-        }
-
-        // Check for empty API version as well (which may not result in an error from the api)
-        if (event.apiVersion.isBlank()) {
-            WooLog.e(T.LOGIN, "Empty apiVersion for site [${event.site.siteId} : ${event.site.name}]!")
-            view?.siteVerificationError(event.site)
-            return
-        }
-
-        if (event.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3) {
-            view?.siteVerificationPassed(event.site)
-        } else {
-            view?.siteVerificationFailed(event.site)
         }
     }
 }

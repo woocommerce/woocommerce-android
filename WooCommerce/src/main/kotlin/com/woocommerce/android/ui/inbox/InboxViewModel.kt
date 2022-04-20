@@ -45,6 +45,12 @@ class InboxViewModel @Inject constructor(
         }
     }
 
+    fun dismissAllNotes() {
+        viewModelScope.launch {
+            inboxRepository.dismissAllNotesForCurrentSite()
+        }
+    }
+
     private fun inboxNotesLocalUpdates() =
         inboxRepository.observeInboxNotes()
             .map { inboxNotes ->
