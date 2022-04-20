@@ -141,6 +141,7 @@
     <string name="count">Count: %s</string>
     <string name="no_sku">No SKU</string>
     <string name="amount">Amount</string>
+    <string name="copy">Copy</string>
 
     <!--
         Date/Time Labels

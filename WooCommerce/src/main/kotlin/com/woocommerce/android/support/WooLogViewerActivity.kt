@@ -2,24 +2,23 @@ package com.woocommerce.android.support
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
 import androidx.annotation.ColorRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ActivityLogviewerBinding
@@ -34,11 +33,6 @@ import java.lang.String.format
 import java.util.*
 
 class WooLogViewerActivity : AppCompatActivity() {
-    companion object {
-        private const val ID_SHARE = 1
-        private const val ID_COPY_TO_CLIPBOARD = 2
-    }
-
     private val isDarkThemeEnabled: Boolean by lazy {
         AppThemeUtils.isDarkThemeActive(this@WooLogViewerActivity)
     }
@@ -49,16 +43,49 @@ class WooLogViewerActivity : AppCompatActivity() {
         val binding = ActivityLogviewerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(binding.toolbar.toolbar as Toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        // setSupportActionBar(binding.toolbar.toolbar as Toolbar)
+        // supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         binding.composeView.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    LogViewerEntries(WooLog.logEntries)
+                    WooLogViewerScreen()
                 }
             }
+        }
+    }
+
+    @Composable
+    fun WooLogViewerScreen() {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    backgroundColor = MaterialTheme.colors.surface,
+                    title = { Text(stringResource(id = R.string.logviewer_activity_title)) },
+                    navigationIcon = {
+                        IconButton(onClick = { onBackPressed() }) {
+                            Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(id = R.string.back))
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = { copyAppLogToClipboard() }) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_copy_white_24dp),
+                                contentDescription = stringResource(id = R.string.copy)
+                            )
+                        }
+                        IconButton(onClick = { shareAppLog() }) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_share_white_24dp),
+                                contentDescription = stringResource(id = R.string.share)
+                            )
+                        }
+                    }
+                )
+            }
+        ) {
+            LogViewerEntries(WooLog.logEntries)
         }
     }
 
@@ -143,44 +170,6 @@ class WooLogViewerActivity : AppCompatActivity() {
         } catch (e: Exception) {
             WooLog.e(T.UTILS, e)
             ToastUtils.showToast(this, R.string.logviewer_error_copy_to_clipboard)
-        }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        super.onCreateOptionsMenu(menu)
-
-        val mnuCopy = menu.add(
-            Menu.NONE,
-            ID_COPY_TO_CLIPBOARD, Menu.NONE, android.R.string.copy
-        )
-        mnuCopy.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
-        mnuCopy.setIcon(R.drawable.ic_copy_white_24dp)
-
-        val mnuShare = menu.add(
-            Menu.NONE,
-            ID_SHARE, Menu.NONE, R.string.share
-        )
-        mnuShare.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
-        mnuShare.setIcon(R.drawable.ic_share_white_24dp)
-
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            android.R.id.home -> {
-                finish()
-                true
-            }
-            ID_SHARE -> {
-                shareAppLog()
-                true
-            }
-            ID_COPY_TO_CLIPBOARD -> {
-                copyAppLogToClipboard()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
         }
     }
 }
