@@ -135,6 +135,7 @@ private fun logLevelColor(level: WooLog.LogLevel): Int {
 
 @Preview
 @Composable
+@Suppress("MagicNumber")
 fun WooLogViewerScreenPreview() {
     val entries = RollingLogEntries(99).also {
         it.add(
