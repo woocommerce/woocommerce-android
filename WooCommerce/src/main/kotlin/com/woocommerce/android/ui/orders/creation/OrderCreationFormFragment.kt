@@ -211,10 +211,11 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             }
             new.isEachAddButtonEnabled.takeIfNotEqualTo(old?.isEachAddButtonEnabled) { enabled ->
                 binding.paymentSection.loadingProgress.isVisible = !enabled
-                binding.enableAddButtons(enabled)
+                binding.paymentSection.feeButton.isEnabled = enabled
+                binding.productsSection.isEachAddButtonEnabled = enabled
             }
             new.isUpdatingOrderDraft.takeIfNotEqualTo(old?.isUpdatingOrderDraft) { show ->
-                binding.productsSection.content.productsAdapter?.isEachQuantityButtonEnabled = show.not()
+                binding.productsSection.content.productsAdapter?.isQuantityStepperEnabled = show.not()
             }
             new.showOrderUpdateSnackbar.takeIfNotEqualTo(old?.showOrderUpdateSnackbar) { show ->
                 showOrHideErrorSnackBar(show)
@@ -339,11 +340,6 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             .let {
                 customerAddressSection.content = it
             }
-    }
-
-    private fun FragmentOrderCreationFormBinding.enableAddButtons(enable: Boolean) {
-        paymentSection.feeButton.isEnabled = enable
-        productsSection.isEachAddButtonEnabled = enable
     }
 
     private fun setupHandleResults() {

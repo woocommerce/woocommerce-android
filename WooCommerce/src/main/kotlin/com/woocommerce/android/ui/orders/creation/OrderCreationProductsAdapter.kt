@@ -26,7 +26,7 @@ class OrderCreationProductsAdapter(
         setHasStableIds(true)
     }
 
-    var isEachQuantityButtonEnabled = false
+    var isQuantityButtonsEnabled = false
         set(value) {
             if (value != field) {
                 field = value
@@ -69,8 +69,8 @@ class OrderCreationProductsAdapter(
 
         fun bind(productModel: ProductUIModel) {
             binding.productName.text = productModel.item.name
-            binding.stepperView.isMinusButtonEnabled = isEachQuantityButtonEnabled
-            binding.stepperView.isPlusButtonEnabled = isEachQuantityButtonEnabled
+            binding.stepperView.isMinusButtonEnabled = isQuantityButtonsEnabled
+            binding.stepperView.isPlusButtonEnabled = isQuantityButtonsEnabled
             binding.stepperView.apply {
                 value = productModel.item.quantity.toInt()
                 contentDescription = context.getString(R.string.count, value.toString())
