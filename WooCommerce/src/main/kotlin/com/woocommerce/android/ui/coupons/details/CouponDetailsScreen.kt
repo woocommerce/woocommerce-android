@@ -9,9 +9,9 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.coupons.components.CouponExpirationLabel
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.*
@@ -97,7 +97,10 @@ fun CouponSummaryHeading(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 16.dp)
+            .padding(
+                horizontal = dimensionResource(id = R.dimen.major_100),
+                vertical = dimensionResource(id = R.dimen.major_100)
+            )
     ) {
         code?.let {
             Text(
@@ -114,21 +117,21 @@ fun CouponSummaryHeading(
 @Composable
 fun CouponSummarySection(couponSummary: CouponSummaryUi) {
     Surface(
-        elevation = 1.dp,
+        elevation = dimensionResource(id = R.dimen.minor_10),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 16.dp)
+            .padding(vertical = dimensionResource(id = R.dimen.major_100))
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.padding(16.dp)
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
+            modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100))
         ) {
             Text(
                 text = stringResource(id = R.string.coupon_details_heading),
                 style = MaterialTheme.typography.subtitle1,
                 color = MaterialTheme.colors.onSurface,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.minor_100))
             )
             SummaryLabel(couponSummary.discountType)
             SummaryLabel(couponSummary.summary)
@@ -153,12 +156,12 @@ private fun SummaryLabel(text: String?) {
 @Composable
 private fun CouponPerformanceSection(couponPerformanceState: CouponPerformanceState) {
     Surface(
-        elevation = 1.dp,
+        elevation = dimensionResource(id = R.dimen.minor_10),
         modifier = Modifier
             .fillMaxWidth()
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100))
         ) {
             Text(
                 text = stringResource(id = R.string.coupon_details_performance_heading),
@@ -167,7 +170,7 @@ private fun CouponPerformanceSection(couponPerformanceState: CouponPerformanceSt
                 fontWeight = FontWeight.Bold
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
 
             Row {
                 CouponPerformanceCount(
@@ -190,7 +193,7 @@ private fun CouponPerformanceCount(
     modifier: Modifier = Modifier
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
         modifier = modifier
     ) {
         Text(
@@ -214,7 +217,7 @@ private fun CouponPerformanceAmount(
     modifier: Modifier = Modifier
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
         modifier = modifier
     ) {
         Text(
@@ -223,7 +226,7 @@ private fun CouponPerformanceAmount(
             color = colorResource(id = R.color.color_surface_variant)
         )
         when (couponPerformanceState) {
-            is Loading -> CircularProgressIndicator(modifier = Modifier.size(32.dp))
+            is Loading -> CircularProgressIndicator(modifier = Modifier.size(dimensionResource(id = R.dimen.major_200)))
             else -> {
                 val amount = (couponPerformanceState as? Success)?.data
                     ?.formattedAmount ?: "-"
