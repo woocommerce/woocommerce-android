@@ -1890,6 +1890,7 @@
     <string name="coupon_details_performance_amount_heading">Amount</string>
     <string name="coupon_details_menu_copy">Copy Coupon Code</string>
     <string name="coupon_details_menu_share">Share Coupon</string>
+    <string name="coupon_details_menu_delete">Delete Coupon</string>
     <string name="coupon_details_performance_loading_failure">Loading coupon performance failed</string>
     <string name="coupon_type_percent">Percentage Discount</string>
     <string name="coupon_type_fixed_cart">Fixed Cart Discount</string>

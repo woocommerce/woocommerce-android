@@ -72,6 +72,12 @@ fun CouponDetailsScreen(
                     DropdownMenuItem(onClick = onShareButtonClick) {
                         Text(stringResource(id = R.string.coupon_details_menu_share))
                     }
+                    DropdownMenuItem(onClick = { }) {
+                        Text(
+                            stringResource(id = R.string.coupon_details_menu_delete),
+                            color = colorResource(id = R.color.woo_red_30)
+                        )
+                    }
                 }
             }
         )
