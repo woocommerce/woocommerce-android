@@ -1,10 +1,11 @@
 package com.woocommerce.android.ui.inbox
 
+import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.inbox.InboxViewModel.Companion.DEFAULT_DISMISS_LABEL
 import com.woocommerce.android.ui.inbox.InboxViewModel.InboxNoteActionUi
-import com.woocommerce.android.ui.inbox.InboxViewModel.InboxNoteUi
+import com.woocommerce.android.ui.inbox.InboxViewModel.InboxState
 import com.woocommerce.android.ui.inbox.domain.InboxNote
 import com.woocommerce.android.ui.inbox.domain.InboxRepository
 import com.woocommerce.android.util.DateUtils
@@ -15,8 +16,11 @@ import kotlinx.coroutines.flow.flow
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.reset
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -28,6 +32,8 @@ class InboxViewModelTest : BaseUnitTest() {
     private val inboxRepository: InboxRepository = mock()
 
     private lateinit var viewModel: InboxViewModel
+    private var observer: Observer<InboxState> = mock()
+    private val captor = argumentCaptor<InboxState>()
 
     @Before
     fun setup() = testBlocking {
@@ -72,6 +78,22 @@ class InboxViewModelTest : BaseUnitTest() {
             }
         }
 
+    @Test
+    fun `given inbox notes loaded, when refresh notes, show is refreshing state and fetch notes`() =
+        testBlocking {
+            whenViewModelIsCreated()
+            givenObserveNotesEmits(listOf(NOTE))
+            reset(inboxRepository)
+
+            viewModel.inboxState.observeForever(observer)
+            viewModel.inboxState.value?.onRefresh?.invoke()
+
+            verify(observer, Mockito.times(3)).onChanged(captor.capture())
+            assertThat(captor.allValues[1].isRefreshing).isTrue
+            assertThat(captor.allValues.last().isRefreshing).isFalse
+            verify(inboxRepository).fetchInboxNotes()
+        }
+
     private suspend fun givenFetchInboxNotesReturns(result: Result<Unit>) {
         whenever(inboxRepository.fetchInboxNotes()).thenReturn(result)
     }
@@ -109,6 +131,7 @@ class InboxViewModelTest : BaseUnitTest() {
             description = "",
             dateCreated = "",
             status = InboxNote.Status.UNACTIONED,
+            type = InboxNote.NoteType.INFO,
             actions = listOf(NOTE_ACTION)
         )
         val DEFAULT_DISMISS_ACTION_UI =
@@ -120,22 +143,5 @@ class InboxViewModelTest : BaseUnitTest() {
                 onClick = { _, _ -> },
                 url = ""
             )
-        val NOTE_UI = InboxNoteUi(
-            id = 2,
-            title = "",
-            description = "",
-            dateCreated = "",
-            actions = listOf(
-                InboxNoteActionUi(
-                    id = 3,
-                    parentNoteId = 2,
-                    label = "",
-                    textColor = R.color.color_secondary,
-                    onClick = { _, _ -> },
-                    url = ""
-                ),
-                DEFAULT_DISMISS_ACTION_UI
-            )
-        )
     }
 }

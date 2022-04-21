@@ -85,7 +85,7 @@ class OrderCreationProductSelectionFragment :
                 clickListener = { id, _ -> productListViewModel.onProductSelected(id) },
                 loadMoreListener = this@OrderCreationProductSelectionFragment
             ).also { productsList.adapter = it }
-        adapter.submitList(products)
+        adapter.products = products
     }
 
     override fun onRequestLoadMore() {

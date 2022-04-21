@@ -11,7 +11,6 @@ import com.woocommerce.android.ui.cardreader.onboarding.PluginType.STRIPE_EXTENS
 import com.woocommerce.android.ui.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
@@ -58,7 +57,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when track learn more invoked, then CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             cardReaderTracker.trackOnboardingLearnMoreTapped()
 
             verify(trackerWrapper).track(
@@ -69,7 +68,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when onboarding state GenericError, then reason=generic_error tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.GenericError)
 
             verify(trackerWrapper).track(
@@ -79,7 +78,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when onboarding state StoreCountryNotSupported, then reason=country_not_supported tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.StoreCountryNotSupported(""))
 
             verify(trackerWrapper).track(
@@ -90,7 +89,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when onboarding state PluginIsNotSupportedInTheCountry woo, then wcpay_is_not_supported_in_CA tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             cardReaderTracker.trackOnboardingState(
                 CardReaderOnboardingState.PluginIsNotSupportedInTheCountry(
                     WOOCOMMERCE_PAYMENTS,
@@ -106,7 +105,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when onboarding state PluginIsNotSupportedInTheCountry str, then stripe_extension_is_not_supported_in_US`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             cardReaderTracker.trackOnboardingState(
                 CardReaderOnboardingState.PluginIsNotSupportedInTheCountry(
                     STRIPE_EXTENSION_GATEWAY,
@@ -122,7 +121,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when onboarding state StripeAccountCountryNotSupported, then reason=account_country_not_supported tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             cardReaderTracker.trackOnboardingState(
                 CardReaderOnboardingState.StripeAccountCountryNotSupported(
                     mock(),
@@ -138,7 +137,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when onboarding state WcpayNotInstalled, then reason=wcpay_not_installed tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.WcpayNotInstalled)
 
             verify(trackerWrapper).track(
@@ -149,7 +148,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when onboarding state WcpayNotActivated, then reason=wcpay_not_activated tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.WcpayNotActivated)
 
             verify(trackerWrapper).track(
@@ -160,7 +159,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when onboarding state PluginUnsupportedVersion WCPay, then reason=wcpay_unsupported_version tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             cardReaderTracker.trackOnboardingState(
                 CardReaderOnboardingState.PluginUnsupportedVersion(WOOCOMMERCE_PAYMENTS)
             )
@@ -173,7 +172,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when onboarding PluginUnsupportedVersion Stripe, then reason=stripe_extension_unsupported_version tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             cardReaderTracker.trackOnboardingState(
                 CardReaderOnboardingState.PluginUnsupportedVersion(STRIPE_EXTENSION_GATEWAY)
             )
@@ -186,7 +185,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when onboarding state SetupNotCompleted WCPay, then reason=wcpay_not_setup tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             cardReaderTracker.trackOnboardingState(
                 CardReaderOnboardingState.SetupNotCompleted(WOOCOMMERCE_PAYMENTS)
             )
@@ -199,7 +198,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when onboarding state SetupNotCompleted Stripe, then reason=stripe_extension_not_setup tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             cardReaderTracker.trackOnboardingState(
                 CardReaderOnboardingState.SetupNotCompleted(STRIPE_EXTENSION_GATEWAY)
             )
@@ -212,7 +211,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when onboarding StripeAccountPendingRequirement WCPay, then reason=account_pending_requirements tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             cardReaderTracker.trackOnboardingState(
                 CardReaderOnboardingState.StripeAccountPendingRequirement(
                     null,
@@ -230,7 +229,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when onboarding StripeAccountPendingRequirement Stripe, then reason=account_pending_requirements tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             cardReaderTracker.trackOnboardingState(
                 CardReaderOnboardingState.StripeAccountPendingRequirement(
                     null,
@@ -248,7 +247,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when onboarding state StripeAccountOverdueRequirement, then reason=account_overdue_requirements tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.StripeAccountOverdueRequirement(mock()))
 
             verify(trackerWrapper).track(
@@ -259,7 +258,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when onboarding state StripeAccountUnderReview, then reason=account_under_review tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.StripeAccountUnderReview(mock()))
 
             verify(trackerWrapper).track(
@@ -270,7 +269,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when onboarding state StripeAccountRejected, then reason=account_rejected tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.StripeAccountRejected(mock()))
 
             verify(trackerWrapper).track(
@@ -281,7 +280,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when wcpay in test mode with live account, then wcpay_in_test_mode_with_live_account`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             cardReaderTracker
                 .trackOnboardingState(
                     CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount(WOOCOMMERCE_PAYMENTS)
@@ -295,7 +294,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when stripe in test mode with live account, then stripe_extension_in_test_mode_with_live_account`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             cardReaderTracker
                 .trackOnboardingState(
                     CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount(STRIPE_EXTENSION_GATEWAY)
@@ -309,7 +308,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when onboarding state OnboardingCompleted WCPay, then event NOT tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             cardReaderTracker.trackOnboardingState(
                 CardReaderOnboardingState.OnboardingCompleted(
                     WOOCOMMERCE_PAYMENTS,
@@ -323,7 +322,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when onboarding state OnboardingCompleted Stripe, then event NOT tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             cardReaderTracker.trackOnboardingState(
                 CardReaderOnboardingState.OnboardingCompleted(STRIPE_EXTENSION_GATEWAY, PLUGIN_VERSION, COUNTRY_CODE)
             )
@@ -333,7 +332,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when track software update started, then CARD_READER_SOFTWARE_UPDATE_STARTED tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             cardReaderTracker.trackSoftwareUpdateStarted(true)
 
             verify(trackerWrapper).track(
@@ -344,7 +343,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `given update required, when track software update started, then event with REQUIRED_UPDATE tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             cardReaderTracker.trackSoftwareUpdateStarted(requiredUpdate = true)
 
             verify(trackerWrapper).track(
@@ -357,7 +356,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `given update not required, when track software update started, then event with OPTIONAL_UPDATE tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             cardReaderTracker.trackSoftwareUpdateStarted(requiredUpdate = false)
 
             verify(trackerWrapper).track(
@@ -370,7 +369,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when track software update failed, then CARD_READER_SOFTWARE_UPDATE_FAILED tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val dummyMessage = "abcd"
             cardReaderTracker.trackSoftwareUpdateFailed(Failed(mock(), dummyMessage), requiredUpdate = false)
 
@@ -385,7 +384,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when software update canceled, then CARD_READER_SOFTWARE_UPDATE_FAILED tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             cardReaderTracker.trackSoftwareUpdateCancelled(false)
 
             verify(trackerWrapper).track(
@@ -399,7 +398,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `given required update, when software update canceled, then required update property tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             cardReaderTracker.trackSoftwareUpdateCancelled(requiredUpdate = true)
 
             verify(trackerWrapper).track(
@@ -415,7 +414,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `given optional update, when software update canceled, then optional update property tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             cardReaderTracker.trackSoftwareUpdateCancelled(requiredUpdate = false)
 
             verify(trackerWrapper).track(
@@ -431,7 +430,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when auto connection started, then CARD_READER_AUTO_CONNECTION_STARTED tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             cardReaderTracker.trackAutoConnectionStarted()
 
             verify(trackerWrapper).track(eq(CARD_READER_AUTO_CONNECTION_STARTED), any())
@@ -439,7 +438,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when scanning fails, then CARD_READER_DISCOVERY_FAILED tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val dummyErrorMgs = "dummy error"
             cardReaderTracker.trackReaderDiscoveryFailed(dummyErrorMgs)
 
@@ -450,7 +449,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when reader found, then CARD_READER_DISCOVERY_READER_DISCOVERED tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val dummyCount = 99
             cardReaderTracker.trackReadersDiscovered(dummyCount)
 
@@ -463,7 +462,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when reader found, then reader_count tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val dummyCount = 99
             cardReaderTracker.trackReadersDiscovered(dummyCount)
 
@@ -476,7 +475,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when location fetching fails, then CARD_READER_LOCATION_FAILURE tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val dummyErrorMgs = "dummy error"
             cardReaderTracker.trackFetchingLocationFailed(dummyErrorMgs)
 
@@ -568,7 +567,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when location fetching succeeds, then CARD_READER_LOCATION_SUCCESS tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             cardReaderTracker.trackFetchingLocationSucceeded()
 
             verify(trackerWrapper).track(eq(CARD_READER_LOCATION_SUCCESS), any())
@@ -576,7 +575,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when payment fails, then CARD_PRESENT_COLLECT_PAYMENT_FAILED tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val dummyMessage = "error msg"
             cardReaderTracker.trackPaymentFailed(dummyMessage)
 
@@ -587,7 +586,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when payment completed, then CARD_PRESENT_COLLECT_PAYMENT_SUCCESS tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             cardReaderTracker.trackPaymentSucceeded()
 
             verify(trackerWrapper).track(eq(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS), any())
@@ -595,7 +594,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when user clicks on print receipt button, then RECEIPT_PRINT_TAPPED tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             cardReaderTracker.trackPrintReceiptTapped()
 
             verify(trackerWrapper).track(eq(RECEIPT_PRINT_TAPPED), any())
@@ -624,7 +623,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when user clicks on send receipt button, then RECEIPT_EMAIL_TAPPED tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             cardReaderTracker.trackEmailReceiptTapped()
 
             verify(trackerWrapper).track(eq(RECEIPT_EMAIL_TAPPED), any())
@@ -632,7 +631,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when user cancels payment, then CARD_PRESENT_COLLECT_PAYMENT_CANCELLED tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val currentPaymentState = "dummy state"
             cardReaderTracker.trackPaymentCancelled(currentPaymentState)
 
@@ -647,7 +646,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when user taps collect payment button, then CARD_PRESENT_COLLECT_PAYMENT_TAPPED tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             cardReaderTracker.trackCollectPaymentTapped()
 
             verify(trackerWrapper).track(eq(CARD_PRESENT_COLLECT_PAYMENT_TAPPED), any())
@@ -655,7 +654,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `given wcpay is preferred plugin, when event tracked, then wcpay plugin slug tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
                 .thenReturn(WOOCOMMERCE_PAYMENTS)
 
@@ -669,7 +668,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `given stripe is preferred plugin, when event tracked, then stripe plugin slug tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
                 .thenReturn(STRIPE_EXTENSION_GATEWAY)
 
@@ -683,7 +682,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `given preferred plugin not stored, when event tracked, then unknown slug tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
                 .thenReturn(null)
 

@@ -6,7 +6,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 
 sealed class CardReaderConnectEvent : MultiLiveEvent.Event() {
     data class CheckLocationPermissions(
-        val onLocationPermissionsCheckResult: (Boolean) -> Unit
+        val onLocationPermissionsCheckResult: (permissionGranted: Boolean, showRationale: Boolean) -> Unit
     ) : CardReaderConnectEvent()
 
     data class CheckLocationEnabled(val onLocationEnabledCheckResult: (Boolean) -> Unit) : CardReaderConnectEvent()

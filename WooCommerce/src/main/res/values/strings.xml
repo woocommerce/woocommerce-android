@@ -330,6 +330,8 @@
     <string name="simple_payments_cash_dlg_title">Mark as paid?</string>
     <string name="simple_payments_cash_dlg_message">This will create your order and mark it as paid if you received payment outside of WooCommerce</string>
     <string name="simple_payments_cash_dlg_button">Mark as paid</string>
+    <string name="simple_payments_share_payment_link">Share payment link</string>
+    <string name="simple_payments_share_payment_dialog_title">Checkout - %s</string>
     <!--
          Taxes
     -->
@@ -911,6 +913,28 @@
     <string name="card_reader_bbpos_manual_card_reader">BBPOS Chipper Card Reader Manual</string>
     <string name="card_reader_m2_manual_card_reader">Stripe M2 Card Reader Manual</string>
     <string name="card_reader_wisepad_3_manual_card_reader">WisePad 3 Card Reader Manual</string>
+
+    <!--
+            Card Reader Interac refund
+        -->
+    <string name="card_reader_interac_refund_refund_loading_header">Getting ready to refund payment</string>
+    <string name="card_reader_interac_refund_refund_failed_header">Refund failed</string>
+    <string name="card_reader_interac_refund_refund_payment">Refund payment</string>
+    <string name="card_reader_interac_refund_refund_processing_state">Processing refund</string>
+    <string name="card_reader_interac_refund_refund_completed_header">Refund successful</string>
+    <string name="card_reader_interac_refund_refund_failed_unexpected_error_state">Sorry, this refund couldn\’t be processed</string>
+    <string name="card_reader_interac_refund_refund_failed_unknown">Refund was declined for an unknown reason</string>
+    <string name="card_reader_interac_refund_refund_failed_fraud">Try another means of refund</string>
+    <string name="card_reader_interac_refund_refund_failed_generic">Refund was declined for an unspecified reason</string>
+    <string name="card_reader_interac_refund_refund_failed_card_not_supported">The card does not support this type of refund</string>
+    <string name="card_reader_interac_refund_refund_failed_duplicate_transaction">An identical refund was submitted recently</string>
+    <string name="card_reader_interac_refund_refund_failed_insufficient_funds">Refund declined due to insufficient funds</string>
+    <string name="card_reader_interac_refund_refund_failed_invalid_amount">The refund amount is not allowed for the card presented</string>
+    <string name="card_reader_interac_refund_refund_failed_test_card">System test cards are not permitted for refund</string>
+    <string name="card_reader_interac_refund_refund_failed_ok">OK</string>
+    <string name="card_reader_interac_refund_refund_failed_cancelled">Refund cancelled</string>
+    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">The order is already refunded</string>
+    <string name="card_reader_interac_refund_refund_payment_hint">Tap or insert to refund</string>
     <!--
         Card Reader Payments
     -->
@@ -1004,6 +1028,9 @@
     <string name="card_reader_connect_missing_permissions_header">Missing required precise location permission</string>
     <string name="card_reader_connect_location_provider_disabled_header">Location is disabled</string>
     <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth is disabled</string>
+    <string name="card_reader_connect_permission_rationale_header">Location Access Required</string>
+    <string name="card_reader_connect_permission_rationale_hint">Card reader payments require precise location permission</string>
+    <string name="card_reader_connect_permission_rationale_action" translatable="false">@string/continue_button</string>
     <string name="card_reader_connect_open_permission_settings">Open settings</string>
     <string name="card_reader_connect_open_location_settings">Open settings</string>
     <string name="card_reader_connect_open_bluetooth_settings">Turn on bluetooth</string>
@@ -1852,6 +1879,7 @@
     <string name="jetpack_install_progress_failed_option_contact_support">Contact Support</string>
 
     <!-- Inbox -->
+    <string name="inbox_screen_title">Inbox</string>
     <string name="dismiss_inbox_note">Dismiss</string>
     <string name="inbox_note_recency_now">Moments ago</string>
     <string name="inbox_note_recency_minutes">%d minutes ago</string>
@@ -1862,6 +1890,9 @@
     <string name="inbox_note_recency_date_time">Created on %s</string>
     <string name="empty_inbox_title">Congrats, you’ve read everything!</string>
     <string name="empty_inbox_description">Come back soon for more tips and insights on growing your store</string>
+    <string name="inbox_note_survey_actioned">Thank you for your feedback!</string>
+    <string name="inbox_note_dismiss_all_notes">Dismiss all</string>
+    <string name="inbox_screen_sync_error">Error syncing inbox</string>
 
     <!-- coupons -->
     <string name="coupons">Coupons</string>
@@ -1892,6 +1923,14 @@
     <string name="coupon_summary_loading_failure">Loading coupon summary failed</string>
     <string name="coupon_beta_features_heading">Coupons Management</string>
     <string name="coupon_beta_features_subheading">Test out managing coupons in the app</string>
+    <string name="coupon_details_copy_clipboard_label">Coupon Code</string>
+    <string name="coupon_details_copy_success">Coupon code copied to clipboard.</string>
+    <string name="coupon_details_copy_error">Error copying coupon code to clipboard.</string>
+    <string name="coupon_details_share_coupon_all">Apply %1$s off to all products with the promo code %2$s</string>
+    <string name="coupon_details_share_coupon_some">Apply %1$s off to select products with the promo code %2$s</string>
+    <string name="coupon_details_share_coupon_error">Error sharing coupon code.</string>
+    <string name="coupon_details_share_formatting_failure">Unable to generate coupon code sharing message</string>
+    <string name="coupons_list_search_hint">Search coupons</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>

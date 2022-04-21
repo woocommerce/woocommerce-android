@@ -1,1 +1,2 @@
-Create orders on the go with products, shipping & billing information, and fees! You can quickly take an in-person credit card payment right after or send a link to a customer to pay for that order on their own device. You’ve asked for it, and now it’s here!
+- [*] Fixes a bug that caused the scheduled sale dates of a product to be different than the selected dates. [https://github.com/woocommerce/woocommerce-android/pull/6188]
+- [***][internal] Introduces In-Person Payments in Canada. [https://github.com/woocommerce/woocommerce-android/pull/6137, https://github.com/woocommerce/woocommerce-android/pull/6138, https://github.com/woocommerce/woocommerce-android/pull/6156, https://github.com/woocommerce/woocommerce-android/pull/6157]

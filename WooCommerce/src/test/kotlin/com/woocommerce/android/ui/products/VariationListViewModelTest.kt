@@ -11,7 +11,6 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -62,7 +61,7 @@ class VariationListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Do not fetch product variations from api when not connected`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             doReturn(false).whenever(networkStatus).isConnected()
 
             createViewModel()
@@ -81,7 +80,7 @@ class VariationListViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Shows and hides product variations skeleton correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Shows and hides product variations skeleton correctly`() = testBlocking {
         doReturn(emptyList<ProductVariation>())
             .whenever(variationRepository).getProductVariationList(productRemoteId)
 
@@ -97,7 +96,7 @@ class VariationListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Display empty view on fetch product variations error`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Display empty view on fetch product variations error`() = testBlocking {
         whenever(variationRepository.fetchProductVariations(productRemoteId)).thenReturn(null)
         whenever(variationRepository.getProductVariationList(productRemoteId)).thenReturn(null)
 

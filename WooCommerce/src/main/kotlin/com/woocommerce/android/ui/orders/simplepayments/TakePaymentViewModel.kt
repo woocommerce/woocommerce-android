@@ -6,6 +6,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_COLLECT_CARD
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_COLLECT_CASH
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_COLLECT_LINK
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -77,6 +78,28 @@ class TakePaymentViewModel @Inject constructor(
             }
         } else {
             triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
+        }
+    }
+
+    fun onSharePaymentUrlClicked() {
+        AnalyticsTracker.track(
+            AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_COLLECT,
+            mapOf(
+                AnalyticsTracker.KEY_PAYMENT_METHOD to VALUE_SIMPLE_PAYMENTS_COLLECT_LINK
+            )
+        )
+        triggerEvent(SharePaymentUrl(selectedSite.get().name, order.paymentUrl))
+    }
+
+    fun onSharePaymentUrlCompleted() {
+        AnalyticsTracker.track(
+            AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_COMPLETED,
+            mapOf(
+                AnalyticsTracker.KEY_PAYMENT_METHOD to VALUE_SIMPLE_PAYMENTS_COLLECT_LINK
+            )
+        )
+        launch {
+            markOrderCompleted()
         }
     }
 
@@ -158,6 +181,11 @@ class TakePaymentViewModel @Inject constructor(
             }
         }
     }
+
+    data class SharePaymentUrl(
+        val storeName: String,
+        val paymentUrl: String
+    ) : MultiLiveEvent.Event()
 
     companion object {
         private const val DELAY_MS = 1L

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.inbox.domain
 
 import com.woocommerce.android.WooException
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.inbox.domain.InboxNote.NoteType
 import com.woocommerce.android.ui.inbox.domain.InboxNote.Status
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -49,6 +50,14 @@ class InboxRepository @Inject constructor(
         }
     }
 
+    suspend fun dismissAllNotesForCurrentSite(): Result<Unit> {
+        val result = inboxStore.deleteNotesForSite(selectedSite.get())
+        return when {
+            result.isError -> Result.failure(WooException(result.error))
+            else -> Result.success(Unit)
+        }
+    }
+
     private fun InboxNoteWithActions.toInboxNote() =
         InboxNote(
             id = inboxNote.remoteId,
@@ -57,7 +66,16 @@ class InboxRepository @Inject constructor(
             dateCreated = inboxNote.dateCreated,
             status = inboxNote.status.toInboxNoteStatus(),
             actions = noteActions.map { it.toInboxAction() },
+            type = inboxNoteTypeFromString(inboxNote.type)
         )
+
+    private fun inboxNoteTypeFromString(typeName: String?): NoteType =
+        when (typeName) {
+            null -> NoteType.INFO
+            else -> runCatching {
+                enumValueOf(typeName.uppercase()) as NoteType
+            }.getOrDefault(NoteType.INFO)
+        }
 
     private fun InboxNoteActionEntity.toInboxAction() =
         InboxNoteAction(

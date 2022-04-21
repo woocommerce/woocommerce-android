@@ -10,11 +10,18 @@ import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages
+import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus
+import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.CollectingInteracRefund
+import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.InitializingInteracRefund
+import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.InteracRefundFailure
+import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.InteracRefundSuccess
+import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.ProcessingInteracRefund
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.*
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.*
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
+import com.woocommerce.android.cardreader.payments.RefundParams
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.model.Order
@@ -51,6 +58,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.math.BigDecimal
 import javax.inject.Inject
 
 private const val ARTIFICIAL_RETRY_DELAY = 500L
@@ -65,27 +73,45 @@ class CardReaderPaymentViewModel
     private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
+    private val interacRefundableChecker: CardReaderInteracRefundableChecker,
     private val tracker: CardReaderTracker,
     private val currencyFormatter: CurrencyFormatter,
     private val errorMapper: CardReaderPaymentErrorMapper,
+    private val interacRefundErrorMapper: CardReaderInteracRefundErrorMapper,
     private val wooStore: WooCommerceStore,
     private val dispatchers: CoroutineDispatchers,
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderPaymentDialogFragmentArgs by savedState.navArgs()
 
+    private val orderId = arguments.paymentOrRefund.orderId
+
+    private val refundAmount: BigDecimal
+        get() = when (val param = arguments.paymentOrRefund) {
+            is CardReaderFlowParam.PaymentOrRefund.Refund -> param.refundAmount
+            else -> throw IllegalStateException("Accessing refund account on $param flow")
+        }
+
     // The app shouldn't store the state as payment flow gets canceled when the vm dies
     private val viewState = MutableLiveData<ViewState>(LoadingDataState)
     val viewStateData: LiveData<ViewState> = viewState
 
     private var paymentFlowJob: Job? = null
+    private var refundFlowJob: Job? = null
     private var paymentDataForRetry: PaymentData? = null
 
     private var refetchOrderJob: Job? = null
 
     fun start() {
-        if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected && paymentFlowJob == null) {
-            initPaymentFlow(isRetry = false)
+        if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected) {
+            when (arguments.paymentOrRefund) {
+                is CardReaderFlowParam.PaymentOrRefund.Payment -> {
+                    if (paymentFlowJob == null) initPaymentFlow(isRetry = false)
+                }
+                is CardReaderFlowParam.PaymentOrRefund.Refund -> {
+                    if (refundFlowJob == null) initRefundFlow(isRetry = false)
+                }
+            }
         } else {
             exitWithSnackbar(R.string.card_reader_payment_reader_not_connected)
         }
@@ -137,6 +163,36 @@ class CardReaderPaymentViewModel
         }
     }
 
+    private fun initRefundFlow(isRetry: Boolean) {
+        refundFlowJob = launch {
+            onRefundStatusChanged(InitializingInteracRefund, "")
+            if (isRetry) {
+                delay(ARTIFICIAL_RETRY_DELAY)
+            }
+            fetchOrder()?.let { order ->
+                if (!interacRefundableChecker.isRefundable(order)) {
+                    exitWithSnackbar(R.string.card_reader_interac_refund_order_refunded_refund_cancelled)
+                    return@launch
+                }
+                launch {
+                    refundPaymentFlow(cardReaderManager, order)
+                }
+                launch {
+                    listenForBluetoothCardReaderMessages()
+                }
+            } ?: run {
+                tracker.trackPaymentFailed("Fetching order failed")
+                viewState.postValue(
+                    FailedRefundState(
+                        errorType = InteracRefundFlowError.FetchingOrderFailed,
+                        amountWithCurrencyLabel = null,
+                        onPrimaryActionClicked = { initRefundFlow(isRetry = true) }
+                    )
+                )
+            }
+        }
+    }
+
     fun retry(orderId: Long, billingEmail: String, paymentData: PaymentData, amountLabel: String) {
         paymentFlowJob = launch {
             viewState.postValue((LoadingDataState))
@@ -145,6 +201,10 @@ class CardReaderPaymentViewModel
                 onPaymentStatusChanged(orderId, billingEmail, paymentStatus, amountLabel)
             }
         }
+    }
+
+    fun retryInteracRefund() {
+        initRefundFlow(isRetry = true)
     }
 
     private suspend fun collectPaymentFlow(cardReaderManager: CardReaderManager, order: Order) {
@@ -209,6 +269,60 @@ class CardReaderPaymentViewModel
         }.exhaustive
     }
 
+    private suspend fun refundPaymentFlow(
+        cardReaderManager: CardReaderManager,
+        order: Order
+    ) {
+        order.chargeId?.let { chargeId ->
+            cardReaderManager.refundInteracPayment(
+                RefundParams(
+                    chargeId = chargeId,
+                    amount = refundAmount,
+                    currency = order.currency
+                )
+            ).collect { refundStatus ->
+                onRefundStatusChanged(
+                    refundStatus,
+                    currencyFormatter.formatAmountWithCurrency(
+                        order.currency,
+                        refundAmount.toDouble()
+                    )
+                )
+            }
+        } ?: run {
+            emitFailedInteracRefundState(
+                currencyFormatter.formatAmountWithCurrency(
+                    order.currency,
+                    refundAmount.toDouble()
+                ),
+                InteracRefundFailure(
+                    type = CardInteracRefundStatus.RefundStatusErrorType.NonRetryable,
+                    errorMessage = "Charge id is null for the order.",
+                    refundParams = null
+                )
+            )
+        }
+    }
+
+    private fun onRefundStatusChanged(
+        refundStatus: CardInteracRefundStatus,
+        amountLabel: String
+    ) {
+        when (refundStatus) {
+            InitializingInteracRefund -> viewState.postValue(RefundLoadingDataState)
+            CollectingInteracRefund -> viewState.postValue(CollectRefundState(amountLabel))
+            ProcessingInteracRefund -> viewState.postValue(ProcessingRefundState(amountLabel))
+            is InteracRefundSuccess -> {
+                viewState.postValue(RefundSuccessfulState(amountLabel))
+                triggerEvent(InteracRefundSuccessful)
+            }
+            is InteracRefundFailure -> emitFailedInteracRefundState(
+                amountLabel,
+                refundStatus
+            )
+        }.exhaustive
+    }
+
     private fun onPaymentCompleted(
         paymentStatus: PaymentCompleted,
         orderId: Long,
@@ -230,7 +344,34 @@ class CardReaderPaymentViewModel
     }
 
     private suspend fun fetchOrder(): Order? {
-        return orderRepository.fetchOrderById(arguments.orderId)
+        return orderRepository.fetchOrderById(orderId)
+    }
+
+    private fun emitFailedInteracRefundState(
+        amountLabel: String?,
+        error: InteracRefundFailure
+    ) {
+        WooLog.e(WooLog.T.CARD_READER, "Refund failed: ${error.errorMessage}")
+        val onRetryClicked = { retryInteracRefund() }
+        val errorType = interacRefundErrorMapper.mapRefundErrorToUiError(error.type)
+        if (errorType is InteracRefundFlowError.NonRetryableError) {
+            viewState.postValue(
+                FailedRefundState(
+                    errorType,
+                    amountLabel,
+                    R.string.card_reader_interac_refund_refund_failed_ok,
+                    onPrimaryActionClicked = { onBackPressed() }
+                )
+            )
+        } else {
+            viewState.postValue(
+                FailedRefundState(
+                    errorType,
+                    amountLabel,
+                    onPrimaryActionClicked = onRetryClicked
+                )
+            )
+        }
     }
 
     private fun emitFailedPaymentState(orderId: Long, billingEmail: String, error: PaymentFailed, amountLabel: String) {
@@ -261,7 +402,7 @@ class CardReaderPaymentViewModel
 
     private fun showPaymentSuccessfulState() {
         launch {
-            val order = orderRepository.getOrderById(arguments.orderId)
+            val order = orderRepository.getOrderById(orderId)
                 ?: throw IllegalStateException("Order URL not available.")
             val amountLabel = order.getAmountLabel()
             val receiptUrl = getReceiptUrl(order.id)
@@ -297,23 +438,40 @@ class CardReaderPaymentViewModel
     }
 
     private fun handleAdditionalInfo(type: AdditionalInfoType) {
-        (viewState.value as? CollectPaymentState)?.let { collectPaymentState ->
-            viewState.value = collectPaymentState.copy(
-                hintLabel = when (type) {
-                    RETRY_CARD -> R.string.card_reader_payment_retry_card_prompt
-                    INSERT_CARD, INSERT_OR_SWIPE_CARD, SWIPE_CARD -> R.string.card_reader_payment_collect_payment_hint
-                    REMOVE_CARD -> R.string.card_reader_payment_remove_card_prompt
-                    MULTIPLE_CONTACTLESS_CARDS_DETECTED ->
-                        R.string.card_reader_payment_multiple_contactless_cards_detected_prompt
-                    TRY_ANOTHER_READ_METHOD -> R.string.card_reader_payment_try_another_read_method_prompt
-                    TRY_ANOTHER_CARD -> R.string.card_reader_payment_try_another_card_prompt
-                    CHECK_MOBILE_DEVICE -> R.string.card_reader_payment_check_mobile_device_prompt
-                }
+        when (val state = viewState.value) {
+            is CollectRefundState -> {
+                viewState.value = state.copy(
+                    hintLabel = type.toHintLabel(true)
+                )
+            }
+            is CollectPaymentState -> {
+                viewState.value = state.copy(
+                    hintLabel = type.toHintLabel(false)
+                )
+            }
+            else -> WooLog.e(
+                WooLog.T.CARD_READER, "Got SDK message when cardReaderPaymentViewModel is in ${viewState.value}"
             )
-        } ?: run {
-            WooLog.e(WooLog.T.CARD_READER, "Got SDK message when cardReaderPaymentViewModel is in ${viewState.value}")
         }
     }
+
+    @StringRes
+    private fun AdditionalInfoType.toHintLabel(isInteracRefund: Boolean) =
+        when (this) {
+            RETRY_CARD -> R.string.card_reader_payment_retry_card_prompt
+            INSERT_CARD, INSERT_OR_SWIPE_CARD, SWIPE_CARD ->
+                if (isInteracRefund) {
+                    R.string.card_reader_interac_refund_refund_payment_hint
+                } else {
+                    R.string.card_reader_payment_collect_payment_hint
+                }
+            REMOVE_CARD -> R.string.card_reader_payment_remove_card_prompt
+            MULTIPLE_CONTACTLESS_CARDS_DETECTED ->
+                R.string.card_reader_payment_multiple_contactless_cards_detected_prompt
+            TRY_ANOTHER_READ_METHOD -> R.string.card_reader_payment_try_another_read_method_prompt
+            TRY_ANOTHER_CARD -> R.string.card_reader_payment_try_another_card_prompt
+            CHECK_MOBILE_DEVICE -> R.string.card_reader_payment_check_mobile_device_prompt
+        }
 
     private fun onSaveForLaterClicked() {
         onBackPressed()
@@ -335,7 +493,7 @@ class CardReaderPaymentViewModel
 
     private fun startPrintingFlow() {
         launch {
-            val order = orderRepository.getOrderById(arguments.orderId)
+            val order = orderRepository.getOrderById(orderId)
                 ?: throw IllegalStateException("Order URL not available.")
             triggerEvent(PrintReceipt(getReceiptUrl(order.id), order.getReceiptDocumentName()))
         }
@@ -481,4 +639,6 @@ class CardReaderPaymentViewModel
     class ShowSnackbarInDialog(@StringRes val message: Int) : Event()
 
     object PlayChaChing : MultiLiveEvent.Event()
+
+    object InteracRefundSuccessful : MultiLiveEvent.Event()
 }

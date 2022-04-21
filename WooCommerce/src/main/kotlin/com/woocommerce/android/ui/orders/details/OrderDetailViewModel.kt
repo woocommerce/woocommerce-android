@@ -8,20 +8,53 @@ import androidx.lifecycle.SavedStateHandle
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
-import com.woocommerce.android.analytics.AnalyticsEvent.*
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_DETAIL_CREATE_SHIPPING_LABEL_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_DETAIL_PULLED_TO_REFRESH
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_STATUS_CHANGE
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_STATUS_CHANGE_FAILED
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_STATUS_CHANGE_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_TRACKING_ADD
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_TRACKING_DELETE_FAILED
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_TRACKING_DELETE_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_ADDONS_ORDER_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.SHIPPING_LABEL_ORDER_IS_ELIGIBLE
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
-import com.woocommerce.android.model.*
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
+import com.woocommerce.android.model.OrderNote
+import com.woocommerce.android.model.OrderShipmentTracking
+import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult.SUCCESS
+import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.getNonRefundedProducts
+import com.woocommerce.android.model.loadProducts
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.ProductImageMap.OnProductFetchedListener
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderPaymentFlow
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabelCreationFlow
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderFulfillInfo
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderedAddons
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintCustomsForm
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstructions
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
+import com.woocommerce.android.ui.orders.cardreader.payment.CardReaderPaymentCollectibilityChecker
+import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.*
@@ -42,6 +75,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
@@ -140,10 +174,12 @@ final class OrderDetailViewModel @Inject constructor(
     private suspend fun fetchAndDisplayOrderDetails() {
         fetchOrderNotes()
         fetchProductAndShippingDetails()
-        displayOrderDetails()
+        launch {
+            displayOrderDetails()
+        }
     }
 
-    private fun displayOrderDetails() {
+    private suspend fun displayOrderDetails() {
         updateOrderState()
         loadOrderNotes()
         displayProductAndShippingDetails()
@@ -459,32 +495,24 @@ final class OrderDetailViewModel @Inject constructor(
         )
     }
 
-    private fun updateOrderState() {
-        launch {
-            val isPaymentCollectable = isPaymentCollectable(order)
-            withContext(coroutineDispatchers.main) {
-                val orderStatus = orderDetailRepository.getOrderStatus(order.status.value)
-                viewState = viewState.copy(
-                    orderInfo = OrderInfo(
-                        order = order,
-                        isPaymentCollectableWithCardReader = isPaymentCollectable,
-                        isReceiptButtonsVisible = FeatureFlag.CARD_READER.isEnabled() &&
-                            !loadReceiptUrl().isNullOrEmpty()
-                    ),
-                    orderStatus = orderStatus,
-                    toolbarTitle = resourceProvider.getString(
-                        string.orderdetail_orderstatus_ordernum, order.number
-                    )
-                )
-            }
-        }
+    private suspend fun updateOrderState() {
+        val isPaymentCollectable = isPaymentCollectable(order)
+        val orderStatus = orderDetailRepository.getOrderStatus(order.status.value)
+        viewState = viewState.copy(
+            orderInfo = OrderInfo(
+                order = order,
+                isPaymentCollectableWithCardReader = isPaymentCollectable,
+                isReceiptButtonsVisible = FeatureFlag.CARD_READER.isEnabled() &&
+                    !loadReceiptUrl().isNullOrEmpty()
+            ),
+            orderStatus = orderStatus,
+            toolbarTitle = resourceProvider.getString(
+                string.orderdetail_orderstatus_ordernum, order.number
+            )
+        )
     }
 
-    private suspend fun isPaymentCollectable(order: Order): Boolean {
-        return async {
-            paymentCollectibilityChecker.isCollectable(order)
-        }.await()
-    }
+    private suspend fun isPaymentCollectable(order: Order) = paymentCollectibilityChecker.isCollectable(order)
 
     private fun loadOrderNotes() {
         launch {

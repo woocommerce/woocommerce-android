@@ -15,7 +15,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.*
@@ -57,7 +56,7 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `hide customer note checkbox if no email`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `hide customer note checkbox if no email`() = testBlocking {
         val testOrder = testOrder.let {
             val address = it.billingAddress.copy(email = "")
             it.copy(billingAddress = address)
@@ -74,7 +73,7 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `show customer note checkbox if no email`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `show customer note checkbox if no email`() = testBlocking {
         val testOrder = testOrder.let {
             val address = it.billingAddress.copy(email = "test@emai.com")
             it.copy(billingAddress = address)

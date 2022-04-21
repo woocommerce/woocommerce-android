@@ -80,6 +80,16 @@ sealed class CardReaderConnectViewState(
         illustrationTopMargin = R.dimen.major_150
     )
 
+    data class LocationPermissionRationale(
+        override val onPrimaryActionClicked: () -> Unit
+    ) : CardReaderConnectViewState(
+        headerLabel = UiString.UiStringRes(R.string.card_reader_connect_permission_rationale_header),
+        hintLabel = R.string.card_reader_connect_permission_rationale_hint,
+        illustration = R.drawable.img_location,
+        primaryActionLabel = R.string.card_reader_connect_permission_rationale_action,
+        illustrationTopMargin = R.dimen.major_150
+    )
+
     data class MissingLocationPermissionsError(
         override val onPrimaryActionClicked: () -> Unit,
         override val onSecondaryActionClicked: () -> Unit
