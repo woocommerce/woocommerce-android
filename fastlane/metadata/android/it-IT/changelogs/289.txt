@@ -1,4 +1,0 @@
-8.8:
-Anche se questo rilascio non ha alcuna sorprendente nuova funzionalità, ci abbiamo messo comunque tanto amore. Abbiamo risolto alcuni bug e apportato vari miglioramenti legati all'accessibilità usando TalkBack.
-
-Sapevi che avevamo rilasciato una funzionalità beta per la creazione degli ordini? Vai alla scheda Menu, tocca l'icona delle impostazioni e scorri verso le funzionalità beta.

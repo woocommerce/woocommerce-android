@@ -1857,6 +1857,7 @@
     <string name="jetpack_install_progress_failed_option_contact_support">Contact Support</string>
 
     <!-- Inbox -->
+    <string name="inbox_screen_title">Inbox</string>
     <string name="dismiss_inbox_note">Dismiss</string>
     <string name="inbox_note_recency_now">Moments ago</string>
     <string name="inbox_note_recency_minutes">%d minutes ago</string>
@@ -1868,6 +1869,8 @@
     <string name="empty_inbox_title">Congrats, you’ve read everything!</string>
     <string name="empty_inbox_description">Come back soon for more tips and insights on growing your store</string>
     <string name="inbox_note_survey_actioned">Thank you for your feedback!</string>
+    <string name="inbox_note_dismiss_all_notes">Dismiss all</string>
+    <string name="inbox_screen_sync_error">Error syncing inbox</string>
 
     <!-- coupons -->
     <string name="coupons">Coupons</string>
