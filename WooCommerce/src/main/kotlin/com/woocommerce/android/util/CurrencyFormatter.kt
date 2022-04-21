@@ -4,19 +4,22 @@ import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.locale.LocaleProvider
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.text.NumberFormat
-import java.util.Currency
-import java.util.Locale
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 
+@ExperimentalCoroutinesApi
 @Singleton
 class CurrencyFormatter @Inject constructor(
     private val wcStore: WooCommerceStore,
@@ -58,18 +61,33 @@ class CurrencyFormatter @Inject constructor(
             selectedSite.observe()
                 .onEach { defaultCurrencyCode = "" }
                 .filterNotNull()
-                .mapNotNull { site ->
-                    wcStore.getSiteSettings(site) ?: run {
-                        wcStore.fetchWooCommerceSite(site)
-                        wcStore.getSiteSettings(site)
-                    }
-                }
-                .map { settings -> settings.currencyCode }
+                .map { site -> getCurrencyCode(site) }
                 .flowOn(dispatchers.io)
                 .collect { currencyCode ->
                     defaultCurrencyCode = currencyCode
                 }
         }
+    }
+
+    private suspend fun getCurrencyCode(site: SiteModel): String {
+        val localSettings = wcStore.getSiteSettings(site)
+        if (localSettings != null) return localSettings.currencyCode
+
+        val initialDelay = 1_000L
+        val maxDelay = 10_000L
+        val factor = 1.5
+        var currentDelay = initialDelay
+
+        repeat(20) {
+            try {
+                val settings = wcStore.fetchSiteGeneralSettings(site).model!!
+                return settings.currencyCode
+            } catch (e: NullPointerException) {
+                delay(currentDelay)
+                currentDelay = (currentDelay * factor).toLong().coerceAtMost(maxDelay)
+            }
+        }
+        return ""
     }
 
     /**
