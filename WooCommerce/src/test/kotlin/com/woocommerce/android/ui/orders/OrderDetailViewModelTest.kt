@@ -91,7 +91,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         isCreateShippingLabelButtonVisible = false,
         isProductListVisible = true,
         areShippingLabelsVisible = false,
-        isProductListMenuVisible = false
+        isProductListMenuVisible = false,
+        isSharePaymentLinkVisible = false
     )
 
     @Before
