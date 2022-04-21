@@ -1,9 +1,9 @@
-package com.woocommerce.android.ui.orders.cardreader
+package com.woocommerce.android.ui.cardreader
 
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.RefundStatusErrorType.DeclinedByBackendError
-import com.woocommerce.android.ui.orders.cardreader.payment.CardReaderInteracRefundErrorMapper
-import com.woocommerce.android.ui.orders.cardreader.payment.InteracRefundFlowError
+import com.woocommerce.android.ui.cardreader.payment.CardReaderInteracRefundErrorMapper
+import com.woocommerce.android.ui.cardreader.payment.InteracRefundFlowError
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before

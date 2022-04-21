@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.cardreader.payment
+package com.woocommerce.android.ui.cardreader.payment
 
 import com.woocommerce.android.extensions.CASH_ON_DELIVERY_PAYMENT_TYPE
 import com.woocommerce.android.extensions.WOOCOMMERCE_BOOKINGS_PAYMENT_TYPE

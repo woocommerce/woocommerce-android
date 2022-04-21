@@ -166,7 +166,7 @@
         android:label="CardReaderPaymentDialogFragment">
         <argument
             android:name="paymentOrRefund"
-            app:argType="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam$PaymentOrRefund"
+            app:argType="com.woocommerce.android.ui.cardreader.onboarding.CardReaderFlowParam$PaymentOrRefund"
             app:nullable="false" />
     </dialog>
 </navigation>

@@ -30,6 +30,7 @@ import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.cardreader.CardReaderTrackingInfoKeeper
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.cardreader.onboarding.WCPAY_RECEIPTS_SENDING_SUPPORT_VERSION
 import com.woocommerce.android.ui.cardreader.payment.ViewState.*
