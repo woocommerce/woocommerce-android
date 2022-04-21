@@ -162,8 +162,6 @@ class IssueRefundViewModel @Inject constructor(
     val isRefundInProgress: Boolean
         get() = refundJob?.isActive ?: false
 
-    private var isSummaryTextTooLong = false
-
     init {
         order = runBlocking { loadOrder(arguments.orderId) }
         allShippingLineIds = order.shippingLines.map { it.itemId }
@@ -540,8 +538,7 @@ class IssueRefundViewModel @Inject constructor(
      * surpassed, the button should be disabled until the text is brought within the maximum length.
      */
     fun onRefundSummaryTextChanged(maxLength: Int, currLength: Int) {
-        isSummaryTextTooLong = currLength > maxLength
-        refundSummaryState = refundSummaryState.copy(isSubmitButtonEnabled = currLength <= maxLength)
+        refundSummaryState = refundSummaryState.copy(isSummaryTextTooLong = currLength > maxLength)
     }
 
     // will be used in the future
@@ -780,11 +777,9 @@ class IssueRefundViewModel @Inject constructor(
 
     private fun loadCardDetails(chargeId: String, refundMethod: String) {
         launch {
-            refundSummaryState = refundSummaryState.copy(isSubmitButtonEnabled = false)
+            refundSummaryState = refundSummaryState.copy(isFetchingCardData = true)
             val result = paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)
-            if (!isSummaryTextTooLong) {
-                refundSummaryState = refundSummaryState.copy(isSubmitButtonEnabled = true)
-            }
+            refundSummaryState = refundSummaryState.copy(isFetchingCardData = false)
             when (result) {
                 is PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success -> {
                     cardType = PaymentMethodType.fromValue(result.paymentMethodType ?: "card_present")
@@ -937,13 +932,17 @@ class IssueRefundViewModel @Inject constructor(
     @Parcelize
     data class RefundSummaryViewState(
         val isFormEnabled: Boolean? = null,
-        val isSubmitButtonEnabled: Boolean? = null,
         val previouslyRefunded: String? = null,
         val refundAmount: String? = null,
         val refundMethod: String? = null,
         val refundReason: String? = null,
-        val isMethodDescriptionVisible: Boolean? = null
-    ) : Parcelable
+        val isMethodDescriptionVisible: Boolean? = null,
+        val isSummaryTextTooLong: Boolean = false,
+        val isFetchingCardData: Boolean = false,
+    ) : Parcelable {
+        val isSubmitButtonEnabled: Boolean
+            get() = !isSummaryTextTooLong && !isFetchingCardData
+    }
 
     @Parcelize
     data class CommonViewState(

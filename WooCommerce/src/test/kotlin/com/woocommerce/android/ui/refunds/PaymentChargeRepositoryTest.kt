@@ -269,7 +269,7 @@ class PaymentChargeRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `given missing active plugin, when fetching one with error, then error returned`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val chargeId = "charge_id"
             whenever(appPrefs.getCardReaderPreferredPlugin(siteModel.id, siteModel.siteId, siteModel.selfHostedSiteId))
@@ -288,7 +288,7 @@ class PaymentChargeRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `given missing active plugin, when fetching one with success stripe, then returned plugin is used`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val chargeId = "charge_id"
             whenever(appPrefs.getCardReaderPreferredPlugin(siteModel.id, siteModel.siteId, siteModel.selfHostedSiteId))

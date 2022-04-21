@@ -290,7 +290,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given non cash order, when charge data loaded, then button enabled`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val chargeId = "charge_id"
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
                 paymentMethod = "cod",
@@ -312,7 +312,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given non cash order and text summary to long, when charge data loaded, then button not enabled`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val chargeId = "charge_id"
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
                 paymentMethod = "cod",
