@@ -32,6 +32,11 @@ class CurrencyFormatter @Inject constructor(
         private const val ONE_THOUSAND = 1000
         private const val ONE_MILLION = 1000000
 
+        private const val BACKOFF_INITIAL_DELAY = 1_000L
+        private const val BACKOFF_MAX_DELAY = 10_000L
+        private const val BACKOFF_FACTOR = 1.5
+        private const val BACKOFF_INTENTS = 20
+
         // Formats the value to two decimal places
         private val currencyFormatter: DecimalFormat by lazy {
             DecimalFormat("0.00")
@@ -73,18 +78,15 @@ class CurrencyFormatter @Inject constructor(
         val localSettings = wcStore.getSiteSettings(site)
         if (localSettings != null) return localSettings.currencyCode
 
-        val initialDelay = 1_000L
-        val maxDelay = 10_000L
-        val factor = 1.5
-        var currentDelay = initialDelay
+        var currentDelay = BACKOFF_INITIAL_DELAY
 
-        repeat(20) {
+        repeat(BACKOFF_INTENTS) {
             try {
                 val settings = wcStore.fetchSiteGeneralSettings(site).model!!
                 return settings.currencyCode
             } catch (e: NullPointerException) {
                 delay(currentDelay)
-                currentDelay = (currentDelay * factor).toLong().coerceAtMost(maxDelay)
+                currentDelay = (currentDelay * BACKOFF_FACTOR).toLong().coerceAtMost(BACKOFF_MAX_DELAY)
             }
         }
         return ""
