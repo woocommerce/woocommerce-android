@@ -68,13 +68,22 @@ fun CouponDetailsScreen(
                     expanded = showMenu,
                     onDismissRequest = { showMenu = false }
                 ) {
-                    DropdownMenuItem(onClick = onCopyButtonClick) {
+                    DropdownMenuItem(onClick = {
+                        showMenu = false
+                        onCopyButtonClick()
+                    }) {
                         Text(stringResource(id = R.string.coupon_details_menu_copy))
                     }
-                    DropdownMenuItem(onClick = onShareButtonClick) {
+                    DropdownMenuItem(onClick = {
+                        showMenu = false
+                        onShareButtonClick()
+                    }) {
                         Text(stringResource(id = R.string.coupon_details_menu_share))
                     }
-                    DropdownMenuItem(onClick = { showDeleteDialog = true }) {
+                    DropdownMenuItem(onClick = {
+                        showMenu = false
+                        showDeleteDialog = true
+                    }) {
                         Text(
                             stringResource(id = R.string.coupon_details_delete),
                             color = colorResource(id = R.color.woo_red_30)
@@ -83,6 +92,7 @@ fun CouponDetailsScreen(
                 }
             }
         )
+
 
         state.couponSummary?.let { coupon ->
             CouponSummaryHeading(
@@ -125,6 +135,7 @@ fun CouponDetailsScreen(
         }
     }
 }
+
 
 @Composable
 fun CouponSummaryHeading(
