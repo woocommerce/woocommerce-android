@@ -50,6 +50,14 @@ class InboxRepository @Inject constructor(
         }
     }
 
+    suspend fun dismissAllNotesForCurrentSite(): Result<Unit> {
+        val results = inboxStore.deleteNotesForSite(selectedSite.get())
+        return when {
+            results.any { it.isError } -> Result.failure(WooException(results.first { it.isError }.error))
+            else -> Result.success(Unit)
+        }
+    }
+
     private fun InboxNoteWithActions.toInboxNote() =
         InboxNote(
             id = inboxNote.remoteId,
@@ -64,7 +72,9 @@ class InboxRepository @Inject constructor(
     private fun inboxNoteTypeFromString(typeName: String?): NoteType =
         when (typeName) {
             null -> NoteType.INFO
-            else -> enumValueOf(typeName.uppercase())
+            else -> runCatching {
+                enumValueOf(typeName.uppercase()) as NoteType
+            }.getOrDefault(NoteType.INFO)
         }
 
     private fun InboxNoteActionEntity.toInboxAction() =

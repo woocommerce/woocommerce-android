@@ -82,8 +82,8 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = 'trunk-662d6ef7949a70879c647024ca2bcf28f277286d'
-    glideVersion = '4.12.0'
+    fluxCVersion = 'trunk-465cdcb6ae9a856582ce64e0795ad8ee45cb0a3b'
+    glideVersion = '4.13.1'
     testRunnerVersion = '1.0.1'
     espressoVersion = '3.4.0'
     mockitoKotlinVersion = '4.0.0'
@@ -111,6 +111,7 @@ ext {
 
     // Compose and its module versions need to be consistent with each other (for example 'compose-theme-adapter')
     composeVersion = "1.1.1"
+    composeAccompanistVersion = "0.23.1"
     lifecycleViewmodelComposeVersion = "2.4.1"
     composeThemeAdapterVersion = "1.1.6"
 }

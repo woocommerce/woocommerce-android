@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-03-25 09:54:03+0000
+Translation-Revision-Date: 2022-04-07 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="coupon_summary_performance_amount_heading">金額</string>
+    <string name="coupon_summary_performance_discounted_order_heading">折扣訂單</string>
+    <string name="coupon_summary_performance_heading">效能</string>
+    <string name="coupon_summary_maximum_spend">%s 最高消費</string>
+    <string name="coupon_summary_minimum_spend">%s 最低消費</string>
+    <string name="coupon_summary_heading">折價券摘要</string>
+    <string name="coupon_list_view_coupon">檢視折價券摘要</string>
+    <string name="coupon_list_wip_message_enabled">我們一直努力讓你可以在裝置上查看並編輯優惠券！</string>
+    <string name="coupon_list_wip_title">檢視並編輯優惠券</string>
+    <string name="coupon_list_empty_heading">找不到折價券</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1s (不包括 %2s)</string>
+    <string name="coupon_list_item_label_everything">全部</string>
+    <string name="coupon_list_item_label_off">on</string>
+    <string name="coupon_list_item_label_expired">已到期</string>
+    <string name="coupon_list_item_label_active">使用中</string>
+    <string name="coupons">折價券</string>
+    <string name="inbox_note_recency_date_time">建立日期：%s</string>
+    <string name="inbox_note_recency_days">%d 天前</string>
+    <string name="inbox_note_recency_one_day">1 天前</string>
+    <string name="inbox_note_recency_hours">%d 小時前</string>
+    <string name="inbox_note_recency_one_hour">1 小時前</string>
+    <string name="inbox_note_recency_minutes">%d 分鐘前</string>
+    <string name="inbox_note_recency_now">片刻前</string>
+    <string name="category_count_many">%d 個分類</string>
+    <string name="category_count_one">%d 個分類</string>
+    <string name="product_ratings_count_zero">\u2022  沒有已核准的評論</string>
+    <string name="product_ratings_count_one">\u2022  1 則已核准的評論</string>
+    <string name="product_ratings_count">\u2022  %d 則已核准的評論</string>
+    <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">我們持續努力讓你能夠透過裝置建立訂單和收取款項！ 點選「+」按鈕即可體驗這些功能</string>
+    <string name="orderlist_simple_payments_wip_title">建立訂單和收取款項！</string>
     <string name="empty_inbox_description">稍後再返回查看更多商店成長秘訣和洞察報告</string>
     <string name="empty_inbox_title">恭喜，你已閱讀所有所有資訊！</string>
     <string name="orderstatus_contentDesc_withStatus">訂單狀態： %s</string>
@@ -187,9 +218,6 @@ Language: zh_TW
     <string name="date_timeframe_last_quarter">上個季度</string>
     <string name="date_timeframe_last_month">上個月</string>
     <string name="date_timeframe_last_week">上週</string>
-    <string name="settings_enable_order_creation_teaser_message">測試即將推出的「建立完整詳細資訓的訂單」功能</string>
-    <string name="settings_enable_order_creation_teaser_title">建立訂單</string>
-    <string name="beta_features_order_creation">建立訂單</string>
     <string name="beta_features_simple_payments">輕鬆付款</string>
     <string name="beta_features_add_ons">檢視附加元件</string>
     <string name="orders_empty_message_for_filtered_orders">很抱歉，我們找不到任何訂單</string>
@@ -210,7 +238,6 @@ Language: zh_TW
     <string name="simple_payments_enter_amount">輸入金額</string>
     <string name="simple_payments_dialog_title">收取款項</string>
     <string name="orderlist_simple_payments_menu">輕鬆付款</string>
-    <string name="orderlist_simple_payments_wip_title">從你的裝置收取款項！</string>
     <string name="analytics">分析</string>
     <string name="jetpack_install_progress_step_four_message">全部完成</string>
     <string name="jetpack_install_progress_step_three_message">連結至你的商店</string>
@@ -245,7 +272,6 @@ Language: zh_TW
     <string name="orderfilters_default_filter_option">全部</string>
     <string name="orderfilters_filter_card_title_filtered_orders">篩選的訂單</string>
     <string name="orderfilters_filter_card_title_all_orders">全部訂單</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">我們正努力讓你能更輕鬆從裝置收取款項！ 現在點選「+」按鈕將能建立收款金額的訂單。</string>
     <string name="jetpack_benefits_modal_dismiss">現在不要</string>
     <string name="jetpack_benefits_modal_install_jetpack">安裝 Jetpack</string>
     <string name="jetpack_benefits_modal_user_profiles_subtitle">允許多位使用者存取 WooCommerce Mobile。</string>
@@ -813,9 +839,6 @@ Language: zh_TW
     <string name="product_detail_no_variations">此商品尚無子項</string>
     <string name="product_variant_list_empty">目前只在網頁上提供新增尺寸和顏色等選項。 這些選項會顯示在網站的商品頁面上。</string>
     <string name="product_adding_wip_title">從應用程式建立商品！</string>
-    <string name="product_ratings_count_zero">\u2022 沒有評分</string>
-    <string name="product_ratings_count_one">\u2022 評分過一次</string>
-    <string name="product_ratings_count">\u2022 評分過 %d 次</string>
     <string name="product_detail_fetch_product_invalid_id_error">找不到商品</string>
     <string name="print_shipping_label_info_step_5">如果仍無法從裝置列印，可以&lt;b&gt;將標籤另存為 PDF 檔&lt;/b&gt;，並透過電子郵件傳送檔案到其他裝置上列印。</string>
     <string name="print_shipping_label_info_step_2">如果你從未使用此裝置列印，選取&lt;b&gt;「列印郵寄標籤」&lt;/b&gt;之後，可能必須先選取並新增印表機。</string>
@@ -1839,12 +1862,6 @@ Language: zh_TW
     <string name="dashboard_top_performers_empty">此期間沒有任何活動</string>
     <string name="dashboard_top_performers_total_orders">訂單總數：%s</string>
     <string name="dashboard_top_performers_title">成效最佳者</string>
-    <string name="dashboard_stats_updated_date_time">更新日期：%s</string>
-    <string name="dashboard_stats_updated_one_day">1 天前已更新</string>
-    <string name="dashboard_stats_updated_hours">%d 小時前已更新</string>
-    <string name="dashboard_stats_updated_one_hour">1 小時前已更新</string>
-    <string name="dashboard_stats_updated_minutes">%d 分鐘前已更新</string>
-    <string name="dashboard_stats_updated_now">不久前已更新</string>
     <string name="dashboard_stats_error_content_description">錯誤圖片</string>
     <string name="dashboard_stats_error">擷取資料時發生錯誤</string>
     <string name="dashboard_stats_revenue">收益</string>

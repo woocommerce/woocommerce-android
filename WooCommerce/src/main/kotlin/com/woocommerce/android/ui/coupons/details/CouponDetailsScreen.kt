@@ -25,13 +25,20 @@ fun CouponDetailsScreen(
 ) {
     val couponSummaryState by viewModel.couponState.observeAsState(CouponDetailsState())
 
-    CouponDetailsScreen(couponSummaryState, onBackPress)
+    CouponDetailsScreen(
+        couponSummaryState,
+        onBackPress,
+        viewModel::onCopyButtonClick,
+        viewModel::onShareButtonClick
+    )
 }
 
 @Composable
 fun CouponDetailsScreen(
     state: CouponDetailsState,
-    onBackPress: () -> Boolean
+    onBackPress: () -> Boolean,
+    onCopyButtonClick: () -> Unit,
+    onShareButtonClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -59,10 +66,10 @@ fun CouponDetailsScreen(
                     expanded = showMenu,
                     onDismissRequest = { showMenu = false }
                 ) {
-                    DropdownMenuItem(onClick = { /*TODO*/ }) {
+                    DropdownMenuItem(onClick = onCopyButtonClick) {
                         Text(stringResource(id = R.string.coupon_details_menu_copy))
                     }
-                    DropdownMenuItem(onClick = { /*TODO*/ }) {
+                    DropdownMenuItem(onClick = onShareButtonClick) {
                         Text(stringResource(id = R.string.coupon_details_menu_share))
                     }
                 }

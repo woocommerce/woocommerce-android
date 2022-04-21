@@ -1,14 +1,21 @@
 package com.woocommerce.android.ui.compose.animations
 
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.unit.Dp
 import com.woocommerce.android.R
 
 const val SKELETON_ANIMATION_ALPHA = 0.15F
+
 @Composable
 fun skeletonAnimationBrush(): Brush {
     val transition = rememberInfiniteTransition()
@@ -31,5 +38,15 @@ fun skeletonAnimationBrush(): Brush {
         colors = shimmerColorShades,
         start = Offset(0f, 0f),
         end = Offset(translateAnim, translateAnim)
+    )
+}
+
+@Composable
+fun SkeletonView(width: Dp, height: Dp) {
+    Spacer(
+        modifier = Modifier
+            .width(width)
+            .height(height)
+            .background(skeletonAnimationBrush())
     )
 }

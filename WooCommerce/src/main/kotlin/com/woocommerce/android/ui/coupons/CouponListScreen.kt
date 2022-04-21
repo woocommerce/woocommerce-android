@@ -1,12 +1,12 @@
 package com.woocommerce.android.ui.coupons
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -23,6 +23,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.animations.SkeletonView
+import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListItem
 import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListState
 import com.woocommerce.android.ui.coupons.components.CouponExpirationLabel
@@ -33,26 +35,31 @@ fun CouponListScreen(viewModel: CouponListViewModel) {
 
     CouponListScreen(
         state = couponListState,
-        onCouponClick = viewModel::onCouponClick
+        onCouponClick = viewModel::onCouponClick,
+        onLoadMore = viewModel::onLoadMore
     )
 }
 
 @Composable
 fun CouponListScreen(
     state: CouponListState,
-    onCouponClick: (Long) -> Unit
+    onCouponClick: (Long) -> Unit,
+    onLoadMore: () -> Unit
 ) {
     when {
         state.coupons.isNotEmpty() -> CouponList(
             coupons = state.coupons,
-            onCouponClick = onCouponClick
+            onCouponClick = onCouponClick,
+            onLoadMore = onLoadMore
         )
-        state.coupons.isEmpty() -> EmptyCouponList()
+        state.coupons.isEmpty() && state.isLoading -> CouponListSkeleton()
+        state.isSearchOpen -> SearchEmptyList(searchQuery = state.searchQuery.orEmpty())
+        else -> EmptyCouponList()
     }
 }
 
 @Composable
-fun EmptyCouponList() {
+private fun EmptyCouponList() {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -75,15 +82,18 @@ fun EmptyCouponList() {
 }
 
 @Composable
-fun CouponList(
+private fun CouponList(
     coupons: List<CouponListItem>,
-    onCouponClick: (Long) -> Unit
+    onCouponClick: (Long) -> Unit,
+    onLoadMore: () -> Unit
 ) {
+    val listState = rememberLazyListState()
     LazyColumn(
+        state = listState,
         modifier = Modifier
             .background(color = MaterialTheme.colors.surface)
     ) {
-        itemsIndexed(coupons) { index, coupon ->
+        itemsIndexed(coupons) { _, coupon ->
             CouponListItem(
                 coupon = coupon,
                 onCouponClick = onCouponClick
@@ -96,10 +106,14 @@ fun CouponList(
             )
         }
     }
+
+    InfiniteListHandler(listState = listState) {
+        onLoadMore()
+    }
 }
 
 @Composable
-fun CouponListItem(
+private fun CouponListItem(
     coupon: CouponListItem,
     onCouponClick: (Long) -> Unit
 ) {
@@ -130,7 +144,7 @@ fun CouponListItem(
 }
 
 @Composable
-fun CouponListItemInfo(
+private fun CouponListItemInfo(
     summary: String,
 ) {
     Text(
@@ -140,7 +154,57 @@ fun CouponListItemInfo(
     )
 }
 
-@ExperimentalFoundationApi
+@Composable
+@Suppress("MagicNumber")
+private fun CouponListSkeleton() {
+    val numberOfInboxSkeletonRows = 10
+    LazyColumn(Modifier.background(color = MaterialTheme.colors.surface)) {
+        repeat(numberOfInboxSkeletonRows) {
+            item {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    SkeletonView(80.dp, 20.dp)
+                    SkeletonView(160.dp, 16.dp)
+                    SkeletonView(40.dp, 20.dp)
+                }
+                Divider(
+                    modifier = Modifier
+                        .offset(x = 16.dp),
+                    color = colorResource(id = R.color.divider_color),
+                    thickness = 1.dp
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SearchEmptyList(searchQuery: String) {
+    if (searchQuery.isEmpty()) return
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 32.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = stringResource(id = R.string.empty_message_with_search, searchQuery),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.h6,
+            modifier = Modifier.padding(start = 24.dp, end = 24.dp)
+        )
+        Spacer(Modifier.size(54.dp))
+        Image(
+            painter = painterResource(id = R.drawable.img_empty_search),
+            contentDescription = null,
+        )
+    }
+}
+
 @Preview
 @Composable
 @Suppress("MagicNumber")
@@ -168,12 +232,17 @@ fun CouponListPreview() {
         ),
     )
 
-    CouponList(coupons = coupons) {}
+    CouponList(coupons = coupons, {}, {})
 }
 
-@ExperimentalFoundationApi
 @Preview
 @Composable
 fun CouponListEmptyPreview() {
     EmptyCouponList()
+}
+
+@Preview
+@Composable
+fun CouponListSkeletonPreview() {
+    CouponListSkeleton()
 }
