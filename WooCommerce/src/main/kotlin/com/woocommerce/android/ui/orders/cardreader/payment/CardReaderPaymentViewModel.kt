@@ -182,7 +182,10 @@ class CardReaderPaymentViewModel
                     listenForBluetoothCardReaderMessages()
                 }
             } ?: run {
-                tracker.trackPaymentFailed("Fetching order failed")
+                tracker.trackInteracPaymentFailed(
+                    orderId = orderId,
+                    errorMessage = "Fetching order failed"
+                )
                 viewState.postValue(
                     FailedRefundState(
                         errorType = InteracRefundFlowError.FetchingOrderFailed,
@@ -291,6 +294,11 @@ class CardReaderPaymentViewModel
                 )
             }
         } ?: run {
+            tracker.trackInteracPaymentFailed(
+                orderId = orderId,
+                errorMessage = "Charge id is null for the order.",
+                errorType = CardInteracRefundStatus.RefundStatusErrorType.NonRetryable,
+            )
             emitFailedInteracRefundState(
                 currencyFormatter.formatAmountWithCurrency(
                     order.currency,
@@ -317,10 +325,17 @@ class CardReaderPaymentViewModel
                 viewState.postValue(RefundSuccessfulState(amountLabel))
                 triggerEvent(InteracRefundSuccessful)
             }
-            is InteracRefundFailure -> emitFailedInteracRefundState(
-                amountLabel,
-                refundStatus
-            )
+            is InteracRefundFailure -> {
+                tracker.trackInteracPaymentFailed(
+                    orderId,
+                    refundStatus.errorMessage,
+                    refundStatus.type,
+                )
+                emitFailedInteracRefundState(
+                    amountLabel,
+                    refundStatus
+                )
+            }
         }.exhaustive
     }
 

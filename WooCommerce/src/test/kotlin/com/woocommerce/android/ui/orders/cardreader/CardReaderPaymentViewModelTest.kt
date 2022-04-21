@@ -2495,6 +2495,135 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when interac refund fails, then interac refund failed event is triggered`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow {
+                    emit(
+                        CardInteracRefundStatus.InteracRefundFailure(
+                            CardInteracRefundStatus.RefundStatusErrorType.Generic,
+                            "",
+                            RefundParams(
+                                amount = BigDecimal.TEN,
+                                chargeId = "",
+                                currency = "USD"
+                            )
+                        )
+                    )
+                }
+            }
+
+            viewModel.start()
+
+            verify(tracker).trackInteracPaymentFailed(any(), any(), any())
+        }
+
+    @Test
+    fun `when interac refund fails, then interac refund failed event is triggered with correct data`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            val expectedOrderId = ORDER_ID
+            val expectedErrorMessage = "Error Message"
+            val expectedErrorType = CardInteracRefundStatus.RefundStatusErrorType.Cancelled
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow {
+                    emit(
+                        CardInteracRefundStatus.InteracRefundFailure(
+                            expectedErrorType,
+                            expectedErrorMessage,
+                            RefundParams(
+                                amount = BigDecimal.TEN,
+                                chargeId = "",
+                                currency = "USD"
+                            )
+                        )
+                    )
+                }
+            }
+            val captor = argumentCaptor<Long, String, CardInteracRefundStatus.RefundStatusErrorType>()
+
+            viewModel.start()
+
+            verify(tracker).trackInteracPaymentFailed(
+                captor.first.capture(),
+                captor.second.capture(),
+                captor.third.capture(),
+            )
+            assertThat(captor.first.firstValue).isEqualTo(expectedOrderId)
+            assertThat(captor.second.firstValue).isEqualTo(expectedErrorMessage)
+            assertThat(captor.third.firstValue).isEqualTo(expectedErrorType)
+        }
+
+    @Test
+    fun `given failed to fetch order, when interac refund fails, then interac refund failed event is triggered`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(orderRepository.fetchOrderById(ORDER_ID)).thenReturn(null)
+
+            viewModel.start()
+
+            verify(tracker).trackInteracPaymentFailed(any(), any(), any())
+        }
+
+    @Test
+    fun `given failed to fetch order, when interac refund fails, then event is triggered with correct data`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(orderRepository.fetchOrderById(ORDER_ID)).thenReturn(null)
+            val captor = argumentCaptor<String>()
+            val expectedErrorMessage = "Fetching order failed"
+
+            viewModel.start()
+
+            verify(tracker).trackInteracPaymentFailed(any(), captor.capture(), any())
+            assertThat(captor.firstValue).isEqualTo(expectedErrorMessage)
+        }
+
+    @Test
+    fun `given null chargeid on order, when interac refund fails, then interac refund failed event is triggered`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(mockedOrder.chargeId).thenReturn(null)
+            whenever(
+                interacRefundErrorMapper.mapRefundErrorToUiError(
+                    CardInteracRefundStatus.RefundStatusErrorType.NonRetryable
+                )
+            ).thenReturn(InteracRefundFlowError.NonRetryableGeneric)
+
+            viewModel.start()
+
+            verify(tracker).trackInteracPaymentFailed(any(), any(), any())
+        }
+
+    @Test
+    fun `given null chargeid on order, when interac refund fails, then event is triggered with correct data`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            setupViewModelForInteracRefund()
+            whenever(mockedOrder.chargeId).thenReturn(null)
+            whenever(
+                interacRefundErrorMapper.mapRefundErrorToUiError(
+                    CardInteracRefundStatus.RefundStatusErrorType.NonRetryable
+                )
+            ).thenReturn(InteracRefundFlowError.NonRetryableGeneric)
+            val expectedOrderId = ORDER_ID
+            val expectedErrorMessage = "Charge id is null for the order."
+            val expectedErrorType = CardInteracRefundStatus.RefundStatusErrorType.NonRetryable
+            val captor = argumentCaptor<Long, String, CardInteracRefundStatus.RefundStatusErrorType>()
+
+            viewModel.start()
+
+            verify(tracker).trackInteracPaymentFailed(
+                captor.first.capture(),
+                captor.second.capture(),
+                captor.third.capture(),
+            )
+            assertThat(captor.first.firstValue).isEqualTo(expectedOrderId)
+            assertThat(captor.second.firstValue).isEqualTo(expectedErrorMessage)
+            assertThat(captor.third.firstValue).isEqualTo(expectedErrorType)
+        }
+
+    @Test
     fun `when interac refund succeeds, then correct labels, illustration and buttons are shown`() =
         testBlocking {
             setupViewModelForInteracRefund()
