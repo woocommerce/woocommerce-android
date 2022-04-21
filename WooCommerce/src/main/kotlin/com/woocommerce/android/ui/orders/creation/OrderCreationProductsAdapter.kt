@@ -22,10 +22,6 @@ class OrderCreationProductsAdapter(
     private val onIncreaseQuantity: (Long) -> Unit,
     private val onDecreaseQuantity: (Long) -> Unit
 ) : ListAdapter<ProductUIModel, ProductViewHolder>(ProductUIModelDiffCallback) {
-    init {
-        setHasStableIds(true)
-    }
-
     var isQuantityButtonsEnabled = false
         set(value) {
             if (value != field) {
@@ -43,8 +39,6 @@ class OrderCreationProductsAdapter(
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
-
-    override fun getItemId(position: Int): Long = getItem(position).item.itemId
 
     inner class ProductViewHolder(private val binding: OrderCreationProductItemBinding) : ViewHolder(binding.root) {
         private val context = binding.root.context
