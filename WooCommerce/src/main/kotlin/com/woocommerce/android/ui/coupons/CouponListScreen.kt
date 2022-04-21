@@ -182,7 +182,7 @@ private fun CouponListSkeleton() {
                         dimensionResource(id = R.dimen.major_100)
                     )
                     SkeletonView(
-                        dimensionResource(id = R.dimen.major_250),
+                        dimensionResource(id = R.dimen.skeleton_text_small_width),
                         dimensionResource(id = R.dimen.major_125)
                     )
                 }
