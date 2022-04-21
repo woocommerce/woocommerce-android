@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.coupons.details
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -76,15 +78,19 @@ fun CouponDetailsScreen(
             }
         )
 
-        state.couponSummary?.let { coupon ->
-            CouponSummaryHeading(
-                code = coupon.code,
-                isActive = state.couponSummary.isActive
-            )
-            CouponSummarySection(coupon)
-        }
-        state.couponPerformanceState?.let {
-            CouponPerformanceSection(it)
+        Column(
+            modifier = Modifier.verticalScroll(rememberScrollState())
+        ) {
+            state.couponSummary?.let { coupon ->
+                CouponSummaryHeading(
+                    code = coupon.code,
+                    isActive = state.couponSummary.isActive
+                )
+                CouponSummarySection(coupon)
+            }
+            state.couponPerformanceState?.let {
+                CouponPerformanceSection(it)
+            }
         }
     }
 }
