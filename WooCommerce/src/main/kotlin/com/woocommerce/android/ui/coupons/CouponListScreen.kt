@@ -16,12 +16,12 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
@@ -63,7 +63,7 @@ private fun EmptyCouponList() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 32.dp),
+            .padding(horizontal = dimensionResource(id = R.dimen.major_200)),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -71,9 +71,12 @@ private fun EmptyCouponList() {
             text = stringResource(id = R.string.coupon_list_empty_heading),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.h6,
-            modifier = Modifier.padding(start = 24.dp, end = 24.dp)
+            modifier = Modifier.padding(
+                start = dimensionResource(id = R.dimen.major_150),
+                end = dimensionResource(id = R.dimen.major_150)
+            )
         )
-        Spacer(Modifier.size(54.dp))
+        Spacer(Modifier.size(dimensionResource(id = R.dimen.major_325)))
         Image(
             painter = painterResource(id = R.drawable.img_empty_coupon_list),
             contentDescription = null,
@@ -99,10 +102,9 @@ private fun CouponList(
                 onCouponClick = onCouponClick
             )
             Divider(
-                modifier = Modifier
-                    .offset(x = 16.dp),
+                modifier = Modifier.offset(x = dimensionResource(id = R.dimen.major_100)),
                 color = colorResource(id = R.color.divider_color),
-                thickness = 1.dp
+                thickness = dimensionResource(id = R.dimen.minor_10)
             )
         }
     }
@@ -118,7 +120,7 @@ private fun CouponListItem(
     onCouponClick: (Long) -> Unit
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_50)),
         modifier = Modifier
             .fillMaxWidth()
             .clickable(
@@ -127,7 +129,9 @@ private fun CouponListItem(
                 role = Role.Button,
                 onClick = { onCouponClick(coupon.id) }
             )
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(
+                horizontal = dimensionResource(id = R.dimen.major_100),
+                vertical = dimensionResource(id = R.dimen.minor_100)),
     ) {
         coupon.code?.let {
             Text(
@@ -162,18 +166,18 @@ private fun CouponListSkeleton() {
         repeat(numberOfInboxSkeletonRows) {
             item {
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_50)),
+                    modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100), vertical = dimensionResource(id = R.dimen.minor_100))
                 ) {
-                    SkeletonView(80.dp, 20.dp)
-                    SkeletonView(160.dp, 16.dp)
-                    SkeletonView(40.dp, 20.dp)
+                    SkeletonView(dimensionResource(id = R.dimen.skeleton_text_medium_width), dimensionResource(id = R.dimen.major_125))
+                    SkeletonView(dimensionResource(id = R.dimen.skeleton_text_large_width), dimensionResource(id = R.dimen.major_100))
+                    SkeletonView(dimensionResource(id = R.dimen.major_250), dimensionResource(id = R.dimen.major_125))
                 }
                 Divider(
                     modifier = Modifier
-                        .offset(x = 16.dp),
+                        .offset(x = dimensionResource(id = R.dimen.major_100)),
                     color = colorResource(id = R.color.divider_color),
-                    thickness = 1.dp
+                    thickness = dimensionResource(id = R.dimen.minor_10)
                 )
             }
         }
@@ -187,7 +191,7 @@ private fun SearchEmptyList(searchQuery: String) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 32.dp),
+            .padding(horizontal = dimensionResource(id = R.dimen.major_200)),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -195,9 +199,9 @@ private fun SearchEmptyList(searchQuery: String) {
             text = stringResource(id = R.string.empty_message_with_search, searchQuery),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.h6,
-            modifier = Modifier.padding(start = 24.dp, end = 24.dp)
+            modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_150), end = dimensionResource(id = R.dimen.major_150))
         )
-        Spacer(Modifier.size(54.dp))
+        Spacer(Modifier.size(dimensionResource(id = R.dimen.major_325)))
         Image(
             painter = painterResource(id = R.drawable.img_empty_search),
             contentDescription = null,
