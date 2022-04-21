@@ -2414,13 +2414,14 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            verify(tracker).trackInteracPaymentFailed(any(), any())
+            verify(tracker).trackInteracPaymentFailed(any(), any(), any())
         }
 
     @Test
     fun `when interac refund fails, then interac refund failed event is triggered with correct data`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             setupViewModelForInteracRefund()
+            val expectedOrderId = ORDER_ID
             val expectedErrorMessage = "Error Message"
             val expectedErrorType = CardInteracRefundStatus.RefundStatusErrorType.Cancelled
             whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
@@ -2438,13 +2439,18 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                     )
                 }
             }
-            val captor = argumentCaptor<String, CardInteracRefundStatus.RefundStatusErrorType>()
+            val captor = argumentCaptor<Long, String, CardInteracRefundStatus.RefundStatusErrorType>()
 
             viewModel.start()
 
-            verify(tracker).trackInteracPaymentFailed(captor.first.capture(), captor.second.capture())
-            assertThat(captor.first.firstValue).isEqualTo(expectedErrorMessage)
-            assertThat(captor.second.firstValue).isEqualTo(expectedErrorType)
+            verify(tracker).trackInteracPaymentFailed(
+                captor.first.capture(),
+                captor.second.capture(),
+                captor.third.capture(),
+            )
+            assertThat(captor.first.firstValue).isEqualTo(expectedOrderId)
+            assertThat(captor.second.firstValue).isEqualTo(expectedErrorMessage)
+            assertThat(captor.third.firstValue).isEqualTo(expectedErrorType)
         }
 
     @Test
@@ -2455,7 +2461,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            verify(tracker).trackInteracPaymentFailed(any(), any())
+            verify(tracker).trackInteracPaymentFailed(any(), any(), any())
         }
 
     @Test
@@ -2468,7 +2474,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            verify(tracker).trackInteracPaymentFailed(captor.capture(), any())
+            verify(tracker).trackInteracPaymentFailed(any(), captor.capture(), any())
             assertThat(captor.firstValue).isEqualTo(expectedErrorMessage)
         }
 
@@ -2485,7 +2491,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            verify(tracker).trackInteracPaymentFailed(any(), any())
+            verify(tracker).trackInteracPaymentFailed(any(), any(), any())
         }
 
     @Test
@@ -2498,15 +2504,21 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                     CardInteracRefundStatus.RefundStatusErrorType.NonRetryable
                 )
             ).thenReturn(InteracRefundFlowError.NonRetryableGeneric)
+            val expectedOrderId = ORDER_ID
             val expectedErrorMessage = "Charge id is null for the order."
             val expectedErrorType = CardInteracRefundStatus.RefundStatusErrorType.NonRetryable
-            val captor = argumentCaptor<String, CardInteracRefundStatus.RefundStatusErrorType>()
+            val captor = argumentCaptor<Long, String, CardInteracRefundStatus.RefundStatusErrorType>()
 
             viewModel.start()
 
-            verify(tracker).trackInteracPaymentFailed(captor.first.capture(), captor.second.capture())
-            assertThat(captor.first.firstValue).isEqualTo(expectedErrorMessage)
-            assertThat(captor.second.firstValue).isEqualTo(expectedErrorType)
+            verify(tracker).trackInteracPaymentFailed(
+                captor.first.capture(),
+                captor.second.capture(),
+                captor.third.capture(),
+            )
+            assertThat(captor.first.firstValue).isEqualTo(expectedOrderId)
+            assertThat(captor.second.firstValue).isEqualTo(expectedErrorMessage)
+            assertThat(captor.third.firstValue).isEqualTo(expectedErrorType)
         }
 
     @Test

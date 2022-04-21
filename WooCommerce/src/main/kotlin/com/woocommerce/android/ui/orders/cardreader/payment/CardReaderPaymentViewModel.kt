@@ -179,6 +179,7 @@ class CardReaderPaymentViewModel
                 }
             } ?: run {
                 tracker.trackInteracPaymentFailed(
+                    orderId = orderId,
                     errorMessage = "Fetching order failed"
                 )
                 viewState.postValue(
@@ -289,6 +290,7 @@ class CardReaderPaymentViewModel
             }
         } ?: run {
             tracker.trackInteracPaymentFailed(
+                orderId = orderId,
                 errorMessage = "Charge id is null for the order.",
                 errorType = CardInteracRefundStatus.RefundStatusErrorType.NonRetryable,
             )
@@ -320,6 +322,7 @@ class CardReaderPaymentViewModel
             }
             is InteracRefundFailure -> {
                 tracker.trackInteracPaymentFailed(
+                    orderId,
                     refundStatus.errorMessage,
                     refundStatus.type,
                 )

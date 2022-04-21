@@ -224,11 +224,13 @@ class CardReaderTracker @Inject constructor(
     }
 
     fun trackInteracPaymentFailed(
+        orderId: Long,
         errorMessage: String,
         errorType: RefundStatusErrorType = RefundStatusErrorType.Generic
     ) {
         track(
             CARD_PRESENT_COLLECT_INTERAC_PAYMENT_FAILED,
+            properties = mutableMapOf("orderId" to orderId),
             errorType = errorType.toString(),
             errorDescription = errorMessage
         )
