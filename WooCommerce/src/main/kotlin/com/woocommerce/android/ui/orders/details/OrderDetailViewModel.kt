@@ -243,7 +243,7 @@ final class OrderDetailViewModel @Inject constructor(
     }
 
     fun onSharePaymentUrlClicked() {
-        // TODO nbradbury analytics?
+        AnalyticsTracker.track(AnalyticsEvent.ORDER_DETAIL_PAYMENT_LINK_SHARED)
         triggerEvent(TakePaymentViewModel.SharePaymentUrl(selectedSite.get().name, order.paymentUrl))
     }
 
