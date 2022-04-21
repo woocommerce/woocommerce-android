@@ -37,9 +37,15 @@ rootProject.afterEvaluate {
                 '**/dagger',
                 '**/*Hilt*.*',
                 '**/hilt_aggregated_deps',
+                '**/*Module.class',
                 '**/com/bumptech',
                 '**/*FragmentDirections*',
-                '**/*FragmentArgs*'
+                '**/*FragmentArgs*',
+                '**/*Fragment.class',
+                '**/*Activity.class',
+                '**/*ViewHolder.class',
+                '**/*View.class',
+                '**/*Adapter.class',
         ]
 
         def kClasses = rootProject.subprojects.collect { proj ->
