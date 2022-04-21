@@ -67,13 +67,6 @@ class CouponDetailsViewModel @Inject constructor(
                     maximumSpending = couponUtils.formatMaximumSpendingInfo(coupon.maximumAmount, currencyCode),
                     isActive = coupon.dateExpiresGmt?.after(Date()) ?: true,
                     expiration = coupon.dateExpiresGmt?.let { couponUtils.formatExpirationDate(it) },
-                    shareCodeMessage = couponUtils.formatSharingMessage(
-                        amount = coupon.amount,
-                        currencyCode = currencyCode,
-                        couponCode = coupon.code,
-                        includedProducts = coupon.products.size,
-                        excludedProducts = coupon.excludedProducts.size
-                    )
                 )
             }
     }
@@ -122,7 +115,15 @@ class CouponDetailsViewModel @Inject constructor(
     }
 
     fun onShareButtonClick() {
-        couponState.value?.couponSummary?.shareCodeMessage?.let {
+        coupon.value?.let { coupon ->
+            couponUtils.formatSharingMessage(
+                amount = coupon.amount,
+                currencyCode = currencyCode,
+                couponCode = coupon.code,
+                includedProducts = coupon.products.size,
+                excludedProducts = coupon.excludedProducts.size
+            )
+        }?.let {
             triggerEvent(ShareCodeEvent(it))
         } ?: run {
             triggerEvent(ShowSnackbar(R.string.coupon_details_share_formatting_failure))
@@ -143,7 +144,6 @@ class CouponDetailsViewModel @Inject constructor(
         val minimumSpending: String?,
         val maximumSpending: String?,
         val expiration: String?,
-        val shareCodeMessage: String?
     )
 
     data class CouponPerformanceUi(
