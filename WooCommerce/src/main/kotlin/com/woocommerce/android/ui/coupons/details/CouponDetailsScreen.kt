@@ -34,6 +34,7 @@ fun CouponDetailsScreen(
 }
 
 @Composable
+@Suppress("LongMethod")
 fun CouponDetailsScreen(
     state: CouponDetailsState,
     onBackPress: () -> Boolean,
@@ -45,6 +46,7 @@ fun CouponDetailsScreen(
             .fillMaxSize()
     ) {
         var showMenu by remember { mutableStateOf(false) }
+        var showDeleteDialog by remember { mutableStateOf(false) }
 
         TopAppBar(
             backgroundColor = MaterialTheme.colors.surface,
@@ -72,9 +74,9 @@ fun CouponDetailsScreen(
                     DropdownMenuItem(onClick = onShareButtonClick) {
                         Text(stringResource(id = R.string.coupon_details_menu_share))
                     }
-                    DropdownMenuItem(onClick = { }) {
+                    DropdownMenuItem(onClick = { showDeleteDialog = true }) {
                         Text(
-                            stringResource(id = R.string.coupon_details_menu_delete),
+                            stringResource(id = R.string.coupon_details_delete),
                             color = colorResource(id = R.color.woo_red_30)
                         )
                     }
@@ -91,6 +93,35 @@ fun CouponDetailsScreen(
         }
         state.couponPerformanceState?.let {
             CouponPerformanceSection(it)
+        }
+
+        if (showDeleteDialog) {
+            AlertDialog(
+                onDismissRequest = { showDeleteDialog = false },
+                text = {
+                    Text(stringResource(id = R.string.coupon_details_delete_confirmation))
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = { showDeleteDialog = false }
+                    ) {
+                        Text(
+                            stringResource(id = R.string.coupon_details_delete).uppercase(),
+                            color = colorResource(id = R.color.woo_red_30)
+                        )
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = { showDeleteDialog = false }
+                    ) {
+                        Text(
+                            stringResource(id = R.string.cancel).uppercase(),
+                            color = colorResource(id = R.color.woo_red_30)
+                        )
+                    }
+                }
+            )
         }
     }
 }
