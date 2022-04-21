@@ -61,6 +61,21 @@ class CouponUtils @Inject constructor(
         return resourceProvider.getString(R.string.coupon_details_expiration_date, dateFormat.format(expirationDate))
     }
 
+    fun formatUsageLimitPerUser(usageLimitPerUser: Int?): String? {
+        return usageLimitPerUser?.takeIf { it > 0 }?.let {
+            StringUtils.getQuantityString(
+                resourceProvider = resourceProvider,
+                quantity = it,
+                default = R.string.coupon_details_usage_limit_per_user_multiple,
+                one = R.string.coupon_details_usage_limit_per_user_single
+            )
+        }
+    }
+
+    fun formatRestrictedEmails(restrictedEmails: List<String>): String? {
+        return restrictedEmails.takeIf { it.isNotEmpty() }?.joinToString(", ")
+    }
+
     /*
     - When only specific products or categories are defined: Display "x products" or "x categories"
     - When specific products/categories and exceptions are defined: Display "x products excl. y categories" etc.

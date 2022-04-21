@@ -141,9 +141,20 @@ fun CouponSummarySection(couponSummary: CouponSummaryUi) {
             )
             SummaryLabel(couponSummary.discountType)
             SummaryLabel(couponSummary.summary)
+            if (couponSummary.isForIndividualUse) {
+                SummaryLabel(stringResource(id = R.string.coupon_details_individual_use_only))
+            }
+            if (couponSummary.isShippingFree) {
+                SummaryLabel(stringResource(id = R.string.coupon_details_allows_free_shipping))
+            }
+            if (couponSummary.areSaleItemsExcluded) {
+                SummaryLabel(stringResource(id = R.string.coupon_details_excludes_sale_items))
+            }
             SummaryLabel(couponSummary.minimumSpending)
             SummaryLabel(couponSummary.maximumSpending)
+            SummaryLabel(couponSummary.usageLimitPerUser)
             SummaryLabel(couponSummary.expiration)
+            SummaryLabel(couponSummary.emailRestrictions)
         }
     }
 }

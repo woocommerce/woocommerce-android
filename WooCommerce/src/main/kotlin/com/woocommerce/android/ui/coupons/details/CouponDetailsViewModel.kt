@@ -61,12 +61,17 @@ class CouponDetailsViewModel @Inject constructor(
             .map { coupon ->
                 CouponSummaryUi(
                     code = coupon.code,
+                    isActive = coupon.dateExpiresGmt?.after(Date()) ?: true,
                     summary = couponUtils.generateSummary(coupon, currencyCode),
+                    isForIndividualUse = coupon.isForIndividualUse ?: false,
+                    isShippingFree = coupon.isShippingFree ?: false,
+                    areSaleItemsExcluded = coupon.areSaleItemsExcluded ?: false,
                     discountType = coupon.type?.let { couponUtils.localizeType(it) },
                     minimumSpending = couponUtils.formatMinimumSpendingInfo(coupon.minimumAmount, currencyCode),
                     maximumSpending = couponUtils.formatMaximumSpendingInfo(coupon.maximumAmount, currencyCode),
-                    isActive = coupon.dateExpiresGmt?.after(Date()) ?: true,
+                    usageLimitPerUser = couponUtils.formatUsageLimitPerUser(coupon.usageLimitPerUser),
                     expiration = coupon.dateExpiresGmt?.let { couponUtils.formatExpirationDate(it) },
+                    emailRestrictions = couponUtils.formatRestrictedEmails(coupon.restrictedEmails)
                 )
             }
     }
@@ -140,10 +145,15 @@ class CouponDetailsViewModel @Inject constructor(
         val code: String?,
         val isActive: Boolean,
         val summary: String,
+        val isForIndividualUse: Boolean,
+        val isShippingFree: Boolean,
+        val areSaleItemsExcluded: Boolean,
         val discountType: String?,
         val minimumSpending: String?,
         val maximumSpending: String?,
+        val usageLimitPerUser: String?,
         val expiration: String?,
+        val emailRestrictions: String?
     )
 
     data class CouponPerformanceUi(

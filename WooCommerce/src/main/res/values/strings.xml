@@ -1909,6 +1909,8 @@
     <string name="coupon_details_share_coupon_error">Error sharing coupon code.</string>
     <string name="coupon_details_share_formatting_failure">Unable to generate coupon code sharing message</string>
     <string name="coupons_list_search_hint">Search coupons</string>
+    <string name="coupon_details_usage_limit_per_user_multiple">%1$d uses per user</string>
+    <string name="coupon_details_usage_limit_per_user_single">1 use per user</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>
@@ -2314,4 +2316,7 @@
     <string name="about_automattic_back_icon_description">Back icon</string>
     <string name="about_automattic_app_icon_description">App icon</string>
     <string name="error_generic">An error occurred</string>
+    <string name="coupon_details_individual_use_only">Individual use only</string>
+    <string name="coupon_details_allows_free_shipping">Allows free shipping</string>
+    <string name="coupon_details_excludes_sale_items">Excludes sale items</string>
 </resources>

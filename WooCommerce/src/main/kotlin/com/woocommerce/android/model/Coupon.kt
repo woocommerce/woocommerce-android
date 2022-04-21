@@ -26,7 +26,8 @@ data class Coupon(
     val products: List<Product>,
     val excludedProducts: List<Product>,
     val categories: List<ProductCategory>,
-    val excludedCategories: List<ProductCategory>
+    val excludedCategories: List<ProductCategory>,
+    val restrictedEmails: List<String>
 ) {
     sealed class Type(open val value: String) {
         companion object {
@@ -71,5 +72,6 @@ fun CouponDataModel.toAppModel() = Coupon(
     products = products.map { it.toAppModel() },
     excludedProducts = excludedProducts.map { it.toAppModel() },
     categories = categories.map { it.toAppModel() },
-    excludedCategories = excludedCategories.map { it.toAppModel() }
+    excludedCategories = excludedCategories.map { it.toAppModel() },
+    restrictedEmails = restrictedEmails.map { it.email }
 )
