@@ -42,10 +42,12 @@ rootProject.afterEvaluate {
                 '**/*FragmentDirections*',
                 '**/*FragmentArgs*',
                 '**/*Fragment.class',
+                '**/*Dialog.class',
                 '**/*Activity.class',
                 '**/*ViewHolder.class',
                 '**/*View.class',
                 '**/*Adapter.class',
+                '**/*Screen*',
         ]
 
         def kClasses = rootProject.subprojects.collect { proj ->
