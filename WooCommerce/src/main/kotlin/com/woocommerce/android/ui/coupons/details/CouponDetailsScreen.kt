@@ -86,7 +86,7 @@ fun CouponDetailsScreen(
                     }) {
                         Text(
                             stringResource(id = R.string.coupon_details_delete),
-                            color = colorResource(id = R.color.woo_red_30)
+                            color = MaterialTheme.colors.secondary
                         )
                     }
                 }
@@ -116,7 +116,7 @@ fun CouponDetailsScreen(
                     ) {
                         Text(
                             stringResource(id = R.string.coupon_details_delete).uppercase(),
-                            color = colorResource(id = R.color.woo_red_30)
+                            color = MaterialTheme.colors.secondary
                         )
                     }
                 },
@@ -126,7 +126,7 @@ fun CouponDetailsScreen(
                     ) {
                         Text(
                             stringResource(id = R.string.cancel).uppercase(),
-                            color = colorResource(id = R.color.woo_red_30)
+                            color = MaterialTheme.colors.secondary
                         )
                     }
                 }
