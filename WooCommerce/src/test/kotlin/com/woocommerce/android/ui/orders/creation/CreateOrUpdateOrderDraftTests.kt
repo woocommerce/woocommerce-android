@@ -1,17 +1,27 @@
 package com.woocommerce.android.ui.orders.creation
 
+import com.woocommerce.android.helpers.advanceTimeAndRun
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus
 import com.woocommerce.android.util.InlineClassesAnswer
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.runCurrent
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 
 class CreateOrUpdateOrderDraftTests : BaseUnitTest() {
@@ -84,8 +94,7 @@ class CreateOrUpdateOrderDraftTests : BaseUnitTest() {
         }
 
         verify(orderCreationRepository, never()).createOrUpdateDraft(any())
-        advanceTimeBy(CreateOrUpdateOrderDraft.DEBOUNCE_DURATION_MS)
-        runCurrent()
+        advanceTimeAndRun(CreateOrUpdateOrderDraft.DEBOUNCE_DURATION_MS)
         verify(orderCreationRepository, times(1)).createOrUpdateDraft(any())
 
         job.cancel()

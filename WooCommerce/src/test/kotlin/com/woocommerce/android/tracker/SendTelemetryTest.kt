@@ -1,6 +1,7 @@
 package com.woocommerce.android.tracker
 
 import app.cash.turbine.test
+import com.woocommerce.android.helpers.advanceTimeAndRun
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.SendTelemetry.Result.NOT_SENT
 import com.woocommerce.android.tracker.SendTelemetry.Result.SENT
@@ -11,7 +12,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.advanceTimeBy
-import kotlinx.coroutines.test.runCurrent
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -113,8 +113,7 @@ class SendTelemetryTest : BaseUnitTest() {
                 results.add(it)
             }
         }
-        advanceTimeBy(SendTelemetry.UPDATE_INTERVAL.toLong() * 3)
-        runCurrent()
+        advanceTimeAndRun(SendTelemetry.UPDATE_INTERVAL.toLong() * 3)
 
         // then
         assertThat(results).containsExactly(SENT, NOT_SENT, SENT, NOT_SENT, SENT, NOT_SENT, SENT)
