@@ -377,14 +377,14 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     }
 
     private fun sharePaymentUrl(storeName: String, paymentUrl: String) {
-        val title = getString(R.string.simple_payments_share_payment_dialog_title, storeName)
+        val subject = getString(R.string.simple_payments_share_payment_dialog_title, storeName)
         val shareIntent = Intent().apply {
             action = Intent.ACTION_SEND
             putExtra(Intent.EXTRA_TEXT, paymentUrl)
-            putExtra(Intent.EXTRA_SUBJECT, title)
+            putExtra(Intent.EXTRA_SUBJECT, subject)
             type = "text/plain"
         }
-        startActivity(Intent.createChooser(shareIntent, title))
+        startActivity(Intent.createChooser(shareIntent, storeName))
     }
 
     private fun refreshProduct(remoteProductId: Long) {
