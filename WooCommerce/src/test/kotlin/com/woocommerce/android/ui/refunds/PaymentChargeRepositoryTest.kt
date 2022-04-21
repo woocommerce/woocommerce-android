@@ -5,7 +5,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -48,7 +47,7 @@ class PaymentChargeRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `given active plugin saved and card response successful, when fetching data, then card details returned`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val chargeId = "charge_id"
             whenever(appPrefs.getCardReaderPreferredPlugin(siteModel.id, siteModel.siteId, siteModel.selfHostedSiteId))
@@ -76,7 +75,7 @@ class PaymentChargeRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `given active plugin saved and interac response successful, when fetching data, then card details returned`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val chargeId = "charge_id"
             whenever(appPrefs.getCardReaderPreferredPlugin(siteModel.id, siteModel.siteId, siteModel.selfHostedSiteId))
@@ -107,7 +106,7 @@ class PaymentChargeRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `given active plugin saved and unknown response successful, when fetching data, then card details null`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val chargeId = "charge_id"
             whenever(appPrefs.getCardReaderPreferredPlugin(siteModel.id, siteModel.siteId, siteModel.selfHostedSiteId))
@@ -135,7 +134,7 @@ class PaymentChargeRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `given active plugin saved and response not successful, when fetching data, then error returned`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val chargeId = "charge_id"
             whenever(appPrefs.getCardReaderPreferredPlugin(siteModel.id, siteModel.siteId, siteModel.selfHostedSiteId))
@@ -160,7 +159,7 @@ class PaymentChargeRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `given active plugin is not saved, when fetching data, then error returned`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val chargeId = "charge_id"
             whenever(appPrefs.getCardReaderPreferredPlugin(siteModel.id, siteModel.siteId, siteModel.selfHostedSiteId))

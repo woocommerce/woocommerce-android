@@ -83,3 +83,9 @@ fun String.capitalizeWords(): String {
         word.replaceFirstChar { it.uppercase() }
     }
 }
+
+/**
+ * Returns this string if it's not empty or null otherwise.
+ * Syntactic sugar for `string.ifEmpty { null }`.
+ */
+fun String.orNullIfEmpty(): String? = this.ifEmpty { null }

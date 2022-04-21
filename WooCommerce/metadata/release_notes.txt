@@ -1,5 +1,2 @@
-- [*] Fixed an issue to update the product price to zero, if required. [https://github.com/woocommerce/woocommerce-android/pull/6039]
-- [*] Added support for moderating reviews of specific products from the Product Details screen. [https://github.com/woocommerce/woocommerce-android/pull/6070]
-- [*] In-Person Payments: Removed collecting L2/L3 data. [https://github.com/woocommerce/woocommerce-android/pull/6084]
-- [***] Order Creation is now available for the general public making possible to fully create custom orders directly from the app [https://github.com/woocommerce/woocommerce-android/pull/6092]
+- [*] Fixes a bug that caused the scheduled sale dates of a product to be different than the selected dates. [https://github.com/woocommerce/woocommerce-android/pull/6188]
 

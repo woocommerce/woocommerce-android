@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.moremenu
 import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -67,7 +68,7 @@ class MoreMenuViewModel @Inject constructor(
                 type = COUPONS,
                 text = R.string.more_menu_button_coupons,
                 icon = R.drawable.ic_more_menu_coupons,
-                isEnabled = FeatureFlag.MORE_MENU_COUPONS.isEnabled(),
+                isEnabled = AppPrefs.isCouponsEnabled,
                 onClick = ::onCouponsButtonClick
             ),
             MenuUiButton(

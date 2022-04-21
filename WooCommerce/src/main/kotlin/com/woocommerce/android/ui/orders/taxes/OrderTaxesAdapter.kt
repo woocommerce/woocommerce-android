@@ -1,8 +1,9 @@
 package com.woocommerce.android.ui.orders.taxes
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderTaxItemBinding
@@ -12,17 +13,9 @@ import com.woocommerce.android.util.CurrencyFormatter
 class OrderTaxesAdapter(
     private val currencyFormatter: CurrencyFormatter,
     private val currencyCode: String
-) : RecyclerView.Adapter<OrderTaxesAdapter.ViewHolder>() {
-    private var taxes: List<Order.TaxLine> = emptyList()
-
+) : ListAdapter<Order.TaxLine, OrderTaxesAdapter.ViewHolder>(TaxLineDiffCallBack) {
     init {
         setHasStableIds(true)
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    fun updateTaxes(newTaxes: List<Order.TaxLine>) {
-        taxes = newTaxes
-        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -38,12 +31,10 @@ class OrderTaxesAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(taxes[position])
+        holder.bind(getItem(position))
     }
 
-    override fun getItemId(position: Int): Long = taxes[position].id
-
-    override fun getItemCount(): Int = taxes.size
+    override fun getItemId(position: Int): Long = getItem(position).id
 
     class ViewHolder(
         private val viewBinding: OrderTaxItemBinding,
@@ -56,5 +47,17 @@ class OrderTaxesAdapter(
                 String.format(context.getString(R.string.tax_name_with_tax_percent), tax.label, tax.ratePercent)
             viewBinding.taxValue.text = currencyFormatter.formatCurrency(tax.taxTotal, currencyCode)
         }
+    }
+
+    object TaxLineDiffCallBack : DiffUtil.ItemCallback<Order.TaxLine>() {
+        override fun areItemsTheSame(
+            oldItem: Order.TaxLine,
+            newItem: Order.TaxLine
+        ): Boolean = oldItem.id == newItem.id
+
+        override fun areContentsTheSame(
+            oldItem: Order.TaxLine,
+            newItem: Order.TaxLine
+        ): Boolean = oldItem == newItem
     }
 }

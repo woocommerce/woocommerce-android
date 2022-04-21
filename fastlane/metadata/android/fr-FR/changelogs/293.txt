@@ -1,0 +1,2 @@
+8.9 :
+Créez des commandes en déplacement en y ajoutant des produits, les informations d’expédition et de facturation, ainsi que les frais ! Vous pouvez recevoir un paiement en personne par carte de crédit dans la foulée ou envoyer un lien à votre client pour qu’il règle sa commande depuis son appareil. Vous l’avez demandé, et c’est désormais chose faite !

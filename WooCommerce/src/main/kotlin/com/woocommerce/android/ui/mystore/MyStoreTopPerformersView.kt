@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
@@ -17,7 +19,7 @@ import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.widgets.SkeletonView
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
-import java.util.Locale
+import java.util.*
 
 class MyStoreTopPerformersView @JvmOverloads constructor(
     ctx: Context,
@@ -73,7 +75,7 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
     }
 
     fun updateView(topPerformers: List<TopPerformerProductUiModel>) {
-        (binding.topPerformersRecycler.adapter as TopPerformersAdapter).setTopPerformers(topPerformers)
+        (binding.topPerformersRecycler.adapter as TopPerformersAdapter).submitList(topPerformers)
         showEmptyView(topPerformers.isEmpty())
     }
 
@@ -84,26 +86,14 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
     }
 
     class TopPerformersViewHolder(val viewBinding: TopPerformersListItemBinding) :
-        RecyclerView.ViewHolder(viewBinding.getRoot())
+        RecyclerView.ViewHolder(viewBinding.root)
 
-    class TopPerformersAdapter : RecyclerView.Adapter<TopPerformersViewHolder>() {
-        private val topPerformersList: ArrayList<TopPerformerProductUiModel> = ArrayList()
-
+    class TopPerformersAdapter : ListAdapter<TopPerformerProductUiModel, TopPerformersViewHolder>(ItemDiffCallback) {
         init {
             setHasStableIds(true)
         }
 
-        fun setTopPerformers(newList: List<TopPerformerProductUiModel>) {
-            topPerformersList.clear()
-            topPerformersList.addAll(newList)
-            notifyDataSetChanged()
-        }
-
-        override fun getItemCount() = topPerformersList.size
-
-        override fun getItemId(position: Int): Long {
-            return topPerformersList[position].productId
-        }
+        override fun getItemId(position: Int): Long = getItem(position).productId
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TopPerformersViewHolder {
             return TopPerformersViewHolder(
@@ -115,7 +105,7 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
         }
 
         override fun onBindViewHolder(holder: TopPerformersViewHolder, position: Int) {
-            val topPerformer = topPerformersList[position]
+            val topPerformer = getItem(position)
             holder.viewBinding.textProductName.text = topPerformer.name
             holder.viewBinding.itemsSoldTextView.text = topPerformer.timesOrdered
             holder.viewBinding.netSalesTextView.text = topPerformer.netSales
@@ -128,6 +118,22 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
             holder.itemView.setOnClickListener {
                 topPerformer.onClick(topPerformer.productId)
             }
+        }
+    }
+
+    object ItemDiffCallback : DiffUtil.ItemCallback<TopPerformerProductUiModel>() {
+        override fun areItemsTheSame(
+            oldItem: TopPerformerProductUiModel,
+            newItem: TopPerformerProductUiModel
+        ): Boolean {
+            return oldItem.productId == newItem.productId
+        }
+
+        override fun areContentsTheSame(
+            oldItem: TopPerformerProductUiModel,
+            newItem: TopPerformerProductUiModel
+        ): Boolean {
+            return oldItem == newItem
         }
     }
 }

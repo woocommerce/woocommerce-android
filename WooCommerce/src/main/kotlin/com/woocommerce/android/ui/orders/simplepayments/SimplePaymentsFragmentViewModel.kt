@@ -103,7 +103,7 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
     }
 
     fun onBillingEmailChanged(email: String) {
-        viewState = viewState.copy(billingEmail = email)
+        viewState = viewState.copy(billingEmail = email.trim())
     }
 
     fun onDoneButtonClicked() {
