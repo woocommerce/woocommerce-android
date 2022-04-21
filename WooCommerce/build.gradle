@@ -69,9 +69,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "8.9-rc-1"
+            versionName "9.0-rc-1"
         }
-        versionCode 290
+        versionCode 294
 
         minSdkVersion 21
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
@@ -116,17 +116,24 @@ android {
     flavorDimensions "buildType"
 
     productFlavors {
-        vanilla { // Release version
+        // Used for release/beta builds. Usually shouldn't be build locally.
+        // AppName: WooCommerce
+        vanilla {
             dimension "buildType"
         }
 
-        wasabi { // Development only version, can be installed along release versions
+        // Used for local development - preferred variant for developers.
+        // AppName: WooCommerce (Dev)
+        wasabi {
             applicationId "com.woocommerce.android.dev"
             dimension "buildType"
             isDefault true
         }
 
-        jalapeno { // Pre-Alpha version, used for PR builds, can be installed along release and dev versions.
+        // Used for CI builds on PRs (downloadable apks). Can be used locally when a developer needs
+        // to install multiple versions of the app on the same device.
+        // AppName: WooCommerce (PreAlpha)
+        jalapeno {
             applicationId "com.woocommerce.android.prealpha"
             dimension "buildType"
         }
@@ -330,6 +337,7 @@ dependencies {
 
     // Jetpack Compose
     implementation 'androidx.activity:activity-compose:1.4.0'
+    implementation "com.google.accompanist:accompanist-swiperefresh:$composeAccompanistVersion"
     implementation "androidx.compose.material:material:$composeVersion"
     implementation "androidx.compose.animation:animation:$composeVersion"
     implementation "androidx.compose.ui:ui-tooling:$composeVersion"
@@ -389,7 +397,7 @@ tasks.register("violationCommentsToGitHub", ViolationCommentsToGitHubTask) {
 **Reporter**: {{violation.reporter}}{{#violation.rule}}\n
 **Rule**: {{violation.rule}}{{/violation.rule}}
 **Severity**: {{violation.severity}}
-**File**: {{violation.file}} L{{violation.startLine}}{{#violation.source}}
+**File**: {{violation.file}}:{{violation.startLine}}{{#violation.source}}
 **Source**: {{violation.source}}{{/violation.source}}
 {{violation.message}}
 """
@@ -413,9 +421,15 @@ tasks.register("dependencyTreeDiffCommentToGitHub", ViolationCommentsToGitHubTas
     commentTemplate = """
 ### The PR caused the following dependency changes:
 
+<details><summary>expand</summary>
+<p>
+
 ```diff
 {{{violation.message}}}
 ```
+
+</p>
+</details>
 
 *Please review and act accordingly*
 """

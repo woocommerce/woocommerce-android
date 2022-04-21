@@ -1,8 +1,16 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
-9.0
+9.1
 -----
 
+
+9.1
+-----
+- [*] Introduced Location permission rationale dialog in IPP connection flow
+
+9.0
+-----
+- [*] Fixes a bug that caused the scheduled sale dates of a product to be different than the selected dates. [https://github.com/woocommerce/woocommerce-android/pull/6188]
 
 8.9
 -----

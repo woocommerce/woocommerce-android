@@ -1,0 +1,2 @@
+8.9:
+Crie pedidos de onde estiver com informações de cobrança, envio e produtos, além de taxas! Você pode receber pagamentos com cartão de crédito presenciais logo em seguida ou enviar um link para o cliente pagar o pedido em seu próprio dispositivo. Vocês pediram, nós atendemos.

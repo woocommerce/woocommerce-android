@@ -16,9 +16,9 @@ updates:
       # Bumping 2.26.3 to 2.27.2 will break the mocks. For more details, see
       # https://github.com/wiremock/wiremock/issues/1345#issuecomment-656060968
       - dependency-name: "com.github.tomakehurst:wiremock"
-      # Our libraries that are stored in S3 have a custom versioning scheme which doesn't work with
-      # dependapot.
+      # Our libraries that are stored in S3 have a custom versioning scheme which doesn't work with Dependabot.
       - dependency-name: "org.wordpress:utils"
       - dependency-name: "org.wordpress:fluxc"
       - dependency-name: "org.wordpress.fluxc.plugins:woocommerce"
       - dependency-name: "org.wordpress:login"
+      - dependency-name: "com.automattic:Automattic-Tracks-Android"

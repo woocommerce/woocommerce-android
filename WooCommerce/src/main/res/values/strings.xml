@@ -140,6 +140,7 @@
     <string name="exclusive_or">or</string>
     <string name="count">Count: %s</string>
     <string name="no_sku">No SKU</string>
+    <string name="amount">Amount</string>
 
     <!--
         Date/Time Labels
@@ -329,6 +330,8 @@
     <string name="simple_payments_cash_dlg_title">Mark as paid?</string>
     <string name="simple_payments_cash_dlg_message">This will create your order and mark it as paid if you received payment outside of WooCommerce</string>
     <string name="simple_payments_cash_dlg_button">Mark as paid</string>
+    <string name="simple_payments_share_payment_link">Share payment link</string>
+    <string name="simple_payments_share_payment_dialog_title">Checkout - %s</string>
     <!--
          Taxes
     -->
@@ -371,14 +374,12 @@
     <string name="order_creation_success_snackbar">Order created</string>
     <string name="order_creation_payment_tax">Taxes</string>
     <string name="order_creation_price_calculation_failed">Couldn’t update pricing</string>
-    <string name="order_creation_shipping_amount">Amount</string>
     <string name="order_creation_shipping_name">Name</string>
     <string name="order_creation_shipping_title_add">Add Shipping</string>
     <string name="order_creation_add_shipping">Add shipping</string>
     <string name="order_creation_edit_shipping">Shipping</string>
     <string name="order_creation_remove_shipping">Remove shipping from order</string>
     <string name="order_creation_add_fee_removal_hint">Remove fee from order</string>
-    <string name="order_creation_fee_amount_hint">Amount ($)</string>
     <string name="order_creation_fee_percentage_hint">Percentage (%)</string>
     <string name="order_creation_fee_percentage_toggle_text">Percentage fee</string>
     <!--
@@ -1027,6 +1028,9 @@
     <string name="card_reader_connect_missing_permissions_header">Missing required precise location permission</string>
     <string name="card_reader_connect_location_provider_disabled_header">Location is disabled</string>
     <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth is disabled</string>
+    <string name="card_reader_connect_permission_rationale_header">Location Access Required</string>
+    <string name="card_reader_connect_permission_rationale_hint">Card reader payments require precise location permission</string>
+    <string name="card_reader_connect_permission_rationale_action" translatable="false">@string/continue_button</string>
     <string name="card_reader_connect_open_permission_settings">Open settings</string>
     <string name="card_reader_connect_open_location_settings">Open settings</string>
     <string name="card_reader_connect_open_bluetooth_settings">Turn on bluetooth</string>
@@ -1508,6 +1512,7 @@
     <string name="send_feedback">Send feedback</string>
     <string name="beta_features">Beta features</string>
     <string name="beta_features_add_ons">View Add-ons</string>
+    <string name="beta_features_coupons">Coupons Management</string>
     <string name="beta_features_simple_payments">Simple payments</string>
     <string name="settings_signout">Log out</string>
     <string name="settings_preferences">Preferences</string>
@@ -1874,6 +1879,7 @@
     <string name="jetpack_install_progress_failed_option_contact_support">Contact Support</string>
 
     <!-- Inbox -->
+    <string name="inbox_screen_title">Inbox</string>
     <string name="dismiss_inbox_note">Dismiss</string>
     <string name="inbox_note_recency_now">Moments ago</string>
     <string name="inbox_note_recency_minutes">%d minutes ago</string>
@@ -1884,12 +1890,13 @@
     <string name="inbox_note_recency_date_time">Created on %s</string>
     <string name="empty_inbox_title">Congrats, you’ve read everything!</string>
     <string name="empty_inbox_description">Come back soon for more tips and insights on growing your store</string>
+    <string name="inbox_note_survey_actioned">Thank you for your feedback!</string>
+    <string name="inbox_note_dismiss_all_notes">Dismiss all</string>
 
     <!-- coupons -->
     <string name="coupons">Coupons</string>
     <string name="coupon_list_item_label_active">Active</string>
     <string name="coupon_list_item_label_expired">Expired</string>
-    <string name="coupon_list_item_label_off">off</string>
     <string name="coupon_list_item_label_everything">everything</string>
     <string name="coupon_list_item_label_products_and_categories">%1s and %2s</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s excl. %2s</string>
@@ -1897,12 +1904,32 @@
     <string name="coupon_list_wip_title">View and edit coupons</string>
     <string name="coupon_list_wip_message_enabled">We’ve been working on making it possible to view and edit coupons from your device!</string>
     <string name="coupon_list_view_coupon">View coupon summary</string>
-    <string name="coupon_summary_heading">Coupon Summary</string>
-    <string name="coupon_summary_minimum_spend">Minimum spend of %s</string>
-    <string name="coupon_summary_maximum_spend">Maximum spend of %s</string>
-    <string name="coupon_summary_performance_heading">Performance</string>
-    <string name="coupon_summary_performance_discounted_order_heading">Discounted Orders</string>
-    <string name="coupon_summary_performance_amount_heading">Amount</string>
+    <string name="coupon_details_heading">Coupon Summary</string>
+    <string name="coupon_details_minimum_spend">Minimum spend of %s</string>
+    <string name="coupon_details_maximum_spend">Maximum spend of %s</string>
+    <string name="coupon_details_performance_heading">Performance</string>
+    <string name="coupon_details_performance_discounted_order_heading">Discounted Orders</string>
+    <string name="coupon_details_performance_amount_heading">Amount</string>
+    <string name="coupon_details_menu_copy">Copy Coupon Code</string>
+    <string name="coupon_details_menu_share">Share Coupon</string>
+    <string name="coupon_details_performance_loading_failure">Loading coupon performance failed</string>
+    <string name="coupon_type_percent">Percentage Discount</string>
+    <string name="coupon_type_fixed_cart">Fixed Cart Discount</string>
+    <string name="coupon_type_fixed_product">Fixed Product Discount</string>
+    <string name="coupon_type_custom">Custom Discount (%1$s)</string>
+    <string name="coupon_summary_template">%1$s off %2$s</string>
+    <string name="coupon_details_expiration_date">Expires %1$s</string>
+    <string name="coupon_summary_loading_failure">Loading coupon summary failed</string>
+    <string name="coupon_beta_features_heading">Coupons Management</string>
+    <string name="coupon_beta_features_subheading">Test out managing coupons in the app</string>
+    <string name="coupon_details_copy_clipboard_label">Coupon Code</string>
+    <string name="coupon_details_copy_success">Coupon code copied to clipboard.</string>
+    <string name="coupon_details_copy_error">Error copying coupon code to clipboard.</string>
+    <string name="coupon_details_share_coupon_all">Apply %1$s off to all products with the promo code %2$s</string>
+    <string name="coupon_details_share_coupon_some">Apply %1$s off to select products with the promo code %2$s</string>
+    <string name="coupon_details_share_coupon_error">Error sharing coupon code.</string>
+    <string name="coupon_details_share_formatting_failure">Unable to generate coupon code sharing message</string>
+    <string name="coupons_list_search_hint">Search coupons</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>

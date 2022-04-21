@@ -220,10 +220,6 @@ class IssueRefundViewModel @Inject constructor(
                 val shipping = resourceProvider.getString(R.string.multiple_shipping).toLowerCase(Locale.getDefault())
                 refundOptions.add(shipping)
             }
-            if (order.totalTax > BigDecimal.ZERO) {
-                val taxes = resourceProvider.getString(R.string.taxes).toLowerCase(Locale.getDefault())
-                refundOptions.add(taxes)
-            }
             return if (refundOptions.isNotEmpty()) {
                 val and = resourceProvider.getString(R.string.and).toLowerCase(Locale.getDefault())
                 val options = refundOptions.joinToString(lastSeparator = " $and ")

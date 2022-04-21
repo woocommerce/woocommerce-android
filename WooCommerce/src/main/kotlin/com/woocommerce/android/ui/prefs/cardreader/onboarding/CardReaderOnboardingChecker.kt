@@ -34,6 +34,8 @@ const val SUPPORTED_WCPAY_VERSION = "3.2.1"
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
 const val SUPPORTED_STRIPE_EXTENSION_VERSION = "6.2.0"
 
+const val WCPAY_RECEIPTS_SENDING_SUPPORT_VERSION = "4.0.0"
+
 /**
  * This class is used to check if the selected store is ready to accept In Person Payments. The app should check store's
  * eligibility every time it attempts to connect to a card reader.
@@ -68,13 +70,15 @@ class CardReaderOnboardingChecker @Inject constructor(
 
         return fetchOnboardingState()
             .also {
+                val (status, version) = when (it) {
+                    is OnboardingCompleted -> CARD_READER_ONBOARDING_COMPLETED to it.version
+                    is StripeAccountPendingRequirement -> CARD_READER_ONBOARDING_PENDING to it.version
+                    else -> CARD_READER_ONBOARDING_NOT_COMPLETED to null
+                }
                 updateSharedPreferences(
-                    when (it) {
-                        is OnboardingCompleted -> CARD_READER_ONBOARDING_COMPLETED
-                        is StripeAccountPendingRequirement -> CARD_READER_ONBOARDING_PENDING
-                        else -> CARD_READER_ONBOARDING_NOT_COMPLETED
-                    },
+                    status,
                     it.preferredPlugin,
+                    version
                 )
             }
     }
@@ -144,12 +148,17 @@ class CardReaderOnboardingChecker @Inject constructor(
         if (isStripeAccountPendingRequirements(paymentAccount)) return StripeAccountPendingRequirement(
             paymentAccount.currentDeadline,
             preferredPlugin.type,
+            preferredPlugin.info?.version,
             requireNotNull(countryCode)
         )
         if (isStripeAccountRejected(paymentAccount)) return StripeAccountRejected(preferredPlugin.type)
         if (isInUndefinedState(paymentAccount)) return GenericError
 
-        return OnboardingCompleted(preferredPlugin.type, requireNotNull(countryCode))
+        return OnboardingCompleted(
+            preferredPlugin.type,
+            preferredPlugin.info?.version,
+            requireNotNull(countryCode)
+        )
     }
 
     private fun saveStatementDescriptor(statementDescriptor: String?) {
@@ -233,17 +242,26 @@ class CardReaderOnboardingChecker @Inject constructor(
     private fun isInUndefinedState(paymentAccount: WCPaymentAccountResult): Boolean =
         paymentAccount.status != COMPLETE
 
-    private fun updateSharedPreferences(status: CardReaderOnboardingStatus, preferredPlugin: PluginType?) {
+    private fun updateSharedPreferences(
+        status: CardReaderOnboardingStatus,
+        preferredPlugin: PluginType?,
+        version: String?,
+    ) {
         val site = selectedSite.get()
-        appPrefsWrapper.setCardReaderOnboardingStatusAndPreferredPlugin(
+        appPrefsWrapper.setCardReaderOnboardingData(
             localSiteId = site.id,
             remoteSiteId = site.siteId,
             selfHostedSiteId = site.selfHostedSiteId,
-            status,
-            preferredPlugin,
+            PersistentOnboardingData(status, preferredPlugin, version),
         )
     }
 }
+
+data class PersistentOnboardingData(
+    val status: CardReaderOnboardingStatus,
+    val preferredPlugin: PluginType?,
+    val version: String?,
+)
 
 fun PluginType.toInPersonPaymentsPluginType(): InPersonPaymentsPluginType = when (this) {
     WOOCOMMERCE_PAYMENTS -> InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
@@ -260,8 +278,11 @@ enum class PluginType(val minSupportedVersion: String) {
 sealed class CardReaderOnboardingState(
     open val preferredPlugin: PluginType? = null
 ) {
-    data class OnboardingCompleted(override val preferredPlugin: PluginType, val countryCode: String) :
-        CardReaderOnboardingState()
+    data class OnboardingCompleted(
+        override val preferredPlugin: PluginType,
+        val version: String?,
+        val countryCode: String
+    ) : CardReaderOnboardingState()
 
     /**
      * Store is not located in one of the supported countries.
@@ -323,6 +344,7 @@ sealed class CardReaderOnboardingState(
     data class StripeAccountPendingRequirement(
         val dueDate: Long?,
         override val preferredPlugin: PluginType,
+        val version: String?,
         val countryCode: String,
     ) : CardReaderOnboardingState()
 

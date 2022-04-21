@@ -36,8 +36,10 @@ steps:
     command: |
       echo "--- 🧪 Testing"
       cp gradle.properties-example gradle.properties
-      ./gradlew testJalapenoDebug
-      ./gradlew lib:cardreader:testDebug
+      ./gradlew testJalapenoDebug lib:cardreader:testDebug
+      echo "--- ⚒️ Generating and uploading code coverage"
+      ./gradlew jacocoTestReport
+      .buildkite/commands/upload-code-coverage.sh
     plugins: *common_plugins
 
   - label: "Ensure Screenshot Tests Build"

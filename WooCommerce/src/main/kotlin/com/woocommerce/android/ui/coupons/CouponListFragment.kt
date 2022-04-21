@@ -1,9 +1,10 @@
 package com.woocommerce.android.ui.coupons
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.view.MenuItem.OnActionExpandListener
+import android.widget.SearchView.OnQueryTextListener
+import androidx.appcompat.widget.SearchView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
@@ -19,7 +20,7 @@ import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.COUPONS
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListEvent.NavigateToCouponSummaryEvent
+import com.woocommerce.android.ui.coupons.CouponListViewModel.NavigateToCouponDetailsEvent
 import com.woocommerce.android.ui.feedback.SurveyType
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -29,6 +30,8 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
         const val TAG: String = "CouponListFragment"
     }
 
+    private lateinit var searchMenuItem: MenuItem
+    private lateinit var searchView: SearchView
     private var _binding: FragmentCouponListBinding? = null
     private val binding get() = _binding!!
     private val feedbackState
@@ -42,6 +45,7 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        setHasOptionsMenu(true)
         _binding = FragmentCouponListBinding.inflate(inflater, container, false)
 
         val view = binding.root
@@ -63,11 +67,26 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
     }
 
     private fun setupObservers() {
-        viewModel.event.observe(viewLifecycleOwner) { event ->
-            when (event) {
-                is NavigateToCouponSummaryEvent -> navigateToCouponSummary(event.couponId)
+        viewModel.couponsState.observe(viewLifecycleOwner) { state ->
+            if (::searchMenuItem.isInitialized && state.isSearchOpen != searchMenuItem.isActionViewExpanded) {
+                if (state.isSearchOpen) searchMenuItem.expandActionView() else searchMenuItem.collapseActionView()
+            }
+            if (::searchView.isInitialized && state.isSearchOpen && state.searchQuery != searchView.query?.toString()) {
+                searchView.setQuery(state.searchQuery, false)
             }
         }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is NavigateToCouponDetailsEvent -> navigateToCouponDetails(event.couponId)
+            }
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.menu_search, menu)
+        searchMenuItem = menu.findItem(R.id.menu_search)
+        initSearch()
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -75,9 +94,52 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
         displayCouponsWIPCard(true)
     }
 
-    private fun navigateToCouponSummary(couponId: Long) {
+    private fun initSearch() {
+        searchView = searchMenuItem.actionView as SearchView
+        searchView.queryHint = getString(R.string.coupons_list_search_hint)
+        viewModel.couponsState.value?.let {
+            if (it.isSearchOpen) {
+                searchMenuItem.expandActionView()
+                searchView.setQuery(it.searchQuery, false)
+            } else {
+                searchMenuItem.collapseActionView()
+            }
+        }
+        searchMenuItem.setOnActionExpandListener(object : OnActionExpandListener {
+            override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+                if (isAdded) {
+                    viewModel.onSearchStateChanged(open = true)
+                }
+                return true
+            }
+
+            override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+                if (isAdded) {
+                    viewModel.onSearchStateChanged(open = false)
+                }
+                return true
+            }
+        })
+        searchView.setOnQueryTextListener(object : OnQueryTextListener, SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                if (isAdded) {
+                    viewModel.onSearchQueryChanged(query.orEmpty())
+                }
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if (isAdded) {
+                    viewModel.onSearchQueryChanged(newText.orEmpty())
+                }
+                return true
+            }
+        })
+    }
+
+    private fun navigateToCouponDetails(couponId: Long) {
         findNavController().navigateSafely(
-            CouponListFragmentDirections.actionCouponListFragmentToCouponSummaryFragment(couponId)
+            CouponListFragmentDirections.actionCouponListFragmentToCouponDetailsFragment(couponId)
         )
     }
 

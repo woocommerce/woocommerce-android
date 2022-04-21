@@ -1,28 +1,19 @@
 package com.woocommerce.android.util
 
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.viewmodel.ResourceProvider
-import java.lang.StringBuilder
 import java.math.BigDecimal
+import java.text.SimpleDateFormat
+import java.util.Date
 import javax.inject.Inject
 
 class CouponUtils @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val resourceProvider: ResourceProvider
 ) {
-    fun formatDiscount(
-        amount: BigDecimal?,
-        couponType: Coupon.Type?,
-        currencyCode: String?
-    ): String {
-        return when (couponType) {
-            Coupon.Type.Percent -> "$amount%"
-            else -> formatCurrency(amount, currencyCode)
-        }
-    }
-
-    private fun formatCurrency(amount: BigDecimal?, currencyCode: String?): String {
+    fun formatCurrency(amount: BigDecimal?, currencyCode: String?): String {
         return if (amount != null) {
             currencyCode?.let { currencyFormatter.formatCurrency(amount, it) }
                 ?: amount.toString()
@@ -31,13 +22,52 @@ class CouponUtils @Inject constructor(
         }
     }
 
+    fun generateSummary(coupon: Coupon, currencyCode: String?): String {
+        val amount = formatDiscount(coupon.amount, coupon.type, currencyCode)
+        val affectedArticles = formatAffectedArticles(
+            coupon.products.size,
+            coupon.excludedProducts.size,
+            coupon.categories.size,
+            coupon.excludedCategories.size
+        )
+        return resourceProvider.getString(R.string.coupon_summary_template, amount, affectedArticles)
+    }
+
+    fun localizeType(couponType: Coupon.Type): String = when (couponType) {
+        Coupon.Type.FixedCart -> resourceProvider.getString(R.string.coupon_type_fixed_cart)
+        Coupon.Type.FixedProduct -> resourceProvider.getString(R.string.coupon_type_fixed_product)
+        Coupon.Type.Percent -> resourceProvider.getString(R.string.coupon_type_percent)
+        is Coupon.Type.Custom -> resourceProvider.getString(R.string.coupon_type_custom, couponType.value)
+    }
+
+    fun formatMinimumSpendingInfo(minimumAmount: BigDecimal?, currencyCode: String?): String? {
+        if (minimumAmount == null || minimumAmount.isEqualTo(BigDecimal.ZERO)) return null
+        return resourceProvider.getString(
+            R.string.coupon_details_minimum_spend,
+            formatCurrency(minimumAmount, currencyCode)
+        )
+    }
+
+    fun formatMaximumSpendingInfo(maximumAmount: BigDecimal?, currencyCode: String?): String? {
+        if (maximumAmount == null || maximumAmount.isEqualTo(BigDecimal.ZERO)) return null
+        return resourceProvider.getString(
+            R.string.coupon_details_maximum_spend,
+            formatCurrency(maximumAmount, currencyCode)
+        )
+    }
+
+    fun formatExpirationDate(expirationDate: Date): String {
+        val dateFormat = SimpleDateFormat.getDateInstance(SimpleDateFormat.LONG)
+        return resourceProvider.getString(R.string.coupon_details_expiration_date, dateFormat.format(expirationDate))
+    }
+
     /*
     - When only specific products or categories are defined: Display "x products" or "x categories"
     - When specific products/categories and exceptions are defined: Display "x products excl. y categories" etc.
     - When both specific products and categories are defined: Display "x products and y categories"
     - When only exceptions are defined: Display "everything excl. x products" or "everything excl. y categories"
      */
-    fun formatAffectedArticles(
+    private fun formatAffectedArticles(
         includedProducts: Int,
         excludedProducts: Int,
         includedCategories: Int,
@@ -80,6 +110,57 @@ class CouponUtils @Inject constructor(
         }
     }
 
+    private fun formatDiscount(
+        amount: BigDecimal?,
+        couponType: Coupon.Type?,
+        currencyCode: String?
+    ): String {
+        return when (couponType) {
+            Coupon.Type.Percent -> "$amount%"
+            else -> formatCurrency(amount, currencyCode)
+        }
+    }
+
+    /*
+    - If all products are included: "Apply 15% off to all products with the promo code ABCDE"
+    - If only some products: "Apply 15% off to select products with the promo code ABCDE"
+     */
+    fun formatSharingMessage(
+        amount: BigDecimal?,
+        currencyCode: String?,
+        couponCode: String?,
+        includedProducts: Int,
+        excludedProducts: Int
+    ): String? {
+        return if (amount != null && currencyCode != null && couponCode != null) {
+            if (includedProducts == 0 && excludedProducts == 0) {
+                resourceProvider.getString(
+                    R.string.coupon_details_share_coupon_all,
+                    formatCurrency(amount, currencyCode),
+                    couponCode
+                )
+            } else {
+                resourceProvider.getString(
+                    R.string.coupon_details_share_coupon_some,
+                    formatCurrency(amount, currencyCode),
+                    couponCode
+                )
+            }
+        } else {
+            var params = ""
+            if (amount == null) params += "`amount` "
+            if (currencyCode == null) params += "`currencyCode` "
+            if (couponCode == null) params += "`couponCode`"
+
+            WooLog.e(
+                WooLog.T.COUPONS,
+                "Formatting coupon sharing message failed. null value found in $params"
+            )
+
+            null
+        }
+    }
+
     private fun formatProducts(products: Int): String {
         return if (products > 0) {
             StringUtils.getQuantityString(
@@ -100,33 +181,5 @@ class CouponUtils @Inject constructor(
                 one = R.string.category_count_one
             )
         } else ""
-    }
-
-    fun formatSpendingInfo(
-        minimumAmount: BigDecimal?,
-        maximumAmount: BigDecimal?,
-        currencyCode: String?
-    ): String {
-        val sb = StringBuilder()
-
-        if (minimumAmount != null) {
-            sb.append(
-                resourceProvider.getString(
-                    R.string.coupon_summary_minimum_spend,
-                    formatCurrency(minimumAmount, currencyCode)
-                )
-            )
-        }
-
-        if (maximumAmount != null) {
-            sb.append(
-                resourceProvider.getString(
-                    R.string.coupon_summary_maximum_spend,
-                    formatCurrency(maximumAmount, currencyCode)
-                )
-            )
-        }
-
-        return sb.toString()
     }
 }
