@@ -177,7 +177,7 @@ class PaymentChargeRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `given interac transaction, when fetching data, then card details returned`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val chargeId = "charge_id"
             whenever(appPrefs.getCardReaderPreferredPlugin(siteModel.id, siteModel.siteId, siteModel.selfHostedSiteId))
@@ -207,7 +207,7 @@ class PaymentChargeRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `given non-interac transaction, when fetching data, then card details returned`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val chargeId = "charge_id"
             whenever(appPrefs.getCardReaderPreferredPlugin(siteModel.id, siteModel.siteId, siteModel.selfHostedSiteId))
@@ -237,7 +237,7 @@ class PaymentChargeRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `given unknown transaction, when fetching data, then card details returned`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val chargeId = "charge_id"
             whenever(appPrefs.getCardReaderPreferredPlugin(siteModel.id, siteModel.siteId, siteModel.selfHostedSiteId))

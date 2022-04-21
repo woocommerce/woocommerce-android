@@ -39,7 +39,7 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
 
     @Test
     fun `when order is paid, then order is refundable`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val order = getOrder(
                 paymentStatus = Order.Status.Completed,
                 datePaid = Date()
@@ -52,7 +52,7 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
 
     @Test
     fun `when order not paid, then order is not refundable`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val order = getOrder(datePaid = null)
 
             val isRefundable = checker.isRefundable(order)
@@ -62,7 +62,7 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
 
     @Test
     fun `when total amount less than zero, then order is not refundable`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val order = getOrder(total = BigDecimal(-2))
 
             val isRefundable = checker.isRefundable(order)
@@ -72,7 +72,7 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
 
     @Test
     fun `when total amount equal to zero, then order is not refundable`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val order = getOrder(total = BigDecimal(0))
 
             val isRefundable = checker.isRefundable(order)
@@ -82,7 +82,7 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
 
     @Test
     fun `when total amount greater than zero, then order is refundable`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val order = getOrder(
                 datePaid = Date(),
                 total = BigDecimal(2)
@@ -94,7 +94,7 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
 
     @Test
     fun `when order has empty payment method, then order is refundable`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val order = getOrder(paymentMethod = "")
 
             val isRefundable = checker.isRefundable(order)
@@ -104,7 +104,7 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
 
     @Test
     fun `when order in supported country then it is refundable`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val order = getOrder(currency = "USD")
 
             val isRefundable = checker.isRefundable(order)
@@ -114,7 +114,7 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
 
     @Test
     fun `when order in not supported country then it is not refundable`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val order = getOrder(currency = "INR")
             whenever(
                 cardReaderPaymentCurrencySupportedChecker.isCurrencySupported("INR")
@@ -127,7 +127,7 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
 
     @Test
     fun `when order has no subscriptions items, then is refundable`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val order = getOrder()
             doReturn(false).whenever(repository).hasSubscriptionProducts(any())
 
@@ -138,7 +138,7 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
 
     @Test
     fun `when order has subscriptions items, then order is not refundable`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val order = getOrder()
             doReturn(true).whenever(repository).hasSubscriptionProducts(any())
 
@@ -149,7 +149,7 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
 
     @Test
     fun `when order has code payment method, then is refundable`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val order = getOrder(paymentMethod = "cod")
 
             val isRefundable = checker.isRefundable(order)
@@ -159,7 +159,7 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
 
     @Test
     fun `when order has non code payment method, then it is not refundable`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val order = getOrder(paymentMethod = "stripe")
 
             val isRefundable = checker.isRefundable(order)
@@ -169,7 +169,7 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
 
     @Test
     fun `when order has processing status, then is not refundable`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val order = getOrder(paymentStatus = Order.Status.Processing)
 
             val isRefundable = checker.isRefundable(order)
@@ -179,7 +179,7 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
 
     @Test
     fun `when order has on hold status, then is not refundable`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val order = getOrder(paymentStatus = Order.Status.OnHold)
 
             val isRefundable = checker.isRefundable(order)
@@ -189,7 +189,7 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
 
     @Test
     fun `when order has pending status, then is not refundable`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val order = getOrder(paymentStatus = Order.Status.Pending)
 
             val isRefundable = checker.isRefundable(order)
@@ -199,7 +199,7 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
 
     @Test
     fun `when order has refunded status, then is not refundable`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val order = getOrder(paymentStatus = Order.Status.Refunded)
 
             val isRefundable = checker.isRefundable(order)
@@ -209,7 +209,7 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
 
     @Test
     fun `when order has custom status, then is not refundable`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val order = getOrder(paymentStatus = Order.Status.Custom("custom"))
 
             val isRefundable = checker.isRefundable(order)
@@ -219,7 +219,7 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
 
     @Test
     fun `when order has failed status, then is not refundable`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val order = getOrder(paymentStatus = Order.Status.Failed)
 
             val isRefundable = checker.isRefundable(order)
@@ -229,7 +229,7 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
 
     @Test
     fun `when order has completed status, then is refundable`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val order = getOrder(paymentStatus = Order.Status.Completed)
 
             val isRefundable = checker.isRefundable(order)
@@ -239,7 +239,7 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
 
     @Test
     fun `when order has cancelled status, then is not refundable`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val order = getOrder(paymentStatus = Order.Status.Cancelled)
 
             val isRefundable = checker.isRefundable(order)
@@ -249,7 +249,7 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
 
     @Test
     fun `when order has been partially refunded, then is refundable`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val order = getOrder(
                 total = BigDecimal("50"),
                 refundTotal = 99
@@ -262,7 +262,7 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
 
     @Test
     fun `when order has "woocommerce_payments" payment method, then it is refundable`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val order = getOrder(paymentMethod = "woocommerce_payments")
 
@@ -275,7 +275,7 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
 
     @Test
     fun `when order has "wc-booking-gateway" payment method, then it is refundable`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val order = getOrder(paymentMethod = "wc-booking-gateway")
 
@@ -291,7 +291,7 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
      */
     @Test
     fun `given bookings order requires confirmation, when checking refundability, then it is refundable`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val order = getOrder(paymentMethod = "wc-booking-gateway")
 

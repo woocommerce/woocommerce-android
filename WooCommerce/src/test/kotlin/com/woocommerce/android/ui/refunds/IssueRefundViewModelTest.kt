@@ -166,7 +166,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given interac refund, when refund confirmed, then trigger card reader screen`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val chargeId = "charge_id"
             val cardBrand = "visa"
             val cardLast4 = "1234"
@@ -199,7 +199,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given IPP canada feature flag is disabled, when refund confirmed, then do not trigger card reader screen`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val chargeId = "charge_id"
             val cardBrand = "visa"
             val cardLast4 = "1234"
@@ -233,7 +233,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given non-interac refund, when refund confirmed, then do not trigger card reader screen`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val chargeId = "charge_id"
             val cardBrand = "visa"
             val cardLast4 = "1234"

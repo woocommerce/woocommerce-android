@@ -1955,7 +1955,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given interac refund shown, when RETRY message received, then refund payment hint updated`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             setupViewModelForInteracRefund()
             whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
                 flow {
@@ -1975,7 +1975,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given interac refund shown, when INSERT_CARD received, then refund payment hint updated`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             setupViewModelForInteracRefund()
             whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
                 flow {
@@ -1995,7 +1995,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given interac refund shown, when INSERT_OR_SWIPE_CARD received, then refund payment hint updated`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             setupViewModelForInteracRefund()
             whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
                 flow {
@@ -2015,7 +2015,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given interac refund shown, when SWIPE_CARD received, then refund payment hint updated`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             setupViewModelForInteracRefund()
             whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
                 flow {
@@ -2035,7 +2035,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given interac refund shown, when REMOVE_CARD received, then refund payment hint updated`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             setupViewModelForInteracRefund()
             whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
                 flow {
@@ -2055,7 +2055,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given interac refund, when MULTIPLE_CONTACTLESS_CARDS_DETECTED received, then refund payment hint updated`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             setupViewModelForInteracRefund()
             whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
                 flow {
@@ -2075,7 +2075,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given interac refund shown, when TRY_ANOTHER_READ_METHOD received, then refund payment hint updated`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             setupViewModelForInteracRefund()
             whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
                 flow {
@@ -2095,7 +2095,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given interac refund, when TRY_ANOTHER_CARD received, then refund payment hint updated`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             setupViewModelForInteracRefund()
             whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
                 flow {
@@ -2115,7 +2115,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given interac refund, when CHECK_MOBILE_DEVICE received, then refund payment hint updated`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             setupViewModelForInteracRefund()
             whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
                 flow {
@@ -2144,7 +2144,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when initializing interac refund, then ui updated to initializing refund state `() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             setupViewModelForInteracRefund()
             whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.InitializingInteracRefund) }
@@ -2157,7 +2157,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given fetch order failed, when initializing interac refund, then ui updated to proper error state `() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             setupViewModelForInteracRefund()
             whenever(orderRepository.fetchOrderById(ORDER_ID)).thenReturn(null)
 
@@ -2168,7 +2168,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when collecting interac refund, then ui updated to collecting refund state`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             setupViewModelForInteracRefund()
             whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.CollectingInteracRefund) }
@@ -2181,7 +2181,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when processing interac refund, then ui updated to processing refund state`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             setupViewModelForInteracRefund()
             whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.ProcessingInteracRefund) }
@@ -2194,7 +2194,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when interac refund completed, then ui updated to refund successful state`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             setupViewModelForInteracRefund()
             whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.InteracRefundSuccess) }
@@ -2207,7 +2207,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when interac refund fails, then ui updated to refund failed state`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             setupViewModelForInteracRefund()
             whenever(
                 interacRefundErrorMapper.mapRefundErrorToUiError(
@@ -2237,7 +2237,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given chargeId is null, when interac refund initiated, then proper state is shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             setupViewModelForInteracRefund()
             whenever(mockedOrder.chargeId).thenReturn(null)
             whenever(
@@ -2253,7 +2253,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given non retryable error, when interac refund initiated, then correct labels and illustration is shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             setupViewModelForInteracRefund()
             whenever(mockedOrder.chargeId).thenReturn(null)
             whenever(
@@ -2281,7 +2281,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given non retryable error, when interac refund initiated, then primary action is back press`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             setupViewModelForInteracRefund()
             whenever(mockedOrder.chargeId).thenReturn(null)
             whenever(
@@ -2299,7 +2299,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when collecting interac refund, then progress and buttons are hidden`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             setupViewModelForInteracRefund()
             whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.CollectingInteracRefund) }
@@ -2315,7 +2315,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when collecting interac refund, then correct labels and illustration is shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             setupViewModelForInteracRefund()
             whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.CollectingInteracRefund) }
@@ -2340,7 +2340,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when processing interac refund, then progress and buttons are hidden`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             setupViewModelForInteracRefund()
             whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.ProcessingInteracRefund) }
@@ -2356,7 +2356,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when processing interac refund, then correct labels and illustration is shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             setupViewModelForInteracRefund()
             whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.ProcessingInteracRefund) }
@@ -2381,7 +2381,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when interac refund fails, then progress and secondary button are hidden`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             setupViewModelForInteracRefund()
             whenever(
                 interacRefundErrorMapper.mapRefundErrorToUiError(
@@ -2413,7 +2413,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when interac refund fails, then correct labels, illustration and button are shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             setupViewModelForInteracRefund()
             whenever(
                 interacRefundErrorMapper.mapRefundErrorToUiError(
@@ -2455,7 +2455,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when interac refund fails of non retryable error, then correct labels, illustration and button are shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val nonRetryableError = CardDeclined.InvalidAccount
             setupViewModelForInteracRefund()
             whenever(
@@ -2496,7 +2496,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when interac refund succeeds, then correct labels, illustration and buttons are shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             setupViewModelForInteracRefund()
             whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.InteracRefundSuccess) }
@@ -2518,7 +2518,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given interac refund flow already started, when start() is invoked, then flow is not restarted`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             setupViewModelForInteracRefund()
             whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
                 flow<CardInteracRefundStatus> {}
@@ -2535,7 +2535,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given user clicks on retry, when interac refund fails, then refundInteracPayment invoked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             setupViewModelForInteracRefund()
             whenever(
                 interacRefundErrorMapper.mapRefundErrorToUiError(
