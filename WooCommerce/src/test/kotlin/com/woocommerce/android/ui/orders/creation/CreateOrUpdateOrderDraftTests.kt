@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.orders.creation
 
-import com.woocommerce.android.helpers.advanceTimeAndRun
+import com.woocommerce.android.util.advanceTimeAndRun
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus

@@ -1,7 +1,7 @@
 package com.woocommerce.android.tracker
 
 import app.cash.turbine.test
-import com.woocommerce.android.helpers.advanceTimeAndRun
+import com.woocommerce.android.util.advanceTimeAndRun
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.SendTelemetry.Result.NOT_SENT
 import com.woocommerce.android.tracker.SendTelemetry.Result.SENT

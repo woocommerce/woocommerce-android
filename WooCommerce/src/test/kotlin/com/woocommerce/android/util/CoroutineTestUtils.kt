@@ -1,4 +1,4 @@
-package com.woocommerce.android.helpers
+package com.woocommerce.android.util
 
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
