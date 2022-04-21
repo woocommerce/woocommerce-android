@@ -51,10 +51,6 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
     }
 
     private fun FragmentSettingsBetaBinding.bindCouponsToggle() {
-        if (!PackageUtils.isDebugBuild()) {
-            switchCouponsToggle.hide()
-            return
-        }
         switchCouponsToggle.isChecked = AppPrefs.isCouponsEnabled
         switchCouponsToggle.setOnCheckedChangeListener { switch, isChecked ->
             settingsListener?.onCouponsOptionChanged(isChecked)
