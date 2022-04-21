@@ -12,7 +12,6 @@ import com.woocommerce.android.util.WooLog.T
 import org.json.JSONObject
 import org.wordpress.android.fluxc.model.SiteModel
 import java.util.UUID
-import kotlin.collections.HashMap
 
 class AnalyticsTracker private constructor(private val context: Context) {
     private var tracksClient: TracksClient? = TracksClient.getClient(context)
@@ -317,6 +316,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_MORE_MENU_REVIEWS = "reviews"
         const val VALUE_MORE_MENU_INBOX = "inbox"
         const val VALUE_MORE_MENU_COUPONS = "coupons"
+
+        // -- Inbox note actions
+        const val KEY_INBOX_NOTE_ACTION = "action"
+        const val VALUE_INBOX_NOTE_ACTION_OPEN = "open"
+        const val VALUE_INBOX_NOTE_ACTION_DISMISS = "dismiss"
+        const val VALUE_INBOX_NOTE_ACTION_DISMISS_ALL = "dismiss_all"
 
         var sendUsageStats: Boolean = true
             set(value) {
