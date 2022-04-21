@@ -11,10 +11,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_ADDONS_BETA_FEATURES_SWITCH_TOGGLED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentSettingsBetaBinding
-import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
 import com.woocommerce.android.util.AnalyticsUtils
-import com.woocommerce.android.util.PackageUtils
 
 class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
     companion object {
