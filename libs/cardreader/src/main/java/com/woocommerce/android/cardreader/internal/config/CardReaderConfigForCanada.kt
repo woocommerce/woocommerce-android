@@ -11,5 +11,9 @@ object CardReaderConfigForCanada : CardReaderConfigForSupportedCountry(
         PaymentMethodType.CARD_PRESENT,
         PaymentMethodType.INTERAC_PRESENT
     ),
-    isStripeExtensionSupported = false
+    isStripeExtensionSupported = false,
+    minimumSupportedVersionWCPay = "4.0.0",
+    // Empty string is temporary here. As soon as support stripe extension in Canada,
+    // we replace this with the actual version.
+    minimumSupportedVersionStripeExtension = ""
 )

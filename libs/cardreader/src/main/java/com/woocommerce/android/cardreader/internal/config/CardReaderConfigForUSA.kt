@@ -8,5 +8,7 @@ object CardReaderConfigForUSA : CardReaderConfigForSupportedCountry(
     countryCode = "US",
     supportedReaders = listOf(SpecificReader.Chipper2X, SpecificReader.StripeM2),
     paymentMethodType = listOf(PaymentMethodType.CARD_PRESENT),
-    isStripeExtensionSupported = true
+    isStripeExtensionSupported = true,
+    minimumSupportedVersionWCPay = "3.2.1",
+    minimumSupportedVersionStripeExtension = "6.2.0"
 )
