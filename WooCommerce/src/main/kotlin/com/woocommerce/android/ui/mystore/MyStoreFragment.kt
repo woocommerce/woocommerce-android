@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.mystore
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.view.ViewGroup.LayoutParams
 import androidx.core.view.children
@@ -21,7 +23,11 @@ import com.woocommerce.android.R.attr
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentMyStoreBinding
-import com.woocommerce.android.extensions.*
+import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.scrollStartEvents
+import com.woocommerce.android.extensions.setClickableText
+import com.woocommerce.android.extensions.startHelpActivity
+import com.woocommerce.android.extensions.verticalOffsetChanges
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
@@ -32,7 +38,11 @@ import com.woocommerce.android.ui.mystore.MyStoreViewModel.OrderState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.TopPerformersViewState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.VisitorStatsViewState
-import com.woocommerce.android.util.*
+import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.util.WooAnimUtils
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
@@ -42,7 +52,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.NetworkUtils
-import java.util.*
+import java.util.Calendar
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -152,7 +162,9 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         viewModel.activeStatsGranularity.observe(viewLifecycleOwner) { activeGranularity ->
             if (tabLayout.getTabAt(tabLayout.selectedTabPosition)?.tag != activeGranularity) {
                 val index = StatsGranularity.values().indexOf(activeGranularity)
-                tabLayout.getTabAt(index)?.select()
+                Handler(Looper.getMainLooper()).postDelayed(
+                    { tabLayout.getTabAt(index)?.select() }, 300
+                )
             }
             binding.myStoreStats.loadDashboardStats(activeGranularity)
             binding.myStoreTopPerformers.onDateGranularityChanged(activeGranularity)
