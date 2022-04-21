@@ -1,10 +1,10 @@
 package com.woocommerce.android.tracker
 
 import app.cash.turbine.test
-import com.woocommerce.android.util.advanceTimeAndRun
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.SendTelemetry.Result.NOT_SENT
 import com.woocommerce.android.tracker.SendTelemetry.Result.SENT
+import com.woocommerce.android.util.advanceTimeAndRun
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow

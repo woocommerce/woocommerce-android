@@ -1,10 +1,10 @@
 package com.woocommerce.android.ui.orders.creation
 
-import com.woocommerce.android.util.advanceTimeAndRun
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus
 import com.woocommerce.android.util.InlineClassesAnswer
+import com.woocommerce.android.util.advanceTimeAndRun
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
