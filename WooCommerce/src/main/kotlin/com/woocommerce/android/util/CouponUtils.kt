@@ -73,7 +73,9 @@ class CouponUtils @Inject constructor(
     }
 
     fun formatRestrictedEmails(restrictedEmails: List<String>): String? {
-        return restrictedEmails.takeIf { it.isNotEmpty() }?.joinToString(", ")
+        return restrictedEmails.takeIf { it.isNotEmpty() }?.let { emails ->
+            resourceProvider.getString(R.string.coupon_details_restricted_emails, emails.joinToString(", "))
+        }
     }
 
     /*
