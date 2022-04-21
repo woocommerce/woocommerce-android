@@ -179,7 +179,6 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     ORDER_DETAIL_CREATE_SHIPPING_LABEL_BUTTON_TAPPED,
     ORDER_DETAIL_PAYMENT_LINK_SHARED,
 
-
     // - Order detail editing
     ORDER_DETAIL_EDIT_FLOW_STARTED,
     ORDER_DETAIL_EDIT_FLOW_COMPLETED,
