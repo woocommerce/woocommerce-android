@@ -131,7 +131,8 @@ private fun CouponListItem(
             )
             .padding(
                 horizontal = dimensionResource(id = R.dimen.major_100),
-                vertical = dimensionResource(id = R.dimen.minor_100)),
+                vertical = dimensionResource(id = R.dimen.minor_100)
+            ),
     ) {
         coupon.code?.let {
             Text(
@@ -167,11 +168,23 @@ private fun CouponListSkeleton() {
             item {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_50)),
-                    modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100), vertical = dimensionResource(id = R.dimen.minor_100))
+                    modifier = Modifier.padding(
+                        horizontal = dimensionResource(id = R.dimen.major_100),
+                        vertical = dimensionResource(id = R.dimen.minor_100)
+                    )
                 ) {
-                    SkeletonView(dimensionResource(id = R.dimen.skeleton_text_medium_width), dimensionResource(id = R.dimen.major_125))
-                    SkeletonView(dimensionResource(id = R.dimen.skeleton_text_large_width), dimensionResource(id = R.dimen.major_100))
-                    SkeletonView(dimensionResource(id = R.dimen.major_250), dimensionResource(id = R.dimen.major_125))
+                    SkeletonView(
+                        dimensionResource(id = R.dimen.skeleton_text_medium_width),
+                        dimensionResource(id = R.dimen.major_125)
+                    )
+                    SkeletonView(
+                        dimensionResource(id = R.dimen.skeleton_text_large_width),
+                        dimensionResource(id = R.dimen.major_100)
+                    )
+                    SkeletonView(
+                        dimensionResource(id = R.dimen.major_250),
+                        dimensionResource(id = R.dimen.major_125)
+                    )
                 }
                 Divider(
                     modifier = Modifier
@@ -199,7 +212,10 @@ private fun SearchEmptyList(searchQuery: String) {
             text = stringResource(id = R.string.empty_message_with_search, searchQuery),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.h6,
-            modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_150), end = dimensionResource(id = R.dimen.major_150))
+            modifier = Modifier.padding(
+                start = dimensionResource(id = R.dimen.major_150),
+                end = dimensionResource(id = R.dimen.major_150)
+            )
         )
         Spacer(Modifier.size(dimensionResource(id = R.dimen.major_325)))
         Image(
