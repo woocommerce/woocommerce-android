@@ -22,6 +22,7 @@ import com.woocommerce.android.R
 const val SKELETON_ANIMATION_ALPHA = 0.2F
 
 @Composable
+@SuppressWarnings("MagicNumber")
 fun skeletonAnimationBrush(): Brush {
     val transition = rememberInfiniteTransition()
     val translateAnim by transition.animateFloat(
