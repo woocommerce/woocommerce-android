@@ -14,7 +14,6 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -41,7 +40,6 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     private val refundStore: WCRefundStore = mock()
     private val currencyFormatter: CurrencyFormatter = mock()
     private val resourceProvider: ResourceProvider = mock {
-        on(it.getString(R.string.taxes)).thenAnswer { "Taxes" }
         on(it.getString(R.string.multiple_shipping)).thenAnswer { "Multiple shipping lines" }
         on(it.getString(R.string.and)).thenAnswer { "and" }
         on(it.getString(any(), any())).thenAnswer { i ->
@@ -82,8 +80,8 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when order has zero taxes and no shipping and fees, then refund notice is not visible`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `when order has no shipping, then refund notice is not visible`() {
+        testBlocking {
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(OrderTestUtils.generateOrder())
 
             initViewModel()
@@ -96,26 +94,10 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when order has taxes and no shipping and fees, then only the taxes are mentioned in the notice`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            val orderWithTax = OrderTestUtils.generateOrder().copy(totalTax = "4.00")
-            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithTax)
-
-            initViewModel()
-
-            var viewState: RefundByItemsViewState? = null
-            viewModel.refundByItemsStateLiveData.observeForever { _, new -> viewState = new }
-
-            assertTrue(viewState!!.isRefundNoticeVisible)
-            assertEquals("You can refund taxes", viewState!!.refundNotice)
-        }
-    }
-
-    @Test
-    fun `when order has one shipping and fees without taxes, then the notice not visible`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            val orderWithFeesAndShipping = OrderTestUtils.generateOrderWithFee()
-            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithFeesAndShipping)
+    fun `when order has one shipping, then the notice not visible`() {
+        testBlocking {
+            val orderWithShipping = OrderTestUtils.generateOrderWithOneShipping()
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithShipping)
 
             initViewModel()
 
@@ -127,24 +109,8 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when order has one shipping, and fees and taxes, then taxes are mentioned in the notice`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            val orderWithFeesAndShipping = OrderTestUtils.generateOrderWithFee().copy(totalTax = "4.00")
-            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithFeesAndShipping)
-
-            initViewModel()
-
-            var viewState: RefundByItemsViewState? = null
-            viewModel.refundByItemsStateLiveData.observeForever { _, new -> viewState = new }
-
-            assertTrue(viewState!!.isRefundNoticeVisible)
-            assertEquals("You can refund taxes", viewState!!.refundNotice)
-        }
-    }
-
-    @Test
     fun `when order has multiple shipping, multiple shipping are mentioned in the notice`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines()
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
 
@@ -160,7 +126,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given non cash order, when successfully charge data loaded, then card info is visible`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val chargeId = "charge_id"
             val cardBrand = "visa"
             val cardLast4 = "1234"
@@ -189,7 +155,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given non cash order, when charge data loaded with error, then card info is not visible`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val chargeId = "charge_id"
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
                 paymentMethod = "cod",
@@ -213,7 +179,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given non cash order and non charge id in order, when charge data loading, then card info is not visible`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
                 paymentMethod = "cod",
                 metaData = "[]"

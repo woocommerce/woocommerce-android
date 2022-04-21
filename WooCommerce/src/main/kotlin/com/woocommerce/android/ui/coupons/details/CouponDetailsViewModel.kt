@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CouponUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -65,7 +66,14 @@ class CouponDetailsViewModel @Inject constructor(
                     minimumSpending = couponUtils.formatMinimumSpendingInfo(coupon.minimumAmount, currencyCode),
                     maximumSpending = couponUtils.formatMaximumSpendingInfo(coupon.maximumAmount, currencyCode),
                     isActive = coupon.dateExpiresGmt?.after(Date()) ?: true,
-                    expiration = coupon.dateExpiresGmt?.let { couponUtils.formatExpirationDate(it) }
+                    expiration = coupon.dateExpiresGmt?.let { couponUtils.formatExpirationDate(it) },
+                    shareCodeMessage = couponUtils.formatSharingMessage(
+                        amount = coupon.amount,
+                        currencyCode = currencyCode,
+                        couponCode = coupon.code,
+                        includedProducts = coupon.products.size,
+                        excludedProducts = coupon.excludedProducts.size
+                    )
                 )
             }
     }
@@ -107,6 +115,20 @@ class CouponDetailsViewModel @Inject constructor(
         }
     }
 
+    fun onCopyButtonClick() {
+        couponState.value?.couponSummary?.code?.let {
+            triggerEvent(CopyCodeEvent(it))
+        }
+    }
+
+    fun onShareButtonClick() {
+        couponState.value?.couponSummary?.shareCodeMessage?.let {
+            triggerEvent(ShareCodeEvent(it))
+        } ?: run {
+            triggerEvent(ShowSnackbar(R.string.coupon_details_share_formatting_failure))
+        }
+    }
+
     data class CouponDetailsState(
         val isLoading: Boolean = false,
         val couponSummary: CouponSummaryUi? = null,
@@ -120,7 +142,8 @@ class CouponDetailsViewModel @Inject constructor(
         val discountType: String?,
         val minimumSpending: String?,
         val maximumSpending: String?,
-        val expiration: String?
+        val expiration: String?,
+        val shareCodeMessage: String?
     )
 
     data class CouponPerformanceUi(
@@ -138,4 +161,7 @@ class CouponDetailsViewModel @Inject constructor(
                 get() = data.ordersCount
         }
     }
+
+    data class CopyCodeEvent(val couponCode: String) : MultiLiveEvent.Event()
+    data class ShareCodeEvent(val shareCodeMessage: String) : MultiLiveEvent.Event()
 }

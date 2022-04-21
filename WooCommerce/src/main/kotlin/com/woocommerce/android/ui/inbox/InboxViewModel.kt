@@ -6,6 +6,18 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.INBOX_NOTES_LOADED
+import com.woocommerce.android.analytics.AnalyticsEvent.INBOX_NOTES_LOAD_FAILED
+import com.woocommerce.android.analytics.AnalyticsEvent.INBOX_NOTE_ACTION
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_CONTEXT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_TYPE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_INBOX_NOTE_ACTION
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IS_LOADING_MORE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_INBOX_NOTE_ACTION_DISMISS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_INBOX_NOTE_ACTION_DISMISS_ALL
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_INBOX_NOTE_ACTION_OPEN
 import com.woocommerce.android.ui.inbox.domain.InboxNote
 import com.woocommerce.android.ui.inbox.domain.InboxNote.NoteType.SURVEY
 import com.woocommerce.android.ui.inbox.domain.InboxNote.Status.ACTIONED
@@ -45,7 +57,36 @@ class InboxViewModel @Inject constructor(
         }
     }
 
+    private fun trackInboxNotesLoaded(result: Result<Unit>, isLoadingMore: Boolean = false) {
+        result.fold(
+            onSuccess = {
+                AnalyticsTracker.track(
+                    INBOX_NOTES_LOADED,
+                    mapOf(KEY_IS_LOADING_MORE to isLoadingMore.toString())
+                )
+            },
+            onFailure = {
+                AnalyticsTracker.track(
+                    INBOX_NOTES_LOAD_FAILED,
+                    mapOf(
+                        KEY_ERROR_CONTEXT to it::class.java.simpleName,
+                        KEY_ERROR_TYPE to it,
+                        KEY_ERROR_DESC to it.message
+                    )
+                )
+            }
+        )
+    }
+
+    private fun trackInboxNoteActionClicked(actionValue: String) {
+        AnalyticsTracker.track(
+            INBOX_NOTE_ACTION,
+            mapOf(KEY_INBOX_NOTE_ACTION to actionValue)
+        )
+    }
+
     fun dismissAllNotes() {
+        trackInboxNoteActionClicked(VALUE_INBOX_NOTE_ACTION_DISMISS_ALL)
         viewModelScope.launch {
             _inboxState.value = _inboxState.value?.copy(isLoading = true)
             inboxRepository
@@ -72,12 +113,12 @@ class InboxViewModel @Inject constructor(
     }
 
     private suspend fun refreshNotes() {
-        inboxRepository
-            .fetchInboxNotes()
-            .fold(
-                onFailure = { showSyncError() },
-                onSuccess = {}
-            )
+        val result = inboxRepository.fetchInboxNotes()
+        trackInboxNotesLoaded(result)
+        result.fold(
+            onFailure = { showSyncError() },
+            onSuccess = {}
+        )
     }
 
     private fun inboxNotesLocalUpdates() =
@@ -148,6 +189,7 @@ class InboxViewModel @Inject constructor(
     private fun handleInboxNoteAction(actionId: Long, noteId: Long) {
         val clickedNote = inboxState.value?.notes?.firstOrNull { noteId == it.id }
         clickedNote?.let {
+            trackInboxNoteActionClicked(VALUE_INBOX_NOTE_ACTION_OPEN)
             when {
                 it.isSurvey -> markSurveyAsAnswered(clickedNote.id, actionId)
                 else -> openActionUrl(clickedNote, actionId)
@@ -174,6 +216,7 @@ class InboxViewModel @Inject constructor(
     }
 
     private fun dismissNote(noteId: Long) {
+        trackInboxNoteActionClicked(VALUE_INBOX_NOTE_ACTION_DISMISS)
         viewModelScope.launch {
             inboxRepository
                 .dismissNote(noteId)

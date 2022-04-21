@@ -31,7 +31,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -183,7 +182,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays the product detail properties correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Displays the product detail properties correctly`() = testBlocking {
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
         var cards: List<ProductPropertyCard>? = null
@@ -197,7 +196,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Display success message on add product success`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Display success message on add product success`() = testBlocking {
         // given
         doReturn(product).whenever(productRepository).getProductAsync(any())
         doReturn(Pair(true, 1L)).whenever(productRepository).addProduct(any())
@@ -230,7 +229,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Display error message on add product failed`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Display error message on add product failed`() = testBlocking {
         // given
         doReturn(Pair(false, 0L)).whenever(productRepository).addProduct(any())
 
@@ -256,7 +255,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Display error message on add product for NO network`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Display error message on add product for NO network`() = testBlocking {
         // given
         doReturn(false).whenever(networkStatus).isConnected()
 
@@ -283,7 +282,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
     @Test
     fun `Display correct message on updating a freshly added product`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // given
             doReturn(product).whenever(productRepository).getProductAsync(any())
             doReturn(Pair(true, 1L)).whenever(productRepository).addProduct(any())

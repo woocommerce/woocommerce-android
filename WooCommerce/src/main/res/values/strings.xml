@@ -1006,6 +1006,9 @@
     <string name="card_reader_connect_missing_permissions_header">Missing required precise location permission</string>
     <string name="card_reader_connect_location_provider_disabled_header">Location is disabled</string>
     <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth is disabled</string>
+    <string name="card_reader_connect_permission_rationale_header">Location Access Required</string>
+    <string name="card_reader_connect_permission_rationale_hint">Card reader payments require precise location permission</string>
+    <string name="card_reader_connect_permission_rationale_action" translatable="false">@string/continue_button</string>
     <string name="card_reader_connect_open_permission_settings">Open settings</string>
     <string name="card_reader_connect_open_location_settings">Open settings</string>
     <string name="card_reader_connect_open_bluetooth_settings">Turn on bluetooth</string>
@@ -1898,6 +1901,14 @@
     <string name="coupon_summary_loading_failure">Loading coupon summary failed</string>
     <string name="coupon_beta_features_heading">Coupons Management</string>
     <string name="coupon_beta_features_subheading">Test out managing coupons in the app</string>
+    <string name="coupon_details_copy_clipboard_label">Coupon Code</string>
+    <string name="coupon_details_copy_success">Coupon code copied to clipboard.</string>
+    <string name="coupon_details_copy_error">Error copying coupon code to clipboard.</string>
+    <string name="coupon_details_share_coupon_all">Apply %1$s off to all products with the promo code %2$s</string>
+    <string name="coupon_details_share_coupon_some">Apply %1$s off to select products with the promo code %2$s</string>
+    <string name="coupon_details_share_coupon_error">Error sharing coupon code.</string>
+    <string name="coupon_details_share_formatting_failure">Unable to generate coupon code sharing message</string>
+    <string name="coupons_list_search_hint">Search coupons</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>
