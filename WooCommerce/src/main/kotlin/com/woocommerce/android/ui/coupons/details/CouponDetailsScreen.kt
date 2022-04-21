@@ -93,7 +93,6 @@ fun CouponDetailsScreen(
             }
         )
 
-
         state.couponSummary?.let { coupon ->
             CouponSummaryHeading(
                 code = coupon.code,
@@ -135,7 +134,6 @@ fun CouponDetailsScreen(
         }
     }
 }
-
 
 @Composable
 fun CouponSummaryHeading(
