@@ -157,7 +157,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         setupStateObservers()
     }
 
-    @Suppress("ComplexMethod")
+    @Suppress("ComplexMethod", "MagicNumber")
     private fun setupStateObservers() {
         viewModel.activeStatsGranularity.observe(viewLifecycleOwner) { activeGranularity ->
             if (tabLayout.getTabAt(tabLayout.selectedTabPosition)?.tag != activeGranularity) {
