@@ -144,7 +144,7 @@ fun String?.parseFromIso8601DateFormat(locale: Locale = Locale.getDefault()): Da
  * Method to convert month string from yyyy-MM-dd'T'hh:mm:ss format to Date object
  */
 @Throws(IllegalArgumentException::class)
-fun String?.parseGMTDateFromIso8601DateFormat(locale: Locale = Locale.getDefault()): Date? {
+fun String?.parseGmtDateFromIso8601DateFormat(locale: Locale = Locale.getDefault()): Date? {
     return try {
         if (!this.isNullOrEmpty()) {
             val originalFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", locale).apply {

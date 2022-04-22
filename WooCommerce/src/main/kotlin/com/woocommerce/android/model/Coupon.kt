@@ -1,6 +1,6 @@
 package com.woocommerce.android.model
 
-import com.woocommerce.android.extensions.parseGMTDateFromIso8601DateFormat
+import com.woocommerce.android.extensions.parseGmtDateFromIso8601DateFormat
 import org.wordpress.android.fluxc.persistence.entity.CouponDataModel
 import java.math.BigDecimal
 import java.util.Date
@@ -55,11 +55,11 @@ fun CouponDataModel.toAppModel() = Coupon(
     id = coupon.id,
     code = coupon.code,
     amount = coupon.amount?.toBigDecimalOrNull(),
-    dateCreatedGmt = coupon.dateCreatedGmt.parseGMTDateFromIso8601DateFormat(),
-    dateModifiedGmt = coupon.dateModifiedGmt.parseGMTDateFromIso8601DateFormat(),
+    dateCreatedGmt = coupon.dateCreatedGmt.parseGmtDateFromIso8601DateFormat(),
+    dateModifiedGmt = coupon.dateModifiedGmt.parseGmtDateFromIso8601DateFormat(),
     type = coupon.discountType?.let { Coupon.Type.fromString(it) },
     description = coupon.description,
-    dateExpiresGmt = coupon.dateExpiresGmt.parseGMTDateFromIso8601DateFormat(),
+    dateExpiresGmt = coupon.dateExpiresGmt.parseGmtDateFromIso8601DateFormat(),
     usageCount = coupon.usageCount,
     isForIndividualUse = coupon.isForIndividualUse,
     usageLimit = coupon.usageLimit,
