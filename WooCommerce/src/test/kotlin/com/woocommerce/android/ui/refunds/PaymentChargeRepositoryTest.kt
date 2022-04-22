@@ -315,4 +315,34 @@ class PaymentChargeRepositoryTest : BaseUnitTest() {
             )
         }
     }
+
+    @Test
+    fun `given missing active plugin, when fetching one with success wcpay, then returned plugin is used`() {
+        testBlocking {
+            // GIVEN
+            val chargeId = "charge_id"
+            whenever(appPrefs.getCardReaderPreferredPlugin(siteModel.id, siteModel.siteId, siteModel.selfHostedSiteId))
+                .thenReturn(null)
+            whenever(cardReaderOnboardingChecker.fetchPreferredPlugin()).thenReturn(
+                PreferredPluginResult.Success(PluginType.WOOCOMMERCE_PAYMENTS)
+            )
+            whenever(
+                ippStore.fetchPaymentCharge(
+                    WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS,
+                    siteModel,
+                    chargeId
+                )
+            ).thenReturn(WooPayload(apiResult))
+
+            // WHEN
+            repo.fetchCardDataUsedForOrderPayment(chargeId)
+
+            // THEN
+            verify(ippStore).fetchPaymentCharge(
+                WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS,
+                siteModel,
+                chargeId
+            )
+        }
+    }
 }
