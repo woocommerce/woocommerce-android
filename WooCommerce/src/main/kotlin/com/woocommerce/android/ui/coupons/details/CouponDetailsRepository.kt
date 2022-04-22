@@ -5,6 +5,7 @@ import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.CouponPerformanceReport
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
@@ -33,6 +34,23 @@ class CouponDetailsRepository @Inject constructor(
         return when {
             result.isError -> Result.failure(WooException(result.error))
             else -> Result.success(result.model!!.toAppModel())
+        }
+    }
+
+    suspend fun deleteCoupon(couponId: Long): Boolean {
+        val result = store.deleteCoupon(
+            site = selectedSite.get(),
+            couponId = couponId
+        )
+
+        return if (result.isError) {
+            WooLog.e(
+                tag = WooLog.T.COUPONS,
+                message = "Coupon deletion failed: ${result.error.message}"
+            )
+            false
+        } else {
+            true
         }
     }
 }
