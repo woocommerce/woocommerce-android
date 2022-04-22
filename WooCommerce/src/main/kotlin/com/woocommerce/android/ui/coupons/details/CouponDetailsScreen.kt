@@ -68,18 +68,16 @@ fun CouponDetailsScreen(
                     expanded = showMenu,
                     onDismissRequest = { showMenu = false }
                 ) {
-                    val onCopyClicked = {
+                    DropdownMenuItem(onClick = {
                         onCopyButtonClick()
                         showMenu = false
-                    }
-                    val onShareClicked = {
-                        onShareButtonClick()
-                        showMenu = false
-                    }
-                    DropdownMenuItem(onClick = onCopyClicked) {
+                    }) {
                         Text(stringResource(id = R.string.coupon_details_menu_copy))
                     }
-                    DropdownMenuItem(onClick = onShareClicked) {
+                    DropdownMenuItem(onClick = {
+                        onShareButtonClick()
+                        showMenu = false
+                    }) {
                         Text(stringResource(id = R.string.coupon_details_menu_share))
                     }
                 }
