@@ -6,7 +6,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.copyToClipboard
@@ -20,7 +19,6 @@ class WooLogViewerActivity : ComponentActivity() {
             WooThemeWithBackground {
                 WooLogViewerScreen(
                     WooLog.logEntries,
-                    isDarkThemeActive = AppThemeUtils.isDarkThemeActive(this@WooLogViewerActivity),
                     onBackPress = { onBackPressed() },
                     onCopyButtonClick = { copyAppLogToClipboard() },
                     onShareButtonClick = { shareAppLog() }

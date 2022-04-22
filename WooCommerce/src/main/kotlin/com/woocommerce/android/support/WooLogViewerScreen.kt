@@ -24,18 +24,13 @@ import com.woocommerce.android.util.WooLog
 import java.lang.String.format
 import java.util.*
 
-private var isDarkTheme: Boolean = false
-
 @Composable
 fun WooLogViewerScreen(
     entries: RollingLogEntries,
-    isDarkThemeActive: Boolean,
     onBackPress: () -> Unit,
     onCopyButtonClick: () -> Unit,
     onShareButtonClick: () -> Unit
 ) {
-    isDarkTheme = isDarkThemeActive
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -120,16 +115,12 @@ fun LogViewerEntry(index: Int, entry: RollingLogEntries.LogEntry) {
 
 @ColorRes
 private fun logLevelColor(level: WooLog.LogLevel): Int {
-    return if (isDarkTheme) {
-        R.color.white
-    } else {
-        when (level) {
-            WooLog.LogLevel.v -> R.color.grey
-            WooLog.LogLevel.d -> R.color.blue_50
-            WooLog.LogLevel.i -> R.color.woo_black
-            WooLog.LogLevel.w -> R.color.woo_purple_50
-            WooLog.LogLevel.e -> R.color.woo_red_50
-        }
+    return when (level) {
+        WooLog.LogLevel.v -> R.color.log_text_verbose
+        WooLog.LogLevel.d -> R.color.log_text_debug
+        WooLog.LogLevel.i -> R.color.log_text_info
+        WooLog.LogLevel.w -> R.color.log_text_warning
+        WooLog.LogLevel.e -> R.color.log_text_error
     }
 }
 
@@ -156,7 +147,6 @@ fun WooLogViewerScreenPreview() {
     }
     WooLogViewerScreen(
         entries,
-        isDarkThemeActive = false,
         onBackPress = {},
         onShareButtonClick = {},
         onCopyButtonClick = {}
