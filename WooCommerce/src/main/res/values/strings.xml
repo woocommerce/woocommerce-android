@@ -1910,7 +1910,11 @@
     <string name="coupon_details_share_formatting_failure">Unable to generate coupon code sharing message</string>
     <string name="coupons_list_search_hint">Search coupons</string>
     <string name="coupon_details_usage_limit_per_user_multiple">%1$d uses per user</string>
-    <string name="coupon_details_usage_limit_per_user_single">1 use per user</string>
+    <string name="coupon_details_usage_limit_per_user_single">%1$d use per user</string>
+    <string name="coupon_details_usage_limit_per_coupon_multiple">Can be used %1$d times</string>
+    <string name="coupon_details_usage_limit_per_coupon_single">Can be used %1$d time</string>
+    <string name="coupon_details_usage_limit_per_items_multiple">Limited to %1$d items in cart</string>
+    <string name="coupon_details_usage_limit_per_items_single">Limited to %1$d item in cart</string>
     <string name="coupon_details_individual_use_only">Individual use only</string>
     <string name="coupon_details_allows_free_shipping">Allows free shipping</string>
     <string name="coupon_details_excludes_sale_items">Excludes sale items</string>

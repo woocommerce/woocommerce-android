@@ -152,7 +152,9 @@ fun CouponSummarySection(couponSummary: CouponSummaryUi) {
             }
             SummaryLabel(couponSummary.minimumSpending)
             SummaryLabel(couponSummary.maximumSpending)
+            SummaryLabel(couponSummary.usageLimitPerCoupon)
             SummaryLabel(couponSummary.usageLimitPerUser)
+            SummaryLabel(couponSummary.usageLimitPerItems)
             SummaryLabel(couponSummary.expiration)
             SummaryLabel(couponSummary.emailRestrictions)
         }

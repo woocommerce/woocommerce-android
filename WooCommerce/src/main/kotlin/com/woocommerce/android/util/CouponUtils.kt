@@ -61,15 +61,31 @@ class CouponUtils @Inject constructor(
         return resourceProvider.getString(R.string.coupon_details_expiration_date, dateFormat.format(expirationDate))
     }
 
-    fun formatUsageLimitPerUser(usageLimitPerUser: Int?): String? {
-        return usageLimitPerUser?.takeIf { it > 0 }?.let {
-            StringUtils.getQuantityString(
-                resourceProvider = resourceProvider,
-                quantity = it,
-                default = R.string.coupon_details_usage_limit_per_user_multiple,
-                one = R.string.coupon_details_usage_limit_per_user_single
-            )
-        }
+    fun formatUsageLimitPerUser(usageLimitPerUser: Int?) = usageLimitPerUser?.takeIf { it > 0 }?.let {
+        StringUtils.getQuantityString(
+            resourceProvider = resourceProvider,
+            quantity = it,
+            default = R.string.coupon_details_usage_limit_per_user_multiple,
+            one = R.string.coupon_details_usage_limit_per_user_single
+        )
+    }
+
+    fun formatUsageLimitPerCoupon(usageLimit: Int?) = usageLimit?.takeIf { it > 0 }?.let {
+        StringUtils.getQuantityString(
+            resourceProvider = resourceProvider,
+            quantity = it,
+            default = R.string.coupon_details_usage_limit_per_coupon_multiple,
+            one = R.string.coupon_details_usage_limit_per_coupon_single
+        )
+    }
+
+    fun formatUsageLimitPerItems(usageLimit: Int?) = usageLimit?.takeIf { it > 0 }?.let {
+        StringUtils.getQuantityString(
+            resourceProvider = resourceProvider,
+            quantity = it,
+            default = R.string.coupon_details_usage_limit_per_items_multiple,
+            one = R.string.coupon_details_usage_limit_per_items_single
+        )
     }
 
     fun formatRestrictedEmails(restrictedEmails: List<String>): String? {

@@ -70,6 +70,8 @@ class CouponDetailsViewModel @Inject constructor(
                     minimumSpending = couponUtils.formatMinimumSpendingInfo(coupon.minimumAmount, currencyCode),
                     maximumSpending = couponUtils.formatMaximumSpendingInfo(coupon.maximumAmount, currencyCode),
                     usageLimitPerUser = couponUtils.formatUsageLimitPerUser(coupon.usageLimitPerUser),
+                    usageLimitPerCoupon = couponUtils.formatUsageLimitPerCoupon(coupon.usageLimit),
+                    usageLimitPerItems = couponUtils.formatUsageLimitPerItems(coupon.limitUsageToXItems),
                     expiration = coupon.dateExpiresGmt?.let { couponUtils.formatExpirationDate(it) },
                     emailRestrictions = couponUtils.formatRestrictedEmails(coupon.restrictedEmails)
                 )
@@ -152,6 +154,8 @@ class CouponDetailsViewModel @Inject constructor(
         val minimumSpending: String?,
         val maximumSpending: String?,
         val usageLimitPerUser: String?,
+        val usageLimitPerCoupon: String?,
+        val usageLimitPerItems: String?,
         val expiration: String?,
         val emailRestrictions: String?
     )
