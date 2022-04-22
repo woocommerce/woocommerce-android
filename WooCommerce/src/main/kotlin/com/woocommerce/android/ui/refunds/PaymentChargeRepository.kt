@@ -15,27 +15,13 @@ class PaymentChargeRepository @Inject constructor(
     private val appPrefs: AppPrefs,
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
 ) {
-    private val activePlugin: WCInPersonPaymentsStore.InPersonPaymentsPluginType?
-        get() = appPrefs.getCardReaderPreferredPlugin(
-            selectedSite.get().id,
-            selectedSite.get().siteId,
-            selectedSite.get().selfHostedSiteId
-        )?.toInPersonPaymentsPluginType()
-            ?: null.also { WooLog.e(WooLog.T.ORDERS, "Active Payment Plugin is not set") }
-
     suspend fun fetchCardDataUsedForOrderPayment(chargeId: String): CardDataUsedForOrderPaymentResult {
-        val plugin = if (activePlugin == null) {
-            when (val prefferedPluginResult = cardReaderOnboardingChecker.fetchPreferredPlugin()) {
-                is PreferredPluginResult.Success -> prefferedPluginResult.type.toInPersonPaymentsPluginType()
-                else -> null
-            }
-        } else {
-            activePlugin
-        }
+        val activePlugin = getActivePlugin()
 
-        return if (plugin == null) CardDataUsedForOrderPaymentResult.Error
-        else {
-            val result = ippStore.fetchPaymentCharge(plugin, selectedSite.get(), chargeId)
+        return if (activePlugin == null) {
+            CardDataUsedForOrderPaymentResult.Error
+        } else {
+            val result = ippStore.fetchPaymentCharge(activePlugin, selectedSite.get(), chargeId)
             if (result.isError) {
                 WooLog.e(WooLog.T.ORDERS, "Could not fetch charge - ${result.error.message}")
                 CardDataUsedForOrderPaymentResult.Error
@@ -66,6 +52,19 @@ class PaymentChargeRepository @Inject constructor(
             }
         }
     }
+
+    private suspend fun getActivePlugin() =
+        appPrefs.getCardReaderPreferredPlugin(
+            selectedSite.get().id,
+            selectedSite.get().siteId,
+            selectedSite.get().selfHostedSiteId
+        )?.toInPersonPaymentsPluginType() ?: fetchPreferredPlugin()
+
+    private suspend fun fetchPreferredPlugin() =
+        when (val prefferedPluginResult = cardReaderOnboardingChecker.fetchPreferredPlugin()) {
+            is PreferredPluginResult.Success -> prefferedPluginResult.type.toInPersonPaymentsPluginType()
+            else -> null
+        }
 
     sealed class CardDataUsedForOrderPaymentResult {
         object Error : CardDataUsedForOrderPaymentResult()
