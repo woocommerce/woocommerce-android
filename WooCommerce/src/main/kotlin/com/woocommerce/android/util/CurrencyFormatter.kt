@@ -81,6 +81,7 @@ class CurrencyFormatter @Inject constructor(
         var currentDelay = BACKOFF_INITIAL_DELAY
 
         repeat(BACKOFF_INTENTS) {
+            @Suppress("SwallowedException,TooGenericExceptionCaught")
             try {
                 val settings = wcStore.fetchSiteGeneralSettings(site).model!!
                 return settings.currencyCode
