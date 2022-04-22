@@ -32,9 +32,7 @@ class CurrencyFormatter @Inject constructor(
         private const val ONE_THOUSAND = 1000
         private const val ONE_MILLION = 1000000
 
-        private const val BACKOFF_INITIAL_DELAY = 1_000L
-        private const val BACKOFF_MAX_DELAY = 10_000L
-        private const val BACKOFF_FACTOR = 1.5
+        private const val BACKOFF_DELAY = 1_000L
         private const val BACKOFF_INTENTS = 20
 
         // Formats the value to two decimal places
@@ -74,23 +72,22 @@ class CurrencyFormatter @Inject constructor(
         }
     }
 
-    @Suppress("Detekt.SwallowedException", "Detekt.TooGenericExceptionCaught", "Detekt.ReturnCount")
     private suspend fun getCurrencyCode(site: SiteModel): String {
         val localSettings = wcStore.getSiteSettings(site)
         if (localSettings != null) return localSettings.currencyCode
 
-        var currentDelay = BACKOFF_INITIAL_DELAY
-
-        repeat(BACKOFF_INTENTS) {
-            try {
-                val settings = wcStore.fetchSiteGeneralSettings(site).model!!
-                return settings.currencyCode
-            } catch (e: NullPointerException) {
-                delay(currentDelay)
-                currentDelay = (currentDelay * BACKOFF_FACTOR).toLong().coerceAtMost(BACKOFF_MAX_DELAY)
+        var currentDelay = BACKOFF_DELAY
+        var currencyCode = ""
+        for (i in 0 until BACKOFF_INTENTS) {
+            val settings = wcStore.fetchSiteGeneralSettings(site).model
+            if (settings != null) {
+                currencyCode = settings.currencyCode
+                break
             }
+            delay(currentDelay)
+            currentDelay = (currentDelay * i)
         }
-        return ""
+        return currencyCode
     }
 
     /**
