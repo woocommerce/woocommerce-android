@@ -107,6 +107,9 @@ fun CouponDetailsScreen(
         if (showDeleteDialog) {
             AlertDialog(
                 onDismissRequest = { showDeleteDialog = false },
+                title = {
+                    Text(stringResource(id = R.string.coupon_details_delete))
+                },
                 text = {
                     Text(stringResource(id = R.string.coupon_details_delete_confirmation))
                 },
@@ -115,7 +118,7 @@ fun CouponDetailsScreen(
                         onClick = { showDeleteDialog = false }
                     ) {
                         Text(
-                            stringResource(id = R.string.coupon_details_delete).uppercase(),
+                            stringResource(id = R.string.delete).uppercase(),
                             color = MaterialTheme.colors.secondary
                         )
                     }
