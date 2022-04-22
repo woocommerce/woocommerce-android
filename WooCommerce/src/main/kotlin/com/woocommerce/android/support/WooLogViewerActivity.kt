@@ -19,9 +19,9 @@ class WooLogViewerActivity : ComponentActivity() {
             WooThemeWithBackground {
                 WooLogViewerScreen(
                     WooLog.logEntries,
-                    onBackPress = { onBackPressed() },
-                    onCopyButtonClick = { copyAppLogToClipboard() },
-                    onShareButtonClick = { shareAppLog() }
+                    onBackPress = ::onBackPressed,
+                    onCopyButtonClick = ::copyAppLogToClipboard,
+                    onShareButtonClick = ::shareAppLog
                 )
             }
         }
