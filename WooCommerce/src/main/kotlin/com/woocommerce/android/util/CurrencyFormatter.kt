@@ -74,6 +74,7 @@ class CurrencyFormatter @Inject constructor(
         }
     }
 
+    @Suppress("Detekt.SwallowedException", "Detekt.TooGenericExceptionCaught", "Detekt.ReturnCount")
     private suspend fun getCurrencyCode(site: SiteModel): String {
         val localSettings = wcStore.getSiteSettings(site)
         if (localSettings != null) return localSettings.currencyCode
@@ -81,7 +82,6 @@ class CurrencyFormatter @Inject constructor(
         var currentDelay = BACKOFF_INITIAL_DELAY
 
         repeat(BACKOFF_INTENTS) {
-            @Suppress("SwallowedException,TooGenericExceptionCaught")
             try {
                 val settings = wcStore.fetchSiteGeneralSettings(site).model!!
                 return settings.currencyCode
