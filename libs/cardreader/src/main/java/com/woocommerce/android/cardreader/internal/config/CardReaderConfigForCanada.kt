@@ -11,7 +11,6 @@ object CardReaderConfigForCanada : CardReaderConfigForSupportedCountry(
         PaymentMethodType.CARD_PRESENT,
         PaymentMethodType.INTERAC_PRESENT
     ),
-    isStripeExtensionSupported = false,
     supportedExtensions = listOf(
         SupportedExtension(
             type = SupportedExtensionType.WC_PAY,
