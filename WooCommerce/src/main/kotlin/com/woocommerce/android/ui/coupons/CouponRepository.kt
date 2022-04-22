@@ -114,4 +114,21 @@ class CouponRepository @Inject constructor(
                 }
             }
     }
+
+    suspend fun deleteCoupon(couponId: Long): Boolean {
+        val result = store.deleteCoupon(
+            site = site.get(),
+            couponId = couponId
+        )
+
+        return if (result.isError) {
+            WooLog.e(
+                tag = WooLog.T.COUPONS,
+                message = "Coupon deletion failed: ${result.error.message}"
+            )
+            false
+        } else {
+            true
+        }
+    }
 }
