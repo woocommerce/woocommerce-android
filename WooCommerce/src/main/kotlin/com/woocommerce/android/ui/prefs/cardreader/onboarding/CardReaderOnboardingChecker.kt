@@ -8,6 +8,7 @@ import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_O
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForSupportedCountry
+import com.woocommerce.android.cardreader.internal.config.SupportedExtensionType
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -119,21 +120,21 @@ class CardReaderOnboardingChecker @Inject constructor(
 
         if (isBothPluginsActivated(wcPayPluginInfo, stripePluginInfo)) return WcpayAndStripeActivated
 
-        val preferredPlugin = getPreferredPlugin(stripePluginInfo, wcPayPluginInfo, cardReaderConfig)
+        val preferredPlugin = getPreferredPlugin(stripePluginInfo, wcPayPluginInfo)
 
         if (!isPluginInstalled(preferredPlugin)) when (preferredPlugin.type) {
             WOOCOMMERCE_PAYMENTS -> return WcpayNotInstalled
             STRIPE_EXTENSION_GATEWAY -> throw IllegalStateException("Developer error:`preferredPlugin` should be WCPay")
         }
 
-        if (
-            preferredPlugin.type == STRIPE_EXTENSION_GATEWAY &&
-            !cardReaderConfig.isStripeExtensionSupported
-        ) return PluginIsNotSupportedInTheCountry(preferredPlugin.type, countryCode!!)
+        if (preferredPlugin.type == STRIPE_EXTENSION_GATEWAY && !cardReaderConfig.isStripeExtensionSupported)
+            return PluginIsNotSupportedInTheCountry(preferredPlugin.type, countryCode!!)
 
-        if (!isPluginVersionSupported(preferredPlugin)) return PluginUnsupportedVersion(
-            preferredPlugin.type
-        )
+        if (!isPluginVersionSupported(
+                preferredPlugin,
+                getMinimumSupportedVersionForPlugin(preferredPlugin.type, cardReaderConfig)
+            )
+        ) return PluginUnsupportedVersion(preferredPlugin.type)
 
         if (!isPluginActivated(preferredPlugin.info)) when (preferredPlugin.type) {
             WOOCOMMERCE_PAYMENTS -> return WcpayNotActivated
@@ -175,6 +176,24 @@ class CardReaderOnboardingChecker @Inject constructor(
         )
     }
 
+    private fun getMinimumSupportedVersionForPlugin(
+        preferredPluginType: PluginType,
+        cardReaderConfig: CardReaderConfigForSupportedCountry
+    ): String {
+        return when (preferredPluginType) {
+            WOOCOMMERCE_PAYMENTS -> {
+                cardReaderConfig.supportedExtensions.first {
+                    it.type == SupportedExtensionType.WC_PAY
+                }.supportedSince
+            }
+            STRIPE_EXTENSION_GATEWAY -> {
+                cardReaderConfig.supportedExtensions.firstOrNull {
+                    it.type == SupportedExtensionType.STRIPE
+                }?.supportedSince ?: ""
+            }
+        }
+    }
+
     private fun saveStatementDescriptor(statementDescriptor: String?) {
         val site = selectedSite.get()
         appPrefsWrapper.setCardReaderStatementDescriptor(
@@ -195,7 +214,6 @@ class CardReaderOnboardingChecker @Inject constructor(
     private fun getPreferredPlugin(
         stripePluginInfo: SitePluginModel?,
         wcPayPluginInfo: SitePluginModel?,
-        cardReaderConfig: CardReaderConfigForSupportedCountry
     ): PluginWrapper = if (stripeExtensionFeatureFlag.isEnabled() &&
         isPluginActivated(stripePluginInfo) &&
         !isPluginActivated(wcPayPluginInfo)
@@ -203,11 +221,10 @@ class CardReaderOnboardingChecker @Inject constructor(
         PluginWrapper(
             STRIPE_EXTENSION_GATEWAY,
             stripePluginInfo,
-            cardReaderConfig.minimumSupportedVersionStripeExtension
         )
     } else {
         // Default to WCPay when Stripe Extension is not active
-        PluginWrapper(WOOCOMMERCE_PAYMENTS, wcPayPluginInfo, cardReaderConfig.minimumSupportedVersionWCPay)
+        PluginWrapper(WOOCOMMERCE_PAYMENTS, wcPayPluginInfo)
     }
 
     private suspend fun getStoreCountryCode(): String? {
@@ -229,9 +246,10 @@ class CardReaderOnboardingChecker @Inject constructor(
     }
 
     private fun isPluginVersionSupported(
-        plugin: PluginWrapper
+        plugin: PluginWrapper,
+        minimumSupportedVersion: String
     ): Boolean {
-        return plugin.info != null && (plugin.info.version).semverCompareTo(plugin.minSupportedVersion) >= 0
+        return plugin.info != null && (plugin.info.version).semverCompareTo(minimumSupportedVersion) >= 0
     }
 
     private fun isPluginActivated(pluginInfo: SitePluginModel?): Boolean = pluginInfo?.isActive == true
@@ -292,8 +310,7 @@ fun PluginType.toInPersonPaymentsPluginType(): InPersonPaymentsPluginType = when
 
 private data class PluginWrapper(
     val type: PluginType,
-    val info: SitePluginModel?,
-    val minSupportedVersion: String
+    val info: SitePluginModel?
 )
 
 enum class PluginType {

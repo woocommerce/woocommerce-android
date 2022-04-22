@@ -12,8 +12,15 @@ sealed class CardReaderConfigForSupportedCountry(
     val supportedReaders: List<SpecificReader>,
     val paymentMethodType: List<PaymentMethodType>,
     val isStripeExtensionSupported: Boolean,
-    val minimumSupportedVersionWCPay: String,
-    val minimumSupportedVersionStripeExtension: String
+    val supportedExtensions: List<SupportedExtension>,
 ) : CardReaderConfig()
 
 object CardReaderConfigForUnsupportedCountry : CardReaderConfig()
+
+data class SupportedExtension(
+    val type: SupportedExtensionType,
+    val supportedSince: String,
+)
+enum class SupportedExtensionType {
+    WC_PAY, STRIPE
+}
