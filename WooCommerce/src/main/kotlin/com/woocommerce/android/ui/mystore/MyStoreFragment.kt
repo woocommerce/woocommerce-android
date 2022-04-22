@@ -162,6 +162,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         viewModel.activeStatsGranularity.observe(viewLifecycleOwner) { activeGranularity ->
             if (tabLayout.getTabAt(tabLayout.selectedTabPosition)?.tag != activeGranularity) {
                 val index = StatsGranularity.values().indexOf(activeGranularity)
+                // Small delay needed to ensure tablayout scrolls to the selected if tab is not visible on screen.
                 Handler(Looper.getMainLooper()).postDelayed(
                     { tabLayout.getTabAt(index)?.select() }, 300
                 )
