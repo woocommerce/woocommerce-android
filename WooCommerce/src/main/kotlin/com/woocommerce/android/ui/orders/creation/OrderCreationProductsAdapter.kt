@@ -22,9 +22,13 @@ class OrderCreationProductsAdapter(
     private val onIncreaseQuantity: (Long) -> Unit,
     private val onDecreaseQuantity: (Long) -> Unit
 ) : ListAdapter<ProductUIModel, ProductViewHolder>(ProductUIModelDiffCallback) {
-    init {
-        setHasStableIds(true)
-    }
+    var isQuantityButtonsEnabled = false
+        set(value) {
+            if (value != field) {
+                field = value
+                notifyDataSetChanged()
+            }
+        }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
         return ProductViewHolder(
@@ -35,8 +39,6 @@ class OrderCreationProductsAdapter(
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
-
-    override fun getItemId(position: Int): Long = getItem(position).item.uniqueId
 
     inner class ProductViewHolder(private val binding: OrderCreationProductItemBinding) : ViewHolder(binding.root) {
         private val context = binding.root.context
@@ -51,16 +53,18 @@ class OrderCreationProductsAdapter(
             }
             binding.stepperView.init(
                 onPlusButtonClick = {
-                    safePosition?.let { onIncreaseQuantity(getItem(it).item.uniqueId) }
+                    safePosition?.let { onIncreaseQuantity(getItem(it).item.itemId) }
                 },
                 onMinusButtonClick = {
-                    safePosition?.let { onDecreaseQuantity(getItem(it).item.uniqueId) }
+                    safePosition?.let { onDecreaseQuantity(getItem(it).item.itemId) }
                 }
             )
         }
 
         fun bind(productModel: ProductUIModel) {
             binding.productName.text = productModel.item.name
+            binding.stepperView.isMinusButtonEnabled = isQuantityButtonsEnabled
+            binding.stepperView.isPlusButtonEnabled = isQuantityButtonsEnabled
             binding.stepperView.apply {
                 value = productModel.item.quantity.toInt()
                 contentDescription = context.getString(R.string.count, value.toString())
