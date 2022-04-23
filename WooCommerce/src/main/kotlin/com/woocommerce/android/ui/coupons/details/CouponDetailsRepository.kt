@@ -39,7 +39,8 @@ class CouponDetailsRepository @Inject constructor(
     suspend fun deleteCoupon(couponId: Long): Result<Unit> {
         val result = store.deleteCoupon(
             site = selectedSite.get(),
-            couponId = couponId
+            couponId = couponId,
+            trash = false
         )
 
         return when {
