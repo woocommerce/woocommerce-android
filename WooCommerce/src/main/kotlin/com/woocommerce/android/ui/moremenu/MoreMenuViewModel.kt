@@ -19,10 +19,7 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import java.net.URL
@@ -40,7 +37,7 @@ class MoreMenuViewModel @Inject constructor(
         combine(
             unseenReviewsCountHandler.observeUnseenCount(),
             selectedSite.observe().filterNotNull(),
-            appPrefsWrapper.observePrefs().filter { it == "IS_COUPONS_ENABLED" }.onStart { emit("") }
+            appPrefsWrapper.observePrefs().filter { it == "IS_COUPONS_ENABLED" }.map {}.onStart { emit(Unit) }
         ) { count, selectedSite, _ ->
             MoreMenuViewState(
                 moreMenuItems = generateMenuButtons(unseenReviewsCount = count),
