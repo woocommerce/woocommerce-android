@@ -133,6 +133,10 @@ class CouponDetailsViewModel @Inject constructor(
         }
     }
 
+    fun onDeleteButtonClick() {
+        deleteCoupon()
+    }
+
     fun onCopyButtonClick() {
         couponState.value?.couponSummary?.code?.let {
             triggerEvent(CopyCodeEvent(it))
