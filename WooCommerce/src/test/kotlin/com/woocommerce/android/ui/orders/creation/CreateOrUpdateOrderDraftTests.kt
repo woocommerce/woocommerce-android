@@ -39,10 +39,11 @@ class CreateOrUpdateOrderDraftTests : BaseUnitTest() {
 
         advanceUntilIdle()
 
-        assertThat(updateStatuses.size).isEqualTo(2)
-        assertThat(updateStatuses[0]).isEqualTo(OrderDraftUpdateStatus.Ongoing)
-        assertThat(updateStatuses[1]).isInstanceOf(OrderDraftUpdateStatus.Succeeded::class.java)
-        with(updateStatuses[1] as OrderDraftUpdateStatus.Succeeded) {
+        assertThat(updateStatuses.size).isEqualTo(3)
+        assertThat(updateStatuses[0]).isEqualTo(OrderDraftUpdateStatus.PendingDebounce)
+        assertThat(updateStatuses[1]).isEqualTo(OrderDraftUpdateStatus.Ongoing)
+        assertThat(updateStatuses[2]).isInstanceOf(OrderDraftUpdateStatus.Succeeded::class.java)
+        with(updateStatuses[2] as OrderDraftUpdateStatus.Succeeded) {
             assertThat(order)
                 .isEqualTo(orderCreationRepository.createOrUpdateDraft(orderDraftChanges.value).getOrThrow())
         }
@@ -64,9 +65,10 @@ class CreateOrUpdateOrderDraftTests : BaseUnitTest() {
 
         advanceUntilIdle()
 
-        assertThat(updateStatuses.size).isEqualTo(2)
-        assertThat(updateStatuses[0]).isEqualTo(OrderDraftUpdateStatus.Ongoing)
-        assertThat(updateStatuses[1]).isInstanceOf(OrderDraftUpdateStatus.Failed::class.java)
+        assertThat(updateStatuses.size).isEqualTo(3)
+        assertThat(updateStatuses[0]).isEqualTo(OrderDraftUpdateStatus.PendingDebounce)
+        assertThat(updateStatuses[1]).isEqualTo(OrderDraftUpdateStatus.Ongoing)
+        assertThat(updateStatuses[2]).isInstanceOf(OrderDraftUpdateStatus.Failed::class.java)
 
         job.cancel()
     }
@@ -113,7 +115,7 @@ class CreateOrUpdateOrderDraftTests : BaseUnitTest() {
         retryTrigger.tryEmit(Unit)
         advanceUntilIdle()
 
-        assertThat(updateStatuses.size).isEqualTo(4)
+        assertThat(updateStatuses.size).isEqualTo(5)
         assertThat(updateStatuses.last()).isInstanceOf(OrderDraftUpdateStatus.Succeeded::class.java)
 
         job.cancel()
