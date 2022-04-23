@@ -94,7 +94,7 @@ class MoreMenuViewModel @Inject constructor(
             name
         }
 
-    private fun SiteModel.getSelectedSiteAbsoluteUrl(): String = url.toUri().host ?: ""
+    private fun SiteModel.getSelectedSiteAbsoluteUrl(): String = runCatching { URL(url).host }.getOrDefault("")
 
     fun onSettingsClick() {
         AnalyticsTracker.track(
