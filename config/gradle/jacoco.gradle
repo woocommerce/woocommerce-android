@@ -49,11 +49,13 @@ rootProject.afterEvaluate {
                 '**/*Activity.*',
                 '**/*Activity$*.*',
                 '**/*ViewHolder.*',
+                '**/*ViewHolder$*.*',
                 '**/*View.*',
                 '**/*View$*.*',
                 '**/*Adapter.*',
                 '**/*Adapter$*.*',
                 '**/*Screen*',
+                '**/*Screen$*',
         ]
 
         def kClasses = rootProject.subprojects.collect { proj ->
