@@ -44,6 +44,7 @@ rootProject.afterEvaluate {
                 '**/*Fragment.*',
                 '**/*Fragment$*.*',
                 '**/*Dialog.*',
+                '**/*Dialog$*.*',
                 '**/*Activity.*',
                 '**/*Activity$*.*',
                 '**/*ViewHolder.*',
