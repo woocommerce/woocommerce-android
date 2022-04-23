@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.util.WooLog
@@ -122,7 +123,7 @@ class CouponDetailsViewModel @Inject constructor(
                 .onFailure {
                     WooLog.e(
                         tag = WooLog.T.COUPONS,
-                        message = "Coupon deletion failed: ${it.message}"
+                        message = "Coupon deletion failed: ${(it as WooException).error.message}"
                     )
                     triggerEvent(ShowSnackbar(R.string.coupon_details_delete_failure))
                 }
