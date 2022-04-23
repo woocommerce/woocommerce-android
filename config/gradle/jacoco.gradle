@@ -50,7 +50,9 @@ rootProject.afterEvaluate {
                 '**/*Activity$*.*',
                 '**/*ViewHolder.*',
                 '**/*View.*',
+                '**/*View$*.*',
                 '**/*Adapter.*',
+                '**/*Adapter$*.*',
                 '**/*Screen*',
         ]
 
