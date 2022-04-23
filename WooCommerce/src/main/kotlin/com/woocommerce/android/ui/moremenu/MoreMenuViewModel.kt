@@ -1,9 +1,8 @@
 package com.woocommerce.android.ui.moremenu
 
-import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
-import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -15,19 +14,18 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_M
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_VIEW_STORE
 import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.moremenu.MenuButtonType.COUPONS
-import com.woocommerce.android.ui.moremenu.MenuButtonType.INBOX
-import com.woocommerce.android.ui.moremenu.MenuButtonType.PRODUCT_REVIEWS
-import com.woocommerce.android.ui.moremenu.MenuButtonType.VIEW_ADMIN
-import com.woocommerce.android.ui.moremenu.MenuButtonType.VIEW_STORE
+import com.woocommerce.android.ui.moremenu.MenuButtonType.*
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.onStart
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
+import java.net.URL
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,13 +33,15 @@ class MoreMenuViewModel @Inject constructor(
     savedState: SavedStateHandle,
     accountStore: AccountStore,
     private val selectedSite: SelectedSite,
-    unseenReviewsCountHandler: UnseenReviewsCountHandler
+    unseenReviewsCountHandler: UnseenReviewsCountHandler,
+    private val appPrefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedState) {
     val moreMenuViewState =
         combine(
             unseenReviewsCountHandler.observeUnseenCount(),
-            selectedSite.observe().filterNotNull()
-        ) { count, selectedSite ->
+            selectedSite.observe().filterNotNull(),
+            appPrefsWrapper.observePrefs().filter { it == "IS_COUPONS_ENABLED" }.onStart { emit("") }
+        ) { count, selectedSite, _ ->
             MoreMenuViewState(
                 moreMenuItems = generateMenuButtons(unseenReviewsCount = count),
                 siteName = selectedSite.getSelectedSiteName(),
@@ -68,7 +68,7 @@ class MoreMenuViewModel @Inject constructor(
                 type = COUPONS,
                 text = R.string.more_menu_button_coupons,
                 icon = R.drawable.ic_more_menu_coupons,
-                isEnabled = AppPrefs.isCouponsEnabled,
+                isEnabled = appPrefsWrapper.isCouponsEnabled,
                 onClick = ::onCouponsButtonClick
             ),
             MenuUiButton(
