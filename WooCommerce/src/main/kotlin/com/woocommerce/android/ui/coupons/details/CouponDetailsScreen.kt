@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.coupons.components.CouponExpirationLabel
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.*
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponPerformanceState.Loading
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponPerformanceState.Success
+import com.woocommerce.android.util.FeatureFlag
 
 @Composable
 fun CouponDetailsScreen(
@@ -80,14 +81,17 @@ fun CouponDetailsScreen(
                     }) {
                         Text(stringResource(id = R.string.coupon_details_menu_share))
                     }
-                    DropdownMenuItem(onClick = {
-                        showMenu = false
-                        showDeleteDialog = true
-                    }) {
-                        Text(
-                            stringResource(id = R.string.coupon_details_delete),
-                            color = MaterialTheme.colors.secondary
-                        )
+
+                    if (FeatureFlag.CARD_READER.isEnabled()) {
+                        DropdownMenuItem(onClick = {
+                            showMenu = false
+                            showDeleteDialog = true
+                        }) {
+                            Text(
+                                stringResource(id = R.string.coupon_details_delete),
+                                color = MaterialTheme.colors.secondary
+                            )
+                        }
                     }
                 }
             }
