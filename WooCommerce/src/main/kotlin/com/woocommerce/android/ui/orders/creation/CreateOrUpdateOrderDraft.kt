@@ -33,7 +33,7 @@ class CreateOrUpdateOrderDraft @Inject constructor(
                 debouncedChanges
                     .combine(retryTrigger.onStart { emit(Unit) }) { draft, _ -> draft }
                     .flatMapLatest { createOrUpdateDraft(it) }
-                    .onStart { emit(OrderDraftUpdateStatus.Ongoing) }
+                    .onStart { emit(OrderDraftUpdateStatus.PendingDebounce) }
                     .distinctUntilChanged()
             }
     }
@@ -48,6 +48,7 @@ class CreateOrUpdateOrderDraft @Inject constructor(
     }
 
     sealed interface OrderDraftUpdateStatus {
+        object PendingDebounce : OrderDraftUpdateStatus
         object Ongoing : OrderDraftUpdateStatus
         data class Succeeded(val order: Order) : OrderDraftUpdateStatus
         object Failed : OrderDraftUpdateStatus
