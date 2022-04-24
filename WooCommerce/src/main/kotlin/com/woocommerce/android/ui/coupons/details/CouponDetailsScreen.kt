@@ -82,7 +82,7 @@ fun CouponDetailsScreen(
                         Text(stringResource(id = R.string.coupon_details_menu_share))
                     }
 
-                    if (FeatureFlag.CARD_READER.isEnabled()) {
+                    if (FeatureFlag.COUPONS_M2.isEnabled()) {
                         DropdownMenuItem(onClick = {
                             showMenu = false
                             showDeleteDialog = true
