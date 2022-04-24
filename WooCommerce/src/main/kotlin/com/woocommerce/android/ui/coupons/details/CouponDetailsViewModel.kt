@@ -117,7 +117,7 @@ class CouponDetailsViewModel @Inject constructor(
         }
     }
 
-    private fun deleteCoupon() {
+    fun onDeleteButtonClick() {
         viewModelScope.launch {
             couponDetailsRepository.deleteCoupon(navArgs.couponId)
                 .onFailure {
@@ -132,10 +132,6 @@ class CouponDetailsViewModel @Inject constructor(
                     triggerEvent(Exit)
                 }
         }
-    }
-
-    fun onDeleteButtonClick() {
-        deleteCoupon()
     }
 
     fun onCopyButtonClick() {
