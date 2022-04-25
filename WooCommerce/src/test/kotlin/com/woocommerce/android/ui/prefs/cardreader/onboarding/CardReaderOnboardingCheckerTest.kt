@@ -284,16 +284,18 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     @Test
     fun `given store in Canada, when wcpay plugin outdated, then UNSUPPORTED_VERSION returned`() =
         testBlocking {
+            whenever(wooStore.getStoreCountryCode(site)).thenReturn("CA")
+            whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(true)
+            whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForCanada)
             whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
-            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-                .thenReturn(buildWCPayPluginInfo())
-            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS)).thenReturn(null)
-            whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+                .thenReturn(buildWCPayPluginInfo(version = wcPayPluginVersion))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY)).thenReturn(null)
 
             val result = checker.getOnboardingState()
 
             assertThat(result).isEqualTo(
-                CardReaderOnboardingState.PluginUnsupportedVersion(PluginType.STRIPE_EXTENSION_GATEWAY)
+                CardReaderOnboardingState.PluginUnsupportedVersion(PluginType.WOOCOMMERCE_PAYMENTS)
             )
         }
 
