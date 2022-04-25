@@ -37,7 +37,7 @@ class MoreMenuViewModel @Inject constructor(
         combine(
             unseenReviewsCountHandler.observeUnseenCount(),
             selectedSite.observe().filterNotNull(),
-            appPrefsWrapper.observePrefs().filter { it == "IS_COUPONS_ENABLED" }.map {}.onStart { emit(Unit) }
+            observeCouponBetaSwitch()
         ) { count, selectedSite, _ ->
             MoreMenuViewState(
                 moreMenuItems = generateMenuButtons(unseenReviewsCount = count),
@@ -46,6 +46,11 @@ class MoreMenuViewModel @Inject constructor(
                 userAvatarUrl = accountStore.account.avatarUrl
             )
         }.asLiveData()
+
+    private fun observeCouponBetaSwitch() = appPrefsWrapper.observePrefs()
+        .onStart { emit(Unit) }
+        .map { appPrefsWrapper.isCouponsEnabled }
+        .distinctUntilChanged()
 
     private fun generateMenuButtons(unseenReviewsCount: Int): List<MenuUiButton> =
         listOf(

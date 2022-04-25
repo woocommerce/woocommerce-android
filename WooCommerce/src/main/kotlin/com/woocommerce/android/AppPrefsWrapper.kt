@@ -125,12 +125,12 @@ class AppPrefsWrapper @Inject constructor() {
     fun setProductSortingChoice(siteId: Int, value: String) = AppPrefs.setProductSortingChoice(siteId, value)
 
     /**
-     * Returns a Flow that emits the keys of the changed preferences.
+     * Observes changes to the preferences
      */
-    fun observePrefs(): Flow<String> {
+    fun observePrefs(): Flow<Unit> {
         return callbackFlow {
-            val listener = OnSharedPreferenceChangeListener { _, key ->
-                trySend(key)
+            val listener = OnSharedPreferenceChangeListener { _, _ ->
+                trySend(Unit)
             }
             AppPrefs.getPreferences().registerOnSharedPreferenceChangeListener(listener)
 

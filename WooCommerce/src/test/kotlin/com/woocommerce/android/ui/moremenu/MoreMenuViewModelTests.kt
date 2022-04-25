@@ -53,13 +53,14 @@ class MoreMenuViewModelTests : BaseUnitTest() {
 
     @Test
     fun `when coupons beta feature toggle is updated, then refresh the list of button`() = testBlocking {
-        val prefsChanges = MutableSharedFlow<String>()
+        val prefsChanges = MutableSharedFlow<Unit>()
         setup {
             whenever(appPrefsWrapper.observePrefs()).thenReturn(prefsChanges)
+            whenever(appPrefsWrapper.isCouponsEnabled).thenReturn(true).thenReturn(false)
         }
         val states = viewModel.moreMenuViewState.captureValues()
 
-        prefsChanges.emit("IS_COUPONS_ENABLED")
+        prefsChanges.emit(Unit)
 
         assertThat(states.size).isEqualTo(2)
     }
