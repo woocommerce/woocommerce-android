@@ -30,16 +30,21 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
+import com.woocommerce.android.model.FeatureFeedbackSettings.*
 import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.PRODUCT_VARIATIONS
-import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
-import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.*
+import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
+import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
+import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.UNANSWERED
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.*
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.SkeletonView
@@ -93,7 +98,7 @@ class ProductListFragment :
         setupObservers(viewModel)
         setupResultHandlers()
         ViewGroupCompat.setTransitionGroup(binding.productsRefreshLayout, true)
-        _productAdapter = ProductListAdapter(this, ::onProductClick, this)
+        _productAdapter = ProductListAdapter(::onProductClick, this)
         binding.productsRecycler.layoutManager = LinearLayoutManager(requireActivity())
         binding.productsRecycler.adapter = productAdapter
 
@@ -281,12 +286,12 @@ class ProductListFragment :
                 }
             }
             new.displaySortAndFilterCard?.takeIfNotEqualTo(old?.displaySortAndFilterCard) {
-                _productAdapter?.updateSortFilterItem(show = it)
+                showProductSortAndFiltersCard(it)
             }
             new.filterCount?.takeIfNotEqualTo(old?.filterCount) { updateFilterSelection(it) }
 
             new.sortingTitleResource?.takeIfNotEqualTo(old?.sortingTitleResource) {
-                _productAdapter?.updateSortFilterItem(title = getString(it))
+                binding.productsSortFilterCard.setSortingTitle(getString(it))
             }
             new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) { isVisible ->
                 showAddProductButton(show = isVisible)
@@ -397,7 +402,7 @@ class ProductListFragment :
     }
 
     private fun showProductList(products: List<Product>) {
-        productAdapter.products = products
+        productAdapter.submitList(products)
 
         showProductWIPNoticeCard(true)
     }
@@ -419,6 +424,15 @@ class ProductListFragment :
         }
     }
 
+    private fun showProductSortAndFiltersCard(show: Boolean) {
+        if (show) {
+            binding.productsSortFilterCard.visibility = View.VISIBLE
+            binding.productsSortFilterCard.initView(this)
+        } else {
+            binding.productsSortFilterCard.visibility = View.GONE
+        }
+    }
+
     private fun showBottomNavBar(isVisible: Boolean) {
         if (!isVisible) {
             (activity as? MainActivity)?.hideBottomNav()
@@ -428,7 +442,7 @@ class ProductListFragment :
     }
 
     private fun updateFilterSelection(filterCount: Int) {
-        _productAdapter?.updateSortFilterItem(filterCount = filterCount)
+        binding.productsSortFilterCard.updateFilterSelection(filterCount)
     }
 
     private fun showAddProductButton(show: Boolean) {
