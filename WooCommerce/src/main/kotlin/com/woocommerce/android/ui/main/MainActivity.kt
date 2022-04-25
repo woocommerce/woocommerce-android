@@ -36,7 +36,9 @@ import com.woocommerce.android.databinding.ActivityMainBinding
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
+import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
@@ -105,7 +107,6 @@ class MainActivity :
     private var isBottomNavShowing = true
     private var unfilledOrderCount: Int = 0
     private var isMainThemeApplied = false
-    private var restoreToolbarHeight = 0
     private var menu: Menu? = null
 
     private val toolbarEnabledBehavior = AppBarLayout.Behavior()
@@ -407,15 +408,11 @@ class MainActivity :
     }
 
     private fun showToolbar() {
-        if (restoreToolbarHeight > 0) {
-            binding.collapsingToolbar.layoutParams.height = restoreToolbarHeight
-            restoreToolbarHeight = 0
-        }
+        binding.collapsingToolbar.show()
     }
 
     fun hideToolbar() {
-        restoreToolbarHeight = binding.collapsingToolbar.layoutParams.height
-        binding.collapsingToolbar.layoutParams.height = 0
+        binding.collapsingToolbar.hide()
     }
 
     override fun setTitle(title: CharSequence?) {
