@@ -488,9 +488,13 @@ class ProductDetailCardBuilder(
 
     private fun Product.title(): ProductProperty {
         val name = this.name.fastStripHtml()
+        val badgeText = if (this.status != ProductStatus.PUBLISH) this.status?.stringResource else null
+        val badgeColor = if (this.status != ProductStatus.PUBLISH) this.status?.colorResource else null
         return Editable(
-            string.product_detail_title_hint,
-            name,
+            hint = string.product_detail_title_hint,
+            text = name,
+            badgeText = badgeText,
+            badgeColor = badgeColor,
             onTextChanged = viewModel::onProductTitleChanged
         )
     }

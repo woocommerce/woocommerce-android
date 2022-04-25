@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -24,16 +23,33 @@
         android:importantForAutofill="no"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/divider"
+        app:layout_constraintEnd_toStartOf="@+id/badgeTextView"
         app:layout_constraintStart_toStartOf="parent"
+        tools:text="Hoodie" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/badgeTextView"
+        style="@style/Woo.TextView.Body2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/product_detail_status_badge"
+        android:paddingStart="@dimen/major_75"
+        android:paddingEnd="@dimen/major_75"
+        android:paddingTop="@dimen/minor_50"
+        android:paddingBottom="@dimen/minor_50"
+        android:textColor="@color/woo_gray_80"
+        android:layout_marginTop="@dimen/minor_100"
+        app:layout_constraintTop_toTopOf="@+id/editText"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:text="Hoodie"/>
+        android:visibility="gone"
+        tools:text="Private" />
 
     <View
         android:id="@+id/divider"
         style="@style/Woo.Divider"
         android:layout_marginStart="@dimen/minor_00"
-        app:layout_constraintTop_toBottomOf="@id/editText"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@id/editText" />
 </merge>
