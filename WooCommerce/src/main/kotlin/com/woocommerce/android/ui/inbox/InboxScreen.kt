@@ -49,13 +49,13 @@ import com.woocommerce.android.ui.inbox.InboxViewModel.InboxState
 import com.woocommerce.android.util.StringUtils
 
 @Composable
-fun Inbox(viewModel: InboxViewModel) {
+fun InboxScreen(viewModel: InboxViewModel) {
     val inboxState by viewModel.inboxState.observeAsState(InboxState())
-    Inbox(state = inboxState)
+    InboxScreen(state = inboxState)
 }
 
 @Composable
-fun Inbox(state: InboxState) {
+fun InboxScreen(state: InboxState) {
     when {
         state.isLoading -> InboxSkeletons()
         else -> InboxNotes(
@@ -315,7 +315,7 @@ private fun InboxNoteButtonsSkeleton() {
 @Preview
 @Composable
 fun InboxPreview(@PreviewParameter(SampleInboxProvider::class, 1) state: InboxState) {
-    Inbox(state)
+    InboxScreen(state)
 }
 
 class SampleInboxProvider : PreviewParameterProvider<InboxState> {

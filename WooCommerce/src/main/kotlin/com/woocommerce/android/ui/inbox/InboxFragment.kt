@@ -45,7 +45,7 @@ class InboxFragment : BaseFragment(R.layout.fragment_inbox) {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    Inbox(viewModel = viewModel)
+                    InboxScreen(viewModel = viewModel)
                 }
             }
         }
