@@ -225,7 +225,7 @@ fun InboxNoteTextAction(inboxAction: InboxNoteActionUi) {
     ) {
         if (inboxAction.isDismissing) {
             CircularProgressIndicator(
-                modifier = Modifier.size(24.dp),
+                modifier = Modifier.size(dimensionResource(id = R.dimen.major_150)),
                 color = colorResource(id = inboxAction.textColor)
             )
         } else {
