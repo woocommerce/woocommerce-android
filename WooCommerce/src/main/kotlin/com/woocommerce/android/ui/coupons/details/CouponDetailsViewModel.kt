@@ -6,8 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.WooException
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CouponUtils
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -119,6 +121,23 @@ class CouponDetailsViewModel @Inject constructor(
                 CouponPerformanceState.Failure(couponDetails?.usageCount)
             }
             else -> couponPerformanceState
+        }
+    }
+
+    fun onDeleteButtonClick() {
+        viewModelScope.launch {
+            couponDetailsRepository.deleteCoupon(navArgs.couponId)
+                .onFailure {
+                    WooLog.e(
+                        tag = WooLog.T.COUPONS,
+                        message = "Coupon deletion failed: ${(it as WooException).error.message}"
+                    )
+                    triggerEvent(ShowSnackbar(R.string.coupon_details_delete_failure))
+                }
+                .onSuccess {
+                    triggerEvent(ShowSnackbar(R.string.coupon_details_delete_successful))
+                    triggerEvent(Exit)
+                }
         }
     }
 

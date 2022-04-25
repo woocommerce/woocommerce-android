@@ -1893,6 +1893,8 @@
     <string name="coupon_details_menu_share">Share Coupon</string>
     <string name="coupon_details_delete">Delete Coupon</string>
     <string name="coupon_details_delete_confirmation">Are you sure you want to delete this coupon?</string>
+    <string name="coupon_details_delete_failure">Deleting coupon failed</string>
+    <string name="coupon_details_delete_successful">Coupon deleted</string>
     <string name="coupon_details_performance_loading_failure">Loading coupon performance failed</string>
     <string name="coupon_type_percent">Percentage Discount</string>
     <string name="coupon_type_fixed_cart">Fixed Cart Discount</string>
