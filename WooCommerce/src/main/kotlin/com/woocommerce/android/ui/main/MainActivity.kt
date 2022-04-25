@@ -446,8 +446,12 @@ class MainActivity :
     private fun removeSubtitle() {
         binding.appBarLayout.removeOnOffsetChangedListener(appBarOffsetListener)
         if (binding.toolbarSubtitle.visibility == View.GONE) return
-        binding.toolbarSubtitle.collapse(duration = 200L)
-        hideSubtitleAnimator.start()
+        if (binding.collapsingToolbar.isVisible) {
+            binding.toolbarSubtitle.collapse(duration = 200L)
+            hideSubtitleAnimator.start()
+        } else {
+            binding.toolbarSubtitle.hide()
+        }
     }
 
     private fun setFadingSubtitleOnCollapsingToolbar(subtitle: CharSequence) {
