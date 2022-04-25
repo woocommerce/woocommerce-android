@@ -2,9 +2,9 @@ package com.woocommerce.android.support
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import com.woocommerce.android.R
-import com.woocommerce.android.databinding.ActivityLogviewerBinding
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -15,10 +15,7 @@ class WooLogViewerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val binding = ActivityLogviewerBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        binding.composeView.setContent {
+        setContent {
             WooThemeWithBackground {
                 WooLogViewerScreen(
                     WooLog.logEntries,
