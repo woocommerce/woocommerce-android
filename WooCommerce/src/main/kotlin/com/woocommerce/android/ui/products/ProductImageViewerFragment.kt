@@ -96,20 +96,20 @@ class ProductImageViewerFragment :
         }
 
         fadeOutToolbarHandler.postDelayed(fadeOutToolbarRunnable, TOOLBAR_FADE_DELAY_MS)
+
+        @Suppress("MagicNumber")
+        // If we make the Activity full-screen directly, it'll prevent the fragment transition from finishing,
+        // which would prevent the previous fragment's view from getting destroyed, this causes an issue where the
+        // Toolbar doesn't get restored when navigating back.
+        // This seems like a bug in the fragment library.
+        view.postDelayed({
+            requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        }, 500)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    override fun onStart() {
-        super.onStart()
-        requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-    }
-
-    override fun onStop() {
-        super.onStop()
         requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
     }
 
