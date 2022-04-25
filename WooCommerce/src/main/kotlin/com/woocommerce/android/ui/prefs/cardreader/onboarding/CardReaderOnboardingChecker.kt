@@ -148,18 +148,12 @@ class CardReaderOnboardingChecker @Inject constructor(
     private fun isPreferredPluginSupportedInCountry(
         preferredPlugin: PluginWrapper,
         cardReaderConfig: CardReaderConfigForSupportedCountry
-    ) = when (preferredPlugin.type) {
-        WOOCOMMERCE_PAYMENTS -> cardReaderConfig.isExtensionSupported(SupportedExtensionType.WC_PAY)
-        STRIPE_EXTENSION_GATEWAY -> cardReaderConfig.isExtensionSupported(SupportedExtensionType.STRIPE)
-    }
+    ) = cardReaderConfig.isExtensionSupported(preferredPlugin.type.toSupportedExtensionType())
 
     private fun getMinimumSupportedVersionForPlugin(
         preferredPluginType: PluginType,
         cardReaderConfig: CardReaderConfigForSupportedCountry
-    ) = when (preferredPluginType) {
-        WOOCOMMERCE_PAYMENTS -> cardReaderConfig.minSupportedVersionForExtension(SupportedExtensionType.WC_PAY)
-        STRIPE_EXTENSION_GATEWAY -> cardReaderConfig.minSupportedVersionForExtension(SupportedExtensionType.STRIPE)
-    }
+    ) = cardReaderConfig.minSupportedVersionForExtension(preferredPluginType.toSupportedExtensionType())
 
     private fun saveStatementDescriptor(statementDescriptor: String?) {
         val site = selectedSite.get()
@@ -284,6 +278,12 @@ enum class PluginType {
     WOOCOMMERCE_PAYMENTS,
     STRIPE_EXTENSION_GATEWAY
 }
+
+private fun PluginType.toSupportedExtensionType() =
+    when (this) {
+        WOOCOMMERCE_PAYMENTS -> SupportedExtensionType.WC_PAY
+        STRIPE_EXTENSION_GATEWAY -> SupportedExtensionType.STRIPE
+    }
 
 sealed class CardReaderOnboardingState(
     open val preferredPlugin: PluginType? = null
