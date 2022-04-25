@@ -84,52 +84,78 @@ fun MoreMenuScreen(
     onSettingsClick: () -> Unit
 ) {
     Column {
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    start = dimensionResource(id = R.dimen.major_75),
-                    end = dimensionResource(id = R.dimen.major_75)
-                ),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                MoreMenuMyStoreHeader(
-                    state.userAvatarUrl,
-                    state.siteName,
-                    state.siteUrl,
-                    onSwitchStore
-                )
-            }
-            SettingsButton(onSettingsClick)
-        }
-        LazyVerticalGrid(
-            cells = Fixed(2),
-            contentPadding = PaddingValues(
-                horizontal = dimensionResource(id = R.dimen.major_100),
-                vertical = dimensionResource(id = R.dimen.major_150)
-            ),
-            horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_75)),
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_175))
-        ) {
-            itemsIndexed(
-                state.moreMenuItems.filter { it.isEnabled }
-            ) { _, item ->
-                MoreMenuButton(
-                    text = item.text,
-                    iconDrawable = item.icon,
-                    badgeCount = item.badgeCount,
-                    onClick = item.onClick
-                )
-            }
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+        MoreMenuHeader(onSwitchStore, state, onSettingsClick)
+        MoreMenuItems(state)
+    }
+}
+
+@ExperimentalFoundationApi
+@Composable
+private fun MoreMenuItems(state: MoreMenuViewState) {
+    LazyVerticalGrid(
+        cells = Fixed(2),
+        contentPadding = PaddingValues(
+            horizontal = dimensionResource(id = R.dimen.major_100),
+            vertical = dimensionResource(id = R.dimen.major_100)
+        ),
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_75)),
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_75))
+    ) {
+        itemsIndexed(
+            state.moreMenuItems.filter { it.isEnabled }
+        ) { _, item ->
+            MoreMenuButton(
+                text = item.text,
+                iconDrawable = item.icon,
+                badgeCount = item.badgeCount,
+                onClick = item.onClick
+            )
         }
     }
 }
 
 @Composable
-private fun SettingsButton(onSettingsClick: () -> Unit) {
+private fun MoreMenuHeader(
+    onSwitchStore: () -> Unit,
+    state: MoreMenuViewState,
+    onSettingsClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(
+                enabled = true,
+                onClickLabel = stringResource(id = string.settings_switch_store),
+                role = Role.Button,
+                onClick = onSwitchStore
+            )
+            .padding(
+                top = dimensionResource(id = R.dimen.major_100),
+                bottom = dimensionResource(id = R.dimen.major_100)
+            ),
+    ) {
+        StoreDetailsHeader(
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .padding(start = dimensionResource(id = R.dimen.minor_100)),
+            userAvatarUrl = state.userAvatarUrl,
+            siteName = state.siteName,
+            siteUrl = state.siteUrl
+        )
+        SettingsButton(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(end = dimensionResource(id = R.dimen.minor_100)),
+            onSettingsClick = onSettingsClick
+        )
+    }
+}
+
+@Composable
+private fun SettingsButton(modifier: Modifier, onSettingsClick: () -> Unit) {
     IconButton(
+        modifier = modifier,
         onClick = { onSettingsClick() },
     ) {
         Icon(
@@ -141,31 +167,14 @@ private fun SettingsButton(onSettingsClick: () -> Unit) {
 }
 
 @Composable
-private fun MoreMenuMyStoreHeader(
+private fun StoreDetailsHeader(
+    modifier: Modifier,
     userAvatarUrl: String,
     siteName: String,
-    siteUrl: String,
-    onSwitchStore: () -> Unit
+    siteUrl: String
 ) {
-    Row(
-        modifier = Modifier
-            .clickable(
-                enabled = true,
-                onClickLabel = stringResource(id = string.settings_switch_store),
-                role = Role.Button,
-                onClick = onSwitchStore
-            )
-            .padding(
-                start = dimensionResource(id = R.dimen.minor_75),
-                end = dimensionResource(id = R.dimen.minor_75),
-                top = dimensionResource(id = R.dimen.minor_75),
-                bottom = dimensionResource(id = R.dimen.minor_75)
-            )
-    ) {
-        Column {
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
-            MoreMenuUserAvatar(avatarUrl = userAvatarUrl)
-        }
+    Row(modifier = modifier) {
+        MoreMenuUserAvatar(avatarUrl = userAvatarUrl)
         Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
         Column {
             Text(
@@ -209,7 +218,11 @@ private fun MoreMenuUserAvatar(avatarUrl: String) {
     }
 
     val circledModifier = Modifier
-        .size(dimensionResource(id = R.dimen.minor_75))
+        .size(dimensionResource(id = R.dimen.major_300))
+        .padding(
+            top = dimensionResource(id = R.dimen.minor_75),
+            start = dimensionResource(id = R.dimen.minor_100)
+        )
         .clip(CircleShape)
 
     bitmapState.value?.let {
