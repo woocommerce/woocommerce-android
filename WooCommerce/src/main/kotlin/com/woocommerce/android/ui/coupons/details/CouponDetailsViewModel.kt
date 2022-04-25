@@ -4,9 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.WooException
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.util.WooLog
