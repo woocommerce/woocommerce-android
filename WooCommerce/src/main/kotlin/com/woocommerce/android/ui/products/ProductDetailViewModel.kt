@@ -184,10 +184,12 @@ class ProductDetailViewModel @Inject constructor(
             val canBeSavedAsDraft = isAddFlowEntryPoint &&
                 !isProductStoredAtSite &&
                 productDraft.status != DRAFT
+            val isNotPublishedUnderCreation = isProductUnderCreation && productDraft.status != PUBLISH
+            val showSaveOptionAsPrincipal = hasChanges && (isNotPublishedUnderCreation || !isProductUnderCreation)
             val isProductPublished = productDraft.status == PUBLISH
             val isProductPublishedOrPrivate = isProductPublished || productDraft.status == PRIVATE
             MenuButtonsState(
-                saveOption = hasChanges && !canBeSavedAsDraft,
+                saveOption = showSaveOptionAsPrincipal,
                 saveAsDraftOption = canBeSavedAsDraft,
                 publishOption = !isProductPublishedOrPrivate || isProductUnderCreation,
                 viewProductOption = isProductPublished && !isProductUnderCreation,
@@ -731,18 +733,13 @@ class ProductDetailViewModel @Inject constructor(
         else string.product_detail_save_product_success
 
     private fun pickAddProductRequestSnackbarText(productWasAdded: Boolean, requestedProductStatus: ProductStatus) =
-        if (productWasAdded) {
-            if (requestedProductStatus == DRAFT) {
-                string.product_detail_publish_product_draft_success
-            } else {
-                string.product_detail_publish_product_success
-            }
-        } else {
-            if (requestedProductStatus == DRAFT) {
-                string.product_detail_publish_product_draft_error
-            } else {
-                string.product_detail_publish_product_error
-            }
+        when {
+            productWasAdded && requestedProductStatus == DRAFT -> string.product_detail_publish_product_draft_success
+            productWasAdded && requestedProductStatus == PUBLISH -> string.product_detail_publish_product_success
+            productWasAdded -> string.product_detail_save_product_success
+            !productWasAdded && requestedProductStatus == DRAFT -> string.product_detail_publish_product_draft_error
+            !productWasAdded && requestedProductStatus == PUBLISH -> string.product_detail_publish_product_error
+            else -> string.product_detail_save_product_error
         }
 
     private fun trackPublishing(it: Product) {
