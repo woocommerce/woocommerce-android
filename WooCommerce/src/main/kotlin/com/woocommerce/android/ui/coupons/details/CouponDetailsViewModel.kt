@@ -5,6 +5,8 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.util.WooLog
@@ -55,6 +57,11 @@ class CouponDetailsViewModel @Inject constructor(
                 }
             }
         }
+
+        AnalyticsTracker.track(
+            AnalyticsEvent.COUPON_DETAILS,
+            mapOf(AnalyticsTracker.KEY_COUPON_ACTION to AnalyticsTracker.KEY_COUPON_ACTION_LOADED)
+        )
     }
 
     private fun loadCouponSummary(): Flow<CouponSummaryUi> {
@@ -132,12 +139,22 @@ class CouponDetailsViewModel @Inject constructor(
                     triggerEvent(Exit)
                 }
         }
+
+        AnalyticsTracker.track(
+            AnalyticsEvent.COUPON_DETAILS,
+            mapOf(AnalyticsTracker.KEY_COUPON_ACTION to AnalyticsTracker.KEY_COUPON_ACTION_DELETED)
+        )
     }
 
     fun onCopyButtonClick() {
         couponState.value?.couponSummary?.code?.let {
             triggerEvent(CopyCodeEvent(it))
         }
+
+        AnalyticsTracker.track(
+            AnalyticsEvent.COUPON_DETAILS,
+            mapOf(AnalyticsTracker.KEY_COUPON_ACTION to AnalyticsTracker.KEY_COUPON_ACTION_COPIED)
+        )
     }
 
     fun onShareButtonClick() {
@@ -154,6 +171,11 @@ class CouponDetailsViewModel @Inject constructor(
         } ?: run {
             triggerEvent(ShowSnackbar(R.string.coupon_details_share_formatting_failure))
         }
+
+        AnalyticsTracker.track(
+            AnalyticsEvent.COUPON_DETAILS,
+            mapOf(AnalyticsTracker.KEY_COUPON_ACTION to AnalyticsTracker.KEY_COUPON_ACTION_SHARED)
+        )
     }
 
     data class CouponDetailsState(

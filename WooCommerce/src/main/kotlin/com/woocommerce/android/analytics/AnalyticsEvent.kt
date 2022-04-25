@@ -593,4 +593,10 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     INBOX_NOTES_LOADED,
     INBOX_NOTES_LOAD_FAILED,
     INBOX_NOTE_ACTION,
+
+    // Coupons
+    COUPONS_LOADED,
+    COUPONS_LOAD_FAILED,
+    COUPONS_LIST_SEARCH_TAPPED,
+    COUPON_DETAILS,
 }
