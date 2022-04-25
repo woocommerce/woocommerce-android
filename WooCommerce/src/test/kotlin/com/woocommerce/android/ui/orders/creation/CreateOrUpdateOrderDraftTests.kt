@@ -4,11 +4,24 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus
 import com.woocommerce.android.util.InlineClassesAnswer
+import com.woocommerce.android.util.advanceTimeAndRun
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 
 class CreateOrUpdateOrderDraftTests : BaseUnitTest() {
@@ -39,10 +52,11 @@ class CreateOrUpdateOrderDraftTests : BaseUnitTest() {
 
         advanceUntilIdle()
 
-        assertThat(updateStatuses.size).isEqualTo(2)
-        assertThat(updateStatuses[0]).isEqualTo(OrderDraftUpdateStatus.Ongoing)
-        assertThat(updateStatuses[1]).isInstanceOf(OrderDraftUpdateStatus.Succeeded::class.java)
-        with(updateStatuses[1] as OrderDraftUpdateStatus.Succeeded) {
+        assertThat(updateStatuses.size).isEqualTo(3)
+        assertThat(updateStatuses[0]).isEqualTo(OrderDraftUpdateStatus.PendingDebounce)
+        assertThat(updateStatuses[1]).isEqualTo(OrderDraftUpdateStatus.Ongoing)
+        assertThat(updateStatuses[2]).isInstanceOf(OrderDraftUpdateStatus.Succeeded::class.java)
+        with(updateStatuses[2] as OrderDraftUpdateStatus.Succeeded) {
             assertThat(order)
                 .isEqualTo(orderCreationRepository.createOrUpdateDraft(orderDraftChanges.value).getOrThrow())
         }
@@ -64,9 +78,10 @@ class CreateOrUpdateOrderDraftTests : BaseUnitTest() {
 
         advanceUntilIdle()
 
-        assertThat(updateStatuses.size).isEqualTo(2)
-        assertThat(updateStatuses[0]).isEqualTo(OrderDraftUpdateStatus.Ongoing)
-        assertThat(updateStatuses[1]).isInstanceOf(OrderDraftUpdateStatus.Failed::class.java)
+        assertThat(updateStatuses.size).isEqualTo(3)
+        assertThat(updateStatuses[0]).isEqualTo(OrderDraftUpdateStatus.PendingDebounce)
+        assertThat(updateStatuses[1]).isEqualTo(OrderDraftUpdateStatus.Ongoing)
+        assertThat(updateStatuses[2]).isInstanceOf(OrderDraftUpdateStatus.Failed::class.java)
 
         job.cancel()
     }
@@ -81,7 +96,7 @@ class CreateOrUpdateOrderDraftTests : BaseUnitTest() {
         }
 
         verify(orderCreationRepository, never()).createOrUpdateDraft(any())
-        advanceTimeBy(CreateOrUpdateOrderDraft.DEBOUNCE_DURATION_MS)
+        advanceTimeAndRun(CreateOrUpdateOrderDraft.DEBOUNCE_DURATION_MS)
         verify(orderCreationRepository, times(1)).createOrUpdateDraft(any())
 
         job.cancel()
@@ -113,7 +128,7 @@ class CreateOrUpdateOrderDraftTests : BaseUnitTest() {
         retryTrigger.tryEmit(Unit)
         advanceUntilIdle()
 
-        assertThat(updateStatuses.size).isEqualTo(4)
+        assertThat(updateStatuses.size).isEqualTo(5)
         assertThat(updateStatuses.last()).isInstanceOf(OrderDraftUpdateStatus.Succeeded::class.java)
 
         job.cancel()

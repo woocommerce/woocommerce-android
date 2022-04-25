@@ -68,10 +68,16 @@ fun CouponDetailsScreen(
                     expanded = showMenu,
                     onDismissRequest = { showMenu = false }
                 ) {
-                    DropdownMenuItem(onClick = onCopyButtonClick) {
+                    DropdownMenuItem(onClick = {
+                        onCopyButtonClick()
+                        showMenu = false
+                    }) {
                         Text(stringResource(id = R.string.coupon_details_menu_copy))
                     }
-                    DropdownMenuItem(onClick = onShareButtonClick) {
+                    DropdownMenuItem(onClick = {
+                        onShareButtonClick()
+                        showMenu = false
+                    }) {
                         Text(stringResource(id = R.string.coupon_details_menu_share))
                     }
                 }
@@ -141,9 +147,22 @@ fun CouponSummarySection(couponSummary: CouponSummaryUi) {
             )
             SummaryLabel(couponSummary.discountType)
             SummaryLabel(couponSummary.summary)
+            if (couponSummary.isForIndividualUse) {
+                SummaryLabel(stringResource(id = R.string.coupon_details_individual_use_only))
+            }
+            if (couponSummary.isShippingFree) {
+                SummaryLabel(stringResource(id = R.string.coupon_details_allows_free_shipping))
+            }
+            if (couponSummary.areSaleItemsExcluded) {
+                SummaryLabel(stringResource(id = R.string.coupon_details_excludes_sale_items))
+            }
             SummaryLabel(couponSummary.minimumSpending)
             SummaryLabel(couponSummary.maximumSpending)
+            SummaryLabel(couponSummary.usageLimitPerCoupon)
+            SummaryLabel(couponSummary.usageLimitPerUser)
+            SummaryLabel(couponSummary.usageLimitPerItems)
             SummaryLabel(couponSummary.expiration)
+            SummaryLabel(couponSummary.emailRestrictions)
         }
     }
 }

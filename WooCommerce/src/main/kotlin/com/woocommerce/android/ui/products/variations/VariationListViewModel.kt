@@ -90,11 +90,6 @@ class VariationListViewModel @Inject constructor(
         loadVariations(remoteProductId, loadMore = true)
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        variationRepository.onCleanup()
-    }
-
     fun onItemClick(variation: ProductVariation) {
         track(PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED)
         triggerEvent(ShowVariationDetail(variation))
