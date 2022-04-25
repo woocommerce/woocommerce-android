@@ -118,4 +118,8 @@ so that's the baseline as defined in `major_100`.
     <dimen name="progress_bar_mid">56dp</dimen>
     <dimen name="progress_bar_large">91dp</dimen>
     <dimen name="whats_new_dialog_heading_top_margin">64dp</dimen>
+
+    <!-- Chart dimens -->
+    <dimen name="more_menu_button_height">190dp</dimen>
+
 </resources>
