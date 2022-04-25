@@ -1,4 +1,4 @@
-package com.woocommerce.android.util
+package com.woocommerce.android.cardreader.internal
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -9,9 +9,7 @@ import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 
 @ExperimentalCoroutinesApi
-class CoroutineTestRule(val testDispatcher: TestDispatcher) : TestWatcher() {
-    val testDispatchers = CoroutineDispatchers(testDispatcher, testDispatcher, testDispatcher)
-
+class CardReaderCoroutineTestRule(val testDispatcher: TestDispatcher) : TestWatcher() {
     override fun starting(description: Description?) {
         super.starting(description)
         Dispatchers.setMain(testDispatcher)
