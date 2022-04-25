@@ -139,6 +139,11 @@ class CouponDetailsViewModel @Inject constructor(
                     triggerEvent(Exit)
                 }
         }
+
+        AnalyticsTracker.track(
+            AnalyticsEvent.COUPON_DETAILS,
+            mapOf(AnalyticsTracker.KEY_COUPON_ACTION to AnalyticsTracker.KEY_COUPON_ACTION_DELETED)
+        )
     }
 
     fun onCopyButtonClick() {
