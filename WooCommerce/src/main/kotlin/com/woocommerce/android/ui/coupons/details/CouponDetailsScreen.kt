@@ -32,7 +32,8 @@ fun CouponDetailsScreen(
         couponSummaryState,
         onBackPress,
         viewModel::onCopyButtonClick,
-        viewModel::onShareButtonClick
+        viewModel::onShareButtonClick,
+        viewModel::onDeleteButtonClick
     )
 }
 
@@ -42,7 +43,8 @@ fun CouponDetailsScreen(
     state: CouponDetailsState,
     onBackPress: () -> Boolean,
     onCopyButtonClick: () -> Unit,
-    onShareButtonClick: () -> Unit
+    onShareButtonClick: () -> Unit,
+    onDeleteButtonClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -125,7 +127,10 @@ fun CouponDetailsScreen(
                 },
                 confirmButton = {
                     TextButton(
-                        onClick = { showDeleteDialog = false }
+                        onClick = {
+                            showDeleteDialog = false
+                            onDeleteButtonClick()
+                        }
                     ) {
                         Text(
                             stringResource(id = R.string.delete).uppercase(),
