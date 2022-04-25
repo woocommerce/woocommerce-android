@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
-import androidx.annotation.VisibleForTesting
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
@@ -50,12 +49,6 @@ import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore.InPersonPaymentsPluginType
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
-
-@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-const val SUPPORTED_WCPAY_VERSION = "3.2.1"
-
-@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-const val SUPPORTED_STRIPE_EXTENSION_VERSION = "6.2.0"
 
 const val WCPAY_RECEIPTS_SENDING_SUPPORT_VERSION = "4.0.0"
 
