@@ -3,6 +3,7 @@ package com.woocommerce.android.screenshots.products
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.platform.app.InstrumentationRegistry
 import com.woocommerce.android.R
 import com.woocommerce.android.screenshots.util.CustomMatchers
 import com.woocommerce.android.screenshots.util.ProductData
@@ -47,12 +48,13 @@ class SingleProductScreen : Screen {
         if (product.rating > 0) {
             // Check that "Review" label, actual rating (stars) and reviews count are
             // all direct children of the same container:
+
             Espresso.onView(
                 Matchers.allOf(
                     ViewMatchers.withChild(
                         Matchers.allOf(
                             ViewMatchers.withId(R.id.textPropertyName),
-                            ViewMatchers.withText("Reviews")
+                            ViewMatchers.withText(R.string.product_reviews)
                         )
                     ),
                     ViewMatchers.withChild(
@@ -64,7 +66,7 @@ class SingleProductScreen : Screen {
                     ViewMatchers.withChild(
                         Matchers.allOf(
                             ViewMatchers.withId(R.id.textPropertyValue),
-                            ViewMatchers.withText(product.reviewsCountBeautified)
+                            ViewMatchers.withText(product.getReviewsDescription())
                         )
                     )
                 )
@@ -90,5 +92,14 @@ class SingleProductScreen : Screen {
                 )
             )
         ).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+    }
+
+    private fun ProductData.getReviewsDescription(): String {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        return when (this.reviewsCount) {
+            0 -> context.getString(R.string.product_ratings_count_zero)
+            1 -> context.getString(R.string.product_ratings_count_one)
+            else -> context.getString(R.string.product_ratings_count, this.reviewsCount)
+        }
     }
 }

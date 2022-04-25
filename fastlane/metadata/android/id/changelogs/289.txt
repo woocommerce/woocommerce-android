@@ -1,4 +1,0 @@
-8.8:
-Meski tanpa kejutan fitur baru dalam rilis ini, kami tetap berupaya keras. Kami memperbaiki bug dan menyempurnakan aksesibilitas menggunakan TalkBack.
-
-Tahukah Anda bahwa kami baru saja merilis fitur beta untuk membuat pesanan? Arahkan kursor ke tab Menu, ketuk ikon pengaturan, dan gulir ke fitur beta.

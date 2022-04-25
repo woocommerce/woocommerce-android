@@ -177,6 +177,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     ORDER_DETAIL_ISSUE_REFUND_BUTTON_TAPPED,
     ORDER_DETAIL_VIEW_REFUND_DETAILS_BUTTON_TAPPED,
     ORDER_DETAIL_CREATE_SHIPPING_LABEL_BUTTON_TAPPED,
+    ORDER_DETAIL_PAYMENT_LINK_SHARED,
 
     // - Order detail editing
     ORDER_DETAIL_EDIT_FLOW_STARTED,
@@ -586,5 +587,10 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     // -- More Menu (aka Hub Menu)
     HUB_MENU_SWITCH_STORE_TAPPED,
     HUB_MENU_OPTION_TAPPED,
-    HUB_MENU_SETTINGS_TAPPED
+    HUB_MENU_SETTINGS_TAPPED,
+
+    // Inbox
+    INBOX_NOTES_LOADED,
+    INBOX_NOTES_LOAD_FAILED,
+    INBOX_NOTE_ACTION,
 }

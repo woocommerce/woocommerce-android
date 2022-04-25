@@ -61,6 +61,39 @@ class CouponUtils @Inject constructor(
         return resourceProvider.getString(R.string.coupon_details_expiration_date, dateFormat.format(expirationDate))
     }
 
+    fun formatUsageLimitPerUser(usageLimitPerUser: Int?) = usageLimitPerUser?.takeIf { it > 0 }?.let {
+        StringUtils.getQuantityString(
+            resourceProvider = resourceProvider,
+            quantity = it,
+            default = R.string.coupon_details_usage_limit_per_user_multiple,
+            one = R.string.coupon_details_usage_limit_per_user_single
+        )
+    }
+
+    fun formatUsageLimitPerCoupon(usageLimit: Int?) = usageLimit?.takeIf { it > 0 }?.let {
+        StringUtils.getQuantityString(
+            resourceProvider = resourceProvider,
+            quantity = it,
+            default = R.string.coupon_details_usage_limit_per_coupon_multiple,
+            one = R.string.coupon_details_usage_limit_per_coupon_single
+        )
+    }
+
+    fun formatUsageLimitPerItems(usageLimit: Int?) = usageLimit?.takeIf { it > 0 }?.let {
+        StringUtils.getQuantityString(
+            resourceProvider = resourceProvider,
+            quantity = it,
+            default = R.string.coupon_details_usage_limit_per_items_multiple,
+            one = R.string.coupon_details_usage_limit_per_items_single
+        )
+    }
+
+    fun formatRestrictedEmails(restrictedEmails: List<String>): String? {
+        return restrictedEmails.takeIf { it.isNotEmpty() }?.let { emails ->
+            resourceProvider.getString(R.string.coupon_details_restricted_emails, emails.joinToString(", "))
+        }
+    }
+
     /*
     - When only specific products or categories are defined: Display "x products" or "x categories"
     - When specific products/categories and exceptions are defined: Display "x products excl. y categories" etc.
@@ -118,6 +151,46 @@ class CouponUtils @Inject constructor(
         return when (couponType) {
             Coupon.Type.Percent -> "$amount%"
             else -> formatCurrency(amount, currencyCode)
+        }
+    }
+
+    /*
+    - If all products are included: "Apply 15% off to all products with the promo code ABCDE"
+    - If only some products: "Apply 15% off to select products with the promo code ABCDE"
+     */
+    fun formatSharingMessage(
+        amount: BigDecimal?,
+        currencyCode: String?,
+        couponCode: String?,
+        includedProducts: Int,
+        excludedProducts: Int
+    ): String? {
+        return if (amount != null && currencyCode != null && couponCode != null) {
+            if (includedProducts == 0 && excludedProducts == 0) {
+                resourceProvider.getString(
+                    R.string.coupon_details_share_coupon_all,
+                    formatCurrency(amount, currencyCode),
+                    couponCode
+                )
+            } else {
+                resourceProvider.getString(
+                    R.string.coupon_details_share_coupon_some,
+                    formatCurrency(amount, currencyCode),
+                    couponCode
+                )
+            }
+        } else {
+            var params = ""
+            if (amount == null) params += "`amount` "
+            if (currencyCode == null) params += "`currencyCode` "
+            if (couponCode == null) params += "`couponCode`"
+
+            WooLog.e(
+                WooLog.T.COUPONS,
+                "Formatting coupon sharing message failed. null value found in $params"
+            )
+
+            null
         }
     }
 
