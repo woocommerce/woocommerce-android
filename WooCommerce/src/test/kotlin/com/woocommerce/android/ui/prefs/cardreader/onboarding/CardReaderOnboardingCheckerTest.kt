@@ -50,6 +50,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
     private val countryCode = "US"
     private val wcPayPluginVersion = "3.3.0"
+    private val wcPayPluginVersionCanada = "4.0.0"
     private val stripePluginVersion = "6.6.0"
 
     @Before
@@ -280,6 +281,24 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             assertThat(result).isEqualTo(
                 CardReaderOnboardingState.PluginUnsupportedVersion(PluginType.STRIPE_EXTENSION_GATEWAY)
+            )
+        }
+
+    @Test
+    fun `given store in Canada, when wcpay plugin outdated, then UNSUPPORTED_VERSION returned`() =
+        testBlocking {
+            whenever(wooStore.getStoreCountryCode(site)).thenReturn("CA")
+            whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(true)
+            whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForCanada)
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+                .thenReturn(buildWCPayPluginInfo(version = wcPayPluginVersion))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY)).thenReturn(null)
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isEqualTo(
+                CardReaderOnboardingState.PluginUnsupportedVersion(PluginType.WOOCOMMERCE_PAYMENTS)
             )
         }
 
@@ -1018,7 +1037,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         whenever(wooStore.getStoreCountryCode(site)).thenReturn("CA")
         whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(true)
         whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-            .thenReturn(buildWCPayPluginInfo(isActive = true))
+            .thenReturn(buildWCPayPluginInfo(isActive = true, version = wcPayPluginVersionCanada))
         whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
             .thenReturn(buildStripeExtensionPluginInfo(isActive = false))
         whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForCanada)
