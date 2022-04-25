@@ -135,7 +135,11 @@
     <color name="product_status_fg_other">@color/woo_blue_50</color>
     <color name="product_status_fg_pending">@color/woo_orange_50</color>
     <color name="product_filer_bg_selected">@color/color_primary_surface</color>
-
+    <!--
+        Product Status Badge
+    -->
+    <color name="product_status_badge_draft">@color/woo_gray_5</color>
+    <color name="product_status_badge_pending">@color/woo_orange_10</color>
     <!--
         Aztec Editor
     -->
