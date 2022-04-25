@@ -40,7 +40,6 @@ import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
-import org.wordpress.android.fluxc.generated.WCCoreActionBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.OnJetpackTimeoutError
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
@@ -94,9 +93,9 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             selectedSite.getIfExists()?.let {
                 appCoroutineScope.launch {
                     wooCommerceStore.fetchWooCommerceSite(it)
+                    wooCommerceStore.fetchSiteGeneralSettings(it)
+                    wooCommerceStore.fetchSiteProductSettings(it)
                 }
-                dispatcher.dispatch(WCCoreActionBuilder.newFetchSiteSettingsAction(it))
-                dispatcher.dispatch(WCCoreActionBuilder.newFetchProductSettingsAction(it))
             }
             return true
         }

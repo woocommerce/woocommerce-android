@@ -2,6 +2,6 @@
 #
 # Ensure this file is checked in to source control!
 
-gem 'fastlane-plugin-wpmreleasetoolkit', '~> 4.0'
+gem 'fastlane-plugin-wpmreleasetoolkit', '~> 4.1'
 #gem 'fastlane-plugin-wpmreleasetoolkit', path: '../../release-toolkit'
 #gem 'fastlane-plugin-wpmreleasetoolkit', git: 'https://github.com/wordpress-mobile/release-toolkit', branch: 'add/s3-binary-upload'
