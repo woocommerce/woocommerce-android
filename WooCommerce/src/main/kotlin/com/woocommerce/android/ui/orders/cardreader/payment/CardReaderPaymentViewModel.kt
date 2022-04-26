@@ -54,7 +54,6 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
@@ -566,16 +565,18 @@ class CardReaderPaymentViewModel
                 exitWithSnackbar(R.string.card_reader_refetching_order_failed)
             }
         } else {
-            viewState.value?.let { paymentState ->
-                if (isStateEligibleForTracking(paymentState)) {
+            viewState.value?.let { state ->
+                if (isStateEligibleForTrackingPayment(state)) {
                     tracker.trackPaymentCancelled(getCurrentPaymentState())
+                } else if (isStateEligibleForTrackingInteracRefund(state)) {
+                    tracker.trackInteracRefundCanceled(getCurrentInteracRefundState())
                 }
             }
             triggerEvent(Exit)
         }
     }
 
-    private fun isStateEligibleForTracking(paymentState: ViewState) =
+    private fun isStateEligibleForTrackingPayment(paymentState: ViewState) =
         paymentState is LoadingDataState ||
             paymentState is CollectPaymentState ||
             paymentState is ProcessingPaymentState ||
@@ -589,6 +590,23 @@ class CardReaderPaymentViewModel
             is ProcessingPaymentState -> "Processing"
             else -> {
                 WooLog.e(WooLog.T.CARD_READER, "Invalid payment state received")
+                null
+            }
+        }
+    }
+
+    private fun isStateEligibleForTrackingInteracRefund(refundState: ViewState) =
+        refundState is RefundLoadingDataState ||
+            refundState is CollectRefundState ||
+            refundState is ProcessingRefundState
+
+    private fun getCurrentInteracRefundState(): String? {
+        return when (viewState.value) {
+            is RefundLoadingDataState -> "Loading"
+            is CollectRefundState -> "Collecting"
+            is ProcessingRefundState -> "Processing"
+            else -> {
+                WooLog.e(WooLog.T.CARD_READER, "Invalid refund state received")
                 null
             }
         }
