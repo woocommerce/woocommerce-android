@@ -54,7 +54,6 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
@@ -214,6 +213,7 @@ class CardReaderPaymentViewModel
     private suspend fun collectPaymentFlow(cardReaderManager: CardReaderManager, order: Order) {
         val customerEmail = order.billingAddress.email
         val site = selectedSite.get()
+        val countryCode = getStoreCountryCode()
         cardReaderManager.collectPayment(
             PaymentInfo(
                 paymentDescription = order.getPaymentDescription(),
@@ -231,7 +231,8 @@ class CardReaderPaymentViewModel
                 customerName = "${order.billingAddress.firstName} ${order.billingAddress.lastName}".ifBlank { null },
                 storeName = selectedSite.get().name.ifEmpty { null },
                 siteUrl = selectedSite.get().url.ifEmpty { null },
-                countryCode = getStoreCountryCode(),
+                countryCode = countryCode,
+                feeAmount = calculateFeeInCents(order.total, countryCode)
             )
         ).collect { paymentStatus ->
             onPaymentStatusChanged(order.id, customerEmail, paymentStatus, order.getAmountLabel())
@@ -502,7 +503,7 @@ class CardReaderPaymentViewModel
     }
 
     fun onViewCreated() {
-        if (viewState.value is ViewState.PrintingReceiptState) {
+        if (viewState.value is PrintingReceiptState) {
             startPrintingFlow()
         }
     }
@@ -608,7 +609,6 @@ class CardReaderPaymentViewModel
     private fun getReceiptUrl(orderId: Long): String {
         return selectedSite.get().let {
             appPrefsWrapper.getReceiptUrl(it.id, it.siteId, it.selfHostedSiteId, orderId)
-                ?: throw IllegalStateException("Receipt URL not available.")
         }
     }
 
@@ -631,6 +631,13 @@ class CardReaderPaymentViewModel
             ) ?: throw IllegalStateException("Store's country code not found.")
         }
     }
+
+    private fun calculateFeeInCents(amount: BigDecimal, countryCode: String) =
+        if (countryCode == "CA") {
+            amount.movePointRight(2).longValueExact() * 26 / 1000 + 25
+        } else {
+            null
+        }
 
     private fun isPluginCanSendReceipt(site: SiteModel): Boolean {
         val preferredPlugin = appPrefsWrapper.getCardReaderPreferredPlugin(
