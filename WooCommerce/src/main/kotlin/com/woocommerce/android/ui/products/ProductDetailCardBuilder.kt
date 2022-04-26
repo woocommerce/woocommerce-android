@@ -486,7 +486,7 @@ class ProductDetailCardBuilder(
 
     private fun Product.title(): ProductProperty {
         val name = this.name.fastStripHtml()
-        val (badgeText, badgeColor) = this.status?.getBadgeResources() ?: Pair(null, null)
+        val (badgeText, badgeColor) = this.status.getBadgeResources()
         return Editable(
             hint = string.product_detail_title_hint,
             text = name,
@@ -652,11 +652,12 @@ class ProductDetailCardBuilder(
     }
 }
 
-fun ProductStatus.getBadgeResources(): Pair<Int?, Int?> {
-    return when (this) {
+fun ProductStatus?.getBadgeResources(): Pair<Int?, Int?> {
+    return if (this == null) Pair(null, null)
+    else when (this) {
         ProductStatus.PUBLISH -> Pair(null, null)
-        ProductStatus.DRAFT -> Pair(string.product_status_draft, R.color.product_status_badge_draft)
         ProductStatus.PENDING -> Pair(string.product_status_pending, R.color.product_status_badge_pending)
         ProductStatus.PRIVATE -> Pair(string.product_status_privately_published, R.color.product_status_badge_draft)
+        else -> Pair(this.stringResource, R.color.product_status_badge_draft)
     }
 }
