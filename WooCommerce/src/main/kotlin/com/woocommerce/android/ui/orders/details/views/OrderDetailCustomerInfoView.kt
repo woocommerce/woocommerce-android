@@ -78,7 +78,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         if (billingAddress.isNotEmpty()) {
             binding.customerInfoBillingAddressSection.setOnLongClickListener {
                 context.copyToClipboardWithToast(
-                    R.string.order_detail_copy_billing_address_to_clipboard,
+                    R.string.order_detail_copied_billing_address_to_clipboard,
                     billingAddress
                 )
                 true
@@ -189,6 +189,16 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
                 findNavController().navigateSafely(action)
             }
         }
+
+        if (order.customerNote.isNotEmpty()) {
+            binding.customerInfoCustomerNote.setOnLongClickListener {
+                context.copyToClipboardWithToast(
+                    R.string.order_detail_copied_customer_note_to_clipboard,
+                    order.customerNote
+                )
+                true
+            }
+        }
     }
 
     private fun showShippingAddress(order: Order, isVirtualOrder: Boolean, isReadOnly: Boolean) {
@@ -223,7 +233,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         if (shippingAddress.isNotEmpty()) {
             binding.customerInfoShippingAddressSection.setOnLongClickListener {
                 context.copyToClipboardWithToast(
-                    R.string.order_detail_copy_shipping_address_to_clipboard,
+                    R.string.order_detail_copied_shipping_address_to_clipboard,
                     shippingAddress
                 )
                 true

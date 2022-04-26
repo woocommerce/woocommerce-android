@@ -12,7 +12,6 @@ import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.ui.orders.OrderShipmentTrackingHelper
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShipmentTrackingListAdapter.OrderDetailShipmentTrackingViewHolder
 import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.util.copyToClipboard
 import com.woocommerce.android.util.copyToClipboardWithToast
 
 class OrderDetailShipmentTrackingListAdapter(
@@ -86,7 +85,7 @@ class OrderDetailShipmentTrackingListAdapter(
                 if (shipmentTracking.trackingNumber.isNotEmpty()) {
                     setOnLongClickListener {
                         context.copyToClipboardWithToast(
-                            R.string.order_detail_copy_tracking_number_to_clipboard,
+                            R.string.order_detail_copied_tracking_number_to_clipboard,
                             shipmentTracking.trackingNumber
                         )
                         true

@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderDetailNoteItemBinding
 import com.woocommerce.android.model.OrderNote
+import com.woocommerce.android.util.copyToClipboardWithToast
 
 class OrderDetailOrderNoteItemView @JvmOverloads constructor(
     ctx: Context,
@@ -41,6 +42,16 @@ class OrderDetailOrderNoteItemView @JvmOverloads constructor(
             else -> R.drawable.ic_note_private
         }
         binding.orderNoteIcon.setImageDrawable(ContextCompat.getDrawable(context, drawableId))
+
+        if (note.note.isNotEmpty()) {
+            binding.orderNoteNote.setOnLongClickListener {
+                context.copyToClipboardWithToast(
+                    R.string.order_detail_copied_shipping_address_to_clipboard,
+                    note.note
+                )
+                true
+            }
+        }
     }
 
     private fun getHtmlText(txt: String): Spanned {
