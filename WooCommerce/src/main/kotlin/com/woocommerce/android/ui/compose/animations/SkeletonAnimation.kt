@@ -14,7 +14,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.Dp
 import com.woocommerce.android.R
 
-const val SKELETON_ANIMATION_ALPHA = 0.15F
+const val SKELETON_ANIMATION_ALPHA = 0.20F
 
 @Composable
 fun skeletonAnimationBrush(): Brush {
