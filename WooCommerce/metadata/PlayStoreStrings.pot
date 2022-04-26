@@ -14,7 +14,7 @@ msgstr ""
 msgctxt "release_note_090"
 msgid ""
 "9.0:\n"
-"Updated for testing\n"
+"Dates are crucial when you’re running a business! We fixed a glitch when setting a “sale date” on a product – sometimes, that date didn’t end up being what you selected. Community feedback for the win!\n"
 msgstr ""
 
 msgctxt "release_note_089"
