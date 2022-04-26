@@ -184,7 +184,9 @@ class ProductDetailViewModel @Inject constructor(
             val canBeSavedAsDraft = isAddFlowEntryPoint &&
                 !isProductStoredAtSite &&
                 productDraft.status != DRAFT
-            val isNotPublishedUnderCreation = isProductUnderCreation && productDraft.status != PUBLISH
+            val isNotPublishedUnderCreation = isProductUnderCreation &&
+                productDraft.status != PUBLISH &&
+                productDraft.status != PRIVATE
             val showSaveOptionAsPrincipal = hasChanges && (isNotPublishedUnderCreation || !isProductUnderCreation)
             val isProductPublished = productDraft.status == PUBLISH
             val isProductPublishedOrPrivate = isProductPublished || productDraft.status == PRIVATE

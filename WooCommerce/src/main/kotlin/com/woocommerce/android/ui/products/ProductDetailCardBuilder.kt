@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.R
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -9,10 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_VIEW_INVE
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_VIEW_PRODUCT_DESCRIPTION_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.extensions.addIfNotEmpty
-import com.woocommerce.android.extensions.fastStripHtml
-import com.woocommerce.android.extensions.filterNotEmpty
-import com.woocommerce.android.extensions.isSet
+import com.woocommerce.android.extensions.*
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
@@ -488,8 +486,7 @@ class ProductDetailCardBuilder(
 
     private fun Product.title(): ProductProperty {
         val name = this.name.fastStripHtml()
-        val badgeText = if (this.status != ProductStatus.PUBLISH) this.status?.stringResource else null
-        val badgeColor = if (this.status != ProductStatus.PUBLISH) this.status?.colorResource else null
+        val (badgeText, badgeColor) = this.status?.getBadgeResources() ?: Pair(null, null)
         return Editable(
             hint = string.product_detail_title_hint,
             text = name,
@@ -652,5 +649,14 @@ class ProductDetailCardBuilder(
         return missingPriceVariation?.let {
             ProductProperty.Warning(resources.getString(string.variation_detail_price_warning))
         }
+    }
+}
+
+fun ProductStatus.getBadgeResources(): Pair<Int?, Int?> {
+    return when (this) {
+        ProductStatus.PUBLISH -> Pair(null, null)
+        ProductStatus.DRAFT -> Pair(string.product_status_draft, R.color.product_status_badge_draft)
+        ProductStatus.PENDING -> Pair(string.product_status_pending, R.color.product_status_badge_pending)
+        ProductStatus.PRIVATE -> Pair(string.product_status_privately_published, R.color.product_status_badge_draft)
     }
 }

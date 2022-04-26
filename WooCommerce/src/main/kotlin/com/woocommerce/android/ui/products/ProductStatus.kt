@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.products
 
 import android.content.Context
-import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStatus
@@ -12,12 +11,11 @@ import java.util.Locale
  */
 enum class ProductStatus(
     @StringRes val stringResource: Int = 0,
-    val value: String = "",
-    @ColorRes val colorResource: Int = R.color.product_status_badge_draft,
+    val value: String = ""
 ) {
     PUBLISH(R.string.product_status_published, CoreProductStatus.PUBLISH.value),
-    DRAFT(R.string.product_status_draft, CoreProductStatus.DRAFT.value, R.color.product_status_badge_draft),
-    PENDING(R.string.product_status_pending, CoreProductStatus.PENDING.value, R.color.product_status_badge_pending),
+    DRAFT(R.string.product_status_draft, CoreProductStatus.DRAFT.value),
+    PENDING(R.string.product_status_pending, CoreProductStatus.PENDING.value),
     PRIVATE(R.string.product_status_private, CoreProductStatus.PRIVATE.value);
 
     /**
