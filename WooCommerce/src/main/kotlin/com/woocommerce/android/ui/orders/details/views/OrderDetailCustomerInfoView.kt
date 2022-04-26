@@ -11,15 +11,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.OrderDetailCustomerInfoBinding
-import com.woocommerce.android.extensions.collapse
-import com.woocommerce.android.extensions.expand
-import com.woocommerce.android.extensions.hide
-import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.show
+import com.woocommerce.android.extensions.*
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderCustomerHelper
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.util.PhoneUtils
+import com.woocommerce.android.util.copyToClipboardWithToast
 import com.woocommerce.android.widgets.AppRatingDialog
 
 class OrderDetailCustomerInfoView @JvmOverloads constructor(
@@ -78,6 +75,16 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         if (!isReadOnly) {
             binding.customerInfoBillingAddressSection.setOnClickListener { navigateToBillingAddressEditingView() }
         }
+        if (billingAddress.isNotEmpty()) {
+            binding.customerInfoBillingAddressSection.setOnLongClickListener {
+                context.copyToClipboardWithToast(
+                    R.string.order_detail_copy_billing_address_to_clipboard,
+                    billingAddress
+                )
+                true
+            }
+        }
+
         binding.customerInfoViewMore.setOnClickListener { onViewMoreCustomerInfoClick() }
 
         // in read-only mode, if billing info is the only thing available automatically expand it and hide
@@ -212,6 +219,15 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
 
         if (!isReadOnly) {
             binding.customerInfoShippingAddressSection.setOnClickListener { navigateToShippingAddressEditingView() }
+        }
+        if (shippingAddress.isNotEmpty()) {
+            binding.customerInfoShippingAddressSection.setOnLongClickListener {
+                context.copyToClipboardWithToast(
+                    R.string.order_detail_copy_shipping_address_to_clipboard,
+                    shippingAddress
+                )
+                true
+            }
         }
     }
 

@@ -1,19 +1,19 @@
 package com.woocommerce.android.util
 
 import android.app.Activity
-import android.content.ActivityNotFoundException
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
-import android.content.Intent
+import android.content.*
 import android.content.pm.PackageManager
 import android.net.Uri
+import androidx.annotation.StringRes
 import androidx.core.content.FileProvider
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.util.WooLog.T
 import org.wordpress.android.util.ToastUtils
 import java.io.File
+import java.lang.IllegalStateException
 
 // TODO Duplicating methods from WordPress' WPActivityUtils
 object ActivityUtils {
@@ -110,5 +110,18 @@ object ActivityUtils {
 fun Context.copyToClipboard(label: String, text: String) {
     with(getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager) {
         setPrimaryClip(ClipData.newPlainText(label, text))
+    }
+}
+
+/**
+ * Similar to the above but shows a toast on success/failure
+ */
+fun Context.copyToClipboardWithToast(@StringRes titleRes: Int, text: String) {
+    try {
+        copyToClipboard(getString(titleRes), text)
+        ToastUtils.showToast(this, titleRes)
+    } catch (e: IllegalStateException) {
+        WooLog.e(T.UTILS, e)
+        ToastUtils.showToast(this, R.string.error_copy_to_clipboard)
     }
 }

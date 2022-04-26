@@ -540,6 +540,9 @@
     <string name="orderdetail_empty_address">No address specified</string>
     <string name="order_detail_use_as_billing_address">Use as Billing Address</string>
     <string name="order_detail_use_as_shipping_address">Use as Shipping Address</string>
+    <string name="order_detail_copy_shipping_address_to_clipboard">Copied shipping address to clipboard</string>
+    <string name="order_detail_copy_billing_address_to_clipboard">Copied billing address to clipboard</string>
+    <string name="order_detail_copy_tracking_number_to_clipboard">Copied tracking number to clipboard</string>
 
     <!--
         Shipping label Refunds

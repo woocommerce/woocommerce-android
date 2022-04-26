@@ -24,6 +24,8 @@
         android:drawablePadding="@dimen/major_100"
         android:gravity="center_vertical"
         android:paddingBottom="@dimen/minor_100"
+        android:focusableInTouchMode="true"
+        android:textIsSelectable="true"
         android:visibility="gone" />
 
 </FrameLayout>

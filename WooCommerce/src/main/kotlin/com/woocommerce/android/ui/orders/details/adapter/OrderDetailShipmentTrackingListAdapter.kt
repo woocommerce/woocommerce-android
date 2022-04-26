@@ -6,11 +6,14 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
+import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderDetailShipmentTrackingListItemBinding
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.ui.orders.OrderShipmentTrackingHelper
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShipmentTrackingListAdapter.OrderDetailShipmentTrackingViewHolder
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.util.copyToClipboard
+import com.woocommerce.android.util.copyToClipboardWithToast
 
 class OrderDetailShipmentTrackingListAdapter(
     private val onDeleteShipmentTrackingClicked: ((trackingNumber: String) -> Unit),
@@ -79,6 +82,15 @@ class OrderDetailShipmentTrackingListAdapter(
                         trackingNumber = shipmentTracking.trackingNumber,
                         onDeleteTrackingClicked = onDeleteShipmentTrackingClicked
                     )
+                }
+                if (shipmentTracking.trackingNumber.isNotEmpty()) {
+                    setOnLongClickListener {
+                        context.copyToClipboardWithToast(
+                            R.string.order_detail_copy_tracking_number_to_clipboard,
+                            shipmentTracking.trackingNumber
+                        )
+                        true
+                    }
                 }
             }
         }
