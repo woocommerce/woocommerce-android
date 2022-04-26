@@ -33,7 +33,7 @@ class CurrencyFormatter @Inject constructor(
         private const val ONE_MILLION = 1000000
 
         private const val BACKOFF_DELAY = 1_000L
-        private const val BACKOFF_INTENTS = 20
+        private const val BACKOFF_INTENTS = 3
 
         // Formats the value to two decimal places
         private val currencyFormatter: DecimalFormat by lazy {
