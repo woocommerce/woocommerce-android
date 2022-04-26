@@ -569,7 +569,7 @@ class CardReaderPaymentViewModel
                 if (isStateEligibleForTrackingPayment(state)) {
                     tracker.trackPaymentCancelled(getCurrentPaymentState())
                 } else if (isStateEligibleForTrackingInteracRefund(state)) {
-                    tracker.trackInteracRefundCanceled(getCurrentInteracRefundState())
+                    tracker.trackInteracRefundCancelled(getCurrentInteracRefundState())
                 }
             }
             triggerEvent(Exit)

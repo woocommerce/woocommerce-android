@@ -2718,7 +2718,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.onBackPressed()
 
-            verify(tracker).trackInteracRefundCanceled("Loading")
+            verify(tracker).trackInteracRefundCancelled("Loading")
         }
 
     @Test
@@ -2732,7 +2732,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.onBackPressed()
 
-            verify(tracker).trackInteracRefundCanceled("Collecting")
+            verify(tracker).trackInteracRefundCancelled("Collecting")
         }
 
     @Test
@@ -2746,7 +2746,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.onBackPressed()
 
-            verify(tracker).trackInteracRefundCanceled("Processing")
+            verify(tracker).trackInteracRefundCancelled("Processing")
         }
 
     //endregion - Interac Refund tests

@@ -264,7 +264,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     // --Card Present Payments - Interac refund
     CARD_PRESENT_COLLECT_INTERAC_PAYMENT_SUCCESS,
     CARD_PRESENT_COLLECT_INTERAC_PAYMENT_FAILED,
-    CARD_PRESENT_COLLECT_INTERAC_REFUND_CANCELED,
+    CARD_PRESENT_COLLECT_INTERAC_REFUND_CANCELLED,
 
     // -- Card Reader - discovery
     CARD_READER_DISCOVERY_TAPPED,

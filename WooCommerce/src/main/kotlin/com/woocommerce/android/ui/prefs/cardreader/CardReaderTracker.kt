@@ -290,9 +290,9 @@ class CardReaderTracker @Inject constructor(
         )
     }
 
-    fun trackInteracRefundCanceled(currentRefundState: String?) {
+    fun trackInteracRefundCancelled(currentRefundState: String?) {
         track(
-            CARD_PRESENT_COLLECT_INTERAC_REFUND_CANCELED,
+            CARD_PRESENT_COLLECT_INTERAC_REFUND_CANCELLED,
             errorDescription = "User manually cancelled the payment during state $currentRefundState"
         )
     }
