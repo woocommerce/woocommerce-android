@@ -144,8 +144,10 @@ platform :android do
       play_store_screenshot_8: File.join(metadata_folder, 'promo_screenshot_8.txt')
     }
 
+    po_path = File.join(metadata_folder, 'PlayStoreStrings.pot')
+
     android_update_metadata_source(
-      po_file_path: File.join(metadata_folder, 'PlayStoreStrings.pot'),
+      po_file_path: po_path,
       source_files: files,
       release_version: options[:version]
     )
