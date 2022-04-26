@@ -2,13 +2,15 @@ package com.woocommerce.android.ui.orders.filters.data
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.DateUtils
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class OrderFiltersRepository @Inject constructor(
     private val appSharedPrefs: AppPrefsWrapper,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val dateUtils: DateUtils
 ) {
     fun setSelectedFilters(
         filterCategory: OrderListFilterCategory,
@@ -39,8 +41,8 @@ class OrderFiltersRepository @Inject constructor(
         selectedSite.getIfExists()?.let {
             appSharedPrefs.setOrderFilterCustomDateRange(
                 it.id,
-                startDateMillis,
-                endDateMillis
+                dateUtils.getDateInMillisAtTheStartOfTheDay(startDateMillis),
+                dateUtils.getDateInMillisAtTheEndOfTheDay(endDateMillis)
             )
         }
     }
