@@ -203,7 +203,7 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
         whenever(terminalWrapper.isInitialized()).thenReturn(false)
 
         assertThatIllegalStateException().isThrownBy {
-            runBlockingTest {
+            testBlocking {
                 cardReaderManager.refundInteracPayment(mock())
             }
         }
@@ -211,7 +211,7 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
 
     @Test
     fun `when refund interac payment is initiated, then reset bluetooth card reader messages`() =
-        runBlockingTest {
+        testBlocking {
             whenever(terminalWrapper.isInitialized()).thenReturn(true)
             cardReaderManager.refundInteracPayment(mock())
 
@@ -220,7 +220,7 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
 
     @Test
     fun `when refund interac payment is initiated, then refund interac payment is called with correct params`() =
-        runBlockingTest {
+        testBlocking {
             whenever(terminalWrapper.isInitialized()).thenReturn(true)
             val refundParams = RefundParams(
                 chargeId = "chargeId",
