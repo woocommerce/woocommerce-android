@@ -151,7 +151,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(orderRepository.getOrderById(any())).thenReturn(mockedOrder)
         whenever(mockedOrder.total).thenReturn(DUMMY_TOTAL)
         whenever(mockedOrder.currency).thenReturn("GBP")
-        whenever(currencyFormatter.formatAmountWithCurrency("GBP", DUMMY_TOTAL.toDouble()))
+        whenever(currencyFormatter.formatAmountWithCurrency(DUMMY_TOTAL.toDouble(), "GBP"))
             .thenReturn("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
         whenever(mockedOrder.billingAddress).thenReturn(mockedAddress)
         whenever(mockedAddress.email).thenReturn("")
