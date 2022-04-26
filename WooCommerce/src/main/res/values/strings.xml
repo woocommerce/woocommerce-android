@@ -382,6 +382,7 @@
     <string name="order_creation_add_fee_removal_hint">Remove fee from order</string>
     <string name="order_creation_fee_percentage_hint">Percentage (%)</string>
     <string name="order_creation_fee_percentage_toggle_text">Calculate as percentage</string>
+    <string name="order_creation_fee_percentage_calculated_amount">Calculated amount: %s</string>
     <!--
         Order Filters
     -->
