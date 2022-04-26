@@ -18,5 +18,16 @@
         <argument
             android:name="couponId"
             app:argType="long" />
+        <action
+            android:id="@+id/action_couponDetailsFragment_to_editCouponFragment"
+            app:destination="@id/editCouponFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/editCouponFragment"
+        android:name="com.woocommerce.android.ui.coupons.edit.EditCouponFragment"
+        android:label="EditCouponFragment">
+        <argument
+            android:name="couponId"
+            app:argType="long" />
     </fragment>
 </navigation>
