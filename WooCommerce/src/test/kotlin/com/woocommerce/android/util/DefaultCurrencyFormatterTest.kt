@@ -6,8 +6,9 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.test.TestCoroutineScope
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.doReturn
@@ -31,7 +32,7 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
 
     @Test
     fun `when the selected site changes the default currency code updates`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        runTest {
             setupSitesFlow()
             // When the selected site currency code is empty
             var result = formatter.formatAmountWithCurrency(113.7)
@@ -39,7 +40,7 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
             assertThat(result).doesNotContain("\$US").contains("$")
 
             // When the selected site change to a site with currencyCode ARS
-            advanceTimeBy(1_000)
+            advanceTimeBy(1_100)
             result = formatter.formatAmountWithCurrency(113.7)
             // Then the formatted currency contains ARS
             assertThat(result).contains("ARS")
@@ -53,7 +54,7 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
 
     @Test
     fun `when fetching site settings are null then retry fetching settings with exponential backoff`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        runTest {
             // First time fetch site setting will return an invalid response error
             // Second time fetch site setting will return an empty success response
             // Third time fetch site setting will return a success response
@@ -93,7 +94,7 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
             wcStore = wcStore,
             selectedSite = selectedSite,
             localeProvider = localeProvider,
-            appCoroutineScope = TestCoroutineScope(coroutinesTestRule.testDispatcher),
+            appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher),
             dispatchers = coroutinesTestRule.testDispatchers
         )
     }
@@ -126,7 +127,7 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
             wcStore = wcStore,
             selectedSite = selectedSite,
             localeProvider = localeProvider,
-            appCoroutineScope = TestCoroutineScope(coroutinesTestRule.testDispatcher),
+            appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher),
             dispatchers = coroutinesTestRule.testDispatchers
         )
     }
