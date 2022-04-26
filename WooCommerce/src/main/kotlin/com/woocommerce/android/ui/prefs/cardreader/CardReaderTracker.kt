@@ -219,7 +219,7 @@ class CardReaderTracker @Inject constructor(
     }
 
     fun trackInteracPaymentSucceeded() {
-        track(CARD_INTERAC_COLLECT_PAYMENT_SUCCESS)
+        track(CARD_PRESENT_COLLECT_INTERACT_PAYMENT_SUCCESS)
     }
 
     fun trackPrintReceiptTapped() {
