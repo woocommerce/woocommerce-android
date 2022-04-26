@@ -2735,6 +2735,20 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             verify(tracker).trackInteracRefundCanceled("Collecting")
         }
 
+    @Test
+    fun `given refund flow is processing, when user presses back button, then refund cancel event is tracked`() =
+        testBlocking {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow { emit(CardInteracRefundStatus.ProcessingInteracRefund) }
+            }
+            viewModel.start()
+
+            viewModel.onBackPressed()
+
+            verify(tracker).trackInteracRefundCanceled("Processing")
+        }
+
     //endregion - Interac Refund tests
 
     private suspend fun simulateFetchOrderJobState(inProgress: Boolean) {
