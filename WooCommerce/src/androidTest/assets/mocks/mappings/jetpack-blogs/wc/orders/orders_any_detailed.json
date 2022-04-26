@@ -8,10 +8,10 @@
             },
             "path": {
                 "matches": "/wc/v3/orders/(.*)"
-            },            
+            },
             "query": {
                 "matches": "\\{\"per_page\":\"1\",\"offset\":\"0\",\"status\":\"any\"\\}"
-            },            
+            },
             "locale": {
                 "matches": "(.*)"
             }
@@ -21,115 +21,77 @@
         "status": 200,
         "jsonBody": {
             "data": [{
-                "id": 2789,
-                "parent_id": 0,
-                "status": "on-hold",
-                "currency": "USD",
-                "version": "4.6.1",
-                "prices_include_tax": false,
-                "date_created": "{{#assign 'customformat'}}yyyy-MM-dd'T'HH:mm:ss{{/assign}}{{fnow offset='-10 minutes' format=customformat}}",
-                "date_modified": "{{fnow offset='-10 minutes' format=customformat}}",
-                "discount_total": "0.00",
-                "discount_tax": "0.00",
-                "shipping_total": "0.00",
-                "shipping_tax": "0.00",
-                "cart_tax": "0.00",
-                "total": "110.00",
-                "total_tax": "0.00",
-                "customer_id": 742108,
-                "order_key": "wc_order_4eyyMamrS1jeL",
-                "billing": {
-                    "first_name": "bbbbb",
-                    "last_name": "bbbbb",
-                    "company": "bbbbb",
-                    "address_1": "74 Eastbourne Rd",
-                    "address_2": "",
-                    "city": "ROBOROUGH",
-                    "state": "",
-                    "postcode": "EX14 5HN",
-                    "country": "GB",
-                    "email": "yzqoimajgfue@abbuzz.com",
-                    "phone": "078 1369 7987"
+                "id":2201,
+                "parent_id":0,
+                "status":"processing",
+                "currency":"USD",
+                "version":"6.3.1",
+                "prices_include_tax":false,
+                "date_created":"{{#assign 'customformat'}}yyyy-MM-dd'T'HH:mm:ss{{/assign}}{{fnow offset='-10 minutes' format=customformat}}",
+                "date_modified":"{{fnow offset='-10 minutes' format=customformat}}",
+                "discount_total":"0.00",
+                "discount_tax":"0.00",
+                "shipping_total":"0.00",
+                "shipping_tax":"0.00",
+                "cart_tax":"0.00",
+                "total":"0.00",
+                "total_tax":"0.00",
+                "customer_id":0,
+                "order_key":"wc_order_itGmODLV25QAx",
+                "billing":{
+                    "first_name":"",
+                    "last_name":"",
+                    "company":"",
+                    "address_1":"",
+                    "address_2":"",
+                    "city":"",
+                    "state":"",
+                    "postcode":"",
+                    "country":"",
+                    "email":"",
+                    "phone":""
                 },
-                "shipping": {
-                    "first_name": "bbbbb",
-                    "last_name": "bbbbb",
-                    "company": "bbbbb",
-                    "address_1": "74 Eastbourne Rd",
-                    "address_2": "",
-                    "city": "ROBOROUGH",
-                    "state": "",
-                    "postcode": "EX14 5HN",
-                    "country": "GB",
-                    "phone": "078 1369 7987"
+                "shipping":{
+                    "first_name":"",
+                    "last_name":"",
+                    "company":"",
+                    "address_1":"",
+                    "address_2":"",
+                    "city":"",
+                    "state":"",
+                    "postcode":"",
+                    "country":"",
+                    "phone":""
                 },
-                "payment_method": "cheque",
-                "payment_method_title": "Check payments",
-                "transaction_id": "",
-                "customer_ip_address": "173.255.237.70",
-                "customer_user_agent": "Go-http-client\/1.1",
-                "created_via": "checkout",
-                "customer_note": "",
-                "date_completed": null,
-                "date_paid": null,
-                "cart_hash": "5406f982399f1e566cc92507aed9e781",
-                "number": "2789",
-                "meta_data": [{
-                    "id": 4025,
-                    "key": "is_vat_exempt",
-                    "value": "no"
-                }],
-                "line_items": [{
-                    "id": 40,
-                    "name": "Akoya Pearl shades",
-                    "product_id": 2129,
-                    "variation_id": 0,
-                    "quantity": 1,
-                    "tax_class": "",
-                    "subtotal": "110.00",
-                    "subtotal_tax": "0.00",
-                    "total": "110.00",
-                    "total_tax": "0.00",
-                    "taxes": [],
-                    "meta_data": [],
-                    "sku": "",
-                    "price": 110,
-                    "parent_name": null
-                }],
-                "tax_lines": [],
-                "shipping_lines": [{
-                    "id": 41,
-                    "method_title": "Free shipping",
-                    "method_id": "free_shipping",
-                    "instance_id": "1",
-                    "total": "0.00",
-                    "total_tax": "0.00",
-                    "taxes": [],
-                    "meta_data": [{
-                        "id": 360,
-                        "key": "Items",
-                        "value": "Akoya Pearl shades &times; 1",
-                        "display_key": "Items",
-                        "display_value": "Akoya Pearl shades &times; 1"
-                    }]
-                }],
-                "fee_lines": [],
-                "coupon_lines": [],
-                "refunds": [],
+                "payment_method":"",
+                "payment_method_title":"",
+                "transaction_id":"",
+                "customer_ip_address":"",
+                "customer_user_agent":"",
+                "created_via":"rest-api",
+                "customer_note":"",
+                "date_completed":null,
+                "date_paid":null,
+                "cart_hash":"",
+                "number":"2201",
+                "meta_data":[],
+                "line_items":[],
+                "tax_lines":[],
+                "shipping_lines":[],
+                "fee_lines":[],
+                "coupon_lines":[],
+                "refunds":[],
                 "date_created_gmt": "{{fnow offset='-10 minutes' format=customformat}}",
                 "date_modified_gmt": "{{fnow offset='-10 minutes' format=customformat}}",
-                "date_completed_gmt": null,
-                "date_paid_gmt": null,
-                "currency_symbol": "$",
-                "_links": {
+                "date_completed_gmt":null,
+                "date_paid_gmt":null,
+                "currency_symbol":"$",
+                "_links":{
                     "self": [{
-                        "href": "https:\/\/automatticwidgets.wpcomstaging.com\/wp-json\/wc\/v3\/orders\/2789"
+                        "href": "https:\/\/automatticwidgets.wpcomstaging.com\/wp-json\/wc\/v3\/orders\/2201"
                     }],
                     "collection": [{
                         "href": "https:\/\/automatticwidgets.wpcomstaging.com\/wp-json\/wc\/v3\/orders"
-                    }],
-                    "customer": [{
-                        "href": "https:\/\/automatticwidgets.wpcomstaging.com\/wp-json\/wc\/v3\/customers\/742108"
                     }]
                 }
             }]

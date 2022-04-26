@@ -4,7 +4,6 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.telephony.TelephonyManager
 import android.text.TextUtils
-import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -13,7 +12,6 @@ import com.woocommerce.android.extensions.logInformation
 import com.woocommerce.android.extensions.stateLogInformation
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.util.PackageUtils
-import com.woocommerce.android.util.PreferencesWrapper
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.zendesk.logger.Logger
@@ -45,7 +43,6 @@ private const val enablePushNotificationsDelayAfterIdentityChange: Long = 2500
 private const val maxLogfileLength: Int = 63000 // Max characters allowed in the system status report field
 
 class ZendeskHelper(
-    private val context: Context,
     private val accountStore: AccountStore,
     private val siteStore: SiteStore,
     private val supportHelper: SupportHelper
@@ -58,12 +55,6 @@ class ZendeskHelper(
 
     private val zendeskPushRegistrationProvider: PushRegistrationProvider?
         get() = zendeskInstance.provider()?.pushRegistrationProvider()
-
-    private val wcPushNotificationDeviceToken: String?
-        get() {
-            val preferences = PreferenceManager.getDefaultSharedPreferences(context)
-            return preferences.getString(PreferencesWrapper.WPCOM_PUSH_DEVICE_TOKEN, null)
-        }
 
     private val timer: Timer by lazy {
         Timer()
@@ -233,7 +224,7 @@ class ZendeskHelper(
             return
         }
         // The device token will not be available if the user is not logged in, so this check serves two purposes
-        wcPushNotificationDeviceToken?.let { deviceToken ->
+        AppPrefs.getFCMToken().takeIf { it.isNotEmpty() }?.let { deviceToken ->
             zendeskPushRegistrationProvider?.registerWithDeviceIdentifier(
                 deviceToken,
                 object : ZendeskCallback<String>() {

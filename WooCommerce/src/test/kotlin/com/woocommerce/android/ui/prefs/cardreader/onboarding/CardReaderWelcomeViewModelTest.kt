@@ -1,23 +1,31 @@
 package com.woocommerce.android.ui.prefs.cardreader.onboarding
 
-import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderWelcomeViewModel.CardReaderWelcomeDialogEvent.NavigateToOnboardingFlow
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 
 class CardReaderWelcomeViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: CardReaderWelcomeViewModel
+    private val appPrefsWrapper: AppPrefsWrapper = mock()
+
+    private val savedState = CardReaderWelcomeDialogFragmentArgs(
+        cardReaderFlowParam = CardReaderFlowParam.CardReadersHub
+    ).initSavedStateHandle()
 
     @Before
     fun setUp() {
-        viewModel = CardReaderWelcomeViewModel(SavedStateHandle())
+        viewModel = CardReaderWelcomeViewModel(savedState, appPrefsWrapper)
     }
 
     @Test
-    fun `when screen shown, then view state initialized`() {
-        assertThat(viewModel.viewState).isNotNull
+    fun `when screen shown, then welcome screen shown set`() {
+        verify(appPrefsWrapper).setCardReaderWelcomeDialogShown()
     }
 
     @Test

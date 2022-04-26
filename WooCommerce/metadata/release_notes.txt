@@ -1,3 +1,2 @@
-Even though this release doesn’t have any surprising new features, we still put a lot of love into it! We fixed a few bugs and made several improvements for accessibility using TalkBack.
+- [*] Fixes a bug that caused the scheduled sale dates of a product to be different than the selected dates. [https://github.com/woocommerce/woocommerce-android/pull/6188]
 
-Did you know we’ve released a beta feature for creating orders? Head to the Menu tab, tap the settings icon, and scroll to beta features.

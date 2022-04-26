@@ -1,13 +1,12 @@
 package com.woocommerce.android.model
 
-import com.woocommerce.android.extensions.parseFromIso8601DateFormat
+import com.woocommerce.android.extensions.parseGmtDateFromIso8601DateFormat
 import org.wordpress.android.fluxc.persistence.entity.CouponDataModel
 import java.math.BigDecimal
-import java.util.*
+import java.util.Date
 
 data class Coupon(
     val id: Long,
-    val siteId: Long,
     val code: String? = null,
     val amount: BigDecimal? = null,
     val dateCreatedGmt: Date? = null,
@@ -27,7 +26,8 @@ data class Coupon(
     val products: List<Product>,
     val excludedProducts: List<Product>,
     val categories: List<ProductCategory>,
-    val excludedCategories: List<ProductCategory>
+    val excludedCategories: List<ProductCategory>,
+    val restrictedEmails: List<String>
 ) {
     sealed class Type(open val value: String) {
         companion object {
@@ -52,26 +52,26 @@ data class Coupon(
 }
 
 fun CouponDataModel.toAppModel() = Coupon(
-    id = couponEntity.id,
-    siteId = couponEntity.siteId,
-    code = couponEntity.code,
-    amount = couponEntity.amount?.toBigDecimalOrNull(),
-    dateCreatedGmt = couponEntity.dateCreatedGmt.parseFromIso8601DateFormat(),
-    dateModifiedGmt = couponEntity.dateModifiedGmt.parseFromIso8601DateFormat(),
-    type = couponEntity.discountType?.let { Coupon.Type.fromString(it) },
-    description = couponEntity.description,
-    dateExpiresGmt = couponEntity.dateExpiresGmt.parseFromIso8601DateFormat(),
-    usageCount = couponEntity.usageCount,
-    isForIndividualUse = couponEntity.isForIndividualUse,
-    usageLimit = couponEntity.usageLimit,
-    usageLimitPerUser = couponEntity.usageLimitPerUser,
-    limitUsageToXItems = couponEntity.limitUsageToXItems,
-    isShippingFree = couponEntity.isShippingFree,
-    areSaleItemsExcluded = couponEntity.areSaleItemsExcluded,
-    minimumAmount = couponEntity.minimumAmount?.toBigDecimalOrNull(),
-    maximumAmount = couponEntity.maximumAmount?.toBigDecimalOrNull(),
+    id = coupon.id,
+    code = coupon.code,
+    amount = coupon.amount?.toBigDecimalOrNull(),
+    dateCreatedGmt = coupon.dateCreatedGmt.parseGmtDateFromIso8601DateFormat(),
+    dateModifiedGmt = coupon.dateModifiedGmt.parseGmtDateFromIso8601DateFormat(),
+    type = coupon.discountType?.let { Coupon.Type.fromString(it) },
+    description = coupon.description,
+    dateExpiresGmt = coupon.dateExpiresGmt.parseGmtDateFromIso8601DateFormat(),
+    usageCount = coupon.usageCount,
+    isForIndividualUse = coupon.isForIndividualUse,
+    usageLimit = coupon.usageLimit,
+    usageLimitPerUser = coupon.usageLimitPerUser,
+    limitUsageToXItems = coupon.limitUsageToXItems,
+    isShippingFree = coupon.isShippingFree,
+    areSaleItemsExcluded = coupon.areSaleItemsExcluded,
+    minimumAmount = coupon.minimumAmount?.toBigDecimalOrNull(),
+    maximumAmount = coupon.maximumAmount?.toBigDecimalOrNull(),
     products = products.map { it.toAppModel() },
     excludedProducts = excludedProducts.map { it.toAppModel() },
     categories = categories.map { it.toAppModel() },
-    excludedCategories = excludedCategories.map { it.toAppModel() }
+    excludedCategories = excludedCategories.map { it.toAppModel() },
+    restrictedEmails = restrictedEmails.map { it.email }
 )

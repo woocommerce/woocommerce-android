@@ -5,8 +5,8 @@ import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForCan
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUnsupportedCountry
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.cardreader.payment.CardReaderPaymentCurrencySupportedChecker
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -39,7 +39,7 @@ class CardReaderPaymentCurrencySupportedCheckerTest : BaseUnitTest() {
 
     @Test
     fun `given usd currency, when store location in USA, then isCurrencySupported returns true`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(wooStore.getStoreCountryCode(site)).thenReturn("US")
             whenever(
                 cardReaderConfigFactory.getCardReaderConfigFor("US")
@@ -52,7 +52,7 @@ class CardReaderPaymentCurrencySupportedCheckerTest : BaseUnitTest() {
 
     @Test
     fun `given usd currency, when store location in Canada, then isCurrencySupported returns false`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(wooStore.getStoreCountryCode(site)).thenReturn("CA")
             whenever(
                 cardReaderConfigFactory.getCardReaderConfigFor("CA")
@@ -65,7 +65,7 @@ class CardReaderPaymentCurrencySupportedCheckerTest : BaseUnitTest() {
 
     @Test
     fun `given cad currency, when store location in Canada, then isCurrencySupported returns true`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(wooStore.getStoreCountryCode(site)).thenReturn("CA")
             whenever(
                 cardReaderConfigFactory.getCardReaderConfigFor("CA")
@@ -78,7 +78,7 @@ class CardReaderPaymentCurrencySupportedCheckerTest : BaseUnitTest() {
 
     @Test
     fun `given cad currency, when store location in USA, then isCurrencySupported returns false`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(wooStore.getStoreCountryCode(site)).thenReturn("US")
             whenever(
                 cardReaderConfigFactory.getCardReaderConfigFor("US")
@@ -91,7 +91,7 @@ class CardReaderPaymentCurrencySupportedCheckerTest : BaseUnitTest() {
 
     @Test
     fun `given usd currency, when store location in unsupported country, then isCurrencySupported returns false`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(wooStore.getStoreCountryCode(site)).thenReturn("IN")
             whenever(
                 cardReaderConfigFactory.getCardReaderConfigFor("IN")

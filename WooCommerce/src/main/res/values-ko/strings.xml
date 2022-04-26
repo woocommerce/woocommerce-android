@@ -1,11 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-03-10 17:54:03+0000
+Translation-Revision-Date: 2022-04-08 11:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="coupon_summary_performance_amount_heading">금액</string>
+    <string name="coupon_summary_performance_discounted_order_heading">할인한 주문</string>
+    <string name="coupon_summary_performance_heading">성과</string>
+    <string name="coupon_summary_maximum_spend">%s의 최대 지출</string>
+    <string name="coupon_summary_minimum_spend">%s의 최소 지출</string>
+    <string name="coupon_summary_heading">쿠폰 요약</string>
+    <string name="coupon_list_view_coupon">쿠폰 요약 보기</string>
+    <string name="coupon_list_wip_message_enabled">기기에서 쿠폰을 보고 편집할 수 있도록 작업하고 있습니다.</string>
+    <string name="coupon_list_wip_title">쿠폰 보기 및 편집</string>
+    <string name="coupon_list_empty_heading">쿠폰 없음</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1s(%2s 제외)</string>
+    <string name="coupon_list_item_label_products_and_categories">%1s 및 %2s</string>
+    <string name="coupon_list_item_label_everything">모든 것</string>
+    <string name="coupon_list_item_label_off">끄기</string>
+    <string name="coupon_list_item_label_expired">만료됨</string>
+    <string name="coupon_list_item_label_active">활성</string>
+    <string name="coupons">쿠폰</string>
+    <string name="inbox_note_recency_date_time">%s에 생성됨</string>
+    <string name="inbox_note_recency_days">%d일 전</string>
+    <string name="inbox_note_recency_one_day">1일 전</string>
+    <string name="inbox_note_recency_hours">%d시간 전</string>
+    <string name="inbox_note_recency_one_hour">1시간 전</string>
+    <string name="inbox_note_recency_minutes">%d분 전</string>
+    <string name="inbox_note_recency_now">조금 전</string>
+    <string name="category_count_many">%d개 카테고리</string>
+    <string name="category_count_one">%d개 카테고리</string>
+    <string name="product_ratings_count_zero">\u2022  승인한 리뷰 없음</string>
+    <string name="product_ratings_count_one">\u2022  승인한 리뷰 1개</string>
+    <string name="product_ratings_count">\u2022  %d개 승인한 리뷰</string>
+    <string name="tax_name_with_tax_percent">%1$s(%2$s%%)</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">기기에서 주문을 생성하고 결제를 진행할 수 있도록 작업하고 있습니다! \"+\" 버튼을 눌러 이러한 기능을 체험하실 수 있습니다.</string>
+    <string name="orderlist_simple_payments_wip_title">주문을 생성하고 결제를 진행하세요!</string>
+    <string name="empty_inbox_description">곧 다시 오셔서 더 많은 스토어 성장 팁과 인사이트를 확인하세요.</string>
+    <string name="empty_inbox_title">수고하셨습니다. 다 읽으셨습니다!</string>
+    <string name="orderstatus_contentDesc_withStatus">주문 상태: %s</string>
+    <string name="no_sku">SKU 없음</string>
+    <string name="count">개수: %s</string>
+    <string name="plus_one">하나 더하기</string>
+    <string name="minus_one">하나 빼기</string>
+    <string name="more_menu_button_coupons">쿠폰</string>
     <string name="dismiss_inbox_note">무시</string>
     <string name="login_error_xml_rpc_auth_error_communicating">사이트와 통신하는 중 문제가 발생했습니다. HTTP 오류 코드 401이 반환되었습니다.</string>
     <string name="login_error_xml_rpc_cannot_read_site_auth_required">XML-RPC 호출이 이 사이트에서 차단된 것 같습니다(오류 코드 401). 로그인 시도가 실패하면 도움말 아이콘을 눌러 FAQ를 확인하세요.</string>
@@ -144,8 +184,6 @@ Language: ko_KR
     <string name="order_card_transition_name">order_card_%1$s</string>
     <string name="cash">현금</string>
     <string name="card">카드</string>
-    <string name="plus">더하기</string>
-    <string name="minus">빼기</string>
     <string name="tax">세금</string>
     <string name="email">이메일</string>
     <string name="order_creation_add_customer_note">메모 추가</string>
@@ -181,9 +219,6 @@ Language: ko_KR
     <string name="date_timeframe_last_quarter">지난 분기</string>
     <string name="date_timeframe_last_month">지난달</string>
     <string name="date_timeframe_last_week">지난주</string>
-    <string name="settings_enable_order_creation_teaser_message">출시 준비가 되면 전체 상세 정보로 주문 생성해 보기</string>
-    <string name="settings_enable_order_creation_teaser_title">주문 생성</string>
-    <string name="beta_features_order_creation">주문 생성</string>
     <string name="beta_features_simple_payments">간편한 결제</string>
     <string name="beta_features_add_ons">애드온 보기</string>
     <string name="orders_empty_message_for_filtered_orders">죄송합니다. 주문을 찾을 수 없습니다.</string>
@@ -204,7 +239,6 @@ Language: ko_KR
     <string name="simple_payments_enter_amount">금액 입력</string>
     <string name="simple_payments_dialog_title">결제하기</string>
     <string name="orderlist_simple_payments_menu">간편한 결제</string>
-    <string name="orderlist_simple_payments_wip_title">기기에서 결제하세요!</string>
     <string name="analytics">분석</string>
     <string name="jetpack_install_progress_step_four_message">모두 완료</string>
     <string name="jetpack_install_progress_step_three_message">스토어 연결 중</string>
@@ -239,7 +273,6 @@ Language: ko_KR
     <string name="orderfilters_default_filter_option">전체</string>
     <string name="orderfilters_filter_card_title_filtered_orders">필터링한 주문</string>
     <string name="orderfilters_filter_card_title_all_orders">모든 주문</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">기기에서 더 쉽게 결제할 수 있도록 만들려고 노력하고 있습니다! 지금은 \"+\" 버튼을 누르면 받으려는 금액으로 주문을 생성할 수 있습니다.</string>
     <string name="jetpack_benefits_modal_dismiss">나중에</string>
     <string name="jetpack_benefits_modal_install_jetpack">젯팩 설정</string>
     <string name="jetpack_benefits_modal_user_profiles_subtitle">여러 사용자에게 우커머스 모바일 접근을 허용하세요.</string>
@@ -807,9 +840,6 @@ Language: ko_KR
     <string name="product_detail_no_variations">이 제품에 아직 변형이 없습니다.</string>
     <string name="product_variant_list_empty">현재 웹에서 크기 및 색상 등의 옵션을 추가할 수 있습니다. 사이트의 제품 페이지에 옵션으로 표시됩니다.</string>
     <string name="product_adding_wip_title">앱에서 제품을 만들어 보세요!</string>
-    <string name="product_ratings_count_zero">\u2022 평가 없음</string>
-    <string name="product_ratings_count_one">\u2022 1회 평가됨</string>
-    <string name="product_ratings_count">\u2022 %d회 평가됨</string>
     <string name="product_detail_fetch_product_invalid_id_error">제품을 찾을 수 없습니다.</string>
     <string name="print_shipping_label_info_step_5">기기에서 인쇄 중 문제가 계속 발생하는 경우 &lt;b&gt;레이블을 PDF로 저장&lt;/b&gt;하고 이메일로 보내 다른 기기에서 인쇄할 수 있습니다.</string>
     <string name="print_shipping_label_info_step_2">&lt;b&gt;\"배송 레이블 인쇄\"&lt;/b&gt;를 선택한 후, 이전에 이 기기에서 인쇄한 적이 없는 경우 프린터를 선택하고 추가해야 할 수도 있습니다.</string>
@@ -1833,12 +1863,6 @@ Language: ko_KR
     <string name="dashboard_top_performers_empty">이 기간에 활동이 없음</string>
     <string name="dashboard_top_performers_total_orders">총 주문 수: %s</string>
     <string name="dashboard_top_performers_title">최고 인기 상품</string>
-    <string name="dashboard_stats_updated_date_time">%s에 업데이트됨</string>
-    <string name="dashboard_stats_updated_one_day">어제 업데이트됨</string>
-    <string name="dashboard_stats_updated_hours">%d시간 전에 업데이트됨</string>
-    <string name="dashboard_stats_updated_one_hour">1시간 전에 업데이트됨</string>
-    <string name="dashboard_stats_updated_minutes">%d분 전에 업데이트됨</string>
-    <string name="dashboard_stats_updated_now">방금 업데이트됨</string>
     <string name="dashboard_stats_error_content_description">오류 이미지</string>
     <string name="dashboard_stats_error">데이터를 가져오는 중 오류 발생</string>
     <string name="dashboard_stats_revenue">수입</string>

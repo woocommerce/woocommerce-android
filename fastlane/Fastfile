@@ -56,9 +56,9 @@ main_strings_path = "./WooCommerce/src/main/res/values/strings.xml"
 update_strings_path = "./fastlane/resources/values/"
 
 platform :android do
-########################################################################
-# Release Lanes
-########################################################################
+  ########################################################################
+  # Release Lanes
+  ########################################################################
 
   #####################################################################################
   # code_freeze
@@ -74,7 +74,7 @@ platform :android do
   #####################################################################################
   desc "Creates a new release branch from the current trunk"
   lane :code_freeze do | options |
-    old_version = android_codefreeze_prechecks(options)
+    android_codefreeze_prechecks(options)
 
     android_bump_version_release()
     new_version = android_get_app_version()
@@ -87,9 +87,6 @@ platform :android do
     android_update_release_notes(new_version: new_version)
     setbranchprotection(repository:GHHELPER_REPO, branch: "release/#{new_version}")
     setfrozentag(repository:GHHELPER_REPO, milestone: new_version)
-
-    localize_libs()
-    send_strings_for_translation()
   end
 
   #####################################################################################
@@ -107,6 +104,10 @@ platform :android do
   desc "Creates a new release branch from the current trunk"
   lane :complete_code_freeze do | options |
     android_completecodefreeze_prechecks(options)
+
+    localize_libs()
+    send_strings_for_translation()
+
     new_version = android_get_app_version()
     trigger_release_build(branch_to_build: "release/#{new_version}")
   end
@@ -144,8 +145,8 @@ platform :android do
     }
 
     android_update_metadata_source(po_file_path: prj_folder + "/WooCommerce/metadata/PlayStoreStrings.pot",
-      source_files: files,
-      release_version: options[:version])
+                                   source_files: files,
+                                   release_version: options[:version])
   end
 
   #####################################################################################
@@ -272,7 +273,7 @@ platform :android do
   #####################################################################################
   # build_and_upload_google_play
   # -----------------------------------------------------------------------------------
-  # This lane builds the app for Google Play, and will correctly select which build 
+  # This lane builds the app for Google Play, and will correctly select which build
   # should be produced based on the build number.
   # -----------------------------------------------------------------------------------
   # Usage:
@@ -314,32 +315,32 @@ platform :android do
   desc "Builds and uploads release for distribution"
   lane :build_and_upload_release do | options |
     android_build_prechecks(skip_confirm: options[:skip_confirm],
-      alpha: false,
-      beta: false,
-      final: true)
-    android_build_preflight() unless options[:skip_prechecks]
+                            alpha: false,
+                            beta: false,
+                            final: true)
+  android_build_preflight() unless options[:skip_prechecks]
 
-    # Create the file names
-    version = android_get_release_version()
-    build_bundle(version: version, flavor:"Vanilla")
+  # Create the file names
+  version = android_get_release_version()
+  build_bundle(version: version, flavor:"Vanilla")
 
-    aab_file_path = File.join(PROJECT_ROOT_FOLDER, "artifacts", aab_file_name(version))
+  aab_file_path = File.join(PROJECT_ROOT_FOLDER, "artifacts", aab_file_name(version))
 
-    UI.error("Unable to find a build artifact at #{aab_file_path}") unless File.exist? aab_file_path
+  UI.error("Unable to find a build artifact at #{aab_file_path}") unless File.exist? aab_file_path
 
-    upload_to_play_store(
-      package_name: 'com.woocommerce.android',
-      aab: aab_file_path,
-      track: 'production',
-      release_status: 'draft',
-      skip_upload_metadata: true,
-      skip_upload_changelogs: true,
-      skip_upload_images: true,
-      skip_upload_screenshots: true,
-      json_key: UPLOAD_TO_PLAY_STORE_JSON_KEY
-    )
+  upload_to_play_store(
+    package_name: 'com.woocommerce.android',
+    aab: aab_file_path,
+    track: 'production',
+    release_status: 'draft',
+    skip_upload_metadata: true,
+    skip_upload_changelogs: true,
+    skip_upload_images: true,
+    skip_upload_screenshots: true,
+    json_key: UPLOAD_TO_PLAY_STORE_JSON_KEY
+  )
 
-    create_gh_release(version: version) if options[:create_release]
+  create_gh_release(version: version) if options[:create_release]
   end
 
   #####################################################################################
@@ -384,22 +385,22 @@ platform :android do
   end
 
   #####################################################################################
-   # trigger_release_build
-   # -----------------------------------------------------------------------------------
-   # This lane triggers a stable release build on CI
-   # -----------------------------------------------------------------------------------
-   # Usage:
-   # bundle exec fastlane trigger_release_build [branch_to_build:<branch_name>]
-   #
-   #####################################################################################
+  # trigger_release_build
+  # -----------------------------------------------------------------------------------
+  # This lane triggers a stable release build on CI
+  # -----------------------------------------------------------------------------------
+  # Usage:
+  # bundle exec fastlane trigger_release_build [branch_to_build:<branch_name>]
+  #
+  #####################################################################################
   desc "Tell Buildkite to trigger a release build"
   lane :trigger_release_build do | options |
-      buildkite_trigger_build(
-        buildkite_organization: 'automattic',
-        buildkite_pipeline: 'woocommerce-android',
-        branch: options[:branch_to_build] || git_branch,
-        pipeline_file: 'release-builds.yml'
-      )
+    buildkite_trigger_build(
+      buildkite_organization: 'automattic',
+      buildkite_pipeline: 'woocommerce-android',
+      branch: options[:branch_to_build] || git_branch,
+      pipeline_file: 'release-builds.yml'
+    )
   end
 
   #####################################################################################
@@ -434,36 +435,36 @@ platform :android do
       },
     ]
 
-    binary_imported_libraries.each do  | lib |
-      download_path = android_download_file_by_version(
-        library_name: lib[:name],
-        import_key: lib[:import_key],
-        repository: lib[:repository],
-        file_path: lib[:strings_file_path],
-        github_release_prefix: lib[:github_release_prefix]
-      )
+  binary_imported_libraries.each do  | lib |
+    download_path = android_download_file_by_version(
+      library_name: lib[:name],
+      import_key: lib[:import_key],
+      repository: lib[:repository],
+      file_path: lib[:strings_file_path],
+      github_release_prefix: lib[:github_release_prefix]
+    )
 
-      if download_path.nil?
-        error_message = "Can't download strings file for #{lib[:name]}.\r\n"
-        error_message += "Strings for this library won't get translated.\r\n"
-        error_message += "Do you want to continue anyway?"
-        UI.user_error! "Abort." unless UI.confirm(error_message)
-      else
-        UI.message("Strings.xml file for #{lib[:name]} downloaded to #{download_path}.")
-        lib_to_merge = [{
-          library: lib[:name],
-          strings_path: download_path,
-          exclusions: lib[:exclusions]
-        }]
-        an_localize_libs(app_strings_path: main_strings_path, libs_strings_path: lib_to_merge)
-        File.delete(download_path) if File.exist?(download_path)
-      end
-    end
+  if download_path.nil?
+    error_message = "Can't download strings file for #{lib[:name]}.\r\n"
+    error_message += "Strings for this library won't get translated.\r\n"
+    error_message += "Do you want to continue anyway?"
+    UI.user_error! "Abort." unless UI.confirm(error_message)
+  else
+    UI.message("Strings.xml file for #{lib[:name]} downloaded to #{download_path}.")
+    lib_to_merge = [{
+      library: lib[:name],
+      strings_path: download_path,
+      exclusions: lib[:exclusions]
+    }]
+    an_localize_libs(app_strings_path: main_strings_path, libs_strings_path: lib_to_merge)
+    File.delete(download_path) if File.exist?(download_path)
+  end
+  end
 
-    is_repo_clean = ("git status --porcelain").empty?
-    unless is_repo_clean then
-      commit_strings(options)
-    end
+  is_repo_clean = ("git status --porcelain").empty?
+  unless is_repo_clean then
+    commit_strings(options)
+  end
   end
 
   #####################################################################################
@@ -491,10 +492,10 @@ platform :android do
     delete_old_changelogs(build: options[:build_number])
     download_path=Dir.pwd + "/metadata/android"
     gp_downloadmetadata(project_url: "https://translate.wordpress.com/projects/woocommerce/woocommerce-android/release-notes/",
-      target_files: files,
-      locales: SUPPORTED_LOCALES.map {| hsh | [ hsh[:glotpress], hsh[:google_play] ]},
-      source_locale: "en-US",
-      download_path: download_path)
+                        target_files: files,
+                        locales: SUPPORTED_LOCALES.map {| hsh | [ hsh[:glotpress], hsh[:google_play] ]},
+                        source_locale: "en-US",
+                        download_path: download_path)
 
     android_create_xml_release_notes(download_path: download_path, build_number: "#{options[:build_number]}", locales: SUPPORTED_LOCALES.map {| hsh | [ hsh[:glotpress], hsh[:google_play] ]})
     add_us_release_notes(relese_notes_path: download_path + "/release_notes.xml", version_name: options[:version])
@@ -506,9 +507,9 @@ platform :android do
   ########################################################################
   private_lane :commit_strings do | options |
     if (options[:auto_commit]) then
-       sh("cd .. && git add #{main_strings_path}")
-       sh("git commit -m 'Update strings for translation'")
-       sh("git push origin HEAD")
+      sh("cd .. && git add #{main_strings_path}")
+      sh("git commit -m 'Update strings for translation'")
+      sh("git push origin HEAD")
     else
       UI.important("Your #{main_strings_path} has changed.")
       UI.input("Please, review the changes, commit them and press return to continue.")
@@ -528,7 +529,6 @@ platform :android do
     # Create the file names
     version = options[:version]
     name = aab_file_name(version)
-    apk_name = universal_apk_name(version)
     aab_file = "WooCommerce-vanilla-release.aab"
     output_dir = "WooCommerce/build/outputs/bundle/"
     build_dir = "artifacts/"
@@ -577,7 +577,7 @@ platform :android do
         map { |locale|  locale[:google_play] }
     end
 
-    # Override the locales array with one locale until 
+    # Override the locales array with one locale until
     # https://github.com/fastlane/fastlane/issues/19521
     # is fixed:
     locales = ["en-EN"]
@@ -619,7 +619,7 @@ platform :android do
           launch_arguments: ["theme light"]
         }
       )
-    )    
+    )
   end
 
   #####################################################################################

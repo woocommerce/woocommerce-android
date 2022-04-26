@@ -4,7 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
@@ -19,8 +19,6 @@ import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.prefs.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.*
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.*
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingChecker
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -32,7 +30,6 @@ import com.woocommerce.android.viewmodel.SingleLiveEvent
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
@@ -43,8 +40,7 @@ class CardReaderConnectViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val dispatchers: CoroutineDispatchers,
     private val tracker: CardReaderTracker,
-    private val appPrefs: AppPrefs,
-    private val onboardingChecker: CardReaderOnboardingChecker,
+    private val appPrefs: AppPrefsWrapper,
     private val locationRepository: CardReaderLocationRepository,
     private val selectedSite: SelectedSite,
     private val cardReaderManager: CardReaderManager,
@@ -79,11 +75,7 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun startFlow() {
         viewState.value = ScanningState(::onCancelClicked)
-        if (arguments.skipOnboarding) {
-            triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
-        } else {
-            checkOnboardingState()
-        }
+        triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
     }
 
     private fun restartFlow() {
@@ -97,14 +89,21 @@ class CardReaderConnectViewModel @Inject constructor(
         }
     }
 
-    private fun onCheckLocationPermissionsResult(granted: Boolean) {
+    private fun onCheckLocationPermissionsResult(granted: Boolean, shouldShowRationale: Boolean) {
         if (granted) {
             onLocationPermissionsVerified()
         } else if (viewState.value !is MissingLocationPermissionsError) {
-            triggerEvent(RequestLocationPermissions(::onRequestLocationPermissionsResult))
+            if (shouldShowRationale) {
+                viewState.value = LocationPermissionRationale(::onLocationPermissionRationaleConfirmed)
+            } else {
+                triggerEvent(RequestLocationPermissions(::onRequestLocationPermissionsResult))
+            }
         }
     }
 
+    private fun onLocationPermissionRationaleConfirmed() {
+        triggerEvent(RequestLocationPermissions(::onRequestLocationPermissionsResult))
+    }
     private fun onRequestLocationPermissionsResult(granted: Boolean) {
         if (granted) {
             onLocationPermissionsVerified()
@@ -195,21 +194,6 @@ class CardReaderConnectViewModel @Inject constructor(
         }
         launch {
             startScanningIfNotStarted()
-        }
-    }
-
-    private fun checkOnboardingState() {
-        launch {
-            when (onboardingChecker.getOnboardingState()) {
-                is CardReaderOnboardingState.GenericError,
-                is CardReaderOnboardingState.NoConnectionError -> {
-                    viewState.value = ScanningFailedState(::restartFlow, ::onCancelClicked)
-                }
-                is CardReaderOnboardingState.OnboardingCompleted -> {
-                    triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
-                }
-                else -> triggerEvent(NavigateToOnboardingFlow)
-            }
         }
     }
 
@@ -423,26 +407,15 @@ class CardReaderConnectViewModel @Inject constructor(
         WooLog.e(WooLog.T.CARD_READER, "Connecting to reader succeeded.")
         storeConnectedReader(cardReader)
 
-        // show the tutorial if this is the first time the user has connected a reader, otherwise we're done
-        if (appPrefs.getShowCardReaderConnectedTutorial()) {
-            triggerEvent(ShowCardReaderTutorial)
-            appPrefs.setShowCardReaderConnectedTutorial(false)
-        } else {
-            exitFlow(connected = true)
-        }
-    }
-
-    fun onTutorialClosed() {
-        launch {
-            // this workaround needs to be here since the navigation component hasn't finished the previous
-            // transaction when a result is received
-            delay(1)
-            exitFlow(connected = true)
-        }
+        exitFlow(connected = true)
     }
 
     private fun exitFlow(connected: Boolean) {
-        triggerEvent(ExitWithResult(connected))
+        if (!connected) {
+            triggerEvent(ExitWithResult(false))
+        } else {
+            triggerEvent(ShowCardReaderTutorial(arguments.cardReaderFlowParam))
+        }
     }
 
     private fun storeConnectedReader(cardReader: CardReader) {
