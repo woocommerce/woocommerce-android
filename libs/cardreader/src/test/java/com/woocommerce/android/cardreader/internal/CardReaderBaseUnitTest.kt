@@ -1,7 +1,5 @@
-package com.woocommerce.android.viewmodel
+package com.woocommerce.android.cardreader.internal
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.woocommerce.android.util.CoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.TestScope
@@ -13,13 +11,10 @@ import org.mockito.junit.MockitoJUnitRunner
 
 @Suppress("UnnecessaryAbstractClass")
 @RunWith(MockitoJUnitRunner::class)
-abstract class BaseUnitTest(testDispatcher: TestDispatcher = UnconfinedTestDispatcher()) {
-    @Rule @JvmField
-    val rule = InstantTaskExecutorRule()
-
+abstract class CardReaderBaseUnitTest(testDispatcher: TestDispatcher = UnconfinedTestDispatcher()) {
     @ExperimentalCoroutinesApi
     @Rule @JvmField
-    val coroutinesTestRule = CoroutineTestRule(testDispatcher)
+    val coroutinesTestRule = CardReaderCoroutineTestRule(testDispatcher)
 
     @ExperimentalCoroutinesApi
     protected fun testBlocking(block: suspend TestScope.() -> Unit) =

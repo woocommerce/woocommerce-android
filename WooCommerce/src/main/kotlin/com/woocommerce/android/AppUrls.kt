@@ -55,7 +55,7 @@ object AppUrls {
     const val WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY = "https://woocommerce.com/products/hardware/"
 
     const val BBPOS_MANUAL_CARD_READER =
-        "https://developer.bbpos.com/quick_start_guide/Chipper%202X%20BT%20Quick%20Start%20Guide.pdf"
+        "https://stripe.com/files/docs/terminal/c2xbt_product_sheet.pdf"
     const val M2_MANUAL_CARD_READER = "https://stripe.com/files/docs/terminal/m2_product_sheet.pdf"
     const val WISEPAD_3_MANUAL_CARD_READER = "https://stripe.com/files/docs/terminal/wp3_product_sheet.pdf"
 

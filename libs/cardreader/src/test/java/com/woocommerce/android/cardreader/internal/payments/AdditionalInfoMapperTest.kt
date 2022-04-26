@@ -1,6 +1,7 @@
 package com.woocommerce.android.cardreader.internal.payments
 
 import com.stripe.stripeterminal.external.models.ReaderDisplayMessage
+import com.woocommerce.android.cardreader.internal.CardReaderBaseUnitTest
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.CHECK_MOBILE_DEVICE
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.INSERT_CARD
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.INSERT_OR_SWIPE_CARD
@@ -13,11 +14,8 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalI
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.junit.MockitoJUnitRunner
 
-@RunWith(MockitoJUnitRunner::class)
-class AdditionalInfoMapperTest {
+class AdditionalInfoMapperTest : CardReaderBaseUnitTest() {
     private lateinit var additionalInfoMapper: AdditionalInfoMapper
 
     @Before

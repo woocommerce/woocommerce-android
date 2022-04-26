@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.coupons.components.CouponExpirationLabel
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.*
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponPerformanceState.Loading
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponPerformanceState.Success
+import com.woocommerce.android.util.FeatureFlag
 
 @Composable
 fun CouponDetailsScreen(
@@ -31,22 +32,26 @@ fun CouponDetailsScreen(
         couponSummaryState,
         onBackPress,
         viewModel::onCopyButtonClick,
-        viewModel::onShareButtonClick
+        viewModel::onShareButtonClick,
+        viewModel::onDeleteButtonClick
     )
 }
 
 @Composable
+@Suppress("LongMethod")
 fun CouponDetailsScreen(
     state: CouponDetailsState,
     onBackPress: () -> Boolean,
     onCopyButtonClick: () -> Unit,
-    onShareButtonClick: () -> Unit
+    onShareButtonClick: () -> Unit,
+    onDeleteButtonClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
     ) {
         var showMenu by remember { mutableStateOf(false) }
+        var showDeleteDialog by remember { mutableStateOf(false) }
 
         TopAppBar(
             backgroundColor = MaterialTheme.colors.surface,
@@ -80,6 +85,18 @@ fun CouponDetailsScreen(
                     }) {
                         Text(stringResource(id = R.string.coupon_details_menu_share))
                     }
+
+                    if (FeatureFlag.COUPONS_M2.isEnabled()) {
+                        DropdownMenuItem(onClick = {
+                            showMenu = false
+                            showDeleteDialog = true
+                        }) {
+                            Text(
+                                stringResource(id = R.string.coupon_details_delete),
+                                color = MaterialTheme.colors.secondary
+                            )
+                        }
+                    }
                 }
             }
         )
@@ -97,6 +114,41 @@ fun CouponDetailsScreen(
             state.couponPerformanceState?.let {
                 CouponPerformanceSection(it)
             }
+        }
+
+        if (showDeleteDialog) {
+            AlertDialog(
+                onDismissRequest = { showDeleteDialog = false },
+                title = {
+                    Text(stringResource(id = R.string.coupon_details_delete))
+                },
+                text = {
+                    Text(stringResource(id = R.string.coupon_details_delete_confirmation))
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            showDeleteDialog = false
+                            onDeleteButtonClick()
+                        }
+                    ) {
+                        Text(
+                            stringResource(id = R.string.delete).uppercase(),
+                            color = MaterialTheme.colors.secondary
+                        )
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = { showDeleteDialog = false }
+                    ) {
+                        Text(
+                            stringResource(id = R.string.cancel).uppercase(),
+                            color = MaterialTheme.colors.secondary
+                        )
+                    }
+                }
+            )
         }
     }
 }

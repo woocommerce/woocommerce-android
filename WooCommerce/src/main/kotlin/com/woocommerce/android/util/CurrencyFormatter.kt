@@ -4,29 +4,36 @@ import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.locale.LocaleProvider
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.text.NumberFormat
-import java.util.Currency
-import java.util.Locale
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 
+@ExperimentalCoroutinesApi
 @Singleton
 class CurrencyFormatter @Inject constructor(
     private val wcStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
     private val localeProvider: LocaleProvider,
-    @AppCoroutineScope private val appCoroutineScope: CoroutineScope
+    @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
+    private val dispatchers: CoroutineDispatchers
 ) {
     companion object {
         private const val ONE_THOUSAND = 1000
         private const val ONE_MILLION = 1000000
+
+        private const val BACKOFF_DELAY = 1_000L
+        private const val BACKOFF_INTENTS = 3
 
         // Formats the value to two decimal places
         private val currencyFormatter: DecimalFormat by lazy {
@@ -57,12 +64,30 @@ class CurrencyFormatter @Inject constructor(
             selectedSite.observe()
                 .onEach { defaultCurrencyCode = "" }
                 .filterNotNull()
-                .mapNotNull { site -> wcStore.getSiteSettings(site) }
-                .map { settings -> settings.currencyCode }
+                .map { site -> getCurrencyCode(site) }
+                .flowOn(dispatchers.io)
                 .collect { currencyCode ->
                     defaultCurrencyCode = currencyCode
                 }
         }
+    }
+
+    private suspend fun getCurrencyCode(site: SiteModel): String {
+        val localSettings = wcStore.getSiteSettings(site)
+        if (localSettings != null) return localSettings.currencyCode
+
+        var currentDelay = BACKOFF_DELAY
+        var currencyCode = ""
+        for (i in 0 until BACKOFF_INTENTS) {
+            val settings = wcStore.fetchSiteGeneralSettings(site).model
+            if (settings != null) {
+                currencyCode = settings.currencyCode
+                break
+            }
+            delay(currentDelay)
+            currentDelay = (currentDelay * i)
+        }
+        return currencyCode
     }
 
     /**
@@ -142,7 +167,11 @@ class CurrencyFormatter @Inject constructor(
     fun formatAmountWithCurrency(amount: Double, currencyCode: String = defaultCurrencyCode): String {
         val locale = localeProvider.provideLocale() ?: Locale.getDefault()
         val formatter = NumberFormat.getCurrencyInstance(locale)
-        formatter.currency = Currency.getInstance(currencyCode)
+        formatter.currency = if (currencyCode.isEmpty()) {
+            Currency.getInstance(locale)
+        } else {
+            Currency.getInstance(currencyCode)
+        }
         return formatter.format(amount)
     }
 }
