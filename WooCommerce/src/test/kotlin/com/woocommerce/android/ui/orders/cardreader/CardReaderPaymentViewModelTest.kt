@@ -2496,7 +2496,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when interac refund fails, then interac refund failed event is triggered`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             setupViewModelForInteracRefund()
             whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
                 flow {
@@ -2521,7 +2521,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when interac refund fails, then interac refund failed event is triggered with correct data`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             setupViewModelForInteracRefund()
             val expectedOrderId = ORDER_ID
             val expectedErrorMessage = "Error Message"
@@ -2557,7 +2557,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given failed to fetch order, when interac refund fails, then interac refund failed event is triggered`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             setupViewModelForInteracRefund()
             whenever(orderRepository.fetchOrderById(ORDER_ID)).thenReturn(null)
 
@@ -2568,7 +2568,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given failed to fetch order, when interac refund fails, then event is triggered with correct data`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             setupViewModelForInteracRefund()
             whenever(orderRepository.fetchOrderById(ORDER_ID)).thenReturn(null)
             val captor = argumentCaptor<String>()
@@ -2582,7 +2582,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given null chargeid on order, when interac refund fails, then interac refund failed event is triggered`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             setupViewModelForInteracRefund()
             whenever(mockedOrder.chargeId).thenReturn(null)
             whenever(
@@ -2598,7 +2598,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given null chargeid on order, when interac refund fails, then event is triggered with correct data`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             setupViewModelForInteracRefund()
             whenever(mockedOrder.chargeId).thenReturn(null)
             whenever(
