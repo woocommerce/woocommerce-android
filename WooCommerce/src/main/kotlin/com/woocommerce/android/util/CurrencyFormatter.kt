@@ -4,7 +4,6 @@ import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.locale.LocaleProvider
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -19,7 +18,6 @@ import javax.inject.Singleton
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 
-@ExperimentalCoroutinesApi
 @Singleton
 class CurrencyFormatter @Inject constructor(
     private val wcStore: WooCommerceStore,
