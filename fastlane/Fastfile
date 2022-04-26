@@ -126,6 +126,8 @@ platform :android do
   #####################################################################################
   desc "Updates the PlayStoreStrings.pot file"
   lane :update_appstore_strings do |options|
+    ensure_git_status_clean
+
     metadata_folder = File.join(PROJECT_ROOT_FOLDER, 'WooCommerce', 'metadata')
 
     files = {
@@ -146,10 +148,17 @@ platform :android do
 
     po_path = File.join(metadata_folder, 'PlayStoreStrings.pot')
 
-    android_update_metadata_source(
+    an_update_metadata_source(
       po_file_path: po_path,
       source_files: files,
       release_version: options[:version]
+    )
+
+    git_add(path: po_path)
+    git_commit(
+      path: po_path,
+      message: "Update `PlayStoreStrings.po` for #{options[:version]}",
+      allow_nothing_to_commit: true
     )
   end
 
