@@ -195,7 +195,7 @@ dependencies {
     implementation("androidx.browser:browser:1.4.0") {
         exclude group: 'com.google.guava', module: 'listenablefuture'
     }
-    implementation "androidx.preference:preference:1.1.1"
+    implementation "androidx.preference:preference:1.2.0"
     implementation "androidx.datastore:datastore-preferences:1.0.0"
 
     implementation "androidx.navigation:navigation-fragment-ktx:$gradle.ext.navigationVersion"
@@ -307,7 +307,7 @@ dependencies {
     }
 
     // ViewModel and LiveData
-    implementation "androidx.fragment:fragment-ktx:1.4.0"
+    implementation "androidx.fragment:fragment-ktx:1.4.1"
     implementation "androidx.activity:activity-ktx:1.4.0"
     implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"

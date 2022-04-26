@@ -35,4 +35,17 @@ class CouponDetailsRepository @Inject constructor(
             else -> Result.success(result.model!!.toAppModel())
         }
     }
+
+    suspend fun deleteCoupon(couponId: Long): Result<Unit> {
+        val result = store.deleteCoupon(
+            site = selectedSite.get(),
+            couponId = couponId,
+            trash = false
+        )
+
+        return when {
+            result.isError -> Result.failure(WooException(result.error))
+            else -> Result.success(Unit)
+        }
+    }
 }
