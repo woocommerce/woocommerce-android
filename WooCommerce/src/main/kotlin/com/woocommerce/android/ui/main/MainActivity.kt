@@ -20,6 +20,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
@@ -107,6 +108,7 @@ class MainActivity :
     private var isBottomNavShowing = true
     private var unfilledOrderCount: Int = 0
     private var isMainThemeApplied = false
+    private var restoreToolbarHeight = 0
     private var menu: Menu? = null
 
     private val toolbarEnabledBehavior = AppBarLayout.Behavior()
@@ -408,11 +410,14 @@ class MainActivity :
     }
 
     private fun showToolbar() {
-        binding.collapsingToolbar.show()
+        if (restoreToolbarHeight > 0) {
+            binding.collapsingToolbar.updateLayoutParams { height = restoreToolbarHeight }
+        }
     }
 
     fun hideToolbar() {
-        binding.collapsingToolbar.hide()
+        restoreToolbarHeight = binding.collapsingToolbar.layoutParams.height
+        binding.collapsingToolbar.updateLayoutParams { height = 0 }
     }
 
     override fun setTitle(title: CharSequence?) {
@@ -446,7 +451,7 @@ class MainActivity :
     private fun removeSubtitle() {
         binding.appBarLayout.removeOnOffsetChangedListener(appBarOffsetListener)
         if (binding.toolbarSubtitle.visibility == View.GONE) return
-        if (binding.collapsingToolbar.isVisible) {
+        if (binding.collapsingToolbar.layoutParams.height != 0) {
             binding.toolbarSubtitle.collapse(duration = 200L)
             hideSubtitleAnimator.start()
         } else {
