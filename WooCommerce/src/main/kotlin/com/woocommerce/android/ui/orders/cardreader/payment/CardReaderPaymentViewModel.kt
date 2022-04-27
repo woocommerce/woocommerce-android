@@ -63,6 +63,8 @@ import java.math.RoundingMode
 import javax.inject.Inject
 
 private const val ARTIFICIAL_RETRY_DELAY = 500L
+private const val CANADA_FEE_FLAT = 0.026
+private const val CANADA_FEE_CENTS = 25
 
 @HiltViewModel
 class CardReaderPaymentViewModel
@@ -636,8 +638,8 @@ class CardReaderPaymentViewModel
     private fun calculateFeeInCents(amount: BigDecimal, countryCode: String) =
         if (countryCode == "CA") {
             amount.movePointRight(2)
-                .multiply(BigDecimal(0.026))
-                .plus(BigDecimal(25))
+                .multiply(BigDecimal(CANADA_FEE_CENTS))
+                .plus(BigDecimal(CANADA_FEE_FLAT))
                 .setScale(0, RoundingMode.HALF_UP)
                 .toLong()
         } else {
