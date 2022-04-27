@@ -1,21 +1,27 @@
 package com.woocommerce.android.ui.inbox
 
-import android.os.*
-import android.view.*
-import androidx.compose.ui.platform.*
-import androidx.fragment.app.*
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.base.*
-import com.woocommerce.android.ui.compose.theme.*
-import com.woocommerce.android.ui.inbox.InboxViewModel.InboxNoteActionEvent.*
-import com.woocommerce.android.util.*
-import com.woocommerce.android.viewmodel.MultiLiveEvent.*
-import dagger.hilt.android.*
-import javax.inject.*
+import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.inbox.InboxViewModel.InboxNoteActionEvent.OpenUrlEvent
+import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class InboxFragment : BaseFragment() {
-
     private val viewModel: InboxViewModel by viewModels()
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
