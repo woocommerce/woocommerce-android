@@ -172,8 +172,8 @@ class ProductDetailFragment :
         }
         handleResult<PricingData>(BaseProductEditorFragment.KEY_PRICING_DIALOG_RESULT) {
             viewModel.updateProductDraft(
-                regularPrice = Optional(it.regularPrice),
-                salePrice = Optional(it.salePrice),
+                regularPrice = it.regularPrice,
+                salePrice = it.salePrice,
                 saleStartDate = it.saleStartDate,
                 saleEndDate = it.saleEndDate,
                 isSaleScheduled = it.isSaleScheduled,

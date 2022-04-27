@@ -842,8 +842,8 @@ class ProductDetailViewModel @Inject constructor(
         soldIndividually: Boolean? = null,
         stockQuantity: Double? = null,
         backorderStatus: ProductBackorderStatus? = null,
-        regularPrice: Optional<BigDecimal?>? = null,
-        salePrice: Optional<BigDecimal?>? = null,
+        regularPrice: BigDecimal? = viewState.productDraft?.regularPrice,
+        salePrice: BigDecimal? = viewState.productDraft?.salePrice,
         isOnSale: Boolean? = null,
         isVirtual: Boolean? = null,
         isSaleScheduled: Boolean? = null,
@@ -892,16 +892,8 @@ class ProductDetailViewModel @Inject constructor(
                 backorderStatus = backorderStatus ?: product.backorderStatus,
                 stockQuantity = stockQuantity ?: product.stockQuantity,
                 images = images ?: product.images,
-                regularPrice = if (regularPrice != null) {
-                    regularPrice.value
-                } else {
-                    product.regularPrice
-                },
-                salePrice = if (salePrice != null) {
-                    salePrice.value
-                } else {
-                    product.salePrice
-                },
+                regularPrice = regularPrice,
+                salePrice = salePrice,
                 isVirtual = isVirtual ?: product.isVirtual,
                 taxStatus = taxStatus ?: product.taxStatus,
                 taxClass = taxClass ?: product.taxClass,
