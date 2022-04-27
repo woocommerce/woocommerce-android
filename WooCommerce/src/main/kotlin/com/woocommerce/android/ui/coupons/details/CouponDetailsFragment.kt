@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCouponDetailsBinding
@@ -15,6 +16,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CopyCodeEvent
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.ShareCodeEvent
+import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.ShowEditCoupon
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.copyToClipboard
@@ -63,6 +65,9 @@ class CouponDetailsFragment : BaseFragment(R.layout.fragment_coupon_details) {
             when (event) {
                 is CopyCodeEvent -> copyCodeToClipboard(event.couponCode)
                 is ShareCodeEvent -> shareCode(event.shareCodeMessage)
+                is ShowEditCoupon -> findNavController().navigate(
+                    CouponDetailsFragmentDirections.actionCouponDetailsFragmentToEditCouponFragment(event.couponId)
+                )
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is Exit -> findNavController().navigateUp()
             }
