@@ -7,8 +7,6 @@ import android.net.Uri
 import androidx.annotation.StringRes
 import androidx.core.content.FileProvider
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.util.WooLog.T
 import org.wordpress.android.util.ToastUtils
