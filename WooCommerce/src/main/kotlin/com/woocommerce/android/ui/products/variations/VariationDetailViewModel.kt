@@ -13,7 +13,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_IMAGE_
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_VIEW_VARIATION_VISIBILITY_SWITCH_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ID
-import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.ProductVariation
