@@ -75,7 +75,7 @@ Managing state properly in Compose is key to updating the UI as expected and mak
 
 - Recommended talk on Compose [state](https://www.youtube.com/watch?v=rmv2ug-wW4U&ab_channel=AndroidDevelopers)
 - Best practices on handling state in `@Composable` functions: 
-	- Apply state hoisting whenever possible. State hoisting is basically moving all private state out of the @Composable functions to make composable functions stateless. Ideally, delegate data manipulation to the viewModel or at least to the parent function that is calling the @Composable function.
+	- Apply https://developer.android.com/jetpack/compose/state#state-hoisting whenever possible. State hoisting is basically moving all private state out of the @Composable functions to make composable functions stateless. Ideally, delegate data manipulation to the viewModel or at least to the parent function that is calling the @Composable function.
 	- When using state inside a composable function prefer to use property delegates such `by` to avoid having to access the `mutableState.value` all the time. For example: `var foo : Int by rememberSaveable {mutableStateOf(1)}`
 	- Always mutate state outside the composable function scope. Like for example onClick{} lambdas passed as parameter.
 	- Pass immutable values to composable functions to respect the single source of truth.
@@ -83,10 +83,29 @@ Managing state properly in Compose is key to updating the UI as expected and mak
 
 # Navigation 🗺 <a name="navigation"></a>
 
-Currently, we are using Compose through `ComposeView` nested inside a `Fragment` as the root in a 1:1 relationship. For this kind of usage, Navigation implementation remains the same, we can keep using the existing navitation_graphs.xml. 
+Currently, we are using Compose through `ComposeView` nested inside a `Fragment` as the root view in a 1:1 relationship. With this kind of usage, Navigation remains unchanged, we can keep using the existing navitation_graphs.xml. 
 There is one thing to keep in mind when using this `ComposeView` approach. Compose views involve ongoing work and registering the composition with external event sources. These registrations can cause the composition to remain live and ineligible for garbage collection for long after the host View may have been abandoned. To avoid any leaks Android provides [ViewCompositionStrategy](https://developer.android.com/reference/kotlin/androidx/compose/ui/platform/ViewCompositionStrategy)  for disposing the composition automatically at an appropriate time. The recommended strategy for the `Fragment` <--> `ComposeView` approach is [DisposeOnViewTreeLifecycleDestroyed](https://developer.android.com/reference/kotlin/androidx/compose/ui/platform/ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
-//TODO Add guidelines to best practices when navigating between Composables. 
+We can add the `ComposeView` to the fragment directly from code. That way we avoid created unnecessary layout xml files. An example on how to do this can be found [here](https://developer.android.com/jetpack/compose/interop/interop-apis#:~:text=You%20can%20also%20include%20a%20ComposeView%20directly%20in%20a%20fragment). Just add `ComposeView` from the fragment's `onCreateView` function: 
+
+```kotlin
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        return ComposeView(requireContext()).apply {
+            // Dispose of the Composition when the view's LifecycleOwner
+            // is destroyed
+            setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                WooThemeWithBackground {
+                    // Compose code here.
+                }
+            }
+        }
+    }
+```
 
 
 # Accessibility ♿️ <a name="accessibility"></a>
