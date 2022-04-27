@@ -1,30 +1,30 @@
 package com.woocommerce.android.widgets
 
 import android.content.Context
+import android.text.Selection
+import android.text.Spannable
 import android.util.AttributeSet
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import com.google.android.material.textview.MaterialTextView
-import com.woocommerce.android.databinding.WcSelectableTextviewBinding
+
 
 /**
- * Custom [MaterialTextView] with built-in selection support and a copy button at the end
+ * Custom [MaterialTextView] with built-in selection support and automatically selects
+ * all text before the action mode (copy, etc.) menu appears
  */
 class WCSelectableTextView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : androidx.appcompat.widget.AppCompatTextView(context, attrs, defStyleAttr), android.view.ActionMode.Callback {
-    private val binding = WcSelectableTextviewBinding.inflate(LayoutInflater.from(context))
-
+) : MaterialTextView(context, attrs, defStyleAttr), android.view.ActionMode.Callback {
     init {
         setTextIsSelectable(true)
         customSelectionActionModeCallback = this
     }
 
     override fun onCreateActionMode(mode: android.view.ActionMode?, menu: Menu?): Boolean {
-        isSelected = true
+        selectAllText()
         return true
     }
 
@@ -38,5 +38,9 @@ class WCSelectableTextView @JvmOverloads constructor(
 
     override fun onDestroyActionMode(mode: android.view.ActionMode?) {
         // noop
+    }
+
+    fun selectAllText() {
+        Selection.setSelection(text as Spannable, 0, length())
     }
 }
