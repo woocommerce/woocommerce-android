@@ -14,7 +14,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 @Module
 class ExperimentationModule {
-
     @Provides
     @Singleton
     fun provideExPlat(
