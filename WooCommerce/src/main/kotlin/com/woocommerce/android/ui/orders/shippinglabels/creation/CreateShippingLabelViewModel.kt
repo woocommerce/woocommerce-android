@@ -217,8 +217,7 @@ class CreateShippingLabelViewModel @Inject constructor(
         mapOf(KEY_STATE to VALUE_STARTED)
     )
 
-    private fun trackPurchaseInitiated(data: List<ShippingRate>, fulfillOrder: Boolean) {
-        val amount = data.sumByBigDecimal { it.price }
+    private fun trackPurchaseInitiated(amount: BigDecimal, fulfillOrder: Boolean) {
         AnalyticsTracker.track(
             AnalyticsEvent.SHIPPING_LABEL_PURCHASE_FLOW,
             mapOf(
@@ -452,7 +451,8 @@ class CreateShippingLabelViewModel @Inject constructor(
     }
 
     private suspend fun purchaseLabels(data: StateMachineData, fulfillOrder: Boolean): Event {
-        trackPurchaseInitiated(data.stepsState.carrierStep.data, fulfillOrder)
+        val amount = data.stepsState.carrierStep.data.sumByBigDecimal { it.price }
+        trackPurchaseInitiated(amount, fulfillOrder)
 
         var result: WooResult<List<ShippingLabel>>
         val duration = measureTimeMillis {
@@ -500,6 +500,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                 AnalyticsEvent.SHIPPING_LABEL_PURCHASE_FLOW,
                 mapOf(
                     KEY_STATE to VALUE_PURCHASE_SUCCEEDED,
+                    KEY_AMOUNT to amount,
                     KEY_TOTAL_DURATION to duration
                 )
             )
