@@ -5,7 +5,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -20,12 +19,14 @@ import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 
 @ExperimentalCoroutinesApi
 class PaymentChargeRepositoryTest : BaseUnitTest() {
-    private val cardPreset: WCPaymentChargeApiResult.PaymentMethodDetails.CardPresent = mock {
+    private val cardDetails: WCPaymentChargeApiResult.PaymentMethodDetails.CardDetails = mock {
         on { brand }.thenReturn("visa")
         on { last4 }.thenReturn("1234")
     }
     private val paymentMethodDetails: WCPaymentChargeApiResult.PaymentMethodDetails = mock {
-        on { cardPresent }.thenReturn(cardPreset)
+        on { cardDetails }.thenReturn(cardDetails)
+        on { interacCardDetails }.thenReturn(cardDetails)
+        on { type }.thenReturn("card_present")
     }
     private val apiResult: WCPaymentChargeApiResult = mock {
         on { paymentMethodDetails }.thenReturn(paymentMethodDetails)
@@ -45,8 +46,8 @@ class PaymentChargeRepositoryTest : BaseUnitTest() {
     private val repo = PaymentChargeRepository(ippStore, selectedSite, appPrefs)
 
     @Test
-    fun `given active plugin saved and response successful when fetching data then card details returned`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `given active plugin saved and card response successful, when fetching data, then card details returned`() {
+        testBlocking {
             // GIVEN
             val chargeId = "charge_id"
             whenever(appPrefs.getCardReaderPreferredPlugin(siteModel.id, siteModel.siteId, siteModel.selfHostedSiteId))
@@ -73,8 +74,67 @@ class PaymentChargeRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given active plugin saved and response not successful when fetching data then error returned`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `given active plugin saved and interac response successful, when fetching data, then card details returned`() {
+        testBlocking {
+            // GIVEN
+            val chargeId = "charge_id"
+            whenever(appPrefs.getCardReaderPreferredPlugin(siteModel.id, siteModel.siteId, siteModel.selfHostedSiteId))
+                .thenReturn(PluginType.STRIPE_EXTENSION_GATEWAY)
+            whenever(cardDetails.last4).thenReturn("2345")
+            whenever(cardDetails.brand).thenReturn("mastercard")
+            whenever(paymentMethodDetails.type).thenReturn("interac_present")
+            whenever(
+                ippStore.fetchPaymentCharge(
+                    WCInPersonPaymentsStore.InPersonPaymentsPluginType.STRIPE,
+                    siteModel,
+                    chargeId
+                )
+            ).thenReturn(WooPayload(apiResult))
+
+            // WHEN
+            val result = repo.fetchCardDataUsedForOrderPayment(chargeId)
+
+            // THEN
+            assertThat(result).isInstanceOf(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success::class.java
+            )
+            assertThat((result as PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success).cardLast4)
+                .isEqualTo("2345")
+            assertThat(result.cardBrand).isEqualTo("mastercard")
+        }
+    }
+
+    @Test
+    fun `given active plugin saved and unknown response successful, when fetching data, then card details null`() {
+        testBlocking {
+            // GIVEN
+            val chargeId = "charge_id"
+            whenever(appPrefs.getCardReaderPreferredPlugin(siteModel.id, siteModel.siteId, siteModel.selfHostedSiteId))
+                .thenReturn(PluginType.STRIPE_EXTENSION_GATEWAY)
+            whenever(paymentMethodDetails.type).thenReturn("unknown")
+            whenever(
+                ippStore.fetchPaymentCharge(
+                    WCInPersonPaymentsStore.InPersonPaymentsPluginType.STRIPE,
+                    siteModel,
+                    chargeId
+                )
+            ).thenReturn(WooPayload(apiResult))
+
+            // WHEN
+            val result = repo.fetchCardDataUsedForOrderPayment(chargeId)
+
+            // THEN
+            assertThat(result).isInstanceOf(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success::class.java
+            )
+            assertThat((result as PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success).cardLast4).isNull()
+            assertThat(result.cardBrand).isNull()
+        }
+    }
+
+    @Test
+    fun `given active plugin saved and response not successful, when fetching data, then error returned`() {
+        testBlocking {
             // GIVEN
             val chargeId = "charge_id"
             whenever(appPrefs.getCardReaderPreferredPlugin(siteModel.id, siteModel.siteId, siteModel.selfHostedSiteId))
@@ -99,7 +159,7 @@ class PaymentChargeRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `given active plugin is not saved, when fetching data, then error returned`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // GIVEN
             val chargeId = "charge_id"
             whenever(appPrefs.getCardReaderPreferredPlugin(siteModel.id, siteModel.siteId, siteModel.selfHostedSiteId))

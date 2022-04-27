@@ -67,7 +67,7 @@ class ParentCategoryListFragment :
         val activity = requireActivity()
 
         parentCategoryListAdapter = ParentCategoryListAdapter(
-            activity.baseContext, viewModel.getSelectedParentId(), this, this
+            viewModel.getSelectedParentId(), this, this
         )
         with(binding.productCategoriesRecycler) {
             layoutManager = androidx.recyclerview.widget.LinearLayoutManager(activity)
@@ -119,7 +119,7 @@ class ParentCategoryListFragment :
     }
 
     private fun showParentCategories(productCategories: List<ProductCategoryItemUiModel>) {
-        parentCategoryListAdapter.parentCategoryList = productCategories
+        parentCategoryListAdapter.submitList(productCategories)
     }
 
     private fun showSkeleton(show: Boolean) {

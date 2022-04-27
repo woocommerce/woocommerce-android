@@ -1,11 +1,88 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-02-15 09:54:03+0000
+Translation-Revision-Date: 2022-04-07 11:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="coupon_summary_performance_amount_heading">Сумма</string>
+    <string name="coupon_summary_performance_discounted_order_heading">Заказы со скидкой</string>
+    <string name="coupon_summary_performance_heading">Производительность</string>
+    <string name="coupon_summary_maximum_spend">Максимальный расход %s</string>
+    <string name="coupon_summary_minimum_spend">Минимальный расход %s</string>
+    <string name="coupon_summary_heading">Сводка по купонам</string>
+    <string name="coupon_list_view_coupon">Смотреть сводку по купонам</string>
+    <string name="coupon_list_wip_message_enabled">Мы разработали функцию, которая позволяет просматривать и редактировать купоны на вашем устройстве.</string>
+    <string name="coupon_list_wip_title">Просмотр и редактирование купонов</string>
+    <string name="coupon_list_empty_heading">Купоны не найдены</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1s без учёта %2s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1s и %2s</string>
+    <string name="coupon_list_item_label_everything">всё</string>
+    <string name="coupon_list_item_label_off">on</string>
+    <string name="coupon_list_item_label_expired">Просрочен</string>
+    <string name="coupon_list_item_label_active">Активный</string>
+    <string name="coupons">Купоны</string>
+    <string name="inbox_note_recency_date_time">Создано %s</string>
+    <string name="inbox_note_recency_days">%d дн. назад</string>
+    <string name="inbox_note_recency_one_day">День назад</string>
+    <string name="inbox_note_recency_hours">%d ч. назад</string>
+    <string name="inbox_note_recency_one_hour">Час назад</string>
+    <string name="inbox_note_recency_minutes">%d мин. назад</string>
+    <string name="inbox_note_recency_now">Только что</string>
+    <string name="category_count_many">Рубрики: %d</string>
+    <string name="category_count_one">%d рубрика</string>
+    <string name="product_ratings_count_zero">\u2022  нет подтверждённых отзывов</string>
+    <string name="product_ratings_count_one">\u2022  один подтверждённый отзыв</string>
+    <string name="product_ratings_count">\u2022 подтверждённые отзывы:  %d</string>
+    <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">Мы работаем над функцией, которая поможет создавать заказы и принимать платежи на вашем устройстве! Эти возможности можно испытать, нажав кнопку \"+\"</string>
+    <string name="orderlist_simple_payments_wip_title">Создавайте заказы и принимайте платежи!</string>
+    <string name="empty_inbox_description">Зайдите позже, чтобы узнать больше советов и идей по развитию вашего магазина</string>
+    <string name="empty_inbox_title">Поздравляем, вы прочитали все примечания!</string>
+    <string name="orderstatus_contentDesc_withStatus">Статус заказа: %s</string>
+    <string name="no_sku">Артикула нет</string>
+    <string name="count">Счётчик: %s</string>
+    <string name="plus_one">Плюс один</string>
+    <string name="minus_one">Минус один</string>
+    <string name="more_menu_button_coupons">Купоны</string>
+    <string name="dismiss_inbox_note">Закрыть</string>
+    <string name="login_error_xml_rpc_auth_error_communicating">Возникла проблема при подключении к сайту. Получен код ошибки HTTP 401.</string>
+    <string name="login_error_xml_rpc_cannot_read_site_auth_required">Вызовы XML-RPC на этом сайте заблокированы (код ошибки 401). Если войти не удалось, нажмите на значок справки, чтобы открыть часто задаваемые вопросы.</string>
+    <string name="login_error_xml_rpc_cannot_read_site">Не удалось найти веб-сайт WordPress по этому URL-адресу. Нажмите на значок справки, чтобы открыть часто задаваемые вопросы.</string>
+    <string name="login_error_xml_rpc_services_disabled">Сервисы XML-RPC на этом сайте отключены.</string>
+    <string name="a8c_email_message">Чтобы отправить запрос в службу поддержки, не используйте почту Automattic</string>
+    <string name="card_reader_onboarding_stripe_account_in_unsupported_country">Мы не поддерживаем счета Stripe, зарегистрированные в %1$s</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">Мы не поддерживаем WooCommerce Payments в %1$s</string>
+    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Мы не поддерживаем Stripe в %1$s</string>
+    <string name="card_reader_connect_scanning_hint">Нажмите кнопку питания на устройстве чтения</string>
+    <string name="card_reader_payment_reader_receipt_sent">Чек отправлен получателю: &lt;strong&gt;%s&lt;/strong&gt;</string>
+    <string name="order_creation_fee_percentage_toggle_text">Процент комиссии</string>
+    <string name="order_creation_fee_percentage_hint">Процент (%)</string>
+    <string name="order_creation_fee_amount_hint">Сумма (долл. США)</string>
+    <string name="order_creation_add_fee_removal_hint">Убрать комиссию из заказа</string>
+    <string name="order_creation_remove_shipping">Убрать доставку из заказа</string>
+    <string name="order_creation_edit_shipping">Доставка</string>
+    <string name="order_creation_add_shipping">Добавить метод доставки</string>
+    <string name="order_creation_shipping_title_add">Добавить доставку</string>
+    <string name="order_creation_shipping_name">Имя</string>
+    <string name="order_creation_shipping_amount">Сумма</string>
+    <string name="order_creation_payment_fee">Сборы</string>
+    <string name="order_creation_customer_details">Информация о клиенте</string>
+    <string name="order_creation_add_fee">Добавить комиссию</string>
+    <string name="order_creation_customer_note_edit_content_description">Изменить примечание клиента</string>
+    <string name="order_creation_customer_edit_content_description">Изменить сведения о клиенте</string>
+    <string name="order_creation_status_edit_content_description">Изменить статус заказа</string>
+    <string name="simple_payments_update_error">Не удалось изменить заказ простых платежей</string>
+    <string name="simple_payments_creation_error">Не удалось создать заказ простых платежей</string>
+    <string name="more_menu_avatar">Фото профиля пользователя</string>
+    <string name="more_menu_button_reviews">Отзывы</string>
+    <string name="more_menu_button_store">Перейти в магазин</string>
+    <string name="more_menu_button_inbox">Входящие</string>
+    <string name="more_menu_button_analytics">Аналитика</string>
+    <string name="more_menu_button_payments">платежи</string>
+    <string name="more_menu_button_woo_admin">WooCommerce Admin</string>
+    <string name="more_menu">Меню</string>
     <string name="card_reader_onboarding_both_plugins_activated_refresh_button">Перезагрузите после обновления</string>
     <string name="card_reader_onboarding_both_plugins_activated_open_store_admin_label">Управление плагинами</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_two">Платежи WooCommerce</string>
@@ -88,10 +165,9 @@ Language: ru
     <string name="order_creation_new_customer_add_different_shipping_address">Добавить другой адрес доставки</string>
     <string name="order_creation_product_instock">В наличии</string>
     <string name="order_creation_product_stock_quantity">%s в наличии</string>
-    <string name="order_creation_customer_details">Новый клиент</string>
     <string name="order_creation_add_products">Добавить товар</string>
     <string name="order_creation_products">Товары</string>
-    <string name="order_creation_add_customer">Добавить клиента</string>
+    <string name="order_creation_add_customer">Добавить сведения о клиенте</string>
     <string name="order_creation_customer">Клиент</string>
     <string name="simple_payments_cash_dlg_button">Отметить как оплаченный</string>
     <string name="simple_payments_cash_dlg_message">Заказ будет создан и отмечен как оплаченный, если вы получили платеж не через WooCommerce</string>
@@ -108,8 +184,6 @@ Language: ru
     <string name="order_card_transition_name">order_card_%1$s</string>
     <string name="cash">Наличные</string>
     <string name="card">Карта</string>
-    <string name="plus">Plus</string>
-    <string name="minus">Минус</string>
     <string name="tax">Налог</string>
     <string name="email">Отправить email</string>
     <string name="order_creation_add_customer_note">Добавить примечание</string>
@@ -145,10 +219,6 @@ Language: ru
     <string name="date_timeframe_last_quarter">Прошлый квартал</string>
     <string name="date_timeframe_last_month">Прошлый месяц</string>
     <string name="date_timeframe_last_week">Прошлая неделя</string>
-    <string name="settings_enable_order_creation_teaser_message">Попробуйте создавать заказы с подробной информацией, пока мы готовим запуск функции</string>
-    <string name="settings_enable_order_creation_teaser_title">Создание заказа</string>
-    <string name="settings_enable_simple_payments_teaser_title">Платежи без хлопот</string>
-    <string name="beta_features_order_creation">Создание заказа</string>
     <string name="beta_features_simple_payments">Платежи без хлопот</string>
     <string name="beta_features_add_ons">Просмотреть дополнения</string>
     <string name="orders_empty_message_for_filtered_orders">Не удалось найти заказы</string>
@@ -166,11 +236,9 @@ Language: ru
     <string name="orderlist_bottom_sheet_create_order_description">Создание нового заказа вручную</string>
     <string name="orderlist_bottom_sheet_create_order_action">Создать заказ</string>
     <string name="orderlist_create_order_button_description">Создать заказ</string>
-    <string name="simple_payments_creation_error">Не удалось создать заказ</string>
     <string name="simple_payments_enter_amount">Введите сумму</string>
     <string name="simple_payments_dialog_title">Получить оплату</string>
     <string name="orderlist_simple_payments_menu">Платёж без хлопот</string>
-    <string name="orderlist_simple_payments_wip_title">Получайте платежи на устройстве!</string>
     <string name="analytics">Аналитика</string>
     <string name="jetpack_install_progress_step_four_message">Все готово</string>
     <string name="jetpack_install_progress_step_three_message">Подключение вашего магазина</string>
@@ -205,8 +273,6 @@ Language: ru
     <string name="orderfilters_default_filter_option">Все</string>
     <string name="orderfilters_filter_card_title_filtered_orders">Отфильтрованные заказы</string>
     <string name="orderfilters_filter_card_title_all_orders">Все заказы</string>
-    <string name="orderlist_simple_payments_wip_message_disabled">Мы стараемся упростить процедуру получения платежей с вашего устройства. Включите эту функцию в разделе \"Настройки &gt; Бета-функции\".</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">Мы стараемся упростить процедуру получения платежей с вашего устройства. А пока нажмите кнопку \"+\", чтобы создать заказ на необходимую сумму.</string>
     <string name="jetpack_benefits_modal_dismiss">Не сейчас</string>
     <string name="jetpack_benefits_modal_install_jetpack">Установить Jetpack</string>
     <string name="jetpack_benefits_modal_user_profiles_subtitle">Обеспечьте возможность доступа к WooCommerce Mobile для нескольких пользователей.</string>
@@ -217,7 +283,6 @@ Language: ru
     <string name="jetpack_benefits_modal_push_notifications_title">Мгновенные уведомления</string>
     <string name="jetpack_benefits_modal_subtitle">Установите бесплатный плагин Jetpack для удобства работы на мобильном устройстве.</string>
     <string name="jetpack_benefits_modal_title">Используйте все возможности магазина</string>
-    <string name="settings_enable_simple_payments_teaser_message">Попробуйте создавать заказы с минимальной информацией, пока мы готовим запуск функции</string>
     <string name="order_detail_use_as_shipping_address">Это адрес доставки</string>
     <string name="order_detail_use_as_billing_address">Это адрес для выставления счетов</string>
     <string name="orderfilters_filters_count_title">Фильтры (%d)</string>
@@ -542,7 +607,6 @@ Language: ru
     <string name="card_reader_connect_connecting_header">Подключение к устройству чтения</string>
     <string name="card_reader_connect_to_reader">Подключиться к устройству чтения</string>
     <string name="card_reader_connect_reader_found_header">Подключить устройство чтения %s?</string>
-    <string name="card_reader_connect_scanning_hint">Нажмите кнопку включения устройства чтения и удерживайте её до появления мигающего синего сигнала.</string>
     <string name="card_reader_connect_scanning_header">Поиск устройств чтения</string>
     <string name="shipping_label_items_count_placeholder">Количество позиций</string>
     <string name="orderdetail_products_recreate_shipping_label_menu">Создать новую транспортную этикетку</string>
@@ -776,9 +840,6 @@ Language: ru
     <string name="product_detail_no_variations">Вариантов продукта пока нет</string>
     <string name="product_variant_list_empty">Добавление опций, например размера и цвета, сейчас возможно только в Интернете. Эти варианты будут показаны на странице продукта на вашем сайте.</string>
     <string name="product_adding_wip_title">Создавайте продукты в приложении!</string>
-    <string name="product_ratings_count_zero">\u2022 оценок нет</string>
-    <string name="product_ratings_count_one">\u2022 одна оценка</string>
-    <string name="product_ratings_count">\u2022 оценено %d раз</string>
     <string name="product_detail_fetch_product_invalid_id_error">Продукт не найден</string>
     <string name="print_shipping_label_info_step_5">Если вам по-прежнему не удается выполнить печать со своего устройства, вы можете &lt;b&gt;сохранить этикетку в формате PDF&lt;/b&gt; и отправить ее по эл. почте, чтобы распечатать с другого устройства.</string>
     <string name="print_shipping_label_info_step_2">Нажав &lt;b&gt;«Напечатать транспортную этикетку»&lt;/b&gt;, можно выбрать и добавить принтер, если ранее вы не выполняли печать с этого устройства.</string>
@@ -1802,12 +1863,6 @@ Language: ru
     <string name="dashboard_top_performers_empty">Нет активности за этот период</string>
     <string name="dashboard_top_performers_total_orders">Всего заказов: %s</string>
     <string name="dashboard_top_performers_title">Самые продаваемые</string>
-    <string name="dashboard_stats_updated_date_time">Обновлено %s</string>
-    <string name="dashboard_stats_updated_one_day">Обновлено 1 день назад</string>
-    <string name="dashboard_stats_updated_hours">Обновлено %d ч. назад</string>
-    <string name="dashboard_stats_updated_one_hour">Обновлено 1 час назад</string>
-    <string name="dashboard_stats_updated_minutes">Обновлено %d мин. назад</string>
-    <string name="dashboard_stats_updated_now">Обновлено только что</string>
     <string name="dashboard_stats_error_content_description">Изображение ошибки</string>
     <string name="dashboard_stats_error">Ошибка при получении данных</string>
     <string name="dashboard_stats_revenue">Доход</string>

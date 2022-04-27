@@ -27,33 +27,29 @@ steps:
     command: |
       echo "--- 🧹 Linting"
       cp gradle.properties-example gradle.properties
-      ./gradlew lintVanillaRelease
+      ./gradlew lintJalapenoDebug
     plugins: *common_plugins
     artifact_paths:
       - "**/build/reports/lint-results*.*"
 
-  - label: "Test WooCommerce"
+  - label: "Unit tests"
     command: |
       echo "--- 🧪 Testing"
       cp gradle.properties-example gradle.properties
-      ./gradlew testVanillaRelease
-    plugins: *common_plugins
-
-  - label: "Test CardReaderModule"
-    command: |
-      echo "--- 🧪 Testing"
-      cp gradle.properties-example gradle.properties
-      ./gradlew lib:cardreader:testRelease
+      ./gradlew testJalapenoDebug lib:cardreader:testDebug
+      echo "--- ⚒️ Generating and uploading code coverage"
+      ./gradlew jacocoTestReport
+      .buildkite/commands/upload-code-coverage.sh
     plugins: *common_plugins
 
   - label: "Ensure Screenshot Tests Build"
     command: |
       echo "--- ⚒️ Building"
       cp gradle.properties-example gradle.properties
-      ./gradlew assembleVanillaDebugAndroidTest
+      ./gradlew assembleJalapenoDebugAndroidTest
     plugins: *common_plugins
 
   - label: "🛠 Installable Build"
     command: ".buildkite/commands/installable-build.sh"
-    if: "build.pull_request.id != null || build.pull_request.draft"
+    if: build.pull_request.id != null
     plugins: *common_plugins

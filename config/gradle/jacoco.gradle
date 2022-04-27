@@ -1,0 +1,81 @@
+allprojects {
+    apply plugin: JacocoPlugin
+}
+
+jacoco {
+    toolVersion = "0.8.8"
+}
+
+rootProject.afterEvaluate {
+    tasks.register("jacocoTestReport", JacocoReport) {
+        dependsOn(':WooCommerce:testJalapenoDebugUnitTest', ':libs:cardreader:testDebugUnitTest')
+
+        group = "Reporting"
+        description = "Generate Jacoco coverage reports for JalapenoDebug variant"
+
+        reports {
+            xml.getRequired().set(true)
+            html.getRequired().set(true)
+        }
+
+        def excludes = [
+                'android/databinding/**/*.class',
+                '**/android/databinding/*Binding.class',
+                '**/android/databinding/*',
+                '**/androidx/databinding/*',
+                '**/BR.*',
+                '**/R.class',
+                '**/R$*.class',
+                '**/*$$*',
+                '**/BuildConfig.*',
+                '**/*$Lambda$*.*', // Jacoco can not handle several "$" in class name.
+                '**/*Dagger*.*',
+                '**/*MembersInjector*.*',
+                '**/*_Provide*Factory*.*',
+                '**/*_Factory*.*',
+                '**/*$inlined$*.*', // Kotlin specific, Jacoco can not handle several "$" in class name.
+                '**/dagger',
+                '**/*Hilt*.*',
+                '**/hilt_aggregated_deps',
+                '**/*Module.*',
+                '**/*Module$*.*',
+                '**/com/bumptech',
+                '**/*FragmentDirections*',
+                '**/*FragmentArgs*',
+                '**/*Fragment.*',
+                '**/*Fragment$*.*',
+                '**/*Dialog.*',
+                '**/*Dialog$*.*',
+                '**/*Activity.*',
+                '**/*Activity$*.*',
+                '**/*ViewHolder.*',
+                '**/*ViewHolder$*.*',
+                '**/*View.*',
+                '**/*View$*.*',
+                '**/*Adapter.*',
+                '**/*Adapter$*.*',
+                '**/*Screen*',
+                '**/*Screen$*',
+        ]
+
+        def kClasses = rootProject.subprojects.collect { proj ->
+            ["${proj.buildDir}/tmp/kotlin-classes/jalapenoDebug", "${proj.buildDir}/tmp/kotlin-classes/debug"]
+        }.flatten()
+
+        def kotlinClasses = kClasses.collect { path ->
+            fileTree(dir: path, excludes: excludes)
+        }
+
+        def sources = rootProject.subprojects.collect { proj ->
+            ["${proj.projectDir}/src/main/java", "${proj.projectDir}/src/main/kotlin"]
+        }.flatten()
+
+        sourceDirectories.setFrom(files([sources]))
+        classDirectories.from = files([kotlinClasses])
+
+        executionData.from = files([
+                "WooCommerce/build/jacoco/testJalapenoDebugUnitTest.exec",
+                "libs/cardreader/build/jacoco/testDebugUnitTest.exec"
+        ])
+    }
+}

@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.orders.simplepayments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
@@ -10,15 +12,15 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentTakePaymentBinding
 import com.woocommerce.android.extensions.handleDialogNotice
-import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialogFragment
+import com.woocommerce.android.ui.orders.cardreader.payment.CardReaderPaymentDialogFragment
 import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectDialogFragment
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -29,6 +31,12 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
     private val sharedViewModel by hiltNavGraphViewModels<SimplePaymentsSharedViewModel>(R.id.nav_graph_main)
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+
+    private val sharePaymentUrlLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        viewModel.onSharePaymentUrlCompleted()
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -41,49 +49,50 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
             viewModel.onCardPaymentClicked()
         }
 
-        setUpObservers(binding)
+        if (viewModel.order.paymentUrl.isNotEmpty()) {
+            binding.textShare.setOnClickListener {
+                viewModel.onSharePaymentUrlClicked()
+            }
+        } else {
+            binding.textShare.isVisible = false
+        }
+
+        setUpObservers()
         setupResultHandlers()
     }
 
-    private fun setUpObservers(binding: FragmentTakePaymentBinding) {
-        viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
-            new.isCardPaymentEnabled.takeIfNotEqualTo(old?.isCardPaymentEnabled) {
-                binding.textCard.isVisible = it == true
-            }
-        }
-
+    private fun setUpObservers() {
         viewModel.event.observe(
-            viewLifecycleOwner,
-            { event ->
-                when (event) {
-                    is MultiLiveEvent.Event.ShowDialog -> {
-                        event.showDialog()
-                    }
-                    is MultiLiveEvent.Event.ShowSnackbar -> {
-                        uiMessageResolver.showSnack(event.message)
-                    }
-                    is MultiLiveEvent.Event.Exit -> {
-                        findNavController().navigateSafely(R.id.orders)
-                    }
-                    is OrderNavigationTarget.StartCardReaderConnectFlow -> {
-                        val action = TakePaymentFragmentDirections.actionTakePaymentFragmentToCardReaderConnectDialog(
-                            skipOnboarding = event.skipOnboarding
-                        )
-                        findNavController().navigateSafely(action)
-                    }
-                    is OrderNavigationTarget.StartCardReaderPaymentFlow -> {
-                        val action = TakePaymentFragmentDirections.actionTakePaymentFragmentToCardReaderPaymentDialog(
-                            orderId = event.orderId
-                        )
-                        findNavController().navigateSafely(action)
-                    }
+            viewLifecycleOwner
+        ) { event ->
+            when (event) {
+                is MultiLiveEvent.Event.ShowDialog -> {
+                    event.showDialog()
+                }
+                is MultiLiveEvent.Event.ShowSnackbar -> {
+                    uiMessageResolver.showSnack(event.message)
+                }
+                is MultiLiveEvent.Event.Exit -> {
+                    findNavController().navigateSafely(R.id.orders)
+                }
+                is OrderNavigationTarget.StartCardReaderPaymentFlow -> {
+                    val action = TakePaymentFragmentDirections.actionTakePaymentFragmentToCardReaderFlow(
+                        CardReaderFlowParam.ConnectAndAcceptPayment(event.orderId)
+                    )
+                    findNavController().navigateSafely(action)
+                }
+                is TakePaymentViewModel.SharePaymentUrl -> {
+                    sharePaymentUrl(event.storeName, event.paymentUrl)
                 }
             }
-        )
+        }
     }
 
     private fun setupResultHandlers() {
-        handleResult<Boolean>(CardReaderConnectDialogFragment.KEY_CONNECT_TO_READER_RESULT) { connected ->
+        handleDialogResult<Boolean>(
+            key = CardReaderConnectDialogFragment.KEY_CONNECT_TO_READER_RESULT,
+            entryId = R.id.takePaymentFragment
+        ) { connected ->
             viewModel.onConnectToReaderResultReceived(connected)
         }
 
@@ -93,6 +102,17 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
         ) {
             viewModel.onCardReaderPaymentCompleted()
         }
+    }
+
+    private fun sharePaymentUrl(storeName: String, paymentUrl: String) {
+        val title = getString(R.string.simple_payments_share_payment_dialog_title, storeName)
+        val shareIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, paymentUrl)
+            putExtra(Intent.EXTRA_SUBJECT, title)
+            type = "text/plain"
+        }
+        sharePaymentUrlLauncher.launch(Intent.createChooser(shareIntent, title))
     }
 
     override fun onResume() {

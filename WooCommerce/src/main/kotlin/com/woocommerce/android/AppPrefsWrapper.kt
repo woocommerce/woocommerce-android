@@ -1,10 +1,16 @@
 package com.woocommerce.android
 
-import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 
 class AppPrefsWrapper @Inject constructor() {
+    var isCouponsEnabled: Boolean by AppPrefs::isCouponsEnabled
+
     fun getReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
         AppPrefs.getReceiptUrl(localSiteId, remoteSiteId, selfHostedSiteId, orderId)
 
@@ -19,25 +25,37 @@ class AppPrefsWrapper @Inject constructor() {
     fun isCardReaderOnboardingCompleted(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
         AppPrefs.isCardReaderOnboardingCompleted(localSiteId, remoteSiteId, selfHostedSiteId)
 
+    fun isCardReaderWelcomeDialogShown() = AppPrefs.isCardReaderWelcomeDialogShown()
+
     fun getCardReaderPreferredPlugin(
         localSiteId: Int,
         remoteSiteId: Long,
         selfHostedSiteId: Long
     ): PluginType? = AppPrefs.getCardReaderPreferredPlugin(localSiteId, remoteSiteId, selfHostedSiteId)
 
-    fun setCardReaderOnboardingStatusAndPreferredPlugin(
+    fun getCardReaderPreferredPluginVersion(
         localSiteId: Int,
         remoteSiteId: Long,
         selfHostedSiteId: Long,
-        status: CardReaderOnboardingStatus,
-        preferredPlugin: PluginType?,
+        preferredPlugin: PluginType,
+    ): String? = AppPrefs.getCardReaderPreferredPluginVersion(
+        localSiteId,
+        remoteSiteId,
+        selfHostedSiteId,
+        preferredPlugin
+    )
+
+    fun setCardReaderOnboardingData(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long,
+        data: PersistentOnboardingData,
     ) {
-        AppPrefs.setCardReaderOnboardingStatusAndPreferredPlugin(
+        AppPrefs.setCardReaderOnboardingData(
             localSiteId,
             remoteSiteId,
             selfHostedSiteId,
-            status,
-            preferredPlugin
+            data,
         )
     }
 
@@ -57,6 +75,8 @@ class AppPrefsWrapper @Inject constructor() {
     fun setLastConnectedCardReaderId(readerId: String) = AppPrefs.setLastConnectedCardReaderId(readerId)
 
     fun getLastConnectedCardReaderId() = AppPrefs.getLastConnectedCardReaderId()
+
+    fun setCardReaderWelcomeDialogShown() = AppPrefs.setCardReaderWelcomeDialogShown()
 
     fun removeLastConnectedCardReaderId() = AppPrefs.removeLastConnectedCardReaderId()
 
@@ -93,4 +113,30 @@ class AppPrefsWrapper @Inject constructor() {
     }
 
     fun isUserEligible(): Boolean = AppPrefs.isUserEligible()
+
+    fun getFCMToken() = AppPrefs.getFCMToken()
+
+    fun setFCMToken(token: String) = AppPrefs.setFCMToken(token)
+
+    fun removeFCMToken() = AppPrefs.removeFCMToken()
+
+    fun getProductSortingChoice(siteId: Int) = AppPrefs.getProductSortingChoice(siteId)
+
+    fun setProductSortingChoice(siteId: Int, value: String) = AppPrefs.setProductSortingChoice(siteId, value)
+
+    /**
+     * Observes changes to the preferences
+     */
+    fun observePrefs(): Flow<Unit> {
+        return callbackFlow {
+            val listener = OnSharedPreferenceChangeListener { _, _ ->
+                trySend(Unit)
+            }
+            AppPrefs.getPreferences().registerOnSharedPreferenceChangeListener(listener)
+
+            awaitClose {
+                AppPrefs.getPreferences().unregisterOnSharedPreferenceChangeListener(listener)
+            }
+        }
+    }
 }

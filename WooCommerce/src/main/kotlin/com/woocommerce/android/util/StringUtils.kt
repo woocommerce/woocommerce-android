@@ -8,6 +8,8 @@ import android.text.Html
 import android.text.Spanned
 import android.util.Patterns
 import androidx.annotation.StringRes
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import com.woocommerce.android.extensions.isInteger
 import com.woocommerce.android.util.WooLog.T.UTILS
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -79,6 +81,21 @@ object StringUtils {
             0 -> resourceProvider.getString(zero ?: default, quantity)
             1 -> resourceProvider.getString(one ?: default, quantity)
             else -> resourceProvider.getString(default, quantity)
+        }
+    }
+
+    /* The variant to be used inside Jetpack Compose components */
+    @Composable
+    fun getQuantityString(
+        quantity: Int,
+        @StringRes default: Int,
+        @StringRes zero: Int? = null,
+        @StringRes one: Int? = null
+    ): String {
+        return when (quantity) {
+            0 -> stringResource(id = zero ?: default, quantity)
+            1 -> stringResource(id = one ?: default, quantity)
+            else -> stringResource(id = default, quantity)
         }
     }
 

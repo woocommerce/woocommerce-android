@@ -58,6 +58,7 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
         super.postValue(value)
     }
 
+    @Suppress("UnnecessaryAbstractClass")
     abstract class Event(var isHandled: Boolean = false) {
         data class ShowSnackbar(
             @StringRes val message: Int,

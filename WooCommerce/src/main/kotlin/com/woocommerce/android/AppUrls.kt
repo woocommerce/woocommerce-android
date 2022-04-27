@@ -31,6 +31,13 @@ object AppUrls {
 
     const val SIMPLE_PAYMENTS_SURVEY = "https://automattic.survey.fm/woo-app-quick-order-production"
 
+    const val ORDER_CREATION_SURVEY = "https://automattic.survey.fm/woo-app-order-creation-production"
+
+    const val COUPONS_SURVEY_DEBUG = "https://automattic.survey.fm/woo-app-coupon-management-testing"
+
+    // Will be used later when the feature is fully launched.
+    const val COUPONS_SURVEY = "https://automattic.survey.fm/woo-app-coupon-management-production"
+
     const val WOOCOMMERCE_USER_ROLES =
         "https://woocommerce.com/posts/a-guide-to-woocommerce-user-roles-permissions-and-security/"
     const val SHIPPING_LABEL_CUSTOMS_ITN = "https://pe.usps.com/text/imm/immc5_010.htm"
@@ -48,7 +55,7 @@ object AppUrls {
     const val WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY = "https://woocommerce.com/products/hardware/"
 
     const val BBPOS_MANUAL_CARD_READER =
-        "https://developer.bbpos.com/quick_start_guide/Chipper%202X%20BT%20Quick%20Start%20Guide.pdf"
+        "https://stripe.com/files/docs/terminal/c2xbt_product_sheet.pdf"
     const val M2_MANUAL_CARD_READER = "https://stripe.com/files/docs/terminal/m2_product_sheet.pdf"
     const val WISEPAD_3_MANUAL_CARD_READER = "https://stripe.com/files/docs/terminal/wp3_product_sheet.pdf"
 

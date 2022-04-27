@@ -48,7 +48,6 @@ repositories {
     maven {
         url "https://jitpack.io"
         content {
-            includeModule("com.github.Automattic", "Automattic-Tracks-Android")
             includeModule("com.github.wordpress-mobile.WordPress-Aztec-Android", "aztec")
             includeModule("com.github.wordpress-mobile.WordPress-Aztec-Android", "glide-loader")
             includeModule("com.github.chrisbanes", "PhotoView")
@@ -70,9 +69,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "8.7-rc-1"
+            versionName "9.0-rc-2"
         }
-        versionCode 285
+        versionCode 295
 
         minSdkVersion 21
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
@@ -112,22 +111,29 @@ android {
 
     composeOptions {
         kotlinCompilerExtensionVersion composeVersion
-        kotlinCompilerVersion gradle.ext.kotlinVersion
     }
 
     flavorDimensions "buildType"
 
     productFlavors {
-        vanilla { // Release version
+        // Used for release/beta builds. Usually shouldn't be build locally.
+        // AppName: WooCommerce
+        vanilla {
             dimension "buildType"
         }
 
-        wasabi { // Development only version, can be installed along release versions
+        // Used for local development - preferred variant for developers.
+        // AppName: WooCommerce (Dev)
+        wasabi {
             applicationId "com.woocommerce.android.dev"
             dimension "buildType"
+            isDefault true
         }
 
-        jalapeno { // Pre-Alpha version, used for PR builds, can be installed along release and dev versions.
+        // Used for CI builds on PRs (downloadable apks). Can be used locally when a developer needs
+        // to install multiple versions of the app on the same device.
+        // AppName: WooCommerce (PreAlpha)
+        jalapeno {
             applicationId "com.woocommerce.android.prealpha"
             dimension "buildType"
         }
@@ -144,6 +150,7 @@ android {
         debug {
             minifyEnabled false
             pseudoLocalesEnabled true
+            isDefault true
         }
     }
 
@@ -168,13 +175,12 @@ android {
 }
 
 dependencies {
-
     implementation("org.wordpress:libaddressinput.common:$libaddressinputVersion") {
         exclude group: "org.json", module: "json"
         exclude group: "com.google.guava", module: "guava"
     }
 
-    implementation 'com.google.firebase:firebase-messaging-ktx:23.0.0'
+    implementation 'com.google.firebase:firebase-messaging-ktx:23.0.3'
     implementation 'com.google.android.gms:play-services-auth:20.1.0'
 
     // Support library
@@ -189,7 +195,7 @@ dependencies {
     implementation("androidx.browser:browser:1.4.0") {
         exclude group: 'com.google.guava', module: 'listenablefuture'
     }
-    implementation "androidx.preference:preference:1.1.1"
+    implementation "androidx.preference:preference:1.2.0"
     implementation "androidx.datastore:datastore-preferences:1.0.0"
 
     implementation "androidx.navigation:navigation-fragment-ktx:$gradle.ext.navigationVersion"
@@ -200,8 +206,8 @@ dependencies {
         exclude group: "com.android.support"
     }
 
-    implementation 'com.github.Automattic:Automattic-Tracks-Android:2.1.0'
-    implementation "com.automattic.tracks:experimentation:121-cf817e1b407a6b9389055495d7b264b68debd69d"
+    implementation "com.automattic.tracks:experimentation:trunk-f25f5b5e77df8313f19d47d07e7411256d18df79"
+    implementation 'com.automattic:Automattic-Tracks-Android:2.2.0'
 
     implementation("${gradle.ext.fluxCBinaryPath}:$fluxCVersion") {
         exclude group: "com.android.support"
@@ -302,7 +308,7 @@ dependencies {
     }
 
     // ViewModel and LiveData
-    implementation "androidx.fragment:fragment-ktx:1.4.0"
+    implementation "androidx.fragment:fragment-ktx:1.4.1"
     implementation "androidx.activity:activity-ktx:1.4.0"
     implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
@@ -332,12 +338,13 @@ dependencies {
 
     // Jetpack Compose
     implementation 'androidx.activity:activity-compose:1.4.0'
+    implementation "com.google.accompanist:accompanist-swiperefresh:$composeAccompanistVersion"
     implementation "androidx.compose.material:material:$composeVersion"
     implementation "androidx.compose.animation:animation:$composeVersion"
     implementation "androidx.compose.ui:ui-tooling:$composeVersion"
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0'
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycleViewmodelComposeVersion"
     implementation "androidx.compose.runtime:runtime-livedata:$composeVersion"
-    implementation "com.google.android.material:compose-theme-adapter:$composeVersion"
+    implementation "com.google.android.material:compose-theme-adapter:$composeThemeAdapterVersion"
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$composeVersion"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$composeVersion"
 }
@@ -391,7 +398,7 @@ tasks.register("violationCommentsToGitHub", ViolationCommentsToGitHubTask) {
 **Reporter**: {{violation.reporter}}{{#violation.rule}}\n
 **Rule**: {{violation.rule}}{{/violation.rule}}
 **Severity**: {{violation.severity}}
-**File**: {{violation.file}} L{{violation.startLine}}{{#violation.source}}
+**File**: {{violation.file}}:{{violation.startLine}}{{#violation.source}}
 **Source**: {{violation.source}}{{/violation.source}}
 {{violation.message}}
 """
@@ -415,9 +422,15 @@ tasks.register("dependencyTreeDiffCommentToGitHub", ViolationCommentsToGitHubTas
     commentTemplate = """
 ### The PR caused the following dependency changes:
 
+<details><summary>expand</summary>
+<p>
+
 ```diff
 {{{violation.message}}}
 ```
+
+</p>
+</details>
 
 *Please review and act accordingly*
 """

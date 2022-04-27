@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products.categories
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
@@ -13,7 +12,6 @@ import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.categories.ProductCategoriesAdapter.ProductCategoryViewHolder
 
 class ProductCategoriesAdapter(
-    private val context: Context,
     private val loadMoreListener: OnLoadMoreListener,
     private val clickListener: OnProductCategoryClickListener
 ) : RecyclerView.Adapter<ProductCategoryViewHolder>() {
@@ -55,16 +53,11 @@ class ProductCategoriesAdapter(
     }
 
     fun setProductCategories(productsCategories: List<ProductCategoryItemUiModel>) {
-        if (productCategoryList.isEmpty()) {
-            productCategoryList.addAll(productsCategories)
-            notifyDataSetChanged()
-        } else {
-            val diffResult =
-                DiffUtil.calculateDiff(ProductCategoryItemDiffUtil(productCategoryList, productsCategories))
-            productCategoryList.clear()
-            productCategoryList.addAll(productsCategories)
-            diffResult.dispatchUpdatesTo(this)
-        }
+        val diffResult =
+            DiffUtil.calculateDiff(ProductCategoryItemDiffUtil(productCategoryList, productsCategories))
+        productCategoryList.clear()
+        productCategoryList.addAll(productsCategories)
+        diffResult.dispatchUpdatesTo(this)
     }
 
     inner class ProductCategoryViewHolder(private val viewBinder: ProductCategoryListItemBinding) :

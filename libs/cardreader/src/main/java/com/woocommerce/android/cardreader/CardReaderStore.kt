@@ -1,8 +1,6 @@
 package com.woocommerce.android.cardreader
 
 interface CardReaderStore {
-    suspend fun fetchCustomerIdByOrderId(orderId: Long): String?
-
     suspend fun fetchConnectionToken(): String
 
     suspend fun capturePaymentIntent(orderId: Long, paymentId: String): CapturePaymentResponse

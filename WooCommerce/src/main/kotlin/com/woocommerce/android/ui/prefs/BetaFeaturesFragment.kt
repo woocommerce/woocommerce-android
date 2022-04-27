@@ -28,7 +28,7 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
 
         with(FragmentSettingsBetaBinding.bind(view)) {
             bindProductAddonsToggle()
-            bindOrderCreationToggle()
+            bindCouponsToggle()
         }
     }
 
@@ -48,12 +48,10 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
         }
     }
 
-    private fun FragmentSettingsBetaBinding.bindOrderCreationToggle() {
-        switchOrderCreationToggle.isChecked = AppPrefs.isOrderCreationEnabled
-        switchOrderCreationToggle.setOnCheckedChangeListener { switch, isChecked ->
-            // trigger order creation tracks
-
-            settingsListener?.onOrderCreationOptionChanged(isChecked)
+    private fun FragmentSettingsBetaBinding.bindCouponsToggle() {
+        switchCouponsToggle.isChecked = AppPrefs.isCouponsEnabled
+        switchCouponsToggle.setOnCheckedChangeListener { switch, isChecked ->
+            settingsListener?.onCouponsOptionChanged(isChecked)
                 ?: handleToggleChangeFailure(switch, isChecked)
         }
     }

@@ -55,6 +55,7 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
             taxLines = databaseEntity.getTaxLineList().mapTaxLines(),
             chargeId = metaDataList.getOrNull(CHARGE_ID_KEY),
             shippingPhone = metaDataList.getOrEmpty(SHIPPING_PHONE_KEY),
+            paymentUrl = databaseEntity.paymentUrl
         )
     }
 
@@ -82,6 +83,7 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
     private fun List<TaxLine>.mapTaxLines(): List<Order.TaxLine> = map {
         Order.TaxLine(
             id = it.id!!,
+            label = it.label!!,
             compound = it.compound ?: false,
             taxTotal = it.taxTotal ?: StringUtils.EMPTY,
             ratePercent = it.ratePercent ?: 0f

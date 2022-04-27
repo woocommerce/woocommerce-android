@@ -162,7 +162,7 @@ object OrderTestUtils {
         )
     }
 
-    fun generateOrderWithFee(): OrderEntity {
+    fun generateOrderWithOneShipping(): OrderEntity {
         val lineItems = "[{\n" +
             "    \"id\":1,\n" +
             "    \"name\":\"A test\",\n" +

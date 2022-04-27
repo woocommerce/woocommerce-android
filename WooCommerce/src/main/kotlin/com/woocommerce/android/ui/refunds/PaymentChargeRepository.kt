@@ -29,10 +29,26 @@ class PaymentChargeRepository @Inject constructor(
                 WooLog.e(WooLog.T.ORDERS, "Could not fetch charge - ${result.error.message}")
                 CardDataUsedForOrderPaymentResult.Error
             } else {
-                CardDataUsedForOrderPaymentResult.Success(
-                    cardBrand = result.result?.paymentMethodDetails?.cardPresent?.brand,
-                    cardLast4 = result.result?.paymentMethodDetails?.cardPresent?.last4
-                )
+                val paymentMethodDetails = result.result?.paymentMethodDetails
+                when (paymentMethodDetails?.type) {
+                    "interac_present" -> {
+                        CardDataUsedForOrderPaymentResult.Success(
+                            cardBrand = paymentMethodDetails.interacCardDetails?.brand,
+                            cardLast4 = paymentMethodDetails.interacCardDetails?.last4
+                        )
+                    }
+                    "card_present" -> {
+                        CardDataUsedForOrderPaymentResult.Success(
+                            cardBrand = paymentMethodDetails.cardDetails?.brand,
+                            cardLast4 = paymentMethodDetails.cardDetails?.last4
+                        )
+                    }
+                    else ->
+                        CardDataUsedForOrderPaymentResult.Success(
+                            cardBrand = null,
+                            cardLast4 = null
+                        )
+                }
             }
         }
     }

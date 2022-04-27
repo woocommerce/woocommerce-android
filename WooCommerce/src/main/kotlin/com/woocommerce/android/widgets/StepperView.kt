@@ -18,7 +18,10 @@ class StepperView @JvmOverloads constructor(
     var value: Int
         get() = binding.valueText.text.toString().toIntOrNull() ?: 0
         set(value) {
-            binding.valueText.text = value.toString()
+            val text = value.toString()
+            if (text != binding.valueText.text) {
+                binding.valueText.text = text
+            }
         }
 
     var isPlusButtonEnabled: Boolean

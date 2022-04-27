@@ -2,10 +2,10 @@ package com.woocommerce.android.ui.orders.creation
 
 import com.woocommerce.android.model.Order
 
-fun Order.adjustProductQuantity(productId: Long, quantityToAdd: Int): Order {
+fun Order.adjustProductQuantity(itemId: Long, quantityToAdd: Int): Order {
     val items = items.toMutableList()
-    val index = items.indexOfFirst { it.uniqueId == productId }
-    if (index == -1) error("Couldn't find the product with id $productId")
+    val index = items.indexOfFirst { it.itemId == itemId }
+    if (index == -1) error("Couldn't find the product with id $itemId")
     items[index] = with(items[index]) {
         val newQuantity = quantity + quantityToAdd
         copy(

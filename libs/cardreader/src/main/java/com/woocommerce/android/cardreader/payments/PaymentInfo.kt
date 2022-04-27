@@ -9,10 +9,10 @@ data class PaymentInfo(
     val amount: BigDecimal,
     val currency: String,
     val customerEmail: String?,
+    val isPluginCanSendReceipt: Boolean,
     val customerName: String?,
     val storeName: String?,
     val siteUrl: String?,
     val orderKey: String?,
     internal val countryCode: String? = null,
-    internal val customerId: String? = null,
 )

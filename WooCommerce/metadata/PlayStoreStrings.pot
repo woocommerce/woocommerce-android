@@ -11,20 +11,16 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
-msgctxt "release_note_087"
+msgctxt "release_note_090"
 msgid ""
-"8.7:\n"
-"Did you know we’ve released a beta feature for creating orders? Head to the Menu tab, tap the settings icon, and scroll to beta features. We just added fees and shipping costs!\n"
-"\n"
-"We fixed a rare issue where sometimes the notes for an order appeared incorrectly. Thanks for letting us know!\n"
+"9.0:\n"
+"Dates are crucial when you’re running a business! We fixed a glitch when setting a “sale date” on a product – sometimes, that date didn’t end up being what you selected. Community feedback for the win!\n"
 msgstr ""
 
-msgctxt "release_note_086"
+msgctxt "release_note_089"
 msgid ""
-"8.6:\n"
-"This release contains a helpful feature for merchants looking to record a quick monetary transaction that we call simple payments. Quickly take an in-person credit card payment or send your customer a payment link to your site!\n"
-"\n"
-"You’ll also see we changed the tabs a bit and added a “More” tab. Store settings and a few other things were moved there to prepare for more features!\n"
+"8.9:\n"
+"Create orders on the go with products, shipping & billing information, and fees! You can quickly take an in-person credit card payment right after or send a link to a customer to pay for that order on their own device. You’ve asked for it, and now it’s here!\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

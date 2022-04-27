@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -26,22 +27,22 @@
             android:layout_marginBottom="@dimen/minor_00"
             tools:text="George Carlin" />
 
-        <LinearLayout
-            android:id="@+id/orderStatus_edit"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/orderStatus_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
-            android:contentDescription="@string/orderdetail_change_order_status"
+            android:focusable="false"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <com.woocommerce.android.widgets.FlowLayout
+            <com.woocommerce.android.widgets.tags.TagView
                 android:id="@+id/orderStatus_orderTags"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/major_100"
-                android:layout_weight="1"
-                android:contentDescription="@string/orderstatus_contentDesc" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/orderStatus_editImage"
@@ -50,7 +51,10 @@
                 android:importantForAccessibility="no"
                 android:paddingHorizontal="@dimen/major_100"
                 android:paddingVertical="@dimen/major_75"
-                android:src="@drawable/ic_edit_pencil" />
+                android:src="@drawable/ic_edit_pencil"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/orderStatus_editButton"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/orderStatus_editButton"
@@ -58,7 +62,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/order_creation_status_edit_content_description"
-                android:text="@string/edit" />
-        </LinearLayout>
+                android:text="@string/edit"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 </merge>

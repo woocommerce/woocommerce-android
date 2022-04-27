@@ -66,6 +66,28 @@ interface UIMessageResolver {
     }
 
     /**
+     * Create and return a snackbar displaying the provided message and a generic action button.
+     *
+     * @param [message] The message string
+     * @param [message] The action string
+     * @param [stringArgs] Optional. One or more format argument stringArgs
+     * @param [actionListener] Listener to handle the undo button click event
+     */
+    fun getIndefiniteActionSnack(
+        @StringRes message: Int,
+        vararg stringArgs: String = arrayOf(),
+        actionText: String,
+        actionListener: View.OnClickListener
+    ): Snackbar {
+        return getIndefiniteSnackbarWithAction(
+            snackbarRoot,
+            snackbarRoot.context.getString(message, *stringArgs),
+            actionText,
+            actionListener
+        )
+    }
+
+    /**
      * Create and return a snackbar displaying the provided message and a RETRY button.
      *
      * @param [stringResId] The string resource id of the base message

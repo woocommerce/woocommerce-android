@@ -5,16 +5,17 @@ import com.woocommerce.android.analytics.AnalyticsEvent.*
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.PrintReceipt
-import com.woocommerce.android.ui.orders.cardreader.ReceiptEvent.SendReceipt
-import com.woocommerce.android.ui.orders.cardreader.ReceiptPreviewViewModel.ReceiptPreviewEvent.LoadUrl
-import com.woocommerce.android.ui.orders.cardreader.ReceiptPreviewViewModel.ReceiptPreviewViewState.Content
-import com.woocommerce.android.ui.orders.cardreader.ReceiptPreviewViewModel.ReceiptPreviewViewState.Loading
+import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptEvent.PrintReceipt
+import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptEvent.SendReceipt
+import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptPreviewFragmentArgs
+import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptPreviewViewModel
+import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptPreviewViewModel.ReceiptPreviewEvent.LoadUrl
+import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptPreviewViewModel.ReceiptPreviewViewState.Content
+import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptPreviewViewModel.ReceiptPreviewViewState.Loading
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.*
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -72,7 +73,7 @@ class ReceiptPreviewViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when user clicks on send email, then send receipt event emitted`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             viewModel.onSendEmailClicked()
 
             assertThat(viewModel.event.value).isInstanceOf(SendReceipt::class.java)
@@ -80,7 +81,7 @@ class ReceiptPreviewViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when user clicks on send email, then event tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             viewModel.onSendEmailClicked()
 
             verify(tracker).track(RECEIPT_EMAIL_TAPPED)
@@ -88,7 +89,7 @@ class ReceiptPreviewViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when email application not found, then SnackBar with error shown`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             viewModel.onEmailActivityNotFound()
 
             assertThat(viewModel.event.value).isInstanceOf(ShowSnackbar::class.java)
@@ -96,7 +97,7 @@ class ReceiptPreviewViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when email application not found, then event tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             viewModel.onEmailActivityNotFound()
 
             verify(tracker).track(RECEIPT_EMAIL_FAILED)
@@ -104,7 +105,7 @@ class ReceiptPreviewViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when user clicks on print receipt, then print receipt event emitted`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             viewModel.onPrintClicked()
 
             assertThat(viewModel.event.value).isInstanceOf(PrintReceipt::class.java)
@@ -112,7 +113,7 @@ class ReceiptPreviewViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when user clicks on print receipt, then event tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             viewModel.onPrintClicked()
 
             verify(tracker).track(RECEIPT_PRINT_TAPPED)
@@ -120,7 +121,7 @@ class ReceiptPreviewViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when printing receipt fails, then event tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             viewModel.onPrintResult(FAILED)
 
             verify(tracker).track(RECEIPT_PRINT_FAILED)
@@ -128,7 +129,7 @@ class ReceiptPreviewViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when user cancels printing receipt, then event tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             viewModel.onPrintResult(CANCELLED)
 
             verify(tracker).track(RECEIPT_PRINT_CANCELED)
@@ -136,7 +137,7 @@ class ReceiptPreviewViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when printing receipt succeeds, then event tracked`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             viewModel.onPrintResult(STARTED)
 
             verify(tracker).track(RECEIPT_PRINT_SUCCESS)

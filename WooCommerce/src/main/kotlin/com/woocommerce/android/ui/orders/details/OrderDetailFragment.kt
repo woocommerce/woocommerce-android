@@ -1,7 +1,11 @@
 package com.woocommerce.android.ui.orders.details
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -20,27 +24,12 @@ import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_DETAIL_PRODUCT_TAP
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.FragmentOrderDetailBinding
-import com.woocommerce.android.extensions.handleDialogNotice
-import com.woocommerce.android.extensions.handleDialogResult
-import com.woocommerce.android.extensions.handleNotice
-import com.woocommerce.android.extensions.handleResult
-import com.woocommerce.android.extensions.hide
-import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.show
-import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.extensions.whenNotNullNorEmpty
-import com.woocommerce.android.model.FeatureFeedbackSettings
-import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.SHIPPING_LABELS_M4
+import com.woocommerce.android.extensions.*
+import com.woocommerce.android.model.*
+import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.SHIPPING_LABEL_M4
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
-import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
-import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
-import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.UNANSWERED
-import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.*
 import com.woocommerce.android.model.Order.OrderStatus
-import com.woocommerce.android.model.OrderNote
-import com.woocommerce.android.model.OrderShipmentTracking
-import com.woocommerce.android.model.Refund
-import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -49,7 +38,7 @@ import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialogFragment
+import com.woocommerce.android.ui.orders.cardreader.payment.CardReaderPaymentDialogFragment
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.details.editing.OrderEditingViewModel
@@ -58,9 +47,8 @@ import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragment
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment
+import com.woocommerce.android.ui.orders.simplepayments.TakePaymentViewModel
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectDialogFragment
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingFragment
 import com.woocommerce.android.ui.refunds.RefundSummaryFragment
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -92,6 +80,8 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
 
     private val skeletonView = SkeletonView()
     private var undoSnackbar: Snackbar? = null
+    private var mnuSharePaymentLink: MenuItem? = null
+
     private var screenTitle = ""
         set(value) {
             field = value
@@ -99,7 +89,8 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         }
 
     private val feedbackState
-        get() = FeedbackPrefs.getFeatureFeedbackSettings(TAG)?.state ?: UNANSWERED
+        get() = FeedbackPrefs.getFeatureFeedbackSettings(SHIPPING_LABEL_M4)?.feedbackState
+            ?: UNANSWERED
 
     override fun onResume() {
         super.onResume()
@@ -155,6 +146,20 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         _binding = null
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.menu_order_detail, menu)
+        mnuSharePaymentLink = menu.findItem(R.id.menu_share_payment_link)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return if (item.itemId == R.id.menu_share_payment_link) {
+            viewModel.onSharePaymentUrlClicked()
+            true
+        } else {
+            super.onOptionsItemSelected(item)
+        }
+    }
     override fun openOrderProductDetail(remoteProductId: Long) {
         AnalyticsTracker.track(ORDER_DETAIL_PRODUCT_TAPPED)
         (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId)
@@ -185,6 +190,9 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             }
             new.isProductListVisible?.takeIfNotEqualTo(old?.isProductListVisible) {
                 binding.orderDetailProductList.isVisible = it
+            }
+            new.isSharePaymentLinkVisible?.takeIfNotEqualTo(old?.isSharePaymentLinkVisible) {
+                mnuSharePaymentLink?.isVisible = new.isSharePaymentLinkVisible
             }
             new.toolbarTitle?.takeIfNotEqualTo(old?.toolbarTitle) { screenTitle = it }
             new.isOrderDetailSkeletonShown?.takeIfNotEqualTo(old?.isOrderDetailSkeletonShown) { showSkeleton(it) }
@@ -243,6 +251,9 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                         displayUndoSnackbar(event.message, event.undoAction, event.dismissAction)
                     }
                     is OrderNavigationTarget -> navigator.navigate(this, event)
+                    is TakePaymentViewModel.SharePaymentUrl -> {
+                        sharePaymentUrl(event.storeName, event.paymentUrl)
+                    }
                     else -> event.isHandled = false
                 }
             }
@@ -281,11 +292,6 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         handleResult<Boolean>(OrderFulfillViewModel.KEY_REFRESH_SHIPMENT_TRACKING_RESULT) {
             viewModel.refreshShipmentTracking()
         }
-        handleResult<Boolean>(CardReaderConnectDialogFragment.KEY_CONNECT_TO_READER_RESULT) { connected ->
-            if (FeatureFlag.CARD_READER.isEnabled()) {
-                viewModel.onConnectToReaderResultReceived(connected)
-            }
-        }
         handleDialogNotice<String>(
             key = CardReaderPaymentDialogFragment.KEY_CARD_PAYMENT_RESULT,
             entryId = R.id.orderDetailFragment
@@ -299,9 +305,6 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         }
         handleNotice(PrintShippingLabelFragment.KEY_LABEL_PURCHASED) {
             viewModel.onShippingLabelsPurchased()
-        }
-        handleNotice(CardReaderOnboardingFragment.KEY_READER_ONBOARDING_SUCCESS) {
-            viewModel.onOnboardingSuccess()
         }
     }
 
@@ -331,7 +334,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             onCollectCardPresentPaymentClickListener = {
                 if (FeatureFlag.CARD_READER.isEnabled()) {
                     cardReaderManager.let {
-                        viewModel.onAcceptCardPresentPaymentClicked(it)
+                        viewModel.onAcceptCardPresentPaymentClicked()
                     }
                 }
             },
@@ -371,6 +374,17 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             true -> skeletonView.show(binding.orderDetailContainer, R.layout.skeleton_order_detail, delayed = true)
             false -> skeletonView.hide()
         }
+    }
+
+    private fun sharePaymentUrl(storeName: String, paymentUrl: String) {
+        val subject = getString(R.string.simple_payments_share_payment_dialog_title, storeName)
+        val shareIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, paymentUrl)
+            putExtra(Intent.EXTRA_SUBJECT, subject)
+            type = "text/plain"
+        }
+        startActivity(Intent.createChooser(shareIntent, storeName))
     }
 
     private fun refreshProduct(remoteProductId: Long) {
@@ -516,8 +530,10 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     }
 
     private fun registerFeedbackSetting(state: FeedbackState) {
-        FeatureFeedbackSettings(SHIPPING_LABELS_M4.name, state)
-            .run { FeedbackPrefs.setFeatureFeedbackSettings(TAG, this) }
+        FeatureFeedbackSettings(
+            SHIPPING_LABEL_M4,
+            state
+        ).registerItself()
     }
 
     private fun displayUndoSnackbar(

@@ -1,4 +1,0 @@
-8.6:
-Rilis ini memuat fitur bermanfaat bagi penjual yang ingin mencatat transaksi keuangan cepat yang kami sebut pembayaran simpel. Selesaikan pembayaran dengan cepat menggunakan kartu kredit langsung atau kirimkan tautan pembayaran ke situs Anda kepada pelanggan!
-
-Kami juga sedikit mengubah tab dan menambahkan tab "Lainnya". Pengaturan toko dan dan lain-lain dipindahkan ke sana sebagai persiapan untuk berbagai fitur baru lainnya.

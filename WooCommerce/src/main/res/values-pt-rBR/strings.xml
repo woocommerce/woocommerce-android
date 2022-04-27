@@ -1,11 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-03-03 22:42:58+0000
+Translation-Revision-Date: 2022-04-08 15:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="coupon_summary_performance_amount_heading">Quantidade</string>
+    <string name="coupon_summary_performance_discounted_order_heading">Pedidos com desconto</string>
+    <string name="coupon_summary_performance_heading">Desempenho</string>
+    <string name="coupon_summary_maximum_spend">Gasto máximo de %s</string>
+    <string name="coupon_summary_minimum_spend">Gasto mínimo de %s</string>
+    <string name="coupon_summary_heading">Resumo do cupom</string>
+    <string name="coupon_list_view_coupon">Visualizar resumo do cupom</string>
+    <string name="coupon_list_wip_message_enabled">Estamos trabalhando para permitir a visualização e edição de cupons no seu dispositivo!</string>
+    <string name="coupon_list_wip_title">Visualizar e editar cupons</string>
+    <string name="coupon_list_empty_heading">Nenhum cupom encontrado</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1s sem %2s</string>
+    <string name="coupon_list_item_label_everything">tudo</string>
+    <string name="coupon_list_item_label_off">de desconto</string>
+    <string name="coupon_list_item_label_expired">Expirado</string>
+    <string name="coupon_list_item_label_active">Ativo</string>
+    <string name="coupons">Cupons</string>
+    <string name="inbox_note_recency_date_time">Criado em %s</string>
+    <string name="inbox_note_recency_days">%d dias atrás</string>
+    <string name="inbox_note_recency_one_day">1 dia atrás</string>
+    <string name="inbox_note_recency_hours">%d horas atrás</string>
+    <string name="inbox_note_recency_one_hour">1 hora atrás</string>
+    <string name="inbox_note_recency_minutes">%d minutos atrás</string>
+    <string name="inbox_note_recency_now">Instantes atrás</string>
+    <string name="category_count_many">%d categorias</string>
+    <string name="category_count_one">%d categoria</string>
+    <string name="product_ratings_count_zero">\u2022  nenhuma avaliação aprovada</string>
+    <string name="product_ratings_count_one">\u2022  uma avaliação aprovada</string>
+    <string name="product_ratings_count">\u2022  %d avaliações aprovadas</string>
+    <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">Estamos trabalhando para permitir a criação de pedidos e o recebimento de pagamentos no seu dispositivo. Clique no botão \"+\" para experimentar essas funcionalidades</string>
+    <string name="orderlist_simple_payments_wip_title">Crie pedidos e receba pagamentos!</string>
+    <string name="empty_inbox_description">Volte mais tarde para ver outras dicas e informações sobre como ampliar sua loja</string>
+    <string name="empty_inbox_title">Parabéns, você leu tudo!</string>
+    <string name="orderstatus_contentDesc_withStatus">Status do pedido: %s</string>
+    <string name="no_sku">Nenhum SKU</string>
+    <string name="count">Contagem: %s</string>
+    <string name="plus_one">Mais um</string>
+    <string name="minus_one">Menos um</string>
+    <string name="more_menu_button_coupons">Cupons</string>
+    <string name="dismiss_inbox_note">Dispensar</string>
+    <string name="login_error_xml_rpc_auth_error_communicating">Ocorreu um problema na comunicação com o site. Um código de erro HTTP 401 foi retornado.</string>
+    <string name="login_error_xml_rpc_cannot_read_site_auth_required">Chamadas XML-RPC parecem estar bloqueadas neste site (código de erro 401). Se a tentativa de login falhar, clique no ícone de ajuda para ver as perguntas frequentes.</string>
+    <string name="login_error_xml_rpc_cannot_read_site">Não foi possível ler o site do WordPress nessa URL. Clique no ícone de ajuda para ver as perguntas frequentes.</string>
+    <string name="login_error_xml_rpc_services_disabled">Os serviços XML-RPC estão desativados neste site.</string>
+    <string name="a8c_email_message">Use um e-mail que não seja do Automattic para enviar um ticket para o suporte.</string>
+    <string name="card_reader_onboarding_stripe_account_in_unsupported_country">Não oferecemos suporte a contas Stripe registradas em %1$s</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">Não oferecemos suporte a contas WooCommerce Payments em %1$s</string>
+    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Não oferecemos suporte à Stripe em %1$s</string>
+    <string name="card_reader_connect_scanning_hint">Pressione o botão de ligar/desligar do seu leitor</string>
+    <string name="card_reader_payment_reader_receipt_sent">Um recibo foi enviado para &lt;strong&gt;%s&lt;/strong&gt;</string>
+    <string name="order_creation_fee_percentage_toggle_text">Taxa de porcentagem</string>
+    <string name="order_creation_fee_percentage_hint">Porcentagem (%)</string>
+    <string name="order_creation_fee_amount_hint">Quantia ($)</string>
+    <string name="order_creation_add_fee_removal_hint">Remover taxa do pedido</string>
+    <string name="order_creation_remove_shipping">Remover envio do pedido</string>
+    <string name="order_creation_edit_shipping">Envio</string>
+    <string name="order_creation_add_shipping">Adicionar envio</string>
+    <string name="order_creation_shipping_title_add">Adicionar envio</string>
+    <string name="order_creation_shipping_name">Nome</string>
+    <string name="order_creation_shipping_amount">Quantidade</string>
+    <string name="order_creation_payment_fee">Taxas</string>
+    <string name="order_creation_customer_details">Dados do cliente</string>
+    <string name="order_creation_add_fee">Adicionar taxa</string>
+    <string name="order_creation_customer_note_edit_content_description">Editar anotação do cliente</string>
+    <string name="order_creation_customer_edit_content_description">Editar dados do cliente</string>
+    <string name="order_creation_status_edit_content_description">Editar status do pedido</string>
+    <string name="simple_payments_update_error">Não foi possível atualizar pedido com pagamento simples</string>
+    <string name="simple_payments_creation_error">Não foi possível criar pedido com pagamento simples</string>
+    <string name="more_menu_avatar">Foto de perfil do usuário</string>
+    <string name="more_menu_button_reviews">Avaliações</string>
+    <string name="more_menu_button_store">Visualizar loja</string>
+    <string name="more_menu_button_inbox">Caixa de entrada</string>
+    <string name="more_menu_button_analytics">Análises</string>
+    <string name="more_menu_button_payments">Pagamentos</string>
+    <string name="more_menu_button_woo_admin">WooCommerce Admin</string>
+    <string name="more_menu">Menu</string>
     <string name="card_reader_onboarding_both_plugins_activated_refresh_button">Recarregar a página depois de atualizar</string>
     <string name="card_reader_onboarding_both_plugins_activated_open_store_admin_label">Gerenciar plugins</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_two">WooCommerce Payments</string>
@@ -88,10 +164,9 @@ Language: pt_BR
     <string name="order_creation_new_customer_add_different_shipping_address">Adicionar um endereço de entrega diferente</string>
     <string name="order_creation_product_instock">Em estoque</string>
     <string name="order_creation_product_stock_quantity">%s em estoque</string>
-    <string name="order_creation_customer_details">Novo cliente</string>
     <string name="order_creation_add_products">Adicionar produto</string>
     <string name="order_creation_products">Produtos</string>
-    <string name="order_creation_add_customer">Adicionar cliente</string>
+    <string name="order_creation_add_customer">Adicionar dados do cliente</string>
     <string name="order_creation_customer">Cliente</string>
     <string name="simple_payments_cash_dlg_button">Marcar como pago</string>
     <string name="simple_payments_cash_dlg_message">Isso criará o pedido e o marcará como pago se você tiver recebido o pagamento fora do WooCommerce</string>
@@ -108,8 +183,6 @@ Language: pt_BR
     <string name="order_card_transition_name">order_card_%1$s</string>
     <string name="cash">Dinheiro</string>
     <string name="card">Cartão</string>
-    <string name="plus">Mais</string>
-    <string name="minus">Menos</string>
     <string name="tax">Imposto</string>
     <string name="email">Email</string>
     <string name="order_creation_add_customer_note">Adicionar anotação</string>
@@ -145,10 +218,6 @@ Language: pt_BR
     <string name="date_timeframe_last_quarter">Trimestre passado</string>
     <string name="date_timeframe_last_month">Mês passado</string>
     <string name="date_timeframe_last_week">Semana passada</string>
-    <string name="settings_enable_order_creation_teaser_message">Experimente criar pedidos detalhados enquanto nos preparamos para o lançamento</string>
-    <string name="settings_enable_order_creation_teaser_title">Criação do pedido</string>
-    <string name="settings_enable_simple_payments_teaser_title">Pagamentos simples</string>
-    <string name="beta_features_order_creation">Criação do pedido</string>
     <string name="beta_features_simple_payments">Pagamentos simples</string>
     <string name="beta_features_add_ons">Visualizar complementos</string>
     <string name="orders_empty_message_for_filtered_orders">Não foi possível encontrar nenhum pedido</string>
@@ -166,11 +235,9 @@ Language: pt_BR
     <string name="orderlist_bottom_sheet_create_order_description">Crie um novo pedido manual</string>
     <string name="orderlist_bottom_sheet_create_order_action">Criar pedido</string>
     <string name="orderlist_create_order_button_description">Criar pedido</string>
-    <string name="simple_payments_creation_error">Não é possível criar um pedido</string>
     <string name="simple_payments_enter_amount">Inserir valor</string>
     <string name="simple_payments_dialog_title">Aceitar pagamento</string>
     <string name="orderlist_simple_payments_menu">Pagamento simples</string>
-    <string name="orderlist_simple_payments_wip_title">Receba pagamentos no seu dispositivo!</string>
     <string name="analytics">Análises</string>
     <string name="jetpack_install_progress_step_four_message">Tudo pronto</string>
     <string name="jetpack_install_progress_step_three_message">Conectando sua loja</string>
@@ -205,8 +272,6 @@ Language: pt_BR
     <string name="orderfilters_default_filter_option">Tudo</string>
     <string name="orderfilters_filter_card_title_filtered_orders">Pedidos filtrados</string>
     <string name="orderfilters_filter_card_title_all_orders">Todos os pedidos</string>
-    <string name="orderlist_simple_payments_wip_message_disabled">Estamos trabalhando para que você possa receber pagamentos no seu dispositivo com maior facilidade! Ative em Configurações &gt; Funcionalidades Beta.</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">Estamos trabalhando para que você possa receber pagamentos no seu dispositivo com maior facilidade! Por enquanto, toque no botão \"+\" para criar um pedido com o valor que você quer receber.</string>
     <string name="jetpack_benefits_modal_dismiss">Agora não</string>
     <string name="jetpack_benefits_modal_install_jetpack">Instalar Jetpack</string>
     <string name="jetpack_benefits_modal_user_profiles_subtitle">Permita que vários usuários acessem o aplicativo móvel WooCommerce.</string>
@@ -217,7 +282,6 @@ Language: pt_BR
     <string name="jetpack_benefits_modal_push_notifications_title">Notificações por push</string>
     <string name="jetpack_benefits_modal_subtitle">Instale o plugin gratuito Jetpack para aproveitar a melhor experiência móvel.</string>
     <string name="jetpack_benefits_modal_title">Aproveite sua loja ao máximo</string>
-    <string name="settings_enable_simple_payments_teaser_message">Experimente criar pedidos com as informações básicas, enquanto nos preparamos para o lançamento</string>
     <string name="order_detail_use_as_shipping_address">Usar como endereço de entrega</string>
     <string name="order_detail_use_as_billing_address">Usar como endereço de cobrança</string>
     <string name="orderfilters_filters_count_title">Filtros (%d)</string>
@@ -542,7 +606,6 @@ Language: pt_BR
     <string name="card_reader_connect_connecting_header">Conectando-se ao leitor</string>
     <string name="card_reader_connect_to_reader">Conectar-se ao leitor</string>
     <string name="card_reader_connect_reader_found_header">Deseja se conectar ao leitor %s?</string>
-    <string name="card_reader_connect_scanning_hint">Pressione o botão liga/desliga do seu leitor até aparecer uma luz azul piscando</string>
     <string name="card_reader_connect_scanning_header">Procurando leitores</string>
     <string name="shipping_label_items_count_placeholder">Contagem de itens</string>
     <string name="orderdetail_products_recreate_shipping_label_menu">Criar nova etiqueta de envio</string>
@@ -775,9 +838,6 @@ Language: pt_BR
     <string name="product_detail_no_variations">Este produto ainda não tem variações</string>
     <string name="product_variant_list_empty">No momento, adicionar opções como tamanho e cor só está disponível na Web. Elas aparecerão como opções na página do produto no seu site.</string>
     <string name="product_adding_wip_title">Criar produtos no app!</string>
-    <string name="product_ratings_count_zero">\u2022 sem classificações</string>
-    <string name="product_ratings_count_one">\u2022 classificado uma vez</string>
-    <string name="product_ratings_count">\u2022 classificado %d vezes</string>
     <string name="product_detail_fetch_product_invalid_id_error">Produto não encontrado</string>
     <string name="print_shipping_label_info_step_5">Se você ainda tiver problemas para imprimir a partir do seu dispositivo, &lt;b&gt;salve a etiqueta como PDF&lt;/b&gt; e envie por e-mail para imprimir por outro dispositivo.</string>
     <string name="print_shipping_label_info_step_2">Depois de selecionar &lt;b&gt;\"Imprimir etiquetas de envio\"&lt;/b&gt;, caso nenhuma impressão tenha sido feita usando este dispositivo, você precisará escolher e adicionar uma impressora.</string>
@@ -1801,12 +1861,6 @@ Language: pt_BR
     <string name="dashboard_top_performers_empty">Nenhuma atividade no período</string>
     <string name="dashboard_top_performers_total_orders">Total orders: %s</string>
     <string name="dashboard_top_performers_title">Os melhores desempenhos</string>
-    <string name="dashboard_stats_updated_date_time">Atualizado em %s</string>
-    <string name="dashboard_stats_updated_one_day">Atualizado há 1 dia</string>
-    <string name="dashboard_stats_updated_hours">Atualizado há %d horas</string>
-    <string name="dashboard_stats_updated_one_hour">Atualizado há 1 hora</string>
-    <string name="dashboard_stats_updated_minutes">Atualizado há %d minutos</string>
-    <string name="dashboard_stats_updated_now">Atualizado há alguns instantes</string>
     <string name="dashboard_stats_error_content_description">Imagem do erro</string>
     <string name="dashboard_stats_error">Erro ao buscar dados</string>
     <string name="dashboard_stats_revenue">Receita</string>

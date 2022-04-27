@@ -1,11 +1,88 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-02-15 18:54:03+0000
+Translation-Revision-Date: 2022-04-08 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="coupon_summary_performance_amount_heading">Belopp</string>
+    <string name="coupon_summary_performance_discounted_order_heading">Rabatterade beställningar</string>
+    <string name="coupon_summary_performance_heading">Prestanda</string>
+    <string name="coupon_summary_maximum_spend">Maximalt beställningsbelopp på %s</string>
+    <string name="coupon_summary_minimum_spend">Minsta beställningsbelopp på %s</string>
+    <string name="coupon_summary_heading">Rabattkodssammanfattning</string>
+    <string name="coupon_list_view_coupon">Visa rabattkodssammanfattning</string>
+    <string name="coupon_list_wip_message_enabled">Vi har jobbat på att göra det möjligt att visa och redigera rabattkoder från din enhet.</string>
+    <string name="coupon_list_wip_title">Visa och redigera rabattkoder</string>
+    <string name="coupon_list_empty_heading">Inga rabattkoder hittades</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1s exkl. %2s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1s och %2s</string>
+    <string name="coupon_list_item_label_everything">allt</string>
+    <string name="coupon_list_item_label_off">rabatt</string>
+    <string name="coupon_list_item_label_expired">Har löpt ut</string>
+    <string name="coupon_list_item_label_active">Aktiva</string>
+    <string name="coupons">Rabattkoder</string>
+    <string name="inbox_note_recency_date_time">Skapades den %s</string>
+    <string name="inbox_note_recency_days">För %d dagar sedan</string>
+    <string name="inbox_note_recency_one_day">För en dag sedan</string>
+    <string name="inbox_note_recency_hours">För %d timmar sedan</string>
+    <string name="inbox_note_recency_one_hour">För en timme sedan</string>
+    <string name="inbox_note_recency_minutes">För %d minuter sedan</string>
+    <string name="inbox_note_recency_now">För en stund sedan</string>
+    <string name="category_count_many">%d kategorier</string>
+    <string name="category_count_one">%d kategori</string>
+    <string name="product_ratings_count_zero">\u2022  inga godkända recensioner</string>
+    <string name="product_ratings_count_one">\u2022  en godkänd recension</string>
+    <string name="product_ratings_count">\u2022  %d godkända recensioner</string>
+    <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">Vi har jobbat på att göra det möjligt att skapa beställningar och ta emot betalningar från din enhet. Du kan prova dessa funktioner genom att trycka på \"+\"-knappen</string>
+    <string name="orderlist_simple_payments_wip_title">Skapa beställningar och ta emot betalningar.</string>
+    <string name="empty_inbox_description">Kom tillbaka snart för fler tips och insikter om hur du får din butik att växa</string>
+    <string name="empty_inbox_title">Grattis, du har läst allt!</string>
+    <string name="orderstatus_contentDesc_withStatus">Beställningsstatus: %s</string>
+    <string name="no_sku">Inget artikelnummer</string>
+    <string name="count">Antal: %s</string>
+    <string name="plus_one">Plus en</string>
+    <string name="minus_one">Minus en</string>
+    <string name="more_menu_button_coupons">Rabattkoder</string>
+    <string name="dismiss_inbox_note">Avfärda</string>
+    <string name="login_error_xml_rpc_auth_error_communicating">Det uppstod ett problem med att kommunicera med webbplatsen. En HTTP-felkod 401 returnerades.</string>
+    <string name="login_error_xml_rpc_cannot_read_site_auth_required">Anrop med XML-RPC verkar blockerade på denna webbplats (felkod 401). Om försöket att logga in misslyckas tryck på hjälpikonen för att se vanliga frågor.</string>
+    <string name="login_error_xml_rpc_cannot_read_site">Kunde inte läsa WordPress-webbplatsen på denna URL. Tryck på hjälpikonen för att se vanliga frågor.</string>
+    <string name="login_error_xml_rpc_services_disabled">Tjänsten för XML-RPC är inaktiverad på denna webbplats.</string>
+    <string name="a8c_email_message">Använd en e-postadress som inte är kopplad till Automattic för att skicka in ett supportärende</string>
+    <string name="card_reader_onboarding_stripe_account_in_unsupported_country">Vi stöder inte Stripe-konton som är registrerade i %1$s</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">Vi stöder inte WooCommerce Payments i %1$s</string>
+    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Vi stöder inte Stripe i %1$s</string>
+    <string name="card_reader_connect_scanning_hint">Tryck på strömknappen på din läsare</string>
+    <string name="card_reader_payment_reader_receipt_sent">Ett kvitto har skickats till &lt;strong&gt;%s&lt;/strong&gt;</string>
+    <string name="order_creation_fee_percentage_toggle_text">Procentuell avgift</string>
+    <string name="order_creation_fee_percentage_hint">Procent (%)</string>
+    <string name="order_creation_fee_amount_hint">Belopp ($)</string>
+    <string name="order_creation_add_fee_removal_hint">Ta bort avgift från beställning</string>
+    <string name="order_creation_remove_shipping">Ta bort frakt från beställning</string>
+    <string name="order_creation_edit_shipping">Frakt</string>
+    <string name="order_creation_add_shipping">Lägg till frakt</string>
+    <string name="order_creation_shipping_title_add">Lägg till frakt</string>
+    <string name="order_creation_shipping_name">Namn</string>
+    <string name="order_creation_shipping_amount">Belopp</string>
+    <string name="order_creation_payment_fee">Avgifter</string>
+    <string name="order_creation_customer_details">Kunddetaljer</string>
+    <string name="order_creation_add_fee">Lägg till avgift</string>
+    <string name="order_creation_customer_note_edit_content_description">Redigera kundanteckning</string>
+    <string name="order_creation_customer_edit_content_description">Redigera kunddetaljer</string>
+    <string name="order_creation_status_edit_content_description">Redigera beställningsstatus</string>
+    <string name="simple_payments_update_error">Beställningen med enkel betalning gick inte att uppdatera</string>
+    <string name="simple_payments_creation_error">Beställningen med enkel betalning gick inte att skapa</string>
+    <string name="more_menu_avatar">Användarens profilbild</string>
+    <string name="more_menu_button_reviews">Recensioner</string>
+    <string name="more_menu_button_store">Visa butik</string>
+    <string name="more_menu_button_inbox">Inkorg</string>
+    <string name="more_menu_button_analytics">Analyser</string>
+    <string name="more_menu_button_payments">Betalningar</string>
+    <string name="more_menu_button_woo_admin">WooCommerce-admin</string>
+    <string name="more_menu">Meny</string>
     <string name="card_reader_onboarding_both_plugins_activated_refresh_button">Uppdatera efter uppdatering</string>
     <string name="card_reader_onboarding_both_plugins_activated_open_store_admin_label">Hantera tillägg</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_two">WooCommerce Payments</string>
@@ -88,10 +165,9 @@ Language: sv_SE
     <string name="order_creation_new_customer_add_different_shipping_address">Lägg till en annan leveransadress</string>
     <string name="order_creation_product_instock">I lager</string>
     <string name="order_creation_product_stock_quantity">%s i lager</string>
-    <string name="order_creation_customer_details">Ny kund</string>
     <string name="order_creation_add_products">Lägg till produkt</string>
     <string name="order_creation_products">Produkter</string>
-    <string name="order_creation_add_customer">Lägg till kund</string>
+    <string name="order_creation_add_customer">Lägg till kunddetaljer</string>
     <string name="order_creation_customer">Kund</string>
     <string name="simple_payments_cash_dlg_button">Markera som betald</string>
     <string name="simple_payments_cash_dlg_message">Detta kommer att skapa din beställning och markera den som slutförd om du har mottagit betalning utanför WooCommerce</string>
@@ -108,8 +184,6 @@ Language: sv_SE
     <string name="order_card_transition_name">order_card_%1$s</string>
     <string name="cash">Kontant</string>
     <string name="card">Kort</string>
-    <string name="plus">Plus</string>
-    <string name="minus">Minus</string>
     <string name="tax">Moms</string>
     <string name="email">E-post</string>
     <string name="order_creation_add_customer_note">Lägg till anteckning</string>
@@ -145,10 +219,6 @@ Language: sv_SE
     <string name="date_timeframe_last_quarter">Förra kvartalet</string>
     <string name="date_timeframe_last_month">Förra månaden</string>
     <string name="date_timeframe_last_week">Förra veckan</string>
-    <string name="settings_enable_order_creation_teaser_message">Testa att skapa beställningar med fullständig information medan vi gör oss redo för lansering</string>
-    <string name="settings_enable_order_creation_teaser_title">Skapande av beställning</string>
-    <string name="settings_enable_simple_payments_teaser_title">Enkla betalningar</string>
-    <string name="beta_features_order_creation">Skapande av beställning</string>
     <string name="beta_features_simple_payments">Enkla betalningar</string>
     <string name="beta_features_add_ons">Visa utökningar</string>
     <string name="orders_empty_message_for_filtered_orders">Vi kunde inte hitta några beställningar</string>
@@ -166,11 +236,9 @@ Language: sv_SE
     <string name="orderlist_bottom_sheet_create_order_description">Skapa en ny manuell beställning</string>
     <string name="orderlist_bottom_sheet_create_order_action">Skapa beställning</string>
     <string name="orderlist_create_order_button_description">Skapa beställning</string>
-    <string name="simple_payments_creation_error">Kan inte skapa beställning</string>
     <string name="simple_payments_enter_amount">Ange belopp</string>
     <string name="simple_payments_dialog_title">Ta emot betalning</string>
     <string name="orderlist_simple_payments_menu">Enkel betalning</string>
-    <string name="orderlist_simple_payments_wip_title">Ta emot betalningar från din enhet!</string>
     <string name="analytics">Analys</string>
     <string name="jetpack_install_progress_step_four_message">Allt klart</string>
     <string name="jetpack_install_progress_step_three_message">Ansluter din butik</string>
@@ -205,8 +273,6 @@ Language: sv_SE
     <string name="orderfilters_default_filter_option">Alla</string>
     <string name="orderfilters_filter_card_title_filtered_orders">Filtrerade beställningar</string>
     <string name="orderfilters_filter_card_title_all_orders">Alla beställningar</string>
-    <string name="orderlist_simple_payments_wip_message_disabled">Vi arbetar på att göra det enklare för dig att ta emot betalningar från din enhet! Aktivera det i Inställningar &gt; Beta-funktioner.</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">Vi arbetar på att göra det enklare för dig att ta emot betalningar från din enhet! För tillfället kan du trycka på \"+\"-knappen för att skapa en beställning med det belopp som du vill ta emot.</string>
     <string name="jetpack_benefits_modal_dismiss">Inte nu</string>
     <string name="jetpack_benefits_modal_install_jetpack">Installera Jetpack</string>
     <string name="jetpack_benefits_modal_user_profiles_subtitle">Tillåt flera användare att komma åt WooCommerce Mobile.</string>
@@ -217,7 +283,6 @@ Language: sv_SE
     <string name="jetpack_benefits_modal_push_notifications_title">Push-notiser</string>
     <string name="jetpack_benefits_modal_subtitle">Installera det kostnadsfria Jetpack-tillägget för den bästa mobilupplevelsen.</string>
     <string name="jetpack_benefits_modal_title">Få ut så mycket som möjligt av din butik</string>
-    <string name="settings_enable_simple_payments_teaser_message">Testa att skapa beställningar med minimalt med information medan vi gör oss redo för lansering</string>
     <string name="order_detail_use_as_shipping_address">Använd som leveransadress</string>
     <string name="order_detail_use_as_billing_address">Använd som faktureringsadress</string>
     <string name="orderfilters_filters_count_title">Filter (%d)</string>
@@ -542,7 +607,6 @@ Language: sv_SE
     <string name="card_reader_connect_connecting_header">Ansluter till läsaren</string>
     <string name="card_reader_connect_to_reader">Anslut läsaren</string>
     <string name="card_reader_connect_reader_found_header">Vill du ansluta läsaren %s?</string>
-    <string name="card_reader_connect_scanning_hint">Tryck på knappen på din läsare tills du ser ett blinkande blått ljus</string>
     <string name="card_reader_connect_scanning_header">Söker efter läsare</string>
     <string name="shipping_label_items_count_placeholder">Antal artiklar</string>
     <string name="orderdetail_products_recreate_shipping_label_menu">Skapa ny leveransetikett</string>
@@ -776,9 +840,6 @@ Language: sv_SE
     <string name="product_detail_no_variations">Denna produkt har inga variationer än</string>
     <string name="product_variant_list_empty">Det går endast att lägga till alternativ som storlek och färg på webben. Dessa kommer att visas som alternativ på produktsidan på din webbplats.</string>
     <string name="product_adding_wip_title">Skapa produkter från appen!</string>
-    <string name="product_ratings_count_zero">\u2022 inga betyg</string>
-    <string name="product_ratings_count_one">\u2022 betygsatt en gång</string>
-    <string name="product_ratings_count">\u2022 betygsatt %d gånger</string>
     <string name="product_detail_fetch_product_invalid_id_error">Produkt hittades inte</string>
     <string name="print_shipping_label_info_step_5">Om du fortfarande har problem med att skriva ut från din enhet kan du &lt;b&gt;spara din etikett som en PDF-fil&lt;/b&gt; och skicka den med e-post för att skriva ut den från en annan enhet.</string>
     <string name="print_shipping_label_info_step_2">När du har valt &lt;b&gt;\"Skriv ut fraktetikett\"&lt;/b&gt; kan du behöva välja och lägga till en skrivare om du inte har skrivit ut från den här enheten tidigare.</string>
@@ -1802,12 +1863,6 @@ Language: sv_SE
     <string name="dashboard_top_performers_empty">Ingen aktivitet denna period</string>
     <string name="dashboard_top_performers_total_orders">Totalt antal beställningar: %s</string>
     <string name="dashboard_top_performers_title">Toppresterande</string>
-    <string name="dashboard_stats_updated_date_time">Uppdaterad den %s</string>
-    <string name="dashboard_stats_updated_one_day">Uppdaterad för 1 dag sedan</string>
-    <string name="dashboard_stats_updated_hours">Uppdaterad  för %d timmar sedan</string>
-    <string name="dashboard_stats_updated_one_hour">Uppdaterad för 1 timme sedan</string>
-    <string name="dashboard_stats_updated_minutes">Uppdaterad för %d minuter sedan</string>
-    <string name="dashboard_stats_updated_now">Uppdaterad alldeles nyss</string>
     <string name="dashboard_stats_error_content_description">Felbild</string>
     <string name="dashboard_stats_error">Det gick inte att hämta data</string>
     <string name="dashboard_stats_revenue">Intäkter</string>

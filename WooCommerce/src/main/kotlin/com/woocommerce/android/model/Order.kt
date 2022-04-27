@@ -46,6 +46,7 @@ data class Order(
     val taxLines: List<TaxLine>,
     val chargeId: String?,
     val shippingPhone: String,
+    val paymentUrl: String,
 ) : Parcelable {
     @IgnoredOnParcel
     val isOrderPaid = datePaid != null
@@ -178,6 +179,7 @@ data class Order(
     @Parcelize
     data class TaxLine(
         val id: Long,
+        val label: String,
         val compound: Boolean,
         val taxTotal: String,
         val ratePercent: Float
@@ -311,6 +313,7 @@ data class Order(
                 feesLines = emptyList(),
                 taxLines = emptyList(),
                 shippingPhone = "",
+                paymentUrl = ""
             )
         }
     }

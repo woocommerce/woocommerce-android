@@ -26,7 +26,8 @@ object WooLog {
         LOGIN,
         REVIEWS,
         MEDIA,
-        CARD_READER
+        CARD_READER,
+        COUPONS
     }
 
     // Breaking convention to be consistent with org.wordpress.android.util.AppLog
@@ -35,7 +36,7 @@ object WooLog {
 
     const val TAG = "WooCommerce"
     private const val MAX_ENTRIES = 99
-    private val logEntries = RollingLogEntries(MAX_ENTRIES)
+    val logEntries = RollingLogEntries(MAX_ENTRIES)
 
     init {
         // add listener for WP app log so we can capture login & FluxC logs
@@ -174,8 +175,6 @@ object WooLog {
         throwable.printStackTrace(PrintWriter(errors))
         return errors.toString()
     }
-
-    fun toHtmlList(isDarkTheme: Boolean) = logEntries.toHtmlList(isDarkTheme)
 
     override fun toString() = logEntries.toString()
 }

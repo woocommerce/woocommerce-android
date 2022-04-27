@@ -1,11 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-03-03 22:41:55+0000
+Translation-Revision-Date: 2022-04-07 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="coupon_summary_performance_amount_heading">סכום</string>
+    <string name="coupon_summary_performance_discounted_order_heading">הזמנות מוזלות</string>
+    <string name="coupon_summary_performance_heading">ביצועים</string>
+    <string name="coupon_summary_maximum_spend">הוצאה מקסימלית בגובה %s</string>
+    <string name="coupon_summary_minimum_spend">הוצאה מינימלית בגובה %s</string>
+    <string name="coupon_summary_heading">סיכום קופון</string>
+    <string name="coupon_list_view_coupon">הצגה של סיכום הקופון</string>
+    <string name="coupon_list_wip_message_enabled">אנחנו כרגע עובדים על אפשרות להציג ולערוך קופונים מהמכשיר שלך!</string>
+    <string name="coupon_list_wip_title">להציג ולנהל קופונים</string>
+    <string name="coupon_list_empty_heading">לא נמצאו קופונים</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1s לא כולל %2s</string>
+    <string name="coupon_list_item_label_everything">הכול</string>
+    <string name="coupon_list_item_label_off">הנחה</string>
+    <string name="coupon_list_item_label_expired">פג תוקף</string>
+    <string name="coupon_list_item_label_active">פעיל</string>
+    <string name="coupons">קופונים</string>
+    <string name="inbox_note_recency_date_time">נוצר בתאריך %s</string>
+    <string name="inbox_note_recency_days">לפני %d ימים</string>
+    <string name="inbox_note_recency_one_day">לפני יום</string>
+    <string name="inbox_note_recency_hours">לפני %d שעות</string>
+    <string name="inbox_note_recency_one_hour">לפני שעה</string>
+    <string name="inbox_note_recency_minutes">לפני %d דקות</string>
+    <string name="inbox_note_recency_now">לפני כמה רגעים</string>
+    <string name="category_count_many">%d קטגוריות</string>
+    <string name="category_count_one">%d קטגוריה</string>
+    <string name="product_ratings_count_zero">\u2022  אין ביקורות שאושרו</string>
+    <string name="product_ratings_count_one">\u2022  ביקורת אחת אושרה</string>
+    <string name="product_ratings_count">\u2022  %d ביקורות אושרו</string>
+    <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">אנחנו כרגע עובדים על אפשרות ליצור הזמנות ולקבל תשלומים מהמכשיר שלך! אפשר לנסות את האפשרויות האלו על ידי הקשה על הכפתור +</string>
+    <string name="orderlist_simple_payments_wip_title">ליצור הזמנות ולקבל תשלומים!</string>
+    <string name="empty_inbox_description">כדאי לחזור בקרוב כדי לקבל עצות ותובנות נוספות להגדלת החנות שלך</string>
+    <string name="empty_inbox_title">ברכותינו, קראת הכול!</string>
+    <string name="orderstatus_contentDesc_withStatus">סטטוס הזמנה: %s</string>
+    <string name="no_sku">ללא SKU</string>
+    <string name="count">ספירה: %s</string>
+    <string name="plus_one">עוד אחד</string>
+    <string name="minus_one">פחות אחד</string>
+    <string name="more_menu_button_coupons">קופונים</string>
+    <string name="dismiss_inbox_note">ביטול</string>
+    <string name="login_error_xml_rpc_auth_error_communicating">הייתה בעיה בתקשורת עם האתר הזה. הוחזר קוד שגיאה של HTTP מסוג 401.</string>
+    <string name="login_error_xml_rpc_cannot_read_site_auth_required">נראה שקריאות XML-RPC חסומות באתר הזה (קוד שגיאה 401). אם הניסיון להתחברות נכשל, יש להקיש על סמל העזרה כדי להציג את השאלות הנפוצות.</string>
+    <string name="login_error_xml_rpc_cannot_read_site">לא ניתן לקרוא את אתר WordPress בכתובת URL זו. יש להקיש על סמל העזרה כדי להציג את השאלות הנפוצות.</string>
+    <string name="login_error_xml_rpc_services_disabled">שירותי XML-RPC באתר זה מנותקים.</string>
+    <string name="a8c_email_message">יש להשתמש באימייל שאינו של Automattic כדי לשלוח כרטיס לתמיכה</string>
+    <string name="card_reader_onboarding_stripe_account_in_unsupported_country">אנחנו לא תומכים בחשבונות של Stripe שרשומים בתוך ⁦%1$s⁩</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">אנחנו לא תומכים ב-WooCommerce Payments בתוך ⁦%1$s⁩</string>
+    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">אנחנו לא תומכים ב-Stripe בתוך ⁦%1$s⁩</string>
+    <string name="card_reader_connect_scanning_hint">יש ללחוץ על כפתור ההפעלה של הקורא שלך</string>
+    <string name="card_reader_payment_reader_receipt_sent">הקבלה נשלחה אל &lt;strong&gt;%s&lt;/strong&gt;</string>
+    <string name="order_creation_fee_percentage_toggle_text">עמלת אחוזים</string>
+    <string name="order_creation_fee_percentage_hint">אחוזים (%)</string>
+    <string name="order_creation_fee_amount_hint">סכום ($)</string>
+    <string name="order_creation_add_fee_removal_hint">להסיר את העמלה מההזמנה</string>
+    <string name="order_creation_remove_shipping">להסיר את המשלוח מההזמנה</string>
+    <string name="order_creation_edit_shipping">משלוח</string>
+    <string name="order_creation_add_shipping">להוסיף משלוח</string>
+    <string name="order_creation_shipping_title_add">להוסיף משלוח</string>
+    <string name="order_creation_shipping_name">שם</string>
+    <string name="order_creation_shipping_amount">סכום</string>
+    <string name="order_creation_payment_fee">עמלות</string>
+    <string name="order_creation_customer_details">פרטי לקוח</string>
+    <string name="order_creation_add_fee">להוסיף עמלה</string>
+    <string name="order_creation_customer_note_edit_content_description">לערוך את הערות הלקוח</string>
+    <string name="order_creation_customer_edit_content_description">לערוך את פרטי הלקוח</string>
+    <string name="order_creation_status_edit_content_description">לערוך את סטטוס ההזמנה</string>
+    <string name="simple_payments_update_error">לא ניתן לעדכן הזמנה של תשלום פשוט</string>
+    <string name="simple_payments_creation_error">לא ניתן ליצור הזמנה של תשלום פשוט</string>
+    <string name="more_menu_avatar">תמונת פרופיל של המשתמש</string>
+    <string name="more_menu_button_reviews">ביקורות</string>
+    <string name="more_menu_button_store">להציג את החנות</string>
+    <string name="more_menu_button_inbox">תיבת דואר נכנס</string>
+    <string name="more_menu_button_analytics">נתונים אנליטיים</string>
+    <string name="more_menu_button_payments">תשלומים</string>
+    <string name="more_menu_button_woo_admin">מנהל המערכת של WooCommerce</string>
+    <string name="more_menu">תפריט</string>
     <string name="card_reader_onboarding_both_plugins_activated_refresh_button">לרענן לאחר עדכון</string>
     <string name="card_reader_onboarding_both_plugins_activated_open_store_admin_label">ניהול תוספים</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_two">WooCommerce Payments</string>
@@ -88,10 +164,9 @@ Language: he_IL
     <string name="order_creation_new_customer_add_different_shipping_address">להוסיף כתובת שונה למשלוח</string>
     <string name="order_creation_product_instock">במלאי</string>
     <string name="order_creation_product_stock_quantity">%s במלאי</string>
-    <string name="order_creation_customer_details">לקוח חדש</string>
     <string name="order_creation_add_products">להוסיף מוצר</string>
     <string name="order_creation_products">מוצרים</string>
-    <string name="order_creation_add_customer">להוסיף לקוח</string>
+    <string name="order_creation_add_customer">להוסיף את פרטי הלקוח</string>
     <string name="order_creation_customer">לקוח</string>
     <string name="simple_payments_cash_dlg_button">לסמן כ\'שולמה\'</string>
     <string name="simple_payments_cash_dlg_message">הפעולה הזאת תיצור את ההזמנה ותסמן אותה בתור \'שולמה\' אם קיבלת תשלום מחוץ ל-WooCommerce</string>
@@ -108,8 +183,6 @@ Language: he_IL
     <string name="order_card_transition_name">order_card_%1$s</string>
     <string name="cash">מזומן</string>
     <string name="card">כרטיס</string>
-    <string name="plus">ועוד</string>
-    <string name="minus">פחות</string>
     <string name="tax">מס</string>
     <string name="email">לשלוח מייל</string>
     <string name="order_creation_add_customer_note">להוסיף הערה</string>
@@ -145,10 +218,6 @@ Language: he_IL
     <string name="date_timeframe_last_quarter">הרבעון הקודם</string>
     <string name="date_timeframe_last_month">החודש הקודם</string>
     <string name="date_timeframe_last_week">השבוע הקודם</string>
-    <string name="settings_enable_order_creation_teaser_message">כדאי לבדוק את האפשרות ליצור הזמנות עם הפרטים המלאים בזמן שאנחנו מתכוננים להשקה</string>
-    <string name="settings_enable_order_creation_teaser_title">יצירת הזמנה</string>
-    <string name="settings_enable_simple_payments_teaser_title">תשלומים פשוטים</string>
-    <string name="beta_features_order_creation">יצירת הזמנה</string>
     <string name="beta_features_simple_payments">תשלומים פשוטים</string>
     <string name="beta_features_add_ons">להציג הרחבות</string>
     <string name="orders_empty_message_for_filtered_orders">מצטערים, לא הצלחנו למצוא הזמנות</string>
@@ -166,11 +235,9 @@ Language: he_IL
     <string name="orderlist_bottom_sheet_create_order_description">ליצור הזמנה ידנית חדשה</string>
     <string name="orderlist_bottom_sheet_create_order_action">ליצור הזמנה</string>
     <string name="orderlist_create_order_button_description">ליצור הזמנה</string>
-    <string name="simple_payments_creation_error">אין אפשרות ליצור הזמנה</string>
     <string name="simple_payments_enter_amount">להזין סכום</string>
     <string name="simple_payments_dialog_title">לגבות תשלום</string>
     <string name="orderlist_simple_payments_menu">תשלום פשוט</string>
-    <string name="orderlist_simple_payments_wip_title">לגבות תשלומים דרך המכשיר שלך!</string>
     <string name="analytics">נתונים אנליטיים</string>
     <string name="jetpack_install_progress_step_four_message">סיימת</string>
     <string name="jetpack_install_progress_step_three_message">מחבר את החנות שלך</string>
@@ -205,8 +272,6 @@ Language: he_IL
     <string name="orderfilters_default_filter_option">הכול</string>
     <string name="orderfilters_filter_card_title_filtered_orders">הזמנות שסוננו</string>
     <string name="orderfilters_filter_card_title_all_orders">כל ההזמנות</string>
-    <string name="orderlist_simple_payments_wip_message_disabled">אנחנו עובדים על השיפור של תהליך קבלת התשלומים מהמכשיר שלך! ניתן להפעיל את האפשרות דרך \'הגדרות\' &gt; \'אפשרויות ביתא\'.</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">אנחנו עובדים על השיפור של תהליך קבלת התשלומים מהמכשיר שלך! בינתיים, יש להקיש על הכפתור \'+\' ותהיה לך אפשרות ליצור הזמנה עם הסכום שברצונך לגבות.</string>
     <string name="jetpack_benefits_modal_dismiss">לא עכשיו</string>
     <string name="jetpack_benefits_modal_install_jetpack">להתקין את Jetpack</string>
     <string name="jetpack_benefits_modal_user_profiles_subtitle">לאפשר למספר משתמשים לגשת אל WooCommerce Mobile.</string>
@@ -217,7 +282,6 @@ Language: he_IL
     <string name="jetpack_benefits_modal_push_notifications_title">הודעות דחיפה</string>
     <string name="jetpack_benefits_modal_subtitle">להתקין את התוסף החינמי של Jetpack בשביל חוויית השימוש הטובה ביותר בנייד.</string>
     <string name="jetpack_benefits_modal_title">לנצל את מלוא הפוטנציאל של החנות שלך</string>
-    <string name="settings_enable_simple_payments_teaser_message">כדאי לבדוק את האפשרות ליצור הזמנות עם מידע חיוני בלבד בזמן שאנחנו מתכוננים להשקה</string>
     <string name="order_detail_use_as_shipping_address">להשתמש בתור כתובת למשלוח</string>
     <string name="order_detail_use_as_billing_address">להשתמש בתור כתובת לחיוב</string>
     <string name="orderfilters_filters_count_title">מסננים (%d)</string>
@@ -542,7 +606,6 @@ Language: he_IL
     <string name="card_reader_connect_connecting_header">מתחבר אל Reader</string>
     <string name="card_reader_connect_to_reader">יש להתחבר אל Reader</string>
     <string name="card_reader_connect_reader_found_header">האם ברצונך לחבר את Reader %s?</string>
-    <string name="card_reader_connect_scanning_hint">יש ללחוץ על כפתור ההפעלה ב-Reader עד שיופיע אור כחול מהבהב</string>
     <string name="card_reader_connect_scanning_header">סורק פריטים של Reader</string>
     <string name="shipping_label_items_count_placeholder">מספר הפריטים</string>
     <string name="orderdetail_products_recreate_shipping_label_menu">ליצור תווית משלוח חדשה</string>
@@ -776,9 +839,6 @@ Language: he_IL
     <string name="product_detail_no_variations">למוצר זה אין עדיין סוגים</string>
     <string name="product_variant_list_empty">הוספה של אפשרויות כגון גודל וצבע זמינה כעת באינטרנט בלבד. פריטים אלה יופיעו כאפשרויות בעמוד המוצר באתר שלך.</string>
     <string name="product_adding_wip_title">אפשר ליצור מוצרים דרך האפליקציה!</string>
-    <string name="product_ratings_count_zero">\u2022 אין דירוגים</string>
-    <string name="product_ratings_count_one">\u2022 דורג פעם אחת</string>
-    <string name="product_ratings_count">\u2022 דורג %d פעמים</string>
     <string name="product_detail_fetch_product_invalid_id_error">המוצר לא נמצא</string>
     <string name="print_shipping_label_info_step_5">אם עדיין יש בעיות בהדפסה מהמכשיר שלך, אפשר &lt;b&gt;לשמור את התווית שלך בקובץ PDF‏ &lt;/b&gt; ולשלוח באימייל כדי להדפיס אותה ממכשיר אחר.</string>
     <string name="print_shipping_label_info_step_2">אחרי הבחירה באפשרות &lt;b&gt;\"הדפסת תווית משלוח\"&lt;/b&gt; ייתכן שיהיה עליך לבחור ולהוסיף מדפסת אם לא הדפסת דרך מכשיר זה בעבר.</string>
@@ -1802,12 +1862,6 @@ Language: he_IL
     <string name="dashboard_top_performers_empty">אין פעילות בפרק זמן זה</string>
     <string name="dashboard_top_performers_total_orders">סך כל ההזמנות: %s</string>
     <string name="dashboard_top_performers_title">הביצועים הטובים ביותר</string>
-    <string name="dashboard_stats_updated_date_time">עודכן ב-%s</string>
-    <string name="dashboard_stats_updated_one_day">עודכן לפני יום</string>
-    <string name="dashboard_stats_updated_hours">עודכן לפני %d שעות</string>
-    <string name="dashboard_stats_updated_one_hour">עודכן לפני שעה</string>
-    <string name="dashboard_stats_updated_minutes">עודכן לפני %d דקות</string>
-    <string name="dashboard_stats_updated_now">עודכן לפני מספר רגעים</string>
     <string name="dashboard_stats_error_content_description">תמונת השגיאה</string>
     <string name="dashboard_stats_error">שגיאה בעת אחזור הנתונים</string>
     <string name="dashboard_stats_revenue">הכנסה</string>

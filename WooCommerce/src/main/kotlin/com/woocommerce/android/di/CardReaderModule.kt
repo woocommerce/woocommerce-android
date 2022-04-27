@@ -37,18 +37,6 @@ class CardReaderModule {
         responseMapper: CapturePaymentResponseMapper,
         appPrefs: AppPrefs
     ) = object : CardReaderStore {
-        override suspend fun fetchCustomerIdByOrderId(orderId: Long): String? {
-            return inPersonPaymentsStore.createCustomerByOrderId(
-                appPrefs.getCardReaderPreferredPlugin(
-                    selectedSite.get().id,
-                    selectedSite.get().siteId,
-                    selectedSite.get().selfHostedSiteId
-                )!!.toInPersonPaymentsPluginType(),
-                selectedSite.get(),
-                orderId
-            ).model?.customerId
-        }
-
         override suspend fun fetchConnectionToken(): String {
             val result = inPersonPaymentsStore.fetchConnectionToken(
                 appPrefs.getCardReaderPreferredPlugin(

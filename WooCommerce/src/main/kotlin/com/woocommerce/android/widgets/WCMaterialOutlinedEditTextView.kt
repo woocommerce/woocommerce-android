@@ -54,9 +54,9 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
         get() = binding.editText.text.toString()
         set(value) = binding.editText.setText(value)
 
-    var imeOptions: Int = 0
+    var imeOptions: Int
+        get() = binding.editText.imeOptions
         set(value) {
-            field = value
             binding.editText.imeOptions = value
         }
 
@@ -84,9 +84,12 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
                     text = it
                 }
 
-                imeOptions = a.getInt(
-                    R.styleable.WCMaterialOutlinedEditTextView_android_imeOptions, 0
-                )
+                // only set imeOptions if defined, otherwise we'll override the default value
+                if (a.hasValue(R.styleable.WCMaterialOutlinedEditTextView_android_imeOptions)) {
+                    imeOptions = a.getInt(
+                        R.styleable.WCMaterialOutlinedEditTextView_android_imeOptions, 0
+                    )
+                }
 
                 isEnabled = a.getBoolean(R.styleable.WCMaterialOutlinedCurrencyEditTextView_android_enabled, true)
             } finally {

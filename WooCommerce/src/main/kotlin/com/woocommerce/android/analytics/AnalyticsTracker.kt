@@ -12,7 +12,6 @@ import com.woocommerce.android.util.WooLog.T
 import org.json.JSONObject
 import org.wordpress.android.fluxc.model.SiteModel
 import java.util.UUID
-import kotlin.collections.HashMap
 
 class AnalyticsTracker private constructor(private val context: Context) {
     private var tracksClient: TracksClient? = TracksClient.getClient(context)
@@ -241,12 +240,14 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_PRODUCTS_VARIATIONS_FEEDBACK = "products_variations"
         const val VALUE_SHIPPING_LABELS_M4_FEEDBACK = "shipping_labels_m4"
         const val VALUE_PRODUCT_ADDONS_FEEDBACK = "product_addons"
+        const val VALUE_COUPONS_FEEDBACK = "coupons"
         const val VALUE_STATE_ON = "on"
         const val VALUE_STATE_OFF = "off"
 
         const val VALUE_SIMPLE_PAYMENTS_FEEDBACK = "simple_payments"
         const val VALUE_SIMPLE_PAYMENTS_COLLECT_CARD = "card"
         const val VALUE_SIMPLE_PAYMENTS_COLLECT_CASH = "cash"
+        const val VALUE_SIMPLE_PAYMENTS_COLLECT_LINK = "payment_link"
         const val VALUE_SIMPLE_PAYMENTS_SOURCE_AMOUNT = "amount"
         const val VALUE_SIMPLE_PAYMENTS_SOURCE_SUMMARY = "summary"
         const val VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD = "payment_method"
@@ -314,6 +315,20 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_MORE_MENU_ADMIN_MENU = "admin_menu"
         const val VALUE_MORE_MENU_REVIEWS = "reviews"
         const val VALUE_MORE_MENU_INBOX = "inbox"
+        const val VALUE_MORE_MENU_COUPONS = "coupons"
+
+        // -- Inbox note actions
+        const val KEY_INBOX_NOTE_ACTION = "action"
+        const val VALUE_INBOX_NOTE_ACTION_OPEN = "open"
+        const val VALUE_INBOX_NOTE_ACTION_DISMISS = "dismiss"
+        const val VALUE_INBOX_NOTE_ACTION_DISMISS_ALL = "dismiss_all"
+
+        // -- Coupons
+        const val KEY_COUPON_ACTION = "action"
+        const val KEY_COUPON_ACTION_LOADED = "loaded"
+        const val KEY_COUPON_ACTION_COPIED = "copied_code"
+        const val KEY_COUPON_ACTION_SHARED = "shared_code"
+        const val KEY_COUPON_ACTION_DELETED = "tapped_delete"
 
         var sendUsageStats: Boolean = true
             set(value) {

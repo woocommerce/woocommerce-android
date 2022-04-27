@@ -117,7 +117,7 @@ internal class PaymentManager(
     private suspend fun FlowCollector<CardPaymentStatus>.createPaymentIntent(paymentInfo: PaymentInfo): PaymentIntent? {
         var paymentIntent: PaymentIntent? = null
         emit(InitializingPayment)
-        createPaymentAction.createPaymentIntent(enrichPaymentInfoWithCustomerId(paymentInfo)).collect {
+        createPaymentAction.createPaymentIntent(paymentInfo).collect {
             when (it) {
                 is Failure -> emit(errorMapper.mapTerminalError(paymentIntent, it.exception))
                 is Success -> paymentIntent = it.paymentIntent
@@ -185,11 +185,6 @@ internal class PaymentManager(
             }
             else -> false
         }
-    }
-
-    private suspend fun enrichPaymentInfoWithCustomerId(paymentInfo: PaymentInfo): PaymentInfo {
-        val customerId = cardReaderStore.fetchCustomerIdByOrderId(paymentInfo.orderId)
-        return paymentInfo.copy(customerId = customerId)
     }
 
     private fun determinePaymentMethodType(status: ProcessPaymentStatus.Success): PaymentMethodType {
