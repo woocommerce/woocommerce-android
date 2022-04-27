@@ -7,6 +7,7 @@
 9.1
 -----
 - [*] Introduced Location permission rationale dialog in IPP connection flow
+- [*] Added the ability to long-press in order detail to copy select fields to the clipboard
 
 9.0
 -----
