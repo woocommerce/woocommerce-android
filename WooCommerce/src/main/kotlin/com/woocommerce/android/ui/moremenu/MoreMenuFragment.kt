@@ -14,6 +14,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.*
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -24,6 +25,9 @@ import javax.inject.Inject
 @ExperimentalFoundationApi
 class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
     @Inject lateinit var selectedSite: SelectedSite
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     override fun getFragmentTitle() = getString(R.string.more_menu)
 
@@ -44,7 +48,6 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMoreMenuBinding.inflate(inflater, container, false)
-        hideToolbar()
 
         val view = binding.root
         binding.menu.apply {
