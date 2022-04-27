@@ -95,6 +95,7 @@ so that's the baseline as defined in `major_100`.
     <dimen name="skeleton_text_small_width">@dimen/major_250</dimen>
     <dimen name="skeleton_text_medium_width">80dp</dimen>
     <dimen name="skeleton_text_large_width">160dp</dimen>
+
     <!-- Corner Radius -->
     <dimen name="corner_radius_small">2dp</dimen>
     <dimen name="corner_radius_medium">4dp</dimen>
@@ -121,7 +122,7 @@ so that's the baseline as defined in `major_100`.
     <dimen name="progress_bar_large">91dp</dimen>
     <dimen name="whats_new_dialog_heading_top_margin">64dp</dimen>
 
-    <!-- Chart dimens -->
+    <!-- More Menu dimens -->
     <dimen name="more_menu_button_height">190dp</dimen>
 
 </resources>
