@@ -1,35 +1,26 @@
 package com.woocommerce.android.ui.moremenu
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
-import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
+import android.os.*
+import android.view.*
+import androidx.compose.foundation.*
+import androidx.compose.ui.platform.*
+import androidx.compose.ui.platform.ViewCompositionStrategy.*
+import androidx.fragment.app.*
+import androidx.navigation.fragment.*
 import com.woocommerce.android.R
-import com.woocommerce.android.databinding.FragmentMoreMenuBinding
-import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.base.TopLevelFragment
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.ui.main.MainActivity
-import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.NavigateToSettingsEvent
-import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.StartSitePickerEvent
-import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewAdminEvent
-import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewCouponsEvent
-import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewInboxEvent
-import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewReviewsEvent
-import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewStoreEvent
-import com.woocommerce.android.util.ChromeCustomTabUtils
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import com.woocommerce.android.extensions.*
+import com.woocommerce.android.tools.*
+import com.woocommerce.android.ui.base.*
+import com.woocommerce.android.ui.compose.theme.*
+import com.woocommerce.android.ui.main.*
+import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.*
+import com.woocommerce.android.util.*
+import dagger.hilt.android.*
+import javax.inject.*
 
 @AndroidEntryPoint
 @ExperimentalFoundationApi
-class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
+class MoreMenuFragment : TopLevelFragment() {
     @Inject lateinit var selectedSite: SelectedSite
 
     override val activityAppBarStatus: AppBarStatus
@@ -38,9 +29,6 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
     override fun getFragmentTitle() = getString(R.string.more_menu)
 
     override fun shouldExpandToolbar(): Boolean = false
-
-    private var _binding: FragmentMoreMenuBinding? = null
-    private val binding get() = _binding!!
 
     private val viewModel: MoreMenuViewModel by viewModels()
 
@@ -53,10 +41,7 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentMoreMenuBinding.inflate(inflater, container, false)
-
-        val view = binding.root
-        binding.menu.apply {
+        return ComposeView(requireContext()).apply {
             // Dispose of the Composition when the view's LifecycleOwner is destroyed
             setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)
             setContent {
@@ -65,17 +50,11 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
                 }
             }
         }
-        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     private fun setupObservers() {
