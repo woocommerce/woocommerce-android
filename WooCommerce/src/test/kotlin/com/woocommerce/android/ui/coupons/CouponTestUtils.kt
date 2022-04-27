@@ -18,7 +18,8 @@ object CouponTestUtils {
             categories = emptyList(),
             products = emptyList(),
             excludedProducts = emptyList(),
-            excludedCategories = emptyList()
+            excludedCategories = emptyList(),
+            restrictedEmails = emptyList()
         )
     }
 

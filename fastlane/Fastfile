@@ -56,9 +56,9 @@ main_strings_path = "./WooCommerce/src/main/res/values/strings.xml"
 update_strings_path = "./fastlane/resources/values/"
 
 platform :android do
-########################################################################
-# Release Lanes
-########################################################################
+  ########################################################################
+  # Release Lanes
+  ########################################################################
 
   #####################################################################################
   # code_freeze
@@ -74,7 +74,7 @@ platform :android do
   #####################################################################################
   desc "Creates a new release branch from the current trunk"
   lane :code_freeze do | options |
-    old_version = android_codefreeze_prechecks(options)
+    android_codefreeze_prechecks(options)
 
     android_bump_version_release()
     new_version = android_get_app_version()
@@ -126,27 +126,40 @@ platform :android do
   #####################################################################################
   desc "Updates the PlayStoreStrings.pot file"
   lane :update_appstore_strings do |options|
-    prj_folder = Dir.pwd + "/.."
+    ensure_git_status_clean
+
+    metadata_folder = File.join(PROJECT_ROOT_FOLDER, 'WooCommerce', 'metadata')
 
     files = {
-      release_note: prj_folder + "/WooCommerce/metadata/release_notes.txt",
-      play_store_promo: prj_folder + "/WooCommerce/metadata/short_description.txt",
-      play_store_desc: prj_folder + "/WooCommerce/metadata/full_description.txt",
-      play_store_app_title: prj_folder + "/WooCommerce/metadata/title.txt",
-      play_store_screenshot_1: prj_folder + "/WooCommerce/metadata/promo_screenshot_1.txt",
-      play_store_screenshot_1_b: prj_folder + "/WooCommerce/metadata/promo_screenshot_1_b.txt",
-      play_store_screenshot_2: prj_folder + "/WooCommerce/metadata/promo_screenshot_2.txt",
-      play_store_screenshot_3: prj_folder + "/WooCommerce/metadata/promo_screenshot_3.txt",
-      play_store_screenshot_4: prj_folder + "/WooCommerce/metadata/promo_screenshot_4.txt",
-      play_store_screenshot_5: prj_folder + "/WooCommerce/metadata/promo_screenshot_5.txt",
-      play_store_screenshot_6: prj_folder + "/WooCommerce/metadata/promo_screenshot_6.txt",
-      play_store_screenshot_7: prj_folder + "/WooCommerce/metadata/promo_screenshot_7.txt",
-      play_store_screenshot_8: prj_folder + "/WooCommerce/metadata/promo_screenshot_8.txt"
+      release_note: File.join(metadata_folder, 'release_notes.txt'),
+      play_store_promo: File.join(metadata_folder, 'short_description.txt'),
+      play_store_desc: File.join(metadata_folder, 'full_description.txt'),
+      play_store_app_title: File.join(metadata_folder, 'title.txt'),
+      play_store_screenshot_1: File.join(metadata_folder, 'promo_screenshot_1.txt'),
+      play_store_screenshot_1_b: File.join(metadata_folder, 'promo_screenshot_1_b.txt'),
+      play_store_screenshot_2: File.join(metadata_folder, 'promo_screenshot_2.txt'),
+      play_store_screenshot_3: File.join(metadata_folder, 'promo_screenshot_3.txt'),
+      play_store_screenshot_4: File.join(metadata_folder, 'promo_screenshot_4.txt'),
+      play_store_screenshot_5: File.join(metadata_folder, 'promo_screenshot_5.txt'),
+      play_store_screenshot_6: File.join(metadata_folder, 'promo_screenshot_6.txt'),
+      play_store_screenshot_7: File.join(metadata_folder, 'promo_screenshot_7.txt'),
+      play_store_screenshot_8: File.join(metadata_folder, 'promo_screenshot_8.txt')
     }
 
-    android_update_metadata_source(po_file_path: prj_folder + "/WooCommerce/metadata/PlayStoreStrings.pot",
+    po_path = File.join(metadata_folder, 'PlayStoreStrings.pot')
+
+    an_update_metadata_source(
+      po_file_path: po_path,
       source_files: files,
-      release_version: options[:version])
+      release_version: options[:version]
+    )
+
+    git_add(path: po_path)
+    git_commit(
+      path: po_path,
+      message: "Update `PlayStoreStrings.po` for #{options[:version]}",
+      allow_nothing_to_commit: true
+    )
   end
 
   #####################################################################################
@@ -315,32 +328,32 @@ platform :android do
   desc "Builds and uploads release for distribution"
   lane :build_and_upload_release do | options |
     android_build_prechecks(skip_confirm: options[:skip_confirm],
-      alpha: false,
-      beta: false,
-      final: true)
-    android_build_preflight() unless options[:skip_prechecks]
+                            alpha: false,
+                            beta: false,
+                            final: true)
+  android_build_preflight() unless options[:skip_prechecks]
 
-    # Create the file names
-    version = android_get_release_version()
-    build_bundle(version: version, flavor:"Vanilla")
+  # Create the file names
+  version = android_get_release_version()
+  build_bundle(version: version, flavor:"Vanilla")
 
-    aab_file_path = File.join(PROJECT_ROOT_FOLDER, "artifacts", aab_file_name(version))
+  aab_file_path = File.join(PROJECT_ROOT_FOLDER, "artifacts", aab_file_name(version))
 
-    UI.error("Unable to find a build artifact at #{aab_file_path}") unless File.exist? aab_file_path
+  UI.error("Unable to find a build artifact at #{aab_file_path}") unless File.exist? aab_file_path
 
-    upload_to_play_store(
-      package_name: 'com.woocommerce.android',
-      aab: aab_file_path,
-      track: 'production',
-      release_status: 'draft',
-      skip_upload_metadata: true,
-      skip_upload_changelogs: true,
-      skip_upload_images: true,
-      skip_upload_screenshots: true,
-      json_key: UPLOAD_TO_PLAY_STORE_JSON_KEY
-    )
+  upload_to_play_store(
+    package_name: 'com.woocommerce.android',
+    aab: aab_file_path,
+    track: 'production',
+    release_status: 'draft',
+    skip_upload_metadata: true,
+    skip_upload_changelogs: true,
+    skip_upload_images: true,
+    skip_upload_screenshots: true,
+    json_key: UPLOAD_TO_PLAY_STORE_JSON_KEY
+  )
 
-    create_gh_release(version: version) if options[:create_release]
+  create_gh_release(version: version) if options[:create_release]
   end
 
   #####################################################################################
@@ -385,22 +398,22 @@ platform :android do
   end
 
   #####################################################################################
-   # trigger_release_build
-   # -----------------------------------------------------------------------------------
-   # This lane triggers a stable release build on CI
-   # -----------------------------------------------------------------------------------
-   # Usage:
-   # bundle exec fastlane trigger_release_build [branch_to_build:<branch_name>]
-   #
-   #####################################################################################
+  # trigger_release_build
+  # -----------------------------------------------------------------------------------
+  # This lane triggers a stable release build on CI
+  # -----------------------------------------------------------------------------------
+  # Usage:
+  # bundle exec fastlane trigger_release_build [branch_to_build:<branch_name>]
+  #
+  #####################################################################################
   desc "Tell Buildkite to trigger a release build"
   lane :trigger_release_build do | options |
-      buildkite_trigger_build(
-        buildkite_organization: 'automattic',
-        buildkite_pipeline: 'woocommerce-android',
-        branch: options[:branch_to_build] || git_branch,
-        pipeline_file: 'release-builds.yml'
-      )
+    buildkite_trigger_build(
+      buildkite_organization: 'automattic',
+      buildkite_pipeline: 'woocommerce-android',
+      branch: options[:branch_to_build] || git_branch,
+      pipeline_file: 'release-builds.yml'
+    )
   end
 
   #####################################################################################
@@ -435,36 +448,36 @@ platform :android do
       },
     ]
 
-    binary_imported_libraries.each do  | lib |
-      download_path = android_download_file_by_version(
-        library_name: lib[:name],
-        import_key: lib[:import_key],
-        repository: lib[:repository],
-        file_path: lib[:strings_file_path],
-        github_release_prefix: lib[:github_release_prefix]
-      )
+  binary_imported_libraries.each do  | lib |
+    download_path = android_download_file_by_version(
+      library_name: lib[:name],
+      import_key: lib[:import_key],
+      repository: lib[:repository],
+      file_path: lib[:strings_file_path],
+      github_release_prefix: lib[:github_release_prefix]
+    )
 
-      if download_path.nil?
-        error_message = "Can't download strings file for #{lib[:name]}.\r\n"
-        error_message += "Strings for this library won't get translated.\r\n"
-        error_message += "Do you want to continue anyway?"
-        UI.user_error! "Abort." unless UI.confirm(error_message)
-      else
-        UI.message("Strings.xml file for #{lib[:name]} downloaded to #{download_path}.")
-        lib_to_merge = [{
-          library: lib[:name],
-          strings_path: download_path,
-          exclusions: lib[:exclusions]
-        }]
-        an_localize_libs(app_strings_path: main_strings_path, libs_strings_path: lib_to_merge)
-        File.delete(download_path) if File.exist?(download_path)
-      end
-    end
+  if download_path.nil?
+    error_message = "Can't download strings file for #{lib[:name]}.\r\n"
+    error_message += "Strings for this library won't get translated.\r\n"
+    error_message += "Do you want to continue anyway?"
+    UI.user_error! "Abort." unless UI.confirm(error_message)
+  else
+    UI.message("Strings.xml file for #{lib[:name]} downloaded to #{download_path}.")
+    lib_to_merge = [{
+      library: lib[:name],
+      strings_path: download_path,
+      exclusions: lib[:exclusions]
+    }]
+    an_localize_libs(app_strings_path: main_strings_path, libs_strings_path: lib_to_merge)
+    File.delete(download_path) if File.exist?(download_path)
+  end
+  end
 
-    is_repo_clean = ("git status --porcelain").empty?
-    unless is_repo_clean then
-      commit_strings(options)
-    end
+  is_repo_clean = ("git status --porcelain").empty?
+  unless is_repo_clean then
+    commit_strings(options)
+  end
   end
 
   #####################################################################################
@@ -492,10 +505,10 @@ platform :android do
     delete_old_changelogs(build: options[:build_number])
     download_path=Dir.pwd + "/metadata/android"
     gp_downloadmetadata(project_url: "https://translate.wordpress.com/projects/woocommerce/woocommerce-android/release-notes/",
-      target_files: files,
-      locales: SUPPORTED_LOCALES.map {| hsh | [ hsh[:glotpress], hsh[:google_play] ]},
-      source_locale: "en-US",
-      download_path: download_path)
+                        target_files: files,
+                        locales: SUPPORTED_LOCALES.map {| hsh | [ hsh[:glotpress], hsh[:google_play] ]},
+                        source_locale: "en-US",
+                        download_path: download_path)
 
     android_create_xml_release_notes(download_path: download_path, build_number: "#{options[:build_number]}", locales: SUPPORTED_LOCALES.map {| hsh | [ hsh[:glotpress], hsh[:google_play] ]})
     add_us_release_notes(relese_notes_path: download_path + "/release_notes.xml", version_name: options[:version])
@@ -507,9 +520,9 @@ platform :android do
   ########################################################################
   private_lane :commit_strings do | options |
     if (options[:auto_commit]) then
-       sh("cd .. && git add #{main_strings_path}")
-       sh("git commit -m 'Update strings for translation'")
-       sh("git push origin HEAD")
+      sh("cd .. && git add #{main_strings_path}")
+      sh("git commit -m 'Update strings for translation'")
+      sh("git push origin HEAD")
     else
       UI.important("Your #{main_strings_path} has changed.")
       UI.input("Please, review the changes, commit them and press return to continue.")
@@ -529,7 +542,6 @@ platform :android do
     # Create the file names
     version = options[:version]
     name = aab_file_name(version)
-    apk_name = universal_apk_name(version)
     aab_file = "WooCommerce-vanilla-release.aab"
     output_dir = "WooCommerce/build/outputs/bundle/"
     build_dir = "artifacts/"

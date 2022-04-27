@@ -19,10 +19,23 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/minor_100"
             android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/products_sort_filter_card"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:cardElevation="@dimen/plane_00"
+            tools:visibility="visible" />
+
+        <!-- Products filter and sort view -->
+        <com.woocommerce.android.ui.products.ProductSortAndFiltersCard
+            android:id="@+id/products_sort_filter_card"
+            style="@style/Woo.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/minor_00"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/products_wip_card"
             tools:visibility="visible" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -33,7 +46,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/products_wip_card"
+            app:layout_constraintTop_toBottomOf="@+id/products_sort_filter_card"
             tools:itemCount="5"
             tools:listitem="@layout/product_list_item" />
 

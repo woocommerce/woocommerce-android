@@ -190,4 +190,12 @@
     -->
     <color name="more_menu_button_background">@color/color_surface</color>
     <color name="more_menu_button_icon_background">@color/woo_gray_0</color>
+
+
+    <!-- Woo application log -->
+    <color name="log_text_verbose">@color/woo_gray_40</color>
+    <color name="log_text_debug">@color/woo_blue_50</color>
+    <color name="log_text_info">@color/woo_black</color>
+    <color name="log_text_warning">@color/woo_purple_50</color>
+    <color name="log_text_error">@color/woo_red_50</color>
 </resources>
