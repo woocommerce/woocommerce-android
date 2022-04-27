@@ -200,8 +200,8 @@ class VariationDetailViewModel @Inject constructor(
         remoteVariationId: Long? = null,
         sku: String? = null,
         image: Optional<Image>? = null,
-        regularPrice: BigDecimal? = null,
-        salePrice: BigDecimal? = null,
+        regularPrice: BigDecimal? = viewState.variation?.regularPrice,
+        salePrice: BigDecimal? = viewState.variation?.salePrice,
         saleEndDate: Date? = viewState.variation?.saleEndDateGmt,
         saleStartDate: Date? = viewState.variation?.saleStartDateGmt,
         isSaleScheduled: Boolean? = null,
@@ -229,16 +229,8 @@ class VariationDetailViewModel @Inject constructor(
                     remoteVariationId = remoteVariationId ?: variation.remoteVariationId,
                     sku = sku ?: variation.sku,
                     image = if (image != null) image.value else variation.image,
-                    regularPrice = if (regularPrice isNotEqualTo variation.regularPrice) {
-                        regularPrice
-                    } else {
-                        variation.regularPrice
-                    },
-                    salePrice = if (salePrice isNotEqualTo variation.salePrice) {
-                        salePrice
-                    } else {
-                        variation.salePrice
-                    },
+                    regularPrice = regularPrice,
+                    salePrice = salePrice,
                     saleEndDateGmt = saleEndDate,
                     saleStartDateGmt = saleStartDate,
                     isSaleScheduled = isSaleScheduled ?: variation.isSaleScheduled,
