@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.moremenu
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -23,7 +22,8 @@ import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import java.net.URL
@@ -35,29 +35,23 @@ class MoreMenuViewModel @Inject constructor(
     accountStore: AccountStore,
     private val selectedSite: SelectedSite,
     private val moreMenuRepository: MoreMenuRepository,
-    unseenReviewsCountHandler: UnseenReviewsCountHandler,
-    private val appPrefsWrapper: AppPrefsWrapper
+    unseenReviewsCountHandler: UnseenReviewsCountHandler
 ) : ScopedViewModel(savedState) {
     val moreMenuViewState =
         combine(
             unseenReviewsCountHandler.observeUnseenCount(),
             selectedSite.observe().filterNotNull(),
-            observeCouponBetaSwitch()
-        ) { count, selectedSite, _ ->
+            moreMenuRepository.observeCouponBetaSwitch()
+        ) { count, selectedSite, isCouponsEnabled ->
             MoreMenuViewState(
-                moreMenuItems = generateMenuButtons(unseenReviewsCount = count),
+                moreMenuItems = generateMenuButtons(unseenReviewsCount = count, isCouponsEnabled = isCouponsEnabled),
                 siteName = selectedSite.getSelectedSiteName(),
                 siteUrl = selectedSite.getSelectedSiteAbsoluteUrl(),
                 userAvatarUrl = accountStore.account.avatarUrl
             )
         }.asLiveData()
 
-    private fun observeCouponBetaSwitch() = appPrefsWrapper.observePrefs()
-        .onStart { emit(Unit) }
-        .map { appPrefsWrapper.isCouponsEnabled }
-        .distinctUntilChanged()
-
-    private suspend fun generateMenuButtons(unseenReviewsCount: Int): List<MenuUiButton> =
+    private suspend fun generateMenuButtons(unseenReviewsCount: Int, isCouponsEnabled: Boolean): List<MenuUiButton> =
         listOf(
             MenuUiButton(
                 type = VIEW_ADMIN,
@@ -75,7 +69,7 @@ class MoreMenuViewModel @Inject constructor(
                 type = COUPONS,
                 text = R.string.more_menu_button_coupons,
                 icon = R.drawable.ic_more_menu_coupons,
-                isEnabled = appPrefsWrapper.isCouponsEnabled,
+                isEnabled = isCouponsEnabled,
                 onClick = ::onCouponsButtonClick
             ),
             MenuUiButton(

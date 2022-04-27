@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.moremenu
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -31,7 +31,10 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             }
         )
     }
-    private val appPrefsWrapper: AppPrefsWrapper = mock()
+    private val moreMenuRepository: MoreMenuRepository = mock {
+        onBlocking { isInboxEnabled() } doReturn true
+        on { observeCouponBetaSwitch() } doReturn flowOf(true)
+    }
     private val accountStore: AccountStore = mock {
         on { account } doReturn AccountModel().apply {
             avatarUrl = "avatar"
@@ -46,21 +49,21 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             savedState = SavedStateHandle(),
             accountStore = accountStore,
             selectedSite = selectedSite,
-            unseenReviewsCountHandler = unseenReviewsCountHandler,
-            appPrefsWrapper = appPrefsWrapper
+            moreMenuRepository = moreMenuRepository,
+            unseenReviewsCountHandler = unseenReviewsCountHandler
         )
     }
 
     @Test
     fun `when coupons beta feature toggle is updated, then refresh the list of button`() = testBlocking {
-        val prefsChanges = MutableSharedFlow<Unit>()
+        val prefsChanges = MutableSharedFlow<Boolean>()
         setup {
-            whenever(appPrefsWrapper.observePrefs()).thenReturn(prefsChanges)
-            whenever(appPrefsWrapper.isCouponsEnabled).thenReturn(true).thenReturn(false)
+            whenever(moreMenuRepository.observeCouponBetaSwitch()).thenReturn(prefsChanges)
         }
         val states = viewModel.moreMenuViewState.captureValues()
 
-        prefsChanges.emit(Unit)
+        prefsChanges.emit(false)
+        prefsChanges.emit(true)
 
         assertThat(states.size).isEqualTo(2)
     }
