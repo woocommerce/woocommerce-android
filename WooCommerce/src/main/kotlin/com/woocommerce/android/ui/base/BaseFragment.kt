@@ -5,6 +5,7 @@ import android.view.View
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.ui.dialog.WooDialog
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 
@@ -15,6 +16,8 @@ open class BaseFragment : Fragment, BaseFragmentView {
     companion object {
         private const val KEY_TITLE = "title"
     }
+
+    open val activityAppBarStatus: AppBarStatus = AppBarStatus.Visible()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -53,16 +56,18 @@ open class BaseFragment : Fragment, BaseFragmentView {
         }
     }
 
-    protected fun hideToolbar() {
-        if (isAdded && !isHidden && activity is MainActivity) {
-            (activity as MainActivity).hideToolbar()
-        }
-    }
-
+    /**
+     * Returns the title which should be displayed in the Activity's Toolbar.
+     * This is not used if [activityAppBarStatus] returns [AppBarStatus.Hidden].
+     */
     override fun getFragmentTitle(): String {
         return activity?.title?.toString() ?: ""
     }
 
+    /**
+     * Returns the title which should be displayed as a subtitle in the Activity's Toolbar.
+     * This is not used if [activityAppBarStatus] returns [AppBarStatus.Hidden].
+     */
     override fun getFragmentSubtitle(): String = ""
 
     protected fun ShowDialog.showDialog() {
