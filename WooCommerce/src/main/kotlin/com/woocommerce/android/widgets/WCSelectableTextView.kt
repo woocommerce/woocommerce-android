@@ -8,10 +8,9 @@ import android.view.Menu
 import android.view.MenuItem
 import com.google.android.material.textview.MaterialTextView
 
-
 /**
- * Custom [MaterialTextView] with built-in selection support and automatically selects
- * all text before the action mode (copy, etc.) menu appears
+ * Custom [MaterialTextView] with built-in text selection support and automatically selects
+ * all text before the action mode menu (Copy, etc.) appears
  */
 class WCSelectableTextView @JvmOverloads constructor(
     context: Context,
@@ -19,6 +18,8 @@ class WCSelectableTextView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : MaterialTextView(context, attrs, defStyleAttr), android.view.ActionMode.Callback {
     init {
+        isClickable = false
+        isFocusable = false
         setTextIsSelectable(true)
         customSelectionActionModeCallback = this
     }
@@ -40,7 +41,7 @@ class WCSelectableTextView @JvmOverloads constructor(
         // noop
     }
 
-    fun selectAllText() {
+    private fun selectAllText() {
         Selection.setSelection(text as Spannable, 0, length())
     }
 }
