@@ -59,6 +59,7 @@ import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
+import java.math.RoundingMode
 import javax.inject.Inject
 
 private const val ARTIFICIAL_RETRY_DELAY = 500L
@@ -634,7 +635,11 @@ class CardReaderPaymentViewModel
 
     private fun calculateFeeInCents(amount: BigDecimal, countryCode: String) =
         if (countryCode == "CA") {
-            amount.movePointRight(2).longValueExact() * 26 / 1000 + 25
+            amount.movePointRight(2)
+                .multiply(BigDecimal(0.026))
+                .plus(BigDecimal(25))
+                .setScale(0, RoundingMode.HALF_UP)
+                .toLong()
         } else {
             null
         }

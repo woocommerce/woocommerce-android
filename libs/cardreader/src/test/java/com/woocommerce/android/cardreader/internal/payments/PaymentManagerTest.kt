@@ -622,7 +622,8 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
         siteUrl: String? = DUMMY_SITE_URL,
         orderKey: String? = null,
         statementDescriptor: String? = null,
-        countryCode: String = "US"
+        countryCode: String = "US",
+        feeAmount: Long? = null,
     ): PaymentInfo =
         PaymentInfo(
             paymentDescription = paymentDescription,
@@ -637,5 +638,6 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
             orderKey = orderKey,
             statementDescriptor = statementDescriptor,
             countryCode = countryCode,
+            feeAmount = feeAmount,
         )
 }
