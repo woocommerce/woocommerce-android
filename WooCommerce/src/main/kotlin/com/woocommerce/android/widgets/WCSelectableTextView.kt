@@ -18,8 +18,6 @@ class WCSelectableTextView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : MaterialTextView(context, attrs, defStyleAttr), android.view.ActionMode.Callback {
     init {
-        isClickable = false
-        isFocusable = false
         setTextIsSelectable(true)
         customSelectionActionModeCallback = this
     }
