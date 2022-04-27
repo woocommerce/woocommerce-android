@@ -15,7 +15,7 @@ class WCSelectableTextView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : MaterialTextView(context, attrs, defStyleAttr), android.view.ActionMode.Callback {
+) : androidx.appcompat.widget.AppCompatTextView(context, attrs, defStyleAttr), android.view.ActionMode.Callback {
     private val binding = WcSelectableTextviewBinding.inflate(LayoutInflater.from(context))
 
     init {
@@ -24,19 +24,19 @@ class WCSelectableTextView @JvmOverloads constructor(
     }
 
     override fun onCreateActionMode(mode: android.view.ActionMode?, menu: Menu?): Boolean {
-        return true
-    }
-
-    override fun onPrepareActionMode(mode: android.view.ActionMode?, menu: Menu?): Boolean {
         isSelected = true
         return true
     }
 
+    override fun onPrepareActionMode(mode: android.view.ActionMode?, menu: Menu?): Boolean {
+        return false
+    }
+
     override fun onActionItemClicked(mode: android.view.ActionMode?, item: MenuItem?): Boolean {
-        return true
+        return false
     }
 
     override fun onDestroyActionMode(mode: android.view.ActionMode?) {
-        // NOOP
+        // noop
     }
 }
