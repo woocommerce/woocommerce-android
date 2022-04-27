@@ -14,8 +14,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_M
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_VIEW_STORE
 import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.moremenu.MenuButtonType.*
-import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.ui.moremenu.MenuButtonType.COUPONS
+import com.woocommerce.android.ui.moremenu.MenuButtonType.INBOX
+import com.woocommerce.android.ui.moremenu.MenuButtonType.PRODUCT_REVIEWS
+import com.woocommerce.android.ui.moremenu.MenuButtonType.VIEW_ADMIN
+import com.woocommerce.android.ui.moremenu.MenuButtonType.VIEW_STORE
+import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,6 +34,7 @@ class MoreMenuViewModel @Inject constructor(
     savedState: SavedStateHandle,
     accountStore: AccountStore,
     private val selectedSite: SelectedSite,
+    private val moreMenuRepository: MoreMenuRepository,
     unseenReviewsCountHandler: UnseenReviewsCountHandler,
     private val appPrefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedState) {
@@ -52,7 +57,7 @@ class MoreMenuViewModel @Inject constructor(
         .map { appPrefsWrapper.isCouponsEnabled }
         .distinctUntilChanged()
 
-    private fun generateMenuButtons(unseenReviewsCount: Int): List<MenuUiButton> =
+    private suspend fun generateMenuButtons(unseenReviewsCount: Int): List<MenuUiButton> =
         listOf(
             MenuUiButton(
                 type = VIEW_ADMIN,
@@ -84,7 +89,7 @@ class MoreMenuViewModel @Inject constructor(
                 type = INBOX,
                 text = R.string.more_menu_button_inbox,
                 icon = R.drawable.ic_more_menu_inbox,
-                isEnabled = FeatureFlag.MORE_MENU_INBOX.isEnabled(),
+                isEnabled = moreMenuRepository.isInboxEnabled(),
                 onClick = ::onInboxButtonClick
             )
         )

@@ -4,8 +4,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CouponUtils
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -53,6 +57,11 @@ class CouponDetailsViewModel @Inject constructor(
                 }
             }
         }
+
+        AnalyticsTracker.track(
+            AnalyticsEvent.COUPON_DETAILS,
+            mapOf(AnalyticsTracker.KEY_COUPON_ACTION to AnalyticsTracker.KEY_COUPON_ACTION_LOADED)
+        )
     }
 
     private fun loadCouponSummary(): Flow<CouponSummaryUi> {
@@ -115,10 +124,37 @@ class CouponDetailsViewModel @Inject constructor(
         }
     }
 
+    fun onDeleteButtonClick() {
+        viewModelScope.launch {
+            couponDetailsRepository.deleteCoupon(navArgs.couponId)
+                .onFailure {
+                    WooLog.e(
+                        tag = WooLog.T.COUPONS,
+                        message = "Coupon deletion failed: ${(it as WooException).error.message}"
+                    )
+                    triggerEvent(ShowSnackbar(R.string.coupon_details_delete_failure))
+                }
+                .onSuccess {
+                    triggerEvent(ShowSnackbar(R.string.coupon_details_delete_successful))
+                    triggerEvent(Exit)
+                }
+        }
+
+        AnalyticsTracker.track(
+            AnalyticsEvent.COUPON_DETAILS,
+            mapOf(AnalyticsTracker.KEY_COUPON_ACTION to AnalyticsTracker.KEY_COUPON_ACTION_DELETED)
+        )
+    }
+
     fun onCopyButtonClick() {
         couponState.value?.couponSummary?.code?.let {
             triggerEvent(CopyCodeEvent(it))
         }
+
+        AnalyticsTracker.track(
+            AnalyticsEvent.COUPON_DETAILS,
+            mapOf(AnalyticsTracker.KEY_COUPON_ACTION to AnalyticsTracker.KEY_COUPON_ACTION_COPIED)
+        )
     }
 
     fun onShareButtonClick() {
@@ -135,6 +171,11 @@ class CouponDetailsViewModel @Inject constructor(
         } ?: run {
             triggerEvent(ShowSnackbar(R.string.coupon_details_share_formatting_failure))
         }
+
+        AnalyticsTracker.track(
+            AnalyticsEvent.COUPON_DETAILS,
+            mapOf(AnalyticsTracker.KEY_COUPON_ACTION to AnalyticsTracker.KEY_COUPON_ACTION_SHARED)
+        )
     }
 
     data class CouponDetailsState(

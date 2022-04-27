@@ -22,7 +22,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
-import java.util.ArrayList
 import javax.inject.Inject
 
 @AndroidEntryPoint

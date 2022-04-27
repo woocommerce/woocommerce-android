@@ -11,6 +11,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderImpl
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
 import com.woocommerce.android.cardreader.connection.SpecificReader
+import com.woocommerce.android.cardreader.internal.CardReaderBaseUnitTest
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Failure
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.FoundReaders
@@ -20,7 +21,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -33,7 +33,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
-class ConnectionManagerTest {
+class ConnectionManagerTest : CardReaderBaseUnitTest() {
     private val terminalWrapper: TerminalWrapper = mock()
     private val bluetoothReaderListener: BluetoothReaderListenerImpl = mock()
     private val discoverReadersAction: DiscoverReadersAction = mock()
@@ -55,7 +55,7 @@ class ConnectionManagerTest {
     }
 
     @Test
-    fun `when readers discovered, then observers get notified`() = runBlockingTest {
+    fun `when readers discovered, then observers get notified`() = testBlocking {
         val dummyReaderId = "12345"
         val discoveredReaders = listOf(
             mock<Reader> {
@@ -74,19 +74,16 @@ class ConnectionManagerTest {
 
     @Test
     fun `given found readers with specified, when readers discovered, then all readers returned`() =
-        runBlockingTest {
+        testBlocking {
             val dummyReaderId = "12345"
             val discoveredReaders = listOf<Reader>(
                 mock {
-                    on { serialNumber }.thenReturn(dummyReaderId)
                     on { deviceType }.thenReturn(DeviceType.CHIPPER_2X)
                 },
                 mock {
-                    on { serialNumber }.thenReturn(dummyReaderId)
                     on { deviceType }.thenReturn(DeviceType.STRIPE_M2)
                 },
                 mock {
-                    on { serialNumber }.thenReturn(dummyReaderId)
                     on { deviceType }.thenReturn(DeviceType.WISEPOS_E)
                 }
             )
@@ -102,19 +99,16 @@ class ConnectionManagerTest {
 
     @Test
     fun `given found readers with unspecified, when readers discovered, then required readers returned`() =
-        runBlockingTest {
+        testBlocking {
             val dummyReaderId = "12345"
             val discoveredReaders = listOf<Reader>(
                 mock {
-                    on { serialNumber }.thenReturn(dummyReaderId)
                     on { deviceType }.thenReturn(DeviceType.CHIPPER_2X)
                 },
                 mock {
-                    on { serialNumber }.thenReturn(dummyReaderId)
                     on { deviceType }.thenReturn(DeviceType.STRIPE_M2)
                 },
                 mock {
-                    on { serialNumber }.thenReturn(dummyReaderId)
                     on { deviceType }.thenReturn(DeviceType.WISEPOS_E)
                 }
             )
@@ -134,7 +128,7 @@ class ConnectionManagerTest {
 
     @Test
     fun `given no readers found with specified, when readers discovered, then empty list returned`() =
-        runBlockingTest {
+        testBlocking {
             val discoveredReaders = listOf<Reader>()
             whenever(discoverReadersAction.discoverReaders(anyBoolean()))
                 .thenReturn(flow { emit(FoundReaders(discoveredReaders)) })
@@ -146,7 +140,7 @@ class ConnectionManagerTest {
 
     @Test
     fun `given no readers found with unspecified, when readers discovered, then empty list returned`() =
-        runBlockingTest {
+        testBlocking {
             val discoveredReaders = listOf<Reader>()
             whenever(discoverReadersAction.discoverReaders(anyBoolean()))
                 .thenReturn(flow { emit(FoundReaders(discoveredReaders)) })
@@ -160,7 +154,7 @@ class ConnectionManagerTest {
         }
 
     @Test
-    fun `when discovery fails, then observers get notified`() = runBlockingTest {
+    fun `when discovery fails, then observers get notified`() = testBlocking {
         val terminalException = mock<TerminalException>().also { whenever(it.errorMessage).thenReturn("test") }
         whenever(discoverReadersAction.discoverReaders(anyBoolean()))
             .thenReturn(flow { emit(Failure(terminalException)) })
@@ -171,7 +165,7 @@ class ConnectionManagerTest {
     }
 
     @Test
-    fun `when discovery succeeds, then observers get notified`() = runBlockingTest {
+    fun `when discovery succeeds, then observers get notified`() = testBlocking {
         whenever(discoverReadersAction.discoverReaders(anyBoolean()))
             .thenReturn(flow { emit(Success) })
 
@@ -182,10 +176,9 @@ class ConnectionManagerTest {
 
     @Test
     fun `given reader with location id, when connectToReader, then status updated with connecting`() =
-        runBlockingTest {
+        testBlocking {
             val reader: Reader = mock()
             val cardReader: CardReaderImpl = mock {
-                on { locationId }.thenReturn("location_id")
                 on { cardReader }.thenReturn(reader)
             }
             whenever(terminalWrapper.connectToReader(any(), any(), any(), any())).thenAnswer {
@@ -199,10 +192,9 @@ class ConnectionManagerTest {
 
     @Test
     fun `given reader with location id, when connectToReader fails, then status updated with not connected`() =
-        runBlockingTest {
+        testBlocking {
             val reader: Reader = mock()
             val cardReader: CardReaderImpl = mock {
-                on { locationId }.thenReturn("location_id")
                 on { cardReader }.thenReturn(reader)
             }
             val message = "error_message"
@@ -220,10 +212,9 @@ class ConnectionManagerTest {
 
     @Test
     fun `given reader with location id, when connectToReader success, then status updated with connected`() =
-        runBlockingTest {
+        testBlocking {
             val reader: Reader = mock()
             val cardReader: CardReaderImpl = mock {
-                on { locationId }.thenReturn("location_id")
                 on { cardReader }.thenReturn(reader)
             }
             whenever(terminalWrapper.connectToReader(any(), any(), any(), any())).thenAnswer {
@@ -239,7 +230,7 @@ class ConnectionManagerTest {
         }
 
     @Test
-    fun `when disconnect succeeds, then status updated with not connected`() = runBlockingTest {
+    fun `when disconnect succeeds, then status updated with not connected`() = testBlocking {
         whenever(terminalWrapper.disconnectReader(any())).thenAnswer {
             (it.arguments[0] as Callback).onSuccess()
         }
@@ -250,7 +241,7 @@ class ConnectionManagerTest {
     }
 
     @Test
-    fun `when disconnect succeeds, then true is returned`() = runBlockingTest {
+    fun `when disconnect succeeds, then true is returned`() = testBlocking {
         whenever(terminalWrapper.disconnectReader(any())).thenAnswer {
             (it.arguments[0] as Callback).onSuccess()
         }
@@ -261,7 +252,7 @@ class ConnectionManagerTest {
     }
 
     @Test
-    fun `when disconnect fails, then false is returned`() = runBlockingTest {
+    fun `when disconnect fails, then false is returned`() = testBlocking {
         whenever(terminalWrapper.disconnectReader(any())).thenAnswer {
             (it.arguments[0] as Callback).onFailure(mock())
         }
@@ -272,7 +263,7 @@ class ConnectionManagerTest {
     }
 
     @Test
-    fun `when disconnect fails, then false with not connected`() = runBlockingTest {
+    fun `when disconnect fails, then false with not connected`() = testBlocking {
         whenever(terminalWrapper.disconnectReader(any())).thenAnswer {
             (it.arguments[0] as Callback).onFailure(mock())
         }

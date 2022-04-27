@@ -4,6 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CouponUtils
@@ -84,7 +86,12 @@ class CouponListViewModel @Inject constructor(
     }
 
     fun onSearchStateChanged(open: Boolean) {
-        searchQuery.value = if (open) searchQuery.value.orEmpty() else null
+        searchQuery.value = if (open) {
+            AnalyticsTracker.track(AnalyticsEvent.COUPONS_LIST_SEARCH_TAPPED)
+            searchQuery.value.orEmpty()
+        } else {
+            null
+        }
     }
 
     private fun monitorSearchQuery() {
