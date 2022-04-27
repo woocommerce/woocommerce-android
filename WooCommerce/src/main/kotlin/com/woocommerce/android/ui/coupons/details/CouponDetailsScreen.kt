@@ -33,7 +33,8 @@ fun CouponDetailsScreen(
         onBackPress,
         viewModel::onCopyButtonClick,
         viewModel::onShareButtonClick,
-        viewModel::onDeleteButtonClick
+        viewModel::onEditButtonClick,
+        viewModel::onDeleteButtonClick,
     )
 }
 
@@ -44,6 +45,7 @@ fun CouponDetailsScreen(
     onBackPress: () -> Boolean,
     onCopyButtonClick: () -> Unit,
     onShareButtonClick: () -> Unit,
+    onEditButtonClick: () -> Unit,
     onDeleteButtonClick: () -> Unit
 ) {
     Column(
@@ -95,6 +97,12 @@ fun CouponDetailsScreen(
                                 stringResource(id = R.string.coupon_details_delete),
                                 color = MaterialTheme.colors.secondary
                             )
+                        }
+                        DropdownMenuItem(onClick = {
+                            showMenu = false
+                            onEditButtonClick()
+                        }) {
+                            Text(stringResource(id = R.string.coupon_details_menu_edit))
                         }
                     }
                 }

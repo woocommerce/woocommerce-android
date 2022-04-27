@@ -178,6 +178,10 @@ class CouponDetailsViewModel @Inject constructor(
         )
     }
 
+    fun onEditButtonClick() {
+        /* TODO */
+    }
+
     data class CouponDetailsState(
         val isLoading: Boolean = false,
         val couponSummary: CouponSummaryUi? = null,
