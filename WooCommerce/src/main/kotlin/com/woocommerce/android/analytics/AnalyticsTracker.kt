@@ -323,6 +323,13 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_INBOX_NOTE_ACTION_DISMISS = "dismiss"
         const val VALUE_INBOX_NOTE_ACTION_DISMISS_ALL = "dismiss_all"
 
+        // -- Coupons
+        const val KEY_COUPON_ACTION = "action"
+        const val KEY_COUPON_ACTION_LOADED = "loaded"
+        const val KEY_COUPON_ACTION_COPIED = "copied_code"
+        const val KEY_COUPON_ACTION_SHARED = "shared_code"
+        const val KEY_COUPON_ACTION_DELETED = "tapped_delete"
+
         var sendUsageStats: Boolean = true
             set(value) {
                 if (value != field) {

@@ -10,22 +10,19 @@ import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManage
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalApplicationDelegateWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatIllegalStateException
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.any
 import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+
 @ExperimentalCoroutinesApi
-@RunWith(MockitoJUnitRunner::class)
-class CardReaderManagerImplTest {
+class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
     private lateinit var cardReaderManager: CardReaderManagerImpl
     private val terminalApplicationDelegateWrapper: TerminalApplicationDelegateWrapper = mock()
     private val terminalWrapper: TerminalWrapper = mock {
@@ -112,7 +109,7 @@ class CardReaderManagerImplTest {
 
     @Test(expected = IllegalStateException::class)
     fun `given terminal not initialized, when connecting to reader started, then exception is thrown`() =
-        runBlockingTest {
+        testBlocking {
             whenever(terminalWrapper.isInitialized()).thenReturn(false)
 
             cardReaderManager.startConnectionToReader(mock(), locationId)
@@ -123,7 +120,7 @@ class CardReaderManagerImplTest {
         whenever(terminalWrapper.isInitialized()).thenReturn(false)
 
         assertThatIllegalStateException().isThrownBy {
-            runBlockingTest {
+            testBlocking {
                 cardReaderManager.disconnectReader()
             }
         }
@@ -131,7 +128,7 @@ class CardReaderManagerImplTest {
 
     @Test
     fun `given terminal initialized and no connected reader when disconnect from reader then return false`() =
-        runBlockingTest {
+        testBlocking {
             whenever(terminalWrapper.isInitialized()).thenReturn(true)
             whenever(terminalWrapper.getConnectedReader()).thenReturn(null)
 
@@ -140,7 +137,7 @@ class CardReaderManagerImplTest {
 
     @Test
     fun `given terminal initialized and connected reader and success when disconnect from reader then return true`() =
-        runBlockingTest {
+        testBlocking {
             whenever(terminalWrapper.isInitialized()).thenReturn(true)
             whenever(terminalWrapper.getConnectedReader()).thenReturn(mock())
             whenever(connectionManager.disconnectReader()).thenReturn(true)
@@ -150,7 +147,7 @@ class CardReaderManagerImplTest {
 
     @Test
     fun `given terminal initialized and connected reader and fail when disconnect from reader then return false`() =
-        runBlockingTest {
+        testBlocking {
             whenever(terminalWrapper.isInitialized()).thenReturn(true)
             whenever(terminalWrapper.getConnectedReader()).thenReturn(mock())
             whenever(connectionManager.disconnectReader()).thenReturn(false)
@@ -160,7 +157,7 @@ class CardReaderManagerImplTest {
 
     @Test(expected = IllegalStateException::class)
     fun `given terminal not initialized, when installing software update, then exception is thrown`() =
-        runBlockingTest {
+        testBlocking {
             whenever(terminalWrapper.isInitialized()).thenReturn(false)
 
             cardReaderManager.startAsyncSoftwareUpdate()
@@ -168,7 +165,7 @@ class CardReaderManagerImplTest {
 
     @Test
     fun `given terminal is initialized, when installing software update, updateSoftware is called`() =
-        runBlockingTest {
+        testBlocking {
             whenever(terminalWrapper.isInitialized()).thenReturn(true)
 
             cardReaderManager.startAsyncSoftwareUpdate()
@@ -185,7 +182,7 @@ class CardReaderManagerImplTest {
 
     @Test
     fun `when collect payment is initiated, then reset bluetooth card reader messages`() =
-        runBlockingTest {
+        testBlocking {
             cardReaderManager.collectPayment(mock())
 
             verify(connectionManager).resetBluetoothCardReaderDisplayMessage()

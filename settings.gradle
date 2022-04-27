@@ -15,7 +15,7 @@ pluginManagement {
         id 'com.android.application' version gradle.ext.agpVersion
         id 'com.android.library' version gradle.ext.agpVersion
         id 'com.automattic.android.fetchstyle'
-        id 'com.google.gms.google-services' version '4.3.8'
+        id 'com.google.gms.google-services' version '4.3.10'
         id 'io.github.wzieba.tracks.plugin' version '1.0.0'
         id 'io.gitlab.arturbosch.detekt' version gradle.ext.detektVersion
         id 'io.sentry.android.gradle' version '3.0.1'

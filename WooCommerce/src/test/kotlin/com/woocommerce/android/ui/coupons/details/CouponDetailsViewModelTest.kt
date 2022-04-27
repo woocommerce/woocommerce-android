@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.coupons.details
 
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.tools.SelectedSite
@@ -16,12 +17,16 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCSettingsModel
 import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.LEFT
+import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 
@@ -225,5 +230,45 @@ class CouponDetailsViewModelTest : BaseUnitTest() {
         val performanceUi = (state?.couponPerformanceState as CouponPerformanceState.Success).data
         assertThat(performanceUi.ordersCount).isEqualTo(performanceReport.ordersCount)
         assertThat(performanceUi.formattedAmount).isEqualTo(couponUtils.formatCurrency(performanceReport.amount, "USD"))
+    }
+
+    @Test
+    fun `when coupon deletion is successful, then show success Snackbar and exit`() = testBlocking {
+        setup {
+            whenever(couponDetailsRepository.deleteCoupon(any())).doReturn(
+                Result.success(Unit)
+            )
+        }
+
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        viewModel.event.observeForever {
+            events.add(it)
+        }
+
+        viewModel.onDeleteButtonClick()
+
+        assertThat(events.takeLast(2)).containsExactly(
+            ShowSnackbar(R.string.coupon_details_delete_successful),
+            Exit
+        )
+    }
+
+    @Test
+    fun `when coupon deletion is failed, then show failure Snackbar`() = testBlocking {
+        setup {
+            val error = WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.UNKNOWN, "")
+            whenever(couponDetailsRepository.deleteCoupon(any())).doReturn(
+                Result.failure(WooException(error))
+            )
+        }
+
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        viewModel.event.observeForever {
+            events.add(it)
+        }
+
+        viewModel.onDeleteButtonClick()
+
+        assertThat(events).contains(ShowSnackbar(R.string.coupon_details_delete_failure))
     }
 }
