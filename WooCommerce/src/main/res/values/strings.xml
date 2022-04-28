@@ -2351,4 +2351,5 @@
     <string name="about_automattic_back_icon_description">Back icon</string>
     <string name="about_automattic_app_icon_description">App icon</string>
     <string name="error_generic">An error occurred</string>
+    <string name="card_reader_manuals">Card Reader Manuals</string>
 </resources>
