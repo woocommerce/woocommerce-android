@@ -573,21 +573,15 @@ class CardReaderPaymentViewModel
     }
 
     private fun trackCancelledFlow(state: ViewState) {
-        if (isStateEligibleForTrackingPayment(state)) {
-            when (state) {
-                is PaymentFlow -> {
-                    tracker.trackPaymentCancelled(state.nameForTracking)
-                }
-                is InteracRefundFlow -> {
-                    tracker.trackInteracRefundCancelled(state.nameForTracking)
-                }
-                else -> WooLog.e(WooLog.T.CARD_READER, "Invalid state received")
+        when (state) {
+            is PaymentFlow -> {
+                tracker.trackPaymentCancelled(state.nameForTracking)
             }
+            is InteracRefundFlow -> {
+                tracker.trackInteracRefundCancelled(state.nameForTracking)
+            }
+            else -> WooLog.e(WooLog.T.CARD_READER, "Invalid state received")
         }
-    }
-
-    private fun isStateEligibleForTrackingPayment(state: ViewState): Boolean {
-        return (state is PaymentFlow || state is InteracRefundFlow)
     }
 
     private fun exitWithSnackbar(@StringRes message: Int) {
