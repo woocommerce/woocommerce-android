@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.coupons.edit
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map

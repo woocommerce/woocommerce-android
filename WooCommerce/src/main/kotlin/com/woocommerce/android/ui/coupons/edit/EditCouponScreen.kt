@@ -125,18 +125,20 @@ private fun DetailsSection(viewState: EditCouponViewModel.ViewState) {
 }
 
 @Composable
+@Suppress("UnusedPrivateMember")
 private fun ConditionsSection(viewState: EditCouponViewModel.ViewState) {
     /*TODO*/
 }
 
 @Composable
+@Suppress("UnusedPrivateMember")
 private fun UsageRestrictionsSection(viewState: EditCouponViewModel.ViewState) {
     /*TODO*/
 }
 
 @Composable
 @Preview
-private fun EditCouponPreview() {
+fun EditCouponPreview() {
     WooTheme {
         EditCouponScreen(
             viewState = EditCouponViewModel.ViewState(
