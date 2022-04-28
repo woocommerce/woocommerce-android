@@ -30,5 +30,5 @@ class CardReaderManualsFragment : BaseFragment() {
         }
     }
 
-    override fun getFragmentTitle() = resources.getString(R.string.card_reader_manuals)
+    override fun getFragmentTitle() = resources.getString(R.string.settings_card_reader_manuals)
 }
