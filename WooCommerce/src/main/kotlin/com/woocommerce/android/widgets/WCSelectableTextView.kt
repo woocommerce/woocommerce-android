@@ -4,8 +4,11 @@ import android.content.Context
 import android.text.Selection
 import android.text.Spannable
 import android.util.AttributeSet
+import android.view.GestureDetector
 import android.view.Menu
 import android.view.MenuItem
+import android.view.MotionEvent
+import androidx.core.view.GestureDetectorCompat
 import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
 import org.wordpress.android.util.ToastUtils
@@ -18,20 +21,35 @@ class WCSelectableTextView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : MaterialTextView(context, attrs, defStyleAttr), android.view.ActionMode.Callback {
+) : MaterialTextView(context, attrs, defStyleAttr),
+    android.view.ActionMode.Callback,
+    GestureDetector.OnDoubleTapListener{
+    private val detector = GestureDetectorCompat(context, GestureDetector.SimpleOnGestureListener())
+
     init {
         setTextIsSelectable(true)
         customSelectionActionModeCallback = this
+        detector.setOnDoubleTapListener(this)
+
+        // noinspection ClickableViewAccessibility
+        setOnTouchListener { _, event ->
+            detector.onTouchEvent(event)
+            false
+        }
     }
+
+    private fun selectAllText() {
+        Selection.setSelection(text as Spannable, 0, length())
+    }
+
+    // -- ActionMode.Callback
 
     override fun onCreateActionMode(mode: android.view.ActionMode?, menu: Menu?): Boolean {
         selectAllText()
         return true
     }
 
-    override fun onPrepareActionMode(mode: android.view.ActionMode?, menu: Menu?): Boolean {
-        return false
-    }
+    override fun onPrepareActionMode(mode: android.view.ActionMode?, menu: Menu?) = false
 
     override fun onActionItemClicked(mode: android.view.ActionMode?, item: MenuItem?): Boolean {
         if (item?.itemId == android.R.id.copy) {
@@ -40,11 +58,16 @@ class WCSelectableTextView @JvmOverloads constructor(
         return false
     }
 
-    override fun onDestroyActionMode(mode: android.view.ActionMode?) {
-        // noop
+    override fun onDestroyActionMode(mode: android.view.ActionMode?) { }
+
+    // -- OnDoubleTapListener
+
+    override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
+        ToastUtils.showToast(context, "Tap!")
+        return false
     }
 
-    private fun selectAllText() {
-        Selection.setSelection(text as Spannable, 0, length())
-    }
+    override fun onDoubleTap(e: MotionEvent?) = false
+
+    override fun onDoubleTapEvent(e: MotionEvent?) = false
 }
