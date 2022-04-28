@@ -1,8 +1,9 @@
 package com.woocommerce.android.ui.cardreader.payment
 
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError.*
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError.AmountTooSmall
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError.Unknown
 import javax.inject.Inject
 
 class CardReaderPaymentErrorMapper @Inject constructor() {

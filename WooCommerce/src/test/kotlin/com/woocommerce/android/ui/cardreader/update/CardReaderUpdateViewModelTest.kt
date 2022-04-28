@@ -3,7 +3,11 @@ package com.woocommerce.android.ui.cardreader.update
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
-import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.*
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.InstallationStarted
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Installing
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Success
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Unknown
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatusErrorType
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString
@@ -13,7 +17,10 @@ import com.woocommerce.android.ui.cardreader.update.CardReaderUpdateViewModel.Ca
 import com.woocommerce.android.ui.cardreader.update.CardReaderUpdateViewModel.CardReaderUpdateEvent.SoftwareUpdateProgress
 import com.woocommerce.android.ui.cardreader.update.CardReaderUpdateViewModel.UpdateResult.FAILED
 import com.woocommerce.android.ui.cardreader.update.CardReaderUpdateViewModel.UpdateResult.SUCCESS
-import com.woocommerce.android.ui.cardreader.update.CardReaderUpdateViewModel.ViewState.*
+import com.woocommerce.android.ui.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdateAboutToStart
+import com.woocommerce.android.ui.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdateFailedBatteryLow
+import com.woocommerce.android.ui.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingCancelingState
+import com.woocommerce.android.ui.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingState
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi

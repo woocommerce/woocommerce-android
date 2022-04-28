@@ -8,7 +8,14 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
-import com.woocommerce.android.databinding.*
+import com.woocommerce.android.databinding.FragmentCardReaderOnboardingBinding
+import com.woocommerce.android.databinding.FragmentCardReaderOnboardingBothPluginsActivatedBinding
+import com.woocommerce.android.databinding.FragmentCardReaderOnboardingGenericErrorBinding
+import com.woocommerce.android.databinding.FragmentCardReaderOnboardingLoadingBinding
+import com.woocommerce.android.databinding.FragmentCardReaderOnboardingNetworkErrorBinding
+import com.woocommerce.android.databinding.FragmentCardReaderOnboardingStripeBinding
+import com.woocommerce.android.databinding.FragmentCardReaderOnboardingUnsupportedBinding
+import com.woocommerce.android.databinding.FragmentCardReaderOnboardingWcpayBinding
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.support.HelpActivity

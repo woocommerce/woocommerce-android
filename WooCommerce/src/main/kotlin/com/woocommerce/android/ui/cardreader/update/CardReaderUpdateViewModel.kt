@@ -7,7 +7,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.*
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.InstallationStarted
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Installing
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Success
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Unknown
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatusErrorType
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
@@ -17,13 +21,17 @@ import com.woocommerce.android.ui.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.cardreader.update.CardReaderUpdateViewModel.CardReaderUpdateEvent.SoftwareUpdateAboutToStart
 import com.woocommerce.android.ui.cardreader.update.CardReaderUpdateViewModel.UpdateResult.FAILED
 import com.woocommerce.android.ui.cardreader.update.CardReaderUpdateViewModel.UpdateResult.SUCCESS
-import com.woocommerce.android.ui.cardreader.update.CardReaderUpdateViewModel.ViewState.*
+import com.woocommerce.android.ui.cardreader.update.CardReaderUpdateViewModel.ViewState.ButtonState
+import com.woocommerce.android.ui.cardreader.update.CardReaderUpdateViewModel.ViewState.StateWithProgress
+import com.woocommerce.android.ui.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdateAboutToStart
+import com.woocommerce.android.ui.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdateFailedBatteryLow
+import com.woocommerce.android.ui.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingCancelingState
+import com.woocommerce.android.ui.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingState
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

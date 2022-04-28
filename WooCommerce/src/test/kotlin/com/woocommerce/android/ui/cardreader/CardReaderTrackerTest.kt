@@ -1,7 +1,24 @@
 package com.woocommerce.android.ui.cardreader
 
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.analytics.AnalyticsEvent.*
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_CANCELLED
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_FAILED
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_NOT_COMPLETED
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_AUTO_CONNECTION_STARTED
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_DISCOVERY_FAILED
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_DISCOVERY_READER_DISCOVERED
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_LOCATION_FAILURE
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_LOCATION_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_SOFTWARE_UPDATE_FAILED
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_SOFTWARE_UPDATE_STARTED
+import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_EMAIL_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_CANCELED
+import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_FAILED
+import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
@@ -15,7 +32,15 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyLong
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.check
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 
 @ExperimentalCoroutinesApi

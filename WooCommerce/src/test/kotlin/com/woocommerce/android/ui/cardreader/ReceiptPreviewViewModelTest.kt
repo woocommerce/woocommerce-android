@@ -1,7 +1,12 @@
 package com.woocommerce.android.ui.cardreader
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.analytics.AnalyticsEvent.*
+import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_EMAIL_FAILED
+import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_EMAIL_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_CANCELED
+import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_FAILED
+import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.SelectedSite
