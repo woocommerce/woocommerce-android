@@ -32,6 +32,7 @@ import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenTopPerformer
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.OrderState
@@ -90,6 +91,12 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
 
     private val mainNavigationRouter
         get() = activity as? MainNavigationRouter
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Visible(
+            navigationIcon = null,
+            hasShadow = true
+        )
 
     private var isEmptyViewVisible: Boolean = false
     private var wasPreviouslyStopped = false

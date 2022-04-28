@@ -99,7 +99,7 @@ ext {
     flipperVersion = '0.143.0'
     stateMachineVersion = '0.2.0'
     coreKtxVersion = '1.7.0'
-    appCompatVersion = '1.4.0'
+    appCompatVersion = '1.4.1'
     materialVersion = '1.5.0'
     jUnitVersion = '4.13.2'
     jUnitExtVersion = '1.1.3'

@@ -1,9 +1,7 @@
 package com.woocommerce.android.ui.moremenu
 
-import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -28,6 +26,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
+import java.net.URL
 import javax.inject.Inject
 
 @HiltViewModel
@@ -41,17 +40,18 @@ class MoreMenuViewModel @Inject constructor(
     val moreMenuViewState =
         combine(
             unseenReviewsCountHandler.observeUnseenCount(),
-            selectedSite.observe().filterNotNull()
-        ) { count, selectedSite ->
+            selectedSite.observe().filterNotNull(),
+            moreMenuRepository.observeCouponBetaSwitch()
+        ) { count, selectedSite, isCouponsEnabled ->
             MoreMenuViewState(
-                moreMenuItems = generateMenuButtons(unseenReviewsCount = count),
+                moreMenuItems = generateMenuButtons(unseenReviewsCount = count, isCouponsEnabled = isCouponsEnabled),
                 siteName = selectedSite.getSelectedSiteName(),
                 siteUrl = selectedSite.getSelectedSiteAbsoluteUrl(),
                 userAvatarUrl = accountStore.account.avatarUrl
             )
         }.asLiveData()
 
-    private suspend fun generateMenuButtons(unseenReviewsCount: Int): List<MenuUiButton> =
+    private suspend fun generateMenuButtons(unseenReviewsCount: Int, isCouponsEnabled: Boolean): List<MenuUiButton> =
         listOf(
             MenuUiButton(
                 type = VIEW_ADMIN,
@@ -69,7 +69,7 @@ class MoreMenuViewModel @Inject constructor(
                 type = COUPONS,
                 text = R.string.more_menu_button_coupons,
                 icon = R.drawable.ic_more_menu_coupons,
-                isEnabled = AppPrefs.isCouponsEnabled,
+                isEnabled = isCouponsEnabled,
                 onClick = ::onCouponsButtonClick
             ),
             MenuUiButton(
@@ -95,7 +95,7 @@ class MoreMenuViewModel @Inject constructor(
             name
         }
 
-    private fun SiteModel.getSelectedSiteAbsoluteUrl(): String = url.toUri().host ?: ""
+    private fun SiteModel.getSelectedSiteAbsoluteUrl(): String = runCatching { URL(url).host }.getOrDefault("")
 
     fun onSettingsClick() {
         AnalyticsTracker.track(
