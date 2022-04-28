@@ -21,7 +21,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import java.util.*
+import java.util.Locale
 
 @ExperimentalCoroutinesApi
 class DefaultCurrencyFormatterTest : BaseUnitTest() {

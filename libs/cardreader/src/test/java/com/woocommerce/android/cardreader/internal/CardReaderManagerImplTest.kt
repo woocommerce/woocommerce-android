@@ -7,19 +7,24 @@ import com.woocommerce.android.cardreader.connection.SpecificReader
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
 import com.woocommerce.android.cardreader.internal.connection.TerminalListenerImpl
 import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManager
+import com.woocommerce.android.cardreader.internal.payments.InteracRefundManager
+import com.woocommerce.android.cardreader.internal.payments.PaymentManager
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalApplicationDelegateWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
+import com.woocommerce.android.cardreader.payments.RefundParams
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatIllegalStateException
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
 class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
@@ -31,6 +36,8 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
     private val tokenProvider: TokenProvider = mock()
     private val application: Application = mock()
     private val logWrapper: LogWrapper = mock()
+    private val paymentManager: PaymentManager = mock()
+    private val interacRefundManager: InteracRefundManager = mock()
     private val connectionManager: ConnectionManager = mock()
     private val softwareUpdateManager: SoftwareUpdateManager = mock()
     private val terminalListener: TerminalListenerImpl = mock()
@@ -47,7 +54,8 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
             terminalWrapper,
             tokenProvider,
             logWrapper,
-            mock(),
+            paymentManager,
+            interacRefundManager,
             connectionManager,
             softwareUpdateManager,
             terminalListener,
@@ -186,5 +194,44 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
             cardReaderManager.collectPayment(mock())
 
             verify(connectionManager).resetBluetoothCardReaderDisplayMessage()
+        }
+
+    // Interac Refund tests
+
+    @Test
+    fun `given terminal not initialized when interac refund, then exception is thrown`() {
+        whenever(terminalWrapper.isInitialized()).thenReturn(false)
+
+        assertThatIllegalStateException().isThrownBy {
+            testBlocking {
+                cardReaderManager.refundInteracPayment(mock())
+            }
+        }
+    }
+
+    @Test
+    fun `when refund interac payment is initiated, then reset bluetooth card reader messages`() =
+        testBlocking {
+            whenever(terminalWrapper.isInitialized()).thenReturn(true)
+            cardReaderManager.refundInteracPayment(mock())
+
+            verify(connectionManager).resetBluetoothCardReaderDisplayMessage()
+        }
+
+    @Test
+    fun `when refund interac payment is initiated, then refund interac payment is called with correct params`() =
+        testBlocking {
+            whenever(terminalWrapper.isInitialized()).thenReturn(true)
+            val refundParams = RefundParams(
+                chargeId = "chargeId",
+                amount = BigDecimal.TEN,
+                currency = "USD"
+            )
+            val captor = argumentCaptor<RefundParams>()
+
+            cardReaderManager.refundInteracPayment(refundParams)
+
+            verify(interacRefundManager).refundInteracPayment(captor.capture())
+            assertThat(captor.firstValue).isEqualTo(refundParams)
         }
 }

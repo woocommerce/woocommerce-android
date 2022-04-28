@@ -16,7 +16,9 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.filters.OrderFilterCategoriesFragment.Companion.KEY_UPDATED_FILTER_OPTIONS
 import com.woocommerce.android.ui.orders.filters.adapter.OrderFilterOptionAdapter
-import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.*
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnFilterOptionsSelectionUpdated
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.ShowCustomDateRangePicker
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel
 import com.woocommerce.android.ui.orders.list.OrderListFragment
 import dagger.hilt.android.AndroidEntryPoint

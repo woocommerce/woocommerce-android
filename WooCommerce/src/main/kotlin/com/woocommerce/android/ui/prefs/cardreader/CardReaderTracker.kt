@@ -7,6 +7,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.*
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
+import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.RefundStatusErrorType
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Generic
 import com.woocommerce.android.tools.SelectedSite
@@ -219,7 +220,20 @@ class CardReaderTracker @Inject constructor(
     }
 
     fun trackInteracPaymentSucceeded() {
-        track(CARD_INTERAC_COLLECT_PAYMENT_SUCCESS)
+        track(CARD_PRESENT_COLLECT_INTERAC_PAYMENT_SUCCESS)
+    }
+
+    fun trackInteracPaymentFailed(
+        orderId: Long,
+        errorMessage: String,
+        errorType: RefundStatusErrorType = RefundStatusErrorType.Generic
+    ) {
+        track(
+            CARD_PRESENT_COLLECT_INTERAC_PAYMENT_FAILED,
+            properties = mutableMapOf("orderId" to orderId),
+            errorType = errorType.toString(),
+            errorDescription = errorMessage
+        )
     }
 
     fun trackPrintReceiptTapped() {

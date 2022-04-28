@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.refunds
 
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingChecker
+import com.woocommerce.android.ui.prefs.cardreader.onboarding.PreferredPluginResult
 import com.woocommerce.android.ui.prefs.cardreader.onboarding.toInPersonPaymentsPluginType
 import com.woocommerce.android.util.WooLog
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
@@ -10,54 +12,71 @@ import javax.inject.Inject
 class PaymentChargeRepository @Inject constructor(
     private val ippStore: WCInPersonPaymentsStore,
     private val selectedSite: SelectedSite,
-    private val appPrefs: AppPrefs
+    private val appPrefs: AppPrefs,
+    private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
 ) {
-    private val activePlugin: WCInPersonPaymentsStore.InPersonPaymentsPluginType?
-        get() = appPrefs.getCardReaderPreferredPlugin(
-            selectedSite.get().id,
-            selectedSite.get().siteId,
-            selectedSite.get().selfHostedSiteId
-        )?.toInPersonPaymentsPluginType()
-            ?: null.also { WooLog.e(WooLog.T.ORDERS, "Active Payment Plugin is not set") }
-
     suspend fun fetchCardDataUsedForOrderPayment(chargeId: String): CardDataUsedForOrderPaymentResult {
-        val plugin = activePlugin
-        return if (plugin == null) CardDataUsedForOrderPaymentResult.Error
-        else {
-            val result = ippStore.fetchPaymentCharge(plugin, selectedSite.get(), chargeId)
+        val activePlugin = getActivePlugin()
+
+        return if (activePlugin == null) {
+            CardDataUsedForOrderPaymentResult.Error
+        } else {
+            val result = ippStore.fetchPaymentCharge(activePlugin, selectedSite.get(), chargeId)
             if (result.isError) {
                 WooLog.e(WooLog.T.ORDERS, "Could not fetch charge - ${result.error.message}")
                 CardDataUsedForOrderPaymentResult.Error
             } else {
                 val paymentMethodDetails = result.result?.paymentMethodDetails
                 when (paymentMethodDetails?.type) {
-                    "interac_present" -> {
+                    INTERAC_PRESENT -> {
                         CardDataUsedForOrderPaymentResult.Success(
                             cardBrand = paymentMethodDetails.interacCardDetails?.brand,
-                            cardLast4 = paymentMethodDetails.interacCardDetails?.last4
+                            cardLast4 = paymentMethodDetails.interacCardDetails?.last4,
+                            paymentMethodType = INTERAC_PRESENT
                         )
                     }
-                    "card_present" -> {
+                    CARD_PRESENT -> {
                         CardDataUsedForOrderPaymentResult.Success(
                             cardBrand = paymentMethodDetails.cardDetails?.brand,
-                            cardLast4 = paymentMethodDetails.cardDetails?.last4
+                            cardLast4 = paymentMethodDetails.cardDetails?.last4,
+                            paymentMethodType = CARD_PRESENT
                         )
                     }
                     else ->
                         CardDataUsedForOrderPaymentResult.Success(
                             cardBrand = null,
-                            cardLast4 = null
+                            cardLast4 = null,
+                            paymentMethodType = null
                         )
                 }
             }
         }
     }
 
+    private suspend fun getActivePlugin() =
+        appPrefs.getCardReaderPreferredPlugin(
+            selectedSite.get().id,
+            selectedSite.get().siteId,
+            selectedSite.get().selfHostedSiteId
+        )?.toInPersonPaymentsPluginType() ?: fetchPreferredPlugin()
+
+    private suspend fun fetchPreferredPlugin() =
+        when (val prefferedPluginResult = cardReaderOnboardingChecker.fetchPreferredPlugin()) {
+            is PreferredPluginResult.Success -> prefferedPluginResult.type.toInPersonPaymentsPluginType()
+            else -> null
+        }
+
     sealed class CardDataUsedForOrderPaymentResult {
         object Error : CardDataUsedForOrderPaymentResult()
         data class Success(
             val cardBrand: String?,
-            val cardLast4: String?
+            val cardLast4: String?,
+            val paymentMethodType: String?
         ) : CardDataUsedForOrderPaymentResult()
+    }
+
+    companion object {
+        private const val INTERAC_PRESENT = "interac_present"
+        private const val CARD_PRESENT = "card_present"
     }
 }
