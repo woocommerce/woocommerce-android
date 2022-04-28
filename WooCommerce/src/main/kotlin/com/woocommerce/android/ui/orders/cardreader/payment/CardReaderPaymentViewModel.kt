@@ -17,8 +17,25 @@ import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.Inter
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.InteracRefundSuccess
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.ProcessingInteracRefund
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.*
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.*
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.CHECK_MOBILE_DEVICE
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.INSERT_CARD
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.INSERT_OR_SWIPE_CARD
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.MULTIPLE_CONTACTLESS_CARDS_DETECTED
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.REMOVE_CARD
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.RETRY_CARD
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.SWIPE_CARD
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.TRY_ANOTHER_CARD
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.TRY_ANOTHER_READ_METHOD
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CapturingPayment
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CollectingPayment
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.InitializingPayment
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentCompleted
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentFailed
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentMethodType
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPayment
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPaymentCompleted
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.RefundParams
@@ -28,7 +45,20 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.cardreader.payment.ViewState.*
+import com.woocommerce.android.ui.orders.cardreader.payment.ViewState.CapturingPaymentState
+import com.woocommerce.android.ui.orders.cardreader.payment.ViewState.CollectPaymentState
+import com.woocommerce.android.ui.orders.cardreader.payment.ViewState.CollectRefundState
+import com.woocommerce.android.ui.orders.cardreader.payment.ViewState.FailedPaymentState
+import com.woocommerce.android.ui.orders.cardreader.payment.ViewState.FailedRefundState
+import com.woocommerce.android.ui.orders.cardreader.payment.ViewState.LoadingDataState
+import com.woocommerce.android.ui.orders.cardreader.payment.ViewState.PaymentSuccessfulReceiptSentAutomaticallyState
+import com.woocommerce.android.ui.orders.cardreader.payment.ViewState.PaymentSuccessfulState
+import com.woocommerce.android.ui.orders.cardreader.payment.ViewState.PrintingReceiptState
+import com.woocommerce.android.ui.orders.cardreader.payment.ViewState.ProcessingPaymentState
+import com.woocommerce.android.ui.orders.cardreader.payment.ViewState.ProcessingRefundState
+import com.woocommerce.android.ui.orders.cardreader.payment.ViewState.ReFetchingOrderState
+import com.woocommerce.android.ui.orders.cardreader.payment.ViewState.RefundLoadingDataState
+import com.woocommerce.android.ui.orders.cardreader.payment.ViewState.RefundSuccessfulState
 import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptEvent.SendReceipt
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
@@ -54,7 +84,6 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
@@ -288,8 +317,8 @@ class CardReaderPaymentViewModel
                 onRefundStatusChanged(
                     refundStatus,
                     currencyFormatter.formatAmountWithCurrency(
-                        order.currency,
-                        refundAmount.toDouble()
+                        refundAmount.toDouble(),
+                        order.currency
                     )
                 )
             }
@@ -301,8 +330,8 @@ class CardReaderPaymentViewModel
             )
             emitFailedInteracRefundState(
                 currencyFormatter.formatAmountWithCurrency(
-                    order.currency,
-                    refundAmount.toDouble()
+                    refundAmount.toDouble(),
+                    order.currency
                 ),
                 InteracRefundFailure(
                     type = CardInteracRefundStatus.RefundStatusErrorType.NonRetryable,
@@ -502,7 +531,7 @@ class CardReaderPaymentViewModel
     }
 
     fun onViewCreated() {
-        if (viewState.value is ViewState.PrintingReceiptState) {
+        if (viewState.value is PrintingReceiptState) {
             startPrintingFlow()
         }
     }
