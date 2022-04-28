@@ -9,7 +9,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import java.util.*
+import java.util.Locale
 
 @ExperimentalCoroutinesApi
 class CurrencyFormatterTest : BaseUnitTest() {

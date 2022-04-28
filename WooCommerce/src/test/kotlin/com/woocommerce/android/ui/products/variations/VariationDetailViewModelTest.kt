@@ -22,14 +22,19 @@ import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.anyVararg
+import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.store.WCProductStore.OnVariationChanged
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.time.ZoneOffset
-import java.util.*
+import java.util.Date
 
 @ExperimentalCoroutinesApi
 class VariationDetailViewModelTest : BaseUnitTest() {
