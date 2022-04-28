@@ -7,6 +7,8 @@ import android.util.AttributeSet
 import android.view.Menu
 import android.view.MenuItem
 import com.google.android.material.textview.MaterialTextView
+import com.woocommerce.android.R
+import org.wordpress.android.util.ToastUtils
 
 /**
  * Custom [MaterialTextView] with built-in text selection support and automatically selects
@@ -32,6 +34,9 @@ class WCSelectableTextView @JvmOverloads constructor(
     }
 
     override fun onActionItemClicked(mode: android.view.ActionMode?, item: MenuItem?): Boolean {
+        if (item?.itemId == android.R.id.copy) {
+            ToastUtils.showToast(context, R.string.copied_to_clipboard)
+        }
         return false
     }
 
