@@ -149,7 +149,7 @@ class OrderNavigator @Inject constructor() {
             }
             is StartCardReaderPaymentFlow -> {
                 val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToCardReaderFlow(
-                    CardReaderFlowParam.ConnectAndAcceptPayment(target.orderId)
+                    CardReaderFlowParam.PaymentOrRefund.Payment(target.orderId)
                 )
                 fragment.findNavController().navigateSafely(action)
             }

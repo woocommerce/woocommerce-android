@@ -915,6 +915,28 @@
     <string name="card_reader_bbpos_manual_card_reader">BBPOS Chipper Card Reader Manual</string>
     <string name="card_reader_m2_manual_card_reader">Stripe M2 Card Reader Manual</string>
     <string name="card_reader_wisepad_3_manual_card_reader">WisePad 3 Card Reader Manual</string>
+
+    <!--
+            Card Reader Interac refund
+        -->
+    <string name="card_reader_interac_refund_refund_loading_header">Getting ready to refund payment</string>
+    <string name="card_reader_interac_refund_refund_failed_header">Refund failed</string>
+    <string name="card_reader_interac_refund_refund_payment">Refund payment</string>
+    <string name="card_reader_interac_refund_refund_processing_state">Processing refund</string>
+    <string name="card_reader_interac_refund_refund_completed_header">Refund successful</string>
+    <string name="card_reader_interac_refund_refund_failed_unexpected_error_state">Sorry, this refund couldn\’t be processed</string>
+    <string name="card_reader_interac_refund_refund_failed_unknown">Refund was declined for an unknown reason</string>
+    <string name="card_reader_interac_refund_refund_failed_fraud">Try another means of refund</string>
+    <string name="card_reader_interac_refund_refund_failed_generic">Refund was declined for an unspecified reason</string>
+    <string name="card_reader_interac_refund_refund_failed_card_not_supported">The card does not support this type of refund</string>
+    <string name="card_reader_interac_refund_refund_failed_duplicate_transaction">An identical refund was submitted recently</string>
+    <string name="card_reader_interac_refund_refund_failed_insufficient_funds">Refund declined due to insufficient funds</string>
+    <string name="card_reader_interac_refund_refund_failed_invalid_amount">The refund amount is not allowed for the card presented</string>
+    <string name="card_reader_interac_refund_refund_failed_test_card">System test cards are not permitted for refund</string>
+    <string name="card_reader_interac_refund_refund_failed_ok">OK</string>
+    <string name="card_reader_interac_refund_refund_failed_cancelled">Refund cancelled</string>
+    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">The order is already refunded</string>
+    <string name="card_reader_interac_refund_refund_payment_hint">Tap or insert to refund</string>
     <!--
         Card Reader Payments
     -->
@@ -946,7 +968,7 @@
     <string name="card_reader_payment_failed_server_error_state">No connection to server</string>
     <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Card declined</string>
     <string name="card_reader_payment_failed_unexpected_error_state">Sorry, this payment couldn\’t be processed</string>
-    <string name="card_reader_payment_failed_amount_too_small">Amount must be at least $0.50 usd</string>
+    <string name="card_reader_payment_failed_amount_too_small">Amount must be at least $0.50</string>
     <string name="card_reader_payment_failed_temporary">Trying again may succeed</string>
     <string name="card_reader_payment_failed_fraud">Try another means of payment</string>
     <string name="card_reader_payment_failed_generic">Payment was declined for an unspecified reason</string>

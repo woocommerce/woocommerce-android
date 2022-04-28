@@ -11,12 +11,16 @@ import com.woocommerce.android.cardreader.internal.connection.UpdateErrorMapper
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction
 import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManager
 import com.woocommerce.android.cardreader.internal.payments.AdditionalInfoMapper
+import com.woocommerce.android.cardreader.internal.payments.InteracRefundManager
 import com.woocommerce.android.cardreader.internal.payments.PaymentErrorMapper
 import com.woocommerce.android.cardreader.internal.payments.PaymentManager
 import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
+import com.woocommerce.android.cardreader.internal.payments.RefundErrorMapper
 import com.woocommerce.android.cardreader.internal.payments.actions.CancelPaymentAction
+import com.woocommerce.android.cardreader.internal.payments.actions.CollectInteracRefundAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction
+import com.woocommerce.android.cardreader.internal.payments.actions.ProcessInteracRefundAction
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction
 import com.woocommerce.android.cardreader.internal.wrappers.PaymentIntentParametersFactory
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
@@ -57,6 +61,12 @@ object CardReaderManagerFactory {
                 PaymentUtils(),
                 PaymentErrorMapper(),
                 CardReaderConfigFactory()
+            ),
+            InteracRefundManager(
+                CollectInteracRefundAction(terminal),
+                ProcessInteracRefundAction(terminal),
+                RefundErrorMapper(),
+                PaymentUtils(),
             ),
             ConnectionManager(
                 terminal,

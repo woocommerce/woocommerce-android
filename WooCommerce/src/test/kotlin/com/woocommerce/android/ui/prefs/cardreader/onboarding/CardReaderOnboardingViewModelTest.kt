@@ -70,7 +70,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             val viewModel = createVM(
                 CardReaderOnboardingFragmentArgs(
-                    cardReaderFlowParam = CardReaderFlowParam.ConnectAndAcceptPayment(1L)
+                    cardReaderFlowParam = CardReaderFlowParam.PaymentOrRefund.Payment(1L)
                 ).initSavedStateHandle()
             )
 
@@ -688,7 +688,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 )
             val viewModel = createVM(
                 CardReaderOnboardingFragmentArgs(
-                    cardReaderFlowParam = CardReaderFlowParam.ConnectAndAcceptPayment(1L)
+                    cardReaderFlowParam = CardReaderFlowParam.PaymentOrRefund.Payment(1L)
                 ).initSavedStateHandle()
             )
 
