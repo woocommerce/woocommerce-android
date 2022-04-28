@@ -12,10 +12,15 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadData
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus
-import com.woocommerce.android.ui.products.ProductDetailViewModel.*
+import com.woocommerce.android.ui.products.ProductDetailViewModel.HideImageUploadErrorSnackbar
+import com.woocommerce.android.ui.products.ProductDetailViewModel.MenuButtonsState
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
-import com.woocommerce.android.ui.products.models.ProductProperty.*
+import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
+import com.woocommerce.android.ui.products.models.ProductProperty.Editable
+import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
+import com.woocommerce.android.ui.products.models.ProductProperty.RatingBar
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
@@ -23,24 +28,36 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.Optional
 import com.woocommerce.android.util.ProductUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.anyVararg
+import org.mockito.kotlin.clearInvocations
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.time.ZoneOffset
-import java.util.*
+import java.util.Date
 import kotlin.test.assertNull
 
 @ExperimentalCoroutinesApi
@@ -350,8 +367,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         val updatedRegularPrice = null
         val updatedSalePrice = null
         viewModel.updateProductDraft(
-            regularPrice = Optional(updatedRegularPrice),
-            salePrice = Optional(updatedSalePrice)
+            regularPrice = updatedRegularPrice,
+            salePrice = updatedSalePrice
         )
 
         assertNull(productData?.productDraft?.regularPrice)
@@ -372,8 +389,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         val updatedRegularPrice = BigDecimal.ZERO
         val updatedSalePrice = BigDecimal.ZERO
         viewModel.updateProductDraft(
-            regularPrice = Optional(updatedRegularPrice),
-            salePrice = Optional(updatedSalePrice)
+            regularPrice = updatedRegularPrice,
+            salePrice = updatedSalePrice
         )
 
         assertThat(productData?.productDraft?.regularPrice).isEqualTo(updatedRegularPrice)
@@ -810,6 +827,96 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
 
         assertThat(hasChanges).isTrue
+    }
+
+    @Test
+    fun `given regular price set, when updating inventory, then price remains unchanged`() = testBlocking {
+        doReturn(
+            product.copy(
+                regularPrice = BigDecimal(99)
+            )
+        ).whenever(productRepository).getProductAsync(any())
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        viewModel.start()
+
+        viewModel.updateProductDraft(sku = "E9999999")
+
+        assertThat(viewModel.getProduct().productDraft?.regularPrice).isEqualTo(BigDecimal(99))
+    }
+
+    @Test
+    fun `given sale price set, when updating attributes, then price remains unchanged`() = testBlocking {
+        doReturn(
+            product.copy(
+                salePrice = BigDecimal(99)
+            )
+        ).whenever(productRepository).getProductAsync(any())
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        viewModel.start()
+
+        viewModel.updateProductDraft(sku = "E9999999")
+
+        assertThat(viewModel.getProduct().productDraft?.salePrice).isEqualTo(BigDecimal(99))
+    }
+
+    @Test
+    fun `given regular price greater than 0, when setting price to 0, then price is set to zero`() = testBlocking {
+        doReturn(
+            product.copy(
+                regularPrice = BigDecimal(99)
+            )
+        ).whenever(productRepository).getProductAsync(any())
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        viewModel.start()
+
+        viewModel.updateProductDraft(regularPrice = BigDecimal(0))
+
+        assertThat(viewModel.getProduct().productDraft?.regularPrice).isEqualTo(BigDecimal(0))
+    }
+
+    @Test
+    fun `given sale price greater than 0, when setting price to 0, then price is set to zero`() = testBlocking {
+        doReturn(
+            product.copy(
+                regularPrice = BigDecimal(99)
+            )
+        ).whenever(productRepository).getProductAsync(any())
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        viewModel.start()
+
+        viewModel.updateProductDraft(salePrice = BigDecimal(0))
+
+        assertThat(viewModel.getProduct().productDraft?.salePrice).isEqualTo(BigDecimal(0))
+    }
+
+    @Test
+    fun `given regular price greater than 0, when setting price to null, then price is set to null`() = testBlocking {
+        doReturn(
+            product.copy(
+                regularPrice = BigDecimal(99)
+            )
+        ).whenever(productRepository).getProductAsync(any())
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        viewModel.start()
+
+        viewModel.updateProductDraft(regularPrice = null)
+
+        assertThat(viewModel.getProduct().productDraft?.regularPrice).isNull()
+    }
+
+    @Test
+    fun `given sale price greater than 0, when setting price to null, then price is set to null`() = testBlocking {
+        doReturn(
+            product.copy(
+                regularPrice = BigDecimal(99)
+            )
+        ).whenever(productRepository).getProductAsync(any())
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        viewModel.start()
+
+        viewModel.updateProductDraft(salePrice = null)
+
+        assertThat(viewModel.getProduct().productDraft?.salePrice).isNull()
     }
 
     private val productsDraft

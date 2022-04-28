@@ -61,9 +61,9 @@ class CardReaderTutorialDialogFragment : DialogFragment(R.layout.card_reader_tut
     private fun navigateNext() {
         when (val param = args.cardReaderFlowParam) {
             CardReaderFlowParam.CardReadersHub -> findNavController().popBackStack()
-            is CardReaderFlowParam.ConnectAndAcceptPayment -> {
+            is CardReaderFlowParam.PaymentOrRefund -> {
                 val action = CardReaderTutorialDialogFragmentDirections
-                    .actionCardReaderTutorialDialogFragmentToCardReaderPaymentDialogFragment(param.orderId)
+                    .actionCardReaderTutorialDialogFragmentToCardReaderPaymentDialogFragment(param)
                 findNavController().navigateSafely(action, skipThrottling = true)
             }
         }

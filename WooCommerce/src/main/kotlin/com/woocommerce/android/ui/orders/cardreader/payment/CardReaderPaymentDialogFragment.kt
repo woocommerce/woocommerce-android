@@ -23,6 +23,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.cardreader.payment.CardReaderPaymentViewModel.ShowSnackbarInDialog
 import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptEvent.PrintReceipt
 import com.woocommerce.android.ui.orders.cardreader.receipt.ReceiptEvent.SendReceipt
+import com.woocommerce.android.ui.refunds.RefundSummaryFragment.Companion.KEY_INTERAC_SUCCESS
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.PrintHtmlHelper
 import com.woocommerce.android.util.UiHelpers
@@ -79,6 +80,7 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
                     event.receiptUrl,
                     event.documentName
                 )
+                CardReaderPaymentViewModel.InteracRefundSuccessful -> navigateBackWithNotice(KEY_INTERAC_SUCCESS)
                 is SendReceipt -> composeEmail(event.address, event.subject, event.content)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowSnackbarInDialog -> Snackbar.make(

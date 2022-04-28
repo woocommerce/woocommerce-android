@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
+import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.annotation.AnimRes
@@ -24,6 +25,7 @@ import com.woocommerce.android.databinding.FragmentProductImageViewerBinding
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ImageViewerFragment.Companion.ImageViewerListener
 import com.woocommerce.android.util.WooAnimUtils
@@ -55,6 +57,9 @@ class ProductImageViewerFragment :
 
     private var _binding: FragmentProductImageViewerBinding? = null
     private val binding get() = _binding!!
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,11 +96,21 @@ class ProductImageViewerFragment :
         }
 
         fadeOutToolbarHandler.postDelayed(fadeOutToolbarRunnable, TOOLBAR_FADE_DELAY_MS)
+
+        @Suppress("MagicNumber")
+        // If we make the Activity full-screen directly, it'll prevent the fragment transition from finishing,
+        // which would prevent the previous fragment's view from getting destroyed, this causes an issue where the
+        // Toolbar doesn't get restored when navigating back.
+        // This seems like a bug in the fragment library.
+        view.postDelayed({
+            requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        }, 500)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

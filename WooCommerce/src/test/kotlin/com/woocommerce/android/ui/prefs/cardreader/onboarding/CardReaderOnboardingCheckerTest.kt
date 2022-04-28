@@ -23,6 +23,9 @@ import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
+import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore.InPersonPaymentsPluginType.STRIPE
@@ -47,6 +50,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
     private val countryCode = "US"
     private val wcPayPluginVersion = "3.3.0"
+    private val wcPayPluginVersionCanada = "4.0.0"
     private val stripePluginVersion = "6.6.0"
 
     @Before
@@ -277,6 +281,24 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             assertThat(result).isEqualTo(
                 CardReaderOnboardingState.PluginUnsupportedVersion(PluginType.STRIPE_EXTENSION_GATEWAY)
+            )
+        }
+
+    @Test
+    fun `given store in Canada, when wcpay plugin outdated, then UNSUPPORTED_VERSION returned`() =
+        testBlocking {
+            whenever(wooStore.getStoreCountryCode(site)).thenReturn("CA")
+            whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(true)
+            whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForCanada)
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+                .thenReturn(buildWCPayPluginInfo(version = wcPayPluginVersion))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY)).thenReturn(null)
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isEqualTo(
+                CardReaderOnboardingState.PluginUnsupportedVersion(PluginType.WOOCOMMERCE_PAYMENTS)
             )
         }
 
@@ -1015,7 +1037,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         whenever(wooStore.getStoreCountryCode(site)).thenReturn("CA")
         whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(true)
         whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-            .thenReturn(buildWCPayPluginInfo(isActive = true))
+            .thenReturn(buildWCPayPluginInfo(isActive = true, version = wcPayPluginVersionCanada))
         whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
             .thenReturn(buildStripeExtensionPluginInfo(isActive = false))
         whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForCanada)
@@ -1023,6 +1045,52 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         val result = checker.getOnboardingState()
 
         assertThat(result).isInstanceOf(CardReaderOnboardingState.OnboardingCompleted::class.java)
+    }
+
+    @Test
+    fun `given network error, when fetching plugin, then error returned`() = testBlocking {
+        whenever(wooStore.fetchSitePlugins(site)).thenReturn(
+            WooResult(
+                WooError(
+                    WooErrorType.TIMEOUT,
+                    BaseRequest.GenericErrorType.HTTP_AUTH_ERROR
+                )
+            )
+        )
+
+        val result = checker.fetchPreferredPlugin()
+
+        assertThat(result).isInstanceOf(PreferredPluginResult.Error::class.java)
+    }
+
+    @Test
+    fun `given network success and stripe, when fetching plugin, then stripe returned`() = testBlocking {
+        whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+            .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
+        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+            .thenReturn(null)
+        whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
+
+        val result = checker.fetchPreferredPlugin()
+
+        assertThat(result).isInstanceOf(PreferredPluginResult.Success::class.java)
+        assertThat((result as PreferredPluginResult.Success).type).isEqualTo(PluginType.STRIPE_EXTENSION_GATEWAY)
+    }
+
+    @Test
+    fun `given network success and woo, when fetching plugin, then woo returned`() = testBlocking {
+        whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+            .thenReturn(null)
+        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+            .thenReturn(buildWCPayPluginInfo(isActive = true))
+        whenever(stripeExtensionFeatureFlag.isEnabled()).thenReturn(true)
+
+        val result = checker.fetchPreferredPlugin()
+
+        assertThat(result).isInstanceOf(PreferredPluginResult.Success::class.java)
+        assertThat((result as PreferredPluginResult.Success).type).isEqualTo(PluginType.WOOCOMMERCE_PAYMENTS)
     }
 
     private fun buildPaymentAccountResult(
