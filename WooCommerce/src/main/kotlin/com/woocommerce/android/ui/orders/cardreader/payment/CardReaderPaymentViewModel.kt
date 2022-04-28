@@ -566,50 +566,28 @@ class CardReaderPaymentViewModel
             }
         } else {
             viewState.value?.let { state ->
-                if (isStateEligibleForTrackingPayment(state)) {
-                    tracker.trackPaymentCancelled(getCurrentPaymentState())
-                } else if (isStateEligibleForTrackingInteracRefund(state)) {
-                    tracker.trackInteracRefundCancelled(getCurrentInteracRefundState())
-                }
+                trackCancelledFlow(state)
             }
             triggerEvent(Exit)
         }
     }
 
-    private fun isStateEligibleForTrackingPayment(paymentState: ViewState) =
-        paymentState is LoadingDataState ||
-            paymentState is CollectPaymentState ||
-            paymentState is ProcessingPaymentState ||
-            paymentState is CapturingPaymentState
-
-    private fun getCurrentPaymentState(): String? {
-        return when (viewState.value) {
-            is LoadingDataState -> "Loading"
-            is CapturingPaymentState -> "Capturing"
-            is CollectPaymentState -> "Collecting"
-            is ProcessingPaymentState -> "Processing"
-            else -> {
-                WooLog.e(WooLog.T.CARD_READER, "Invalid payment state received")
-                null
+    private fun trackCancelledFlow(state: ViewState) {
+        if (isStateEligibleForTrackingPayment(state)) {
+            when (state) {
+                is PaymentFlow -> {
+                    tracker.trackPaymentCancelled(state.nameForTracking)
+                }
+                is InteracRefundFlow -> {
+                    tracker.trackInteracRefundCancelled(state.nameForTracking)
+                }
+                else -> WooLog.e(WooLog.T.CARD_READER, "Invalid state received")
             }
         }
     }
 
-    private fun isStateEligibleForTrackingInteracRefund(refundState: ViewState) =
-        refundState is RefundLoadingDataState ||
-            refundState is CollectRefundState ||
-            refundState is ProcessingRefundState
-
-    private fun getCurrentInteracRefundState(): String? {
-        return when (viewState.value) {
-            is RefundLoadingDataState -> "Loading"
-            is CollectRefundState -> "Collecting"
-            is ProcessingRefundState -> "Processing"
-            else -> {
-                WooLog.e(WooLog.T.CARD_READER, "Invalid refund state received")
-                null
-            }
-        }
+    private fun isStateEligibleForTrackingPayment(state: ViewState): Boolean {
+        return (state is PaymentFlow || state is InteracRefundFlow)
     }
 
     private fun exitWithSnackbar(@StringRes message: Int) {
