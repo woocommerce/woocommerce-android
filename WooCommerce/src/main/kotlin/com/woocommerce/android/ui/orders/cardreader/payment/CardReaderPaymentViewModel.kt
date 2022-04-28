@@ -59,12 +59,10 @@ import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
-import java.math.RoundingMode
 import javax.inject.Inject
 
 private const val ARTIFICIAL_RETRY_DELAY = 500L
-private const val CANADA_FEE_SHARE = 0.026
-private const val CANADA_FEE_FLAT = 25
+private const val CANADA_FEE_FLAT_IN_CENTS = 15L
 
 @HiltViewModel
 class CardReaderPaymentViewModel
@@ -235,7 +233,7 @@ class CardReaderPaymentViewModel
                 storeName = selectedSite.get().name.ifEmpty { null },
                 siteUrl = selectedSite.get().url.ifEmpty { null },
                 countryCode = countryCode,
-                feeAmount = calculateFeeInCents(order.total, countryCode)
+                feeAmount = calculateFeeInCents(countryCode)
             )
         ).collect { paymentStatus ->
             onPaymentStatusChanged(order.id, customerEmail, paymentStatus, order.getAmountLabel())
@@ -635,13 +633,9 @@ class CardReaderPaymentViewModel
         }
     }
 
-    private fun calculateFeeInCents(amount: BigDecimal, countryCode: String) =
+    private fun calculateFeeInCents(countryCode: String) =
         if (countryCode == "CA") {
-            amount.movePointRight(2)
-                .multiply(BigDecimal(CANADA_FEE_SHARE))
-                .plus(BigDecimal(CANADA_FEE_FLAT))
-                .setScale(0, RoundingMode.HALF_UP)
-                .toLong()
+            CANADA_FEE_FLAT_IN_CENTS
         } else {
             null
         }

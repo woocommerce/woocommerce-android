@@ -1961,7 +1961,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given canada and fee 0,58, when flow started, then fee set to 27`() =
+    fun `given canada and total 0,58, when flow started, then fee set to 27`() =
         testBlocking {
             // Given
             whenever(wooStore.getStoreCountryCode(any())).thenReturn("CA")
@@ -1974,15 +1974,15 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             // Then
             verify(cardReaderManager).collectPayment(captor.capture())
-            assertThat(captor.firstValue.feeAmount).isEqualTo(27)
+            assertThat(captor.firstValue.feeAmount).isEqualTo(15)
         }
 
     @Test
-    fun `given canada and fee 349,99, when flow started, then fee set to 935`() =
+    fun `given canada and total 135,6, when flow started, then fee set to 27`() =
         testBlocking {
             // Given
             whenever(wooStore.getStoreCountryCode(any())).thenReturn("CA")
-            whenever(mockedOrder.total).thenReturn(BigDecimal(349.99))
+            whenever(mockedOrder.total).thenReturn(BigDecimal(145.6))
             whenever(orderRepository.fetchOrderById(ORDER_ID)).thenReturn(mockedOrder)
             val captor = argumentCaptor<PaymentInfo>()
 
@@ -1991,28 +1991,11 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             // Then
             verify(cardReaderManager).collectPayment(captor.capture())
-            assertThat(captor.firstValue.feeAmount).isEqualTo(935)
+            assertThat(captor.firstValue.feeAmount).isEqualTo(15)
         }
 
     @Test
-    fun `given canada and fee 9999,00, when flow started, then fee set to 26022`() =
-        testBlocking {
-            // Given
-            whenever(wooStore.getStoreCountryCode(any())).thenReturn("CA")
-            whenever(mockedOrder.total).thenReturn(BigDecimal(9999.00))
-            whenever(orderRepository.fetchOrderById(ORDER_ID)).thenReturn(mockedOrder)
-            val captor = argumentCaptor<PaymentInfo>()
-
-            // When
-            viewModel.start()
-
-            // Then
-            verify(cardReaderManager).collectPayment(captor.capture())
-            assertThat(captor.firstValue.feeAmount).isEqualTo(26022)
-        }
-
-    @Test
-    fun `given us and fee 1,49, when flow started, then fee is not set`() =
+    fun `given us and total 1,49, when flow started, then fee is not set`() =
         testBlocking {
             // Given
             whenever(wooStore.getStoreCountryCode(any())).thenReturn("US")
