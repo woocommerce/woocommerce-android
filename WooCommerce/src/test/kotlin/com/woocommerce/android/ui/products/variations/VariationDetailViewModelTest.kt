@@ -15,20 +15,28 @@ import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.V
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.anyVararg
+import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.store.WCProductStore.OnVariationChanged
+import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.Date
 
+@ExperimentalCoroutinesApi
 class VariationDetailViewModelTest : BaseUnitTest() {
     companion object {
         private val SALE_START_DATE = Date.from(
@@ -37,9 +45,13 @@ class VariationDetailViewModelTest : BaseUnitTest() {
         private val SALE_END_DATE = Date.from(
             LocalDateTime.of(2020, 4, 1, 8, 0).toInstant(ZoneOffset.UTC)
         )
+        private val DUMMY_REGULAR_PRICE = BigDecimal(99)
+        private val DUMMY_SALE_PRICE = BigDecimal(70)
         val TEST_VARIATION = generateVariation().copy(
             saleStartDateGmt = SALE_START_DATE,
-            saleEndDateGmt = SALE_END_DATE
+            saleEndDateGmt = SALE_END_DATE,
+            regularPrice = DUMMY_REGULAR_PRICE,
+            salePrice = DUMMY_SALE_PRICE,
         )
     }
 
@@ -164,6 +176,60 @@ class VariationDetailViewModelTest : BaseUnitTest() {
         errorEvents.emit(emptyList())
 
         assertThat(sut.event.value).isEqualTo(HideImageUploadErrorSnackbar)
+    }
+
+    @Test
+    fun `given regular price set, when updating attributes, then price remains unchanged`() = testBlocking {
+        sut.variationViewStateData.observeForever { _, _ -> }
+
+        sut.onVariationChanged(attributes = emptyArray())
+
+        assertThat(variation!!.regularPrice).isEqualTo(DUMMY_REGULAR_PRICE)
+    }
+
+    @Test
+    fun `given sale price set, when updating attributes, then price remains unchanged`() = testBlocking {
+        sut.variationViewStateData.observeForever { _, _ -> }
+
+        sut.onVariationChanged(attributes = emptyArray())
+
+        assertThat(variation!!.salePrice).isEqualTo(DUMMY_SALE_PRICE)
+    }
+
+    @Test
+    fun `given regular price greater than 0, when setting price to 0, then price is set to zero`() = testBlocking {
+        sut.variationViewStateData.observeForever { _, _ -> }
+
+        sut.onVariationChanged(regularPrice = BigDecimal(0))
+
+        assertThat(variation!!.regularPrice).isEqualTo(BigDecimal(0))
+    }
+
+    @Test
+    fun `given sale price greater than 0, when setting price to 0, then price is set to zero`() = testBlocking {
+        sut.variationViewStateData.observeForever { _, _ -> }
+
+        sut.onVariationChanged(salePrice = BigDecimal(0))
+
+        assertThat(variation!!.salePrice).isEqualTo(BigDecimal(0))
+    }
+
+    @Test
+    fun `given regular price greater than 0, when setting price to null, then price is set to null`() = testBlocking {
+        sut.variationViewStateData.observeForever { _, _ -> }
+
+        sut.onVariationChanged(regularPrice = null)
+
+        assertThat(variation!!.regularPrice).isNull()
+    }
+
+    @Test
+    fun `given sale price greater than 0, when setting price to null, then price is set to null`() = testBlocking {
+        sut.variationViewStateData.observeForever { _, _ -> }
+
+        sut.onVariationChanged(salePrice = null)
+
+        assertThat(variation!!.salePrice).isNull()
     }
 
     private val variation: ProductVariation?

@@ -1,10 +1,16 @@
 package com.woocommerce.android
 
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import com.woocommerce.android.ui.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.cardreader.onboarding.PluginType
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 
 class AppPrefsWrapper @Inject constructor() {
+    var isCouponsEnabled: Boolean by AppPrefs::isCouponsEnabled
+
     fun getReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
         AppPrefs.getReceiptUrl(localSiteId, remoteSiteId, selfHostedSiteId, orderId)
 
@@ -117,4 +123,20 @@ class AppPrefsWrapper @Inject constructor() {
     fun getProductSortingChoice(siteId: Int) = AppPrefs.getProductSortingChoice(siteId)
 
     fun setProductSortingChoice(siteId: Int, value: String) = AppPrefs.setProductSortingChoice(siteId, value)
+
+    /**
+     * Observes changes to the preferences
+     */
+    fun observePrefs(): Flow<Unit> {
+        return callbackFlow {
+            val listener = OnSharedPreferenceChangeListener { _, _ ->
+                trySend(Unit)
+            }
+            AppPrefs.getPreferences().registerOnSharedPreferenceChangeListener(listener)
+
+            awaitClose {
+                AppPrefs.getPreferences().unregisterOnSharedPreferenceChangeListener(listener)
+            }
+        }
+    }
 }

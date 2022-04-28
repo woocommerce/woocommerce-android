@@ -8,6 +8,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.*
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
@@ -24,6 +25,7 @@ import com.woocommerce.android.tools.ProductImageMap.OnProductFetchedListener
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.cardreader.payment.CardReaderPaymentCollectibilityChecker
+import com.woocommerce.android.ui.orders.simplepayments.TakePaymentViewModel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.*
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -208,6 +210,11 @@ final class OrderDetailViewModel @Inject constructor(
 
     fun onIssueOrderRefundClicked() {
         triggerEvent(IssueOrderRefund(remoteOrderId = order.id))
+    }
+
+    fun onSharePaymentUrlClicked() {
+        AnalyticsTracker.track(AnalyticsEvent.ORDER_DETAIL_PAYMENT_LINK_SHARED)
+        triggerEvent(TakePaymentViewModel.SharePaymentUrl(selectedSite.get().name, order.paymentUrl))
     }
 
     fun onAcceptCardPresentPaymentClicked() {
@@ -473,7 +480,8 @@ final class OrderDetailViewModel @Inject constructor(
             orderStatus = orderStatus,
             toolbarTitle = resourceProvider.getString(
                 string.orderdetail_orderstatus_ordernum, order.number
-            )
+            ),
+            isSharePaymentLinkVisible = order.paymentUrl.isNotEmpty() && order.status == Order.Status.Pending
         )
     }
 
@@ -656,7 +664,8 @@ final class OrderDetailViewModel @Inject constructor(
         val isCreateShippingLabelButtonVisible: Boolean? = null,
         val isProductListVisible: Boolean? = null,
         val areShippingLabelsVisible: Boolean? = null,
-        val isProductListMenuVisible: Boolean? = null
+        val isProductListMenuVisible: Boolean? = null,
+        val isSharePaymentLinkVisible: Boolean? = null
     ) : Parcelable {
         val isMarkOrderCompleteButtonVisible: Boolean?
             get() = if (orderStatus != null) orderStatus.statusKey == CoreOrderStatus.PROCESSING.value else null

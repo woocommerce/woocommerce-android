@@ -41,6 +41,7 @@ import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -120,7 +121,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(orderRepository.getOrderById(any())).thenReturn(mockedOrder)
         whenever(mockedOrder.total).thenReturn(DUMMY_TOTAL)
         whenever(mockedOrder.currency).thenReturn("GBP")
-        whenever(currencyFormatter.formatAmountWithCurrency("GBP", DUMMY_TOTAL.toDouble()))
+        whenever(currencyFormatter.formatAmountWithCurrency(DUMMY_TOTAL.toDouble(), "GBP"))
             .thenReturn("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
         whenever(mockedOrder.billingAddress).thenReturn(mockedAddress)
         whenever(mockedAddress.email).thenReturn("")
@@ -159,6 +160,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
                 flow {
+                    delay(1) // make sure it's run after collecting payment starts
                     emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(RETRY_CARD))
                 }
             }
@@ -168,6 +170,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
 
             viewModel.start()
+            advanceUntilIdle()
 
             assertThat((viewModel.viewStateData.value as CollectPaymentState).hintLabel)
                 .isEqualTo(R.string.card_reader_payment_retry_card_prompt)
@@ -235,6 +238,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
                 flow {
+                    delay(1) // make sure it's run after collecting payment starts
                     emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(REMOVE_CARD))
                 }
             }
@@ -244,6 +248,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
 
             viewModel.start()
+            advanceUntilIdle()
 
             assertThat((viewModel.viewStateData.value as CollectPaymentState).hintLabel)
                 .isEqualTo(R.string.card_reader_payment_remove_card_prompt)
@@ -254,6 +259,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
                 flow {
+                    delay(1) // make sure it's run after collecting payment starts
                     emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(TRY_ANOTHER_CARD))
                 }
             }
@@ -263,6 +269,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
 
             viewModel.start()
+            advanceUntilIdle()
 
             assertThat((viewModel.viewStateData.value as CollectPaymentState).hintLabel)
                 .isEqualTo(R.string.card_reader_payment_try_another_card_prompt)
@@ -273,6 +280,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
                 flow {
+                    delay(1) // make sure it's run after collecting payment starts
                     emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(TRY_ANOTHER_READ_METHOD))
                 }
             }
@@ -282,6 +290,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
 
             viewModel.start()
+            advanceUntilIdle()
 
             assertThat((viewModel.viewStateData.value as CollectPaymentState).hintLabel)
                 .isEqualTo(R.string.card_reader_payment_try_another_read_method_prompt)
@@ -292,6 +301,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
                 flow {
+                    delay(1) // make sure it's run after collecting payment starts
                     emit(BluetoothCardReaderMessages.CardReaderDisplayMessage(MULTIPLE_CONTACTLESS_CARDS_DETECTED))
                 }
             }
@@ -301,6 +311,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
 
             viewModel.start()
+            advanceUntilIdle()
 
             assertThat((viewModel.viewStateData.value as CollectPaymentState).hintLabel)
                 .isEqualTo(R.string.card_reader_payment_multiple_contactless_cards_detected_prompt)
@@ -2440,6 +2451,135 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()
             assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel")
                 .isEqualTo(R.string.card_reader_interac_refund_refund_failed_ok)
+        }
+
+    @Test
+    fun `when interac refund fails, then interac refund failed event is triggered`() =
+        testBlocking {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow {
+                    emit(
+                        CardInteracRefundStatus.InteracRefundFailure(
+                            CardInteracRefundStatus.RefundStatusErrorType.Generic,
+                            "",
+                            RefundParams(
+                                amount = BigDecimal.TEN,
+                                chargeId = "",
+                                currency = "USD"
+                            )
+                        )
+                    )
+                }
+            }
+
+            viewModel.start()
+
+            verify(tracker).trackInteracPaymentFailed(any(), any(), any())
+        }
+
+    @Test
+    fun `when interac refund fails, then interac refund failed event is triggered with correct data`() =
+        testBlocking {
+            setupViewModelForInteracRefund()
+            val expectedOrderId = ORDER_ID
+            val expectedErrorMessage = "Error Message"
+            val expectedErrorType = CardInteracRefundStatus.RefundStatusErrorType.Cancelled
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow {
+                    emit(
+                        CardInteracRefundStatus.InteracRefundFailure(
+                            expectedErrorType,
+                            expectedErrorMessage,
+                            RefundParams(
+                                amount = BigDecimal.TEN,
+                                chargeId = "",
+                                currency = "USD"
+                            )
+                        )
+                    )
+                }
+            }
+            val captor = argumentCaptor<Long, String, CardInteracRefundStatus.RefundStatusErrorType>()
+
+            viewModel.start()
+
+            verify(tracker).trackInteracPaymentFailed(
+                captor.first.capture(),
+                captor.second.capture(),
+                captor.third.capture(),
+            )
+            assertThat(captor.first.firstValue).isEqualTo(expectedOrderId)
+            assertThat(captor.second.firstValue).isEqualTo(expectedErrorMessage)
+            assertThat(captor.third.firstValue).isEqualTo(expectedErrorType)
+        }
+
+    @Test
+    fun `given failed to fetch order, when interac refund fails, then interac refund failed event is triggered`() =
+        testBlocking {
+            setupViewModelForInteracRefund()
+            whenever(orderRepository.fetchOrderById(ORDER_ID)).thenReturn(null)
+
+            viewModel.start()
+
+            verify(tracker).trackInteracPaymentFailed(any(), any(), any())
+        }
+
+    @Test
+    fun `given failed to fetch order, when interac refund fails, then event is triggered with correct data`() =
+        testBlocking {
+            setupViewModelForInteracRefund()
+            whenever(orderRepository.fetchOrderById(ORDER_ID)).thenReturn(null)
+            val captor = argumentCaptor<String>()
+            val expectedErrorMessage = "Fetching order failed"
+
+            viewModel.start()
+
+            verify(tracker).trackInteracPaymentFailed(any(), captor.capture(), any())
+            assertThat(captor.firstValue).isEqualTo(expectedErrorMessage)
+        }
+
+    @Test
+    fun `given null chargeid on order, when interac refund fails, then interac refund failed event is triggered`() =
+        testBlocking {
+            setupViewModelForInteracRefund()
+            whenever(mockedOrder.chargeId).thenReturn(null)
+            whenever(
+                interacRefundErrorMapper.mapRefundErrorToUiError(
+                    CardInteracRefundStatus.RefundStatusErrorType.NonRetryable
+                )
+            ).thenReturn(InteracRefundFlowError.NonRetryableGeneric)
+
+            viewModel.start()
+
+            verify(tracker).trackInteracPaymentFailed(any(), any(), any())
+        }
+
+    @Test
+    fun `given null chargeid on order, when interac refund fails, then event is triggered with correct data`() =
+        testBlocking {
+            setupViewModelForInteracRefund()
+            whenever(mockedOrder.chargeId).thenReturn(null)
+            whenever(
+                interacRefundErrorMapper.mapRefundErrorToUiError(
+                    CardInteracRefundStatus.RefundStatusErrorType.NonRetryable
+                )
+            ).thenReturn(InteracRefundFlowError.NonRetryableGeneric)
+            val expectedOrderId = ORDER_ID
+            val expectedErrorMessage = "Charge id is null for the order."
+            val expectedErrorType = CardInteracRefundStatus.RefundStatusErrorType.NonRetryable
+            val captor = argumentCaptor<Long, String, CardInteracRefundStatus.RefundStatusErrorType>()
+
+            viewModel.start()
+
+            verify(tracker).trackInteracPaymentFailed(
+                captor.first.capture(),
+                captor.second.capture(),
+                captor.third.capture(),
+            )
+            assertThat(captor.first.firstValue).isEqualTo(expectedOrderId)
+            assertThat(captor.second.firstValue).isEqualTo(expectedErrorMessage)
+            assertThat(captor.third.firstValue).isEqualTo(expectedErrorType)
         }
 
     @Test

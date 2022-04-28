@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.coupons
 
 import com.woocommerce.android.WooException
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
@@ -78,12 +80,25 @@ class CouponRepository @Inject constructor(
     private suspend fun loadCoupons(): Result<Unit> {
         return store.fetchCoupons(site.get(), page, PAGE_SIZE).let { result ->
             if (result.isError) {
+                AnalyticsTracker.track(
+                    AnalyticsEvent.COUPONS_LOAD_FAILED,
+                    mapOf(
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to result.error::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to result.error.type.name,
+                        AnalyticsTracker.KEY_ERROR_DESC to result.error.message
+                    )
+                )
+
                 WooLog.w(
                     WooLog.T.COUPONS,
                     "Fetching coupons failed, error: ${result.error.type}: ${result.error.message}"
                 )
                 Result.failure(WooException(result.error))
             } else {
+                AnalyticsTracker.track(
+                    AnalyticsEvent.COUPONS_LOADED,
+                    mapOf(Pair(AnalyticsTracker.KEY_IS_LOADING_MORE, page > 1))
+                )
                 canLoadMore = result.model!!
                 page++
                 Result.success(Unit)

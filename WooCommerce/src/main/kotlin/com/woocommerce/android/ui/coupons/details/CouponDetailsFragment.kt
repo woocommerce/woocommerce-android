@@ -15,7 +15,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CopyCodeEvent
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.ShareCodeEvent
-import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.copyToClipboard
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -28,6 +28,9 @@ import javax.inject.Inject
 class CouponDetailsFragment : BaseFragment(R.layout.fragment_coupon_details) {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     private val viewModel: CouponDetailsViewModel by viewModels()
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,14 +50,12 @@ class CouponDetailsFragment : BaseFragment(R.layout.fragment_coupon_details) {
                 }
             }
         }
-        setupObservers()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers()
-        (requireActivity() as MainActivity).hideToolbar()
     }
 
     private fun setupObservers() {

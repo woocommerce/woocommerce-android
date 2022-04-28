@@ -693,7 +693,7 @@ object AppPrefs {
     fun setBoolean(key: PrefKey, value: Boolean = false) =
         PreferenceUtils.setBoolean(getPreferences(), key.toString(), value)
 
-    private fun getPreferences() = PreferenceManager.getDefaultSharedPreferences(context)
+    fun getPreferences() = PreferenceManager.getDefaultSharedPreferences(context)
 
     private fun remove(key: PrefKey) {
         getPreferences().edit().remove(key.toString()).apply()

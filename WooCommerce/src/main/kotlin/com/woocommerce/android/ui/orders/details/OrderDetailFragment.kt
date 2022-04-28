@@ -1,7 +1,11 @@
 package com.woocommerce.android.ui.orders.details
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -45,6 +49,7 @@ import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragment
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment
+import com.woocommerce.android.ui.orders.simplepayments.TakePaymentViewModel
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment
 import com.woocommerce.android.ui.refunds.RefundSummaryFragment
 import com.woocommerce.android.util.CurrencyFormatter
@@ -77,6 +82,8 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
 
     private val skeletonView = SkeletonView()
     private var undoSnackbar: Snackbar? = null
+    private var mnuSharePaymentLink: MenuItem? = null
+
     private var screenTitle = ""
         set(value) {
             field = value
@@ -141,6 +148,20 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         _binding = null
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.menu_order_detail, menu)
+        mnuSharePaymentLink = menu.findItem(R.id.menu_share_payment_link)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return if (item.itemId == R.id.menu_share_payment_link) {
+            viewModel.onSharePaymentUrlClicked()
+            true
+        } else {
+            super.onOptionsItemSelected(item)
+        }
+    }
     override fun openOrderProductDetail(remoteProductId: Long) {
         AnalyticsTracker.track(ORDER_DETAIL_PRODUCT_TAPPED)
         (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId)
@@ -171,6 +192,9 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             }
             new.isProductListVisible?.takeIfNotEqualTo(old?.isProductListVisible) {
                 binding.orderDetailProductList.isVisible = it
+            }
+            new.isSharePaymentLinkVisible?.takeIfNotEqualTo(old?.isSharePaymentLinkVisible) {
+                mnuSharePaymentLink?.isVisible = new.isSharePaymentLinkVisible
             }
             new.toolbarTitle?.takeIfNotEqualTo(old?.toolbarTitle) { screenTitle = it }
             new.isOrderDetailSkeletonShown?.takeIfNotEqualTo(old?.isOrderDetailSkeletonShown) { showSkeleton(it) }
@@ -229,6 +253,9 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                         displayUndoSnackbar(event.message, event.undoAction, event.dismissAction)
                     }
                     is OrderNavigationTarget -> navigator.navigate(this, event)
+                    is TakePaymentViewModel.SharePaymentUrl -> {
+                        sharePaymentUrl(event.storeName, event.paymentUrl)
+                    }
                     else -> event.isHandled = false
                 }
             }
@@ -349,6 +376,17 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             true -> skeletonView.show(binding.orderDetailContainer, R.layout.skeleton_order_detail, delayed = true)
             false -> skeletonView.hide()
         }
+    }
+
+    private fun sharePaymentUrl(storeName: String, paymentUrl: String) {
+        val subject = getString(R.string.simple_payments_share_payment_dialog_title, storeName)
+        val shareIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, paymentUrl)
+            putExtra(Intent.EXTRA_SUBJECT, subject)
+            type = "text/plain"
+        }
+        startActivity(Intent.createChooser(shareIntent, storeName))
     }
 
     private fun refreshProduct(remoteProductId: Long) {
