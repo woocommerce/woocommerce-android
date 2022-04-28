@@ -201,7 +201,6 @@ fun WCTextButton(
     }
 }
 
-
 @Preview
 @Composable
 fun ButtonsPreview() {
@@ -216,7 +215,10 @@ fun ButtonsPreview() {
             WCColoredButton(onClick = {}) {
                 Text("Button")
             }
-            WCColoredButton(onClick = {}, enabled = false) {
+            WCColoredButton(
+                onClick = {},
+                enabled = false
+            ) {
                 Text("Disabled Button")
             }
             WCColoredButton(

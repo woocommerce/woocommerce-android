@@ -54,7 +54,8 @@ fun WCOutlinedTextField(
             Text(
                 text = helperText,
                 style = MaterialTheme.typography.caption,
-                color = if (!isError) colorResource(id = R.color.color_on_surface_medium) else MaterialTheme.colors.error,
+                color = if (!isError) colorResource(id = R.color.color_on_surface_medium)
+                else MaterialTheme.colors.error,
                 modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
             )
         }
@@ -80,4 +81,3 @@ fun WCOutlinedTextFieldPreview() {
         }
     }
 }
-
