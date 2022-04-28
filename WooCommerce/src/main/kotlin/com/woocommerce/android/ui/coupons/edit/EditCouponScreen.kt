@@ -13,7 +13,6 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
@@ -26,12 +25,12 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
-import com.woocommerce.android.R.dimen
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedSpinner
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import java.math.BigDecimal
 
@@ -46,9 +45,14 @@ fun EditCouponScreen(viewModel: EditCouponViewModel) {
 fun EditCouponScreen(viewState: EditCouponViewModel.ViewState) {
     val scrollState = rememberScrollState()
     Column(
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
         modifier = Modifier
             .background(color = MaterialTheme.colors.surface)
             .verticalScroll(scrollState)
+            .padding(
+                horizontal = dimensionResource(id = R.dimen.major_100),
+                vertical = dimensionResource(id = R.dimen.major_100)
+            )
             .fillMaxSize()
     ) {
         DetailsSection(viewState)
@@ -56,7 +60,8 @@ fun EditCouponScreen(viewState: EditCouponViewModel.ViewState) {
         UsageRestrictionsSection(viewState)
         WCColoredButton(
             onClick = { /*TODO*/ },
-            text = stringResource(id = R.string.coupon_edit_save_button)
+            text = stringResource(id = R.string.coupon_edit_save_button),
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }
@@ -67,11 +72,7 @@ private fun DetailsSection(viewState: EditCouponViewModel.ViewState) {
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
         modifier = Modifier
-            .fillMaxSize()
-            .padding(
-                horizontal = dimensionResource(id = R.dimen.major_100),
-                vertical = dimensionResource(id = R.dimen.major_100)
-            )
+            .fillMaxWidth()
     ) {
         Text(
             text = stringResource(id = R.string.coupon_edit_details_section).toUpperCase(Locale.current),
@@ -95,12 +96,10 @@ private fun DetailsSection(viewState: EditCouponViewModel.ViewState) {
             helperText = stringResource(id = R.string.coupon_edit_code_helper),
             modifier = Modifier.fillMaxWidth()
         )
-        TextButton(
+        WCTextButton(
             onClick = { /*TODO*/ },
-            colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colors.secondary)
-        ) {
-            Text(text = stringResource(id = R.string.coupon_edit_regenerate_coupon).toUpperCase(Locale.current))
-        }
+            text = stringResource(id = R.string.coupon_edit_regenerate_coupon)
+        )
 
         WCOutlinedButton(
             onClick = { /*TODO*/ },
@@ -109,7 +108,7 @@ private fun DetailsSection(viewState: EditCouponViewModel.ViewState) {
                 Icon(
                     imageVector = Filled.Edit,
                     contentDescription = null,
-                    modifier = Modifier.size(dimensionResource(id = dimen.major_100))
+                    modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
                 )
             },
             colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.onSurface),
@@ -119,7 +118,8 @@ private fun DetailsSection(viewState: EditCouponViewModel.ViewState) {
         WCOutlinedSpinner(
             onClick = { /*TODO*/ },
             value = couponDraft.dateExpiresGmt?.toString() ?: "None",
-            label = stringResource(id = R.string.coupon_edit_expiry_date)
+            label = stringResource(id = R.string.coupon_edit_expiry_date),
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }
