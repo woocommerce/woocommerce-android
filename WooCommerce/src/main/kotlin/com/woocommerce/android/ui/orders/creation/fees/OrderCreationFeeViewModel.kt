@@ -42,13 +42,15 @@ class OrderCreationFeeViewModel @Inject constructor(
     }
 
     init {
-        viewState = viewState.copy(shouldDisplayPercentageSwitch = orderSubtotal > BigDecimal.ZERO)
         navArgs.currentFeeValue?.let { currentFee ->
             viewState = viewState.copy(
+                shouldDisplayPercentageSwitch = false,
                 feeAmount = currentFee,
                 feePercentage = calculatePercentageFromValue(currentFee),
                 shouldDisplayRemoveFeeButton = true
             )
+        } ?: run {
+            viewState = viewState.copy(shouldDisplayPercentageSwitch = orderSubtotal > BigDecimal.ZERO)
         }
     }
 
