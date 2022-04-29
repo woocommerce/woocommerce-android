@@ -1961,7 +1961,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given canada and total 0,58, when flow started, then fee set to 27`() =
+    fun `given canada and total 0,58, when flow started, then fee set to 15`() =
         testBlocking {
             // Given
             whenever(wooStore.getStoreCountryCode(any())).thenReturn("CA")
@@ -1978,7 +1978,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given canada and total 135,6, when flow started, then fee set to 27`() =
+    fun `given canada and total 135,6, when flow started, then fee set to 15`() =
         testBlocking {
             // Given
             whenever(wooStore.getStoreCountryCode(any())).thenReturn("CA")
