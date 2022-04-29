@@ -2,9 +2,9 @@ package com.woocommerce.android.ui.refunds
 
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingChecker
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.PreferredPluginResult
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingChecker
+import com.woocommerce.android.ui.cardreader.onboarding.PluginType
+import com.woocommerce.android.ui.cardreader.onboarding.PreferredPluginResult
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat

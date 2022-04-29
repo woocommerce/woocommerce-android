@@ -5,7 +5,7 @@ import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.widgets.ConfirmationDialog
 import dagger.hilt.android.AndroidEntryPoint
 

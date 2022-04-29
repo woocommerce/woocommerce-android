@@ -1,8 +1,8 @@
 package com.woocommerce.android
 
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.PersistentOnboardingData
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
+import com.woocommerce.android.ui.cardreader.onboarding.PersistentOnboardingData
+import com.woocommerce.android.ui.cardreader.onboarding.PluginType
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow

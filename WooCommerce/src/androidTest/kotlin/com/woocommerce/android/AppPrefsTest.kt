@@ -2,8 +2,8 @@ package com.woocommerce.android
 
 import androidx.test.platform.app.InstrumentationRegistry
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.*
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.PersistentOnboardingData
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
+import com.woocommerce.android.ui.cardreader.onboarding.PersistentOnboardingData
+import com.woocommerce.android.ui.cardreader.onboarding.PluginType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
