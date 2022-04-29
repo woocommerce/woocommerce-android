@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.compose.component
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -10,6 +12,10 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -31,19 +37,27 @@ fun WCOutlinedSpinner(
     enabled: Boolean = true
 ) {
     Column(modifier = modifier) {
-        OutlinedTextField(
-            value = value,
-            onValueChange = {},
-            label = {
-                Text(text = label)
-            },
-            readOnly = true,
-            trailingIcon = {
-                Icon(painter = painterResource(id = R.drawable.ic_arrow_drop_down), contentDescription = null)
-            },
-            enabled = enabled,
-            modifier = modifier.clickable(onClick = onClick, enabled = enabled)
-        )
+        Box {
+            OutlinedTextField(
+                value = value,
+                onValueChange = {},
+                label = {
+                    Text(text = label)
+                },
+                readOnly = true,
+                trailingIcon = {
+                    Icon(painter = painterResource(id = R.drawable.ic_arrow_drop_down), contentDescription = null)
+                },
+                enabled = enabled,
+                modifier = modifier
+                    .focusable(false)
+            )
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .clickable(enabled = enabled, onClick = onClick)
+            )
+        }
         if (!helperText.isNullOrEmpty()) {
             Text(
                 text = helperText,
@@ -59,11 +73,19 @@ fun WCOutlinedSpinner(
 @Composable
 fun SpinnerPreview() {
     WooThemeWithBackground {
+        var text by remember {
+            mutableStateOf("button")
+        }
         Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             WCOutlinedSpinner(onClick = { /*TODO*/ }, value = "", label = "Label")
             WCOutlinedSpinner(onClick = { /*TODO*/ }, value = "Value", label = "Label")
-            WCOutlinedSpinner(onClick = { /*TODO*/ }, value = "Value", label = "Label", helperText = "Helper Text")
-            WCOutlinedSpinner(onClick = { /*TODO*/ }, value = "Value", label = "Label", enabled = false)
+            WCOutlinedSpinner(
+                onClick = { /*TODO*/ },
+                value = "Value",
+                label = "Label",
+                helperText = "Helper Text"
+            )
+            WCOutlinedSpinner(onClick = { text = "clicked" }, value = text, label = "Label", enabled = true)
         }
     }
 }
