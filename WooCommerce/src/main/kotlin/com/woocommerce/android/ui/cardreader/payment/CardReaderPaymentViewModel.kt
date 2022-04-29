@@ -92,6 +92,7 @@ import java.math.BigDecimal
 import javax.inject.Inject
 
 private const val ARTIFICIAL_RETRY_DELAY = 500L
+private const val CANADA_FEE_FLAT_IN_CENTS = 15L
 
 @HiltViewModel
 class CardReaderPaymentViewModel
@@ -243,6 +244,7 @@ class CardReaderPaymentViewModel
     private suspend fun collectPaymentFlow(cardReaderManager: CardReaderManager, order: Order) {
         val customerEmail = order.billingAddress.email
         val site = selectedSite.get()
+        val countryCode = getStoreCountryCode()
         cardReaderManager.collectPayment(
             PaymentInfo(
                 paymentDescription = order.getPaymentDescription(),
@@ -260,7 +262,8 @@ class CardReaderPaymentViewModel
                 customerName = "${order.billingAddress.firstName} ${order.billingAddress.lastName}".ifBlank { null },
                 storeName = selectedSite.get().name.ifEmpty { null },
                 siteUrl = selectedSite.get().url.ifEmpty { null },
-                countryCode = getStoreCountryCode(),
+                countryCode = countryCode,
+                feeAmount = calculateFeeInCents(countryCode)
             )
         ).collect { paymentStatus ->
             onPaymentStatusChanged(order.id, customerEmail, paymentStatus, order.getAmountLabel())
@@ -628,7 +631,6 @@ class CardReaderPaymentViewModel
     private fun getReceiptUrl(orderId: Long): String {
         return selectedSite.get().let {
             appPrefsWrapper.getReceiptUrl(it.id, it.siteId, it.selfHostedSiteId, orderId)
-                ?: throw IllegalStateException("Receipt URL not available.")
         }
     }
 
@@ -651,6 +653,13 @@ class CardReaderPaymentViewModel
             ) ?: throw IllegalStateException("Store's country code not found.")
         }
     }
+
+    private fun calculateFeeInCents(countryCode: String) =
+        if (countryCode == "CA") {
+            CANADA_FEE_FLAT_IN_CENTS
+        } else {
+            null
+        }
 
     private fun isPluginCanSendReceipt(site: SiteModel): Boolean {
         val preferredPlugin = appPrefsWrapper.getCardReaderPreferredPlugin(

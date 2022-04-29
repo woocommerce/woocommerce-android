@@ -197,6 +197,22 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
     }
 
     @Test
+    fun `when statement fee null, then PaymentIntent setApplicationFeeAmount NOT invoked`() = testBlocking {
+        action.createPaymentIntent(createPaymentInfo()).toList()
+
+        verify(intentParametersBuilder, never()).setApplicationFeeAmount(any())
+    }
+
+    @Test
+    fun `when statement fee is not null, then PaymentIntent setApplicationFeeAmount invoked`() = testBlocking {
+        val expected = 100L
+
+        action.createPaymentIntent(createPaymentInfo(feeAmount = expected)).toList()
+
+        verify(intentParametersBuilder).setApplicationFeeAmount(expected)
+    }
+
+    @Test
     fun `when creating payment intent, then store name set`() = testBlocking {
         val expected = "dummy store name"
         whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
@@ -402,6 +418,7 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
         orderKey: String? = null,
         countryCode: String? = "US",
         statementDescriptor: String? = null,
+        feeAmount: Long? = null,
     ): PaymentInfo =
         PaymentInfo(
             paymentDescription = paymentDescription,
@@ -415,6 +432,7 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
             siteUrl = siteUrl,
             orderKey = orderKey,
             countryCode = countryCode,
-            statementDescriptor = statementDescriptor
+            statementDescriptor = statementDescriptor,
+            feeAmount = feeAmount,
         )
 }

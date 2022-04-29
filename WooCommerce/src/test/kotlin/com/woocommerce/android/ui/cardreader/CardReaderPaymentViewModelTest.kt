@@ -1958,6 +1958,57 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(captor.firstValue.isPluginCanSendReceipt).isTrue()
         }
 
+    @Test
+    fun `given canada and total 0,58, when flow started, then fee set to 15`() =
+        testBlocking {
+            // Given
+            whenever(wooStore.getStoreCountryCode(any())).thenReturn("CA")
+            whenever(mockedOrder.total).thenReturn(BigDecimal(0.58))
+            whenever(orderRepository.fetchOrderById(ORDER_ID)).thenReturn(mockedOrder)
+            val captor = argumentCaptor<PaymentInfo>()
+
+            // When
+            viewModel.start()
+
+            // Then
+            verify(cardReaderManager).collectPayment(captor.capture())
+            assertThat(captor.firstValue.feeAmount).isEqualTo(15)
+        }
+
+    @Test
+    fun `given canada and total 135,6, when flow started, then fee set to 15`() =
+        testBlocking {
+            // Given
+            whenever(wooStore.getStoreCountryCode(any())).thenReturn("CA")
+            whenever(mockedOrder.total).thenReturn(BigDecimal(145.6))
+            whenever(orderRepository.fetchOrderById(ORDER_ID)).thenReturn(mockedOrder)
+            val captor = argumentCaptor<PaymentInfo>()
+
+            // When
+            viewModel.start()
+
+            // Then
+            verify(cardReaderManager).collectPayment(captor.capture())
+            assertThat(captor.firstValue.feeAmount).isEqualTo(15)
+        }
+
+    @Test
+    fun `given us and total 1,49, when flow started, then fee is not set`() =
+        testBlocking {
+            // Given
+            whenever(wooStore.getStoreCountryCode(any())).thenReturn("US")
+            whenever(mockedOrder.total).thenReturn(BigDecimal(1.49))
+            whenever(orderRepository.fetchOrderById(ORDER_ID)).thenReturn(mockedOrder)
+            val captor = argumentCaptor<PaymentInfo>()
+
+            // When
+            viewModel.start()
+
+            // Then
+            verify(cardReaderManager).collectPayment(captor.capture())
+            assertThat(captor.firstValue.feeAmount).isNull()
+        }
+
     //endregion - Payments tests
 
     //region - Interac Refund tests
