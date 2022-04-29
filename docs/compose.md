@@ -9,9 +9,10 @@
 2. [Theming and Styling](#theming-and-styling)
 3. [File Structure](#file-structure)
 4. [Managing state](#managing-state)
-5. [Navigation](#navigation)
-6. [Accessibility](#accessibility)
-7. [UI Tests in Compose](#ui-tests-in-compose)
+5. [Composable Functions Design](#functions-design)
+6. [Navigation](#navigation)
+7. [Accessibility](#accessibility)
+8. [UI Tests in Compose](#ui-tests-in-compose)
 
 # Code Style ✍️ <a name="code-style"></a>
 
@@ -80,6 +81,70 @@ Managing state properly in Compose is key to updating the UI as expected and mak
 	- Always mutate state outside the composable function scope. Like for example onClick{} lambdas passed as parameters.
 	- Pass immutable values to composable functions to respect the single source of truth.
 	- Composable functions should be side effects free. However, when they need to mutate the state of the app, they should be called from a controlled environment that is aware of the lifecycle of the composable. More on that in the [Compose side effects guides](https://developer.android.com/jetpack/compose/side-effects#state-effect-use-cases)
+
+# Composable Functions Design  <a name="functions-design"></a>
+
+This section shares some principles we should aim for when creating our `@Composable` functions:
+
+- Always provide a `Modifier` parameter to any composable function that emits layout. The reasons for this are well explained [here](https://chris.banes.dev/always-provide-a-modifier/). In essence, the parent composable function should always be telling the child composable (through a `Modifier` param with layout attributes such as height, width, margins, etc) how to measure and be laid out, not the other way around. The child composable should only think about its own content. 
+- Composable functions should not emit content at their top level. 
+
+❌
+
+``` kotlin
+@Composable
+fun MyComposable() {
+	Text("Hello")
+	Text("Foo")
+}
+```
+This composable function will behave differently depending on its parent composable (if it's a Row, a Column, a Box, etc). Always "scope" the content inside a container: 
+
+✅
+
+```kotlin
+@Composable
+fun MyComposable() {
+	Column(...){
+		Text("Hello")
+		Text("Foo")
+	}
+}
+
+or 
+
+@Composable
+fun ColumnScope.MyComposable() {
+	Text("Hello")
+	Text("Foo")
+}
+```
+
+- Composable functions that emit content should always return unit
+- Don't acquire the viewModel inside a composable function, this will make testing harder. Inject it as a parameter and provide a default value to facilitate reusability: 
+
+❌
+
+``` kotlin
+@Composable
+fun MyComposable() {
+	val viewModel by viewModel<MyViewModel>()
+	...
+}
+```
+
+✅
+
+``` kotlin
+@Composable
+fun MyComposable(viewModel : MyViewModel = getViewModel()) {
+	...
+}
+```
+
+- Don't pass mutable types (mutableList, mutableState, etc) as parameters to @Composable functions. Always use immutable types. 
+- Always "remember" `mutableStateOf / derivedStateOf` inside a composable function
+
 
 # Navigation 🗺 <a name="navigation"></a>
 
