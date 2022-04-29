@@ -9,7 +9,7 @@
 2. [Theming and Styling](#theming-and-styling)
 3. [File Structure](#file-structure)
 4. [Managing state](#managing-state)
-5. [Composable Functions Design](#functions-design)
+5. [Composable Functions Best Practices](#functions-best-practices)
 6. [Navigation](#navigation)
 7. [Accessibility](#accessibility)
 8. [UI Tests in Compose](#ui-tests-in-compose)
@@ -82,7 +82,7 @@ Managing state properly in Compose is key to updating the UI as expected and mak
 	- Pass immutable values to composable functions to respect the single source of truth.
 	- Composable functions should be side effects free. However, when they need to mutate the state of the app, they should be called from a controlled environment that is aware of the lifecycle of the composable. More on that in the [Compose side effects guides](https://developer.android.com/jetpack/compose/side-effects#state-effect-use-cases)
 
-# Composable Functions Design  <a name="functions-design"></a>
+# Composable Functions Best Practices ✅ <a name="functions-best-practices"></a>
 
 This section shares some principles we should aim for when creating our `@Composable` functions:
 
