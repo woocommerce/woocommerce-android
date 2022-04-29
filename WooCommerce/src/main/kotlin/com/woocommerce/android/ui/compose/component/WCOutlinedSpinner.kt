@@ -52,6 +52,7 @@ fun WCOutlinedSpinner(
                 modifier = modifier
                     .focusable(false)
             )
+            // Capture and consume click events, this makes the text field non-focusable too.
             Box(
                 modifier = Modifier
                     .matchParentSize()
