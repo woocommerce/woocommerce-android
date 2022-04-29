@@ -13,8 +13,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class CardReaderManualsFragment : BaseFragment() {
-//    private val viewModel: CardReaderManualsViewModel by viewModels()
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
