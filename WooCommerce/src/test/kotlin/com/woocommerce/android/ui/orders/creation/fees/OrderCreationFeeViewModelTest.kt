@@ -90,11 +90,10 @@ class OrderCreationFeeViewModelTest : BaseUnitTest() {
 
         assertThat(sut.viewStateData.liveData.value?.feePercentage).isEqualTo(BigDecimal.ZERO)
         assertThat(lastReceivedEvent).isNotNull
+        // When the fee amount is 0 we trigger a RemoveFee event
         lastReceivedEvent
-            .run { this as? UpdateFee }
-            ?.let { updateFeeEvent ->
-                assertTrue(updateFeeEvent.amount.isEqualTo(BigDecimal.ZERO))
-            } ?: fail("Last event should be of UpdateFee type")
+            .run { this as? RemoveFee }
+            ?: fail("Last event should be of RemoveFee type")
     }
 
     @Test
@@ -168,22 +167,21 @@ class OrderCreationFeeViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when submitting fee with initial state, then trigger UpdateFee as AMOUNT with zero`() {
+    fun `when submitting fee with initial state, then trigger RemoveFee because AMOUNT is zero`() {
         var lastReceivedEvent: Event? = null
         sut.event.observeForever { lastReceivedEvent = it }
 
         sut.onDoneSelected()
 
         assertThat(lastReceivedEvent).isNotNull
+        // When the fee amount is 0 we trigger a RemoveFee event
         lastReceivedEvent
-            .run { this as? UpdateFee }
-            ?.let { updateFeeEvent ->
-                assertThat(updateFeeEvent.amount).isEqualTo(BigDecimal.ZERO)
-            } ?: fail("Last event should be of UpdateFee type")
+            .run { this as? RemoveFee }
+            ?: fail("Last event should be of RemoveFee type")
     }
 
     @Test
-    fun `when submitting fee with invalid percentage value, then trigger UpdateFee with zero as amount`() {
+    fun `when submitting fee with invalid percentage value, then trigger RemoveFee because AMOUNT is zero`() {
         var lastReceivedEvent: Event? = null
         sut.event.observeForever { lastReceivedEvent = it }
 
@@ -194,11 +192,10 @@ class OrderCreationFeeViewModelTest : BaseUnitTest() {
         sut.onDoneSelected()
 
         assertThat(lastReceivedEvent).isNotNull
+        // When the fee amount is 0 we trigger a RemoveFee event
         lastReceivedEvent
-            .run { this as? UpdateFee }
-            ?.let { updateFeeEvent ->
-                assertThat(updateFeeEvent.amount).isEqualTo(BigDecimal.ZERO)
-            } ?: fail("Last event should be of UpdateFee type")
+            .run { this as? RemoveFee }
+            ?: fail("Last event should be of RemoveFee type")
     }
 
     @Test
