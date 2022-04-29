@@ -2,10 +2,7 @@
 
 9.1
 -----
-
-
-9.1
------
+- [**] Variation Detail: Don't clear price on attribute/visibility/inventory change. [https://github.com/woocommerce/woocommerce-android/compare/issue/6345-fix-price-on-variations-2?expand=1]
 - [*] Introduced Location permission rationale dialog in IPP connection flow
 
 9.0

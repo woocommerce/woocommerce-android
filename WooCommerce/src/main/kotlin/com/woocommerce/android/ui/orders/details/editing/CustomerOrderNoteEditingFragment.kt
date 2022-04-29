@@ -5,6 +5,7 @@ import android.view.View
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentEditCustomerOrderNoteBinding
+import com.woocommerce.android.ui.main.AppBarStatus
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 
@@ -19,6 +20,11 @@ class CustomerOrderNoteEditingFragment :
     private val binding get() = _binding!!
 
     override val analyticsValue: String = AnalyticsTracker.ORDER_EDIT_CUSTOMER_NOTE
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Visible(
+            navigationIcon = R.drawable.ic_gridicons_cross_24dp
+        )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

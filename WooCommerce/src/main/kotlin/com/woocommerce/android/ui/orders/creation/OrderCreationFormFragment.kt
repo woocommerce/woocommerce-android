@@ -302,6 +302,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                         onDecreaseQuantity = viewModel::onDecreaseProductsQuantity
                     )
                     itemAnimator = animator
+                    isNestedScrollingEnabled = false
                 }
             }
             productsSection.content.productsAdapter?.submitList(products)

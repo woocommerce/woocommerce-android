@@ -967,7 +967,7 @@
     <string name="card_reader_payment_failed_server_error_state">No connection to server</string>
     <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Card declined</string>
     <string name="card_reader_payment_failed_unexpected_error_state">Sorry, this payment couldn\’t be processed</string>
-    <string name="card_reader_payment_failed_amount_too_small">Amount must be at least $0.50 usd</string>
+    <string name="card_reader_payment_failed_amount_too_small">Amount must be at least $0.50</string>
     <string name="card_reader_payment_failed_temporary">Trying again may succeed</string>
     <string name="card_reader_payment_failed_fraud">Try another means of payment</string>
     <string name="card_reader_payment_failed_generic">Payment was declined for an unspecified reason</string>
@@ -1540,6 +1540,7 @@
     <string name="settings_card_reader">Manage card reader</string>
     <string name="settings_card_reader_payments">In-Person Payments</string>
     <string name="settings_card_reader_connect">Connect card reader</string>
+    <string name="settings_card_reader_manuals">Card Reader Manuals</string>
     <string name="settings_install_jetpack">Install Jetpack</string>
     <string name="settings_notifs">Notifications</string>
     <string name="settings_notifs_device">Manage notifications</string>
