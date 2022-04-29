@@ -1540,6 +1540,7 @@
     <string name="settings_card_reader">Manage card reader</string>
     <string name="settings_card_reader_payments">In-Person Payments</string>
     <string name="settings_card_reader_connect">Connect card reader</string>
+    <string name="settings_card_reader_manuals">Card Reader Manuals</string>
     <string name="settings_install_jetpack">Install Jetpack</string>
     <string name="settings_notifs">Notifications</string>
     <string name="settings_notifs_device">Manage notifications</string>
