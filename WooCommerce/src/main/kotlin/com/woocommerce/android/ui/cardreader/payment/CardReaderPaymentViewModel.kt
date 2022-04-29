@@ -595,31 +595,22 @@ class CardReaderPaymentViewModel
                 exitWithSnackbar(R.string.card_reader_refetching_order_failed)
             }
         } else {
-            viewState.value?.let { paymentState ->
-                if (isStateEligibleForTracking(paymentState)) {
-                    tracker.trackPaymentCancelled(getCurrentPaymentState())
-                }
+            viewState.value?.let { state ->
+                trackCancelledFlow(state)
             }
             triggerEvent(Exit)
         }
     }
 
-    private fun isStateEligibleForTracking(paymentState: ViewState) =
-        paymentState is LoadingDataState ||
-            paymentState is CollectPaymentState ||
-            paymentState is ProcessingPaymentState ||
-            paymentState is CapturingPaymentState
-
-    private fun getCurrentPaymentState(): String? {
-        return when (viewState.value) {
-            is LoadingDataState -> "Loading"
-            is CapturingPaymentState -> "Capturing"
-            is CollectPaymentState -> "Collecting"
-            is ProcessingPaymentState -> "Processing"
-            else -> {
-                WooLog.e(WooLog.T.CARD_READER, "Invalid payment state received")
-                null
+    private fun trackCancelledFlow(state: ViewState) {
+        when (state) {
+            is PaymentFlow -> {
+                tracker.trackPaymentCancelled(state.nameForTracking)
             }
+            is InteracRefundFlow -> {
+                tracker.trackInteracRefundCancelled(state.nameForTracking)
+            }
+            else -> WooLog.e(WooLog.T.CARD_READER, "Invalid state received")
         }
     }
 

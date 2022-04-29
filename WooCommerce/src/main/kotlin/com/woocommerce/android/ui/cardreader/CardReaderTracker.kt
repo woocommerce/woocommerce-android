@@ -317,6 +317,13 @@ class CardReaderTracker @Inject constructor(
         )
     }
 
+    fun trackInteracRefundCancelled(currentRefundState: String?) {
+        track(
+            CARD_PRESENT_COLLECT_INTERAC_REFUND_CANCELLED,
+            errorDescription = "User manually cancelled the payment during state $currentRefundState"
+        )
+    }
+
     companion object {
         private const val OPTIONAL_UPDATE = "Optional"
         private const val REQUIRED_UPDATE = "Required"
