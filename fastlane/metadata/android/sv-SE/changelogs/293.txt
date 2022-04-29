@@ -1,2 +1,0 @@
-8.9:
-Skapa beställningar i farten med produkter, frakt- och faktureringsinformation samt avgifter. Du kan snabbt ta emot en personlig kreditkortsbetalning direkt efteråt eller skicka en länk till en kund som kunden kan använda för att betala den aktuella beställningen på sin egen enhet. Ni har önskat det, nu är det här.

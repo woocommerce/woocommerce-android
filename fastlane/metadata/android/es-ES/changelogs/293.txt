@@ -1,2 +1,0 @@
-8.9:
-Crea pedidos sobre la marcha con productos, información de envío y facturación, y tarifas. Puedes aceptar un pago en persona mediante tarjeta de crédito de manera rápida y al momento o bien, enviar un enlace a un cliente para que pague el pedido con su dispositivo. Lo habías pedido y aquí lo tienes.

@@ -1,0 +1,2 @@
+9.0 dolar
+Ticaret yapıyorsanız tarihler çok önemlidir! Bir üründe "indirim tarihi" ayarlarken oluşan bir hatayı düzelttik (bazen seçtiğiniz tarihten başka bir tarih görüntüleniyordu). Kazanmak için topluluk geri bildirimi!
