@@ -16,11 +16,11 @@ import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.cardreader.connect.CardReaderConnectDialogFragment
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderFlowParam
+import com.woocommerce.android.ui.cardreader.payment.CardReaderPaymentDialogFragment
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
-import com.woocommerce.android.ui.orders.cardreader.payment.CardReaderPaymentDialogFragment
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectDialogFragment
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
