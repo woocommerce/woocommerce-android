@@ -60,7 +60,12 @@ class OrderCreationFeeViewModel @Inject constructor(
         } else {
             viewState.feeAmount
         }
-        triggerEvent(UpdateFee(feeAmount))
+        if (feeAmount == BigDecimal.ZERO) {
+            // Remove the fee if the value is 0
+            triggerEvent(RemoveFee)
+        } else {
+            triggerEvent(UpdateFee(feeAmount))
+        }
     }
 
     fun onRemoveFeeClicked() {
