@@ -187,11 +187,11 @@ class ProductDetailViewModel @Inject constructor(
             val isNotPublishedUnderCreation = isProductUnderCreation &&
                 productDraft.status != PUBLISH &&
                 productDraft.status != PRIVATE
-            val showSaveOptionAsPrincipal = hasChanges && (isNotPublishedUnderCreation || !isProductUnderCreation)
+            val showSaveOptionAsActionWithText = hasChanges && (isNotPublishedUnderCreation || !isProductUnderCreation)
             val isProductPublished = productDraft.status == PUBLISH
             val isProductPublishedOrPrivate = isProductPublished || productDraft.status == PRIVATE
             MenuButtonsState(
-                saveOption = showSaveOptionAsPrincipal,
+                saveOption = showSaveOptionAsActionWithText,
                 saveAsDraftOption = canBeSavedAsDraft,
                 publishOption = !isProductPublishedOrPrivate || isProductUnderCreation,
                 viewProductOption = isProductPublished && !isProductUnderCreation,
