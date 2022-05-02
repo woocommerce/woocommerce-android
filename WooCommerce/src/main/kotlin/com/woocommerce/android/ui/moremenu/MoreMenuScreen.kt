@@ -138,7 +138,10 @@ private fun MoreMenuHeader(
         StoreDetailsHeader(
             modifier = Modifier
                 .align(Alignment.CenterStart)
-                .padding(start = dimensionResource(id = R.dimen.minor_100)),
+                .padding(
+                    start = dimensionResource(id = R.dimen.minor_100),
+                    end = dimensionResource(id = R.dimen.major_325)
+                ),
             userAvatarUrl = state.userAvatarUrl,
             siteName = state.siteName,
             siteUrl = state.siteUrl
