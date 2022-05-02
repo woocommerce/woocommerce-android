@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">WooCommerce</string>
 
     <!-- Android O notification channels, these show in the Android app settings -->
@@ -141,6 +141,7 @@
     <string name="count">Count: %s</string>
     <string name="no_sku">No SKU</string>
     <string name="amount">Amount</string>
+    <string name="copy" tools:override="true">Copy</string>
 
     <!--
         Date/Time Labels
@@ -913,6 +914,28 @@
     <string name="card_reader_bbpos_manual_card_reader">BBPOS Chipper Card Reader Manual</string>
     <string name="card_reader_m2_manual_card_reader">Stripe M2 Card Reader Manual</string>
     <string name="card_reader_wisepad_3_manual_card_reader">WisePad 3 Card Reader Manual</string>
+
+    <!--
+            Card Reader Interac refund
+        -->
+    <string name="card_reader_interac_refund_refund_loading_header">Getting ready to refund payment</string>
+    <string name="card_reader_interac_refund_refund_failed_header">Refund failed</string>
+    <string name="card_reader_interac_refund_refund_payment">Refund payment</string>
+    <string name="card_reader_interac_refund_refund_processing_state">Processing refund</string>
+    <string name="card_reader_interac_refund_refund_completed_header">Refund successful</string>
+    <string name="card_reader_interac_refund_refund_failed_unexpected_error_state">Sorry, this refund couldn\’t be processed</string>
+    <string name="card_reader_interac_refund_refund_failed_unknown">Refund was declined for an unknown reason</string>
+    <string name="card_reader_interac_refund_refund_failed_fraud">Try another means of refund</string>
+    <string name="card_reader_interac_refund_refund_failed_generic">Refund was declined for an unspecified reason</string>
+    <string name="card_reader_interac_refund_refund_failed_card_not_supported">The card does not support this type of refund</string>
+    <string name="card_reader_interac_refund_refund_failed_duplicate_transaction">An identical refund was submitted recently</string>
+    <string name="card_reader_interac_refund_refund_failed_insufficient_funds">Refund declined due to insufficient funds</string>
+    <string name="card_reader_interac_refund_refund_failed_invalid_amount">The refund amount is not allowed for the card presented</string>
+    <string name="card_reader_interac_refund_refund_failed_test_card">System test cards are not permitted for refund</string>
+    <string name="card_reader_interac_refund_refund_failed_ok">OK</string>
+    <string name="card_reader_interac_refund_refund_failed_cancelled">Refund cancelled</string>
+    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">The order is already refunded</string>
+    <string name="card_reader_interac_refund_refund_payment_hint">Tap or insert to refund</string>
     <!--
         Card Reader Payments
     -->
@@ -944,7 +967,7 @@
     <string name="card_reader_payment_failed_server_error_state">No connection to server</string>
     <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Card declined</string>
     <string name="card_reader_payment_failed_unexpected_error_state">Sorry, this payment couldn\’t be processed</string>
-    <string name="card_reader_payment_failed_amount_too_small">Amount must be at least $0.50 usd</string>
+    <string name="card_reader_payment_failed_amount_too_small">Amount must be at least $0.50</string>
     <string name="card_reader_payment_failed_temporary">Trying again may succeed</string>
     <string name="card_reader_payment_failed_fraud">Try another means of payment</string>
     <string name="card_reader_payment_failed_generic">Payment was declined for an unspecified reason</string>
@@ -1517,6 +1540,7 @@
     <string name="settings_card_reader">Manage card reader</string>
     <string name="settings_card_reader_payments">In-Person Payments</string>
     <string name="settings_card_reader_connect">Connect card reader</string>
+    <string name="settings_card_reader_manuals">Card Reader Manuals</string>
     <string name="settings_install_jetpack">Install Jetpack</string>
     <string name="settings_notifs">Notifications</string>
     <string name="settings_notifs_device">Manage notifications</string>
@@ -1857,6 +1881,7 @@
     <string name="jetpack_install_progress_failed_option_contact_support">Contact Support</string>
 
     <!-- Inbox -->
+    <string name="inbox_screen_title">Inbox</string>
     <string name="dismiss_inbox_note">Dismiss</string>
     <string name="inbox_note_recency_now">Moments ago</string>
     <string name="inbox_note_recency_minutes">%d minutes ago</string>
@@ -1868,6 +1893,8 @@
     <string name="empty_inbox_title">Congrats, you’ve read everything!</string>
     <string name="empty_inbox_description">Come back soon for more tips and insights on growing your store</string>
     <string name="inbox_note_survey_actioned">Thank you for your feedback!</string>
+    <string name="inbox_note_dismiss_all_notes">Dismiss all</string>
+    <string name="inbox_screen_sync_error">Error syncing inbox</string>
 
     <!-- coupons -->
     <string name="coupons">Coupons</string>
@@ -1888,6 +1915,10 @@
     <string name="coupon_details_performance_amount_heading">Amount</string>
     <string name="coupon_details_menu_copy">Copy Coupon Code</string>
     <string name="coupon_details_menu_share">Share Coupon</string>
+    <string name="coupon_details_delete">Delete Coupon</string>
+    <string name="coupon_details_delete_confirmation">Are you sure you want to delete this coupon?</string>
+    <string name="coupon_details_delete_failure">Deleting coupon failed</string>
+    <string name="coupon_details_delete_successful">Coupon deleted</string>
     <string name="coupon_details_performance_loading_failure">Loading coupon performance failed</string>
     <string name="coupon_type_percent">Percentage Discount</string>
     <string name="coupon_type_fixed_cart">Fixed Cart Discount</string>
@@ -1906,6 +1937,16 @@
     <string name="coupon_details_share_coupon_error">Error sharing coupon code.</string>
     <string name="coupon_details_share_formatting_failure">Unable to generate coupon code sharing message</string>
     <string name="coupons_list_search_hint">Search coupons</string>
+    <string name="coupon_details_usage_limit_per_user_multiple">%1$d uses per user</string>
+    <string name="coupon_details_usage_limit_per_user_single">%1$d use per user</string>
+    <string name="coupon_details_usage_limit_per_coupon_multiple">Can be used %1$d times</string>
+    <string name="coupon_details_usage_limit_per_coupon_single">Can be used %1$d time</string>
+    <string name="coupon_details_usage_limit_per_items_multiple">Limited to %1$d items in cart</string>
+    <string name="coupon_details_usage_limit_per_items_single">Limited to %1$d item in cart</string>
+    <string name="coupon_details_individual_use_only">Individual use only</string>
+    <string name="coupon_details_allows_free_shipping">Allows free shipping</string>
+    <string name="coupon_details_excludes_sale_items">Excludes sale items</string>
+    <string name="coupon_details_restricted_emails">Restricted to customers with emails: %1$s</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>
