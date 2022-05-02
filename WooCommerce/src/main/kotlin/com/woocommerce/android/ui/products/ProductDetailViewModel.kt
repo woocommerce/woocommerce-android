@@ -734,15 +734,22 @@ class ProductDetailViewModel @Inject constructor(
         if (isProductPublishedOrSaved) string.product_detail_publish_product_success
         else string.product_detail_save_product_success
 
-    private fun pickAddProductRequestSnackbarText(productWasAdded: Boolean, requestedProductStatus: ProductStatus) =
-        when {
-            productWasAdded && requestedProductStatus == DRAFT -> string.product_detail_publish_product_draft_success
-            productWasAdded && requestedProductStatus == PUBLISH -> string.product_detail_publish_product_success
+    private fun pickAddProductRequestSnackbarText(
+        productWasAdded: Boolean,
+        requestedProductStatus: ProductStatus
+    ): Int {
+        val isDraftStatus = requestedProductStatus == DRAFT
+        val isPublishStatus = requestedProductStatus == PUBLISH
+        val failedAddingProduct = !productWasAdded
+        return when {
+            productWasAdded && isDraftStatus -> string.product_detail_publish_product_draft_success
+            productWasAdded && isPublishStatus -> string.product_detail_publish_product_success
+            failedAddingProduct && isDraftStatus -> string.product_detail_publish_product_draft_error
+            failedAddingProduct && isPublishStatus -> string.product_detail_publish_product_error
             productWasAdded -> string.product_detail_save_product_success
-            !productWasAdded && requestedProductStatus == DRAFT -> string.product_detail_publish_product_draft_error
-            !productWasAdded && requestedProductStatus == PUBLISH -> string.product_detail_publish_product_error
             else -> string.product_detail_save_product_error
         }
+    }
 
     private fun trackPublishing(it: Product) {
         val properties = mapOf("product_type" to it.productType.value.toLowerCase(Locale.ROOT))
