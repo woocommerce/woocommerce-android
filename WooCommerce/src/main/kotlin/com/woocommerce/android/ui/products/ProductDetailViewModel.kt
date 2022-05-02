@@ -258,10 +258,14 @@ class ProductDetailViewModel @Inject constructor(
             val canBeSavedAsDraft = isAddFlowEntryPoint &&
                 !isProductStoredAtSite &&
                 productDraft.status != DRAFT
+            val isNotPublishedUnderCreation = isProductUnderCreation &&
+                productDraft.status != PUBLISH &&
+                productDraft.status != PRIVATE
+            val showSaveOptionAsActionWithText = hasChanges && (isNotPublishedUnderCreation || !isProductUnderCreation)
             val isProductPublished = productDraft.status == PUBLISH
             val isProductPublishedOrPrivate = isProductPublished || productDraft.status == PRIVATE
             MenuButtonsState(
-                saveOption = hasChanges && !canBeSavedAsDraft,
+                saveOption = showSaveOptionAsActionWithText,
                 saveAsDraftOption = canBeSavedAsDraft,
                 publishOption = !isProductPublishedOrPrivate || isProductUnderCreation,
                 viewProductOption = isProductPublished && !isProductUnderCreation,
@@ -804,20 +808,22 @@ class ProductDetailViewModel @Inject constructor(
         if (isProductPublishedOrSaved) string.product_detail_publish_product_success
         else string.product_detail_save_product_success
 
-    private fun pickAddProductRequestSnackbarText(productWasAdded: Boolean, requestedProductStatus: ProductStatus) =
-        if (productWasAdded) {
-            if (requestedProductStatus == DRAFT) {
-                string.product_detail_publish_product_draft_success
-            } else {
-                string.product_detail_publish_product_success
-            }
-        } else {
-            if (requestedProductStatus == DRAFT) {
-                string.product_detail_publish_product_draft_error
-            } else {
-                string.product_detail_publish_product_error
-            }
+    private fun pickAddProductRequestSnackbarText(
+        productWasAdded: Boolean,
+        requestedProductStatus: ProductStatus
+    ): Int {
+        val isDraftStatus = requestedProductStatus == DRAFT
+        val isPublishStatus = requestedProductStatus == PUBLISH
+        val failedAddingProduct = !productWasAdded
+        return when {
+            productWasAdded && isDraftStatus -> string.product_detail_publish_product_draft_success
+            productWasAdded && isPublishStatus -> string.product_detail_publish_product_success
+            failedAddingProduct && isDraftStatus -> string.product_detail_publish_product_draft_error
+            failedAddingProduct && isPublishStatus -> string.product_detail_publish_product_error
+            productWasAdded -> string.product_detail_save_product_success
+            else -> string.product_detail_save_product_error
         }
+    }
 
     private fun trackPublishing(it: Product) {
         val properties = mapOf("product_type" to it.productType.value.toLowerCase(Locale.ROOT))

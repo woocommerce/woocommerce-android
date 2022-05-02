@@ -1819,6 +1819,7 @@
     <string name="product_publish_draft_dialog_title">Saving draft</string>
     <string name="product_publish_dialog_message" translatable="false">@string/product_update_dialog_message</string>
     <string name="product_detail_publish_product_error">Error publishing product</string>
+    <string name="product_detail_save_product_error">Cannot update product</string>
     <string name="product_detail_publish_product_success">Product published</string>
     <string name="product_detail_publish_product_draft_error">Error saving product draft</string>
     <string name="product_detail_publish_product_draft_success">Product draft saved</string>
