@@ -673,6 +673,31 @@ platform :android do
   end
 
   #####################################################################################
+  # build_and_instrumented_test
+  # -----------------------------------------------------------------------------------
+  # This lane triggers a stable release build on CI
+  # -----------------------------------------------------------------------------------
+  # Usage:
+  # bundle exec fastlane trigger_release_build [branch_to_build:<branch_name>]
+  #
+  #####################################################################################
+  desc "Build the application and instrumented tests, then run the tests in Firebase Test Lab"
+  lane :build_and_instrumented_test do | options |
+
+    gradle(tasks: ['assembleVanillaDebug', 'assembleVanillaDebugAndroidTest'])
+
+    # Run the instrumented tests in Firebase Test Lab
+    android_firebase_test(
+      key_file: File.join(PROJECT_ROOT_FOLDER, '.configure-files', 'firebase.secrets.json'),
+      model: 'Nexus5',
+      version: 23,
+      test_apk_path: lane_context[SharedValues::GRADLE_ALL_APK_OUTPUT_PATHS].first,
+      apk_path: lane_context[SharedValues::GRADLE_ALL_APK_OUTPUT_PATHS].second,
+      results_output_dir: File.join(PROJECT_ROOT_FOLDER, 'build', 'instrumented-tests')
+    )
+  end
+
+  #####################################################################################
   # Private lanes
   #####################################################################################
   private_lane :delete_old_changelogs do | options |
