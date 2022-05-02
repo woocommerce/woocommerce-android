@@ -1,2 +1,2 @@
-- [*] Fixes a bug that caused the scheduled sale dates of a product to be different than the selected dates. [https://github.com/woocommerce/woocommerce-android/pull/6188]
-
+Dates are crucial when you’re running a business! We fixed a glitch when setting a “sale date” on a product – sometimes, that date didn’t end up being what you selected. Community feedback for the win!
+- [***][internal] Introduces In-Person Payments in Canada. [https://github.com/woocommerce/woocommerce-android/pull/6137, https://github.com/woocommerce/woocommerce-android/pull/6138, https://github.com/woocommerce/woocommerce-android/pull/6156, https://github.com/woocommerce/woocommerce-android/pull/6157]

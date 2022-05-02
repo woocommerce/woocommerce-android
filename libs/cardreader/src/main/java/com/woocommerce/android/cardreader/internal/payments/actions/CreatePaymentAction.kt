@@ -68,6 +68,7 @@ internal class CreatePaymentAction(
             customerEmail?.takeIf { it.isNotEmpty() }?.let {
                 if (!isPluginCanSendReceipt) builder.setReceiptEmail(it)
             }
+            feeAmount?.let { builder.setApplicationFeeAmount(it) }
             statementDescriptor?.takeIf { it.isNotEmpty() }?.let { builder.setStatementDescriptor(it) }
         }
         return builder.build()

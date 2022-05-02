@@ -94,6 +94,8 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
         displayCouponsWIPCard(true)
     }
 
+    override fun getFragmentTitle(): String = getString(R.string.coupons)
+
     private fun initSearch() {
         searchView = searchMenuItem.actionView as SearchView
         searchView.queryHint = getString(R.string.coupons_list_search_hint)

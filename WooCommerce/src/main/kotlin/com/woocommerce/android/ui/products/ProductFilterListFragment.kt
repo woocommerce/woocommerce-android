@@ -18,6 +18,7 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ProductFilterListAdapter.OnProductFilterClickListener
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListItemUiModel
@@ -40,6 +41,13 @@ class ProductFilterListFragment :
     private lateinit var productFilterListAdapter: ProductFilterListAdapter
 
     private var clearAllMenuItem: MenuItem? = null
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Visible(
+            navigationIcon = R.drawable.ic_gridicons_cross_24dp,
+            hasShadow = false,
+            hasDivider = true
+        )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

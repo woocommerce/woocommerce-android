@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.inbox
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,13 +11,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
@@ -29,7 +28,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -39,9 +37,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.woocommerce.android.R
 import com.woocommerce.android.compose.utils.toAnnotatedString
-import com.woocommerce.android.ui.compose.animations.skeletonAnimationBrush
+import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.inbox.InboxViewModel.InboxNoteActionUi
 import com.woocommerce.android.ui.inbox.InboxViewModel.InboxNoteUi
 import com.woocommerce.android.ui.inbox.InboxViewModel.InboxState
@@ -56,9 +57,12 @@ fun Inbox(viewModel: InboxViewModel) {
 @Composable
 fun Inbox(state: InboxState) {
     when {
-        state.isLoading -> InboxSkeleton()
-        state.notes.isEmpty() -> InboxEmptyCase()
-        state.notes.isNotEmpty() -> InboxNotes(notes = state.notes)
+        state.isLoading -> InboxSkeletons()
+        else -> InboxNotes(
+            notes = state.notes,
+            onRefresh = state.onRefresh,
+            isRefreshing = state.isRefreshing
+        )
     }
 }
 
@@ -67,7 +71,8 @@ fun InboxEmptyCase() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 32.dp),
+            .padding(horizontal = 32.dp)
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -93,15 +98,35 @@ fun InboxEmptyCase() {
 }
 
 @Composable
-fun InboxNotes(notes: List<InboxNoteUi>) {
-    LazyColumn {
-        itemsIndexed(notes) { index, note ->
-            InboxNoteRow(note = note)
-            if (index < notes.lastIndex)
-                Divider(
-                    color = colorResource(id = R.color.divider_color),
-                    thickness = 1.dp
-                )
+fun InboxNotes(
+    notes: List<InboxNoteUi>,
+    isRefreshing: Boolean,
+    onRefresh: () -> Unit
+) {
+    SwipeRefresh(
+        state = rememberSwipeRefreshState(isRefreshing),
+        onRefresh = { onRefresh.invoke() },
+        indicator = { state, trigger ->
+            SwipeRefreshIndicator(
+                state = state,
+                refreshTriggerDistance = trigger,
+                contentColor = MaterialTheme.colors.primary,
+            )
+        }
+    ) {
+        if (notes.isEmpty()) {
+            InboxEmptyCase()
+        } else {
+            LazyColumn {
+                itemsIndexed(notes) { index, note ->
+                    InboxNoteRow(note = note)
+                    if (index < notes.lastIndex)
+                        Divider(
+                            color = colorResource(id = R.color.divider_color),
+                            thickness = 1.dp
+                        )
+                }
+            }
         }
     }
 }
@@ -141,12 +166,14 @@ fun InboxNoteRow(note: InboxNoteUi) {
 
 @Composable
 private fun InboxNoteActionsRow(actions: List<InboxNoteActionUi>) {
-    LazyRow(
-        Modifier.padding(start = 8.dp, end = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+    Row(
+        modifier = Modifier
+            .padding(start = 8.dp, end = 8.dp)
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.Start,
     ) {
-        items(actions) { action ->
-            InboxNoteTextAction(inboxAction = action)
+        actions.forEach {
+            InboxNoteTextAction(inboxAction = it)
         }
     }
 }
@@ -176,11 +203,21 @@ private fun InboxNoteSurveyActionsRow(actions: List<InboxNoteActionUi>) {
 
 @Composable
 fun InboxNoteTextAction(inboxAction: InboxNoteActionUi) {
-    TextButton(onClick = { inboxAction.onClick(inboxAction.id, inboxAction.parentNoteId) }) {
-        Text(
-            text = inboxAction.label.uppercase(),
-            color = colorResource(id = inboxAction.textColor)
-        )
+    TextButton(
+        onClick = { inboxAction.onClick(inboxAction.id, inboxAction.parentNoteId) },
+        enabled = !inboxAction.isDismissing
+    ) {
+        if (inboxAction.isDismissing) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(24.dp),
+                color = colorResource(id = inboxAction.textColor)
+            )
+        } else {
+            Text(
+                text = inboxAction.label.uppercase(),
+                color = colorResource(id = inboxAction.textColor)
+            )
+        }
     }
 }
 
@@ -210,12 +247,12 @@ fun InboxNoteSurveyAction(inboxAction: InboxNoteActionUi) {
 
 @Composable
 @Suppress("MagicNumber")
-fun InboxSkeleton() {
+fun InboxSkeletons() {
     val numberOfInboxSkeletonRows = 4
     LazyColumn {
         repeat(numberOfInboxSkeletonRows) {
             item {
-                InboxNoteItemSkeleton(brush = skeletonAnimationBrush())
+                InboxNoteItemSkeleton()
                 Divider(
                     color = colorResource(id = R.color.divider_color),
                     thickness = 1.dp
@@ -226,77 +263,52 @@ fun InboxSkeleton() {
 }
 
 @Composable
-fun InboxNoteItemSkeleton(
-    brush: Brush
-) {
+fun InboxNoteItemSkeleton() {
     Column(modifier = Modifier.padding(16.dp)) {
-        InboxNoteHeaderSkeleton(brush)
+        InboxNoteHeaderSkeleton()
         Spacer(modifier = Modifier.padding(top = 16.dp))
-        InboxNoteContentRowsSkeleton(brush)
+        InboxNoteContentRowsSkeleton()
         Spacer(modifier = Modifier.padding(top = 14.dp))
-        InboxNoteButtonsSkeleton(brush)
+        InboxNoteButtonsSkeleton()
     }
 }
 
 @Composable
-private fun InboxNoteHeaderSkeleton(brush: Brush) {
-    Spacer(
-        modifier = Modifier
-            .width(96.dp)
-            .height(16.dp)
-            .background(brush = brush)
-    )
+private fun InboxNoteHeaderSkeleton() {
+    SkeletonView(width = 96.dp, height = 16.dp)
     Spacer(modifier = Modifier.padding(top = 20.dp))
-    Spacer(
+    SkeletonView(width = 190.dp, height = 16.dp)
+}
+
+@Composable
+private fun InboxNoteContentRowsSkeleton() {
+    SkeletonView(
         modifier = Modifier
-            .width(190.dp)
+            .fillMaxWidth()
             .height(16.dp)
-            .background(brush = brush)
+    )
+    Spacer(modifier = Modifier.padding(top = 6.dp))
+    SkeletonView(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(16.dp)
+    )
+    Spacer(modifier = Modifier.padding(top = 6.dp))
+    SkeletonView(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(16.dp)
     )
 }
 
 @Composable
-private fun InboxNoteContentRowsSkeleton(brush: Brush) {
-    Spacer(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(16.dp)
-            .background(brush = brush)
-    )
-    Spacer(modifier = Modifier.padding(top = 6.dp))
-    Spacer(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(16.dp)
-            .background(brush = brush)
-    )
-    Spacer(modifier = Modifier.padding(top = 6.dp))
-    Spacer(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(16.dp)
-            .background(brush = brush)
-    )
-}
-
-@Composable
-private fun InboxNoteButtonsSkeleton(brush: Brush) {
+private fun InboxNoteButtonsSkeleton() {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Spacer(
-            modifier = Modifier
-                .width(150.dp)
-                .height(16.dp)
-                .background(brush = brush)
-        )
-        Spacer(
-            modifier = Modifier
-                .width(60.dp)
-                .height(16.dp)
-                .background(brush = brush)
-        )
+        SkeletonView(width = 150.dp, height = 16.dp)
+        SkeletonView(width = 60.dp, height = 16.dp)
     }
 }
 

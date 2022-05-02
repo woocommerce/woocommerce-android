@@ -6,19 +6,28 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.initSavedStateHandle
-import com.woocommerce.android.model.*
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.Status
+import com.woocommerce.android.model.OrderNote
+import com.woocommerce.android.model.OrderShipmentTracking
+import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.Refund
+import com.woocommerce.android.model.RequestResult
+import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
-import com.woocommerce.android.ui.orders.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.*
-import com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderInfo
+import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
+import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.ViewState
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -30,10 +39,25 @@ import kotlinx.coroutines.flow.flow
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.atLeastOnce
+import org.mockito.kotlin.clearInvocations
+import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
-import org.wordpress.android.fluxc.store.WCOrderStore.*
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
+import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult
 import org.wordpress.android.fluxc.utils.DateUtils
 import java.math.BigDecimal
 import java.util.concurrent.CancellationException
@@ -91,7 +115,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         isCreateShippingLabelButtonVisible = false,
         isProductListVisible = true,
         areShippingLabelsVisible = false,
-        isProductListMenuVisible = false
+        isProductListMenuVisible = false,
+        isSharePaymentLinkVisible = false
     )
 
     @Before

@@ -58,3 +58,11 @@ fun <T> LiveData<T>.observeForTesting(block: () -> Unit) {
         removeObserver(observer)
     }
 }
+
+fun <T> LiveData<T>.captureValues(): List<T> {
+    val list = mutableListOf<T>()
+    observeForever {
+        list.add(it)
+    }
+    return list
+}

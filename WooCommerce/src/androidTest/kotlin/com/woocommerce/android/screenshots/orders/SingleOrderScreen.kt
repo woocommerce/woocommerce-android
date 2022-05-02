@@ -5,7 +5,6 @@ import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers.*
 import com.woocommerce.android.R
 import com.woocommerce.android.screenshots.util.Screen
-import org.hamcrest.Matchers
 
 class SingleOrderScreen : Screen {
     companion object {
@@ -32,19 +31,8 @@ class SingleOrderScreen : Screen {
         return this
     }
 
-    fun assertSingleOrderScreenWithEmptyOrder(): SingleOrderScreen {
-        Espresso.onView(
-            Matchers.allOf(
-                withId(R.id.orderStatus_header),
-                withText(R.string.orderdetail_customer_name_default)
-            )
-        ).check(ViewAssertions.matches(isDisplayed()))
-        Espresso.onView(
-            Matchers.allOf(
-                withId(R.id.paymentInfo_total),
-                withText("$0.00")
-            )
-        ).check(ViewAssertions.matches(isDisplayed()))
+    fun assertSingleOrderScreenWithProduct(productName: String): SingleOrderScreen {
+        Espresso.onView(withText(productName)).check(ViewAssertions.matches(isDisplayed()))
         return assertSingleOrderScreen()
     }
 }

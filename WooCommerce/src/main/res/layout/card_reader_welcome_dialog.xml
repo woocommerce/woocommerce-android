@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    tools:context=".ui.prefs.cardreader.connect.CardReaderConnectDialogFragment">
+    tools:context=".ui.cardreader.connect.CardReaderConnectDialogFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="@dimen/payments_welcome_dialog_width"
