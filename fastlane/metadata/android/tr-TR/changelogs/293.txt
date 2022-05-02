@@ -1,2 +1,0 @@
-8.9:
-Hareket halindeyken; ürünler, nakliye, fatura bilgileri ve ücretleri kullanarak siparişler oluşturun! Hemen ardından yüz yüze kredi kartı ödemesini hızlı bir şekilde alabilir veya müşteriye ilgili siparişin ödemesini kendi cihazında yapması için bir bağlantı gönderebilirsiniz. Siz istediniz, biz de yaptık!
