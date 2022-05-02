@@ -464,7 +464,15 @@ class IssueRefundViewModel @Inject constructor(
                     )
                 )
 
-                triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_error))
+                if (isInteracRefund()) {
+                    triggerEvent(
+                        ShowSnackbar(
+                            R.string.card_reader_interac_refund_notifying_backend_about_successful_refund_failed
+                        )
+                    )
+                } else {
+                    triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_error))
+                }
             } else {
                 AnalyticsTracker.track(
                     REFUND_CREATE_SUCCESS,
