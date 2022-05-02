@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-03-25 09:54:03+0000
+Translation-Revision-Date: 2022-04-08 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="coupon_summary_performance_amount_heading">Jumlah</string>
+    <string name="coupon_summary_performance_discounted_order_heading">Pesanan yang Didiskon</string>
+    <string name="coupon_summary_performance_heading">Performa</string>
+    <string name="coupon_summary_maximum_spend">Belanja maksimum%s</string>
+    <string name="coupon_summary_minimum_spend">Belanja minimum%s</string>
+    <string name="coupon_summary_heading">Ringkasan Kupon</string>
+    <string name="coupon_list_view_coupon">Lihat ringkasan kupon</string>
+    <string name="coupon_list_wip_message_enabled">Kini Anda dapat melihat dan mengedit kupon dengan perangkat Anda!</string>
+    <string name="coupon_list_wip_title">Lihat dan edit kupon</string>
+    <string name="coupon_list_empty_heading">Tidak ada kupon ditemukan</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1s excl. %2s</string>
+    <string name="coupon_list_item_label_everything">semua</string>
+    <string name="coupon_list_item_label_off">off</string>
+    <string name="coupon_list_item_label_expired">Kedaluwarsa </string>
+    <string name="coupon_list_item_label_active">Aktif</string>
+    <string name="coupons">Kupon</string>
+    <string name="inbox_note_recency_date_time">dibuat pada %s</string>
+    <string name="inbox_note_recency_days">%d hari yang lalu</string>
+    <string name="inbox_note_recency_one_day">Satu hari yang lalu</string>
+    <string name="inbox_note_recency_hours">%d jam yang lalu</string>
+    <string name="inbox_note_recency_one_hour">satu jam yang lalu</string>
+    <string name="inbox_note_recency_minutes">%d menit yang lalu</string>
+    <string name="inbox_note_recency_now">Beberapa saat yang lalu</string>
+    <string name="category_count_many">%d kategori</string>
+    <string name="category_count_one">%d kategori</string>
+    <string name="product_ratings_count_zero">\u2022  tidak ada ulasan disetujui</string>
+    <string name="product_ratings_count_one">\u2022  satu ulasan disetujui</string>
+    <string name="product_ratings_count">\u2022  %d ulasan disetujui</string>
+    <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">Kami sudah mengupayakan agar pesanan dan pembayaran dapat dilakukan dari perangkat Anda! Anda dapat mecoba fitur ini dengan tap tombol \"+\"</string>
+    <string name="orderlist_simple_payments_wip_title">Buat pesanan &amp; lakukan pembayaran!</string>
     <string name="empty_inbox_description">Kembali lagi nanti untuk mendapatkan lebih banyak tips dan wawasan tentang cara mengembangkan toko Anda</string>
     <string name="empty_inbox_title">Selamat, Anda telah membaca semuanya!</string>
     <string name="orderstatus_contentDesc_withStatus">Status pesanan: %s</string>
@@ -187,9 +218,6 @@ Language: id
     <string name="date_timeframe_last_quarter">Kuartal Terakhir</string>
     <string name="date_timeframe_last_month">Bulan Terakhir</string>
     <string name="date_timeframe_last_week">Minggu Terakhir</string>
-    <string name="settings_enable_order_creation_teaser_message">Coba buat pesanan dengan detail lengkap sembari kami bersiap untuk meluncurkan</string>
-    <string name="settings_enable_order_creation_teaser_title">Pembuatan Pesanan</string>
-    <string name="beta_features_order_creation">Pembuatan pesanan</string>
     <string name="beta_features_simple_payments">Simple payments</string>
     <string name="beta_features_add_ons">Lihat Add-on</string>
     <string name="orders_empty_message_for_filtered_orders">Maaf, kami tidak menemukan pesanan</string>
@@ -210,7 +238,6 @@ Language: id
     <string name="simple_payments_enter_amount">Masukkan jumlah</string>
     <string name="simple_payments_dialog_title">Terima pembayaran</string>
     <string name="orderlist_simple_payments_menu">Simple payment</string>
-    <string name="orderlist_simple_payments_wip_title">Terima pembayaran dari perangkat Anda!</string>
     <string name="analytics">Analytics</string>
     <string name="jetpack_install_progress_step_four_message">Semua selesai</string>
     <string name="jetpack_install_progress_step_three_message">Menyambungkan ke toko Anda</string>
@@ -245,7 +272,6 @@ Language: id
     <string name="orderfilters_default_filter_option">Semua</string>
     <string name="orderfilters_filter_card_title_filtered_orders">Pesanan disaring</string>
     <string name="orderfilters_filter_card_title_all_orders">Semua Pesanan</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">Kami berupaya untuk lebih memudahkan Anda menerima pembayaran dari perangkat! Untuk sekarang, ketuk tombol \"+\" dan Anda akan dapat membuat pesanan dengan jumlah yang diinginkan.</string>
     <string name="jetpack_benefits_modal_dismiss">Lain Kali</string>
     <string name="jetpack_benefits_modal_install_jetpack">Menginstal Jetpack</string>
     <string name="jetpack_benefits_modal_user_profiles_subtitle">Izinkan banyak pengguna untuk mengakses WooCommerce Mobile.</string>
@@ -813,9 +839,6 @@ Language: id
     <string name="product_detail_no_variations">Produk ini belum memiliki variasi</string>
     <string name="product_variant_list_empty">Menambahkan opsi seperti ukuran dan warna saat ini hanya tersedia pada web. Pilihan tersebut akan muncul sebagai opsi pada halaman produk situs Anda.</string>
     <string name="product_adding_wip_title">Buat produk dari aplikasi!</string>
-    <string name="product_ratings_count_zero">\u2022 belum ada peringkat</string>
-    <string name="product_ratings_count_one">\u2022 diberi peringkat sekali</string>
-    <string name="product_ratings_count">\u2022 diberi peringkat %d kali</string>
     <string name="product_detail_fetch_product_invalid_id_error">Produk tidak ditemukan</string>
     <string name="print_shipping_label_info_step_5">Jika masih mengalami masalah mencetak dari perangkat, Anda dapat &lt;b&gt;menyimpan label Anda dalam format PDF&lt;/b&gt; dan mengirimkannya melalui email ke perangkat lain untuk dicetak.</string>
     <string name="print_shipping_label_info_step_2">Setelah memilih &lt;b&gt;\"Cetak label pengiriman\"&lt;/b&gt;, Anda harus memilih dan menambahkan mesin cetak jika belum pernah mencetak dari perangkat ini sebelumnya.</string>
@@ -1837,12 +1860,6 @@ Language: id
     <string name="dashboard_top_performers_empty">Tidak ada aktivitas dalam periode ini</string>
     <string name="dashboard_top_performers_total_orders">Total pesanan: %s</string>
     <string name="dashboard_top_performers_title">Produk dengan performa tertinggi</string>
-    <string name="dashboard_stats_updated_date_time">Diperbarui pada %s</string>
-    <string name="dashboard_stats_updated_one_day">Diperbarui 1 hari lalu</string>
-    <string name="dashboard_stats_updated_hours">Diperbarui %d jam lalu</string>
-    <string name="dashboard_stats_updated_one_hour">Diperbarui 1 jam lalu</string>
-    <string name="dashboard_stats_updated_minutes">Diperbarui %d menit lalu</string>
-    <string name="dashboard_stats_updated_now">Diperbarui sesaat lalu</string>
     <string name="dashboard_stats_error_content_description">Gambar error</string>
     <string name="dashboard_stats_error">Error saat mengambil data</string>
     <string name="dashboard_stats_revenue">Pendapatan</string>

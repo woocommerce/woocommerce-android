@@ -32,6 +32,7 @@ import com.woocommerce.android.model.getMaxRefundQuantities
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.cardreader.InPersonPaymentsCanadaFeatureFlag
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.TOO_HIGH
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.TOO_LOW
@@ -71,7 +72,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.collections.set
 import kotlin.collections.sumBy
@@ -94,6 +95,7 @@ class IssueRefundViewModel @Inject constructor(
     private val refundStore: WCRefundStore,
     private val paymentChargeRepository: PaymentChargeRepository,
     private val orderMapper: OrderMapper,
+    private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DEFAULT_DECIMAL_PRECISION = 2
@@ -128,7 +130,7 @@ class IssueRefundViewModel @Inject constructor(
             updateRefundTotal(new.enteredAmount)
         }
     )
-    val productsRefundLiveData = LiveDataDelegate(savedState, ProductsRefundViewState())
+    private val productsRefundLiveData = LiveDataDelegate(savedState, ProductsRefundViewState())
 
     private var commonState by commonStateLiveData
     private var refundByAmountState by refundByAmountStateLiveData
@@ -147,6 +149,7 @@ class IssueRefundViewModel @Inject constructor(
     private val maxQuantities: Map<Long, Float>
     private val formatCurrency: (BigDecimal) -> String
     private val gateway: PaymentGateway
+    private var cardType = PaymentMethodType.CARD_PRESENT
     private val arguments: RefundsArgs by savedState.navArgs()
 
     private val selectedQuantities: MutableMap<Long, Int> by lazy {
@@ -351,8 +354,6 @@ class IssueRefundViewModel @Inject constructor(
         }
     }
 
-    // TODO Refactor this method in a follow up PR
-    @Suppress("ComplexMethod", "LongMethod")
     fun onRefundConfirmed(wasConfirmed: Boolean) {
         if (wasConfirmed) {
             if (networkStatus.isConnected()) {
@@ -360,7 +361,11 @@ class IssueRefundViewModel @Inject constructor(
                     refundSummaryState = refundSummaryState.copy(
                         isFormEnabled = false
                     )
-
+                    if (isInteracRefund() && inPersonPaymentsCanadaFeatureFlag.isEnabled()) {
+                        triggerEvent(IssueRefundEvent.NavigateToCardReaderScreen(order.id, commonState.refundTotal))
+                    } else {
+                        refund()
+                    }
                     triggerEvent(
                         ShowSnackbar(
                             R.string.order_refunds_amount_refund_progress_message,
@@ -379,86 +384,101 @@ class IssueRefundViewModel @Inject constructor(
                             AnalyticsTracker.KEY_AMOUNT to commonState.refundTotal.toString()
                         )
                     )
-
-                    val resultCall = async(dispatchers.io) {
-                        return@async when (commonState.refundType) {
-                            ITEMS -> {
-                                val allItems = mutableListOf<WCRefundItem>()
-                                refundItems.value?.let {
-                                    it.forEach { item -> allItems.add(item.toDataModel()) }
-                                }
-
-                                val selectedShipping = refundShippingLines.value?.filter {
-                                    refundByItemsState.selectedShippingLines
-                                        ?.contains(it.shippingLine.itemId)
-                                        ?: false
-                                }
-                                selectedShipping?.forEach { allItems.add(it.toDataModel()) }
-
-                                val selectedFees = refundFeeLines.value?.filter {
-                                    refundByItemsState.selectedFeeLines
-                                        ?.contains(it.feeLine.id)
-                                        ?: false
-                                }
-                                selectedFees?.forEach { allItems.add(it.toDataModel()) }
-
-                                refundStore.createItemsRefund(
-                                    selectedSite.get(),
-                                    order.id,
-                                    refundSummaryState.refundReason ?: "",
-                                    true,
-                                    gateway.supportsRefunds,
-                                    items = allItems
-                                )
-                            }
-                            AMOUNT -> {
-                                refundStore.createAmountRefund(
-                                    selectedSite.get(),
-                                    order.id,
-                                    commonState.refundTotal,
-                                    refundSummaryState.refundReason ?: "",
-                                    gateway.supportsRefunds
-                                )
-                            }
-                        }
-                    }
-
-                    val result = resultCall.await()
-                    if (result.isError) {
-                        AnalyticsTracker.track(
-                            REFUND_CREATE_FAILED,
-                            mapOf(
-                                AnalyticsTracker.KEY_ORDER_ID to order.id,
-                                AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                                AnalyticsTracker.KEY_ERROR_TYPE to result.error.type.toString(),
-                                AnalyticsTracker.KEY_ERROR_DESC to result.error.message
-                            )
-                        )
-
-                        triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_error))
-                    } else {
-                        AnalyticsTracker.track(
-                            REFUND_CREATE_SUCCESS,
-                            mapOf(
-                                AnalyticsTracker.KEY_ORDER_ID to order.id,
-                                AnalyticsTracker.KEY_ID to result.model?.id
-                            )
-                        )
-
-                        refundSummaryState.refundReason?.let { reason ->
-                            if (reason.isNotBlank()) {
-                                addOrderNote(reason)
-                            }
-                        }
-
-                        triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_successful))
-                        triggerEvent(Exit)
-                    }
-
                     refundSummaryState = refundSummaryState.copy(isFormEnabled = true)
                 }
             } else {
                 triggerEvent(ShowSnackbar(R.string.offline_error))
+            }
+        }
+    }
+
+    private fun isInteracRefund() = cardType == PaymentMethodType.INTERAC_PRESENT
+
+    /*
+       This method does the actual refund in case of non-interac refund. In case of Interac refund, the actual
+       refund happens on the client-side and this method updates the WCPay backend about the refund success status and
+       does not process the refund itself.
+
+       For non-Interac refund -> Process the refund (Entire refund logic lives in the backend)
+       For Interac refund -> Update the backend of the successful refund. The actual refund happens on the client-side
+     */
+    // TODO Refactor this method in a follow up PR
+    @Suppress("ComplexMethod", "LongMethod")
+    fun refund() {
+        launch {
+            val resultCall = async(dispatchers.io) {
+                return@async when (commonState.refundType) {
+                    ITEMS -> {
+                        val allItems = mutableListOf<WCRefundItem>()
+                        refundItems.value?.let {
+                            it.forEach { item -> allItems.add(item.toDataModel()) }
+                        }
+
+                        val selectedShipping = refundShippingLines.value?.filter {
+                            refundByItemsState.selectedShippingLines
+                                ?.contains(it.shippingLine.itemId)
+                                ?: false
+                        }
+                        selectedShipping?.forEach { allItems.add(it.toDataModel()) }
+
+                        val selectedFees = refundFeeLines.value?.filter {
+                            refundByItemsState.selectedFeeLines
+                                ?.contains(it.feeLine.id)
+                                ?: false
+                        }
+                        selectedFees?.forEach { allItems.add(it.toDataModel()) }
+
+                        refundStore.createItemsRefund(
+                            selectedSite.get(),
+                            order.id,
+                            refundSummaryState.refundReason ?: "",
+                            true,
+                            gateway.supportsRefunds,
+                            items = allItems
+                        )
+                    }
+                    AMOUNT -> {
+                        refundStore.createAmountRefund(
+                            selectedSite.get(),
+                            order.id,
+                            commonState.refundTotal,
+                            refundSummaryState.refundReason ?: "",
+                            gateway.supportsRefunds
+                        )
+                    }
+                }
+            }
+
+            val result = resultCall.await()
+            if (result.isError) {
+                AnalyticsTracker.track(
+                    REFUND_CREATE_FAILED,
+                    mapOf(
+                        AnalyticsTracker.KEY_ORDER_ID to order.id,
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to result.error.type.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to result.error.message
+                    )
+                )
+
+                triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_error))
+            } else {
+                AnalyticsTracker.track(
+                    REFUND_CREATE_SUCCESS,
+                    mapOf(
+                        AnalyticsTracker.KEY_ORDER_ID to order.id,
+                        AnalyticsTracker.KEY_ID to result.model?.id
+                    )
+                )
+
+                refundSummaryState.refundReason?.let { reason ->
+                    if (reason.isNotBlank()) {
+                        addOrderNote(reason)
+                    }
+                }
+
+                triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_successful))
+                triggerEvent(Exit)
             }
         }
     }
@@ -518,7 +538,7 @@ class IssueRefundViewModel @Inject constructor(
      * surpassed, the button should be disabled until the text is brought within the maximum length.
      */
     fun onRefundSummaryTextChanged(maxLength: Int, currLength: Int) {
-        refundSummaryState = refundSummaryState.copy(isSubmitButtonEnabled = currLength <= maxLength)
+        refundSummaryState = refundSummaryState.copy(isSummaryTextTooLong = currLength > maxLength)
     }
 
     // will be used in the future
@@ -757,8 +777,12 @@ class IssueRefundViewModel @Inject constructor(
 
     private fun loadCardDetails(chargeId: String, refundMethod: String) {
         launch {
-            when (val result = paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)) {
+            refundSummaryState = refundSummaryState.copy(isFetchingCardData = true)
+            val result = paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)
+            refundSummaryState = refundSummaryState.copy(isFetchingCardData = false)
+            when (result) {
                 is PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success -> {
+                    cardType = PaymentMethodType.fromValue(result.paymentMethodType ?: "card_present")
                     val refundMethodWithCard = result.run {
                         val brand = result.cardBrand.orEmpty().replaceFirstChar { it.uppercase() }
                         val last4 = result.cardLast4.orEmpty()
@@ -767,6 +791,7 @@ class IssueRefundViewModel @Inject constructor(
                     updateRefundSummaryState(refundMethodWithCard, isMethodDescriptionVisible = false)
                 }
                 PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Error -> {
+                    cardType = PaymentMethodType.CARD_PRESENT
                     updateRefundSummaryState(refundMethod, isMethodDescriptionVisible = false)
                 }
             }.exhaustive
@@ -907,13 +932,17 @@ class IssueRefundViewModel @Inject constructor(
     @Parcelize
     data class RefundSummaryViewState(
         val isFormEnabled: Boolean? = null,
-        val isSubmitButtonEnabled: Boolean? = null,
         val previouslyRefunded: String? = null,
         val refundAmount: String? = null,
         val refundMethod: String? = null,
         val refundReason: String? = null,
-        val isMethodDescriptionVisible: Boolean? = null
-    ) : Parcelable
+        val isMethodDescriptionVisible: Boolean? = null,
+        val isSummaryTextTooLong: Boolean = false,
+        val isFetchingCardData: Boolean = false,
+    ) : Parcelable {
+        val isSubmitButtonEnabled: Boolean
+            get() = !isSummaryTextTooLong && !isFetchingCardData
+    }
 
     @Parcelize
     data class CommonViewState(
@@ -930,13 +959,27 @@ class IssueRefundViewModel @Inject constructor(
             val message: String,
             val confirmButtonTitle: String
         ) : IssueRefundEvent()
+
         data class ShowRefundSummary(val refundType: RefundType) : IssueRefundEvent()
         data class ShowRefundAmountDialog(
             val refundAmount: BigDecimal,
             val maxRefund: BigDecimal,
             val message: String
         ) : IssueRefundEvent()
+
         data class OpenUrl(val url: String) : IssueRefundEvent()
         object HideValidationError : IssueRefundEvent()
+        data class NavigateToCardReaderScreen(val orderId: Long, val refundAmount: BigDecimal) : IssueRefundEvent()
+    }
+
+    enum class PaymentMethodType(val paymentMethodType: String) {
+        CARD_PRESENT("card_present"),
+        INTERAC_PRESENT("interac_present");
+
+        companion object {
+            fun fromValue(paymentMethodType: String?): PaymentMethodType {
+                return values().firstOrNull { it.paymentMethodType == paymentMethodType } ?: CARD_PRESENT
+            }
+        }
     }
 }

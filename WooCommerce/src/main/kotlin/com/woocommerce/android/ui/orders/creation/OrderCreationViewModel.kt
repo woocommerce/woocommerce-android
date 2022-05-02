@@ -103,7 +103,7 @@ class OrderCreationViewModel @Inject constructor(
 
     fun onDecreaseProductsQuantity(id: Long) {
         _orderDraft.value.items
-            .find { it.productId == id || it.variationId == id }
+            .find { it.itemId == id }
             ?.takeIf { it.quantity == 1F }
             ?.let { onProductClicked(it) }
             ?: _orderDraft.update { it.adjustProductQuantity(id, -1) }
@@ -122,7 +122,7 @@ class OrderCreationViewModel @Inject constructor(
     }
 
     fun onRemoveProduct(item: Order.Item) = _orderDraft.update {
-        it.adjustProductQuantity(item.uniqueId, -item.quantity.toInt())
+        it.adjustProductQuantity(item.itemId, -item.quantity.toInt())
     }
 
     fun onProductSelected(remoteProductId: Long, variationId: Long? = null) {
@@ -130,18 +130,10 @@ class OrderCreationViewModel @Inject constructor(
             AnalyticsEvent.ORDER_PRODUCT_ADD,
             mapOf(KEY_FLOW to VALUE_FLOW_CREATION)
         )
-        val uniqueId = variationId ?: remoteProductId
+
         viewModelScope.launch {
             _orderDraft.value.items.toMutableList().apply {
-                val index = indexOfFirst { it.uniqueId == uniqueId }
-                if (index != -1) {
-                    val item = get(index)
-                    set(index, item.copy(quantity = item.quantity + 1))
-                    return@apply
-                }
-                // Create a new item
-                val item = createOrderItem(remoteProductId, variationId)
-                add(item)
+                add(createOrderItem(remoteProductId, variationId))
             }.let { items -> _orderDraft.update { it.updateItems(items) } }
         }
     }
@@ -254,8 +246,10 @@ class OrderCreationViewModel @Inject constructor(
             createOrUpdateOrderDraft(_orderDraft, retryOrderDraftUpdateTrigger)
                 .collect { updateStatus ->
                     when (updateStatus) {
+                        OrderDraftUpdateStatus.PendingDebounce ->
+                            viewState = viewState.copy(willUpdateOrderDraft = true, showOrderUpdateSnackbar = false)
                         OrderDraftUpdateStatus.Ongoing ->
-                            viewState = viewState.copy(isUpdatingOrderDraft = true, showOrderUpdateSnackbar = false)
+                            viewState = viewState.copy(willUpdateOrderDraft = false, isUpdatingOrderDraft = true)
                         OrderDraftUpdateStatus.Failed ->
                             viewState = viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = true)
                         is OrderDraftUpdateStatus.Succeeded -> {
@@ -343,11 +337,14 @@ class OrderCreationViewModel @Inject constructor(
     @Parcelize
     data class ViewState(
         val isProgressDialogShown: Boolean = false,
+        val willUpdateOrderDraft: Boolean = false,
         val isUpdatingOrderDraft: Boolean = false,
         val showOrderUpdateSnackbar: Boolean = false
     ) : Parcelable {
         @IgnoredOnParcel
-        val canCreateOrder: Boolean = !isUpdatingOrderDraft && !showOrderUpdateSnackbar
+        val canCreateOrder: Boolean = !willUpdateOrderDraft && !isUpdatingOrderDraft && !showOrderUpdateSnackbar
+        @IgnoredOnParcel
+        val isIdle: Boolean = !isUpdatingOrderDraft && !willUpdateOrderDraft
     }
 }
 

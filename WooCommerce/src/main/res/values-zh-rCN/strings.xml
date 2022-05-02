@@ -1,11 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-03-25 09:54:03+0000
+Translation-Revision-Date: 2022-04-08 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="coupon_summary_performance_amount_heading">金额</string>
+    <string name="coupon_summary_performance_discounted_order_heading">享受折扣的订单</string>
+    <string name="coupon_summary_performance_heading">性能</string>
+    <string name="coupon_summary_maximum_spend">最高花费金额：%s</string>
+    <string name="coupon_summary_minimum_spend">最低花费金额：%s</string>
+    <string name="coupon_summary_heading">优惠券汇总</string>
+    <string name="coupon_list_view_coupon">查看优惠券汇总</string>
+    <string name="coupon_list_wip_message_enabled">我们一直致力于不断改进，让您能够从设备上也可以查看并编辑优惠券！</string>
+    <string name="coupon_list_wip_title">查看并编辑优惠券</string>
+    <string name="coupon_list_empty_heading">没有找到优惠券</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1s，不包括 %2s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1s 和 %2s</string>
+    <string name="coupon_list_item_label_everything">全部</string>
+    <string name="coupon_list_item_label_off">优惠</string>
+    <string name="coupon_list_item_label_expired">已到期</string>
+    <string name="coupon_list_item_label_active">已激活</string>
+    <string name="coupons">优惠券</string>
+    <string name="inbox_note_recency_date_time">创建时间：%s</string>
+    <string name="inbox_note_recency_days">%d 天前</string>
+    <string name="inbox_note_recency_one_day">一天前</string>
+    <string name="inbox_note_recency_hours">%d 小时前</string>
+    <string name="inbox_note_recency_one_hour">1 小时前</string>
+    <string name="inbox_note_recency_minutes">%d 分钟前</string>
+    <string name="inbox_note_recency_now">片刻之前</string>
+    <string name="category_count_many">%d 个分类</string>
+    <string name="category_count_one">%d 个分类</string>
+    <string name="product_ratings_count_zero">\u2022  没有已批准的评论</string>
+    <string name="product_ratings_count_one">\u2022  一条已批准的评论</string>
+    <string name="product_ratings_count">\u2022  %d 条已批准的评论</string>
+    <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">我们一直在努力，旨在助力您直接通过您的设备创建订单并收款！ 您可以轻点“+”按钮，试用这些功能。</string>
+    <string name="orderlist_simple_payments_wip_title">创建订单并收款！</string>
     <string name="empty_inbox_description">请稍后回来查看，届时将提供更多关于发展您商店的贴士和数据分析</string>
     <string name="empty_inbox_title">恭喜您，已全部阅读！</string>
     <string name="orderstatus_contentDesc_withStatus">订单状态： %s</string>
@@ -187,9 +219,6 @@ Language: zh_CN
     <string name="date_timeframe_last_quarter">上一季度</string>
     <string name="date_timeframe_last_month">上月</string>
     <string name="date_timeframe_last_week">上周</string>
-    <string name="settings_enable_order_creation_teaser_message">在我们准备发布时，测试如何使用完整的信息创建订单</string>
-    <string name="settings_enable_order_creation_teaser_title">订单创建</string>
-    <string name="beta_features_order_creation">订单创建</string>
     <string name="beta_features_simple_payments">简单付款</string>
     <string name="beta_features_add_ons">查看插件</string>
     <string name="orders_empty_message_for_filtered_orders">抱歉，我们找不到任何订单</string>
@@ -210,7 +239,6 @@ Language: zh_CN
     <string name="simple_payments_enter_amount">输入金额</string>
     <string name="simple_payments_dialog_title">收款</string>
     <string name="orderlist_simple_payments_menu">简单付款</string>
-    <string name="orderlist_simple_payments_wip_title">通过您的设备收款！</string>
     <string name="analytics">分析</string>
     <string name="jetpack_install_progress_step_four_message">全部完成</string>
     <string name="jetpack_install_progress_step_three_message">正在关联您的商店</string>
@@ -245,7 +273,6 @@ Language: zh_CN
     <string name="orderfilters_default_filter_option">全部</string>
     <string name="orderfilters_filter_card_title_filtered_orders">已过滤的订单</string>
     <string name="orderfilters_filter_card_title_all_orders">所有订单</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">我们正竭力让您可以更轻松地直接通过设备收款！ 现在，点按“+”按钮即可使用您想要收取的金额创建订单。</string>
     <string name="jetpack_benefits_modal_dismiss">不用了</string>
     <string name="jetpack_benefits_modal_install_jetpack">安装 Jetpack</string>
     <string name="jetpack_benefits_modal_user_profiles_subtitle">支持多个用户访问 WooCommerce 移动应用程序。</string>
@@ -813,9 +840,6 @@ Language: zh_CN
     <string name="product_detail_no_variations">该产品尚无变体</string>
     <string name="product_variant_list_empty">目前仅支持通过网页添加尺寸和颜色等选项， 它们将以选项的形式显示在您站点的产品页面上。</string>
     <string name="product_adding_wip_title">通过应用程序创建产品！</string>
-    <string name="product_ratings_count_zero">\u2022 无评价</string>
-    <string name="product_ratings_count_one">\u2022 评价 1 次</string>
-    <string name="product_ratings_count">\u2022 评价 %d 次</string>
     <string name="product_detail_fetch_product_invalid_id_error">找不到产品</string>
     <string name="print_shipping_label_info_step_5">如果通过设备打印时仍然有问题，您可以&lt;b&gt;将标签另存为 PDF &lt;/b&gt;，并通过电子邮件将其发送到其他设备打印。</string>
     <string name="print_shipping_label_info_step_2">选择&lt;b&gt;“打印配送标签”&lt;/b&gt;之后，如果以前从未通过此设备执行过打印操作，则可能需要选择并添加打印机。</string>
@@ -1837,12 +1861,6 @@ Language: zh_CN
     <string name="dashboard_top_performers_empty">这段时间内没有任何活动</string>
     <string name="dashboard_top_performers_total_orders">订单总数： %s</string>
     <string name="dashboard_top_performers_title">热销产品</string>
-    <string name="dashboard_stats_updated_date_time">更新时间：%s</string>
-    <string name="dashboard_stats_updated_one_day">更新时间：1 天前</string>
-    <string name="dashboard_stats_updated_hours">更新时间：%d 小时前</string>
-    <string name="dashboard_stats_updated_one_hour">更新时间：1 小时前</string>
-    <string name="dashboard_stats_updated_minutes">更新时间：%d 分钟前</string>
-    <string name="dashboard_stats_updated_now">更新时间：片刻前</string>
     <string name="dashboard_stats_error_content_description">错误图片</string>
     <string name="dashboard_stats_error">抓取数据时出错</string>
     <string name="dashboard_stats_revenue">收益</string>

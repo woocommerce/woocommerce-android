@@ -295,6 +295,29 @@ class DateUtils @Inject constructor(
     }
 
     /**
+     * Returns the same date received as parameter in millis at the end of the day: 23:59:59
+     */
+    fun getDateInMillisAtTheEndOfTheDay(dateMillis: Long): Long =
+        Calendar.getInstance(Locale.getDefault()).apply {
+            timeInMillis = dateMillis
+            set(Calendar.SECOND, getMaximum(Calendar.SECOND))
+            set(Calendar.MINUTE, getMaximum(Calendar.MINUTE))
+            set(Calendar.HOUR_OF_DAY, getMaximum(Calendar.HOUR_OF_DAY))
+        }.timeInMillis
+
+    /**
+     * Returns the same date received as parameter in millis at the start of the day: 00:00:00
+     */
+    fun getDateInMillisAtTheStartOfTheDay(dateMillis: Long): Long =
+        Calendar.getInstance(Locale.getDefault()).apply {
+            timeInMillis = dateMillis
+            clear(Calendar.MILLISECOND)
+            clear(Calendar.SECOND)
+            clear(Calendar.MINUTE)
+            set(Calendar.HOUR_OF_DAY, ZERO)
+        }.timeInMillis
+
+    /**
      * Returns a date time in millis with the date for current day at 00:00:00
      */
     fun getDateForTodayAtTheStartOfTheDay(): Long =

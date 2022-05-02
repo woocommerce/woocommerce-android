@@ -7,14 +7,17 @@ import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.cardreader.InPersonPaymentsCanadaFeatureFlag
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundByItemsViewState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
@@ -39,6 +42,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     private val gatewayStore: WCGatewayStore = mock()
     private val refundStore: WCRefundStore = mock()
     private val currencyFormatter: CurrencyFormatter = mock()
+    private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag = mock()
     private val resourceProvider: ResourceProvider = mock {
         on(it.getString(R.string.multiple_shipping)).thenAnswer { "Multiple shipping lines" }
         on(it.getString(R.string.and)).thenAnswer { "and" }
@@ -58,6 +62,11 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
     private lateinit var viewModel: IssueRefundViewModel
 
+    @Before
+    fun setup() {
+        whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(true)
+    }
+
     private fun initViewModel() {
         whenever(selectedSite.get()).thenReturn(SiteModel())
         whenever(currencyFormatter.buildBigDecimalFormatter(any())).thenReturn { "" }
@@ -75,7 +84,8 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             gatewayStore,
             refundStore,
             paymentChargeRepository,
-            orderMapper
+            orderMapper,
+            inPersonPaymentsCanadaFeatureFlag,
         )
     }
 
@@ -138,7 +148,8 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
                 PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
                     cardBrand = cardBrand,
-                    cardLast4 = cardLast4
+                    cardLast4 = cardLast4,
+                    paymentMethodType = "card_present"
                 )
             )
             whenever(resourceProvider.getString(R.string.order_refunds_manual_refund))
@@ -150,6 +161,133 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             viewModel.refundSummaryStateLiveData.observeForever { _, new -> viewState = new }
 
             assertThat(viewState!!.refundMethod).isEqualTo("Credit/Debit card (Visa **** 1234)")
+        }
+    }
+
+    @Test
+    fun `given interac refund, when refund confirmed, then trigger card reader screen`() {
+        testBlocking {
+            val chargeId = "charge_id"
+            val cardBrand = "visa"
+            val cardLast4 = "1234"
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+            )
+            whenever(networkStatus.isConnected()).thenReturn(true)
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
+                    cardBrand = cardBrand,
+                    cardLast4 = cardLast4,
+                    paymentMethodType = "interac_present"
+                )
+            )
+            whenever(resourceProvider.getString(R.string.order_refunds_manual_refund))
+                .thenReturn("Credit/Debit card")
+
+            initViewModel()
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+            viewModel.onRefundConfirmed(true)
+
+            assertThat(events.first()).isInstanceOf(
+                IssueRefundViewModel.IssueRefundEvent.NavigateToCardReaderScreen::class.java
+            )
+        }
+    }
+
+    @Test
+    fun `given IPP canada feature flag is disabled, when refund confirmed, then do not trigger card reader screen`() {
+        testBlocking {
+            val chargeId = "charge_id"
+            val cardBrand = "visa"
+            val cardLast4 = "1234"
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+            )
+            whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(false)
+            whenever(networkStatus.isConnected()).thenReturn(true)
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
+                    cardBrand = cardBrand,
+                    cardLast4 = cardLast4,
+                    paymentMethodType = "interac_present"
+                )
+            )
+            whenever(resourceProvider.getString(R.string.order_refunds_manual_refund))
+                .thenReturn("Credit/Debit card")
+
+            initViewModel()
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+            viewModel.onRefundConfirmed(true)
+
+            assertThat(events.first()).isNotInstanceOf(
+                IssueRefundViewModel.IssueRefundEvent.NavigateToCardReaderScreen::class.java
+            )
+        }
+    }
+
+    @Test
+    fun `given non-interac refund, when refund confirmed, then do not trigger card reader screen`() {
+        testBlocking {
+            val chargeId = "charge_id"
+            val cardBrand = "visa"
+            val cardLast4 = "1234"
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+            )
+            whenever(networkStatus.isConnected()).thenReturn(true)
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
+                    cardBrand = cardBrand,
+                    cardLast4 = cardLast4,
+                    paymentMethodType = "card_present"
+                )
+            )
+            whenever(resourceProvider.getString(R.string.order_refunds_manual_refund))
+                .thenReturn("Credit/Debit card")
+
+            initViewModel()
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+            viewModel.onRefundConfirmed(true)
+
+            assertThat(events.first()).isNotInstanceOf(
+                IssueRefundViewModel.IssueRefundEvent.NavigateToCardReaderScreen::class.java
+            )
+        }
+    }
+
+    @Test
+    fun `given charges call fails, when refund confirmed, then do not trigger card reader screen`() {
+        testBlocking {
+            val chargeId = "charge_id"
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+            )
+            whenever(networkStatus.isConnected()).thenReturn(true)
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Error
+            )
+            whenever(resourceProvider.getString(R.string.order_refunds_manual_refund))
+                .thenReturn("Credit/Debit card")
+
+            initViewModel()
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+            viewModel.onRefundConfirmed(true)
+
+            assertThat(events.first()).isNotInstanceOf(
+                IssueRefundViewModel.IssueRefundEvent.NavigateToCardReaderScreen::class.java
+            )
         }
     }
 
@@ -174,6 +312,52 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             viewModel.refundSummaryStateLiveData.observeForever { _, new -> viewState = new }
 
             assertThat(viewState!!.refundMethod).isEqualTo("Credit/Debit card")
+        }
+    }
+
+    @Test
+    fun `given non cash order, when charge data loaded, then button enabled`() {
+        testBlocking {
+            val chargeId = "charge_id"
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+            )
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Error
+            )
+
+            initViewModel()
+
+            var viewState: IssueRefundViewModel.RefundSummaryViewState? = null
+            viewModel.refundSummaryStateLiveData.observeForever { _, new -> viewState = new }
+
+            assertThat(viewState!!.isSubmitButtonEnabled).isTrue()
+        }
+    }
+
+    @Test
+    fun `given non cash order and text summary to long, when charge data loaded, then button not enabled`() {
+        testBlocking {
+            val chargeId = "charge_id"
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+            )
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Error
+            )
+
+            initViewModel()
+
+            viewModel.onRefundSummaryTextChanged(10, 100)
+
+            var viewState: IssueRefundViewModel.RefundSummaryViewState? = null
+            viewModel.refundSummaryStateLiveData.observeForever { _, new -> viewState = new }
+
+            assertThat(viewState!!.isSubmitButtonEnabled).isFalse()
         }
     }
 

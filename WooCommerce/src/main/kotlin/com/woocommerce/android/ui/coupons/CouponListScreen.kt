@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.coupons
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -11,18 +10,20 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListItem
 import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListState
@@ -51,16 +52,18 @@ fun CouponListScreen(
             onCouponClick = onCouponClick,
             onLoadMore = onLoadMore
         )
-        state.coupons.isEmpty() -> EmptyCouponList()
+        state.coupons.isEmpty() && state.isLoading -> CouponListSkeleton()
+        state.isSearchOpen -> SearchEmptyList(searchQuery = state.searchQuery.orEmpty())
+        else -> EmptyCouponList()
     }
 }
 
 @Composable
-fun EmptyCouponList() {
+private fun EmptyCouponList() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 32.dp),
+            .padding(horizontal = dimensionResource(id = R.dimen.major_200)),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -68,9 +71,12 @@ fun EmptyCouponList() {
             text = stringResource(id = R.string.coupon_list_empty_heading),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.h6,
-            modifier = Modifier.padding(start = 24.dp, end = 24.dp)
+            modifier = Modifier.padding(
+                start = dimensionResource(id = R.dimen.major_150),
+                end = dimensionResource(id = R.dimen.major_150)
+            )
         )
-        Spacer(Modifier.size(54.dp))
+        Spacer(Modifier.size(dimensionResource(id = R.dimen.major_325)))
         Image(
             painter = painterResource(id = R.drawable.img_empty_coupon_list),
             contentDescription = null,
@@ -79,7 +85,7 @@ fun EmptyCouponList() {
 }
 
 @Composable
-fun CouponList(
+private fun CouponList(
     coupons: List<CouponListItem>,
     onCouponClick: (Long) -> Unit,
     onLoadMore: () -> Unit
@@ -96,10 +102,9 @@ fun CouponList(
                 onCouponClick = onCouponClick
             )
             Divider(
-                modifier = Modifier
-                    .offset(x = 16.dp),
+                modifier = Modifier.offset(x = dimensionResource(id = R.dimen.major_100)),
                 color = colorResource(id = R.color.divider_color),
-                thickness = 1.dp
+                thickness = dimensionResource(id = R.dimen.minor_10)
             )
         }
     }
@@ -110,12 +115,12 @@ fun CouponList(
 }
 
 @Composable
-fun CouponListItem(
+private fun CouponListItem(
     coupon: CouponListItem,
     onCouponClick: (Long) -> Unit
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_50)),
         modifier = Modifier
             .fillMaxWidth()
             .clickable(
@@ -124,7 +129,10 @@ fun CouponListItem(
                 role = Role.Button,
                 onClick = { onCouponClick(coupon.id) }
             )
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(
+                horizontal = dimensionResource(id = R.dimen.major_100),
+                vertical = dimensionResource(id = R.dimen.minor_100)
+            ),
     ) {
         coupon.code?.let {
             Text(
@@ -141,7 +149,7 @@ fun CouponListItem(
 }
 
 @Composable
-fun CouponListItemInfo(
+private fun CouponListItemInfo(
     summary: String,
 ) {
     Text(
@@ -151,7 +159,72 @@ fun CouponListItemInfo(
     )
 }
 
-@ExperimentalFoundationApi
+@Composable
+@Suppress("MagicNumber")
+private fun CouponListSkeleton() {
+    val numberOfInboxSkeletonRows = 10
+    LazyColumn(Modifier.background(color = MaterialTheme.colors.surface)) {
+        repeat(numberOfInboxSkeletonRows) {
+            item {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_50)),
+                    modifier = Modifier.padding(
+                        horizontal = dimensionResource(id = R.dimen.major_100),
+                        vertical = dimensionResource(id = R.dimen.minor_100)
+                    )
+                ) {
+                    SkeletonView(
+                        dimensionResource(id = R.dimen.skeleton_text_medium_width),
+                        dimensionResource(id = R.dimen.major_125)
+                    )
+                    SkeletonView(
+                        dimensionResource(id = R.dimen.skeleton_text_large_width),
+                        dimensionResource(id = R.dimen.major_100)
+                    )
+                    SkeletonView(
+                        dimensionResource(id = R.dimen.skeleton_text_small_width),
+                        dimensionResource(id = R.dimen.major_125)
+                    )
+                }
+                Divider(
+                    modifier = Modifier
+                        .offset(x = dimensionResource(id = R.dimen.major_100)),
+                    color = colorResource(id = R.color.divider_color),
+                    thickness = dimensionResource(id = R.dimen.minor_10)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SearchEmptyList(searchQuery: String) {
+    if (searchQuery.isEmpty()) return
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = dimensionResource(id = R.dimen.major_200)),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = stringResource(id = R.string.empty_message_with_search, searchQuery),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.h6,
+            modifier = Modifier.padding(
+                start = dimensionResource(id = R.dimen.major_150),
+                end = dimensionResource(id = R.dimen.major_150)
+            )
+        )
+        Spacer(Modifier.size(dimensionResource(id = R.dimen.major_325)))
+        Image(
+            painter = painterResource(id = R.drawable.img_empty_search),
+            contentDescription = null,
+        )
+    }
+}
+
 @Preview
 @Composable
 @Suppress("MagicNumber")
@@ -182,9 +255,14 @@ fun CouponListPreview() {
     CouponList(coupons = coupons, {}, {})
 }
 
-@ExperimentalFoundationApi
 @Preview
 @Composable
 fun CouponListEmptyPreview() {
     EmptyCouponList()
+}
+
+@Preview
+@Composable
+fun CouponListSkeletonPreview() {
+    CouponListSkeleton()
 }
