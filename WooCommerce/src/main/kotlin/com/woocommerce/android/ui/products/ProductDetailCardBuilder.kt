@@ -10,7 +10,10 @@ import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_VIEW_INVE
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_VIEW_PRODUCT_DESCRIPTION_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.extensions.*
+import com.woocommerce.android.extensions.addIfNotEmpty
+import com.woocommerce.android.extensions.fastStripHtml
+import com.woocommerce.android.extensions.filterNotEmpty
+import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
