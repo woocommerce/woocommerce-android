@@ -198,6 +198,74 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given interac refund, when making "capture_terminal_payment", then trigger updating backend snackbar`() {
+        testBlocking {
+            val chargeId = "charge_id"
+            val cardBrand = "visa"
+            val cardLast4 = "1234"
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+            )
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
+                    cardBrand = cardBrand,
+                    cardLast4 = cardLast4,
+                    paymentMethodType = "interac_present"
+                )
+            )
+            whenever(resourceProvider.getString(R.string.order_refunds_manual_refund))
+                .thenReturn("Credit/Debit card")
+
+            initViewModel()
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+            viewModel.refund()
+
+            assertThat(events.first()).isEqualTo(
+                MultiLiveEvent.Event.ShowSnackbar(
+                    R.string.card_reader_interac_refund_notifying_backend_about_successful_refund
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given non-interac refund, when "capture_terminal_payment", then don't trigger updating backend snackbar`() {
+        testBlocking {
+            val chargeId = "charge_id"
+            val cardBrand = "visa"
+            val cardLast4 = "1234"
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+            )
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
+                    cardBrand = cardBrand,
+                    cardLast4 = cardLast4,
+                    paymentMethodType = "card_present"
+                )
+            )
+            whenever(resourceProvider.getString(R.string.order_refunds_manual_refund))
+                .thenReturn("Credit/Debit card")
+
+            initViewModel()
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+            viewModel.refund()
+
+            assertThat(events.any()).isNotEqualTo(
+                MultiLiveEvent.Event.ShowSnackbar(
+                    R.string.card_reader_interac_refund_notifying_backend_about_successful_refund
+                )
+            )
+        }
+    }
+
+    @Test
     fun `given IPP canada feature flag is disabled, when refund confirmed, then do not trigger card reader screen`() {
         testBlocking {
             val chargeId = "charge_id"

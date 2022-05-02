@@ -405,6 +405,9 @@ class IssueRefundViewModel @Inject constructor(
     // TODO Refactor this method in a follow up PR
     @Suppress("ComplexMethod", "LongMethod")
     fun refund() {
+        if (isInteracRefund()) {
+            triggerEvent(ShowSnackbar(R.string.card_reader_interac_refund_notifying_backend_about_successful_refund))
+        }
         launch {
             val resultCall = async(dispatchers.io) {
                 return@async when (commonState.refundType) {
