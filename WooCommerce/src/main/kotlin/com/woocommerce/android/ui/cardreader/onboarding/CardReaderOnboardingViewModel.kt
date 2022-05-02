@@ -13,8 +13,43 @@ import com.woocommerce.android.extensions.formatToMMMMdd
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingParams.Check
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingParams.Failed
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.GenericError
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.NoConnectionError
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.OnboardingCompleted
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.PluginIsNotSupportedInTheCountry
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.PluginUnsupportedVersion
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.SetupNotCompleted
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.StoreCountryNotSupported
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.StripeAccountCountryNotSupported
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.StripeAccountOverdueRequirement
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.StripeAccountPendingRequirement
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.StripeAccountRejected
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.StripeAccountUnderReview
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.WcpayAndStripeActivated
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.WcpayNotActivated
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.WcpayNotInstalled
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInGenericWebView
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInWPComWebView
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.NoConnectionErrorState
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.StripeAcountError.PluginInTestModeWithLiveAccountState
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.StripeAcountError.StripeAccountOverdueRequirementsState
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.StripeAcountError.StripeAccountPendingRequirementsState
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.StripeAcountError.StripeAccountRejectedState
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.StripeAcountError.StripeAccountUnderReviewState
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.StripeExtensionError.StripeExtensionNotSetupState
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.StripeExtensionError.StripeExtensionUnsupportedVersionState
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.UnsupportedErrorState.Country
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.UnsupportedErrorState.StripeAccountInUnsupportedCountry
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.UnsupportedErrorState.StripeInCountry
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.UnsupportedErrorState.WcPayInCountry
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayError.WCPayNotActivatedState
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayError.WCPayNotInstalledState
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayError.WCPayNotSetupState
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayError.WCPayUnsupportedVersionState
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WcPayAndStripeInstalledState
 import com.woocommerce.android.ui.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
@@ -50,116 +85,122 @@ class CardReaderOnboardingViewModel @Inject constructor(
     val viewStateData: LiveData<OnboardingViewState> = viewState
 
     init {
-        refreshState()
+        launch {
+            when (val onboardingParam = arguments.cardReaderOnboardingParam) {
+                is Check -> refreshState()
+                is Failed -> handleNewState(onboardingParam.onboardingState)
+            }.exhaustive
+        }
+    }
+
+    private suspend fun refreshState() {
+        viewState.value = OnboardingViewState.LoadingState
+        val state = cardReaderChecker.getOnboardingState()
+        cardReaderTracker.trackOnboardingState(state)
+        handleNewState(state)
     }
 
     @Suppress("LongMethod", "ComplexMethod")
-    private fun refreshState() {
-        launch {
-            viewState.value = OnboardingViewState.LoadingState
-            val state = cardReaderChecker.getOnboardingState()
-            cardReaderTracker.trackOnboardingState(state)
-            when (state) {
-                is CardReaderOnboardingState.OnboardingCompleted -> {
-                    continueFlow(state.countryCode)
+    private suspend fun handleNewState(state: CardReaderOnboardingState) {
+        when (state) {
+            is OnboardingCompleted -> {
+                continueFlow(state.countryCode)
+            }
+            is StoreCountryNotSupported ->
+                viewState.value = Country(
+                    convertCountryCodeToCountry(state.countryCode),
+                    ::onContactSupportClicked,
+                    ::onLearnMoreClicked
+                )
+            is PluginIsNotSupportedInTheCountry ->
+                viewState.value = when (state.preferredPlugin) {
+                    WOOCOMMERCE_PAYMENTS ->
+                        WcPayInCountry(
+                            convertCountryCodeToCountry(state.countryCode),
+                            ::onContactSupportClicked,
+                            ::onLearnMoreClicked
+                        )
+                    STRIPE_EXTENSION_GATEWAY ->
+                        StripeInCountry(
+                            convertCountryCodeToCountry(state.countryCode),
+                            ::onContactSupportClicked,
+                            ::onLearnMoreClicked
+                        )
                 }
-                is CardReaderOnboardingState.StoreCountryNotSupported ->
-                    viewState.value = OnboardingViewState.UnsupportedErrorState.Country(
-                        convertCountryCodeToCountry(state.countryCode),
-                        ::onContactSupportClicked,
-                        ::onLearnMoreClicked
-                    )
-                is CardReaderOnboardingState.PluginIsNotSupportedInTheCountry ->
-                    viewState.value = when (state.preferredPlugin) {
-                        WOOCOMMERCE_PAYMENTS ->
-                            OnboardingViewState.UnsupportedErrorState.WcPayInCountry(
-                                convertCountryCodeToCountry(state.countryCode),
-                                ::onContactSupportClicked,
+            WcpayNotInstalled ->
+                viewState.value =
+                    WCPayNotInstalledState(::refreshState, ::onLearnMoreClicked)
+            is PluginUnsupportedVersion ->
+                when (state.preferredPlugin) {
+                    WOOCOMMERCE_PAYMENTS ->
+                        viewState.value =
+                            WCPayUnsupportedVersionState(
+                                ::refreshState,
                                 ::onLearnMoreClicked
                             )
-                        STRIPE_EXTENSION_GATEWAY ->
-                            OnboardingViewState.UnsupportedErrorState.StripeInCountry(
-                                convertCountryCodeToCountry(state.countryCode),
-                                ::onContactSupportClicked,
-                                ::onLearnMoreClicked
-                            )
-                    }
-                CardReaderOnboardingState.WcpayNotInstalled ->
-                    viewState.value =
-                        OnboardingViewState.WCPayError.WCPayNotInstalledState(::refreshState, ::onLearnMoreClicked)
-                is CardReaderOnboardingState.PluginUnsupportedVersion ->
-                    when (state.preferredPlugin) {
-                        WOOCOMMERCE_PAYMENTS ->
-                            viewState.value =
-                                OnboardingViewState.WCPayError.WCPayUnsupportedVersionState(
-                                    ::refreshState,
-                                    ::onLearnMoreClicked
-                                )
-                        STRIPE_EXTENSION_GATEWAY ->
-                            viewState.value =
-                                OnboardingViewState.StripeExtensionError.StripeExtensionUnsupportedVersionState(
-                                    ::refreshState, ::onLearnMoreClicked
-                                )
-                    }
-                CardReaderOnboardingState.WcpayNotActivated ->
-                    viewState.value =
-                        OnboardingViewState.WCPayError.WCPayNotActivatedState(::refreshState, ::onLearnMoreClicked)
-                is CardReaderOnboardingState.SetupNotCompleted ->
-                    viewState.value = when (state.preferredPlugin) {
-                        WOOCOMMERCE_PAYMENTS ->
-                            OnboardingViewState.WCPayError.WCPayNotSetupState(::refreshState, ::onLearnMoreClicked)
-                        STRIPE_EXTENSION_GATEWAY ->
-                            OnboardingViewState.StripeExtensionError.StripeExtensionNotSetupState(
+                    STRIPE_EXTENSION_GATEWAY ->
+                        viewState.value =
+                            StripeExtensionUnsupportedVersionState(
                                 ::refreshState, ::onLearnMoreClicked
                             )
-                    }
-                is CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount ->
-                    viewState.value = OnboardingViewState.StripeAcountError.PluginInTestModeWithLiveAccountState(
-                        onContactSupportActionClicked = ::onContactSupportClicked,
-                        onLearnMoreActionClicked = ::onLearnMoreClicked
-                    )
-                is CardReaderOnboardingState.StripeAccountUnderReview ->
-                    viewState.value = OnboardingViewState.StripeAcountError.StripeAccountUnderReviewState(
-                        onContactSupportActionClicked = ::onContactSupportClicked,
-                        onLearnMoreActionClicked = ::onLearnMoreClicked
-                    )
-                is CardReaderOnboardingState.StripeAccountPendingRequirement ->
-                    viewState.value = OnboardingViewState.StripeAcountError
-                        .StripeAccountPendingRequirementsState(
-                            onContactSupportActionClicked = ::onContactSupportClicked,
-                            onLearnMoreActionClicked = ::onLearnMoreClicked,
-                            onButtonActionClicked = { onSkipPendingRequirementsClicked(state.countryCode) },
-                            dueDate = formatDueDate(state)
+                }
+            WcpayNotActivated ->
+                viewState.value =
+                    WCPayNotActivatedState(::refreshState, ::onLearnMoreClicked)
+            is SetupNotCompleted ->
+                viewState.value = when (state.preferredPlugin) {
+                    WOOCOMMERCE_PAYMENTS ->
+                        WCPayNotSetupState(::refreshState, ::onLearnMoreClicked)
+                    STRIPE_EXTENSION_GATEWAY ->
+                        StripeExtensionNotSetupState(
+                            ::refreshState, ::onLearnMoreClicked
                         )
-                is CardReaderOnboardingState.StripeAccountOverdueRequirement ->
-                    viewState.value = OnboardingViewState.StripeAcountError.StripeAccountOverdueRequirementsState(
-                        onContactSupportActionClicked = ::onContactSupportClicked,
-                        onLearnMoreActionClicked = ::onLearnMoreClicked
-                    )
-                is CardReaderOnboardingState.StripeAccountRejected ->
-                    viewState.value = OnboardingViewState.StripeAcountError.StripeAccountRejectedState(
-                        onContactSupportActionClicked = ::onContactSupportClicked,
-                        onLearnMoreActionClicked = ::onLearnMoreClicked
-                    )
-                CardReaderOnboardingState.GenericError ->
-                    viewState.value = OnboardingViewState.GenericErrorState(
-                        onContactSupportActionClicked = ::onContactSupportClicked,
-                        onLearnMoreActionClicked = ::onLearnMoreClicked
-                    )
-                CardReaderOnboardingState.NoConnectionError ->
-                    viewState.value = OnboardingViewState.NoConnectionErrorState(
-                        onRetryButtonActionClicked = ::refreshState
-                    )
-                is CardReaderOnboardingState.StripeAccountCountryNotSupported ->
-                    viewState.value = OnboardingViewState.UnsupportedErrorState.StripeAccountInUnsupportedCountry(
-                        convertCountryCodeToCountry(state.countryCode),
-                        ::onContactSupportClicked,
-                        ::onLearnMoreClicked
-                    )
-                CardReaderOnboardingState.WcpayAndStripeActivated ->
-                    updateUiWithWcPayAndStripeActivated()
-            }.exhaustive
-        }
+                }
+            is PluginInTestModeWithLiveStripeAccount ->
+                viewState.value = PluginInTestModeWithLiveAccountState(
+                    onContactSupportActionClicked = ::onContactSupportClicked,
+                    onLearnMoreActionClicked = ::onLearnMoreClicked
+                )
+            is StripeAccountUnderReview ->
+                viewState.value = StripeAccountUnderReviewState(
+                    onContactSupportActionClicked = ::onContactSupportClicked,
+                    onLearnMoreActionClicked = ::onLearnMoreClicked
+                )
+            is StripeAccountPendingRequirement ->
+                viewState.value = StripeAccountPendingRequirementsState(
+                    onContactSupportActionClicked = ::onContactSupportClicked,
+                    onLearnMoreActionClicked = ::onLearnMoreClicked,
+                    onButtonActionClicked = { onSkipPendingRequirementsClicked(state.countryCode) },
+                    dueDate = formatDueDate(state)
+                )
+            is StripeAccountOverdueRequirement ->
+                viewState.value = StripeAccountOverdueRequirementsState(
+                    onContactSupportActionClicked = ::onContactSupportClicked,
+                    onLearnMoreActionClicked = ::onLearnMoreClicked
+                )
+            is StripeAccountRejected ->
+                viewState.value = StripeAccountRejectedState(
+                    onContactSupportActionClicked = ::onContactSupportClicked,
+                    onLearnMoreActionClicked = ::onLearnMoreClicked
+                )
+            GenericError ->
+                viewState.value = GenericErrorState(
+                    onContactSupportActionClicked = ::onContactSupportClicked,
+                    onLearnMoreActionClicked = ::onLearnMoreClicked
+                )
+            NoConnectionError ->
+                viewState.value = NoConnectionErrorState(
+                    onRetryButtonActionClicked = ::refreshState
+                )
+            is StripeAccountCountryNotSupported ->
+                viewState.value = StripeAccountInUnsupportedCountry(
+                    convertCountryCodeToCountry(state.countryCode),
+                    ::onContactSupportClicked,
+                    ::onLearnMoreClicked
+                )
+            WcpayAndStripeActivated ->
+                updateUiWithWcPayAndStripeActivated()
+        }.exhaustive
     }
 
     private suspend fun updateUiWithWcPayAndStripeActivated() {
@@ -216,12 +257,12 @@ class CardReaderOnboardingViewModel @Inject constructor(
     }
 
     private fun continueFlow(storeCountryCode: String) {
-        when (arguments.cardReaderFlowParam) {
+        when (val params = arguments.cardReaderOnboardingParam.cardReaderFlowParam) {
             CardReaderFlowParam.CardReadersHub -> {
-                triggerEvent(OnboardingEvent.ContinueToHub(arguments.cardReaderFlowParam, storeCountryCode))
+                triggerEvent(OnboardingEvent.ContinueToHub(params, storeCountryCode))
             }
             is CardReaderFlowParam.PaymentOrRefund -> {
-                triggerEvent(OnboardingEvent.ContinueToConnection(arguments.cardReaderFlowParam))
+                triggerEvent(OnboardingEvent.ContinueToConnection(params))
             }
         }.exhaustive
     }

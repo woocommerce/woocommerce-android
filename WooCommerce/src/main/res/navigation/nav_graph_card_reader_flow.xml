@@ -39,7 +39,11 @@
         android:name="com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingFragment"
         android:label="CardReaderOnboardingFragment">
         <argument
-            android:name="cardReaderFlowParam"
+            android:name="cardReaderOnboardingParam"
+            app:argType="com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingParams"
+            app:nullable="false" />
+        <argument
+            android:name="onboardingErrorStatus"
             app:argType="com.woocommerce.android.ui.cardreader.onboarding.CardReaderFlowParam"
             app:nullable="false" />
         <action
