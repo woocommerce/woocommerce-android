@@ -937,6 +937,7 @@
     <string name="card_reader_interac_refund_order_refunded_refund_cancelled">The order is already refunded</string>
     <string name="card_reader_interac_refund_refund_payment_hint">Tap or insert to refund</string>
     <string name="card_reader_interac_refund_notifying_backend_about_successful_refund">Updating backend about the successful refund</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund_failed">Something went wrong while updating the backend.</string>
     <!--
         Card Reader Payments
     -->
