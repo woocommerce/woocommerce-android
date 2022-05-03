@@ -35,7 +35,8 @@ class CardReaderManualsFragment : BaseFragment() {
 
     override fun onViewCreated(
         view: View,
-        savedInstanceState: Bundle?) {
+        savedInstanceState: Bundle?
+    ) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers()
     }
