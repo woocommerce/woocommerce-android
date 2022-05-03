@@ -55,14 +55,14 @@ fun ManualListItem(
         Image(
             painterResource(manualIcon),
             contentDescription = stringResource(R.string.card_reader_icon_content_description),
-            modifier = Modifier
+            modifier
                 .padding(
                     horizontal = dimensionResource(id = R.dimen.major_100),
                     vertical = dimensionResource(id = R.dimen.minor_100)
                 )
         )
         Column(
-            modifier = Modifier
+            modifier
                 .padding(horizontal = dimensionResource(id = R.dimen.major_100))
                 .align(Alignment.CenterVertically)
         ) {
@@ -73,10 +73,11 @@ fun ManualListItem(
 
 @Composable
 fun ManualsList(
-    list: List<CardReaderManualsViewModel.ManualItem>
+    list: List<CardReaderManualsViewModel.ManualItem>,
+    modifier: Modifier = Modifier
 ) {
     LazyColumn(
-        modifier = Modifier
+        modifier
             .background(color = MaterialTheme.colors.surface)
 
     ) {
@@ -89,7 +90,8 @@ fun ManualsList(
                 onManualClick = manual.onManualClicked
             )
             Divider(
-                modifier = Modifier.offset(x = 96.dp),
+                modifier
+                    .offset(x = 96.dp),
                 color = colorResource(id = R.color.divider_color),
                 thickness = dimensionResource(id = R.dimen.minor_10)
             )
