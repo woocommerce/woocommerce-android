@@ -301,7 +301,7 @@ class VariationDetailFragment :
         }
 
         val recyclerViewState = binding.cardsRecyclerView.layoutManager?.onSaveInstanceState()
-        adapter.update(cards)
+        binding.cardsRecyclerView.post { adapter.update(cards) }
         binding.cardsRecyclerView.layoutManager?.onRestoreInstanceState(recyclerViewState)
     }
 
