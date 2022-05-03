@@ -1,24 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-04-07 09:54:03+0000
+Translation-Revision-Date: 2022-04-27 11:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
-    <string name="coupon_summary_performance_amount_heading">金額</string>
-    <string name="coupon_summary_performance_discounted_order_heading">折扣訂單</string>
-    <string name="coupon_summary_performance_heading">效能</string>
-    <string name="coupon_summary_maximum_spend">%s 最高消費</string>
-    <string name="coupon_summary_minimum_spend">%s 最低消費</string>
-    <string name="coupon_summary_heading">折價券摘要</string>
+    <string name="coupons_list_search_hint">搜尋優惠券</string>
+    <string name="coupon_details_share_formatting_failure">無法產生優惠券代碼分享訊息</string>
+    <string name="coupon_details_share_coupon_error">分享優惠券代碼時發生錯誤。</string>
+    <string name="coupon_details_share_coupon_some">使用優惠代碼「%2$s」，特定產品可享 %1$s 折扣</string>
+    <string name="coupon_details_share_coupon_all">使用優惠代碼「%2$s」，所有產品可享 %1$s 折扣</string>
+    <string name="coupon_details_copy_error">將優惠券代碼複製到剪貼簿時發生錯誤。</string>
+    <string name="coupon_details_copy_success">優惠券代碼已複製到剪貼簿。</string>
+    <string name="coupon_details_copy_clipboard_label">優惠券代碼</string>
+    <string name="coupon_beta_features_subheading">在應用程式中試用優惠券管理功能</string>
+    <string name="coupon_beta_features_heading">優惠券管理</string>
+    <string name="coupon_summary_loading_failure">載入優惠券摘要失敗</string>
+    <string name="coupon_details_expiration_date">有效期限︰%1$s</string>
+    <string name="coupon_summary_template">%2$s 可享 %1$s 折扣</string>
+    <string name="coupon_type_custom">自訂折扣 (%1$s)</string>
+    <string name="coupon_type_fixed_product">固定的商品折扣</string>
+    <string name="coupon_type_fixed_cart">固定的購物車折扣</string>
+    <string name="coupon_type_percent">百分比折扣</string>
+    <string name="coupon_details_performance_loading_failure">載入優惠券績效失敗</string>
+    <string name="coupon_details_menu_share">分享優惠券</string>
+    <string name="coupon_details_menu_copy">複製優惠券代碼</string>
+    <string name="inbox_note_survey_actioned">感謝你的意見回饋！</string>
+    <string name="beta_features_coupons">優惠券管理</string>
+    <string name="card_reader_connect_permission_rationale_hint">讀卡機付款需要準確定位的權限</string>
+    <string name="card_reader_connect_permission_rationale_header">需要定位權限</string>
+    <string name="simple_payments_share_payment_dialog_title">結帳 - %s</string>
+    <string name="simple_payments_share_payment_link">分享付款連結</string>
+    <string name="amount">金額</string>
+    <string name="coupon_details_performance_amount_heading">金額</string>
+    <string name="coupon_details_performance_discounted_order_heading">折扣訂單</string>
+    <string name="coupon_details_performance_heading">績效</string>
+    <string name="coupon_details_maximum_spend">%s 最高消費</string>
+    <string name="coupon_details_minimum_spend">%s 最低消費</string>
+    <string name="coupon_details_heading">優惠券摘要</string>
     <string name="coupon_list_view_coupon">檢視折價券摘要</string>
     <string name="coupon_list_wip_message_enabled">我們一直努力讓你可以在裝置上查看並編輯優惠券！</string>
     <string name="coupon_list_wip_title">檢視並編輯優惠券</string>
     <string name="coupon_list_empty_heading">找不到折價券</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s (不包括 %2s)</string>
     <string name="coupon_list_item_label_everything">全部</string>
-    <string name="coupon_list_item_label_off">on</string>
     <string name="coupon_list_item_label_expired">已到期</string>
     <string name="coupon_list_item_label_active">使用中</string>
     <string name="coupons">折價券</string>
@@ -58,14 +84,12 @@ Language: zh_TW
     <string name="card_reader_payment_reader_receipt_sent">收據已傳送至 &lt;strong&gt;%s&lt;/strong&gt;</string>
     <string name="order_creation_fee_percentage_toggle_text">百分比費用</string>
     <string name="order_creation_fee_percentage_hint">百分比 (%)</string>
-    <string name="order_creation_fee_amount_hint">金額 ($)</string>
     <string name="order_creation_add_fee_removal_hint">從訂單中移除費用</string>
     <string name="order_creation_remove_shipping">從訂單中移除運送方式</string>
     <string name="order_creation_edit_shipping">運送方式</string>
     <string name="order_creation_add_shipping">新增運費</string>
     <string name="order_creation_shipping_title_add">新增運送</string>
     <string name="order_creation_shipping_name">名稱</string>
-    <string name="order_creation_shipping_amount">金額</string>
     <string name="order_creation_payment_fee">費用</string>
     <string name="order_creation_customer_details">客戶詳細資料</string>
     <string name="order_creation_add_fee">新增費用</string>

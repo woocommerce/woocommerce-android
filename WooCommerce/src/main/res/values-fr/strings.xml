@@ -1,17 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-04-08 13:54:03+0000
+Translation-Revision-Date: 2022-04-26 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
-    <string name="coupon_summary_performance_amount_heading">Montant</string>
-    <string name="coupon_summary_performance_discounted_order_heading">Commandes avec réduction</string>
-    <string name="coupon_summary_performance_heading">Performances</string>
-    <string name="coupon_summary_maximum_spend">Dépense maximale de %s</string>
-    <string name="coupon_summary_minimum_spend">Dépense minimale de %s</string>
-    <string name="coupon_summary_heading">Résumé du code promo</string>
+    <string name="coupons_list_search_hint">Recherche codes promo</string>
+    <string name="coupon_details_share_formatting_failure">Impossible de générer le message de partage du code promo</string>
+    <string name="coupon_details_share_coupon_error">Erreur lors du partage du code promo.</string>
+    <string name="coupon_details_share_coupon_some">Appliquer %1$s de réduction sur une sélection de produits avec le code promo %2$s</string>
+    <string name="coupon_details_share_coupon_all">Appliquer %1$s de réduction sur tous les produits avec le code promo %2$s</string>
+    <string name="coupon_details_copy_error">Erreur lors de la copie du code promo dans le presse-papier.</string>
+    <string name="coupon_details_copy_success">Le code promo a été copié dans le presse-papier.</string>
+    <string name="coupon_details_copy_clipboard_label">Code promo</string>
+    <string name="coupon_beta_features_subheading">Testez la gestion de codes promo dans l’application</string>
+    <string name="coupon_beta_features_heading">Gestion des codes promo</string>
+    <string name="coupon_summary_loading_failure">Le chargement du résumé du code promo a échoué</string>
+    <string name="coupon_details_expiration_date">Expire %1$s</string>
+    <string name="coupon_summary_template">%1$s de remise sur %2$s</string>
+    <string name="coupon_type_custom">Remise personnalisée (%1$s)</string>
+    <string name="coupon_type_fixed_product">Remise produit fixe</string>
+    <string name="coupon_type_fixed_cart">Remise panier fixe</string>
+    <string name="coupon_type_percent">Remise en pourcentage</string>
+    <string name="coupon_details_performance_loading_failure">Échec du chargement des performances du code promo</string>
+    <string name="coupon_details_menu_share">Partager des codes promo</string>
+    <string name="coupon_details_menu_copy">Copier le code promo</string>
+    <string name="inbox_note_survey_actioned">Merci de votre retour.</string>
+    <string name="beta_features_coupons">Gestion des codes promo</string>
+    <string name="card_reader_connect_permission_rationale_hint">Les paiements par lecteur de carte nécessitent une autorisation de localisation précise</string>
+    <string name="card_reader_connect_permission_rationale_header">Accès à la localisation requise</string>
+    <string name="simple_payments_share_payment_dialog_title">Validation de la commande - %s</string>
+    <string name="simple_payments_share_payment_link">Partager le lien de paiement</string>
+    <string name="amount">Montant</string>
+    <string name="coupon_details_performance_amount_heading">Montant</string>
+    <string name="coupon_details_performance_discounted_order_heading">Commandes avec réduction</string>
+    <string name="coupon_details_performance_heading">Performances</string>
+    <string name="coupon_details_maximum_spend">Dépense maximale de %s</string>
+    <string name="coupon_details_minimum_spend">Dépense minimale de %s</string>
+    <string name="coupon_details_heading">Résumé du code promo</string>
     <string name="coupon_list_view_coupon">Voir le résumé du code promo</string>
     <string name="coupon_list_wip_message_enabled">Il sera bientôt possible d’afficher et de modifier les codes promo depuis votre appareil.</string>
     <string name="coupon_list_wip_title">Afficher et modifier les codes promo</string>
@@ -19,7 +46,6 @@ Language: fr
     <string name="coupon_list_item_label_included_and_excluded">%1s sauf %2s</string>
     <string name="coupon_list_item_label_products_and_categories">%1s et %2s</string>
     <string name="coupon_list_item_label_everything">tout</string>
-    <string name="coupon_list_item_label_off">off</string>
     <string name="coupon_list_item_label_expired">Expiré</string>
     <string name="coupon_list_item_label_active">Actif</string>
     <string name="coupons">Codes promo</string>
@@ -59,14 +85,12 @@ Language: fr
     <string name="card_reader_payment_reader_receipt_sent">Un reçu a été envoyé à &lt;strong&gt;%s&lt;/strong&gt;</string>
     <string name="order_creation_fee_percentage_toggle_text">Frais en pourcentage</string>
     <string name="order_creation_fee_percentage_hint">Pourcentage (%)</string>
-    <string name="order_creation_fee_amount_hint">Montant</string>
     <string name="order_creation_add_fee_removal_hint">Supprimer les frais de la commande</string>
     <string name="order_creation_remove_shipping">Supprimer l’expédition de la commande</string>
     <string name="order_creation_edit_shipping">Expédition</string>
     <string name="order_creation_add_shipping">Ajouter l’expédition</string>
     <string name="order_creation_shipping_title_add">Ajouter l’expédition</string>
     <string name="order_creation_shipping_name">Nom</string>
-    <string name="order_creation_shipping_amount">Montant</string>
     <string name="order_creation_payment_fee">Frais</string>
     <string name="order_creation_customer_details">Détails du client</string>
     <string name="order_creation_add_fee">Ajouter frais</string>

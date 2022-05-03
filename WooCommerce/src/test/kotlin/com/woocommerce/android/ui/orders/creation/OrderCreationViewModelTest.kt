@@ -420,12 +420,17 @@ class OrderCreationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when hitting the fee button with an existent fee, then trigger EditFee with the expected data`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
         var lastReceivedEvent: Event? = null
         sut.event.observeForever {
             lastReceivedEvent = it
         }
 
         val newFeeTotal = BigDecimal(123.5)
+        val orderSubtotal = (orderDraft?.total ?: BigDecimal.ZERO) - newFeeTotal
         sut.onFeeEdited(newFeeTotal)
         sut.onFeeButtonClicked()
 
@@ -434,7 +439,7 @@ class OrderCreationViewModelTest : BaseUnitTest() {
             .run { this as? EditFee }
             ?.let { editFeeEvent ->
                 assertThat(editFeeEvent.currentFeeValue).isEqualTo(newFeeTotal)
-                assertThat(editFeeEvent.orderTotal).isEqualTo(BigDecimal.ZERO)
+                assertThat(editFeeEvent.orderSubTotal).isEqualTo(orderSubtotal)
             } ?: fail("Last event should be of EditFee type")
     }
 
