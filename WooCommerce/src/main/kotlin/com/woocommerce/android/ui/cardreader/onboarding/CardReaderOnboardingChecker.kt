@@ -326,7 +326,6 @@ private fun PluginType.toSupportedExtensionType() =
 sealed class CardReaderOnboardingState(
     open val preferredPlugin: PluginType? = null
 ) : Parcelable {
-
     @Parcelize
     data class OnboardingCompleted(
         override val preferredPlugin: PluginType,
