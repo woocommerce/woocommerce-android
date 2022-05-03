@@ -28,11 +28,7 @@ class WCSelectableTextView @JvmOverloads constructor(
 
     // when text is selectable, TextView intercepts the click event even if there's no OnClickListener,
     // requiring this workaround to pass the click to a parent view
-    var clickableParent: View? = null
-        get() = field
-        set(value) {
-            field = value
-        }
+    private var clickableParent: View? = null
 
     init {
         setTextIsSelectable(true)
@@ -44,6 +40,10 @@ class WCSelectableTextView @JvmOverloads constructor(
             detector.onTouchEvent(event)
             false
         }
+    }
+
+    fun setClickableParent(view: View?) {
+        clickableParent = view
     }
 
     // -- ActionMode.Callback
@@ -67,8 +67,7 @@ class WCSelectableTextView @JvmOverloads constructor(
     // -- OnDoubleTapListener
 
     override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
-        clickableParent?.performClick()
-        return false
+        return clickableParent?.performClick() ?: false
     }
 
     override fun onDoubleTap(e: MotionEvent?) = false

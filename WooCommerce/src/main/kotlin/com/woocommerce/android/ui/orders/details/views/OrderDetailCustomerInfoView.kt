@@ -77,8 +77,9 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         binding.customerInfoBillingAddr.setIsReadOnly(isReadOnly)
         if (!isReadOnly) {
             binding.customerInfoBillingAddressSection.setOnClickListener { navigateToBillingAddressEditingView() }
-            binding.customerInfoBillingAddr.binding.notEmptyLabel.clickableParent =
+            binding.customerInfoBillingAddr.binding.notEmptyLabel.setClickableParent(
                 binding.customerInfoBillingAddressSection
+            )
         }
         binding.customerInfoViewMore.setOnClickListener { onViewMoreCustomerInfoClick() }
 
@@ -214,8 +215,9 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
 
         if (!isReadOnly) {
             binding.customerInfoShippingAddressSection.setOnClickListener { navigateToShippingAddressEditingView() }
-            binding.customerInfoShippingAddr.binding.notEmptyLabel.clickableParent =
+            binding.customerInfoShippingAddr.binding.notEmptyLabel.setClickableParent(
                 binding.customerInfoShippingAddressSection
+            )
         }
     }
 
