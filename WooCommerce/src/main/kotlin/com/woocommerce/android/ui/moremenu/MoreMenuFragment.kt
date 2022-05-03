@@ -5,11 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
-import com.woocommerce.android.databinding.FragmentMoreMenuBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
@@ -29,7 +29,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 @ExperimentalFoundationApi
-class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
+class MoreMenuFragment : TopLevelFragment() {
     @Inject lateinit var selectedSite: SelectedSite
 
     override val activityAppBarStatus: AppBarStatus
@@ -38,9 +38,6 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
     override fun getFragmentTitle() = getString(R.string.more_menu)
 
     override fun shouldExpandToolbar(): Boolean = false
-
-    private var _binding: FragmentMoreMenuBinding? = null
-    private val binding get() = _binding!!
 
     private val viewModel: MoreMenuViewModel by viewModels()
 
@@ -53,29 +50,21 @@ class MoreMenuFragment : TopLevelFragment(R.layout.fragment_more_menu) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentMoreMenuBinding.inflate(inflater, container, false)
-
-        val view = binding.root
-        binding.menu.apply {
+        return ComposeView(requireContext()).apply {
+            id = R.id.more_menu_compose_view
             // Dispose of the Composition when the view's LifecycleOwner is destroyed
             setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    MoreMenu(viewModel)
+                    MoreMenuScreen(viewModel)
                 }
             }
         }
-        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     private fun setupObservers() {
