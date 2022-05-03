@@ -7,6 +7,7 @@ import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingChecker
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingParams
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.cardreader.onboarding.PluginType
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -37,7 +38,11 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat(vm.event.value)
-            .isEqualTo(CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToOnboarding(param))
+            .isEqualTo(
+                CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToOnboarding(
+                    CardReaderOnboardingParams.Check(param)
+                )
+            )
     }
 
     @Test
@@ -56,20 +61,25 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given payment flow and not connected and onboarding error, when vm init, then navigates to onboarding`() =
+    fun `given payment flow and not connected and error, when vm init, then navigates to onboarding with fail`() =
         testBlocking {
             // GIVEN
             val orderId = 1L
             val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId)
             whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
-            whenever(cardReaderChecker.getOnboardingState()).thenReturn(CardReaderOnboardingState.GenericError)
+            val onboardingError = CardReaderOnboardingState.GenericError
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(onboardingError)
 
             // WHEN
             val vm = initViewModel(param)
 
             // THEN
             assertThat(vm.event.value)
-                .isEqualTo(CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToOnboarding(param))
+                .isEqualTo(
+                    CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToOnboarding(
+                        CardReaderOnboardingParams.Failed(param, onboardingError)
+                    )
+                )
         }
 
     @Test

@@ -28,6 +28,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
@@ -81,7 +82,9 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             val viewModel = createVM(
                 CardReaderOnboardingFragmentArgs(
-                    cardReaderFlowParam = CardReaderFlowParam.PaymentOrRefund.Payment(1L)
+                    cardReaderOnboardingParam = CardReaderOnboardingParams.Check(
+                        CardReaderFlowParam.PaymentOrRefund.Payment(1L)
+                    )
                 ).initSavedStateHandle()
             )
 
@@ -97,6 +100,22 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             val viewModel = createVM()
 
+            assertThat(viewModel.viewStateData.value).isInstanceOf(UnsupportedErrorState.Country::class.java)
+        }
+
+    @Test
+    fun `given country not supported incoming, when view model init, then country not supported state shown`() =
+        testBlocking {
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = CardReaderOnboardingState.StoreCountryNotSupported(""),
+                    )
+                ).initSavedStateHandle()
+            )
+
+            verify(onboardingChecker, never()).getOnboardingState()
             assertThat(viewModel.viewStateData.value).isInstanceOf(UnsupportedErrorState.Country::class.java)
         }
 
@@ -117,6 +136,25 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given incoming wcpay is not supported in country, when view model init, then country not supported shown`() =
+        testBlocking {
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = CardReaderOnboardingState.PluginIsNotSupportedInTheCountry(
+                            WOOCOMMERCE_PAYMENTS,
+                            ""
+                        ),
+                    )
+                ).initSavedStateHandle()
+            )
+
+            verify(onboardingChecker, never()).getOnboardingState()
+            assertThat(viewModel.viewStateData.value).isInstanceOf(UnsupportedErrorState.WcPayInCountry::class.java)
+        }
+
+    @Test
     fun `given stripe is not supported in country, when init, then stripe in country not supported state shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
@@ -133,6 +171,25 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given incoming stripe is not supported in country, when view model init, then country not supported shown`() =
+        testBlocking {
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = CardReaderOnboardingState.PluginIsNotSupportedInTheCountry(
+                            STRIPE_EXTENSION_GATEWAY,
+                            ""
+                        ),
+                    )
+                ).initSavedStateHandle()
+            )
+
+            verify(onboardingChecker, never()).getOnboardingState()
+            assertThat(viewModel.viewStateData.value).isInstanceOf(UnsupportedErrorState.StripeInCountry::class.java)
+        }
+
+    @Test
     fun `when stripe account country not supported, then country not supported state shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
@@ -140,6 +197,24 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             val viewModel = createVM()
 
+            assertThat(viewModel.viewStateData.value).isInstanceOf(
+                UnsupportedErrorState.StripeAccountInUnsupportedCountry::class.java
+            )
+        }
+
+    @Test
+    fun `when incoming stripe account country not supported, then country not supported state shown`() =
+        testBlocking {
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = CardReaderOnboardingState.StripeAccountCountryNotSupported(mock(), ""),
+                    )
+                ).initSavedStateHandle()
+            )
+
+            verify(onboardingChecker, never()).getOnboardingState()
             assertThat(viewModel.viewStateData.value).isInstanceOf(
                 UnsupportedErrorState.StripeAccountInUnsupportedCountry::class.java
             )
@@ -177,6 +252,26 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     .headerLabel as UiString.UiStringRes
                 ).params[0]
 
+            assertThat(countryName).isEqualTo(UiString.UiStringText("United States"))
+        }
+
+    @Test
+    fun `when incoming country not supported, then current store country name shown`() =
+        testBlocking {
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = CardReaderOnboardingState.StoreCountryNotSupported("US"),
+                    )
+                ).initSavedStateHandle()
+            )
+
+            verify(onboardingChecker, never()).getOnboardingState()
+            val countryName = (
+                (viewModel.viewStateData.value as UnsupportedErrorState.Country)
+                    .headerLabel as UiString.UiStringRes
+                ).params[0]
             assertThat(countryName).isEqualTo(UiString.UiStringText("United States"))
         }
 
@@ -699,13 +794,39 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 )
             val viewModel = createVM(
                 CardReaderOnboardingFragmentArgs(
-                    cardReaderFlowParam = CardReaderFlowParam.PaymentOrRefund.Payment(1L)
+                    cardReaderOnboardingParam = CardReaderOnboardingParams.Check(
+                        CardReaderFlowParam.PaymentOrRefund.Payment(1L)
+                    )
                 ).initSavedStateHandle()
             )
 
             (viewModel.viewStateData.value as StripeAcountError.StripeAccountPendingRequirementsState)
                 .onButtonActionClicked.invoke()
 
+            assertThat(viewModel.event.value)
+                .isInstanceOf(OnboardingEvent.ContinueToConnection::class.java)
+        }
+
+    @Test
+    fun `given incoming failed status, when button clicked, then continues to connection`() =
+        testBlocking {
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    cardReaderOnboardingParam = CardReaderOnboardingParams.Failed(
+                        CardReaderFlowParam.PaymentOrRefund.Payment(1L),
+                        onboardingState = CardReaderOnboardingState.StripeAccountPendingRequirement(
+                            0L,
+                            WOOCOMMERCE_PAYMENTS,
+                            pluginVersion,
+                            countryCode
+                        )
+                    )
+                ).initSavedStateHandle()
+            )
+
+            verify(onboardingChecker, never()).getOnboardingState()
+            (viewModel.viewStateData.value as StripeAcountError.StripeAccountPendingRequirementsState)
+                .onButtonActionClicked.invoke()
             assertThat(viewModel.event.value)
                 .isInstanceOf(OnboardingEvent.ContinueToConnection::class.java)
         }
@@ -806,7 +927,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     private fun createVM(
         savedState: SavedStateHandle = CardReaderOnboardingFragmentArgs(
-            cardReaderFlowParam = CardReaderFlowParam.CardReadersHub
+            cardReaderOnboardingParam = CardReaderOnboardingParams.Check(CardReaderFlowParam.CardReadersHub)
         ).initSavedStateHandle()
     ) =
         CardReaderOnboardingViewModel(
