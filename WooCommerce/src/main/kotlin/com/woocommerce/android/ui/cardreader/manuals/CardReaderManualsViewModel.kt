@@ -11,7 +11,6 @@ import javax.inject.Inject
 class CardReaderManualsViewModel @Inject constructor(
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
-
     private val _manualState = getManualItems().toMutableStateList()
     val manualState: List<ManualItem>
         get() = _manualState
