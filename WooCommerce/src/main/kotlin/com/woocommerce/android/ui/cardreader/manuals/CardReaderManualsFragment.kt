@@ -9,7 +9,6 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.prefs.cardreader.hub.ManualsScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
