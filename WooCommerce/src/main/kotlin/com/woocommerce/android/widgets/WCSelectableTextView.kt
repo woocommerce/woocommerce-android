@@ -2,12 +2,9 @@ package com.woocommerce.android.widgets
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.GestureDetector
 import android.view.Menu
 import android.view.MenuItem
-import android.view.MotionEvent
 import android.view.View
-import androidx.core.view.GestureDetectorCompat
 import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.selectAllText
@@ -22,28 +19,18 @@ class WCSelectableTextView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : MaterialTextView(context, attrs, defStyleAttr),
-    android.view.ActionMode.Callback,
-    GestureDetector.OnDoubleTapListener {
-    private val detector = GestureDetectorCompat(context, GestureDetector.SimpleOnGestureListener())
-
-    // when text is selectable, TextView intercepts the click event even if there's no OnClickListener,
-    // requiring this workaround to pass the click to a parent view
-    private var clickableParent: View? = null
-
+    android.view.ActionMode.Callback {
     init {
         setTextIsSelectable(true)
         customSelectionActionModeCallback = this
-        detector.setOnDoubleTapListener(this)
-
-        // noinspection ClickableViewAccessibility
-        setOnTouchListener { _, event ->
-            detector.onTouchEvent(event)
-            false
-        }
     }
 
+    // when text is selectable, TextView intercepts the click event even if there's no OnClickListener,
+    // requiring this workaround to pass the click to a parent view
     fun setClickableParent(view: View?) {
-        clickableParent = view
+        setOnClickListener {
+            view?.performClick()
+        }
     }
 
     // -- ActionMode.Callback -- used to detect when the Copy menu appears
@@ -65,14 +52,4 @@ class WCSelectableTextView @JvmOverloads constructor(
     override fun onDestroyActionMode(mode: android.view.ActionMode?) {
         // noop
     }
-
-    // -- OnDoubleTapListener -- used to detect the click so we can pass it along
-
-    override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
-        return clickableParent?.performClick() ?: false
-    }
-
-    override fun onDoubleTap(e: MotionEvent?) = false
-
-    override fun onDoubleTapEvent(e: MotionEvent?) = false
 }
