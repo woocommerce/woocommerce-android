@@ -46,7 +46,7 @@ class WCSelectableTextView @JvmOverloads constructor(
         clickableParent = view
     }
 
-    // -- ActionMode.Callback
+    // -- ActionMode.Callback -- used to detect when the Copy menu appears
 
     override fun onCreateActionMode(mode: android.view.ActionMode?, menu: Menu?): Boolean {
         selectAllText()
@@ -66,7 +66,7 @@ class WCSelectableTextView @JvmOverloads constructor(
         // noop
     }
 
-    // -- OnDoubleTapListener
+    // -- OnDoubleTapListener -- used to detect the click so we can pass it along
 
     override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
         return clickableParent?.performClick() ?: false
