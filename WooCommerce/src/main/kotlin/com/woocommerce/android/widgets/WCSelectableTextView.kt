@@ -1,8 +1,6 @@
 package com.woocommerce.android.widgets
 
 import android.content.Context
-import android.text.Selection
-import android.text.Spannable
 import android.util.AttributeSet
 import android.view.GestureDetector
 import android.view.Menu
@@ -11,6 +9,7 @@ import android.view.MotionEvent
 import androidx.core.view.GestureDetectorCompat
 import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.selectAllText
 import org.wordpress.android.util.ToastUtils
 
 /**
@@ -36,10 +35,6 @@ class WCSelectableTextView @JvmOverloads constructor(
             detector.onTouchEvent(event)
             false
         }
-    }
-
-    private fun selectAllText() {
-        Selection.setSelection(text as Spannable, 0, length())
     }
 
     // -- ActionMode.Callback
