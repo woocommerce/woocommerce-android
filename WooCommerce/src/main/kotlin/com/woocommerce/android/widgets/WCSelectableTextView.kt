@@ -2,6 +2,7 @@ package com.woocommerce.android.widgets
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -23,6 +24,11 @@ class WCSelectableTextView @JvmOverloads constructor(
     init {
         setTextIsSelectable(true)
         customSelectionActionModeCallback = this
+
+        with(TypedValue()) {
+            context.theme.resolveAttribute(android.R.attr.selectableItemBackground, this, true)
+            setBackgroundResource(resourceId)
+        }
     }
 
     // when text is selectable, TextView intercepts the click event even if there's no OnClickListener,
