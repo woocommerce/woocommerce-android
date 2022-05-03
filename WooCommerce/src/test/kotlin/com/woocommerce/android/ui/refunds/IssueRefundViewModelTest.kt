@@ -202,7 +202,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given interac refund, when making "capture_terminal_payment", then trigger updating backend snackbar`() {
+    fun `given interac refund, when initiating refund, then trigger updating backend snackbar`() {
         testBlocking {
             val chargeId = "charge_id"
             val cardBrand = "visa"
@@ -236,7 +236,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given non-interac refund, when "capture_terminal_payment", then don't trigger updating backend snackbar`() {
+    fun `given non-interac refund, when initiating refund, then don't trigger updating backend snackbar`() {
         testBlocking {
             val chargeId = "charge_id"
             val cardBrand = "visa"
@@ -270,7 +270,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given interac refund, when "capture_terminal_payment" fails, then trigger updating backend failed snackbar`() {
+    fun `given interac refund, when initiating refund fails, then trigger updating backend failed snackbar`() {
         testBlocking {
             val chargeId = "charge_id"
             val cardBrand = "visa"
@@ -321,7 +321,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given non-interac refund, when "capture_terminal_payment" fails, then don't trigger update failed snackbar`() {
+    fun `given non-interac refund, when initiating refund fails, then don't trigger update failed snackbar`() {
         testBlocking {
             val chargeId = "charge_id"
             val cardBrand = "visa"
