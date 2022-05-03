@@ -231,7 +231,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Given that stores in db are empty, when stores are fetched from api, then skeleton view is displayed`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(repository.getWooCommerceSites()).thenReturn(mutableListOf())
             whenSitesAreFetched()
             whenViewModelIsCreated()

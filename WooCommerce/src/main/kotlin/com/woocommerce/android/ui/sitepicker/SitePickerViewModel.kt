@@ -148,10 +148,10 @@ class SitePickerViewModel @Inject constructor(
             mapOf(AnalyticsTracker.KEY_NUMBER_OF_STORES to sites.size)
         )
 
-        val notJpSites = sites.filter {
+        val filteredSites = sites.filter {
             FeatureFlag.JETPACK_CP.isEnabled() || !it.isJetpackCPConnected
         }
-        displaySites(notJpSites)
+        displaySites(filteredSites)
     }
 
     private fun displaySites(sites: List<SiteModel>) {
