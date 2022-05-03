@@ -16,7 +16,7 @@ import com.woocommerce.android.databinding.WcActionableEmptyLabelBinding
  */
 class WCActionableEmptyLabel @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) :
     FrameLayout(ctx, attrs) {
-    private val binding = WcActionableEmptyLabelBinding.inflate(LayoutInflater.from(context), this, true)
+    val binding = WcActionableEmptyLabelBinding.inflate(LayoutInflater.from(context), this, true)
 
     /**
      * @param text - the text to appear if it's not empty

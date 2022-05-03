@@ -6,6 +6,7 @@ import android.view.GestureDetector
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
+import android.view.View
 import androidx.core.view.GestureDetectorCompat
 import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
@@ -24,6 +25,14 @@ class WCSelectableTextView @JvmOverloads constructor(
     android.view.ActionMode.Callback,
     GestureDetector.OnDoubleTapListener{
     private val detector = GestureDetectorCompat(context, GestureDetector.SimpleOnGestureListener())
+
+    // when text is selectable, TextView intercepts the click event even if there's no OnClickListener,
+    // requiring this workaround to pass the click to a parent view
+    var clickableParent: View? = null
+        get() = field
+        set(value) {
+            field = value
+        }
 
     init {
         setTextIsSelectable(true)
@@ -58,7 +67,7 @@ class WCSelectableTextView @JvmOverloads constructor(
     // -- OnDoubleTapListener
 
     override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
-        ToastUtils.showToast(context, "Tap!")
+        clickableParent?.performClick()
         return false
     }
 
