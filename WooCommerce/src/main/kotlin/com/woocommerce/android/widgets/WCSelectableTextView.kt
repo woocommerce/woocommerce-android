@@ -23,7 +23,7 @@ class WCSelectableTextView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : MaterialTextView(context, attrs, defStyleAttr),
     android.view.ActionMode.Callback,
-    GestureDetector.OnDoubleTapListener{
+    GestureDetector.OnDoubleTapListener {
     private val detector = GestureDetectorCompat(context, GestureDetector.SimpleOnGestureListener())
 
     // when text is selectable, TextView intercepts the click event even if there's no OnClickListener,
@@ -62,7 +62,9 @@ class WCSelectableTextView @JvmOverloads constructor(
         return false
     }
 
-    override fun onDestroyActionMode(mode: android.view.ActionMode?) { }
+    override fun onDestroyActionMode(mode: android.view.ActionMode?) {
+        // noop
+    }
 
     // -- OnDoubleTapListener
 
