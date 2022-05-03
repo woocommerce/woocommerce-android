@@ -17,10 +17,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.cardreader.manuals.CardReaderManualsViewModel
@@ -29,7 +29,6 @@ import com.woocommerce.android.ui.cardreader.manuals.CardReaderManualsViewModel
 fun ManualsScreen(
     cardReaderManualsViewModel: CardReaderManualsViewModel = viewModel()
 ) {
-
     ManualsList(
         list = cardReaderManualsViewModel.manualState
     )
@@ -55,12 +54,16 @@ fun ManualListItem(
     ) {
         Image(
             painterResource(manualIcon),
-            contentDescription = null,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            contentDescription = stringResource(R.string.card_reader_icon_content_description),
+            modifier = Modifier
+                .padding(
+                    horizontal = dimensionResource(id = R.dimen.major_100),
+                    vertical = dimensionResource(id = R.dimen.minor_100)
+                )
         )
         Column(
             modifier = Modifier
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = dimensionResource(id = R.dimen.major_100))
                 .align(Alignment.CenterVertically)
         ) {
             Text(text = manualLabel)
@@ -86,10 +89,9 @@ fun ManualsList(
                 onManualClick = manual.onManualClicked
             )
             Divider(
-                modifier = Modifier
-                    .offset(x = 96.dp),
+                modifier = Modifier.offset(x = dimensionResource(id = R.dimen.major_100)),
                 color = colorResource(id = R.color.divider_color),
-                thickness = 1.dp
+                thickness = dimensionResource(id = R.dimen.minor_10)
             )
         }
     }
