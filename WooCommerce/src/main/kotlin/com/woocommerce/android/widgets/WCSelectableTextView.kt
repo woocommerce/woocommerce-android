@@ -2,7 +2,6 @@ package com.woocommerce.android.widgets
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.TypedValue
 import android.view.GestureDetector
 import android.view.Menu
 import android.view.MenuItem
@@ -40,12 +39,6 @@ class WCSelectableTextView @JvmOverloads constructor(
         // noinspection ClickableViewAccessibility
         setOnTouchListener { _, event ->
             detector.onTouchEvent(event)
-            false
-        }
-
-        with(TypedValue()) {
-            context.theme.resolveAttribute(android.R.attr.selectableItemBackground, this, true)
-            setBackgroundResource(resourceId)
         }
     }
 
