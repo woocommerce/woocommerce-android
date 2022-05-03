@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.prefs.cardreader.hub
+package com.woocommerce.android.ui.cardreader.manuals
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,9 +21,9 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.cardreader.manuals.CardReaderManualsViewModel
 
 @Composable
 fun ManualsScreen(
@@ -89,7 +89,7 @@ fun ManualsList(
                 onManualClick = manual.onManualClicked
             )
             Divider(
-                modifier = Modifier.offset(x = dimensionResource(id = R.dimen.major_100)),
+                modifier = Modifier.offset(x = 96.dp),
                 color = colorResource(id = R.color.divider_color),
                 thickness = dimensionResource(id = R.dimen.minor_10)
             )
