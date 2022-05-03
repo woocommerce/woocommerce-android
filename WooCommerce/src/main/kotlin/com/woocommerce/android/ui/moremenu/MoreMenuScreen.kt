@@ -8,13 +8,29 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.GridCells.Fixed
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -27,17 +43,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
@@ -49,9 +66,9 @@ import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuViewState
 
 @ExperimentalFoundationApi
 @Composable
-fun MoreMenu(viewModel: MoreMenuViewModel) {
+fun MoreMenuScreen(viewModel: MoreMenuViewModel) {
     val moreMenuState by viewModel.moreMenuViewState.observeAsState(initial = (MoreMenuViewState()))
-    MoreMenu(
+    MoreMenuScreen(
         moreMenuState,
         viewModel::onSwitchStoreClick,
         viewModel::onSettingsClick
@@ -61,52 +78,87 @@ fun MoreMenu(viewModel: MoreMenuViewModel) {
 @ExperimentalFoundationApi
 @Composable
 @Suppress("LongMethod")
-fun MoreMenu(
+fun MoreMenuScreen(
     state: MoreMenuViewState,
     onSwitchStore: () -> Unit,
     onSettingsClick: () -> Unit
 ) {
     Column {
-        Spacer(modifier = Modifier.height(32.dp))
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 10.dp, end = 10.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                MoreMenuMyStoreHeader(
-                    state.userAvatarUrl,
-                    state.siteName,
-                    state.siteUrl,
-                    onSwitchStore
-                )
-            }
-            SettingsButton(onSettingsClick)
-        }
-        LazyVerticalGrid(
-            cells = Fixed(2),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 28.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            itemsIndexed(
-                state.moreMenuItems.filter { it.isEnabled }
-            ) { _, item ->
-                MoreMenuButton(
-                    text = item.text,
-                    iconDrawable = item.icon,
-                    badgeCount = item.badgeCount,
-                    onClick = item.onClick
-                )
-            }
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+        MoreMenuHeader(onSwitchStore, state, onSettingsClick)
+        MoreMenuItems(state)
+    }
+}
+
+@ExperimentalFoundationApi
+@Composable
+private fun MoreMenuItems(state: MoreMenuViewState) {
+    LazyVerticalGrid(
+        cells = Fixed(2),
+        contentPadding = PaddingValues(
+            horizontal = dimensionResource(id = R.dimen.major_100),
+            vertical = dimensionResource(id = R.dimen.major_100)
+        ),
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_75)),
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_75))
+    ) {
+        itemsIndexed(
+            state.moreMenuItems.filter { it.isEnabled }
+        ) { _, item ->
+            MoreMenuButton(
+                text = item.text,
+                iconDrawable = item.icon,
+                badgeCount = item.badgeCount,
+                onClick = item.onClick
+            )
         }
     }
 }
 
 @Composable
-private fun SettingsButton(onSettingsClick: () -> Unit) {
+private fun MoreMenuHeader(
+    onSwitchStore: () -> Unit,
+    state: MoreMenuViewState,
+    onSettingsClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(
+                enabled = true,
+                onClickLabel = stringResource(id = string.settings_switch_store),
+                role = Role.Button,
+                onClick = onSwitchStore
+            )
+            .padding(
+                top = dimensionResource(id = R.dimen.major_100),
+                bottom = dimensionResource(id = R.dimen.major_100)
+            ),
+    ) {
+        StoreDetailsHeader(
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .padding(
+                    start = dimensionResource(id = R.dimen.minor_100),
+                    end = dimensionResource(id = R.dimen.major_325)
+                ),
+            userAvatarUrl = state.userAvatarUrl,
+            siteName = state.siteName,
+            siteUrl = state.siteUrl
+        )
+        SettingsButton(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(end = dimensionResource(id = R.dimen.minor_100)),
+            onSettingsClick = onSettingsClick
+        )
+    }
+}
+
+@Composable
+private fun SettingsButton(modifier: Modifier, onSettingsClick: () -> Unit) {
     IconButton(
+        modifier = modifier,
         onClick = { onSettingsClick() },
     ) {
         Icon(
@@ -118,27 +170,15 @@ private fun SettingsButton(onSettingsClick: () -> Unit) {
 }
 
 @Composable
-private fun MoreMenuMyStoreHeader(
+private fun StoreDetailsHeader(
+    modifier: Modifier,
     userAvatarUrl: String,
     siteName: String,
-    siteUrl: String,
-    onSwitchStore: () -> Unit
+    siteUrl: String
 ) {
-    Row(
-        modifier = Modifier
-            .clickable(
-                enabled = true,
-                onClickLabel = stringResource(id = string.settings_switch_store),
-                role = Role.Button,
-                onClick = onSwitchStore
-            )
-            .padding(start = 6.dp, end = 6.dp, top = 6.dp, bottom = 6.dp)
-    ) {
-        Column {
-            Spacer(modifier = Modifier.height(8.dp))
-            MoreMenuUserAvatar(avatarUrl = userAvatarUrl)
-        }
-        Spacer(modifier = Modifier.width(16.dp))
+    Row(modifier = modifier) {
+        MoreMenuUserAvatar(avatarUrl = userAvatarUrl)
+        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
         Column {
             Text(
                 text = siteName,
@@ -148,7 +188,7 @@ private fun MoreMenuMyStoreHeader(
             Text(
                 text = siteUrl,
                 style = MaterialTheme.typography.body2,
-                modifier = Modifier.padding(vertical = 4.dp)
+                modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.minor_50))
             )
             Text(
                 text = stringResource(string.settings_switch_store),
@@ -181,7 +221,11 @@ private fun MoreMenuUserAvatar(avatarUrl: String) {
     }
 
     val circledModifier = Modifier
-        .size(48.dp)
+        .size(dimensionResource(id = R.dimen.major_300))
+        .padding(
+            top = dimensionResource(id = R.dimen.minor_75),
+            start = dimensionResource(id = R.dimen.minor_100)
+        )
         .clip(CircleShape)
 
     bitmapState.value?.let {
@@ -206,12 +250,12 @@ private fun MoreMenuButton(
 ) {
     Button(
         onClick = onClick,
-        contentPadding = PaddingValues(12.dp),
+        contentPadding = PaddingValues(dimensionResource(id = R.dimen.major_75)),
         colors = ButtonDefaults.buttonColors(
             backgroundColor = colorResource(id = color.more_menu_button_background)
         ),
-        modifier = Modifier.height(190.dp),
-        shape = RoundedCornerShape(10.dp)
+        modifier = Modifier.height(dimensionResource(id = R.dimen.more_menu_button_height)),
+        shape = RoundedCornerShape(dimensionResource(id = R.dimen.major_75))
     ) {
         Box(Modifier.fillMaxSize()) {
             MoreMenuBadge(badgeCount = badgeCount)
@@ -223,7 +267,7 @@ private fun MoreMenuButton(
             ) {
                 Box(
                     modifier = Modifier
-                        .size(58.dp)
+                        .size(dimensionResource(id = R.dimen.major_350))
                         .clip(CircleShape)
                         .background(colorResource(id = color.more_menu_button_icon_background))
                 ) {
@@ -231,7 +275,7 @@ private fun MoreMenuButton(
                         painter = painterResource(id = iconDrawable),
                         contentDescription = stringResource(id = text),
                         modifier = Modifier
-                            .size(35.dp)
+                            .size(dimensionResource(id = R.dimen.major_200))
                             .align(Alignment.Center)
                     )
                 }
@@ -255,7 +299,7 @@ fun MoreMenuBadge(badgeCount: Int) {
         ) {
             Box(
                 modifier = Modifier
-                    .size(24.dp)
+                    .size(dimensionResource(id = R.dimen.major_150))
                     .clip(CircleShape)
                     .background(MaterialTheme.colors.primary)
             ) {
@@ -286,5 +330,5 @@ fun MoreMenuPreview() {
         siteUrl = "woocommerce.com",
         userAvatarUrl = "" // To force displaying placeholder image
     )
-    MoreMenu(state, {}, {})
+    MoreMenuScreen(state, {}, {})
 }

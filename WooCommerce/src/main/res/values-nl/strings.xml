@@ -1,17 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-04-08 11:54:03+0000
+Translation-Revision-Date: 2022-04-26 15:54:15+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
-    <string name="coupon_summary_performance_amount_heading">Bedrag</string>
-    <string name="coupon_summary_performance_discounted_order_heading">Bestellingen met korting</string>
-    <string name="coupon_summary_performance_heading">Prestaties</string>
-    <string name="coupon_summary_maximum_spend">Maximale besteding van %s</string>
-    <string name="coupon_summary_minimum_spend">Minimale besteding van %s</string>
-    <string name="coupon_summary_heading">Couponoverzicht</string>
+    <string name="coupons_list_search_hint">Zoek coupons</string>
+    <string name="coupon_details_share_formatting_failure">Kon deelbericht voor couponcode niet genereren</string>
+    <string name="coupon_details_share_coupon_error">Fout bij delen van couponcode.</string>
+    <string name="coupon_details_share_coupon_some">Krijg %1$s korting op geselecteerde producten met de promotiecode %2$s</string>
+    <string name="coupon_details_share_coupon_all">Krijg %1$s korting op alle producten met de promotiecode %2$s</string>
+    <string name="coupon_details_copy_error">Fout bij kopiëren van couponcode naar klembord.</string>
+    <string name="coupon_details_copy_success">Couponcode gekopieerd naar klembord.</string>
+    <string name="coupon_details_copy_clipboard_label">Couponcode</string>
+    <string name="coupon_beta_features_subheading">Probeer het beheer van coupons uit in de app</string>
+    <string name="coupon_beta_features_heading">Couponbeheer</string>
+    <string name="coupon_summary_loading_failure">Laden van couponoverzicht mislukt</string>
+    <string name="coupon_details_expiration_date">Verloopt %1$s</string>
+    <string name="coupon_summary_template">%1$s korting %2$s</string>
+    <string name="coupon_type_custom">Aangepaste korting (%1$s)</string>
+    <string name="coupon_type_fixed_product">Vaste productkorting</string>
+    <string name="coupon_type_fixed_cart">Vaste winkelwagenkorting</string>
+    <string name="coupon_type_percent">Procentuele korting</string>
+    <string name="coupon_details_performance_loading_failure">Laden van couponprestaties mislukt</string>
+    <string name="coupon_details_menu_share">Coupon delen</string>
+    <string name="coupon_details_menu_copy">Couponcode kopiëren</string>
+    <string name="inbox_note_survey_actioned">Bedankt voor je feedback!</string>
+    <string name="beta_features_coupons">Couponbeheer</string>
+    <string name="card_reader_connect_permission_rationale_hint">Kaartlezerbetalingen vereisen toestemming tot precieze locatie</string>
+    <string name="card_reader_connect_permission_rationale_header">Toestemming tot locatie vereist</string>
+    <string name="simple_payments_share_payment_dialog_title">Betalen - %s</string>
+    <string name="simple_payments_share_payment_link">Betaallink delen</string>
+    <string name="amount">Bedrag</string>
+    <string name="coupon_details_performance_amount_heading">Bedrag</string>
+    <string name="coupon_details_performance_discounted_order_heading">Bestellingen met korting</string>
+    <string name="coupon_details_performance_heading">Prestaties</string>
+    <string name="coupon_details_maximum_spend">Maximale besteding van %s</string>
+    <string name="coupon_details_minimum_spend">Minimale besteding van %s</string>
+    <string name="coupon_details_heading">Couponoverzicht</string>
     <string name="coupon_list_view_coupon">Couponoverzicht weergeven</string>
     <string name="coupon_list_wip_message_enabled">We hebben hard gewerkt zodat jij coupons vanuit je apparaat kunt bekijken en bewerken!</string>
     <string name="coupon_list_wip_title">Coupons bekijken en bewerken</string>
@@ -19,7 +46,6 @@ Language: nl
     <string name="coupon_list_item_label_included_and_excluded">%1s excl. %2s</string>
     <string name="coupon_list_item_label_products_and_categories">%1s en %2s</string>
     <string name="coupon_list_item_label_everything">alles</string>
-    <string name="coupon_list_item_label_off">korting</string>
     <string name="coupon_list_item_label_expired">Verlopen</string>
     <string name="coupon_list_item_label_active">Actief</string>
     <string name="coupons">Coupons</string>
@@ -59,14 +85,12 @@ Language: nl
     <string name="card_reader_payment_reader_receipt_sent">Er is een kwitantie verzonden naar &lt;strong&gt;%s&lt;/strong&gt;</string>
     <string name="order_creation_fee_percentage_toggle_text">Percentage kosten</string>
     <string name="order_creation_fee_percentage_hint">Percentage (%)</string>
-    <string name="order_creation_fee_amount_hint">Bedrag ($)</string>
     <string name="order_creation_add_fee_removal_hint">Kosten verwijderen uit bestelling</string>
     <string name="order_creation_remove_shipping">Verzending verwijderen uit bestelling</string>
     <string name="order_creation_edit_shipping">Verzending</string>
     <string name="order_creation_add_shipping">Verzending toevoegen</string>
     <string name="order_creation_shipping_title_add">Verzending toevoegen</string>
     <string name="order_creation_shipping_name">Naam</string>
-    <string name="order_creation_shipping_amount">Bedrag</string>
     <string name="order_creation_payment_fee">Kosten</string>
     <string name="order_creation_customer_details">Klantgegevens</string>
     <string name="order_creation_add_fee">Kosten toevoegen</string>

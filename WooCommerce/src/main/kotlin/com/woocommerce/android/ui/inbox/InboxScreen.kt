@@ -29,6 +29,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -36,7 +37,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import androidx.compose.ui.unit.dp
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -49,13 +49,13 @@ import com.woocommerce.android.ui.inbox.InboxViewModel.InboxState
 import com.woocommerce.android.util.StringUtils
 
 @Composable
-fun Inbox(viewModel: InboxViewModel) {
+fun InboxScreen(viewModel: InboxViewModel) {
     val inboxState by viewModel.inboxState.observeAsState(InboxState())
-    Inbox(state = inboxState)
+    InboxScreen(state = inboxState)
 }
 
 @Composable
-fun Inbox(state: InboxState) {
+fun InboxScreen(state: InboxState) {
     when {
         state.isLoading -> InboxSkeletons()
         else -> InboxNotes(
@@ -71,7 +71,7 @@ fun InboxEmptyCase() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 32.dp)
+            .padding(dimensionResource(id = R.dimen.major_200))
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -80,19 +80,25 @@ fun InboxEmptyCase() {
             text = stringResource(id = R.string.empty_inbox_title),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.h6,
-            modifier = Modifier.padding(start = 24.dp, end = 24.dp)
+            modifier = Modifier.padding(
+                start = dimensionResource(id = R.dimen.major_150),
+                end = dimensionResource(id = R.dimen.major_150)
+            )
         )
-        Spacer(Modifier.size(54.dp))
+        Spacer(Modifier.size(dimensionResource(id = R.dimen.major_325)))
         Image(
             painter = painterResource(id = R.drawable.img_empty_inbox),
             contentDescription = null,
         )
-        Spacer(Modifier.size(48.dp))
+        Spacer(Modifier.size(dimensionResource(id = R.dimen.major_300)))
         Text(
             text = stringResource(id = R.string.empty_inbox_description),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.body1,
-            modifier = Modifier.padding(start = 24.dp, end = 24.dp)
+            modifier = Modifier.padding(
+                start = dimensionResource(id = R.dimen.major_150),
+                end = dimensionResource(id = R.dimen.major_150)
+            )
         )
     }
 }
@@ -123,7 +129,7 @@ fun InboxNotes(
                     if (index < notes.lastIndex)
                         Divider(
                             color = colorResource(id = R.color.divider_color),
-                            thickness = 1.dp
+                            thickness = dimensionResource(id = R.dimen.minor_10)
                         )
                 }
             }
@@ -135,14 +141,14 @@ fun InboxNotes(
 fun InboxNoteRow(note: InboxNoteUi) {
     Column(
         modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_75))
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100)),
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_75)),
         ) {
             Text(
-                modifier = Modifier.padding(top = 16.dp),
+                modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)),
                 text = note.dateCreated,
                 style = MaterialTheme.typography.subtitle2,
                 color = colorResource(id = R.color.color_surface_variant)
@@ -168,7 +174,10 @@ fun InboxNoteRow(note: InboxNoteUi) {
 private fun InboxNoteActionsRow(actions: List<InboxNoteActionUi>) {
     Row(
         modifier = Modifier
-            .padding(start = 8.dp, end = 8.dp)
+            .padding(
+                start = dimensionResource(id = R.dimen.minor_100),
+                end = dimensionResource(id = R.dimen.minor_100)
+            )
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.Start,
     ) {
@@ -181,12 +190,19 @@ private fun InboxNoteActionsRow(actions: List<InboxNoteActionUi>) {
 @Composable
 private fun InboxNoteSurveyActionsRow(actions: List<InboxNoteActionUi>) {
     Row(
-        modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
+        modifier = Modifier.padding(
+            start = dimensionResource(id = R.dimen.major_100),
+            end = dimensionResource(id = R.dimen.major_100),
+            bottom = dimensionResource(id = R.dimen.minor_100)
+        ),
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))
     ) {
         if (actions.isEmpty()) {
             Text(
-                modifier = Modifier.padding(top = 16.dp, bottom = 16.dp),
+                modifier = Modifier.padding(
+                    top = dimensionResource(id = R.dimen.major_100),
+                    bottom = dimensionResource(id = R.dimen.major_100)
+                ),
                 text = stringResource(id = R.string.inbox_note_survey_actioned),
                 style = MaterialTheme.typography.body2
             )
@@ -209,7 +225,7 @@ fun InboxNoteTextAction(inboxAction: InboxNoteActionUi) {
     ) {
         if (inboxAction.isDismissing) {
             CircularProgressIndicator(
-                modifier = Modifier.size(24.dp),
+                modifier = Modifier.size(dimensionResource(id = R.dimen.major_150)),
                 color = colorResource(id = inboxAction.textColor)
             )
         } else {
@@ -225,12 +241,15 @@ fun InboxNoteTextAction(inboxAction: InboxNoteActionUi) {
 @SuppressWarnings("MagicNumber")
 fun InboxNoteSurveyAction(inboxAction: InboxNoteActionUi) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         OutlinedButton(
             onClick = { inboxAction.onClick(inboxAction.id, inboxAction.parentNoteId) },
-            border = BorderStroke(1.dp, colorResource(id = R.color.color_on_surface_disabled)),
+            border = BorderStroke(
+                dimensionResource(id = R.dimen.minor_10),
+                colorResource(id = R.color.color_on_surface_disabled)
+            ),
             shape = RoundedCornerShape(20),
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = MaterialTheme.colors.background,
@@ -255,7 +274,7 @@ fun InboxSkeletons() {
                 InboxNoteItemSkeleton()
                 Divider(
                     color = colorResource(id = R.color.divider_color),
-                    thickness = 1.dp
+                    thickness = dimensionResource(id = R.dimen.minor_10)
                 )
             }
         }
@@ -264,20 +283,26 @@ fun InboxSkeletons() {
 
 @Composable
 fun InboxNoteItemSkeleton() {
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100))) {
         InboxNoteHeaderSkeleton()
-        Spacer(modifier = Modifier.padding(top = 16.dp))
+        Spacer(modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)))
         InboxNoteContentRowsSkeleton()
-        Spacer(modifier = Modifier.padding(top = 14.dp))
+        Spacer(modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_85)))
         InboxNoteButtonsSkeleton()
     }
 }
 
 @Composable
 private fun InboxNoteHeaderSkeleton() {
-    SkeletonView(width = 96.dp, height = 16.dp)
-    Spacer(modifier = Modifier.padding(top = 20.dp))
-    SkeletonView(width = 190.dp, height = 16.dp)
+    SkeletonView(
+        width = dimensionResource(id = R.dimen.skeleton_text_medium_width),
+        height = dimensionResource(id = R.dimen.major_100)
+    )
+    Spacer(modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_125)))
+    SkeletonView(
+        width = dimensionResource(id = R.dimen.skeleton_text_large_width),
+        height = dimensionResource(id = R.dimen.major_100)
+    )
 }
 
 @Composable
@@ -285,19 +310,19 @@ private fun InboxNoteContentRowsSkeleton() {
     SkeletonView(
         modifier = Modifier
             .fillMaxWidth()
-            .height(16.dp)
+            .height(dimensionResource(id = R.dimen.major_100))
     )
-    Spacer(modifier = Modifier.padding(top = 6.dp))
+    Spacer(modifier = Modifier.padding(top = dimensionResource(id = R.dimen.minor_75)))
     SkeletonView(
         modifier = Modifier
             .fillMaxWidth()
-            .height(16.dp)
+            .height(dimensionResource(id = R.dimen.major_100))
     )
-    Spacer(modifier = Modifier.padding(top = 6.dp))
+    Spacer(modifier = Modifier.padding(top = dimensionResource(id = R.dimen.minor_75)))
     SkeletonView(
         modifier = Modifier
             .fillMaxWidth()
-            .height(16.dp)
+            .height(dimensionResource(id = R.dimen.major_100))
     )
 }
 
@@ -305,17 +330,23 @@ private fun InboxNoteContentRowsSkeleton() {
 private fun InboxNoteButtonsSkeleton() {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))
     ) {
-        SkeletonView(width = 150.dp, height = 16.dp)
-        SkeletonView(width = 60.dp, height = 16.dp)
+        SkeletonView(
+            width = dimensionResource(id = R.dimen.skeleton_text_large_width),
+            height = dimensionResource(id = R.dimen.major_100)
+        )
+        SkeletonView(
+            width = dimensionResource(id = R.dimen.major_350),
+            height = dimensionResource(id = R.dimen.major_100)
+        )
     }
 }
 
 @Preview
 @Composable
 fun InboxPreview(@PreviewParameter(SampleInboxProvider::class, 1) state: InboxState) {
-    Inbox(state)
+    InboxScreen(state)
 }
 
 class SampleInboxProvider : PreviewParameterProvider<InboxState> {

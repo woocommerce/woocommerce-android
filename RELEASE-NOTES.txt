@@ -3,6 +3,8 @@
 9.2
 ----
 - [*] IPP. Optimization: in cases when onboarding is not completed, we show the details about what's wrong right away, without refetching the status
+-----
+
 
 9.1
 -----

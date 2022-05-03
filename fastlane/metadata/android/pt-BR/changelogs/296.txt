@@ -1,0 +1,2 @@
+9.0:
+Datas são essenciais ao gerenciar uma empresa. Por isso, corrigimos uma falha na seleção da data da venda de um produto que fazia com que, às vezes, a data exibida não fosse a selecionada. Ponto para o feedback da comunidade!

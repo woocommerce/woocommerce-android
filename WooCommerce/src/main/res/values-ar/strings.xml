@@ -1,17 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-04-10 08:54:03+0000
+Translation-Revision-Date: 2022-04-25 18:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
-    <string name="coupon_summary_performance_amount_heading">الكمية</string>
-    <string name="coupon_summary_performance_discounted_order_heading">الطلبات التي يسري عليها الخصم</string>
-    <string name="coupon_summary_performance_heading">الأداء</string>
-    <string name="coupon_summary_maximum_spend">الحد الأقصى للإنفاق لـ %s</string>
-    <string name="coupon_summary_minimum_spend">الحد الأدنى للإنفاق لـ %s</string>
-    <string name="coupon_summary_heading">ملخص القسيمة</string>
+    <string name="coupons_list_search_hint">البحث عن القسائم</string>
+    <string name="coupon_details_share_formatting_failure">يتعذر إنشاء رسالة مشاركة رمز القسيمة</string>
+    <string name="coupon_details_share_coupon_error">حدث خطأ في أثناء مشاركة رمز القسيمة.</string>
+    <string name="coupon_details_share_coupon_some">تطبيق خصم قدره ⁦%1$s⁩ على منتجات مُحدَّدة باستخدام الرمز الترويجي ⁦%2$s⁩</string>
+    <string name="coupon_details_share_coupon_all">تطبيق خصم قدره ⁦%1$s⁩ على جميع المنتجات باستخدام الرمز الترويجي ⁦%2$s⁩</string>
+    <string name="coupon_details_copy_error">خطأ في أثناء نسخ رمز القسيمة إلى الحافظة.</string>
+    <string name="coupon_details_copy_success">تم نسخ رمز القسيمة إلى الحافظة.</string>
+    <string name="coupon_details_copy_clipboard_label">رمز القسيمة</string>
+    <string name="coupon_beta_features_subheading">اختبار إدارة القسائم في التطبيق</string>
+    <string name="coupon_beta_features_heading">إدارة القسائم</string>
+    <string name="coupon_summary_loading_failure">فشل تحميل ملخص القسيمة</string>
+    <string name="coupon_details_expiration_date">تنتهي الصلاحية بتاريخ ⁦%1$s⁩</string>
+    <string name="coupon_summary_template">خصم قدره ⁦%1$s⁩ على ⁦%2$s⁩</string>
+    <string name="coupon_type_custom">خصم مخصص (⁦%1$s⁩)</string>
+    <string name="coupon_type_fixed_product">خصم ثابت للمنتجات</string>
+    <string name="coupon_type_fixed_cart">خصم ثابت لعربة التسوق</string>
+    <string name="coupon_type_percent">الخصم بالنسبة المئوية</string>
+    <string name="coupon_details_performance_loading_failure">فشل تحميل أداء القسيمة</string>
+    <string name="coupon_details_menu_share">مشاركة قسيمة</string>
+    <string name="coupon_details_menu_copy">نسخ رمز القسيمة</string>
+    <string name="inbox_note_survey_actioned">نشكرك على ملاحظاتك!</string>
+    <string name="beta_features_coupons">إدارة القسائم</string>
+    <string name="card_reader_connect_permission_rationale_hint">تتطلب مدفوعات قارئ البطاقة صلاحية موقع دقيقة</string>
+    <string name="card_reader_connect_permission_rationale_header">يلزم الوصول إلى الموقع</string>
+    <string name="simple_payments_share_payment_dialog_title">إجراءات السداد - %s</string>
+    <string name="simple_payments_share_payment_link">مشاركة رابط الدفع</string>
+    <string name="amount">الكمية</string>
+    <string name="coupon_details_performance_amount_heading">الكمية</string>
+    <string name="coupon_details_performance_discounted_order_heading">الطلبات التي يسري عليها الخصم</string>
+    <string name="coupon_details_performance_heading">الأداء</string>
+    <string name="coupon_details_maximum_spend">الحد الأقصى للإنفاق لـ %s</string>
+    <string name="coupon_details_minimum_spend">الحد الأدنى للإنفاق لـ %s</string>
+    <string name="coupon_details_heading">ملخص القسيمة</string>
     <string name="coupon_list_view_coupon">عرض ملخص القسيمة</string>
     <string name="coupon_list_wip_message_enabled">لقد كنا نعمل على إتاحة عرض القسائم وتحريرها من جهازك!</string>
     <string name="coupon_list_wip_title">عرض القسائم وتحريرها</string>
@@ -19,7 +46,6 @@ Language: ar
     <string name="coupon_list_item_label_included_and_excluded">%1s من دون %2s</string>
     <string name="coupon_list_item_label_products_and_categories">%1s و%2s</string>
     <string name="coupon_list_item_label_everything">كل شيء</string>
-    <string name="coupon_list_item_label_off">on</string>
     <string name="coupon_list_item_label_expired">منتهي الصلاحية</string>
     <string name="coupon_list_item_label_active">نشط</string>
     <string name="coupons">القسائم</string>
@@ -59,14 +85,12 @@ Language: ar
     <string name="card_reader_payment_reader_receipt_sent">تم إرسال إيصال إلى &lt;strong&gt;%s&lt;/strong&gt;</string>
     <string name="order_creation_fee_percentage_toggle_text">النسبة المئوية للرسوم</string>
     <string name="order_creation_fee_percentage_hint">النسبة المئوية (%)</string>
-    <string name="order_creation_fee_amount_hint">المبلغ ($)</string>
     <string name="order_creation_add_fee_removal_hint">إزالة الرسوم من الطلب</string>
     <string name="order_creation_remove_shipping">إزالة الشحن من طلب</string>
     <string name="order_creation_edit_shipping">الشحن</string>
     <string name="order_creation_add_shipping">إضافة الشحن</string>
     <string name="order_creation_shipping_title_add">إضافة الشحن</string>
     <string name="order_creation_shipping_name">الاسم</string>
-    <string name="order_creation_shipping_amount">الكمية</string>
     <string name="order_creation_payment_fee">الرسوم</string>
     <string name="order_creation_customer_details">بيانات الزبون</string>
     <string name="order_creation_add_fee">إضافة رسوم إضافية</string>

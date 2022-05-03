@@ -71,31 +71,6 @@
 
                     </FrameLayout>
 
-                    <FrameLayout
-                        android:id="@+id/frameStatusBadge"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="start|bottom"
-                        android:paddingBottom="@dimen/major_100"
-                        android:visibility="gone"
-                        tools:visibility="visible">
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/textStatusBadge"
-                            style="@style/Woo.TextView.Body2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="bottom"
-                            android:background="@drawable/product_detail_status_badge"
-                            android:textColor="@color/color_on_primary_high"
-                            android:gravity="center"
-                            android:paddingStart="@dimen/minor_100"
-                            android:paddingTop="@dimen/minor_50"
-                            android:paddingEnd="@dimen/minor_100"
-                            android:paddingBottom="@dimen/minor_50"
-                            tools:text="Private" />
-                    </FrameLayout>
-
                     <View
                         style="@style/Woo.Divider"
                         android:layout_gravity="bottom" />
