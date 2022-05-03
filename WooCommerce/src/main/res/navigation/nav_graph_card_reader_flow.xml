@@ -42,10 +42,6 @@
             android:name="cardReaderOnboardingParam"
             app:argType="com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingParams"
             app:nullable="false" />
-        <argument
-            android:name="onboardingErrorStatus"
-            app:argType="com.woocommerce.android.ui.cardreader.onboarding.CardReaderFlowParam"
-            app:nullable="false" />
         <action
             android:id="@+id/action_cardReaderOnboardingFragment_to_cardReaderHubFragment"
             app:destination="@id/cardReaderHubFragment"

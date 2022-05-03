@@ -85,23 +85,23 @@ class CardReaderOnboardingViewModel @Inject constructor(
     val viewStateData: LiveData<OnboardingViewState> = viewState
 
     init {
+        when (val onboardingParam = arguments.cardReaderOnboardingParam) {
+            is Check -> refreshState()
+            is Failed -> showOnboardingState(onboardingParam.onboardingState)
+        }.exhaustive
+    }
+
+    private fun refreshState() {
         launch {
-            when (val onboardingParam = arguments.cardReaderOnboardingParam) {
-                is Check -> refreshState()
-                is Failed -> handleNewState(onboardingParam.onboardingState)
-            }.exhaustive
+            viewState.value = OnboardingViewState.LoadingState
+            val state = cardReaderChecker.getOnboardingState()
+            cardReaderTracker.trackOnboardingState(state)
+            showOnboardingState(state)
         }
     }
 
-    private suspend fun refreshState() {
-        viewState.value = OnboardingViewState.LoadingState
-        val state = cardReaderChecker.getOnboardingState()
-        cardReaderTracker.trackOnboardingState(state)
-        handleNewState(state)
-    }
-
     @Suppress("LongMethod", "ComplexMethod")
-    private suspend fun handleNewState(state: CardReaderOnboardingState) {
+    private fun showOnboardingState(state: CardReaderOnboardingState) {
         when (state) {
             is OnboardingCompleted -> {
                 continueFlow(state.countryCode)
@@ -198,31 +198,32 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     ::onContactSupportClicked,
                     ::onLearnMoreClicked
                 )
-            WcpayAndStripeActivated ->
-                updateUiWithWcPayAndStripeActivated()
+            WcpayAndStripeActivated -> updateUiWithWcPayAndStripeActivated()
         }.exhaustive
     }
 
-    private suspend fun updateUiWithWcPayAndStripeActivated() {
-        val userInfo = userEligibilityFetcher.fetchUserInfo()
-        val canManagePlugins = userInfo?.getUserRoles()?.contains(ADMINISTRATOR) ?: false
+    private fun updateUiWithWcPayAndStripeActivated() {
+        launch {
+            val userInfo = userEligibilityFetcher.fetchUserInfo()
+            val canManagePlugins = userInfo?.getUserRoles()?.contains(ADMINISTRATOR) ?: false
 
-        viewState.value =
-            WcPayAndStripeInstalledState(
-                hintLabel = if (canManagePlugins) {
-                    UiString.UiStringRes(R.string.card_reader_onboarding_both_plugins_activated_hint_admin)
-                } else {
-                    UiString.UiStringRes(R.string.card_reader_onboarding_both_plugins_activated_hint_store_owner)
-                },
-                onContactSupportActionClicked = ::onContactSupportClicked,
-                onLearnMoreActionClicked = ::onLearnMoreClicked,
-                onRefreshAfterUpdatingClicked = ::refreshState,
-                openWPAdminActionClicked = if (canManagePlugins) {
-                    ::onWPAdminActionClicked
-                } else {
-                    null
-                }
-            )
+            viewState.value =
+                WcPayAndStripeInstalledState(
+                    hintLabel = if (canManagePlugins) {
+                        UiString.UiStringRes(R.string.card_reader_onboarding_both_plugins_activated_hint_admin)
+                    } else {
+                        UiString.UiStringRes(R.string.card_reader_onboarding_both_plugins_activated_hint_store_owner)
+                    },
+                    onContactSupportActionClicked = ::onContactSupportClicked,
+                    onLearnMoreActionClicked = ::onLearnMoreClicked,
+                    onRefreshAfterUpdatingClicked = ::refreshState,
+                    openWPAdminActionClicked = if (canManagePlugins) {
+                        { onWPAdminActionClicked() }
+                    } else {
+                        null
+                    }
+                )
+        }
     }
 
     private fun onWPAdminActionClicked() {
