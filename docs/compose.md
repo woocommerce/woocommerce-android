@@ -86,7 +86,26 @@ Managing state properly in Compose is key to updating the UI as expected and mak
 
 This section shares some principles we should aim for when creating our `@Composable` functions:
 
-- Always provide a `Modifier` parameter to any composable function that emits layout. The reasons for this are well explained [here](https://chris.banes.dev/always-provide-a-modifier/). In essence, the parent composable function should always be telling the child composable (through a `Modifier` param with layout attributes such as height, width, margins, etc) how to measure and be laid out, not the other way around. The child composable should only think about its own content. 
+- Always provide a `Modifier` parameter to any composable function that emits layout. The reasons for this are well explained [here](https://chris.banes.dev/always-provide-a-modifier/). In essence, the parent composable function should always be telling the child composable (through a `Modifier` param with layout attributes such as height, width, margins, etc) how to measure and be laid out, not the other way around. The child composable should only think about its own content. We will adopt [official guidelines](https://github.com/androidx/androidx/blob/androidx-main/compose/docs/compose-api-guidelines.md#elements-accept-and-respect-a-modifier-parameter) on how to pass the `Modifier` as parameter: "MUST be named "modifier" and MUST appear as the **first optional parameter** in the element function's parameter list". Example:
+
+```kotlin
+@Composable
+fun MyComposable(
+    name: String,
+    foo: String,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .padding(start = 16.dp)
+            .fillMaxWidth()
+    ) {
+        Text(name)
+        Text(foo)
+    }
+}
+```
+
 - Composable functions should not emit content at their top level. 
 
 ❌
