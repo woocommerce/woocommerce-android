@@ -916,6 +916,7 @@
     <string name="card_reader_bbpos_manual_card_reader">BBPOS Chipper Card Reader Manual</string>
     <string name="card_reader_m2_manual_card_reader">Stripe M2 Card Reader Manual</string>
     <string name="card_reader_wisepad_3_manual_card_reader">WisePad 3 Card Reader Manual</string>
+    <string name="card_reader_icon_content_description">Card Reader Image</string>
 
     <!--
             Card Reader Interac refund
