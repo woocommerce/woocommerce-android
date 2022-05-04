@@ -96,7 +96,7 @@ class BluetoothReaderListenerImplTest {
         listener.onRequestReaderDisplayMessage(ReaderDisplayMessage.REMOVE_CARD)
 
         // THEN
-        assertThat(listener.displayMessagesEvent.value)
+        assertThat(listener.displayMessagesEvents.value)
             .isEqualTo(BluetoothCardReaderMessages.CardReaderDisplayMessage(REMOVE_CARD))
     }
 
@@ -107,7 +107,7 @@ class BluetoothReaderListenerImplTest {
         listener.onRequestReaderInput(options)
 
         // THEN
-        assertThat(listener.displayMessagesEvent.value)
+        assertThat(listener.displayMessagesEvents.value)
             .isEqualTo(BluetoothCardReaderMessages.CardReaderInputMessage(options.toString()))
     }
 }

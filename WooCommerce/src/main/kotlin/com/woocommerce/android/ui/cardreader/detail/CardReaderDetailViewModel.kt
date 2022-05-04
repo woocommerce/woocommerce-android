@@ -13,6 +13,8 @@ import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
+import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
+import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus.StatusChanged
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
@@ -38,7 +40,6 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.roundToInt
@@ -59,6 +60,7 @@ class CardReaderDetailViewModel @Inject constructor(
     val viewStateData: LiveData<ViewState> = viewState
 
     private lateinit var softwareUpdateAvailabilityJob: Job
+    private lateinit var batteryStatusUpdateJob: Job
 
     init {
         launch {
@@ -75,9 +77,14 @@ class CardReaderDetailViewModel @Inject constructor(
                                 ::handleSoftwareUpdateAvailability
                             )
                         }
+                        batteryStatusUpdateJob = launch {
+                            cardReaderManager.batteryStatus.collect(
+                                ::handleBatteryStatusChange
+                            )
+                        }
                     }
                     is Connecting -> {
-                        showNotConnectedState()
+                        handleNotConnectedState()
                     }
                     is NotConnected -> {
                         triggerEvent(
@@ -85,7 +92,7 @@ class CardReaderDetailViewModel @Inject constructor(
                                 R.string.card_reader_accessibility_reader_is_disconnected
                             )
                         )
-                        showNotConnectedState()
+                        handleNotConnectedState()
                     }
                 }.exhaustive
             }
@@ -102,12 +109,15 @@ class CardReaderDetailViewModel @Inject constructor(
         }.exhaustive
     }
 
-    private fun showNotConnectedState() {
-        if (::softwareUpdateAvailabilityJob.isInitialized) {
-            softwareUpdateAvailabilityJob.cancel()
-        }
+    private fun handleNotConnectedState() {
+        cancelConnectedScopeJobs()
         viewState.value =
             NotConnectedState(onPrimaryActionClicked = ::onConnectBtnClicked, onLearnMoreClicked = ::onLearnMoreClicked)
+    }
+
+    private fun cancelConnectedScopeJobs() {
+        if (::softwareUpdateAvailabilityJob.isInitialized) softwareUpdateAvailabilityJob.cancel()
+        if (::batteryStatusUpdateJob.isInitialized) batteryStatusUpdateJob.cancel()
     }
 
     private fun showConnectedState(readerStatus: Connected, updateAvailable: Boolean = false) {
@@ -147,6 +157,15 @@ class CardReaderDetailViewModel @Inject constructor(
         }
     }
 
+    private fun updateBatteryLevelOnConnectedState(newBatteryLevel: Float) {
+        val currentState = viewState.value
+        if (currentState is ConnectedState) {
+            viewState.value = currentState.copy(
+                readerBattery = buildBatteryLevelUiString(newBatteryLevel)
+            )
+        }
+    }
+
     private fun onLearnMoreClicked() {
         val preferredPlugin = appPrefsWrapper.getCardReaderPreferredPlugin(
             selectedSite.get().id,
@@ -176,7 +195,7 @@ class CardReaderDetailViewModel @Inject constructor(
             val disconnectionResult = cardReaderManager.disconnectReader()
             if (!disconnectionResult) {
                 WooLog.e(WooLog.T.CARD_READER, "Disconnection from reader has failed")
-                showNotConnectedState()
+                handleNotConnectedState()
             }
         }
     }
@@ -187,6 +206,15 @@ class CardReaderDetailViewModel @Inject constructor(
         when (updateStatus) {
             SoftwareUpdateAvailability.Available -> showConnectedState(readerStatus, updateAvailable = true)
             SoftwareUpdateAvailability.NotAvailable -> showConnectedState(readerStatus)
+        }.exhaustive
+    }
+
+    private fun handleBatteryStatusChange(newStatus: CardReaderBatteryStatus) {
+        when (newStatus) {
+            is StatusChanged -> {
+                updateBatteryLevelOnConnectedState(newStatus.batteryLevel)
+            }
+            else -> {}
         }.exhaustive
     }
 
@@ -269,14 +297,7 @@ private fun CardReader.getReadersName(): UiString {
     }
 }
 
-private fun CardReader.getReadersBatteryLevel(): UiString? {
-    return currentBatteryLevel?.let {
-        UiStringRes(
-            R.string.card_reader_detail_connected_battery_percentage,
-            listOf(UiStringText((it * PERCENT_100).roundToInt().toString()))
-        )
-    }
-}
+private fun CardReader.getReadersBatteryLevel(): UiString? = currentBatteryLevel?.let { buildBatteryLevelUiString(it) }
 
 private fun CardReader.getReaderFirmwareVersion(): UiString {
     return UiStringRes(
@@ -284,3 +305,8 @@ private fun CardReader.getReaderFirmwareVersion(): UiString {
         listOf(UiStringText(firmwareVersion))
     )
 }
+
+private fun buildBatteryLevelUiString(batteryLevel: Float) = UiStringRes(
+    R.string.card_reader_detail_connected_battery_percentage,
+    listOf(UiStringText((batteryLevel * PERCENT_100).roundToInt().toString()))
+)
