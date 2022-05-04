@@ -2,7 +2,8 @@
 
 9.2
 -----
-[*] Fixed a bug that caused decimal values to be rounded when the decimal separator was a comma [https://github.com/woocommerce/woocommerce-android/pull/6426]
+- [*] Fixed a bug that caused decimal values to be rounded when the decimal separator was a comma [https://github.com/woocommerce/woocommerce-android/pull/6426]
+- [*] Most of the fields in order detail now support long press to copy to the clipboard [https://github.com/woocommerce/woocommerce-android/pull/6430]
 
 9.1
 -----
