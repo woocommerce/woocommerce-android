@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.cardreader.manuals
 
-import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
@@ -13,9 +12,7 @@ import javax.inject.Inject
 class CardReaderManualsViewModel @Inject constructor(
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
-    private val _manualState = getManualItems().toMutableStateList()
-    val manualState: List<ManualItem>
-        get() = _manualState
+    val manualState = getManualItems()
 
     private fun getManualItems(): List<ManualItem> = listOf(
         ManualItem(
