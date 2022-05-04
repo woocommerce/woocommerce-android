@@ -22,7 +22,7 @@ class CardReaderManualsFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    CardReaderManualsScreen()
+                    ManualsScreen()
                 }
             }
         }
