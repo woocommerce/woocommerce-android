@@ -21,7 +21,6 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.woocommerce.android.R
 
@@ -89,7 +88,7 @@ fun ManualsList(
                 onManualClick = manual.onManualClicked
             )
             Divider(
-                modifier = Modifier.offset(x = 96.dp),
+                modifier = Modifier.offset(dimensionResource(id = R.dimen.card_reader_manuals_divider)),
                 color = colorResource(id = R.color.divider_color),
                 thickness = dimensionResource(id = R.dimen.minor_10)
             )
