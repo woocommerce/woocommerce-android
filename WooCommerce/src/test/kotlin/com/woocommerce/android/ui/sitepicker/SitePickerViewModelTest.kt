@@ -19,8 +19,8 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.ShowWooUpgradeDialogEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerView.AccountMismatchView
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerView.NoStoreView
-import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerView.WooNotFoundView
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerView.StoreListView
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerView.WooNotFoundView
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
