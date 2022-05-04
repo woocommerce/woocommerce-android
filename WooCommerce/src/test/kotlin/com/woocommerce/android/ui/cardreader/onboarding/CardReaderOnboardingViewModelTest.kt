@@ -104,6 +104,21 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given incoming failed onboarding, when view model init, then get onboarding state never called`() =
+        testBlocking {
+            createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = CardReaderOnboardingState.StoreCountryNotSupported(""),
+                    )
+                ).initSavedStateHandle()
+            )
+
+            verify(onboardingChecker, never()).getOnboardingState()
+        }
+
+    @Test
     fun `given country not supported incoming, when view model init, then country not supported state shown`() =
         testBlocking {
             val viewModel = createVM(
@@ -115,7 +130,6 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 ).initSavedStateHandle()
             )
 
-            verify(onboardingChecker, never()).getOnboardingState()
             assertThat(viewModel.viewStateData.value).isInstanceOf(UnsupportedErrorState.Country::class.java)
         }
 
@@ -150,7 +164,6 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 ).initSavedStateHandle()
             )
 
-            verify(onboardingChecker, never()).getOnboardingState()
             assertThat(viewModel.viewStateData.value).isInstanceOf(UnsupportedErrorState.WcPayInCountry::class.java)
         }
 
@@ -185,7 +198,6 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 ).initSavedStateHandle()
             )
 
-            verify(onboardingChecker, never()).getOnboardingState()
             assertThat(viewModel.viewStateData.value).isInstanceOf(UnsupportedErrorState.StripeInCountry::class.java)
         }
 
@@ -214,7 +226,6 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 ).initSavedStateHandle()
             )
 
-            verify(onboardingChecker, never()).getOnboardingState()
             assertThat(viewModel.viewStateData.value).isInstanceOf(
                 UnsupportedErrorState.StripeAccountInUnsupportedCountry::class.java
             )
@@ -823,7 +834,6 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 ).initSavedStateHandle()
             )
 
-            verify(onboardingChecker, never()).getOnboardingState()
             (viewModel.viewStateData.value as StripeAcountError.StripeAccountPendingRequirementsState)
                 .onButtonActionClicked.invoke()
             assertThat(viewModel.event.value)
