@@ -1253,7 +1253,6 @@ Language: zh_TW
     <string name="login_jetpack_installed_sign_in">已經有 Jetpack 了？%1$s</string>
     <string name="login_refresh_app_progress_jetpack">正在嘗試使用 Jetpack 登入…</string>
     <string name="login_refresh_app_continue">重新整理應用程式以繼續使用</string>
-    <string name="login_not_connected_jetpack">若要將此應用程式用於 %1$s，你需要設定 Jetpack 外掛程式並連接到此帳戶。\n\n設定完成後，%2$s</string>
     <string name="login_try_another_store">逛逛其他商店</string>
     <string name="database_downgraded">資料庫降級，正在重新建立表格和載入商店</string>
     <string name="loading_stores">載入商店</string>
@@ -1269,7 +1268,6 @@ Language: zh_TW
     <string name="orderdetail_copy_tracking_number">複製追蹤號碼</string>
     <string name="login_refresh_app_progress">正在檢查 WooCommerce…</string>
     <string name="login_refresh_app">重新整理應用程式</string>
-    <string name="login_not_woo_store">%1$s 似乎不是 WooCommerce 網站。在網路上安裝 WooCommerce 外掛程式，然後%2$s</string>
     <string name="orderdetail_empty_address">未指定地址</string>
     <string name="login_need_help_finding_connected_email">需要協助找出你連結的電子郵件嗎？</string>
     <string name="enter_wordpress_site">此地址的網站不是 WordPress 網站。若需要我們連結網站，網站必須安裝 WordPress。</string>

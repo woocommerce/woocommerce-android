@@ -1254,7 +1254,6 @@ Language: tr
     <string name="login_jetpack_installed_sign_in">Zaten Jetpack’iniz var mı? %1$s</string>
     <string name="login_refresh_app_progress_jetpack">Jetpack ile oturum açılmaya çalışılıyor…</string>
     <string name="login_refresh_app_continue">devam etmek için uygulamayı yenileyin</string>
-    <string name="login_not_connected_jetpack">Bu uygulamayı %1$s için kullanmak istiyorsanız kurulu ve bu hesaba bağlı Jetpack eklentiniz olmalıdır. \n\nKurulumdan sonra, %2$s</string>
     <string name="login_try_another_store">Başka bir mağaza deneyin</string>
     <string name="database_downgraded">Veri tabanının sürümü düşürüldü, tablolar yeniden oluşturuluyor ve mağazalar yükleniyor</string>
     <string name="loading_stores">Mağazalar yükleniyor</string>
@@ -1270,7 +1269,6 @@ Language: tr
     <string name="orderdetail_copy_tracking_number">Takip numarasını kopyala</string>
     <string name="login_refresh_app_progress">WooCommerce kontrol ediliyor…</string>
     <string name="login_refresh_app">uygulamayı yenile</string>
-    <string name="login_not_woo_store">Görünüşe göre %1$s bir WooCommerce sitesi değil. Sitenize WooCommerce eklentisini yükleyin ve daha sonra %2$s</string>
     <string name="orderdetail_empty_address">Adres belirtilmedi</string>
     <string name="login_need_help_finding_connected_email">Bağlanırken kullandığınız e-postayı bulmak için yardıma mı ihtiyacınız var?</string>
     <string name="enter_wordpress_site">Bu adresteki web sitesi bir WordPress sitesi değil. Siteyle bağlantı kurabilmemiz için sitede WordPress yüklü olmalıdır.</string>

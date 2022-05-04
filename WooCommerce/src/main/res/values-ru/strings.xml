@@ -1254,7 +1254,6 @@ Language: ru
     <string name="login_jetpack_installed_sign_in">Уже есть Jetpack? %1$s</string>
     <string name="login_refresh_app_progress_jetpack">Попытка входа через Jetpack…</string>
     <string name="login_refresh_app_continue">обновите приложение, чтобы продолжить</string>
-    <string name="login_not_connected_jetpack">Чтобы использовать это приложение для %1$s, нужно настроить плагин Jetpack и подключить его к этой учетной записи. \n\nПосле настройки %2$s</string>
     <string name="login_try_another_store">Попробуйте другой магазин</string>
     <string name="database_downgraded">База данных переведена на более раннюю версию, идет повторное создание таблиц и загрузка магазинов</string>
     <string name="loading_stores">Загрузка магазинов</string>
@@ -1270,7 +1269,6 @@ Language: ru
     <string name="orderdetail_copy_tracking_number">Копировать номер отслеживания</string>
     <string name="login_refresh_app_progress">Поиск WooCommerce…</string>
     <string name="login_refresh_app">обновите приложение</string>
-    <string name="login_not_woo_store">Похоже, %1$s не является сайтом WooCommerce. Установите плагин WooCommerce на свой сайт, а затем %2$s.</string>
     <string name="orderdetail_empty_address">Адрес не указан</string>
     <string name="login_need_help_finding_connected_email">Не можете вспомнить адрес эл. почты, указанный при регистрации?</string>
     <string name="enter_wordpress_site">Расположенный по этому адресу веб-сайт не имеет отношения к платформе WordPress. Чтобы подключиться к нему, необходимо установить WordPress.</string>

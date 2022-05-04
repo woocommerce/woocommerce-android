@@ -1254,7 +1254,6 @@ Language: it
     <string name="login_jetpack_installed_sign_in">Hai già Jetpack? %1$s</string>
     <string name="login_refresh_app_progress_jetpack">Tentativo di accesso con Jetpack in corso…</string>
     <string name="login_refresh_app_continue">aggiorna l\'app per continuare</string>
-    <string name="login_not_connected_jetpack">Per usare quest\'app per %1$s dovrai avere il plugin Jetpack impostato e connesso a questo account. \n\nUna volta impostato, %2$s</string>
     <string name="login_try_another_store">Prova un altro negozio</string>
     <string name="database_downgraded">Database declassato, ricreazione delle tabelle e caricamento dei negozi in corso</string>
     <string name="loading_stores">Caricamento dei negozi in corso</string>
@@ -1270,7 +1269,6 @@ Language: it
     <string name="orderdetail_copy_tracking_number">Copia numero di tracciabilità</string>
     <string name="login_refresh_app_progress">Verifica per WooCommerce…</string>
     <string name="login_refresh_app">aggiorna l\'app</string>
-    <string name="login_not_woo_store">%1$s non è un sito WooCommerce. Installa il plugin WooCommerce sul sito, quindi %2$s.</string>
     <string name="orderdetail_empty_address">Nessun indirizzo specificato</string>
     <string name="login_need_help_finding_connected_email">Ti serve aiuto per trovare l\'e-mail con cui ti sei collegato?</string>
     <string name="enter_wordpress_site">Il sito web su questo indirizzo non è un sito WordPress. Per poterci collegare a esso, il sito deve avere WordPress installato.</string>

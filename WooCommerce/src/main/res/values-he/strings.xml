@@ -1253,7 +1253,6 @@ Language: he_IL
     <string name="login_jetpack_installed_sign_in">כבר יש לך חשבון ב-Jetpack? %1$s</string>
     <string name="login_refresh_app_progress_jetpack">מנסה להתחבר אל Jetpack…</string>
     <string name="login_refresh_app_continue">יש לרענן את האפליקציה כדי להמשיך</string>
-    <string name="login_not_connected_jetpack">כדי להשתמש באפליקציה להפעלה של %1$s עליך להגדיר את התוסף של Jetpack ולהתחבר לחשבון. \n\nלאחר שההגדרה בוצעה, %2$s</string>
     <string name="login_try_another_store">יש לנסות חנות אחרת</string>
     <string name="database_downgraded">בסיס הנתונים עודכן לגרסה פחות מתקדמת, אנחנו יוצרים את הטבלאות מחדש וטוענים את החנויות</string>
     <string name="loading_stores">מעדכן את החנויות</string>
@@ -1269,7 +1268,6 @@ Language: he_IL
     <string name="orderdetail_copy_tracking_number">להעתקת מספר המעקב</string>
     <string name="login_refresh_app_progress">מנסה לאתר את WooCommerce…</string>
     <string name="login_refresh_app">יש לרענן את האפליקציה</string>
-    <string name="login_not_woo_store">נראה שהאתר %1$s אינו אתר של WooCommerce. יש להתקין את התוסף של Woocommerce באתר שלך ולאחר מכן %2$s</string>
     <string name="orderdetail_empty_address">לא צוינה כתובת</string>
     <string name="login_need_help_finding_connected_email">נדרשת לך עזרה במציאת האימייל שבעזרתו התחברת?</string>
     <string name="enter_wordpress_site">האתר בכתובת זו אינו אתר של WordPress. כדי שנוכל להתחבר לאתר, השירות של WordPress חייב להיות מותקן באתר.</string>

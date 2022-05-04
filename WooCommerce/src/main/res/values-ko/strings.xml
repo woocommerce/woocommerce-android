@@ -1254,7 +1254,6 @@ Language: ko_KR
     <string name="login_jetpack_installed_sign_in">이미 젯팩이 있나요? %1$s</string>
     <string name="login_refresh_app_progress_jetpack">젯팩으로 로그인 시도 중…</string>
     <string name="login_refresh_app_continue">앱을 새로 고친 후 계속</string>
-    <string name="login_not_connected_jetpack">%1$s에 대해 이 앱을 사용하려면 이 계정에 설정되고 연결된 젯팩 플러그인이 있어야 합니다. \n\n설정이 완료되면 %2$s</string>
     <string name="login_try_another_store">다른 스토어 시도</string>
     <string name="database_downgraded">데이터베이스 다운그레이드됨, 테이블 다시 생성 및 스토어 로드 중</string>
     <string name="loading_stores">스토어 로드 중</string>
@@ -1270,7 +1269,6 @@ Language: ko_KR
     <string name="orderdetail_copy_tracking_number">추적 번호 복사</string>
     <string name="login_refresh_app_progress">WooCommerce 확인 중…</string>
     <string name="login_refresh_app">앱 새로 고침</string>
-    <string name="login_not_woo_store">%1$s은(는) WooCommerce 사이트가 아닌 것 같습니다. 사이트에 WooCommerce 플러그인을 설치한 다음 %2$s하세요.</string>
     <string name="orderdetail_empty_address">지정된 주소 없음</string>
     <string name="login_need_help_finding_connected_email">연결한 이메일을 찾는 데 도움이 필요하신가요?</string>
     <string name="enter_wordpress_site">이 주소의 웹사이트는 워드프레스 사이트가 아닙니다. 워드프레스에서 연결하려면 사이트에 워드프레스가 설치되어 있어야 합니다.</string>
