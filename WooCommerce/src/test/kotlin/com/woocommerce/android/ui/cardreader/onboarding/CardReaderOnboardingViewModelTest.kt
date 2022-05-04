@@ -8,6 +8,7 @@ import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.PluginIsNotSupportedInTheCountry
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingEvent
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState
@@ -17,6 +18,7 @@ import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingView
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.StripeExtensionError
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.UnsupportedErrorState
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayError
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayError.WCPayNotInstalledState
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WcPayAndStripeInstalledState
 import com.woocommerce.android.ui.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
@@ -138,7 +140,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(
-                    CardReaderOnboardingState.PluginIsNotSupportedInTheCountry(
+                    PluginIsNotSupportedInTheCountry(
                         WOOCOMMERCE_PAYMENTS,
                         ""
                     )
@@ -156,7 +158,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 CardReaderOnboardingFragmentArgs(
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
-                        onboardingState = CardReaderOnboardingState.PluginIsNotSupportedInTheCountry(
+                        onboardingState = PluginIsNotSupportedInTheCountry(
                             WOOCOMMERCE_PAYMENTS,
                             ""
                         ),
@@ -172,7 +174,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(
-                    CardReaderOnboardingState.PluginIsNotSupportedInTheCountry(
+                    PluginIsNotSupportedInTheCountry(
                         STRIPE_EXTENSION_GATEWAY,
                         ""
                     )
@@ -190,7 +192,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 CardReaderOnboardingFragmentArgs(
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
-                        onboardingState = CardReaderOnboardingState.PluginIsNotSupportedInTheCountry(
+                        onboardingState = PluginIsNotSupportedInTheCountry(
                             STRIPE_EXTENSION_GATEWAY,
                             ""
                         ),
@@ -199,6 +201,21 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             )
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(UnsupportedErrorState.StripeInCountry::class.java)
+        }
+
+    @Test
+    fun `given incoming wcpay not installed in country, when view model init, then wc pay not installed shown`() =
+        testBlocking {
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = CardReaderOnboardingState.WcpayNotInstalled,
+                    )
+                ).initSavedStateHandle()
+            )
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(WCPayNotInstalledState::class.java)
         }
 
     @Test
@@ -236,7 +253,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(
-                    CardReaderOnboardingState.PluginIsNotSupportedInTheCountry(
+                    PluginIsNotSupportedInTheCountry(
                         WOOCOMMERCE_PAYMENTS,
                         "US"
                     )
@@ -249,6 +266,24 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 ).params[0]
 
             assertThat(countryName).isEqualTo(UiString.UiStringText("United States"))
+        }
+
+    @Test
+    fun `given incoming plugin not supported, when view model init, then plugin not supported shown`() =
+        testBlocking {
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = PluginIsNotSupportedInTheCountry(
+                            WOOCOMMERCE_PAYMENTS,
+                            "US"
+                        ),
+                    )
+                ).initSavedStateHandle()
+            )
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(UnsupportedErrorState.WcPayInCountry::class.java)
         }
 
     @Test
@@ -290,7 +325,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(
-                    CardReaderOnboardingState.PluginIsNotSupportedInTheCountry(
+                    PluginIsNotSupportedInTheCountry(
                         WOOCOMMERCE_PAYMENTS,
                         "US"
                     )
@@ -336,7 +371,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(
-                    CardReaderOnboardingState.PluginIsNotSupportedInTheCountry(
+                    PluginIsNotSupportedInTheCountry(
                         WOOCOMMERCE_PAYMENTS,
                         "US"
                     )
@@ -432,7 +467,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             val viewModel = createVM()
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(WCPayError.WCPayNotInstalledState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(WCPayNotInstalledState::class.java)
         }
 
     @Test
@@ -446,12 +481,42 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when incoming wcpay not activated, then wcpay not activated state shown`() =
+        testBlocking {
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = CardReaderOnboardingState.WcpayNotActivated
+                    )
+                ).initSavedStateHandle()
+            )
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(WCPayError.WCPayNotActivatedState::class.java)
+        }
+
+    @Test
     fun `when wcpay not setup, then wcpay not setup state shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(CardReaderOnboardingState.SetupNotCompleted(WOOCOMMERCE_PAYMENTS))
 
             val viewModel = createVM()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(WCPayError.WCPayNotSetupState::class.java)
+        }
+
+    @Test
+    fun `when incoming wcpay not setup, then wcpay not setup state shown`() =
+        testBlocking {
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = CardReaderOnboardingState.SetupNotCompleted(WOOCOMMERCE_PAYMENTS),
+                    )
+                ).initSavedStateHandle()
+            )
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(WCPayError.WCPayNotSetupState::class.java)
         }
@@ -512,6 +577,23 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 .thenReturn(CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount(mock()))
 
             val viewModel = createVM()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(
+                StripeAcountError.PluginInTestModeWithLiveAccountState::class.java
+            )
+        }
+
+    @Test
+    fun `when incoming wcpay in test mode with live stripe account, then wcpay in test mode state shown`() =
+        testBlocking {
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount(mock()),
+                    )
+                ).initSavedStateHandle()
+            )
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(
                 StripeAcountError.PluginInTestModeWithLiveAccountState::class.java
@@ -750,6 +832,22 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when incoming account rejected, then account rejected state shown`() =
+        testBlocking {
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = CardReaderOnboardingState.StripeAccountRejected(mock()),
+                    )
+                ).initSavedStateHandle()
+            )
+
+            assertThat(viewModel.viewStateData.value)
+                .isInstanceOf(StripeAcountError.StripeAccountRejectedState::class.java)
+        }
+
+    @Test
     fun `when account pending requirements, then account pending requirements state shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
@@ -874,12 +972,46 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when incoming account overdue requirements, then account overdue requirements state shown`() =
+        testBlocking {
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = CardReaderOnboardingState.StripeAccountOverdueRequirement(mock()),
+                    )
+                ).initSavedStateHandle()
+            )
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(
+                StripeAcountError.StripeAccountOverdueRequirementsState::class.java
+            )
+        }
+
+    @Test
     fun `when account under review, then account under review state shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(CardReaderOnboardingState.StripeAccountUnderReview(mock()))
 
             val viewModel = createVM()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(
+                StripeAcountError.StripeAccountUnderReviewState::class.java
+            )
+        }
+
+    @Test
+    fun `when incoming account under review, then account under review state shown`() =
+        testBlocking {
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = CardReaderOnboardingState.StripeAccountUnderReview(mock()),
+                    )
+                ).initSavedStateHandle()
+            )
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(
                 StripeAcountError.StripeAccountUnderReviewState::class.java
@@ -898,12 +1030,42 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when incoming onboarding check fails, then generic state shown`() =
+        testBlocking {
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = CardReaderOnboardingState.GenericError,
+                    )
+                ).initSavedStateHandle()
+            )
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(GenericErrorState::class.java)
+        }
+
+    @Test
     fun `when network not available, then no connection error shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(CardReaderOnboardingState.NoConnectionError)
 
             val viewModel = createVM()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(NoConnectionErrorState::class.java)
+        }
+
+    @Test
+    fun `when incoming network not available, then no connection error shown`() =
+        testBlocking {
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = CardReaderOnboardingState.NoConnectionError,
+                    )
+                ).initSavedStateHandle()
+            )
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(NoConnectionErrorState::class.java)
         }
