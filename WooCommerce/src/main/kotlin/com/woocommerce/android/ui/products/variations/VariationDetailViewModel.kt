@@ -86,11 +86,8 @@ class VariationDetailViewModel @Inject constructor(
 
     // view state for the variation detail screen
     val variationViewStateData = LiveDataDelegate(savedState, VariationViewState()) { old, new ->
-        if (old?.variation != new.variation) {
-            new.variation?.let {
-                updateCards(it)
-            }
-        }
+        new.variation?.takeIf { it != old?.variation && it != originalVariation }
+            ?.let { updateCards(it) }
     }
     private var viewState by variationViewStateData
 
