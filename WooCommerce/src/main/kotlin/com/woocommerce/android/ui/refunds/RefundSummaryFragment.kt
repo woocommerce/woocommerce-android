@@ -9,6 +9,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentRefundSummaryBinding
+import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateSafely
@@ -27,6 +28,7 @@ import javax.inject.Inject
 class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), BackPressListener {
     companion object {
         const val REFUND_ORDER_NOTICE_KEY = "refund_order_notice"
+        const val KEY_INTERAC_SUCCESS = "interac_refund_success"
     }
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
@@ -98,6 +100,12 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
                 } else {
                     binding.refundSummaryMethodDescription.hide()
                 }
+            }
+            handleDialogNotice<String>(
+                KEY_INTERAC_SUCCESS,
+                entryId = R.id.refundSummaryFragment
+            ) {
+                viewModel.refund()
             }
         }
     }

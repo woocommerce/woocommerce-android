@@ -5,6 +5,7 @@ import com.stripe.stripeterminal.external.models.TerminalException
 import com.stripe.stripeterminal.external.models.TerminalException.TerminalErrorCode
 import com.stripe.stripeterminal.external.models.TerminalException.TerminalErrorCode.DECLINED_BY_READER
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
+import com.woocommerce.android.cardreader.internal.CardReaderBaseUnitTest
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.CardReadTimeOut
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Generic
@@ -13,13 +14,10 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPayment
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
-@RunWith(MockitoJUnitRunner::class)
-class PaymentErrorMapperTest {
+class PaymentErrorMapperTest : CardReaderBaseUnitTest() {
     private lateinit var mapper: PaymentErrorMapper
 
     private val terminalException = mock<TerminalException>().also {

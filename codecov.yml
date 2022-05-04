@@ -4,4 +4,5 @@ coverage:
   status:
     project: off
     patch: off
-
+codecov:
+  max_report_age: off

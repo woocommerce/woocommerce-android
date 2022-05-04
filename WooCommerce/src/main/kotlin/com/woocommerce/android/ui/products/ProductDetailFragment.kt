@@ -14,6 +14,7 @@ import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
@@ -25,13 +26,22 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentProductDetailBinding
-import com.woocommerce.android.extensions.*
+import com.woocommerce.android.extensions.fastStripHtml
+import com.woocommerce.android.extensions.handleNotice
+import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.show
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_EDITOR_TEXT
 import com.woocommerce.android.ui.dialog.WooDialog
-import com.woocommerce.android.ui.products.ProductDetailViewModel.*
+import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.products.ProductDetailViewModel.HideImageUploadErrorSnackbar
+import com.woocommerce.android.ui.products.ProductDetailViewModel.MenuButtonsState
+import com.woocommerce.android.ui.products.ProductDetailViewModel.RefreshMenu
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
@@ -43,8 +53,9 @@ import com.woocommerce.android.ui.products.reviews.ProductReviewsFragment
 import com.woocommerce.android.ui.products.variations.VariationListFragment
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.VariationListData
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.Optional
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
@@ -81,6 +92,18 @@ class ProductDetailFragment :
 
     private var _binding: FragmentProductDetailBinding? = null
     private val binding get() = _binding!!
+
+    override val activityAppBarStatus: AppBarStatus
+        get() {
+            val navigationIcon = if (findNavController().backQueue.any { it.destination.id == R.id.products }) {
+                R.drawable.ic_back_24dp
+            } else {
+                R.drawable.ic_gridicons_cross_24dp
+            }
+            return AppBarStatus.Visible(
+                navigationIcon = navigationIcon
+            )
+        }
 
     @Inject lateinit var crashLogging: CrashLogging
 
@@ -158,8 +181,8 @@ class ProductDetailFragment :
         }
         handleResult<PricingData>(BaseProductEditorFragment.KEY_PRICING_DIALOG_RESULT) {
             viewModel.updateProductDraft(
-                regularPrice = Optional(it.regularPrice),
-                salePrice = Optional(it.salePrice),
+                regularPrice = it.regularPrice,
+                salePrice = it.salePrice,
                 saleStartDate = it.saleStartDate,
                 saleEndDate = it.saleEndDate,
                 isSaleScheduled = it.isSaleScheduled,

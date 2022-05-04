@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ui.prefs.cardreader.onboarding.CardReaderOnboardingFragment">
+    tools:context=".ui.cardreader.onboarding.CardReaderOnboardingFragment">
 
     <View style="@style/Woo.Divider" />
 

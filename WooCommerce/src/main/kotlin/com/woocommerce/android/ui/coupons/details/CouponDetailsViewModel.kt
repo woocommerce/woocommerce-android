@@ -4,8 +4,13 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CouponUtils
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -52,6 +57,11 @@ class CouponDetailsViewModel @Inject constructor(
                 }
             }
         }
+
+        AnalyticsTracker.track(
+            AnalyticsEvent.COUPON_DETAILS,
+            mapOf(AnalyticsTracker.KEY_COUPON_ACTION to AnalyticsTracker.KEY_COUPON_ACTION_LOADED)
+        )
     }
 
     private fun loadCouponSummary(): Flow<CouponSummaryUi> {
@@ -60,12 +70,19 @@ class CouponDetailsViewModel @Inject constructor(
             .map { coupon ->
                 CouponSummaryUi(
                     code = coupon.code,
+                    isActive = coupon.dateExpiresGmt?.after(Date()) ?: true,
                     summary = couponUtils.generateSummary(coupon, currencyCode),
+                    isForIndividualUse = coupon.isForIndividualUse ?: false,
+                    isShippingFree = coupon.isShippingFree ?: false,
+                    areSaleItemsExcluded = coupon.areSaleItemsExcluded ?: false,
                     discountType = coupon.type?.let { couponUtils.localizeType(it) },
                     minimumSpending = couponUtils.formatMinimumSpendingInfo(coupon.minimumAmount, currencyCode),
                     maximumSpending = couponUtils.formatMaximumSpendingInfo(coupon.maximumAmount, currencyCode),
-                    isActive = coupon.dateExpiresGmt?.after(Date()) ?: true,
-                    expiration = coupon.dateExpiresGmt?.let { couponUtils.formatExpirationDate(it) }
+                    usageLimitPerUser = couponUtils.formatUsageLimitPerUser(coupon.usageLimitPerUser),
+                    usageLimitPerCoupon = couponUtils.formatUsageLimitPerCoupon(coupon.usageLimit),
+                    usageLimitPerItems = couponUtils.formatUsageLimitPerItems(coupon.limitUsageToXItems),
+                    expiration = coupon.dateExpiresGmt?.let { couponUtils.formatExpirationDate(it) },
+                    emailRestrictions = couponUtils.formatRestrictedEmails(coupon.restrictedEmails)
                 )
             }
     }
@@ -107,6 +124,60 @@ class CouponDetailsViewModel @Inject constructor(
         }
     }
 
+    fun onDeleteButtonClick() {
+        viewModelScope.launch {
+            couponDetailsRepository.deleteCoupon(navArgs.couponId)
+                .onFailure {
+                    WooLog.e(
+                        tag = WooLog.T.COUPONS,
+                        message = "Coupon deletion failed: ${(it as WooException).error.message}"
+                    )
+                    triggerEvent(ShowSnackbar(R.string.coupon_details_delete_failure))
+                }
+                .onSuccess {
+                    triggerEvent(ShowSnackbar(R.string.coupon_details_delete_successful))
+                    triggerEvent(Exit)
+                }
+        }
+
+        AnalyticsTracker.track(
+            AnalyticsEvent.COUPON_DETAILS,
+            mapOf(AnalyticsTracker.KEY_COUPON_ACTION to AnalyticsTracker.KEY_COUPON_ACTION_DELETED)
+        )
+    }
+
+    fun onCopyButtonClick() {
+        couponState.value?.couponSummary?.code?.let {
+            triggerEvent(CopyCodeEvent(it))
+        }
+
+        AnalyticsTracker.track(
+            AnalyticsEvent.COUPON_DETAILS,
+            mapOf(AnalyticsTracker.KEY_COUPON_ACTION to AnalyticsTracker.KEY_COUPON_ACTION_COPIED)
+        )
+    }
+
+    fun onShareButtonClick() {
+        coupon.value?.let { coupon ->
+            couponUtils.formatSharingMessage(
+                amount = coupon.amount,
+                currencyCode = currencyCode,
+                couponCode = coupon.code,
+                includedProducts = coupon.products.size,
+                excludedProducts = coupon.excludedProducts.size
+            )
+        }?.let {
+            triggerEvent(ShareCodeEvent(it))
+        } ?: run {
+            triggerEvent(ShowSnackbar(R.string.coupon_details_share_formatting_failure))
+        }
+
+        AnalyticsTracker.track(
+            AnalyticsEvent.COUPON_DETAILS,
+            mapOf(AnalyticsTracker.KEY_COUPON_ACTION to AnalyticsTracker.KEY_COUPON_ACTION_SHARED)
+        )
+    }
+
     data class CouponDetailsState(
         val isLoading: Boolean = false,
         val couponSummary: CouponSummaryUi? = null,
@@ -117,10 +188,17 @@ class CouponDetailsViewModel @Inject constructor(
         val code: String?,
         val isActive: Boolean,
         val summary: String,
+        val isForIndividualUse: Boolean,
+        val isShippingFree: Boolean,
+        val areSaleItemsExcluded: Boolean,
         val discountType: String?,
         val minimumSpending: String?,
         val maximumSpending: String?,
-        val expiration: String?
+        val usageLimitPerUser: String?,
+        val usageLimitPerCoupon: String?,
+        val usageLimitPerItems: String?,
+        val expiration: String?,
+        val emailRestrictions: String?
     )
 
     data class CouponPerformanceUi(
@@ -138,4 +216,7 @@ class CouponDetailsViewModel @Inject constructor(
                 get() = data.ordersCount
         }
     }
+
+    data class CopyCodeEvent(val couponCode: String) : MultiLiveEvent.Event()
+    data class ShareCodeEvent(val shareCodeMessage: String) : MultiLiveEvent.Event()
 }

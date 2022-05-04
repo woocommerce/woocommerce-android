@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.creation.variations
 
 import com.woocommerce.android.initSavedStateHandle
+import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.variations.VariationRepository
@@ -12,7 +13,11 @@ import kotlinx.coroutines.delay
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
 class OrderCreationVariationSelectionViewModelTest : BaseUnitTest() {
@@ -87,10 +92,28 @@ class OrderCreationVariationSelectionViewModelTest : BaseUnitTest() {
             .mapIndexed { index, productVariation ->
                 if (index == 0) productVariation.copy(price = null) else productVariation
             }
-        whenever(variationsRepository.fetchProductVariations(PRODUCT_ID))
+        whenever(variationsRepository.getProductVariationList(PRODUCT_ID))
             .thenReturn(variations)
 
         val displayedVariations = viewModel.viewState.getOrAwaitValue().variationsList
+        assertThat(displayedVariations).allMatch { it.price != null }
+        assertThat(displayedVariations?.size).isEqualTo(variations.size - 1)
+    }
+
+    @Test
+    fun `when fetching variations, then exclude any variations without price`() = testBlocking {
+        val variations = ProductTestUtils.generateProductVariationList(PRODUCT_ID)
+            .mapIndexed { index, productVariation ->
+                if (index == 0) productVariation.copy(price = null) else productVariation
+            }
+        whenever(variationsRepository.fetchProductVariations(PRODUCT_ID))
+            .thenReturn(variations)
+
+        var displayedVariations: List<ProductVariation>? = null
+        viewModel.viewState.observeForever {
+            displayedVariations = it.variationsList
+        }
+
         assertThat(displayedVariations).allMatch { it.price != null }
         assertThat(displayedVariations?.size).isEqualTo(variations.size - 1)
     }

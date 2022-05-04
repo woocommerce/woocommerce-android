@@ -1,11 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-03-25 13:54:03+0000
+Translation-Revision-Date: 2022-04-08 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="coupon_summary_performance_amount_heading">Importe</string>
+    <string name="coupon_summary_performance_discounted_order_heading">Pedidos con descuento</string>
+    <string name="coupon_summary_performance_heading">Rendimiento</string>
+    <string name="coupon_summary_maximum_spend">Gasto máximo de %s</string>
+    <string name="coupon_summary_minimum_spend">Gasto mínimo de %s</string>
+    <string name="coupon_summary_heading">Resumen del cupón</string>
+    <string name="coupon_list_view_coupon">Ver el resumen del cupón</string>
+    <string name="coupon_list_wip_message_enabled">Estamos trabajando para que sea posible ver y editar cupones desde tu dispositivo.</string>
+    <string name="coupon_list_wip_title">Ver y editar cupones</string>
+    <string name="coupon_list_empty_heading">No se han encontrado cupones</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1s excepto %2s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1s y %2s</string>
+    <string name="coupon_list_item_label_everything">todo</string>
+    <string name="coupon_list_item_label_off">de descuento</string>
+    <string name="coupon_list_item_label_expired">Caducado</string>
+    <string name="coupon_list_item_label_active">Activo</string>
+    <string name="coupons">Cupones</string>
+    <string name="inbox_note_recency_date_time">Creado el %s</string>
+    <string name="inbox_note_recency_days">Hace %d días</string>
+    <string name="inbox_note_recency_one_day">Hace un día</string>
+    <string name="inbox_note_recency_hours">Hace %d horas </string>
+    <string name="inbox_note_recency_one_hour">Hace una hora</string>
+    <string name="inbox_note_recency_minutes">Hace %d minutos</string>
+    <string name="inbox_note_recency_now">Hace un momento</string>
+    <string name="category_count_many">%d categorías</string>
+    <string name="category_count_one">%d categoría</string>
+    <string name="product_ratings_count_zero">\u2022  no hay reseñas aprobadas</string>
+    <string name="product_ratings_count_one">\u2022  una reseña aprobada</string>
+    <string name="product_ratings_count">\u2022  %d reseñas aprobadas</string>
+    <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">Estamos trabajando para que sea posible crear pedidos y aceptar pagos desde tu dispositivo. Puedes probar estas funciones tocando el botón \"+\"</string>
+    <string name="orderlist_simple_payments_wip_title">¡Crea pedidos y acepta pagos!</string>
     <string name="empty_inbox_description">Pronto encontrarás más consejos e información para que tu tienda siga creciendo. ¡Te esperamos!</string>
     <string name="empty_inbox_title">¡Enhorabuena, has leído todo!</string>
     <string name="orderstatus_contentDesc_withStatus">Estado del pedido: %s</string>
@@ -187,9 +219,6 @@ Language: es
     <string name="date_timeframe_last_quarter">Último trimestre</string>
     <string name="date_timeframe_last_month">Último mes</string>
     <string name="date_timeframe_last_week">Última semana</string>
-    <string name="settings_enable_order_creation_teaser_message">Prueba a crear pedidos con toda la información mientras nos preparamos para la publicación.</string>
-    <string name="settings_enable_order_creation_teaser_title">Creación de pedidos</string>
-    <string name="beta_features_order_creation">Creación de pedidos</string>
     <string name="beta_features_simple_payments">Pagos simples</string>
     <string name="beta_features_add_ons">Ver complementos</string>
     <string name="orders_empty_message_for_filtered_orders">Lo sentimos, no hemos encontrado ningún pedido.</string>
@@ -210,7 +239,6 @@ Language: es
     <string name="simple_payments_enter_amount">Introducir importe</string>
     <string name="simple_payments_dialog_title">Aceptar pago</string>
     <string name="orderlist_simple_payments_menu">Pago simple</string>
-    <string name="orderlist_simple_payments_wip_title">Acepta pagos desde tu dispositivo.</string>
     <string name="analytics">Análisis</string>
     <string name="jetpack_install_progress_step_four_message">Todo listo</string>
     <string name="jetpack_install_progress_step_three_message">Conectando tu tienda</string>
@@ -245,7 +273,6 @@ Language: es
     <string name="orderfilters_default_filter_option">Todas</string>
     <string name="orderfilters_filter_card_title_filtered_orders">Pedidos filtrados</string>
     <string name="orderfilters_filter_card_title_all_orders">Todos los pedidos</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">Estamos trabajando para que sea más fácil recibir pagos desde tu dispositivo. De momento, pulsa el botón del icono \"+\" y podrás crear un pedido por el importe que quieras recibir.</string>
     <string name="jetpack_benefits_modal_dismiss">No ahora</string>
     <string name="jetpack_benefits_modal_install_jetpack">Instalar Jetpack</string>
     <string name="jetpack_benefits_modal_user_profiles_subtitle">Permite que varios usuarios accedan a la aplicación móvil de WooCommerce.</string>
@@ -813,9 +840,6 @@ Language: es
     <string name="product_detail_no_variations">Este producto no tiene variaciones todavía</string>
     <string name="product_variant_list_empty">En este momento, solo se pueden añadir opciones como tamaño y color en la web. Se mostrarán como opciones en la página de producto de tu sitio.</string>
     <string name="product_adding_wip_title">¡Crea productos desde la aplicación!</string>
-    <string name="product_ratings_count_zero">\u2022 no tiene valoraciones</string>
-    <string name="product_ratings_count_one">\u2022 ha recibido una valoración</string>
-    <string name="product_ratings_count">\u2022 ha recibido %d valoraciones</string>
     <string name="product_detail_fetch_product_invalid_id_error">No se ha encontrado el producto</string>
     <string name="print_shipping_label_info_step_5">Si sigues teniendo problemas para imprimir desde tu dispositivo &lt;b&gt;guarda la etiqueta en formato PDF&lt;/b&gt; y envíala por correo electrónico para imprimirla con otro dispositivo.</string>
     <string name="print_shipping_label_info_step_2">Cuando selecciones &lt;b&gt;\"Imprimir etiqueta de envío\"&lt;/b&gt;, puede que tengas que seleccionar y añadir una impresora si no has impreso nada antes desde ese dispositivo.</string>
@@ -1837,12 +1861,6 @@ Language: es
     <string name="dashboard_top_performers_empty">Sin actividad en este periodo</string>
     <string name="dashboard_top_performers_total_orders">Total de pedidos: %s</string>
     <string name="dashboard_top_performers_title">Mejor rendimiento</string>
-    <string name="dashboard_stats_updated_date_time">Se ha actualizado el %s</string>
-    <string name="dashboard_stats_updated_one_day">Se ha actualizado hace 1 día.</string>
-    <string name="dashboard_stats_updated_hours">Se ha actualizado hace %d horas</string>
-    <string name="dashboard_stats_updated_one_hour">Se ha actualizado hace 1 hora.</string>
-    <string name="dashboard_stats_updated_minutes">Se ha actualizado hace %d minutos.</string>
-    <string name="dashboard_stats_updated_now">Se ha actualizado hace unos instantes.</string>
     <string name="dashboard_stats_error_content_description">Imagen de error</string>
     <string name="dashboard_stats_error">Se ha producido un error al obtener los datos</string>
     <string name="dashboard_stats_revenue">Ingresos</string>

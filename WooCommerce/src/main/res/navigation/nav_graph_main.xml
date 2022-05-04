@@ -164,9 +164,6 @@
         <action
             android:id="@+id/action_moreMenu_to_couponListFragment"
             app:destination="@id/couponListFragment" />
-        <action
-            android:id="@+id/action_moreMenu_to_sitePickerFragment"
-            app:destination="@id/sitePickerFragment"/>
     </fragment>
     <fragment
         android:id="@+id/feedbackSurveyFragment"
