@@ -1,11 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-03-24 17:54:03+0000
+Translation-Revision-Date: 2022-04-10 08:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="coupon_summary_performance_amount_heading">الكمية</string>
+    <string name="coupon_summary_performance_discounted_order_heading">الطلبات التي يسري عليها الخصم</string>
+    <string name="coupon_summary_performance_heading">الأداء</string>
+    <string name="coupon_summary_maximum_spend">الحد الأقصى للإنفاق لـ %s</string>
+    <string name="coupon_summary_minimum_spend">الحد الأدنى للإنفاق لـ %s</string>
+    <string name="coupon_summary_heading">ملخص القسيمة</string>
+    <string name="coupon_list_view_coupon">عرض ملخص القسيمة</string>
+    <string name="coupon_list_wip_message_enabled">لقد كنا نعمل على إتاحة عرض القسائم وتحريرها من جهازك!</string>
+    <string name="coupon_list_wip_title">عرض القسائم وتحريرها</string>
+    <string name="coupon_list_empty_heading">لم يتم العثور على قسائم</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1s من دون %2s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1s و%2s</string>
+    <string name="coupon_list_item_label_everything">كل شيء</string>
+    <string name="coupon_list_item_label_off">on</string>
+    <string name="coupon_list_item_label_expired">منتهي الصلاحية</string>
+    <string name="coupon_list_item_label_active">نشط</string>
+    <string name="coupons">القسائم</string>
+    <string name="inbox_note_recency_date_time">تم الإنشاء في %s</string>
+    <string name="inbox_note_recency_days">منذ %d من الأيام </string>
+    <string name="inbox_note_recency_one_day">منذ يوم</string>
+    <string name="inbox_note_recency_hours">منذ %d من الساعات</string>
+    <string name="inbox_note_recency_one_hour">منذ ساعة مضت</string>
+    <string name="inbox_note_recency_minutes">منذ %d من الدقائق</string>
+    <string name="inbox_note_recency_now">منذ لحظات</string>
+    <string name="category_count_many">%d من التصنيفات</string>
+    <string name="category_count_one">%d تصنيف</string>
+    <string name="product_ratings_count_zero">\u2022  لا توجد أي مراجعات تمت الموافقة عليها</string>
+    <string name="product_ratings_count_one">\u2022  مراجعة واحدة تمت الموافقة عليها</string>
+    <string name="product_ratings_count">\u2022  %d من المراجعات التي تمت الموافقة عليها</string>
+    <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">نعمل على إتاحة إمكانية إنشاء الطلبات وتحصيل المدفوعات من جهازك! يمكنك تجربة هذه الميزات عن طريق الضغط على زر \"+\"</string>
+    <string name="orderlist_simple_payments_wip_title">إنشاء الطلبات وتحصيل المدفوعات!</string>
     <string name="empty_inbox_description">عد قريبًا للحصول على مزيد من النصائح والرؤى بشأن تكبير متجرك</string>
     <string name="empty_inbox_title">تهانينا، لقد قرأت كل شيء!</string>
     <string name="orderstatus_contentDesc_withStatus">حالة الطلب: %s</string>
@@ -187,9 +219,6 @@ Language: ar
     <string name="date_timeframe_last_quarter">الربع الأخير</string>
     <string name="date_timeframe_last_month">الشهر الماضي</string>
     <string name="date_timeframe_last_week">الأسبوع الماضي</string>
-    <string name="settings_enable_order_creation_teaser_message">اختبر إنشاء الطلبات باستخدام تفاصيل كاملة بينما نستعد لإطلاقها</string>
-    <string name="settings_enable_order_creation_teaser_title">إنشاء الطلب</string>
-    <string name="beta_features_order_creation">إنشاء الطلب</string>
     <string name="beta_features_simple_payments">المدفوعات البسيطة</string>
     <string name="beta_features_add_ons">عرض الوظائف الإضافية</string>
     <string name="orders_empty_message_for_filtered_orders">عذرًا، لم نتمكن من العثور على أي طلبات</string>
@@ -210,7 +239,6 @@ Language: ar
     <string name="simple_payments_enter_amount">إدخال المبلغ</string>
     <string name="simple_payments_dialog_title">تحصيل الدفع</string>
     <string name="orderlist_simple_payments_menu">عملية دفع بسيطة</string>
-    <string name="orderlist_simple_payments_wip_title">تحصيل المدفوعات من جهازك!</string>
     <string name="analytics">التحليلات</string>
     <string name="jetpack_install_progress_step_four_message">كل شيء جاهز</string>
     <string name="jetpack_install_progress_step_three_message">الاتصال بمتجرك</string>
@@ -245,7 +273,6 @@ Language: ar
     <string name="orderfilters_default_filter_option">الكل</string>
     <string name="orderfilters_filter_card_title_filtered_orders">الطلبات التي تمت تصفيتها</string>
     <string name="orderfilters_filter_card_title_all_orders">جميع الطلبات</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">نعمل على تسهيل تحصيلك المدفوعات من جهازك! من الآن، اضغط الآن على زر \"+\" وستتمكن من إنشاء طلب بالمبلغ الذي ترغب في تجميعه.</string>
     <string name="jetpack_benefits_modal_dismiss">ليس الآن</string>
     <string name="jetpack_benefits_modal_install_jetpack">تثبيت Jetpack</string>
     <string name="jetpack_benefits_modal_user_profiles_subtitle">اسمح لعدة مستخدمين بالوصول إلى تطبيق WooCommerce للهاتف المحمول.</string>
@@ -813,9 +840,6 @@ Language: ar
     <string name="product_detail_no_variations">لا يحتوي هذا المنتج على تباينات حتى الآن</string>
     <string name="product_variant_list_empty">لا تتوافر إضافة الخيارات، مثل الحجم واللون، على الويب حاليًا.  ستظهر هذه كخيارات على صفحة المنتج في موقعك.</string>
     <string name="product_adding_wip_title">أنشئ منتجات من التطبيق!</string>
-    <string name="product_ratings_count_zero">لا توجد تقييمات</string>
-    <string name="product_ratings_count_one">تم التقييم مرة واحدة</string>
-    <string name="product_ratings_count">تم تقييم %d من المرات</string>
     <string name="product_detail_fetch_product_invalid_id_error">لم يتم العثور على المنتج</string>
     <string name="print_shipping_label_info_step_5">إذا كنت لا تزال تواجه مشكلات في الطباعة من جهازك، فيمكنك &lt;b&gt;حفظ التسمية الخاصة بك بصيغة PDF&lt;/b&gt; وإرسالها عبر البريد الإلكتروني لطباعتها من جهاز آخر.</string>
     <string name="print_shipping_label_info_step_2">بعد تحديد &lt;b&gt;\"طباعة ملصق الشحن\"&lt;/b&gt;، قد تضطر إلى تحديد طابعة وإضافتها إذا لم تقم بالطباعة من هذا الجهاز من قبل.</string>
@@ -1837,12 +1861,6 @@ Language: ar
     <string name="dashboard_top_performers_empty">لا يوجد أي نشاط في هذه الفترة</string>
     <string name="dashboard_top_performers_total_orders">إجمالي الطلبات: %s</string>
     <string name="dashboard_top_performers_title">أهم المؤدِّين</string>
-    <string name="dashboard_stats_updated_date_time">تم التحديث في %s</string>
-    <string name="dashboard_stats_updated_one_day">تم التحديث قبل يوم واحد</string>
-    <string name="dashboard_stats_updated_hours">تم التحديث قبل %d من الساعات</string>
-    <string name="dashboard_stats_updated_one_hour">تم التحديث قبل ساعة واحدة</string>
-    <string name="dashboard_stats_updated_minutes">تم التحديث قبل %d من الدقائق</string>
-    <string name="dashboard_stats_updated_now">تم التحديث منذ لحظات</string>
     <string name="dashboard_stats_error_content_description">صورة الخطأ</string>
     <string name="dashboard_stats_error">حدث خطأ أثناء إحضار البيانات</string>
     <string name="dashboard_stats_revenue">الإيرادات</string>

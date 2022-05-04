@@ -1,4 +1,0 @@
-8.8:
-Es gibt in dieser Version zwar keine überraschenden neuen Features, wir haben uns aber trotzdem viel Mühe gegeben! Wir haben ein paar Fehler behoben und mehrere Verbesserungen bei der Barrierefreiheit mit TalkBack vorgenommen.
-
-Wusstest du schon, dass wir eine Beta-Funktion zum Erstellen von Bestellungen veröffentlicht haben? Geh zum Tab „Menü“, tippe auf das Einstellungs-Icon und scrolle zu den Beta-Funktionen.

@@ -6,10 +6,15 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.test.TestCoroutineScope
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.TestScope
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.reset
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
+import org.mockito.kotlin.verifyNoMoreInteractions
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.util.DateTimeUtils
 
@@ -22,7 +27,7 @@ class MyStoreStatsUsageTracksEventEmitterTest : BaseUnitTest() {
     }
     private val usageTracksEventEmitter = MyStoreStatsUsageTracksEventEmitter(
         analyticsTrackerWrapper = analyticsTrackerWrapper,
-        appCoroutineScope = TestCoroutineScope(coroutinesTestRule.testDispatcher),
+        appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher),
         selectedSite = selectedSite
     )
 
@@ -46,7 +51,7 @@ class MyStoreStatsUsageTracksEventEmitterTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given some interactions, when the site is changed, then it will not emit an event`() = runBlockingTest {
+    fun `given some interactions, when the site is changed, then it will not emit an event`() = testBlocking {
         // Given
         usageTracksEventEmitter.interacted(
             "2021-11-23T00:00:00Z",

@@ -60,6 +60,10 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         )
     }
 
+    private val View?.productsAdapter
+        get() = (this as? RecyclerView)
+            ?.run { adapter as? OrderCreationProductsAdapter }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
@@ -205,9 +209,13 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             new.canCreateOrder.takeIfNotEqualTo(old?.canCreateOrder) {
                 createOrderMenuItem?.isEnabled = it
             }
+            new.isIdle.takeIfNotEqualTo(old?.isIdle) { enabled ->
+                binding.paymentSection.loadingProgress.isVisible = !enabled
+                binding.paymentSection.feeButton.isEnabled = enabled
+                binding.productsSection.isEachAddButtonEnabled = enabled
+            }
             new.isUpdatingOrderDraft.takeIfNotEqualTo(old?.isUpdatingOrderDraft) { show ->
-                binding.paymentSection.loadingProgress.isVisible = show
-                binding.paymentSection.feeButton.isEnabled = show.not()
+                binding.productsSection.content.productsAdapter?.isQuantityButtonsEnabled = show.not()
             }
             new.showOrderUpdateSnackbar.takeIfNotEqualTo(old?.showOrderUpdateSnackbar) { show ->
                 showOrHideErrorSnackBar(show)
@@ -294,9 +302,10 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                         onDecreaseQuantity = viewModel::onDecreaseProductsQuantity
                     )
                     itemAnimator = animator
+                    isNestedScrollingEnabled = false
                 }
             }
-            ((productsSection.content as RecyclerView).adapter as OrderCreationProductsAdapter).submitList(products)
+            productsSection.content.productsAdapter?.submitList(products)
         }
     }
 

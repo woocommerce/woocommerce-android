@@ -51,7 +51,6 @@ data class ProductData(
     val stockStatus = productStatusesMap[stockStatusRaw]
     val price = getPriceDescription()
     val type = productTypesMap[typeRaw]
-    val reviewsCountBeautified = getRatingDescription()
 
     private fun getPriceDescription(): String {
         var price = "Regular price: \$$priceRegularRaw.00"
@@ -66,13 +65,5 @@ data class ProductData(
         }
 
         return price
-    }
-
-    private fun getRatingDescription(): String {
-        return when (reviewsCount) {
-            0 -> ""
-            1 -> "• rated once"
-            else -> "• rated $reviewsCount times"
-        }
     }
 }

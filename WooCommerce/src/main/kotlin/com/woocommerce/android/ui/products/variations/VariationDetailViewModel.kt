@@ -13,7 +13,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_IMAGE_
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_VIEW_VARIATION_VISIBILITY_SWITCH_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ID
-import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.ProductVariation
@@ -34,7 +33,6 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.Optional
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -128,7 +126,7 @@ class VariationDetailViewModel @Inject constructor(
 
     fun onDeleteVariationClicked() {
         triggerEvent(
-            ShowDialog(
+            Event.ShowDialog(
                 positiveBtnAction = { _, _ ->
                     AnalyticsTracker.track(
                         AnalyticsEvent.PRODUCT_VARIATION_REMOVE_BUTTON_TAPPED,
@@ -152,26 +150,26 @@ class VariationDetailViewModel @Inject constructor(
             isUploadingImages() -> {
                 // images can't be assigned to the product until they finish uploading so ask whether to discard images.
                 triggerEvent(
-                    ShowDialog.buildDiscardDialogEvent(
+                    Event.ShowDialog.buildDiscardDialogEvent(
                         messageId = string.discard_images_message,
                         positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                             mediaFileUploadHandler.cancelUpload(navArgs.remoteVariationId)
-                            triggerEvent(Exit)
+                            triggerEvent(Event.Exit)
                         }
                     )
                 )
             }
             viewState.variation != originalVariation -> {
                 triggerEvent(
-                    ShowDialog.buildDiscardDialogEvent(
+                    Event.ShowDialog.buildDiscardDialogEvent(
                         positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                            triggerEvent(Exit)
+                            triggerEvent(Event.Exit)
                         }
                     )
                 )
             }
             else -> {
-                triggerEvent(Exit)
+                triggerEvent(Event.Exit)
             }
         }
     }
@@ -200,8 +198,8 @@ class VariationDetailViewModel @Inject constructor(
         remoteVariationId: Long? = null,
         sku: String? = null,
         image: Optional<Image>? = null,
-        regularPrice: BigDecimal? = null,
-        salePrice: BigDecimal? = null,
+        regularPrice: BigDecimal? = viewState.variation?.regularPrice,
+        salePrice: BigDecimal? = viewState.variation?.salePrice,
         saleEndDate: Date? = viewState.variation?.saleEndDateGmt,
         saleStartDate: Date? = viewState.variation?.saleStartDateGmt,
         isSaleScheduled: Boolean? = null,
@@ -229,16 +227,8 @@ class VariationDetailViewModel @Inject constructor(
                     remoteVariationId = remoteVariationId ?: variation.remoteVariationId,
                     sku = sku ?: variation.sku,
                     image = if (image != null) image.value else variation.image,
-                    regularPrice = if (regularPrice isNotEqualTo variation.regularPrice) {
-                        regularPrice
-                    } else {
-                        variation.regularPrice
-                    },
-                    salePrice = if (salePrice isNotEqualTo variation.salePrice) {
-                        salePrice
-                    } else {
-                        variation.salePrice
-                    },
+                    regularPrice = regularPrice,
+                    salePrice = salePrice,
                     saleEndDateGmt = saleEndDate,
                     saleStartDateGmt = saleStartDate,
                     isSaleScheduled = isSaleScheduled ?: variation.isSaleScheduled,
@@ -279,19 +269,19 @@ class VariationDetailViewModel @Inject constructor(
                 originalVariation = variation
                 showVariation(variation)
                 loadVariation(variation.remoteProductId, variation.remoteVariationId)
-                triggerEvent(ShowSnackbar(string.variation_detail_update_product_success))
+                triggerEvent(Event.ShowSnackbar(string.variation_detail_update_product_success))
             } else {
                 if (
                     variation.image?.id == 0L &&
                     result.error.type == ProductErrorType.INVALID_VARIATION_IMAGE_ID
                 ) {
-                    triggerEvent(ShowSnackbar(string.variation_detail_update_variation_image_error))
+                    triggerEvent(Event.ShowSnackbar(string.variation_detail_update_variation_image_error))
                 } else {
-                    triggerEvent(ShowSnackbar(string.variation_detail_update_variation_error))
+                    triggerEvent(Event.ShowSnackbar(string.variation_detail_update_variation_error))
                 }
             }
         } else {
-            triggerEvent(ShowSnackbar(string.offline_error))
+            triggerEvent(Event.ShowSnackbar(string.offline_error))
         }
 
         viewState = viewState.copy(isProgressDialogShown = false)
@@ -309,7 +299,7 @@ class VariationDetailViewModel @Inject constructor(
 
     private fun handleVariationDeletion(deleted: Boolean, productID: Long) {
         if (deleted) triggerEvent(
-            ExitWithResult(
+            Event.ExitWithResult(
                 viewState.variation?.let { variation ->
                     DeletedVariationData(
                         productID,
@@ -318,7 +308,7 @@ class VariationDetailViewModel @Inject constructor(
                 }
             )
         ) else if (deleted.not() && networkStatus.isConnected().not()) {
-            triggerEvent(ShowSnackbar(string.offline_error))
+            triggerEvent(Event.ShowSnackbar(string.offline_error))
         }
 
         viewState = viewState.copy(isDeleteDialogShown = false)
@@ -341,8 +331,8 @@ class VariationDetailViewModel @Inject constructor(
             originalVariation?.let {
                 showVariation(it)
             } ?: run {
-                triggerEvent(ShowSnackbar(string.variation_detail_fetch_variation_error))
-                triggerEvent(Exit)
+                triggerEvent(Event.ShowSnackbar(string.variation_detail_fetch_variation_error))
+                triggerEvent(Event.Exit)
             }
         }
     }
@@ -352,7 +342,7 @@ class VariationDetailViewModel @Inject constructor(
             variationRepository.fetchVariation(remoteProductId, remoteVariationId)
             originalVariation = variationRepository.getVariation(remoteProductId, remoteVariationId)
         } else {
-            triggerEvent(ShowSnackbar(string.offline_error))
+            triggerEvent(Event.ShowSnackbar(string.offline_error))
         }
     }
 
@@ -413,7 +403,9 @@ class VariationDetailViewModel @Inject constructor(
                 } else {
                     val errorMsg = resources.getMediaUploadErrorMessage(errorList.size)
                     triggerEvent(
-                        ShowActionSnackbar(errorMsg) { triggerEvent(ViewMediaUploadErrors(navArgs.remoteVariationId)) }
+                        Event.ShowActionSnackbar(errorMsg) {
+                            triggerEvent(ViewMediaUploadErrors(navArgs.remoteVariationId))
+                        }
                     )
                 }
             }
