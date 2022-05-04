@@ -11,8 +11,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
@@ -70,7 +68,6 @@ import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
-import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.AppRatingDialog
@@ -132,10 +129,6 @@ class MainActivity :
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var toolbar: Toolbar
-
-    private val sitePickerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        handleSitePickerResult(it)
-    }
 
     private val appBarOffsetListener by lazy {
         AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset ->
@@ -244,7 +237,13 @@ class MainActivity :
         toolbar.navigationIcon = null
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
+        val graphInflater = navHostFragment.navController.navInflater
+
+        val navGraph = graphInflater.inflate(R.navigation.nav_graph_main)
+        navGraph.setStartDestination(viewModel.startDestination)
+
         navController = navHostFragment.navController
+        navController.graph = navGraph
         navHostFragment.childFragmentManager.registerFragmentLifecycleCallbacks(fragmentLifecycleObserver, false)
         binding.bottomNav.init(navController, this)
 
@@ -255,11 +254,6 @@ class MainActivity :
         if (AppPrefs.getDatabaseDowngraded()) {
             presenter.fetchSitesAfterDowngrade()
             AppPrefs.setDatabaseDowngraded(false)
-            return
-        }
-
-        if (!selectedSite.exists()) {
-            showSitePickerScreen()
             return
         }
 
@@ -296,7 +290,9 @@ class MainActivity :
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
 
-        updateOrderBadge(false)
+        if (selectedSite.exists()) {
+            updateOrderBadge(false)
+        }
 
         checkConnection()
         viewModel.showFeatureAnnouncementIfNeeded()
@@ -544,14 +540,6 @@ class MainActivity :
         finish()
     }
 
-    /**
-     * displays the site picker activity and finishes this activity
-     */
-    override fun showSitePickerScreen() {
-        SitePickerActivity.showSitePickerFromLogin(this)
-        finish()
-    }
-
     override fun showUserEligibilityErrorScreen() {
         val action = NavGraphMainDirections.actionGlobalUserEligibilityErrorFragment()
         navController.navigateSafely(action)
@@ -566,26 +554,20 @@ class MainActivity :
     override fun updateSelectedSite() {
         hideProgressDialog()
 
-        if (!selectedSite.exists()) {
-            showSitePickerScreen()
-            return
-        }
-
         // Complete UI initialization
         binding.bottomNav.init(navController, this)
         initFragment(null)
     }
 
     fun startSitePicker() {
-        val sitePickerIntent = Intent(this, SitePickerActivity::class.java)
-        sitePickerLauncher.launch(sitePickerIntent)
+        navController.navigateSafely(
+            MoreMenuFragmentDirections.actionGlobalLoginToSitePickerFragment(openedFromLogin = false)
+        )
     }
 
-    private fun handleSitePickerResult(activityResult: ActivityResult) {
-        if (activityResult.resultCode == RESULT_OK) {
-            presenter.selectedSiteChanged(selectedSite.get())
-            restart()
-        }
+    fun handleSitePickerResult() {
+        presenter.selectedSiteChanged(selectedSite.get())
+        restart()
     }
 
     /**
