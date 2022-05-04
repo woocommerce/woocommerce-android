@@ -4,7 +4,13 @@ import com.stripe.stripeterminal.external.models.ReaderDisplayMessage
 import com.stripe.stripeterminal.external.models.ReaderInputOptions
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.LogWrapper
+import com.woocommerce.android.cardreader.connection.event.BatteryStatus.CRITICAL
+import com.woocommerce.android.cardreader.connection.event.BatteryStatus.LOW
+import com.woocommerce.android.cardreader.connection.event.BatteryStatus.NOMINAL
+import com.woocommerce.android.cardreader.connection.event.BatteryStatus.UNKNOWN
 import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages
+import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus.StatusChanged
+import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus.Warning
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatusErrorType
@@ -109,5 +115,86 @@ class BluetoothReaderListenerImplTest {
         // THEN
         assertThat(listener.displayMessagesEvents.value)
             .isEqualTo(BluetoothCardReaderMessages.CardReaderInputMessage(options.toString()))
+    }
+
+    @Test
+    fun `given NOMINAL status, when on battery level update called, then new battery status is emitted`() {
+        // WHEN
+        val batteryLevel = 0.3F
+        val batteryStatus = com.stripe.stripeterminal.external.models.BatteryStatus.NOMINAL
+        val isCharging = true
+        listener.onBatteryLevelUpdate(batteryLevel, batteryStatus, isCharging)
+
+        // THEN
+        assertThat(listener.batteryStatusEvents.value).isEqualTo(
+            StatusChanged(
+                batteryLevel,
+                NOMINAL,
+                isCharging,
+            )
+        )
+    }
+
+    @Test
+    fun `given LOW status, when on battery level update called, then new battery status is emitted`() {
+        // WHEN
+        val batteryLevel = 0.3F
+        val batteryStatus = com.stripe.stripeterminal.external.models.BatteryStatus.LOW
+        val isCharging = true
+        listener.onBatteryLevelUpdate(batteryLevel, batteryStatus, isCharging)
+
+        // THEN
+        assertThat(listener.batteryStatusEvents.value).isEqualTo(
+            StatusChanged(
+                batteryLevel,
+                LOW,
+                isCharging,
+            )
+        )
+    }
+
+    @Test
+    fun `given CRITICAL status, when on battery level update called, then new battery status is emitted`() {
+        // WHEN
+        val batteryLevel = 0.3F
+        val batteryStatus = com.stripe.stripeterminal.external.models.BatteryStatus.CRITICAL
+        val isCharging = true
+        listener.onBatteryLevelUpdate(batteryLevel, batteryStatus, isCharging)
+
+        // THEN
+        assertThat(listener.batteryStatusEvents.value).isEqualTo(
+            StatusChanged(
+                batteryLevel,
+                CRITICAL,
+                isCharging,
+            )
+        )
+    }
+
+    @Test
+    fun `given UNKNOWN status, when on battery level update called, then new battery status is emitted`() {
+        // WHEN
+        val batteryLevel = 0.3F
+        val batteryStatus = com.stripe.stripeterminal.external.models.BatteryStatus.UNKNOWN
+        val isCharging = true
+        listener.onBatteryLevelUpdate(batteryLevel, batteryStatus, isCharging)
+
+        // THEN
+        assertThat(listener.batteryStatusEvents.value).isEqualTo(
+            StatusChanged(
+                batteryLevel,
+                UNKNOWN,
+                isCharging,
+            )
+        )
+    }
+
+    @Test
+    fun `when on report low battery warning called, then warning battery status is emitted`() {
+        // WHEN
+        listener.onReportLowBatteryWarning()
+
+        // THEN
+        assertThat(listener.batteryStatusEvents.value).isEqualTo(Warning)
     }
 }
