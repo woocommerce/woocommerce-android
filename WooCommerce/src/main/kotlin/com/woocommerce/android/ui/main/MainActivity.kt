@@ -244,7 +244,6 @@ class MainActivity :
 
         navController = navHostFragment.navController
         navController.graph = navGraph
-        navController.addOnDestinationChangedListener(this@MainActivity)
         navHostFragment.childFragmentManager.registerFragmentLifecycleCallbacks(fragmentLifecycleObserver, false)
         binding.bottomNav.init(navController, this)
 
@@ -562,7 +561,7 @@ class MainActivity :
 
     fun startSitePicker() {
         navController.navigateSafely(
-            MoreMenuFragmentDirections.actionMoreMenuToSitePickerFragment(openedFromLogin = false)
+            MoreMenuFragmentDirections.actionGlobalLoginToSitePickerFragment(openedFromLogin = false)
         )
     }
 
