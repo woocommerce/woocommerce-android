@@ -2,7 +2,7 @@
 
 9.2
 -----
-
+[*] Fixed a bug of rounding the number when using a comma decimal separator [https://github.com/woocommerce/woocommerce-android/pull/6426]
 
 9.1
 -----
