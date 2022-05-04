@@ -267,7 +267,6 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 ).initSavedStateHandle()
             )
 
-            verify(onboardingChecker, never()).getOnboardingState()
             val countryName = (
                 (viewModel.viewStateData.value as UnsupportedErrorState.Country)
                     .headerLabel as UiString.UiStringRes
