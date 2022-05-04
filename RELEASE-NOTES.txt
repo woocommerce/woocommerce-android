@@ -2,7 +2,7 @@
 
 9.2
 -----
-
+- [*] In-Person Payments: update the reader's battery level when it's changed on the card reader's details screen
 
 9.1
 -----
