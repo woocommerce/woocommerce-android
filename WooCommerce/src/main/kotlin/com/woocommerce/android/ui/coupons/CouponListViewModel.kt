@@ -26,7 +26,7 @@ class CouponListViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val wooCommerceStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
-    private val couponRepository: CouponRepository,
+    private val couponListHandler: CouponListHandler,
     private val couponUtils: CouponUtils
 ) : ScopedViewModel(savedState) {
     private val currencyCode by lazy {
@@ -37,7 +37,7 @@ class CouponListViewModel @Inject constructor(
     private val isLoading = MutableStateFlow(false)
 
     val couponsState = combine(
-        couponRepository.couponsFlow
+        couponListHandler.couponsFlow
             .map { coupons -> coupons.map { it.toUiModel() } },
         isLoading,
         searchQuery
@@ -54,7 +54,7 @@ class CouponListViewModel @Inject constructor(
         if (searchQuery.value == null) {
             viewModelScope.launch {
                 isLoading.value = true
-                couponRepository.fetchCoupons(forceRefresh = true)
+                couponListHandler.fetchCoupons(forceRefresh = true)
                 isLoading.value = false
             }
         }
@@ -77,7 +77,7 @@ class CouponListViewModel @Inject constructor(
 
     fun onLoadMore() {
         viewModelScope.launch {
-            couponRepository.loadMore()
+            couponListHandler.loadMore()
         }
     }
 
@@ -104,7 +104,7 @@ class CouponListViewModel @Inject constructor(
                     if (it.isNullOrEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS
                 }.collectLatest {
                     try {
-                        couponRepository.fetchCoupons(searchQuery = it)
+                        couponListHandler.fetchCoupons(searchQuery = it)
                     } finally {
                         isLoading.value = false
                     }
