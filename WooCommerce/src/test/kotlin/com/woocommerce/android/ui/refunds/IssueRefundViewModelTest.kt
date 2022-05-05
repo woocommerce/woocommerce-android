@@ -24,6 +24,10 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
@@ -193,6 +197,227 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
             assertThat(events.first()).isInstanceOf(
                 IssueRefundViewModel.IssueRefundEvent.NavigateToCardReaderScreen::class.java
+            )
+        }
+    }
+
+    @Test
+    fun `given interac refund, when initiating refund, then trigger updating backend snackbar`() {
+        testBlocking {
+            val chargeId = "charge_id"
+            val cardBrand = "visa"
+            val cardLast4 = "1234"
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+            )
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
+                    cardBrand = cardBrand,
+                    cardLast4 = cardLast4,
+                    paymentMethodType = "interac_present"
+                )
+            )
+            whenever(resourceProvider.getString(R.string.order_refunds_manual_refund))
+                .thenReturn("Credit/Debit card")
+
+            initViewModel()
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+            viewModel.refund()
+
+            assertThat(events.first()).isEqualTo(
+                MultiLiveEvent.Event.ShowSnackbar(
+                    R.string.card_reader_interac_refund_notifying_backend_about_successful_refund
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given non-interac refund, when initiating refund, then don't trigger updating backend snackbar`() {
+        testBlocking {
+            val chargeId = "charge_id"
+            val cardBrand = "visa"
+            val cardLast4 = "1234"
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+            )
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
+                    cardBrand = cardBrand,
+                    cardLast4 = cardLast4,
+                    paymentMethodType = "card_present"
+                )
+            )
+            whenever(resourceProvider.getString(R.string.order_refunds_manual_refund))
+                .thenReturn("Credit/Debit card")
+
+            initViewModel()
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+            viewModel.refund()
+
+            assertThat(events.any()).isNotEqualTo(
+                MultiLiveEvent.Event.ShowSnackbar(
+                    R.string.card_reader_interac_refund_notifying_backend_about_successful_refund
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given interac refund, when initiating refund fails, then trigger updating backend failed snackbar`() {
+        testBlocking {
+            val chargeId = "charge_id"
+            val cardBrand = "visa"
+            val cardLast4 = "1234"
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+            )
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
+                    cardBrand = cardBrand,
+                    cardLast4 = cardLast4,
+                    paymentMethodType = "interac_present"
+                )
+            )
+            whenever(resourceProvider.getString(R.string.order_refunds_manual_refund))
+                .thenReturn("Credit/Debit card")
+            whenever(
+                refundStore.createItemsRefund(
+                    site = any(),
+                    orderId = any(),
+                    reason = any(),
+                    restockItems = any(),
+                    autoRefund = any(),
+                    items = any()
+                )
+            ).thenReturn(
+                WooResult(
+                    error = WooError(
+                        type = WooErrorType.GENERIC_ERROR,
+                        original = BaseRequest.GenericErrorType.NETWORK_ERROR
+                    )
+                )
+            )
+
+            initViewModel()
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+            viewModel.refund()
+
+            assertThat(events[1]).isEqualTo(
+                MultiLiveEvent.Event.ShowSnackbar(
+                    R.string.card_reader_interac_refund_notifying_backend_about_successful_refund_failed
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given non-interac refund, when initiating refund fails, then don't trigger update failed snackbar`() {
+        testBlocking {
+            val chargeId = "charge_id"
+            val cardBrand = "visa"
+            val cardLast4 = "1234"
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+            )
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
+                    cardBrand = cardBrand,
+                    cardLast4 = cardLast4,
+                    paymentMethodType = "card_present"
+                )
+            )
+            whenever(resourceProvider.getString(R.string.order_refunds_manual_refund))
+                .thenReturn("Credit/Debit card")
+            whenever(
+                refundStore.createItemsRefund(
+                    site = any(),
+                    orderId = any(),
+                    reason = any(),
+                    restockItems = any(),
+                    autoRefund = any(),
+                    items = any()
+                )
+            ).thenReturn(
+                WooResult(
+                    error = WooError(
+                        type = WooErrorType.GENERIC_ERROR,
+                        original = BaseRequest.GenericErrorType.NETWORK_ERROR
+                    )
+                )
+            )
+
+            initViewModel()
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+            viewModel.refund()
+
+            assertThat(events.any()).isNotEqualTo(
+                MultiLiveEvent.Event.ShowSnackbar(
+                    R.string.card_reader_interac_refund_notifying_backend_about_successful_refund_failed
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given non-interac refund, when refund() fails, then trigger failed snackbar`() {
+        testBlocking {
+            val chargeId = "charge_id"
+            val cardBrand = "visa"
+            val cardLast4 = "1234"
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+            )
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
+                    cardBrand = cardBrand,
+                    cardLast4 = cardLast4,
+                    paymentMethodType = "card_present"
+                )
+            )
+            whenever(resourceProvider.getString(R.string.order_refunds_manual_refund))
+                .thenReturn("Credit/Debit card")
+            whenever(
+                refundStore.createItemsRefund(
+                    site = any(),
+                    orderId = any(),
+                    reason = any(),
+                    restockItems = any(),
+                    autoRefund = any(),
+                    items = any()
+                )
+            ).thenReturn(
+                WooResult(
+                    error = WooError(
+                        type = WooErrorType.GENERIC_ERROR,
+                        original = BaseRequest.GenericErrorType.NETWORK_ERROR
+                    )
+                )
+            )
+
+            initViewModel()
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+            viewModel.refund()
+
+            assertThat(events.first()).isEqualTo(
+                MultiLiveEvent.Event.ShowSnackbar(
+                    R.string.order_refunds_amount_refund_error
+                )
             )
         }
     }
