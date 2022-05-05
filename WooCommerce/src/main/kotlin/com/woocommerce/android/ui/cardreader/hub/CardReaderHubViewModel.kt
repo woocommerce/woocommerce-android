@@ -10,6 +10,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.cardreader.InPersonPaymentsCanadaFeatureFlag
+import com.woocommerce.android.ui.cardreader.manuals.CardReaderManualsFeatureFlag
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
@@ -24,6 +25,7 @@ import javax.inject.Inject
 class CardReaderHubViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag,
+    private val cardReaderManualsFeatureFlag: CardReaderManualsFeatureFlag,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val selectedSite: SelectedSite,
 ) : ScopedViewModel(savedState) {
@@ -82,6 +84,15 @@ class CardReaderHubViewModel @Inject constructor(
                     )
                 )
             }
+            if (cardReaderManualsFeatureFlag.isEnabled()) {
+                add(
+                    CardReaderHubListItemViewState(
+                        icon = R.drawable.ic_card_reader_manual,
+                        label = UiString.UiStringRes(R.string.settings_card_reader_manuals),
+                        onItemClicked = ::onCardReaderManualsClicked
+                    )
+                )
+            }
         }.toImmutableList()
     )
 
@@ -107,10 +118,15 @@ class CardReaderHubViewModel @Inject constructor(
         triggerEvent(CardReaderHubEvents.NavigateToManualCardReaderFlow(AppUrls.WISEPAD_3_MANUAL_CARD_READER))
     }
 
+    private fun onCardReaderManualsClicked() {
+        triggerEvent(CardReaderHubEvents.NavigateToCardReaderManualsScreen)
+    }
+
     sealed class CardReaderHubEvents : MultiLiveEvent.Event() {
         data class NavigateToCardReaderDetail(val cardReaderFlowParam: CardReaderFlowParam) : CardReaderHubEvents()
         data class NavigateToPurchaseCardReaderFlow(val url: String) : CardReaderHubEvents()
         data class NavigateToManualCardReaderFlow(val url: String) : CardReaderHubEvents()
+        object NavigateToCardReaderManualsScreen : CardReaderHubEvents()
     }
 
     sealed class CardReaderHubViewState {
