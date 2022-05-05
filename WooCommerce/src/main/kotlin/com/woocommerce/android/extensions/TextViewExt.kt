@@ -3,6 +3,7 @@ package com.woocommerce.android.extensions
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.text.Html
+import android.text.Selection
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
@@ -12,6 +13,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
+import androidx.core.text.toSpannable
 import com.woocommerce.android.util.SystemVersionUtils
 import com.woocommerce.android.widgets.WooClickableSpan
 
@@ -86,4 +88,8 @@ fun TextView.setClickableText(
         setText(it, TextView.BufferType.SPANNABLE)
         movementMethod = LinkMovementMethod.getInstance()
     }
+}
+
+fun TextView.selectAllText() {
+    Selection.setSelection(text.toSpannable(), 0, length())
 }

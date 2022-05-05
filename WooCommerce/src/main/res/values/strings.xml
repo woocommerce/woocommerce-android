@@ -108,6 +108,7 @@
     <string name="dismiss">Dismiss</string>
     <string name="no_thanks">No thanks</string>
     <string name="apply">Apply</string>
+    <string name="copied_to_clipboard">Copied to clipboard</string>
     <string name="error_copy_to_clipboard">Error copying to clipboard</string>
     <string name="read_more">Read more</string>
     <string name="database_downgraded">Database downgraded, recreating tables and loading stores</string>
