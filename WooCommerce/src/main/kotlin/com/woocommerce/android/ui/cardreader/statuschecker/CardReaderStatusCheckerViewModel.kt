@@ -9,6 +9,7 @@ import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.ui.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingChecker
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingParams
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -42,7 +43,7 @@ class CardReaderStatusCheckerViewModel
         when (val param = arguments.cardReaderFlowParam) {
             CardReaderFlowParam.CardReadersHub -> triggerEvent(
                 StatusCheckerEvent.NavigateToOnboarding(
-                    param
+                    CardReaderOnboardingParams.Check(param)
                 )
             )
             is CardReaderFlowParam.PaymentOrRefund -> {
@@ -65,7 +66,11 @@ class CardReaderStatusCheckerViewModel
                     triggerEvent(StatusCheckerEvent.NavigateToWelcome(param))
                 }
             }
-            else -> triggerEvent(StatusCheckerEvent.NavigateToOnboarding(param))
+            else -> triggerEvent(
+                StatusCheckerEvent.NavigateToOnboarding(
+                    CardReaderOnboardingParams.Failed(param, state)
+                )
+            )
         }
     }
 
@@ -73,6 +78,7 @@ class CardReaderStatusCheckerViewModel
         data class NavigateToWelcome(val cardReaderFlowParam: CardReaderFlowParam) : MultiLiveEvent.Event()
         data class NavigateToConnection(val cardReaderFlowParam: CardReaderFlowParam) : MultiLiveEvent.Event()
         data class NavigateToPayment(val cardReaderFlowParam: CardReaderFlowParam) : MultiLiveEvent.Event()
-        data class NavigateToOnboarding(val cardReaderFlowParam: CardReaderFlowParam) : MultiLiveEvent.Event()
+        data class NavigateToOnboarding(val cardReaderOnboardingParams: CardReaderOnboardingParams) :
+            MultiLiveEvent.Event()
     }
 }
