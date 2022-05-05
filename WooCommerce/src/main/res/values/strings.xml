@@ -108,6 +108,7 @@
     <string name="dismiss">Dismiss</string>
     <string name="no_thanks">No thanks</string>
     <string name="apply">Apply</string>
+    <string name="copied_to_clipboard">Copied to clipboard</string>
     <string name="error_copy_to_clipboard">Error copying to clipboard</string>
     <string name="read_more">Read more</string>
     <string name="database_downgraded">Database downgraded, recreating tables and loading stores</string>
@@ -915,6 +916,7 @@
     <string name="card_reader_bbpos_manual_card_reader">BBPOS Chipper Card Reader Manual</string>
     <string name="card_reader_m2_manual_card_reader">Stripe M2 Card Reader Manual</string>
     <string name="card_reader_wisepad_3_manual_card_reader">WisePad 3 Card Reader Manual</string>
+    <string name="card_reader_icon_content_description">Card Reader Image</string>
 
     <!--
             Card Reader Interac refund
