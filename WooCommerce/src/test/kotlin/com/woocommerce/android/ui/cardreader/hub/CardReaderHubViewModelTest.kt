@@ -7,6 +7,7 @@ import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.cardreader.InPersonPaymentsCanadaFeatureFlag
+import com.woocommerce.android.ui.cardreader.manuals.CardReaderManualsFeatureFlag
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
@@ -22,6 +23,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 class CardReaderHubViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: CardReaderHubViewModel
     private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag = mock()
+    private val cardReaderManualsFeatureFlag: CardReaderManualsFeatureFlag = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock {
         on(it.getCardReaderPreferredPlugin(any(), any(), any()))
             .thenReturn(WOOCOMMERCE_PAYMENTS)
@@ -294,6 +296,12 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     private fun initViewModel() {
-        viewModel = CardReaderHubViewModel(savedState, inPersonPaymentsCanadaFeatureFlag, appPrefsWrapper, selectedSite)
+        viewModel = CardReaderHubViewModel(
+            savedState,
+            inPersonPaymentsCanadaFeatureFlag,
+            cardReaderManualsFeatureFlag,
+            appPrefsWrapper,
+            selectedSite
+        )
     }
 }
