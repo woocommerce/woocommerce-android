@@ -45,7 +45,9 @@ fun WCColoredButton(
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     colors: ButtonColors = ButtonDefaults.buttonColors(
         backgroundColor = MaterialTheme.colors.secondary,
-        contentColor = MaterialTheme.colors.onPrimary
+        contentColor = MaterialTheme.colors.onPrimary,
+        disabledBackgroundColor = MaterialTheme.colors.secondary.copy(alpha = 0.38f),
+        disabledContentColor = MaterialTheme.colors.onPrimary
     ),
     content: @Composable RowScope.() -> Unit
 ) {
