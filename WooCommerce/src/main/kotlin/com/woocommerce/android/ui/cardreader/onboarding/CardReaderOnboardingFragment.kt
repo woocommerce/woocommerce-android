@@ -260,6 +260,19 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
     override fun getFragmentTitle() = resources.getString(R.string.card_reader_onboarding_title)
 }
 
+sealed class CardReaderOnboardingParams : Parcelable {
+    abstract val cardReaderFlowParam: CardReaderFlowParam
+
+    @Parcelize
+    data class Check(override val cardReaderFlowParam: CardReaderFlowParam) : CardReaderOnboardingParams()
+
+    @Parcelize
+    data class Failed(
+        override val cardReaderFlowParam: CardReaderFlowParam,
+        val onboardingState: CardReaderOnboardingState
+    ) : CardReaderOnboardingParams()
+}
+
 sealed class CardReaderFlowParam : Parcelable {
     @Parcelize
     object CardReadersHub : CardReaderFlowParam()

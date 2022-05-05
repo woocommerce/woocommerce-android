@@ -66,7 +66,9 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundItem
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
@@ -402,83 +404,112 @@ class IssueRefundViewModel @Inject constructor(
        For non-Interac refund -> Process the refund (Entire refund logic lives in the backend)
        For Interac refund -> Update the backend of the successful refund. The actual refund happens on the client-side
      */
-    // TODO Refactor this method in a follow up PR
-    @Suppress("ComplexMethod", "LongMethod")
     fun refund() {
+        triggerUIMessageIfRefundIsInterac()
         launch {
-            val resultCall = async(dispatchers.io) {
-                return@async when (commonState.refundType) {
-                    ITEMS -> {
-                        val allItems = mutableListOf<WCRefundItem>()
-                        refundItems.value?.let {
-                            it.forEach { item -> allItems.add(item.toDataModel()) }
-                        }
-
-                        val selectedShipping = refundShippingLines.value?.filter {
-                            refundByItemsState.selectedShippingLines
-                                ?.contains(it.shippingLine.itemId)
-                                ?: false
-                        }
-                        selectedShipping?.forEach { allItems.add(it.toDataModel()) }
-
-                        val selectedFees = refundFeeLines.value?.filter {
-                            refundByItemsState.selectedFeeLines
-                                ?.contains(it.feeLine.id)
-                                ?: false
-                        }
-                        selectedFees?.forEach { allItems.add(it.toDataModel()) }
-
-                        refundStore.createItemsRefund(
-                            selectedSite.get(),
-                            order.id,
-                            refundSummaryState.refundReason ?: "",
-                            true,
-                            gateway.supportsRefunds,
-                            items = allItems
-                        )
-                    }
-                    AMOUNT -> {
-                        refundStore.createAmountRefund(
-                            selectedSite.get(),
-                            order.id,
-                            commonState.refundTotal,
-                            refundSummaryState.refundReason ?: "",
-                            gateway.supportsRefunds
-                        )
-                    }
-                }
-            }
-
-            val result = resultCall.await()
+            val result = initiateRefund()
             if (result.isError) {
-                AnalyticsTracker.track(
-                    REFUND_CREATE_FAILED,
-                    mapOf(
-                        AnalyticsTracker.KEY_ORDER_ID to order.id,
-                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                        AnalyticsTracker.KEY_ERROR_TYPE to result.error.type.toString(),
-                        AnalyticsTracker.KEY_ERROR_DESC to result.error.message
-                    )
-                )
-
-                triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_error))
+                trackRefundError(result)
+                triggerUIMessage()
             } else {
-                AnalyticsTracker.track(
-                    REFUND_CREATE_SUCCESS,
-                    mapOf(
-                        AnalyticsTracker.KEY_ORDER_ID to order.id,
-                        AnalyticsTracker.KEY_ID to result.model?.id
-                    )
-                )
-
-                refundSummaryState.refundReason?.let { reason ->
-                    if (reason.isNotBlank()) {
-                        addOrderNote(reason)
-                    }
-                }
-
+                trackRefundSuccess(result)
+                updateRefundSummaryStateWithOrderNote()
                 triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_successful))
                 triggerEvent(Exit)
+            }
+        }
+    }
+
+    private fun triggerUIMessageIfRefundIsInterac() {
+        if (isInteracRefund()) {
+            triggerEvent(ShowSnackbar(R.string.card_reader_interac_refund_notifying_backend_about_successful_refund))
+        }
+    }
+
+    private suspend fun initiateRefund(): WooResult<WCRefundModel> {
+        val result = async(dispatchers.io) {
+            return@async when (commonState.refundType) {
+                ITEMS -> {
+                    val allItems = mutableListOf<WCRefundItem>()
+                    refundItems.value?.let {
+                        it.forEach { item -> allItems.add(item.toDataModel()) }
+                    }
+
+                    val selectedShipping = refundShippingLines.value?.filter {
+                        refundByItemsState.selectedShippingLines
+                            ?.contains(it.shippingLine.itemId)
+                            ?: false
+                    }
+                    selectedShipping?.forEach { allItems.add(it.toDataModel()) }
+
+                    val selectedFees = refundFeeLines.value?.filter {
+                        refundByItemsState.selectedFeeLines
+                            ?.contains(it.feeLine.id)
+                            ?: false
+                    }
+                    selectedFees?.forEach { allItems.add(it.toDataModel()) }
+
+                    refundStore.createItemsRefund(
+                        selectedSite.get(),
+                        order.id,
+                        refundSummaryState.refundReason ?: "",
+                        true,
+                        gateway.supportsRefunds,
+                        items = allItems
+                    )
+                }
+                AMOUNT -> {
+                    refundStore.createAmountRefund(
+                        selectedSite.get(),
+                        order.id,
+                        commonState.refundTotal,
+                        refundSummaryState.refundReason ?: "",
+                        gateway.supportsRefunds
+                    )
+                }
+            }
+        }
+        return result.await()
+    }
+
+    private fun trackRefundError(result: WooResult<WCRefundModel>) {
+        AnalyticsTracker.track(
+            REFUND_CREATE_FAILED,
+            mapOf(
+                AnalyticsTracker.KEY_ORDER_ID to order.id,
+                AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                AnalyticsTracker.KEY_ERROR_TYPE to result.error.type.toString(),
+                AnalyticsTracker.KEY_ERROR_DESC to result.error.message
+            )
+        )
+    }
+
+    private fun triggerUIMessage() {
+        if (isInteracRefund()) {
+            triggerEvent(
+                ShowSnackbar(
+                    R.string.card_reader_interac_refund_notifying_backend_about_successful_refund_failed
+                )
+            )
+        } else {
+            triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_error))
+        }
+    }
+
+    private fun trackRefundSuccess(result: WooResult<WCRefundModel>) {
+        AnalyticsTracker.track(
+            REFUND_CREATE_SUCCESS,
+            mapOf(
+                AnalyticsTracker.KEY_ORDER_ID to order.id,
+                AnalyticsTracker.KEY_ID to result.model?.id
+            )
+        )
+    }
+
+    private suspend fun updateRefundSummaryStateWithOrderNote() {
+        refundSummaryState.refundReason?.let { reason ->
+            if (reason.isNotBlank()) {
+                addOrderNote(reason)
             }
         }
     }
