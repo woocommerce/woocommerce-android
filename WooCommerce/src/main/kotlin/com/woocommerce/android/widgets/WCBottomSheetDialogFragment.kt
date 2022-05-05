@@ -13,7 +13,6 @@ import org.wordpress.android.util.DisplayUtils
  * items. This simple BottomSheetDialogFragment wrapper resolves this by showing the entire sheet on
  * landscape tablets.
  */
-
 open class WCBottomSheetDialogFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
