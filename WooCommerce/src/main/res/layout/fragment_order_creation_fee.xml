@@ -49,6 +49,15 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/fee_type_switch" />
 
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/fee_percentage_calculated_amount"
+                android:layout_marginTop="@dimen/major_100"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                app:layout_constraintTop_toBottomOf="@+id/fee_percentage_edit_text"
+                app:layout_constraintEnd_toEndOf="@+id/fee_percentage_edit_text"/>
+
         </com.woocommerce.android.widgets.WCElevatedConstraintLayout>
 
         <com.google.android.material.button.MaterialButton

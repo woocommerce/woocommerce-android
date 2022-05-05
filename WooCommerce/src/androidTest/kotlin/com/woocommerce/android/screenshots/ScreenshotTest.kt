@@ -85,7 +85,7 @@ class ScreenshotTest : TestBase() {
         TabNavComponent()
             .gotoOrdersScreen()
             .thenTakeScreenshot<OrderListScreen>("order-list")
-            .selectOrder(8)
+            .selectOrder(7)
             .thenTakeScreenshot<SingleOrderScreen>("order-detail")
             .goBackToOrdersScreen()
             .openSearchPane()
