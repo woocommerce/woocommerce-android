@@ -12,11 +12,11 @@ import com.woocommerce.android.databinding.WcActionableEmptyLabelBinding
 /**
  * Simple ViewGroup which contains two views:
  * 1. emptyLabel - button-styled TextView which appears when the text is empty, used as a call to action
- * 2. notEmptyLabel - standard TextView which appears when the text is NOT empty
+ * 2. notEmptyLabel - WCSelectableTextView which appears when the text is NOT empty
  */
 class WCActionableEmptyLabel @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) :
     FrameLayout(ctx, attrs) {
-    private val binding = WcActionableEmptyLabelBinding.inflate(LayoutInflater.from(context), this, true)
+    val binding = WcActionableEmptyLabelBinding.inflate(LayoutInflater.from(context), this, true)
 
     /**
      * @param text - the text to appear if it's not empty
@@ -40,10 +40,9 @@ class WCActionableEmptyLabel @JvmOverloads constructor(ctx: Context, attrs: Attr
     }
 
     /**
-     * When the view is read-only, we make the text selectable and hide the pencil icon
+     * When the view is read-only we hide the pencil icon
      */
     fun setIsReadOnly(readOnly: Boolean) {
-        binding.notEmptyLabel.setTextIsSelectable(readOnly)
         if (readOnly) {
             binding.notEmptyLabel.setCompoundDrawables(null, null, null, null)
         }

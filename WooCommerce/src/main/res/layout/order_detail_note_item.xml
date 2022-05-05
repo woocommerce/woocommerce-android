@@ -28,7 +28,7 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Nov 13, 2017 at 9:54 AM"/>
 
-    <com.google.android.material.textview.MaterialTextView
+    <com.woocommerce.android.widgets.WCSelectableTextView
         android:id="@+id/orderNote_note"
         style="@style/Woo.ListItem.Body"
         android:layout_width="0dp"
