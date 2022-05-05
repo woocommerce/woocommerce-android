@@ -2,12 +2,14 @@ package com.woocommerce.android.ui.products.variations
 
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.distinctUntilChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
@@ -224,7 +226,7 @@ class VariationDetailFragment :
             }
         }
 
-        viewModel.variationDetailCards.observe(viewLifecycleOwner) {
+        viewModel.variationDetailCards.distinctUntilChanged().observe(viewLifecycleOwner) {
             showVariationCards(it)
         }
 
@@ -301,7 +303,7 @@ class VariationDetailFragment :
         }
 
         val recyclerViewState = binding.cardsRecyclerView.layoutManager?.onSaveInstanceState()
-        binding.cardsRecyclerView.post { adapter.update(cards) }
+        adapter.update(cards)
         binding.cardsRecyclerView.layoutManager?.onRestoreInstanceState(recyclerViewState)
     }
 
