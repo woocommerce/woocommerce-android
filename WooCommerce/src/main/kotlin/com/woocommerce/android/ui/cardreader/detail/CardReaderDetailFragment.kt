@@ -94,61 +94,60 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
 
     private fun observeViewState(binding: FragmentCardReaderDetailBinding) {
         viewModel.viewStateData.observe(
-            viewLifecycleOwner,
-            { state ->
-                makeStateVisible(binding, state)
-                when (state) {
-                    is ConnectedState -> {
-                        with(binding.readerConnectedState) {
-                            UiHelpers.setTextOrHide(enforcedUpdateTv, state.enforceReaderUpdate)
-                            enforcedUpdateDivider.visibility = enforcedUpdateTv.visibility
-                            with(readerNameTv) {
-                                UiHelpers.setTextOrHide(this, state.readerName)
-                                setOnLongClickListener { state.onReaderNameLongClick(); true }
-                                expandHitArea(0, dpToPx(requireContext(), HIT_AREA_EXPANSION_DP))
-                            }
-                            UiHelpers.setTextOrHide(readerBatteryTv, state.readerBattery)
-                            UiHelpers.setTextOrHide(readerFirmwareVersionTv, state.readerFirmwareVersion)
-                            UiHelpers.setTextOrHide(primaryActionBtn, state.primaryButtonState?.text)
-                            primaryActionBtn.setOnClickListener { state.primaryButtonState?.onActionClicked?.invoke() }
-                            UiHelpers.setTextOrHide(secondaryActionBtn, state.secondaryButtonState?.text)
-                            secondaryActionBtn.setOnClickListener {
-                                state.secondaryButtonState?.onActionClicked?.invoke()
-                            }
-                            binding.readerConnectedState.enforcedUpdateTv.setDrawableColor(
-                                color.warning_banner_foreground_color
-                            )
-                            with(cardReaderDetailLearnMoreTv.root) {
-                                movementMethod = LinkMovementMethod.getInstance()
-                                UiHelpers.setTextOrHide(this, state.learnMoreLabel)
-                                setOnClickListener { state.onLearnMoreClicked.invoke() }
-                            }
+            viewLifecycleOwner
+        ) { state ->
+            makeStateVisible(binding, state)
+            when (state) {
+                is ConnectedState -> {
+                    with(binding.readerConnectedState) {
+                        UiHelpers.setTextOrHide(enforcedUpdateTv, state.enforceReaderUpdate)
+                        enforcedUpdateDivider.visibility = enforcedUpdateTv.visibility
+                        with(readerNameTv) {
+                            UiHelpers.setTextOrHide(this, state.readerName)
+                            setOnLongClickListener { state.onReaderNameLongClick(); true }
+                            expandHitArea(0, dpToPx(requireContext(), HIT_AREA_EXPANSION_DP))
+                        }
+                        UiHelpers.setTextOrHide(readerBatteryTv, state.readerBattery)
+                        UiHelpers.setTextOrHide(readerFirmwareVersionTv, state.readerFirmwareVersion)
+                        UiHelpers.setTextOrHide(primaryActionBtn, state.primaryButtonState?.text)
+                        primaryActionBtn.setOnClickListener { state.primaryButtonState?.onActionClicked?.invoke() }
+                        UiHelpers.setTextOrHide(secondaryActionBtn, state.secondaryButtonState?.text)
+                        secondaryActionBtn.setOnClickListener {
+                            state.secondaryButtonState?.onActionClicked?.invoke()
+                        }
+                        binding.readerConnectedState.enforcedUpdateTv.setDrawableColor(
+                            color.warning_banner_foreground_color
+                        )
+                        with(cardReaderDetailLearnMoreTv.root) {
+                            movementMethod = LinkMovementMethod.getInstance()
+                            UiHelpers.setTextOrHide(this, state.learnMoreLabel)
+                            setOnClickListener { state.onLearnMoreClicked.invoke() }
                         }
                     }
-                    is NotConnectedState -> {
-                        with(binding.readerDisconnectedState) {
-                            UiHelpers.setTextOrHide(cardReaderDetailConnectHeaderLabel, state.headerLabel)
-                            UiHelpers.setImageOrHideInLandscape(cardReaderDetailIllustration, state.illustration)
-                            UiHelpers.setTextOrHide(cardReaderDetailFirstHintLabel, state.firstHintLabel)
-                            UiHelpers.setTextOrHide(cardReaderDetailFirstHintNumberLabel, state.firstHintNumber)
-                            UiHelpers.setTextOrHide(cardReaderDetailSecondHintLabel, state.secondHintLabel)
-                            UiHelpers.setTextOrHide(cardReaderDetailSecondHintNumberLabel, state.secondHintNumber)
-                            UiHelpers.setTextOrHide(cardReaderDetailThirdHintLabel, state.thirdHintLabel)
-                            UiHelpers.setTextOrHide(cardReaderDetailThirdHintNumberLabel, state.thirdHintNumber)
-                            UiHelpers.setTextOrHide(cardReaderDetailConnectBtn, state.connectBtnLabel)
-                            cardReaderDetailConnectBtn.setOnClickListener { state.onPrimaryActionClicked.invoke() }
-                            with(cardReaderDetailLearnMoreTv.root) {
-                                movementMethod = LinkMovementMethod.getInstance()
-                                UiHelpers.setTextOrHide(this, state.learnMoreLabel)
-                                setOnClickListener { state.onLearnMoreClicked.invoke() }
-                            }
+                }
+                is NotConnectedState -> {
+                    with(binding.readerDisconnectedState) {
+                        UiHelpers.setTextOrHide(cardReaderDetailConnectHeaderLabel, state.headerLabel)
+                        UiHelpers.setImageOrHideInLandscape(cardReaderDetailIllustration, state.illustration)
+                        UiHelpers.setTextOrHide(cardReaderDetailFirstHintLabel, state.firstHintLabel)
+                        UiHelpers.setTextOrHide(cardReaderDetailFirstHintNumberLabel, state.firstHintNumber)
+                        UiHelpers.setTextOrHide(cardReaderDetailSecondHintLabel, state.secondHintLabel)
+                        UiHelpers.setTextOrHide(cardReaderDetailSecondHintNumberLabel, state.secondHintNumber)
+                        UiHelpers.setTextOrHide(cardReaderDetailThirdHintLabel, state.thirdHintLabel)
+                        UiHelpers.setTextOrHide(cardReaderDetailThirdHintNumberLabel, state.thirdHintNumber)
+                        UiHelpers.setTextOrHide(cardReaderDetailConnectBtn, state.connectBtnLabel)
+                        cardReaderDetailConnectBtn.setOnClickListener { state.onPrimaryActionClicked.invoke() }
+                        with(cardReaderDetailLearnMoreTv.root) {
+                            movementMethod = LinkMovementMethod.getInstance()
+                            UiHelpers.setTextOrHide(this, state.learnMoreLabel)
+                            setOnClickListener { state.onLearnMoreClicked.invoke() }
                         }
                     }
-                    Loading -> {
-                    }
-                }.exhaustive
-            }
-        )
+                }
+                Loading -> {
+                }
+            }.exhaustive
+        }
     }
 
     private fun initResultHandlers() {
