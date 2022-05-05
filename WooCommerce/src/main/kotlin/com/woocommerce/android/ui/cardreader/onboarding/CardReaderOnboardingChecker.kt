@@ -6,7 +6,6 @@ import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_O
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_PENDING
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.cardreader.internal.config.SupportedExtensionType
 import com.woocommerce.android.cardreader.internal.config.isExtensionSupported
@@ -14,9 +13,8 @@ import com.woocommerce.android.cardreader.internal.config.minSupportedVersionFor
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.cardreader.CardReaderTrackingInfoKeeper
-import com.woocommerce.android.ui.cardreader.InPersonPaymentsCanadaFeatureFlag
-import com.woocommerce.android.ui.cardreader.StripeExtensionFeatureFlag
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.GenericError
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.NoConnectionError
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.OnboardingCompleted
@@ -73,17 +71,9 @@ class CardReaderOnboardingChecker @Inject constructor(
     private val inPersonPaymentsStore: WCInPersonPaymentsStore,
     private val dispatchers: CoroutineDispatchers,
     private val networkStatus: NetworkStatus,
-    private val stripeExtensionFeatureFlag: StripeExtensionFeatureFlag,
-    private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag,
-    private val cardReaderConfigFactory: CardReaderConfigFactory,
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
+    private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider,
 ) {
-    private val supportedCountries: List<String>
-        get() = if (inPersonPaymentsCanadaFeatureFlag.isEnabled()) {
-            listOf("US", "CA")
-        } else {
-            listOf("US")
-        }
 
     suspend fun getOnboardingState(): CardReaderOnboardingState {
         if (!networkStatus.isConnected()) return NoConnectionError
@@ -115,10 +105,11 @@ class CardReaderOnboardingChecker @Inject constructor(
 
     @Suppress("ReturnCount", "ComplexMethod")
     private suspend fun fetchOnboardingState(): CardReaderOnboardingState {
-        val countryCode = getStoreCountryCode().also { cardReaderTrackingInfoKeeper.setCountry(it) }
-        if (!isCountrySupported(countryCode)) return StoreCountryNotSupported(countryCode)
-        val cardReaderConfig = cardReaderConfigFactory.getCardReaderConfigFor(countryCode)
-            as CardReaderConfigForSupportedCountry
+        val countryCode = getStoreCountryCode()
+        cardReaderTrackingInfoKeeper.setCountry(countryCode)
+        val cardReaderConfig = cardReaderCountryConfigProvider.provideCountryConfigFor(countryCode)
+        if (cardReaderConfig !is CardReaderConfigForSupportedCountry)
+            return StoreCountryNotSupported(countryCode)
 
         val fetchSitePluginsResult = wooStore.fetchSitePlugins(selectedSite.get())
         if (fetchSitePluginsResult.isError) return GenericError
@@ -155,10 +146,14 @@ class CardReaderOnboardingChecker @Inject constructor(
 
         saveStatementDescriptor(paymentAccount.statementDescriptor)
 
-        if (!isCountrySupported(paymentAccount.country)) return StripeAccountCountryNotSupported(
-            preferredPlugin.type,
-            paymentAccount.country
-        )
+
+        val countryConfigOfStripe = cardReaderCountryConfigProvider.provideCountryConfigFor(paymentAccount.country)
+        if (countryConfigOfStripe !is CardReaderConfigForSupportedCountry) {
+            return StripeAccountCountryNotSupported(
+                preferredPlugin.type,
+                paymentAccount.country
+            )
+        }
         if (!isPluginSetupCompleted(paymentAccount)) return SetupNotCompleted(preferredPlugin.type)
         if (isPluginInTestModeWithLiveStripeAccount(paymentAccount)) return PluginInTestModeWithLiveStripeAccount(
             preferredPlugin.type
@@ -206,17 +201,12 @@ class CardReaderOnboardingChecker @Inject constructor(
     private fun isBothPluginsActivated(
         wcPayPluginInfo: SitePluginModel?,
         stripePluginInfo: SitePluginModel?
-    ) = stripeExtensionFeatureFlag.isEnabled() &&
-        isPluginActivated(wcPayPluginInfo) &&
-        isPluginActivated(stripePluginInfo)
+    ) = isPluginActivated(wcPayPluginInfo) && isPluginActivated(stripePluginInfo)
 
     private fun getPreferredPlugin(
         stripePluginInfo: SitePluginModel?,
         wcPayPluginInfo: SitePluginModel?,
-    ): PluginWrapper = if (stripeExtensionFeatureFlag.isEnabled() &&
-        isPluginActivated(stripePluginInfo) &&
-        !isPluginActivated(wcPayPluginInfo)
-    ) {
+    ): PluginWrapper = if (isPluginActivated(stripePluginInfo) && !isPluginActivated(wcPayPluginInfo)) {
         PluginWrapper(
             STRIPE_EXTENSION_GATEWAY,
             stripePluginInfo,
@@ -232,12 +222,6 @@ class CardReaderOnboardingChecker @Inject constructor(
                 WooLog.e(WooLog.T.CARD_READER, "Store's country code not found.")
             }
         }
-    }
-
-    private fun isCountrySupported(countryCode: String?): Boolean {
-        return countryCode?.let { storeCountryCode ->
-            supportedCountries.any { it.equals(storeCountryCode, ignoreCase = true) }
-        } ?: false.also { WooLog.e(WooLog.T.CARD_READER, "Store's country code not found.") }
     }
 
     private fun isPluginInstalled(plugin: PluginWrapper): Boolean {

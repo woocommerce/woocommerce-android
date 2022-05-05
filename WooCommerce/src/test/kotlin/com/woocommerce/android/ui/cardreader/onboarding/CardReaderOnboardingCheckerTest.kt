@@ -11,7 +11,6 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.cardreader.InPersonPaymentsCanadaFeatureFlag
-import com.woocommerce.android.ui.cardreader.StripeExtensionFeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
