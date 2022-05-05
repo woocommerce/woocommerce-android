@@ -1,9 +1,11 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
+import com.woocommerce.android.extensions.parseFromIso8601DateFormat
 import com.woocommerce.android.extensions.parseGmtDateFromIso8601DateFormat
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.persistence.entity.CouponDataModel
+import org.wordpress.android.fluxc.persistence.entity.CouponEntity
 import java.math.BigDecimal
 import java.util.Date
 
@@ -16,7 +18,7 @@ data class Coupon(
     val dateModifiedGmt: Date? = null,
     val type: Type? = null,
     val description: String? = null,
-    val dateExpiresGmt: Date? = null,
+    val dateExpires: Date? = null,
     val usageCount: Int? = null,
     val isForIndividualUse: Boolean? = null,
     val usageLimit: Int? = null,
@@ -34,28 +36,24 @@ data class Coupon(
 ) : Parcelable {
     sealed class Type(open val value: String) : Parcelable {
         companion object {
-            const val PERCENT = "percent"
-            const val FIXED_CART = "fixed_cart"
-            const val FIXED_PRODUCT = "fixed_product"
-
-            fun fromString(value: String): Type {
-                return when (value) {
-                    PERCENT -> Percent
-                    FIXED_CART -> FixedCart
-                    FIXED_PRODUCT -> FixedProduct
-                    else -> Custom(value)
+            fun fromDataModel(dataType: CouponEntity.DiscountType): Type {
+                return when (dataType) {
+                    CouponEntity.DiscountType.Percent -> Percent
+                    CouponEntity.DiscountType.FixedCart -> FixedCart
+                    CouponEntity.DiscountType.FixedProduct -> FixedProduct
+                    is CouponEntity.DiscountType.Custom -> Custom(dataType.value)
                 }
             }
         }
 
         @Parcelize
-        object Percent : Type(PERCENT)
+        object Percent : Type(CouponEntity.DiscountType.Percent.value)
 
         @Parcelize
-        object FixedCart : Type(FIXED_CART)
+        object FixedCart : Type(CouponEntity.DiscountType.FixedCart.value)
 
         @Parcelize
-        object FixedProduct : Type(FIXED_PRODUCT)
+        object FixedProduct : Type(CouponEntity.DiscountType.FixedProduct.value)
 
         @Parcelize
         data class Custom(override val value: String) : Type(value)
@@ -65,12 +63,12 @@ data class Coupon(
 fun CouponDataModel.toAppModel() = Coupon(
     id = coupon.id,
     code = coupon.code,
-    amount = coupon.amount?.toBigDecimalOrNull(),
+    amount = coupon.amount,
     dateCreatedGmt = coupon.dateCreatedGmt.parseGmtDateFromIso8601DateFormat(),
     dateModifiedGmt = coupon.dateModifiedGmt.parseGmtDateFromIso8601DateFormat(),
-    type = coupon.discountType?.let { Coupon.Type.fromString(it) },
+    type = coupon.discountType?.let { Coupon.Type.fromDataModel(it) },
     description = coupon.description,
-    dateExpiresGmt = coupon.dateExpiresGmt.parseGmtDateFromIso8601DateFormat(),
+    dateExpires = coupon.dateExpiresGmt.parseFromIso8601DateFormat(),
     usageCount = coupon.usageCount,
     isForIndividualUse = coupon.isForIndividualUse,
     usageLimit = coupon.usageLimit,
@@ -78,8 +76,8 @@ fun CouponDataModel.toAppModel() = Coupon(
     limitUsageToXItems = coupon.limitUsageToXItems,
     isShippingFree = coupon.isShippingFree,
     areSaleItemsExcluded = coupon.areSaleItemsExcluded,
-    minimumAmount = coupon.minimumAmount?.toBigDecimalOrNull(),
-    maximumAmount = coupon.maximumAmount?.toBigDecimalOrNull(),
+    minimumAmount = coupon.minimumAmount,
+    maximumAmount = coupon.maximumAmount,
     products = products.map { it.toAppModel() },
     excludedProducts = excludedProducts.map { it.toAppModel() },
     categories = categories.map { it.toAppModel() },

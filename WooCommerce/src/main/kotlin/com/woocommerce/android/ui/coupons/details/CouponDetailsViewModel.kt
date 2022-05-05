@@ -70,7 +70,7 @@ class CouponDetailsViewModel @Inject constructor(
             .map { coupon ->
                 CouponSummaryUi(
                     code = coupon.code,
-                    isActive = coupon.dateExpiresGmt?.after(Date()) ?: true,
+                    isActive = coupon.dateExpires?.after(Date()) ?: true,
                     summary = couponUtils.generateSummary(coupon, currencyCode),
                     isForIndividualUse = coupon.isForIndividualUse ?: false,
                     isShippingFree = coupon.isShippingFree ?: false,
@@ -81,7 +81,7 @@ class CouponDetailsViewModel @Inject constructor(
                     usageLimitPerUser = couponUtils.formatUsageLimitPerUser(coupon.usageLimitPerUser),
                     usageLimitPerCoupon = couponUtils.formatUsageLimitPerCoupon(coupon.usageLimit),
                     usageLimitPerItems = couponUtils.formatUsageLimitPerItems(coupon.limitUsageToXItems),
-                    expiration = coupon.dateExpiresGmt?.let { couponUtils.formatExpirationDate(it) },
+                    expiration = coupon.dateExpires?.let { couponUtils.formatExpirationDate(it) },
                     emailRestrictions = couponUtils.formatRestrictedEmails(coupon.restrictedEmails)
                 )
             }

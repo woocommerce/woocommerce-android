@@ -67,7 +67,7 @@ class CouponListViewModel @Inject constructor(
             id = id,
             code = code,
             summary = couponUtils.generateSummary(this, currencyCode),
-            isActive = dateExpiresGmt?.after(Date()) ?: true
+            isActive = dateExpires?.after(Date()) ?: true
         )
     }
 

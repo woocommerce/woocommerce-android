@@ -117,7 +117,7 @@ private fun DetailsSection(viewState: EditCouponViewModel.ViewState) {
 
         WCOutlinedSpinner(
             onClick = { /*TODO*/ },
-            value = couponDraft.dateExpiresGmt?.toString() ?: "None",
+            value = couponDraft.dateExpires?.toString() ?: "None",
             label = stringResource(id = R.string.coupon_edit_expiry_date),
             modifier = Modifier.fillMaxWidth()
         )
