@@ -1,6 +1,10 @@
 package com.woocommerce.android.ui.orders.creation.fees
 
+import android.graphics.Typeface
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.StyleSpan
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -20,7 +24,9 @@ import com.woocommerce.android.ui.orders.creation.fees.OrderCreationFeeViewModel
 import com.woocommerce.android.ui.orders.creation.fees.OrderCreationFeeViewModel.UpdateFee
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.hilt.android.AndroidEntryPoint
+import okhttp3.internal.format
 import org.wordpress.android.util.ActivityUtils
+import java.math.BigDecimal
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -71,10 +77,28 @@ class OrderCreationFeeFragment :
         }
     }
 
+    private fun styleCalculatedFee(feeAmount: BigDecimal): SpannableString {
+        val formattedFeeAmount = currencyFormatter.formatCurrency(amount = feeAmount)
+
+        val text = format(
+            getString(R.string.order_creation_fee_percentage_calculated_amount),
+            formattedFeeAmount
+        )
+        val spannable = SpannableString(text)
+        spannable.setSpan(
+            StyleSpan(Typeface.BOLD),
+            text.length - formattedFeeAmount.length,
+            text.length,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        return spannable
+    }
+
     private fun FragmentOrderCreationFeeBinding.observeViewStateData() {
         editFeeViewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.feeAmount.takeIfNotEqualTo(old?.feeAmount) {
-                feeAmountEditText.setValueIfDifferent(it)
+            new.feeAmount.takeIfNotEqualTo(old?.feeAmount) { feeAmount ->
+                feeAmountEditText.setValueIfDifferent(feeAmount)
+                feePercentageCalculatedAmount.text = styleCalculatedFee(feeAmount)
             }
             new.feePercentage.takeIfNotEqualTo(old?.feePercentage) {
                 feePercentageEditText.setTextIfDifferent(it.toPlainString())
@@ -82,6 +106,7 @@ class OrderCreationFeeFragment :
             new.isPercentageSelected.takeIfNotEqualTo(old?.isPercentageSelected) { isChecked ->
                 ActivityUtils.hideKeyboard(activity)
                 feePercentageEditText.isVisible = isChecked
+                feePercentageCalculatedAmount.isVisible = isChecked
                 feeAmountEditText.isVisible = isChecked.not()
                 feeTypeSwitch.isChecked = isChecked
             }

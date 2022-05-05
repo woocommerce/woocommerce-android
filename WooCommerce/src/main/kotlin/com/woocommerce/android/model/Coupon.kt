@@ -1,12 +1,15 @@
 package com.woocommerce.android.model
 
+import android.os.Parcelable
 import com.woocommerce.android.extensions.parseFromIso8601DateFormat
 import com.woocommerce.android.extensions.parseGmtDateFromIso8601DateFormat
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.persistence.entity.CouponDataModel
 import org.wordpress.android.fluxc.persistence.entity.CouponEntity
 import java.math.BigDecimal
 import java.util.Date
 
+@Parcelize
 data class Coupon(
     val id: Long,
     val code: String? = null,
@@ -30,8 +33,8 @@ data class Coupon(
     val categories: List<ProductCategory>,
     val excludedCategories: List<ProductCategory>,
     val restrictedEmails: List<String>
-) {
-    sealed class Type(open val value: String) {
+) : Parcelable {
+    sealed class Type(open val value: String) : Parcelable {
         companion object {
             fun fromDataModel(dataType: CouponEntity.DiscountType): Type {
                 return when (dataType) {
@@ -42,9 +45,17 @@ data class Coupon(
                 }
             }
         }
+
+        @Parcelize
         object Percent : Type(CouponEntity.DiscountType.Percent.value)
+
+        @Parcelize
         object FixedCart : Type(CouponEntity.DiscountType.FixedCart.value)
+
+        @Parcelize
         object FixedProduct : Type(CouponEntity.DiscountType.FixedProduct.value)
+
+        @Parcelize
         data class Custom(override val value: String) : Type(value)
     }
 }

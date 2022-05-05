@@ -192,6 +192,8 @@ data class Order(
         val total: BigDecimal,
         val totalTax: BigDecimal,
     ) : Parcelable {
+        fun getTotalValue(): BigDecimal = total + totalTax
+
         companion object {
             val EMPTY = FeeLine(
                 id = 0,

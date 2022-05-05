@@ -108,6 +108,7 @@
     <string name="dismiss">Dismiss</string>
     <string name="no_thanks">No thanks</string>
     <string name="apply">Apply</string>
+    <string name="copied_to_clipboard">Copied to clipboard</string>
     <string name="error_copy_to_clipboard">Error copying to clipboard</string>
     <string name="read_more">Read more</string>
     <string name="database_downgraded">Database downgraded, recreating tables and loading stores</string>
@@ -382,7 +383,8 @@
     <string name="order_creation_remove_shipping">Remove shipping from order</string>
     <string name="order_creation_add_fee_removal_hint">Remove fee from order</string>
     <string name="order_creation_fee_percentage_hint">Percentage (%)</string>
-    <string name="order_creation_fee_percentage_toggle_text">Percentage fee</string>
+    <string name="order_creation_fee_percentage_toggle_text">Calculate as percentage</string>
+    <string name="order_creation_fee_percentage_calculated_amount">Calculated amount: %s</string>
     <!--
         Order Filters
     -->
@@ -914,6 +916,7 @@
     <string name="card_reader_bbpos_manual_card_reader">BBPOS Chipper Card Reader Manual</string>
     <string name="card_reader_m2_manual_card_reader">Stripe M2 Card Reader Manual</string>
     <string name="card_reader_wisepad_3_manual_card_reader">WisePad 3 Card Reader Manual</string>
+    <string name="card_reader_icon_content_description">Card Reader Image</string>
 
     <!--
             Card Reader Interac refund
@@ -936,6 +939,8 @@
     <string name="card_reader_interac_refund_refund_failed_cancelled">Refund cancelled</string>
     <string name="card_reader_interac_refund_order_refunded_refund_cancelled">The order is already refunded</string>
     <string name="card_reader_interac_refund_refund_payment_hint">Tap or insert to refund</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund">Applying refund to order</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund_failed">Something went wrong while applying the refund</string>
     <!--
         Card Reader Payments
     -->
@@ -1819,6 +1824,7 @@
     <string name="product_publish_draft_dialog_title">Saving draft</string>
     <string name="product_publish_dialog_message" translatable="false">@string/product_update_dialog_message</string>
     <string name="product_detail_publish_product_error">Error publishing product</string>
+    <string name="product_detail_save_product_error">Cannot update product</string>
     <string name="product_detail_publish_product_success">Product published</string>
     <string name="product_detail_publish_product_draft_error">Error saving product draft</string>
     <string name="product_detail_publish_product_draft_success">Product draft saved</string>
@@ -1947,6 +1953,16 @@
     <string name="coupon_details_allows_free_shipping">Allows free shipping</string>
     <string name="coupon_details_excludes_sale_items">Excludes sale items</string>
     <string name="coupon_details_restricted_emails">Restricted to customers with emails: %1$s</string>
+    <string name="coupon_details_menu_edit">Edit Coupon</string>
+    <string name="coupon_edit_screen_title">Edit %1$s</string>
+    <string name="coupon_edit_details_section">Coupon Details</string>
+    <string name="coupon_edit_amount_hint">Amount (%1$s)</string>
+    <string name="coupon_edit_amount_percentage_helper">Set the percentage of the discount you want to offer.</string>
+    <string name="coupon_edit_amount_rate_helper">Set the amount of the discount you want to offer.</string>
+    <string name="coupon_edit_code_hint">Coupon Code</string>
+    <string name="coupon_edit_code_helper">Customers need to enter this code to use the coupon.</string>
+    <string name="coupon_edit_regenerate_coupon">Regenerate Coupon Code</string>
+    <string name="coupon_edit_save_button">Save</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>
@@ -2352,4 +2368,5 @@
     <string name="about_automattic_back_icon_description">Back icon</string>
     <string name="about_automattic_app_icon_description">App icon</string>
     <string name="error_generic">An error occurred</string>
+    <string name="coupon_edit_expiry_date">Coupon Expiry Date</string>
 </resources>

@@ -6,6 +6,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
+import com.woocommerce.android.cardreader.connection.event.BatteryStatus
+import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
+import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus.StatusChanged
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString
@@ -197,6 +200,19 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when view model init with connected state, should invoke battery status`() =
+        testBlocking {
+            // GIVEN
+            initConnectedState()
+
+            // WHEN
+            createViewModel()
+
+            // THEN
+            verify(cardReaderManager).batteryStatus
+        }
+
+    @Test
     fun `when view model init with connected state and update available should emit connected state with update`() =
         testBlocking {
             // GIVEN
@@ -215,6 +231,34 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
                     listOf(UiStringText(DUMMY_FIRMWARE_VERSION))
                 ),
                 updateAvailable = true
+            )
+        }
+
+    @Test
+    fun `when view model init with connected state and new battery status, should update battery level`() =
+        testBlocking {
+            // GIVEN
+            initConnectedState(
+                batteryStatus = StatusChanged(
+                    batteryLevel = 0.86F,
+                    batteryStatus = BatteryStatus.UNKNOWN,
+                    isCharging = true
+                )
+            )
+
+            // WHEN
+            val viewModel = createViewModel()
+
+            // THEN
+            verifyConnectedState(
+                viewModel,
+                UiStringText(READER_NAME),
+                UiStringRes(R.string.card_reader_detail_connected_battery_percentage, listOf(UiStringText("86"))),
+                UiStringRes(
+                    R.string.card_reader_detail_connected_firmware_version,
+                    listOf(UiStringText(DUMMY_FIRMWARE_VERSION))
+                ),
+                updateAvailable = false
             )
         }
 
@@ -562,7 +606,8 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         readersName: String? = READER_NAME,
         batteryLevel: Float? = 0.65F,
         firmwareVersion: String = DUMMY_FIRMWARE_VERSION,
-        updateAvailable: SoftwareUpdateAvailability = SoftwareUpdateAvailability.NotAvailable
+        updateAvailable: SoftwareUpdateAvailability = SoftwareUpdateAvailability.NotAvailable,
+        batteryStatus: CardReaderBatteryStatus = CardReaderBatteryStatus.Unknown,
     ) = testBlocking {
         val reader: CardReader = mock {
             on { this.id }.thenReturn(readersName)
@@ -572,6 +617,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         val status = MutableStateFlow(CardReaderStatus.Connected(reader))
         whenever(cardReaderManager.readerStatus).thenReturn(status)
         whenever(cardReaderManager.softwareUpdateAvailability).thenReturn(MutableStateFlow(updateAvailable))
+        whenever(cardReaderManager.batteryStatus).thenReturn(MutableStateFlow(batteryStatus))
     }
 
     private fun createViewModel() = CardReaderDetailViewModel(

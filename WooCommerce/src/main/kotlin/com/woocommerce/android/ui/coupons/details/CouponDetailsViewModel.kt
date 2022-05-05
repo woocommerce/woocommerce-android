@@ -178,6 +178,12 @@ class CouponDetailsViewModel @Inject constructor(
         )
     }
 
+    fun onEditButtonClick() {
+        coupon.value?.id?.let {
+            triggerEvent(ShowEditCoupon(it))
+        }
+    }
+
     data class CouponDetailsState(
         val isLoading: Boolean = false,
         val couponSummary: CouponSummaryUi? = null,
@@ -219,4 +225,5 @@ class CouponDetailsViewModel @Inject constructor(
 
     data class CopyCodeEvent(val couponCode: String) : MultiLiveEvent.Event()
     data class ShareCodeEvent(val shareCodeMessage: String) : MultiLiveEvent.Event()
+    data class ShowEditCoupon(val couponId: Long) : MultiLiveEvent.Event()
 }
