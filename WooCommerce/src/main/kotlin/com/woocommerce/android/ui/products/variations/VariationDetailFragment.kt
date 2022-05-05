@@ -39,11 +39,11 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.HideImageUploadErrorSnackbar
 import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesFragment.Companion.KEY_VARIATION_ATTRIBUTES_RESULT
 import com.woocommerce.android.util.Optional
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
