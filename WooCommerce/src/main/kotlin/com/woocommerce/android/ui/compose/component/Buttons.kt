@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.compose.component
 
+import android.content.res.Configuration
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -202,7 +203,8 @@ fun WCTextButton(
     }
 }
 
-@Preview
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun ButtonsPreview() {
     WooThemeWithBackground {

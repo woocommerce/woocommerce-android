@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.compose.component
 
+import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
@@ -70,7 +71,8 @@ fun WCOutlinedSpinner(
     }
 }
 
-@Preview
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun SpinnerPreview() {
     WooThemeWithBackground {
