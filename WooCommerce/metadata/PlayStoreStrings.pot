@@ -11,16 +11,18 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_091"
+msgid ""
+"9.1:\n"
+"We’ve been working hard on a new feature to help you manage your coupons. It’s a work in progress, but you can get an early look by turning the beta feature on in Settings under the More tab. We welcome your early feedback!\n"
+"\n"
+"We also fixed a few bugs with variable products with prices accidentally cleared when changing inventory levels.\n"
+msgstr ""
+
 msgctxt "release_note_090"
 msgid ""
 "9.0:\n"
 "Dates are crucial when you’re running a business! We fixed a glitch when setting a “sale date” on a product – sometimes, that date didn’t end up being what you selected. Community feedback for the win!\n"
-msgstr ""
-
-msgctxt "release_note_089"
-msgid ""
-"8.9:\n"
-"Create orders on the go with products, shipping & billing information, and fees! You can quickly take an in-person credit card payment right after or send a link to a customer to pay for that order on their own device. You’ve asked for it, and now it’s here!\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!
