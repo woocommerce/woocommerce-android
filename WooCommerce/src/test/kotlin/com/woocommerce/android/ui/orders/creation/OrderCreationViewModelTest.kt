@@ -672,6 +672,38 @@ class OrderCreationViewModelTest : BaseUnitTest() {
         assertThat(viewState.canCreateOrder).isTrue
     }
 
+    @Test
+    fun `when hitting a product that is not synced then do nothing`() {
+        var lastReceivedEvent: Event? = null
+        sut.event.observeForever {
+            lastReceivedEvent = it
+        }
+
+        val orderItem = Order.Item.EMPTY
+        sut.onProductClicked(orderItem)
+
+        assertThat(lastReceivedEvent).isNull()
+    }
+
+    @Test
+    fun `when hitting a product that is synced then show product details`() {
+        var lastReceivedEvent: Event? = null
+        sut.event.observeForever {
+            lastReceivedEvent = it
+        }
+
+        val orderItem = createOrderItem()
+        sut.onProductClicked(orderItem)
+
+        assertThat(lastReceivedEvent).isNotNull
+        lastReceivedEvent
+            .run { this as? ShowProductDetails }
+            ?.let { showProductDetailsEvent ->
+                val currentOrderItem = showProductDetailsEvent.item
+                assertThat(currentOrderItem).isEqualTo(orderItem)
+            } ?: fail("Last event should be of ShowProductDetails type")
+    }
+
     private fun createSut() {
         sut = OrderCreationViewModel(
             savedState = savedState,
