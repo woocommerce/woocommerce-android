@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
@@ -21,11 +22,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.R.string
 import com.woocommerce.android.model.Coupon
+import com.woocommerce.android.model.Coupon.Type.Percent
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedSpinner
@@ -37,12 +43,18 @@ import java.math.BigDecimal
 @Composable
 fun EditCouponScreen(viewModel: EditCouponViewModel) {
     viewModel.viewState.observeAsState().value?.let {
-        EditCouponScreen(it)
+        EditCouponScreen(
+            viewState = it,
+            onAmountChanged = viewModel::onAmountChanged
+        )
     }
 }
 
 @Composable
-fun EditCouponScreen(viewState: EditCouponViewModel.ViewState) {
+fun EditCouponScreen(
+    viewState: EditCouponViewModel.ViewState,
+    onAmountChanged: (BigDecimal?) -> Unit
+) {
     val scrollState = rememberScrollState()
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
@@ -55,7 +67,7 @@ fun EditCouponScreen(viewState: EditCouponViewModel.ViewState) {
             )
             .fillMaxSize()
     ) {
-        DetailsSection(viewState)
+        DetailsSection(viewState, onAmountChanged)
         ConditionsSection(viewState)
         UsageRestrictionsSection(viewState)
         WCColoredButton(
@@ -68,7 +80,10 @@ fun EditCouponScreen(viewState: EditCouponViewModel.ViewState) {
 }
 
 @Composable
-private fun DetailsSection(viewState: EditCouponViewModel.ViewState) {
+private fun DetailsSection(
+    viewState: EditCouponViewModel.ViewState,
+    onAmountChanged: (BigDecimal?) -> Unit
+) {
     val couponDraft = viewState.couponDraft
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
@@ -81,20 +96,30 @@ private fun DetailsSection(viewState: EditCouponViewModel.ViewState) {
             color = colorResource(id = R.color.color_on_surface_medium)
         )
         WCOutlinedTextField(
-            value = couponDraft.amount?.toPlainString().orEmpty(),
-            label = stringResource(id = R.string.coupon_edit_amount_hint, viewState.amountUnit),
-            onValueChange = { /*TODO*/ },
+            value = couponDraft.amount ?: BigDecimal.ZERO,
+            label = stringResource(id = string.coupon_edit_amount_hint, viewState.amountUnit),
+            parseText = { it.toBigDecimal() },
+            parseValue = { it.toPlainString() },
+            preAdjustText = {
+                when {
+                    it.text.isEmpty() -> TextFieldValue("0", selection = TextRange(1))
+                    it.text.matches(Regex("^0\\d")) -> it.copy(text = it.text.trimStart('0'))
+                    else -> it
+                }
+            },
+            onValueChange = onAmountChanged,
             helperText = stringResource(
-                if (couponDraft.type is Coupon.Type.Percent) R.string.coupon_edit_amount_percentage_helper
-                else R.string.coupon_edit_amount_rate_helper
+                if (couponDraft.type is Percent) string.coupon_edit_amount_percentage_helper
+                else string.coupon_edit_amount_rate_helper
             ),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth()
         )
         WCOutlinedTextField(
             value = couponDraft.code.orEmpty(),
-            label = stringResource(id = R.string.coupon_edit_code_hint),
+            label = stringResource(id = string.coupon_edit_code_hint),
             onValueChange = { /*TODO*/ },
-            helperText = stringResource(id = R.string.coupon_edit_code_helper),
+            helperText = stringResource(id = string.coupon_edit_code_helper),
             modifier = Modifier.fillMaxWidth()
         )
         WCTextButton(
@@ -156,7 +181,8 @@ fun EditCouponPreview() {
                 localizedType = "Fixed Rate Discount",
                 amountUnit = "%",
                 hasChanges = true
-            )
+            ),
+            onAmountChanged = {}
         )
     }
 }

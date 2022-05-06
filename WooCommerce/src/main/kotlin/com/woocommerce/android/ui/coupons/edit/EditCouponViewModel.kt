@@ -16,7 +16,9 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 import javax.inject.Inject
 
 @HiltViewModel
@@ -56,6 +58,12 @@ class EditCouponViewModel @Inject constructor(
             launch {
                 couponDraft.value = storedCoupon.await()
             }
+        }
+    }
+
+    fun onAmountChanged(value: BigDecimal?) {
+        couponDraft.update {
+            it!!.copy(amount = value)
         }
     }
 
