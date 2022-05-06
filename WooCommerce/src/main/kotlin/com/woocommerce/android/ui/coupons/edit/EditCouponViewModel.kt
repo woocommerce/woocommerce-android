@@ -36,7 +36,8 @@ class EditCouponViewModel @Inject constructor(
         .map { coupon ->
             ViewState(
                 couponDraft = coupon,
-                localizedType = coupon.type?.let { couponUtils.localizeType(it) }
+                localizedType = coupon.type?.let { couponUtils.localizeType(it) },
+                hasChanges = coupon != storedCoupon.await()
             )
         }
         .asLiveData()
@@ -51,6 +52,7 @@ class EditCouponViewModel @Inject constructor(
 
     data class ViewState(
         val couponDraft: Coupon,
-        val localizedType: String?
+        val localizedType: String?,
+        val hasChanges: Boolean
     )
 }
