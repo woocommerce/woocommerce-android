@@ -184,6 +184,8 @@ class OrderCreationViewModel @Inject constructor(
     }
 
     fun onProductClicked(item: Order.Item) {
+        // Don't show details if the product is not synced yet
+        if (!item.isSynced()) return
         triggerEvent(ShowProductDetails(item))
     }
 
@@ -348,6 +350,7 @@ class OrderCreationViewModel @Inject constructor(
     ) : Parcelable {
         @IgnoredOnParcel
         val canCreateOrder: Boolean = !willUpdateOrderDraft && !isUpdatingOrderDraft && !showOrderUpdateSnackbar
+
         @IgnoredOnParcel
         val isIdle: Boolean = !isUpdatingOrderDraft && !willUpdateOrderDraft
     }
@@ -360,3 +363,5 @@ data class ProductUIModel(
     val stockQuantity: Double,
     val stockStatus: ProductStockStatus
 )
+
+fun Order.Item.isSynced() = this.itemId != 0L
