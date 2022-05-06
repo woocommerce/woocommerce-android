@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.Coupon
+import com.woocommerce.android.ui.coupons.CouponRepository
 import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
@@ -12,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -19,12 +21,12 @@ import javax.inject.Inject
 @HiltViewModel
 class EditCouponViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val editCouponRepository: EditCouponRepository,
+    private val couponRepository: CouponRepository,
     private val couponUtils: CouponUtils
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: EditCouponFragmentArgs by savedStateHandle.navArgs()
     private val storedCoupon: Deferred<Coupon> = async {
-        editCouponRepository.getCoupon(navArgs.couponId)
+        couponRepository.observeCoupon(navArgs.couponId).first()
     }
 
     private val couponDraft = savedStateHandle.getNullableStateFlow(viewModelScope, null, Coupon::class.java)
