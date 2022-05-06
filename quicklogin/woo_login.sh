@@ -17,7 +17,8 @@ eval $adbPath shell pm clear $packageName
 ./gradlew installWasabiDebug
 ./gradlew :quicklogin:installDebug \
 -PquickLoginWpEmail="$WORDPRESS_EMAIL" \
--PquickLoginWpPassword="$WORDPRESS_PASSWORD"
+-PquickLoginWpPassword="$WORDPRESS_PASSWORD" \
+-PquickLoginWpSite="$WORDPRESS_SITE"
 
 eval $adbPath shell am instrument -w -r -e debug false -e class 'com.woocommerce.android.quicklogin.QuickLoginWordpress' $packageName.quicklogin/androidx.test.runner.AndroidJUnitRunner
 eval $adbPath shell am start -n $packageName/com.woocommerce.android.ui.main.MainActivity

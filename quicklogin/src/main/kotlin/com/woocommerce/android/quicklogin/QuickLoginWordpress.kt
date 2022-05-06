@@ -39,11 +39,12 @@ class QuickLoginWordpress {
         enterEmail()
         enterPassword()
         enterSecondFactorIfNeeded()
+        selectSiteIfProvided()
     }
 
     private fun verifyEmailAndPassword() {
-        if (BuildConfig.QUICK_LOGIN_WP_EMAIL.isNullOrBlank() ||
-            BuildConfig.QUICK_LOGIN_WP_PASSWORD.isNullOrBlank()
+        if (BuildConfig.QUICK_LOGIN_WP_EMAIL.isBlank() ||
+            BuildConfig.QUICK_LOGIN_WP_PASSWORD.isBlank()
         ) {
             exitFlowWithMessage("WP Email or password is not set. Look into quicklogin/woo_login.sh-example")
         }
@@ -118,6 +119,29 @@ class QuickLoginWordpress {
         continueButton.click()
 
         device.wait(Until.findObject(By.res(DEBUG_PACKAGE_NAME, "site_list_container")), LONG_TIMEOUT)
+    }
+
+    private fun selectSiteIfProvided() {
+        if (BuildConfig.QUICK_LOGIN_WP_SITE.isBlank().not()) {
+            device
+                .wait(Until.findObject(By.res(DEBUG_PACKAGE_NAME, "site_list_container")), TIMEOUT)
+                ?: return
+
+            val selectedSite = device.wait(
+                Until.findObject(
+                    By.text(BuildConfig.QUICK_LOGIN_WP_SITE)
+                ),
+                TIMEOUT
+            )
+
+            val doneButton = device
+                .wait(Until.findObject(By.res(DEBUG_PACKAGE_NAME, "button_primary")), TIMEOUT)
+
+            selectedSite.click()
+            doneButton.click()
+
+            device.wait(Until.findObject(By.res(DEBUG_PACKAGE_NAME, "bottom_nav")), LONG_TIMEOUT)
+        }
     }
 
     private fun exitFlowWithMessage(message: String) {
