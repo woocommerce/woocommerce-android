@@ -20,7 +20,6 @@
         style="@style/Woo.Card.Body"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:drawableEnd="@drawable/ic_edit_pencil"
         android:drawablePadding="@dimen/major_100"
         android:paddingBottom="@dimen/minor_100"
         android:visibility="gone" />

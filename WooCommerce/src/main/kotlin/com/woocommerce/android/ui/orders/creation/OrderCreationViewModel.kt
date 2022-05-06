@@ -37,6 +37,7 @@ import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
+import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -65,7 +66,8 @@ class OrderCreationViewModel @Inject constructor(
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
-    private val _orderDraft = savedState.getStateFlow(viewModelScope, Order.EMPTY)
+    val args: OrderCreationFormFragmentArgs by savedState.navArgs()
+    val _orderDraft = savedState.getStateFlow(viewModelScope, args.order)
     val orderDraft = _orderDraft
         .asLiveData()
 
@@ -235,7 +237,7 @@ class OrderCreationViewModel @Inject constructor(
                 positiveBtnAction = { _, _ ->
                     val draft = _orderDraft.value
                     if (draft.id != 0L) {
-                        launch { orderCreationRepository.deleteDraftOrder(draft) }
+//                        launch { orderCreationRepository.deleteDraftOrder(draft) }
                     }
                     triggerEvent(Exit)
                 }

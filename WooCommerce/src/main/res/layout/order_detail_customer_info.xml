@@ -48,6 +48,7 @@
 
             <com.woocommerce.android.widgets.WCActionableEmptyLabel
                 android:id="@+id/customerInfo_customerNote"
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 

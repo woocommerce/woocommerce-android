@@ -152,9 +152,13 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.menu_order_detail, menu)
         mnuSharePaymentLink = menu.findItem(R.id.menu_share_payment_link)
+        menu.add(0, 123, 0, "Edit").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == 123) {
+            findNavController().navigate(OrderDetailFragmentDirections.actionOrderDetailFragmentToOrderCreationFragment(viewModel.order))
+        }
         return if (item.itemId == R.id.menu_share_payment_link) {
             viewModel.onSharePaymentUrlClicked()
             true
