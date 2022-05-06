@@ -7,7 +7,9 @@ import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.coupons.CouponRepository
 import com.woocommerce.android.ui.coupons.CouponTestUtils
-import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.*
+import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponDetailsState
+import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponPerformanceState
+import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponPerformanceUi
 import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.InlineClassesAnswer
@@ -21,7 +23,14 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.anyVararg
+import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCSettingsModel
 import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.LEFT
