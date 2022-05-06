@@ -81,6 +81,9 @@ fun WCOutlinedTextField(
     }
 }
 
+/**
+ * An [OutlinedTextField] that displays an optional helper text below the field.
+ */
 @Composable
 fun WCOutlinedTextField(
     value: TextFieldValue,
@@ -130,6 +133,17 @@ fun WCOutlinedTextField(
 
 }
 
+/**
+ * A generic [OutlinedTextField] that accepts a typed value of type [T], and have a listener that emits values of the
+ * same type.
+ *
+ * @param parseText parses the entered text into a value of type [T], if this throws any exception, the text change
+ *        will be ignored.
+ * @param parseValue determines how the [T] values should be represented in text.
+ * @param preAdjustText an optional function that allows making modifications to the text before parsing it.
+ *        This can be useful for cases where we want to disallow empty values, or we want to have advanced handling for
+ *        decimals...
+ */
 @Composable
 fun <T> WCOutlinedTextField(
     value: T,
