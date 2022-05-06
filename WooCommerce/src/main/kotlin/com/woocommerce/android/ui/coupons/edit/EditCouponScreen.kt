@@ -61,7 +61,8 @@ fun EditCouponScreen(viewState: EditCouponViewModel.ViewState) {
         WCColoredButton(
             onClick = { /*TODO*/ },
             text = stringResource(id = R.string.coupon_edit_save_button),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = viewState.hasChanges
         )
     }
 }
@@ -152,7 +153,8 @@ fun EditCouponPreview() {
                     excludedCategories = emptyList(),
                     restrictedEmails = emptyList()
                 ),
-                localizedType = "Fixed Rate Discount"
+                localizedType = "Fixed Rate Discount",
+                hasChanges = true
             )
         )
     }
