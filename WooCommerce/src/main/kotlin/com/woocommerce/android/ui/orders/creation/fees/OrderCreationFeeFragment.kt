@@ -17,6 +17,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationFeeBinding
 import com.woocommerce.android.extensions.drop
 import com.woocommerce.android.extensions.filterNotNull
+import com.woocommerce.android.extensions.showKeyboardWithDelay
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
@@ -44,6 +45,10 @@ class OrderCreationFeeFragment :
             bindViews()
             observeEvents()
             observeViewStateData()
+
+            if (savedInstanceState == null) {
+                feeAmountEditText.editText.showKeyboardWithDelay()
+            }
         }
     }
 

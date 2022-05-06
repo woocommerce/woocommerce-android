@@ -36,6 +36,10 @@ class OrderCreationShippingFragment : BaseFragment(R.layout.fragment_order_creat
         val binding = FragmentOrderCreationShippingBinding.bind(view)
         binding.initUi()
         setupObservers(binding)
+
+        if (savedInstanceState == null) {
+            binding.amountEditText.editText.showKeyboardWithDelay()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -64,8 +68,6 @@ class OrderCreationShippingFragment : BaseFragment(R.layout.fragment_order_creat
         removeShippingButton.setOnClickListener {
             viewModel.onRemoveShippingClicked()
         }
-
-        amountEditText.editText.showKeyboardWithDelay()
     }
 
     private fun setupObservers(binding: FragmentOrderCreationShippingBinding) {
