@@ -7,6 +7,7 @@ import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.cardreader.InPersonPaymentsCanadaFeatureFlag
+import com.woocommerce.android.ui.cardreader.manuals.CardReaderManualsFeatureFlag
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
@@ -22,6 +23,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 class CardReaderHubViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: CardReaderHubViewModel
     private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag = mock()
+    private val cardReaderManualsFeatureFlag: CardReaderManualsFeatureFlag = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock {
         on(it.getCardReaderPreferredPlugin(any(), any(), any()))
             .thenReturn(WOOCOMMERCE_PAYMENTS)
@@ -293,7 +295,53 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             )
     }
 
+    @Test
+    fun `given manuals is enabled, when screen shown, then manuals row is displayed`() {
+        whenever(cardReaderManualsFeatureFlag.isEnabled()).thenReturn(true)
+        initViewModel()
+
+        assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
+            .anyMatch {
+                it.icon == R.drawable.ic_card_reader_manual &&
+                    it.label == UiString.UiStringRes(R.string.settings_card_reader_manuals)
+            }
+    }
+
+    @Test
+    fun `given manuals disabled, when screen shown, then manuals row is not displayed`() {
+        whenever(cardReaderManualsFeatureFlag.isEnabled()).thenReturn(false)
+        initViewModel()
+
+        assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
+            .noneMatch {
+                it.icon == R.drawable.ic_card_reader_manual &&
+                    it.label == UiString.UiStringRes(R.string.settings_card_reader_manuals)
+            }
+    }
+
+    @Test
+    fun `given manuals enabled, when user clicks on manuals row, then app navigates to manuals screen`() {
+        whenever(cardReaderManualsFeatureFlag.isEnabled()).thenReturn(true)
+        initViewModel()
+
+        (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
+            .find {
+                it.label == UiString.UiStringRes(R.string.settings_card_reader_manuals)
+            }!!.onItemClicked.invoke()
+
+        assertThat(viewModel.event.value)
+            .isEqualTo(
+                CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderManualsScreen
+            )
+    }
+
     private fun initViewModel() {
-        viewModel = CardReaderHubViewModel(savedState, inPersonPaymentsCanadaFeatureFlag, appPrefsWrapper, selectedSite)
+        viewModel = CardReaderHubViewModel(
+            savedState,
+            inPersonPaymentsCanadaFeatureFlag,
+            cardReaderManualsFeatureFlag,
+            appPrefsWrapper,
+            selectedSite
+        )
     }
 }
