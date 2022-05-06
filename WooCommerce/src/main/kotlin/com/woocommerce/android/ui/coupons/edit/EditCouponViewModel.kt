@@ -5,6 +5,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.ui.coupons.CouponRepository
+import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
@@ -22,14 +23,21 @@ import javax.inject.Inject
 class EditCouponViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val couponRepository: CouponRepository,
-    private val couponUtils: CouponUtils
+    private val couponUtils: CouponUtils,
+    private val parameterRepository: ParameterRepository
 ) : ScopedViewModel(savedStateHandle) {
+    companion object {
+        private const val PARAMETERS_KEY = "parameters_key"
+    }
+
     private val navArgs: EditCouponFragmentArgs by savedStateHandle.navArgs()
     private val storedCoupon: Deferred<Coupon> = async {
         couponRepository.observeCoupon(navArgs.couponId).first()
     }
 
     private val couponDraft = savedStateHandle.getNullableStateFlow(viewModelScope, null, Coupon::class.java)
+    private val currencyCode
+        get() = parameterRepository.getParameters(PARAMETERS_KEY, savedState).currencySymbol.orEmpty()
 
     val viewState = couponDraft
         .filterNotNull()
@@ -37,6 +45,7 @@ class EditCouponViewModel @Inject constructor(
             ViewState(
                 couponDraft = coupon,
                 localizedType = coupon.type?.let { couponUtils.localizeType(it) },
+                amountUnit = if (coupon.type == Coupon.Type.Percent) "%" else currencyCode,
                 hasChanges = coupon != storedCoupon.await()
             )
         }
@@ -53,6 +62,7 @@ class EditCouponViewModel @Inject constructor(
     data class ViewState(
         val couponDraft: Coupon,
         val localizedType: String?,
+        val amountUnit: String,
         val hasChanges: Boolean
     )
 }

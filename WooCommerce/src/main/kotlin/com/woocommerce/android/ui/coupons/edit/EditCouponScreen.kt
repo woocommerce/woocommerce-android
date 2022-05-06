@@ -82,7 +82,7 @@ private fun DetailsSection(viewState: EditCouponViewModel.ViewState) {
         )
         WCOutlinedTextField(
             value = couponDraft.amount?.toPlainString().orEmpty(),
-            label = stringResource(id = R.string.coupon_edit_amount_hint, "%"/*TODO*/),
+            label = stringResource(id = R.string.coupon_edit_amount_hint, viewState.amountUnit),
             onValueChange = { /*TODO*/ },
             helperText = stringResource(
                 if (couponDraft.type is Coupon.Type.Percent) R.string.coupon_edit_amount_percentage_helper
@@ -154,6 +154,7 @@ fun EditCouponPreview() {
                     restrictedEmails = emptyList()
                 ),
                 localizedType = "Fixed Rate Discount",
+                amountUnit = "%",
                 hasChanges = true
             )
         )
