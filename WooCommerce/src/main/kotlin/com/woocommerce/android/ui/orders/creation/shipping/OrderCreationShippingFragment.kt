@@ -13,6 +13,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationShippingBinding
 import com.woocommerce.android.extensions.drop
 import com.woocommerce.android.extensions.filterNotNull
+import com.woocommerce.android.extensions.showKeyboardWithDelay
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
@@ -63,6 +64,8 @@ class OrderCreationShippingFragment : BaseFragment(R.layout.fragment_order_creat
         removeShippingButton.setOnClickListener {
             viewModel.onRemoveShippingClicked()
         }
+
+        amountEditText.editText.showKeyboardWithDelay()
     }
 
     private fun setupObservers(binding: FragmentOrderCreationShippingBinding) {
