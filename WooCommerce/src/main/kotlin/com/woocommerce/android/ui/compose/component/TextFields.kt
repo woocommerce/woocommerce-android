@@ -130,7 +130,6 @@ fun WCOutlinedTextField(
             interactionSource = interactionSource
         )
     }
-
 }
 
 /**
@@ -172,7 +171,6 @@ fun <T> WCOutlinedTextField(
     }
 
     LaunchedEffect(value) {
-        println("LaunchedEffect")
         if (value != parseText(textFieldValue.text)) {
             val text = parseValue(value)
             textFieldValue = TextFieldValue(text, selection = TextRange(text.length))

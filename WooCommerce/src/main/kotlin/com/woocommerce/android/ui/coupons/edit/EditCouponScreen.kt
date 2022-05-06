@@ -79,6 +79,7 @@ fun EditCouponScreen(
     }
 }
 
+@Suppress("LongMethod")
 @Composable
 private fun DetailsSection(
     viewState: EditCouponViewModel.ViewState,
