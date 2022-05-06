@@ -37,6 +37,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.ui.coupons.components.CouponExpirationLabel
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponDetailsState
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponPerformanceState
@@ -199,7 +200,7 @@ fun CouponSummaryHeading(
             )
         }
         CouponExpirationLabel(isActive)
-        description?.let {
+        description?.orNullIfEmpty()?.let {
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_150)))
             Text(
                 text = it,
