@@ -58,17 +58,19 @@ fun CouponDetailsScreen(
         onBackPress,
         viewModel::onCopyButtonClick,
         viewModel::onShareButtonClick,
-        viewModel::onDeleteButtonClick
+        viewModel::onEditButtonClick,
+        viewModel::onDeleteButtonClick,
     )
 }
 
 @Composable
-@Suppress("LongMethod")
+@Suppress("LongMethod", "LongParameterList")
 fun CouponDetailsScreen(
     state: CouponDetailsState,
     onBackPress: () -> Boolean,
     onCopyButtonClick: () -> Unit,
     onShareButtonClick: () -> Unit,
+    onEditButtonClick: () -> Unit,
     onDeleteButtonClick: () -> Unit
 ) {
     Column(
@@ -112,6 +114,13 @@ fun CouponDetailsScreen(
                     }
 
                     if (FeatureFlag.COUPONS_M2.isEnabled()) {
+                        DropdownMenuItem(onClick = {
+                            showMenu = false
+                            onEditButtonClick()
+                        }) {
+                            Text(stringResource(id = R.string.coupon_details_menu_edit))
+                        }
+
                         DropdownMenuItem(onClick = {
                             showMenu = false
                             showDeleteDialog = true

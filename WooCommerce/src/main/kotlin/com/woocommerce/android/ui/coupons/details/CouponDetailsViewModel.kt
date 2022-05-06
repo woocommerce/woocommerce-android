@@ -8,6 +8,7 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.coupons.CouponRepository
 import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -28,7 +29,7 @@ class CouponDetailsViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val wooCommerceStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
-    private val couponDetailsRepository: CouponDetailsRepository,
+    private val couponRepository: CouponRepository,
     private val couponUtils: CouponUtils
 ) : ScopedViewModel(savedState) {
     private val navArgs by savedState.navArgs<CouponDetailsFragmentArgs>()
@@ -36,7 +37,7 @@ class CouponDetailsViewModel @Inject constructor(
         wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
     }
 
-    private val coupon = couponDetailsRepository.observeCoupon(navArgs.couponId)
+    private val coupon = couponRepository.observeCoupon(navArgs.couponId)
         .toStateFlow(null)
 
     private val couponSummary = loadCouponSummary()
@@ -50,7 +51,7 @@ class CouponDetailsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            couponDetailsRepository.fetchCoupon(navArgs.couponId).onFailure {
+            couponRepository.fetchCoupon(navArgs.couponId).onFailure {
                 if (coupon.value == null) {
                     triggerEvent(ShowSnackbar(R.string.coupon_summary_loading_failure))
                     triggerEvent(Exit)
@@ -70,7 +71,7 @@ class CouponDetailsViewModel @Inject constructor(
             .map { coupon ->
                 CouponSummaryUi(
                     code = coupon.code,
-                    isActive = coupon.dateExpiresGmt?.after(Date()) ?: true,
+                    isActive = coupon.dateExpires?.after(Date()) ?: true,
                     description = coupon.description,
                     summary = couponUtils.generateSummary(coupon, currencyCode),
                     isForIndividualUse = coupon.isForIndividualUse ?: false,
@@ -82,7 +83,7 @@ class CouponDetailsViewModel @Inject constructor(
                     usageLimitPerUser = couponUtils.formatUsageLimitPerUser(coupon.usageLimitPerUser),
                     usageLimitPerCoupon = couponUtils.formatUsageLimitPerCoupon(coupon.usageLimit),
                     usageLimitPerItems = couponUtils.formatUsageLimitPerItems(coupon.limitUsageToXItems),
-                    expiration = coupon.dateExpiresGmt?.let { couponUtils.formatExpirationDate(it) },
+                    expiration = coupon.dateExpires?.let { couponUtils.formatExpirationDate(it) },
                     emailRestrictions = couponUtils.formatRestrictedEmails(coupon.restrictedEmails)
                 )
             }
@@ -90,7 +91,7 @@ class CouponDetailsViewModel @Inject constructor(
 
     private fun loadCouponPerformance() = flow {
         emit(CouponPerformanceState.Loading())
-        couponDetailsRepository.fetchCouponPerformance(navArgs.couponId)
+        couponRepository.fetchCouponPerformance(navArgs.couponId)
             .fold(
                 onSuccess = {
                     val performanceUi = CouponPerformanceUi(
@@ -127,7 +128,7 @@ class CouponDetailsViewModel @Inject constructor(
 
     fun onDeleteButtonClick() {
         viewModelScope.launch {
-            couponDetailsRepository.deleteCoupon(navArgs.couponId)
+            couponRepository.deleteCoupon(navArgs.couponId)
                 .onFailure {
                     WooLog.e(
                         tag = WooLog.T.COUPONS,
@@ -179,6 +180,12 @@ class CouponDetailsViewModel @Inject constructor(
         )
     }
 
+    fun onEditButtonClick() {
+        coupon.value?.id?.let {
+            triggerEvent(ShowEditCoupon(it))
+        }
+    }
+
     data class CouponDetailsState(
         val isLoading: Boolean = false,
         val couponSummary: CouponSummaryUi? = null,
@@ -221,4 +228,5 @@ class CouponDetailsViewModel @Inject constructor(
 
     data class CopyCodeEvent(val couponCode: String) : MultiLiveEvent.Event()
     data class ShareCodeEvent(val shareCodeMessage: String) : MultiLiveEvent.Event()
+    data class ShowEditCoupon(val couponId: Long) : MultiLiveEvent.Event()
 }
