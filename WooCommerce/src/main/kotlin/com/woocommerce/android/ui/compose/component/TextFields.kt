@@ -14,15 +14,10 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextFieldColors
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -130,86 +125,6 @@ fun WCOutlinedTextField(
             interactionSource = interactionSource
         )
     }
-}
-
-/**
- * A generic [OutlinedTextField] that accepts a typed value of type [T], and have a listener that emits values of the
- * same type.
- *
- * @param parseText parses the entered text into a value of type [T], if this throws any exception, the text change
- *        will be ignored.
- * @param parseValue determines how the [T] values should be represented in text.
- * @param preAdjustText an optional function that allows making modifications to the text before parsing it.
- *        This can be useful for cases when we want to filter the allowed characters, or for advanced text manipulations
- *        (such as: disallowing empty values, advanced decimal formatting...)
- */
-@Composable
-fun <T> WCOutlinedTextField(
-    value: T,
-    onValueChange: (T) -> Unit,
-    label: String,
-    parseText: (String) -> T,
-    parseValue: (T) -> String,
-    modifier: Modifier = Modifier,
-    preAdjustText: (String) -> String = { it },
-    helperText: String? = null,
-    enabled: Boolean = true,
-    readOnly: Boolean = false,
-    leadingIcon: @Composable (() -> Unit)? = null,
-    trailingIcon: @Composable (() -> Unit)? = null,
-    isError: Boolean = false,
-    visualTransformation: VisualTransformation = VisualTransformation.None,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    keyboardActions: KeyboardActions = KeyboardActions.Default,
-    singleLine: Boolean = true,
-    maxLines: Int = Int.MAX_VALUE,
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors()
-) {
-    var textFieldValue by remember {
-        mutableStateOf(TextFieldValue(parseValue(value)))
-    }
-
-    // Monitor value changes, and update text if it's different
-    LaunchedEffect(value) {
-        if (value != parseText(textFieldValue.text)) {
-            val text = parseValue(value)
-            textFieldValue = TextFieldValue(text, selection = TextRange(text.length))
-        }
-    }
-
-    WCOutlinedTextField(
-        value = textFieldValue,
-        onValueChange = onValueChange@{ updatedValue ->
-            val adjustedText = preAdjustText(updatedValue.text)
-            runCatching { parseText(adjustedText) }
-                .onSuccess {
-                    textFieldValue = TextFieldValue(
-                        text = adjustedText,
-                        // Update selection to preserve cursor position after text adjustments
-                        selection = TextRange(
-                            updatedValue.selection.start + adjustedText.length - updatedValue.text.length
-                        )
-                    )
-                    onValueChange(it)
-                }
-        },
-        label = label,
-        modifier = modifier,
-        helperText = helperText,
-        enabled = enabled,
-        readOnly = readOnly,
-        leadingIcon = leadingIcon,
-        trailingIcon = trailingIcon,
-        isError = isError,
-        visualTransformation = visualTransformation,
-        keyboardOptions = keyboardOptions,
-        keyboardActions = keyboardActions,
-        singleLine = singleLine,
-        maxLines = maxLines,
-        interactionSource = interactionSource,
-        colors = colors
-    )
 }
 
 @Composable

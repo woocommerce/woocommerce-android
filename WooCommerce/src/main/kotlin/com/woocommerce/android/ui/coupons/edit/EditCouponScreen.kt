@@ -31,10 +31,12 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.Coupon.Type
 import com.woocommerce.android.model.Coupon.Type.Percent
+import com.woocommerce.android.ui.compose.component.BigDecimalTextFieldValueMapper
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedSpinner
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
+import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import java.math.BigDecimal
@@ -145,18 +147,10 @@ private fun UsageRestrictionsSection(viewState: EditCouponViewModel.ViewState) {
 
 @Composable
 private fun AmountField(amount: BigDecimal?, amountUnit: String, type: Type?, onAmountChanged: (BigDecimal?) -> Unit) {
-    WCOutlinedTextField(
+    WCOutlinedTypedTextField(
         value = amount ?: BigDecimal.ZERO,
         label = stringResource(id = string.coupon_edit_amount_hint, amountUnit),
-        parseText = { it.toBigDecimal() },
-        parseValue = { it.toPlainString() },
-        preAdjustText = { text ->
-            when {
-                text.isEmpty() -> "0"
-                text.matches(Regex("^0\\d")) -> text.trimStart('0')
-                else -> text.filter { it != '-' }
-            }
-        },
+        valueMapper = BigDecimalTextFieldValueMapper(supportsNegativeValue = true),
         onValueChange = onAmountChanged,
         helperText = stringResource(
             if (type is Percent) string.coupon_edit_amount_percentage_helper
