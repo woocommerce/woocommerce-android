@@ -101,11 +101,11 @@ private fun DetailsSection(
             label = stringResource(id = string.coupon_edit_amount_hint, viewState.amountUnit),
             parseText = { it.toBigDecimal() },
             parseValue = { it.toPlainString() },
-            preAdjustText = {
+            preAdjustText = { value ->
                 when {
-                    it.text.isEmpty() -> TextFieldValue("0", selection = TextRange(1))
-                    it.text.matches(Regex("^0\\d")) -> it.copy(text = it.text.trimStart('0'))
-                    else -> it
+                    value.text.isEmpty() -> TextFieldValue("0", selection = TextRange(1))
+                    value.text.matches(Regex("^0\\d")) -> value.copy(text = value.text.trimStart('0'))
+                    else -> value.copy(text = value.text.filter { it != '-' })
                 }
             },
             onValueChange = onAmountChanged,
@@ -113,6 +113,8 @@ private fun DetailsSection(
                 if (couponDraft.type is Percent) string.coupon_edit_amount_percentage_helper
                 else string.coupon_edit_amount_rate_helper
             ),
+            // TODO use KeyboardType.Decimal after updating to Compose 1.2.0
+            //  (https://issuetracker.google.com/issues/209835363)
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth()
         )

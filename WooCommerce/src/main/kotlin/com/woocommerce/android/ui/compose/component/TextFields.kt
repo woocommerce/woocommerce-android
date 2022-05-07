@@ -140,8 +140,8 @@ fun WCOutlinedTextField(
  *        will be ignored.
  * @param parseValue determines how the [T] values should be represented in text.
  * @param preAdjustText an optional function that allows making modifications to the text before parsing it.
- *        This can be useful for cases where we want to disallow empty values, or we want to have advanced handling for
- *        decimals...
+ *        This can be useful for cases when we want to filter the allowed characters, or for advanced text manipulations
+ *        (such as: disallowing empty values, advanced decimal formatting...)
  */
 @Composable
 fun <T> WCOutlinedTextField(
