@@ -170,6 +170,7 @@ fun <T> WCOutlinedTextField(
         mutableStateOf(TextFieldValue(parseValue(value)))
     }
 
+    // Monitor value changes, and update text if it's different
     LaunchedEffect(value) {
         if (value != parseText(textFieldValue.text)) {
             val text = parseValue(value)
