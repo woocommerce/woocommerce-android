@@ -86,10 +86,11 @@ class OrderCreationFeeViewModel @Inject constructor(
         // Only update when isPercentageSelected is enabled
         if (!viewState.isPercentageSelected) return
         val feePercentage = feePercentageRaw.toBigDecimalOrNull() ?: BigDecimal.ZERO
+        val feeAmount = calculateFeePercentage(feePercentage)
         viewState = viewState.copy(
             feePercentage = feePercentage,
-            feeAmount = calculateFeePercentage(feePercentage),
-            isDoneButtonEnabled = feePercentage > BigDecimal.ZERO
+            feeAmount = feeAmount,
+            isDoneButtonEnabled = feeAmount > BigDecimal.ZERO
         )
     }
 
