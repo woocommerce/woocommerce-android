@@ -22,15 +22,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.model.Coupon
+import com.woocommerce.android.model.Coupon.Type
 import com.woocommerce.android.model.Coupon.Type.Percent
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
@@ -96,28 +95,7 @@ private fun DetailsSection(
             style = MaterialTheme.typography.body2,
             color = colorResource(id = R.color.color_on_surface_medium)
         )
-        WCOutlinedTextField(
-            value = couponDraft.amount ?: BigDecimal.ZERO,
-            label = stringResource(id = string.coupon_edit_amount_hint, viewState.amountUnit),
-            parseText = { it.toBigDecimal() },
-            parseValue = { it.toPlainString() },
-            preAdjustText = { value ->
-                when {
-                    value.text.isEmpty() -> TextFieldValue("0", selection = TextRange(1))
-                    value.text.matches(Regex("^0\\d")) -> value.copy(text = value.text.trimStart('0'))
-                    else -> value.copy(text = value.text.filter { it != '-' })
-                }
-            },
-            onValueChange = onAmountChanged,
-            helperText = stringResource(
-                if (couponDraft.type is Percent) string.coupon_edit_amount_percentage_helper
-                else string.coupon_edit_amount_rate_helper
-            ),
-            // TODO use KeyboardType.Decimal after updating to Compose 1.2.0
-            //  (https://issuetracker.google.com/issues/209835363)
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth()
-        )
+        AmountField(viewState.couponDraft.amount, viewState.amountUnit, viewState.couponDraft.type, onAmountChanged)
         WCOutlinedTextField(
             value = couponDraft.code.orEmpty(),
             label = stringResource(id = string.coupon_edit_code_hint),
@@ -163,6 +141,32 @@ private fun ConditionsSection(viewState: EditCouponViewModel.ViewState) {
 @Suppress("UnusedPrivateMember")
 private fun UsageRestrictionsSection(viewState: EditCouponViewModel.ViewState) {
     /*TODO*/
+}
+
+@Composable
+private fun AmountField(amount: BigDecimal?, amountUnit: String, type: Type?, onAmountChanged: (BigDecimal?) -> Unit) {
+    WCOutlinedTextField(
+        value = amount ?: BigDecimal.ZERO,
+        label = stringResource(id = string.coupon_edit_amount_hint, amountUnit),
+        parseText = { it.toBigDecimal() },
+        parseValue = { it.toPlainString() },
+        preAdjustText = { text ->
+            when {
+                text.isEmpty() -> "0"
+                text.matches(Regex("^0\\d")) -> text.trimStart('0')
+                else -> text.filter { it != '-' }
+            }
+        },
+        onValueChange = onAmountChanged,
+        helperText = stringResource(
+            if (type is Percent) string.coupon_edit_amount_percentage_helper
+            else string.coupon_edit_amount_rate_helper
+        ),
+        // TODO use KeyboardType.Decimal after updating to Compose 1.2.0
+        //  (https://issuetracker.google.com/issues/209835363)
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        modifier = Modifier.fillMaxWidth()
+    )
 }
 
 @Composable

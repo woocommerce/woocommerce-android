@@ -151,7 +151,7 @@ fun <T> WCOutlinedTextField(
     parseText: (String) -> T,
     parseValue: (T) -> String,
     modifier: Modifier = Modifier,
-    preAdjustText: (TextFieldValue) -> TextFieldValue = { it },
+    preAdjustText: (String) -> String = { it },
     helperText: String? = null,
     enabled: Boolean = true,
     readOnly: Boolean = false,
@@ -181,10 +181,16 @@ fun <T> WCOutlinedTextField(
     WCOutlinedTextField(
         value = textFieldValue,
         onValueChange = onValueChange@{ updatedValue ->
-            val adjustedText = preAdjustText(updatedValue)
-            runCatching { parseText(adjustedText.text) }
+            val adjustedText = preAdjustText(updatedValue.text)
+            runCatching { parseText(adjustedText) }
                 .onSuccess {
-                    textFieldValue = adjustedText
+                    textFieldValue = TextFieldValue(
+                        text = adjustedText,
+                        // Update selection to preserve cursor position after text adjustments
+                        selection = TextRange(
+                            updatedValue.selection.start + adjustedText.length - updatedValue.text.length
+                        )
+                    )
                     onValueChange(it)
                 }
         },
