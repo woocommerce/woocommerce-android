@@ -54,7 +54,7 @@ class OrderCreationFeeFragment :
         menu.clear()
         inflater.inflate(R.menu.menu_done, menu)
         doneMenuItem = menu.findItem(R.id.menu_done)
-        doneMenuItem?.isEnabled = editFeeViewModel.viewStateData.liveData.value!!.isDoneButtonEnabled
+        doneMenuItem?.isEnabled = editFeeViewModel.viewStateData.liveData.value?.isDoneButtonEnabled ?: false
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
