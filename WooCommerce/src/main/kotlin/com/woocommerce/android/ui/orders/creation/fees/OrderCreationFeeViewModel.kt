@@ -47,6 +47,7 @@ class OrderCreationFeeViewModel @Inject constructor(
                 shouldDisplayPercentageSwitch = false,
                 feeAmount = currentFee,
                 feePercentage = calculatePercentageFromValue(currentFee),
+                isDoneButtonEnabled = currentFee > BigDecimal.ZERO,
                 shouldDisplayRemoveFeeButton = true
             )
         } ?: run {
@@ -76,7 +77,8 @@ class OrderCreationFeeViewModel @Inject constructor(
         if (viewState.isPercentageSelected) return
         viewState = viewState.copy(
             feeAmount = feeAmount,
-            feePercentage = calculatePercentageFromValue(feeAmount)
+            feePercentage = calculatePercentageFromValue(feeAmount),
+            isDoneButtonEnabled = feeAmount > BigDecimal.ZERO
         )
     }
 
@@ -86,7 +88,8 @@ class OrderCreationFeeViewModel @Inject constructor(
         val feePercentage = feePercentageRaw.toBigDecimalOrNull() ?: BigDecimal.ZERO
         viewState = viewState.copy(
             feePercentage = feePercentage,
-            feeAmount = calculateFeePercentage(feePercentage)
+            feeAmount = calculateFeePercentage(feePercentage),
+            isDoneButtonEnabled = feePercentage > BigDecimal.ZERO
         )
     }
 
@@ -95,6 +98,7 @@ class OrderCreationFeeViewModel @Inject constructor(
         val feeAmount: BigDecimal = BigDecimal.ZERO,
         val feePercentage: BigDecimal = BigDecimal.ZERO,
         val isPercentageSelected: Boolean = false,
+        val isDoneButtonEnabled: Boolean = false,
         val shouldDisplayRemoveFeeButton: Boolean = false,
         val shouldDisplayPercentageSwitch: Boolean = false
     ) : Parcelable
