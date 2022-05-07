@@ -63,6 +63,10 @@ fun <T> WCOutlinedTypedTextField(
     WCOutlinedTextField(
         value = textFieldValue,
         onValueChange = onValueChange@{ updatedValue ->
+            if (updatedValue.text == textFieldValue.text) {
+                textFieldValue = updatedValue
+                return@onValueChange
+            }
             val transformedText = valueMapper.transformText(textFieldValue.text, updatedValue.text)
             runCatching { valueMapper.parseText(transformedText) }
                 .onSuccess {
