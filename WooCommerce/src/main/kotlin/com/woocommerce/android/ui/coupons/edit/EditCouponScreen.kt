@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -95,6 +96,7 @@ private fun DetailsSection(
     onRegenerateCodeClick: () -> Unit
 ) {
     val couponDraft = viewState.couponDraft
+    val focusManager = LocalFocusManager.current
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
         modifier = Modifier
@@ -116,7 +118,10 @@ private fun DetailsSection(
             modifier = Modifier.fillMaxWidth()
         )
         WCTextButton(
-            onClick = onRegenerateCodeClick,
+            onClick = {
+                focusManager.clearFocus()
+                onRegenerateCodeClick()
+            },
             text = stringResource(id = R.string.coupon_edit_regenerate_coupon)
         )
 
