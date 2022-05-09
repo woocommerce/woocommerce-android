@@ -220,6 +220,7 @@ class CouponUtils @Inject constructor(
      * Generate a random coupon code following the same logic as Core
      * https://github.com/woocommerce/woocommerce/blob/2e60d47a019a6e35f066f3ef43a56c0e761fc8e3/includes/admin/class-wc-admin-assets.php#L295
      */
+    @Suppress("MagicNumber")
     fun generateRandomCode(): String {
         val availableCharacters = "abcdefghjkmnpqrstuvwxyz23456789".toCharArray()
         val codeLength = 8
