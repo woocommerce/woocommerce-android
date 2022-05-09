@@ -67,6 +67,12 @@ class EditCouponViewModel @Inject constructor(
         }
     }
 
+    fun onCouponCodeChanged(code: String) {
+        couponDraft.update {
+            it?.copy(code = code)
+        }
+    }
+
     data class ViewState(
         val couponDraft: Coupon,
         val localizedType: String?,

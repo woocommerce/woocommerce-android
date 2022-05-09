@@ -46,7 +46,8 @@ fun EditCouponScreen(viewModel: EditCouponViewModel) {
     viewModel.viewState.observeAsState().value?.let {
         EditCouponScreen(
             viewState = it,
-            onAmountChanged = viewModel::onAmountChanged
+            onAmountChanged = viewModel::onAmountChanged,
+            onCouponCodeChanged = viewModel::onCouponCodeChanged
         )
     }
 }
@@ -54,7 +55,8 @@ fun EditCouponScreen(viewModel: EditCouponViewModel) {
 @Composable
 fun EditCouponScreen(
     viewState: EditCouponViewModel.ViewState,
-    onAmountChanged: (BigDecimal?) -> Unit
+    onAmountChanged: (BigDecimal?) -> Unit = {},
+    onCouponCodeChanged: (String) -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -68,7 +70,7 @@ fun EditCouponScreen(
             )
             .fillMaxSize()
     ) {
-        DetailsSection(viewState, onAmountChanged)
+        DetailsSection(viewState, onAmountChanged, onCouponCodeChanged)
         ConditionsSection(viewState)
         UsageRestrictionsSection(viewState)
         WCColoredButton(
@@ -84,7 +86,8 @@ fun EditCouponScreen(
 @Composable
 private fun DetailsSection(
     viewState: EditCouponViewModel.ViewState,
-    onAmountChanged: (BigDecimal?) -> Unit
+    onAmountChanged: (BigDecimal?) -> Unit,
+    onCouponCodeChanged: (String) -> Unit
 ) {
     val couponDraft = viewState.couponDraft
     Column(
@@ -101,7 +104,7 @@ private fun DetailsSection(
         WCOutlinedTextField(
             value = couponDraft.code.orEmpty(),
             label = stringResource(id = string.coupon_edit_code_hint),
-            onValueChange = { /*TODO*/ },
+            onValueChange = onCouponCodeChanged,
             helperText = stringResource(id = string.coupon_edit_code_helper),
             modifier = Modifier.fillMaxWidth()
         )
@@ -182,8 +185,7 @@ fun EditCouponPreview() {
                 localizedType = "Fixed Rate Discount",
                 amountUnit = "%",
                 hasChanges = true
-            ),
-            onAmountChanged = {}
+            )
         )
     }
 }
