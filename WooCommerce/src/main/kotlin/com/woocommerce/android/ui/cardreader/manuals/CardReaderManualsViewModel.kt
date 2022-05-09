@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.cardreader.manuals
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.cardreader.hub.CardReaderHubViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,12 +17,12 @@ class CardReaderManualsViewModel @Inject constructor(
 
     private fun getManualItems(): List<ManualItem> = listOf(
         ManualItem(
-            icon = R.drawable.ic_card_reader_manual,
+            icon = R.drawable.ic_chipper_reader,
             label = R.string.card_reader_bbpos_manual_card_reader,
             onManualClicked = ::onBbposManualClicked
         ),
         ManualItem(
-            icon = R.drawable.ic_card_reader_manual,
+            icon = R.drawable.ic_m2_reader,
             label = R.string.card_reader_m2_manual_card_reader,
             onManualClicked = ::onM2ManualClicked
         )
