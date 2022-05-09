@@ -45,7 +45,7 @@ class CardReaderManualsViewModelTest : BaseUnitTest() {
     @Test
     fun `when screen shown, then BBPOS icon is displayed`() {
         val bbposRow = viewModel.manualState.find {
-            it.icon == R.drawable.ic_card_reader_manual
+            it.icon == R.drawable.ic_chipper_reader
         }
 
         assertThat(bbposRow).isNotNull
@@ -79,7 +79,7 @@ class CardReaderManualsViewModelTest : BaseUnitTest() {
     @Test
     fun `when screen is shown, then M2 icon is displayed`() {
         val m2Row = viewModel.manualState.find {
-            it.icon == R.drawable.ic_card_reader_manual
+            it.icon == R.drawable.ic_m2_reader
         }
 
         assertThat(m2Row).isNotNull
