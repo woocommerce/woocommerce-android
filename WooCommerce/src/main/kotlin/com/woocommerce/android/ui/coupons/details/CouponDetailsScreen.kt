@@ -37,6 +37,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.ui.coupons.components.CouponExpirationLabel
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponDetailsState
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponPerformanceState
@@ -135,12 +136,14 @@ fun CouponDetailsScreen(
         )
 
         Column(
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
             modifier = Modifier.verticalScroll(rememberScrollState())
         ) {
             state.couponSummary?.let { coupon ->
                 CouponSummaryHeading(
                     code = coupon.code,
-                    isActive = state.couponSummary.isActive
+                    isActive = state.couponSummary.isActive,
+                    description = coupon.description
                 )
                 CouponSummarySection(coupon)
             }
@@ -189,15 +192,13 @@ fun CouponDetailsScreen(
 @Composable
 fun CouponSummaryHeading(
     code: String?,
-    isActive: Boolean
+    isActive: Boolean,
+    description: String?
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(
-                horizontal = dimensionResource(id = R.dimen.major_100),
-                vertical = dimensionResource(id = R.dimen.major_100)
-            )
+            .padding(dimensionResource(id = R.dimen.major_100))
     ) {
         code?.let {
             Text(
@@ -208,6 +209,15 @@ fun CouponSummaryHeading(
             )
         }
         CouponExpirationLabel(isActive)
+        description?.orNullIfEmpty()?.let {
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_150)))
+            Text(
+                text = it,
+                style = MaterialTheme.typography.caption,
+                color = colorResource(id = R.color.color_on_surface_medium),
+                fontWeight = FontWeight.Bold
+            )
+        }
     }
 }
 
@@ -217,7 +227,6 @@ fun CouponSummarySection(couponSummary: CouponSummaryUi) {
         elevation = dimensionResource(id = R.dimen.minor_10),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = dimensionResource(id = R.dimen.major_100))
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
