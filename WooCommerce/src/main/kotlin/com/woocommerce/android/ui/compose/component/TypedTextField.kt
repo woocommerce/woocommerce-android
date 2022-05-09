@@ -77,8 +77,10 @@ fun <T> WCOutlinedTypedTextField(
                             updatedValue.selection.start + transformedText.length - updatedValue.text.length
                         )
                     )
-                    currentValue = it
-                    onValueChange(it)
+                    if (currentValue != it) {
+                        currentValue = it
+                        onValueChange(it)
+                    }
                 }
         },
         label = label,
