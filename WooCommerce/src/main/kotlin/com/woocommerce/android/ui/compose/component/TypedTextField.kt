@@ -79,7 +79,7 @@ fun <T> WCOutlinedTypedTextField(
                                 .coerceIn(0, transformedText.length)
                         )
                     )
-                    if (currentValue != it) {
+                    if (!valueMapper.equals(currentValue, it)) {
                         currentValue = it
                         onValueChange(it)
                     }
@@ -126,6 +126,19 @@ interface TextFieldValueMapper<T> {
      * (such as: disallowing empty values, advanced decimal formatting...)
      */
     fun transformText(oldText: String, newText: String): String = newText
+
+    /**
+     * Checks whether the old value that the text field had [oldValue] equals the [newValue]
+     * The Text field won't emit changes until the values are different
+     */
+    fun equals(oldValue: T, newValue: T): Boolean {
+        return if (oldValue is Comparable<*> && newValue != null) {
+            @Suppress("UNCHECKED_CAST")
+            (oldValue as Comparable<Any>).compareTo(newValue) == 0
+        } else {
+            oldValue == newValue
+        }
+    }
 }
 
 class BigDecimalTextFieldValueMapper(
