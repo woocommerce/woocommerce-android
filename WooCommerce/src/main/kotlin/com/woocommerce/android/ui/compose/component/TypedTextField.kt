@@ -72,6 +72,7 @@ fun <T> WCOutlinedTypedTextField(
                 .onSuccess {
                     textFieldValue = TextFieldValue(
                         text = transformedText,
+                        composition = updatedValue.composition,
                         // Update selection to preserve cursor position after text transformations
                         selection = TextRange(
                             (updatedValue.selection.start + transformedText.length - updatedValue.text.length)
