@@ -221,7 +221,7 @@ class CouponUtils @Inject constructor(
      * https://github.com/woocommerce/woocommerce/blob/2e60d47a019a6e35f066f3ef43a56c0e761fc8e3/includes/admin/class-wc-admin-assets.php#L295
      */
     fun generateRandomCode(): String {
-        val availableCharacters = "ABCDEFGHJKMNPQRSTUVWXYZ23456789".toCharArray()
+        val availableCharacters = "abcdefghjkmnpqrstuvwxyz23456789".toCharArray()
         val codeLength = 8
         return String(
             (1..codeLength).map {

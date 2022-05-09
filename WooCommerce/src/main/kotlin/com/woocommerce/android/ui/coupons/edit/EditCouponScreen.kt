@@ -22,8 +22,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
@@ -104,11 +106,13 @@ private fun DetailsSection(
             color = colorResource(id = R.color.color_on_surface_medium)
         )
         AmountField(viewState.couponDraft.amount, viewState.amountUnit, viewState.couponDraft.type, onAmountChanged)
+        // Coupon code field: display code uppercased, but always return it lowercased
         WCOutlinedTextField(
-            value = couponDraft.code.orEmpty(),
+            value = couponDraft.code.orEmpty().toUpperCase(Locale.current),
             label = stringResource(id = string.coupon_edit_code_hint),
-            onValueChange = onCouponCodeChanged,
+            onValueChange = { onCouponCodeChanged(it.toLowerCase(Locale.current)) },
             helperText = stringResource(id = string.coupon_edit_code_helper),
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters),
             modifier = Modifier.fillMaxWidth()
         )
         WCTextButton(
