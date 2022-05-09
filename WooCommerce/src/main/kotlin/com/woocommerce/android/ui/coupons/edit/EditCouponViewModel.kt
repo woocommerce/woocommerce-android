@@ -63,7 +63,7 @@ class EditCouponViewModel @Inject constructor(
 
     fun onAmountChanged(value: BigDecimal?) {
         couponDraft.update {
-            it!!.copy(amount = value)
+            it?.copy(amount = value)
         }
     }
 
