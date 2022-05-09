@@ -23,7 +23,7 @@ class CouponUtils @Inject constructor(
     }
 
     fun generateSummary(coupon: Coupon, currencyCode: String?): String {
-        val amount = formatDiscount(coupon.amount, coupon.type, currencyCode)
+        val amount = coupon.amount?.let { formatDiscount(it, coupon.type, currencyCode) }.orEmpty()
         val affectedArticles = formatAffectedArticles(
             coupon.products.size,
             coupon.excludedProducts.size,
@@ -144,13 +144,14 @@ class CouponUtils @Inject constructor(
     }
 
     private fun formatDiscount(
-        amount: BigDecimal?,
+        amount: BigDecimal,
         couponType: Coupon.Type?,
         currencyCode: String?
     ): String {
         return when (couponType) {
-            Coupon.Type.Percent -> "$amount%"
-            else -> formatCurrency(amount, currencyCode)
+            Coupon.Type.Percent -> "${amount.toPlainString()}%"
+            Coupon.Type.FixedCart, Coupon.Type.FixedProduct -> formatCurrency(amount, currencyCode)
+            else -> amount.toPlainString()
         }
     }
 
