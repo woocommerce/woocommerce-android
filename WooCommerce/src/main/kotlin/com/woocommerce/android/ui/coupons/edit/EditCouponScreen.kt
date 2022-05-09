@@ -47,7 +47,8 @@ fun EditCouponScreen(viewModel: EditCouponViewModel) {
         EditCouponScreen(
             viewState = it,
             onAmountChanged = viewModel::onAmountChanged,
-            onCouponCodeChanged = viewModel::onCouponCodeChanged
+            onCouponCodeChanged = viewModel::onCouponCodeChanged,
+            onRegenerateCodeClick = viewModel::onRegenerateCodeClick
         )
     }
 }
@@ -56,7 +57,8 @@ fun EditCouponScreen(viewModel: EditCouponViewModel) {
 fun EditCouponScreen(
     viewState: EditCouponViewModel.ViewState,
     onAmountChanged: (BigDecimal?) -> Unit = {},
-    onCouponCodeChanged: (String) -> Unit = {}
+    onCouponCodeChanged: (String) -> Unit = {},
+    onRegenerateCodeClick: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -70,7 +72,7 @@ fun EditCouponScreen(
             )
             .fillMaxSize()
     ) {
-        DetailsSection(viewState, onAmountChanged, onCouponCodeChanged)
+        DetailsSection(viewState, onAmountChanged, onCouponCodeChanged, onRegenerateCodeClick)
         ConditionsSection(viewState)
         UsageRestrictionsSection(viewState)
         WCColoredButton(
@@ -87,7 +89,8 @@ fun EditCouponScreen(
 private fun DetailsSection(
     viewState: EditCouponViewModel.ViewState,
     onAmountChanged: (BigDecimal?) -> Unit,
-    onCouponCodeChanged: (String) -> Unit
+    onCouponCodeChanged: (String) -> Unit,
+    onRegenerateCodeClick: () -> Unit
 ) {
     val couponDraft = viewState.couponDraft
     Column(
@@ -109,7 +112,7 @@ private fun DetailsSection(
             modifier = Modifier.fillMaxWidth()
         )
         WCTextButton(
-            onClick = { /*TODO*/ },
+            onClick = onRegenerateCodeClick,
             text = stringResource(id = R.string.coupon_edit_regenerate_coupon)
         )
 
