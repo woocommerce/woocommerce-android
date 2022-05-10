@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.DialogProductDetailBottomSheetListBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
@@ -16,11 +15,12 @@ import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.Prod
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
+import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ProductTypesBottomSheetFragment : BottomSheetDialogFragment() {
+class ProductTypesBottomSheetFragment : WCBottomSheetDialogFragment() {
     companion object {
         const val KEY_PRODUCT_TYPE_RESULT = "key_product_type_result"
     }
