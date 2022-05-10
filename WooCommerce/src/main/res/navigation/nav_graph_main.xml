@@ -357,4 +357,20 @@
         android:name="com.woocommerce.android.ui.inbox.InboxFragment"
         android:label="InboxFragment"
         tools:layout="@layout/fragment_inbox" />
+    <fragment
+        android:id="@+id/simpleTextEditorFragment"
+        android:name="com.woocommerce.android.ui.common.texteditor.SimpleTextEditorFragment"
+        android:label="SimpleTextEditorFragment">
+        <argument
+            android:name="currentText"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="requestCode"
+            android:defaultValue="-1"
+            app:argType="integer" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_simpleTextEditorFragment"
+        app:destination="@id/simpleTextEditorFragment" />
 </navigation>
