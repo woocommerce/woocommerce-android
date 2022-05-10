@@ -180,7 +180,7 @@ dependencies {
         exclude group: "com.google.guava", module: "guava"
     }
 
-    implementation 'com.google.firebase:firebase-messaging-ktx:23.0.3'
+    implementation 'com.google.firebase:firebase-messaging-ktx:23.0.4'
     implementation 'com.google.android.gms:play-services-auth:20.2.0'
 
     // Support library
@@ -318,7 +318,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
 
-    testImplementation 'app.cash.turbine:turbine:0.7.0'
+    testImplementation 'app.cash.turbine:turbine:0.8.0'
 
     // Use caution when updating this, as commons-text 1.9 caused the reviews tab to crash on API 21
     implementation "org.apache.commons:commons-text:1.8"
