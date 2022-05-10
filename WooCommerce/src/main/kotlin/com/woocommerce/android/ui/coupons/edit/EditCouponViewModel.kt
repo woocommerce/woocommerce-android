@@ -48,7 +48,7 @@ class EditCouponViewModel @Inject constructor(
                 couponDraft = coupon,
                 localizedType = coupon.type?.let { couponUtils.localizeType(it) },
                 amountUnit = if (coupon.type == Coupon.Type.Percent) "%" else currencyCode,
-                hasChanges = coupon != storedCoupon.await()
+                hasChanges = !coupon.isSameCoupon(storedCoupon.await())
             )
         }
         .asLiveData()
