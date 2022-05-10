@@ -19,11 +19,14 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
@@ -46,7 +49,9 @@ fun EditCouponScreen(viewModel: EditCouponViewModel) {
     viewModel.viewState.observeAsState().value?.let {
         EditCouponScreen(
             viewState = it,
-            onAmountChanged = viewModel::onAmountChanged
+            onAmountChanged = viewModel::onAmountChanged,
+            onCouponCodeChanged = viewModel::onCouponCodeChanged,
+            onRegenerateCodeClick = viewModel::onRegenerateCodeClick
         )
     }
 }
@@ -54,7 +59,9 @@ fun EditCouponScreen(viewModel: EditCouponViewModel) {
 @Composable
 fun EditCouponScreen(
     viewState: EditCouponViewModel.ViewState,
-    onAmountChanged: (BigDecimal?) -> Unit
+    onAmountChanged: (BigDecimal?) -> Unit = {},
+    onCouponCodeChanged: (String) -> Unit = {},
+    onRegenerateCodeClick: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -68,7 +75,7 @@ fun EditCouponScreen(
             )
             .fillMaxSize()
     ) {
-        DetailsSection(viewState, onAmountChanged)
+        DetailsSection(viewState, onAmountChanged, onCouponCodeChanged, onRegenerateCodeClick)
         ConditionsSection(viewState)
         UsageRestrictionsSection(viewState)
         WCColoredButton(
@@ -84,9 +91,12 @@ fun EditCouponScreen(
 @Composable
 private fun DetailsSection(
     viewState: EditCouponViewModel.ViewState,
-    onAmountChanged: (BigDecimal?) -> Unit
+    onAmountChanged: (BigDecimal?) -> Unit,
+    onCouponCodeChanged: (String) -> Unit,
+    onRegenerateCodeClick: () -> Unit
 ) {
     val couponDraft = viewState.couponDraft
+    val focusManager = LocalFocusManager.current
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
         modifier = Modifier
@@ -98,15 +108,20 @@ private fun DetailsSection(
             color = colorResource(id = R.color.color_on_surface_medium)
         )
         AmountField(viewState.couponDraft.amount, viewState.amountUnit, viewState.couponDraft.type, onAmountChanged)
+        // Coupon code field: display code uppercased, but always return it lowercased
         WCOutlinedTextField(
-            value = couponDraft.code.orEmpty(),
+            value = couponDraft.code.orEmpty().toUpperCase(Locale.current),
             label = stringResource(id = string.coupon_edit_code_hint),
-            onValueChange = { /*TODO*/ },
+            onValueChange = { onCouponCodeChanged(it.toLowerCase(Locale.current)) },
             helperText = stringResource(id = string.coupon_edit_code_helper),
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters),
             modifier = Modifier.fillMaxWidth()
         )
         WCTextButton(
-            onClick = { /*TODO*/ },
+            onClick = {
+                focusManager.clearFocus()
+                onRegenerateCodeClick()
+            },
             text = stringResource(id = R.string.coupon_edit_regenerate_coupon)
         )
 
@@ -182,8 +197,7 @@ fun EditCouponPreview() {
                 localizedType = "Fixed Rate Discount",
                 amountUnit = "%",
                 hasChanges = true
-            ),
-            onAmountChanged = {}
+            )
         )
     }
 }
