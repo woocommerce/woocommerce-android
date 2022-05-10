@@ -38,15 +38,6 @@ class LoginUserInfoView @JvmOverloads constructor(
         }
     }
 
-    fun leftAlign() {
-        binding.loginUserInfo.gravity = Gravity.START
-        with(binding.imageAvatar) {
-            layoutParams.height = resources.getDimensionPixelSize(dimen.image_major_72)
-            layoutParams.width = resources.getDimensionPixelSize(dimen.image_major_72)
-            requestLayout()
-        }
-    }
-
     fun avatarUrl(avatarUrl: String) {
         GlideApp.with(this)
             .load(avatarUrl)
