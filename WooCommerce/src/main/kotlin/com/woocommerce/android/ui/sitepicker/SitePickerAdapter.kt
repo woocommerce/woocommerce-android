@@ -33,6 +33,8 @@ class SitePickerAdapter(
             diffResult.dispatchUpdatesTo(this)
         }
 
+    override fun getItemId(position: Int) = sites[position].site.siteId
+
     override fun getItemCount(): Int = sites.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SiteViewHolder {
