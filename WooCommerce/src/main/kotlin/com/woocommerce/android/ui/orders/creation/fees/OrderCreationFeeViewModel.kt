@@ -47,7 +47,7 @@ class OrderCreationFeeViewModel @Inject constructor(
                 shouldDisplayPercentageSwitch = false,
                 feeAmount = currentFee,
                 feePercentage = calculatePercentageFromValue(currentFee),
-                isDoneButtonEnabled = currentFee > BigDecimal.ZERO,
+                isDoneButtonEnabled = shouldEnableDoneButtonForAmount(currentFee),
                 shouldDisplayRemoveFeeButton = true
             )
         } ?: run {
@@ -78,7 +78,7 @@ class OrderCreationFeeViewModel @Inject constructor(
         viewState = viewState.copy(
             feeAmount = feeAmount,
             feePercentage = calculatePercentageFromValue(feeAmount),
-            isDoneButtonEnabled = feeAmount > BigDecimal.ZERO
+            isDoneButtonEnabled = shouldEnableDoneButtonForAmount(feeAmount)
         )
     }
 
@@ -90,9 +90,11 @@ class OrderCreationFeeViewModel @Inject constructor(
         viewState = viewState.copy(
             feePercentage = feePercentage,
             feeAmount = feeAmount,
-            isDoneButtonEnabled = feeAmount > BigDecimal.ZERO
+            isDoneButtonEnabled = shouldEnableDoneButtonForAmount(feeAmount)
         )
     }
+
+    private fun shouldEnableDoneButtonForAmount(amount: BigDecimal) = amount != BigDecimal.ZERO
 
     @Parcelize
     data class ViewState(
