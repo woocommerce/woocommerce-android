@@ -301,7 +301,6 @@ class OrderCreationFeeViewModelTest : BaseUnitTest() {
         assertThat(lastReceivedChange).isTrue
     }
 
-
     @Test
     fun `when fee value start as zero, then set isDoneButtonEnabled to false`() {
         var lastReceivedChange: Boolean? = null
