@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
@@ -21,15 +22,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.R.string
 import com.woocommerce.android.model.Coupon
+import com.woocommerce.android.model.Coupon.Type
+import com.woocommerce.android.model.Coupon.Type.Percent
+import com.woocommerce.android.ui.compose.component.BigDecimalTextFieldValueMapper
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedSpinner
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
+import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import java.math.BigDecimal
@@ -37,12 +44,18 @@ import java.math.BigDecimal
 @Composable
 fun EditCouponScreen(viewModel: EditCouponViewModel) {
     viewModel.viewState.observeAsState().value?.let {
-        EditCouponScreen(it)
+        EditCouponScreen(
+            viewState = it,
+            onAmountChanged = viewModel::onAmountChanged
+        )
     }
 }
 
 @Composable
-fun EditCouponScreen(viewState: EditCouponViewModel.ViewState) {
+fun EditCouponScreen(
+    viewState: EditCouponViewModel.ViewState,
+    onAmountChanged: (BigDecimal?) -> Unit
+) {
     val scrollState = rememberScrollState()
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
@@ -55,19 +68,24 @@ fun EditCouponScreen(viewState: EditCouponViewModel.ViewState) {
             )
             .fillMaxSize()
     ) {
-        DetailsSection(viewState)
+        DetailsSection(viewState, onAmountChanged)
         ConditionsSection(viewState)
         UsageRestrictionsSection(viewState)
         WCColoredButton(
             onClick = { /*TODO*/ },
             text = stringResource(id = R.string.coupon_edit_save_button),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = viewState.hasChanges
         )
     }
 }
 
+@Suppress("LongMethod")
 @Composable
-private fun DetailsSection(viewState: EditCouponViewModel.ViewState) {
+private fun DetailsSection(
+    viewState: EditCouponViewModel.ViewState,
+    onAmountChanged: (BigDecimal?) -> Unit
+) {
     val couponDraft = viewState.couponDraft
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
@@ -79,21 +97,12 @@ private fun DetailsSection(viewState: EditCouponViewModel.ViewState) {
             style = MaterialTheme.typography.body2,
             color = colorResource(id = R.color.color_on_surface_medium)
         )
-        WCOutlinedTextField(
-            value = couponDraft.amount?.toPlainString().orEmpty(),
-            label = stringResource(id = R.string.coupon_edit_amount_hint, "%"/*TODO*/),
-            onValueChange = { /*TODO*/ },
-            helperText = stringResource(
-                if (couponDraft.type is Coupon.Type.Percent) R.string.coupon_edit_amount_percentage_helper
-                else R.string.coupon_edit_amount_rate_helper
-            ),
-            modifier = Modifier.fillMaxWidth()
-        )
+        AmountField(viewState.couponDraft.amount, viewState.amountUnit, viewState.couponDraft.type, onAmountChanged)
         WCOutlinedTextField(
             value = couponDraft.code.orEmpty(),
-            label = stringResource(id = R.string.coupon_edit_code_hint),
+            label = stringResource(id = string.coupon_edit_code_hint),
             onValueChange = { /*TODO*/ },
-            helperText = stringResource(id = R.string.coupon_edit_code_helper),
+            helperText = stringResource(id = string.coupon_edit_code_helper),
             modifier = Modifier.fillMaxWidth()
         )
         WCTextButton(
@@ -137,6 +146,24 @@ private fun UsageRestrictionsSection(viewState: EditCouponViewModel.ViewState) {
 }
 
 @Composable
+private fun AmountField(amount: BigDecimal?, amountUnit: String, type: Type?, onAmountChanged: (BigDecimal?) -> Unit) {
+    WCOutlinedTypedTextField(
+        value = amount ?: BigDecimal.ZERO,
+        label = stringResource(id = string.coupon_edit_amount_hint, amountUnit),
+        valueMapper = BigDecimalTextFieldValueMapper(supportsNegativeValue = true),
+        onValueChange = onAmountChanged,
+        helperText = stringResource(
+            if (type is Percent) string.coupon_edit_amount_percentage_helper
+            else string.coupon_edit_amount_rate_helper
+        ),
+        // TODO use KeyboardType.Decimal after updating to Compose 1.2.0
+        //  (https://issuetracker.google.com/issues/209835363)
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        modifier = Modifier.fillMaxWidth()
+    )
+}
+
+@Composable
 @Preview
 fun EditCouponPreview() {
     WooTheme {
@@ -152,8 +179,11 @@ fun EditCouponPreview() {
                     excludedCategories = emptyList(),
                     restrictedEmails = emptyList()
                 ),
-                localizedType = "Fixed Rate Discount"
-            )
+                localizedType = "Fixed Rate Discount",
+                amountUnit = "%",
+                hasChanges = true
+            ),
+            onAmountChanged = {}
         )
     }
 }
