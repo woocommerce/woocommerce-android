@@ -80,6 +80,10 @@ class EditCouponViewModel @Inject constructor(
         }
     }
 
+    fun onDescriptionButtonClick() {
+        TODO()
+    }
+
     data class ViewState(
         val couponDraft: Coupon,
         val localizedType: String?,

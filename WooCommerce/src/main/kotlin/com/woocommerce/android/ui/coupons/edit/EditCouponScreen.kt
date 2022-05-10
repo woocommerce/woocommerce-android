@@ -14,7 +14,8 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons.Filled
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -30,7 +31,6 @@ import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
-import com.woocommerce.android.R.string
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.Coupon.Type
 import com.woocommerce.android.model.Coupon.Type.Percent
@@ -51,7 +51,8 @@ fun EditCouponScreen(viewModel: EditCouponViewModel) {
             viewState = it,
             onAmountChanged = viewModel::onAmountChanged,
             onCouponCodeChanged = viewModel::onCouponCodeChanged,
-            onRegenerateCodeClick = viewModel::onRegenerateCodeClick
+            onRegenerateCodeClick = viewModel::onRegenerateCodeClick,
+            onDescriptionButtonClick = viewModel::onDescriptionButtonClick
         )
     }
 }
@@ -61,7 +62,8 @@ fun EditCouponScreen(
     viewState: EditCouponViewModel.ViewState,
     onAmountChanged: (BigDecimal?) -> Unit = {},
     onCouponCodeChanged: (String) -> Unit = {},
-    onRegenerateCodeClick: () -> Unit = {}
+    onRegenerateCodeClick: () -> Unit = {},
+    onDescriptionButtonClick: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -75,7 +77,13 @@ fun EditCouponScreen(
             )
             .fillMaxSize()
     ) {
-        DetailsSection(viewState, onAmountChanged, onCouponCodeChanged, onRegenerateCodeClick)
+        DetailsSection(
+            viewState = viewState,
+            onAmountChanged = onAmountChanged,
+            onCouponCodeChanged = onCouponCodeChanged,
+            onRegenerateCodeClick = onRegenerateCodeClick,
+            onDescriptionButtonClick = onDescriptionButtonClick
+        )
         ConditionsSection(viewState)
         UsageRestrictionsSection(viewState)
         WCColoredButton(
@@ -93,7 +101,8 @@ private fun DetailsSection(
     viewState: EditCouponViewModel.ViewState,
     onAmountChanged: (BigDecimal?) -> Unit,
     onCouponCodeChanged: (String) -> Unit,
-    onRegenerateCodeClick: () -> Unit
+    onRegenerateCodeClick: () -> Unit,
+    onDescriptionButtonClick: () -> Unit
 ) {
     val couponDraft = viewState.couponDraft
     val focusManager = LocalFocusManager.current
@@ -111,9 +120,9 @@ private fun DetailsSection(
         // Coupon code field: display code uppercased, but always return it lowercased
         WCOutlinedTextField(
             value = couponDraft.code.orEmpty().toUpperCase(Locale.current),
-            label = stringResource(id = string.coupon_edit_code_hint),
+            label = stringResource(id = R.string.coupon_edit_code_hint),
             onValueChange = { onCouponCodeChanged(it.toLowerCase(Locale.current)) },
-            helperText = stringResource(id = string.coupon_edit_code_helper),
+            helperText = stringResource(id = R.string.coupon_edit_code_helper),
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters),
             modifier = Modifier.fillMaxWidth()
         )
@@ -124,21 +133,7 @@ private fun DetailsSection(
             },
             text = stringResource(id = R.string.coupon_edit_regenerate_coupon)
         )
-
-        WCOutlinedButton(
-            onClick = { /*TODO*/ },
-            text = "Edit Description",
-            leadingIcon = {
-                Icon(
-                    imageVector = Filled.Edit,
-                    contentDescription = null,
-                    modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
-                )
-            },
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.onSurface),
-            modifier = Modifier.fillMaxWidth()
-        )
-
+        DescriptionButton(viewState.couponDraft.description, onDescriptionButtonClick)
         WCOutlinedSpinner(
             onClick = { /*TODO*/ },
             value = couponDraft.dateExpires?.toString() ?: "None",
@@ -164,16 +159,36 @@ private fun UsageRestrictionsSection(viewState: EditCouponViewModel.ViewState) {
 private fun AmountField(amount: BigDecimal?, amountUnit: String, type: Type?, onAmountChanged: (BigDecimal?) -> Unit) {
     WCOutlinedTypedTextField(
         value = amount ?: BigDecimal.ZERO,
-        label = stringResource(id = string.coupon_edit_amount_hint, amountUnit),
+        label = stringResource(id = R.string.coupon_edit_amount_hint, amountUnit),
         valueMapper = BigDecimalTextFieldValueMapper(supportsNegativeValue = true),
         onValueChange = onAmountChanged,
         helperText = stringResource(
-            if (type is Percent) string.coupon_edit_amount_percentage_helper
-            else string.coupon_edit_amount_rate_helper
+            if (type is Percent) R.string.coupon_edit_amount_percentage_helper
+            else R.string.coupon_edit_amount_rate_helper
         ),
         // TODO use KeyboardType.Decimal after updating to Compose 1.2.0
         //  (https://issuetracker.google.com/issues/209835363)
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        modifier = Modifier.fillMaxWidth()
+    )
+}
+
+@Composable
+private fun DescriptionButton(description: String?, onButtonClicked: () -> Unit) {
+    WCOutlinedButton(
+        onClick = onButtonClicked,
+        text = stringResource(
+            id = if (description.isNullOrEmpty()) R.string.coupon_edit_add_description
+            else R.string.coupon_edit_edit_description
+        ),
+        leadingIcon = {
+            Icon(
+                imageVector = if (description.isNullOrEmpty()) Icons.Filled.Add else Icons.Filled.Edit,
+                contentDescription = null,
+                modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
+            )
+        },
+        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.onSurface),
         modifier = Modifier.fillMaxWidth()
     )
 }
