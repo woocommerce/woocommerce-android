@@ -2,8 +2,11 @@ package com.woocommerce.android
 
 import android.app.Application
 import android.content.Context
+import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
+import androidx.lifecycle.Lifecycle.State.STARTED
+import androidx.lifecycle.ProcessLifecycleOwner
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -19,6 +22,7 @@ import com.woocommerce.android.tools.RateLimitedTask
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.SendTelemetry
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
@@ -27,6 +31,7 @@ import com.woocommerce.android.util.REGEX_API_JETPACK_TUNNEL_METHOD
 import com.woocommerce.android.util.REGEX_API_NUMERIC_PARAM
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.util.WooLog.T.DASHBOARD
 import com.woocommerce.android.util.WooLog.T.UTILS
 import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.util.crashlogging.UploadEncryptedLogs
@@ -170,6 +175,19 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             dispatcher.dispatch(AccountActionBuilder.newFetchSettingsAction())
             appCoroutineScope.launch {
                 wooCommerceStore.fetchWooCommerceSites()
+
+                // Added to fix this crash
+                // https://github.com/woocommerce/woocommerce-android/issues/4842
+                if (selectedSite.getSelectedSiteId() != -1 &&
+                    !selectedSite.exists() &&
+                    ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(STARTED)
+                ) {
+                    // The previously selected site is not connected anymore, take the user to the site picker
+                    WooLog.i(DASHBOARD, "Selected site no longer exists, showing site picker")
+                    val intent = Intent(application, MainActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    application.startActivity(intent)
+                }
             }
 
             // Update the user info for the currently logged in user
