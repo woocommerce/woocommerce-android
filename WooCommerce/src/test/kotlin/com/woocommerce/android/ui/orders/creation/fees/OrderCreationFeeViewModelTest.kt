@@ -300,4 +300,103 @@ class OrderCreationFeeViewModelTest : BaseUnitTest() {
 
         assertThat(lastReceivedChange).isTrue
     }
+
+
+    @Test
+    fun `when fee value start as zero, then set isDoneButtonEnabled to false`() {
+        var lastReceivedChange: Boolean? = null
+        savedState = OrderCreationFeeFragmentArgs(BigDecimal.ZERO, BigDecimal.ZERO)
+            .initSavedStateHandle()
+        initSut()
+
+        sut.viewStateData.observeForever { _, viewState ->
+            lastReceivedChange = viewState.isDoneButtonEnabled
+        }
+
+        assertThat(lastReceivedChange).isFalse
+    }
+
+    @Test
+    fun `when fee value starts as bigger than zero, then set isDoneButtonEnabled to true`() {
+        var lastReceivedChange: Boolean? = null
+        savedState = OrderCreationFeeFragmentArgs(DEFAULT_ORDER_SUB_TOTAL, DEFAULT_FEE_VALUE)
+            .initSavedStateHandle()
+        initSut()
+
+        sut.viewStateData.observeForever { _, viewState ->
+            lastReceivedChange = viewState.isDoneButtonEnabled
+        }
+
+        assertThat(lastReceivedChange).isTrue
+    }
+
+    @Test
+    fun `when fee value starts as negative amount, then set isDoneButtonEnabled to true`() {
+        var lastReceivedChange: Boolean? = null
+        savedState = OrderCreationFeeFragmentArgs(DEFAULT_ORDER_SUB_TOTAL, BigDecimal(-25))
+            .initSavedStateHandle()
+        initSut()
+
+        sut.viewStateData.observeForever { _, viewState ->
+            lastReceivedChange = viewState.isDoneButtonEnabled
+        }
+
+        assertThat(lastReceivedChange).isTrue
+    }
+
+    @Test
+    fun `when fee amount is set to a negative value, then set isDoneButtonEnabled to true`() {
+        var lastReceivedChange: Boolean? = null
+        savedState = OrderCreationFeeFragmentArgs(DEFAULT_ORDER_SUB_TOTAL, DEFAULT_FEE_VALUE)
+            .initSavedStateHandle()
+        initSut()
+
+        sut.viewStateData.observeForever { _, viewState ->
+            lastReceivedChange = viewState.isDoneButtonEnabled
+        }
+
+        assertThat(lastReceivedChange).isTrue
+
+        sut.onFeeAmountChanged(BigDecimal(-25))
+
+        assertThat(lastReceivedChange).isTrue
+    }
+
+    @Test
+    fun `when fee amount is set to zero, then set isDoneButtonEnabled to false`() {
+        var lastReceivedChange: Boolean? = null
+        savedState = OrderCreationFeeFragmentArgs(DEFAULT_ORDER_SUB_TOTAL, DEFAULT_FEE_VALUE)
+            .initSavedStateHandle()
+        initSut()
+
+        sut.viewStateData.observeForever { _, viewState ->
+            lastReceivedChange = viewState.isDoneButtonEnabled
+        }
+
+        assertThat(lastReceivedChange).isTrue
+
+        sut.onFeeAmountChanged(BigDecimal.ZERO)
+
+        assertThat(lastReceivedChange).isFalse
+    }
+
+    @Test
+    fun `when fee percentage is set to zero, then set isDoneButtonEnabled to false`() {
+        var lastReceivedChange: Boolean? = null
+        savedState = OrderCreationFeeFragmentArgs(DEFAULT_ORDER_SUB_TOTAL, DEFAULT_FEE_VALUE)
+            .initSavedStateHandle()
+        initSut()
+
+        sut.viewStateData.observeForever { _, viewState ->
+            lastReceivedChange = viewState.isDoneButtonEnabled
+        }
+
+        assertThat(lastReceivedChange).isTrue
+
+        sut.onPercentageSwitchChanged(true)
+
+        sut.onFeePercentageChanged("0")
+
+        assertThat(lastReceivedChange).isFalse
+    }
 }
