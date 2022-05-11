@@ -18,6 +18,14 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
 
+/**
+ * A screen that shows a TextField in full-screen, to allow editing and returning a simple text.
+ *
+ * To configure the screen, pass an instance of [SimpleTextEditorFragmentArgs] during the navigation.
+ *
+ * The result is returned using the key:
+ *   "{[SIMPLE_TEXT_EDITOR_RESULT]}{[SimpleTextEditorFragmentArgs.requestCode] if present}".
+ */
 @AndroidEntryPoint
 class SimpleTextEditorFragment : BaseFragment(), BackPressListener {
     companion object {
