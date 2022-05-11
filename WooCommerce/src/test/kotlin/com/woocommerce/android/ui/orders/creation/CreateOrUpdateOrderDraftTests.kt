@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.orders.creation
 
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus
@@ -33,6 +35,7 @@ class CreateOrUpdateOrderDraftTests : BaseUnitTest() {
     }
     private val orderDraftChanges = MutableStateFlow(Order.EMPTY)
     private val retryTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    private val analyticsTrackerWrapper = mock<AnalyticsTrackerWrapper>()
 
     private val sut: CreateOrUpdateOrderDraft = CreateOrUpdateOrderDraft(
         dispatchers = coroutinesTestRule.testDispatchers,
@@ -132,5 +135,15 @@ class CreateOrUpdateOrderDraftTests : BaseUnitTest() {
         assertThat(updateStatuses.last()).isInstanceOf(OrderDraftUpdateStatus.Succeeded::class.java)
 
         job.cancel()
+    }
+
+    @Test
+    fun `when order sync fails, then error is tracked`() = testBlocking {
+        val badOrder = Order.EMPTY.copy(id = -1)
+        orderCreationRepository.createOrUpdateDraft(badOrder)
+        advanceTimeAndRun(CreateOrUpdateOrderDraft.DEBOUNCE_DURATION_MS)
+
+        verify(orderCreationRepository, times(1)).createOrUpdateDraft(any())
+        verify(analyticsTrackerWrapper, times(1)).track(AnalyticsEvent.ORDER_SYNC_FAILED)
     }
 }
