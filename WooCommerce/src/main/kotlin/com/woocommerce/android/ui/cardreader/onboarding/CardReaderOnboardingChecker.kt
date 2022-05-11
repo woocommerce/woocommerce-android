@@ -103,7 +103,7 @@ class CardReaderOnboardingChecker @Inject constructor(
         return PreferredPluginResult.Success(getPreferredPlugin(stripePluginInfo, wcPayPluginInfo).type)
     }
 
-    @Suppress("ReturnCount", "ComplexMethod")
+    @Suppress("ReturnCount", "ComplexMethod", "LongMethod")
     private suspend fun fetchOnboardingState(): CardReaderOnboardingState {
         val countryCode = getStoreCountryCode()
         cardReaderTrackingInfoKeeper.setCountry(countryCode)
@@ -145,7 +145,6 @@ class CardReaderOnboardingChecker @Inject constructor(
             inPersonPaymentsStore.loadAccount(fluxCPluginType, selectedSite.get()).model ?: return GenericError
 
         saveStatementDescriptor(paymentAccount.statementDescriptor)
-
 
         val countryConfigOfStripe = cardReaderCountryConfigProvider.provideCountryConfigFor(paymentAccount.country)
         if (countryConfigOfStripe !is CardReaderConfigForSupportedCountry) {

@@ -13,7 +13,7 @@ class CardReaderCountryConfigProvider @Inject constructor(
     fun provideCountryConfigFor(countryCode: String?): CardReaderConfig {
         val config = cardReaderConfigFactory.getCardReaderConfigFor(countryCode)
         return if (config is CardReaderConfigForCanada && !canadaFeatureFlag.isEnabled()) {
-             CardReaderConfigForUnsupportedCountry
+            CardReaderConfigForUnsupportedCountry
         } else {
             config
         }
