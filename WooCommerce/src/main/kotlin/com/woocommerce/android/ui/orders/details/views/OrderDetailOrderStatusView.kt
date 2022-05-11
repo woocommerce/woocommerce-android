@@ -35,8 +35,7 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
     fun updateOrder(order: Order) {
         with(order.dateCreated) {
             when (isToday()) {
-                true -> getTimeString(context)
-                false -> getMediumDate(context)
+                true, false -> getMediumDate(context)
                 null -> ""
             }.let { dateStr ->
                 binding.orderStatusSubtitle.text =
