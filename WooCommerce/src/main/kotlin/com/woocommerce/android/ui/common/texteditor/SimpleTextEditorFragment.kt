@@ -8,6 +8,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.texteditor.SimpleTextEditorViewModel.SimpleTextEditorResult
@@ -24,6 +25,7 @@ class SimpleTextEditorFragment : BaseFragment(), BackPressListener {
     }
 
     private val viewModel: SimpleTextEditorViewModel by viewModels()
+    private val navArgs: SimpleTextEditorFragmentArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         setHasOptionsMenu(true)
@@ -55,6 +57,8 @@ class SimpleTextEditorFragment : BaseFragment(), BackPressListener {
             }
         }
     }
+
+    override fun getFragmentTitle(): String = navArgs.screenTitle
 
     override fun onRequestAllowBackPress(): Boolean {
         viewModel.onBackPressed()

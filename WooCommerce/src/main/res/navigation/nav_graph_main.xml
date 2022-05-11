@@ -366,6 +366,12 @@
             app:argType="string"
             app:nullable="true" />
         <argument
+            android:name="screenTitle"
+            app:argType="string" />
+        <argument
+            android:name="hint"
+            app:argType="string" />
+        <argument
             android:name="requestCode"
             android:defaultValue="-1"
             app:argType="integer" />

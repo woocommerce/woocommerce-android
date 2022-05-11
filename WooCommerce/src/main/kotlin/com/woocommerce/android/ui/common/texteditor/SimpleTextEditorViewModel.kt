@@ -20,6 +20,7 @@ class SimpleTextEditorViewModel @Inject constructor(savedState: SavedStateHandle
     val viewState = textLiveData.map {
         ViewState(
             text = it,
+            hint = navArgs.hint,
             hasChanges = it != navArgs.currentText
         )
     }
@@ -43,6 +44,7 @@ class SimpleTextEditorViewModel @Inject constructor(savedState: SavedStateHandle
 
     data class ViewState(
         val text: String,
+        val hint: String,
         val hasChanges: Boolean
     )
 

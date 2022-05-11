@@ -1966,6 +1966,8 @@
     <string name="coupon_edit_expiry_date">Coupon Expiry Date</string>
     <string name="coupon_edit_add_description">Add Description (Optional)</string>
     <string name="coupon_edit_edit_description">Edit Description</string>
+    <string name="coupon_edit_description_editor_title">Coupon Description</string>
+    <string name="coupon_edit_add_description_hint">Add the description of the coupon.</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>
