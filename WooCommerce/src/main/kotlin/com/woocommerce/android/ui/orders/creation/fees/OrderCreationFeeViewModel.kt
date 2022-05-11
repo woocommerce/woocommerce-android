@@ -47,6 +47,7 @@ class OrderCreationFeeViewModel @Inject constructor(
                 shouldDisplayPercentageSwitch = false,
                 feeAmount = currentFee,
                 feePercentage = calculatePercentageFromValue(currentFee),
+                isDoneButtonEnabled = shouldEnableDoneButtonForAmount(currentFee),
                 shouldDisplayRemoveFeeButton = true
             )
         } ?: run {
@@ -76,7 +77,8 @@ class OrderCreationFeeViewModel @Inject constructor(
         if (viewState.isPercentageSelected) return
         viewState = viewState.copy(
             feeAmount = feeAmount,
-            feePercentage = calculatePercentageFromValue(feeAmount)
+            feePercentage = calculatePercentageFromValue(feeAmount),
+            isDoneButtonEnabled = shouldEnableDoneButtonForAmount(feeAmount)
         )
     }
 
@@ -84,17 +86,22 @@ class OrderCreationFeeViewModel @Inject constructor(
         // Only update when isPercentageSelected is enabled
         if (!viewState.isPercentageSelected) return
         val feePercentage = feePercentageRaw.toBigDecimalOrNull() ?: BigDecimal.ZERO
+        val feeAmount = calculateFeePercentage(feePercentage)
         viewState = viewState.copy(
             feePercentage = feePercentage,
-            feeAmount = calculateFeePercentage(feePercentage)
+            feeAmount = feeAmount,
+            isDoneButtonEnabled = shouldEnableDoneButtonForAmount(feeAmount)
         )
     }
+
+    private fun shouldEnableDoneButtonForAmount(amount: BigDecimal) = amount != BigDecimal.ZERO
 
     @Parcelize
     data class ViewState(
         val feeAmount: BigDecimal = BigDecimal.ZERO,
         val feePercentage: BigDecimal = BigDecimal.ZERO,
         val isPercentageSelected: Boolean = false,
+        val isDoneButtonEnabled: Boolean = false,
         val shouldDisplayRemoveFeeButton: Boolean = false,
         val shouldDisplayPercentageSwitch: Boolean = false
     ) : Parcelable

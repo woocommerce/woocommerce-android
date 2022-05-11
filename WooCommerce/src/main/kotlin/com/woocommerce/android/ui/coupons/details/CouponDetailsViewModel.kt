@@ -77,6 +77,7 @@ class CouponDetailsViewModel @Inject constructor(
                 CouponSummaryUi(
                     code = coupon.code,
                     isActive = coupon.dateExpires?.after(Date()) ?: true,
+                    description = coupon.description,
                     summary = couponUtils.generateSummary(coupon, currencyCode),
                     isForIndividualUse = coupon.isForIndividualUse ?: false,
                     isShippingFree = coupon.isShippingFree ?: false,
@@ -199,6 +200,7 @@ class CouponDetailsViewModel @Inject constructor(
     data class CouponSummaryUi(
         val code: String?,
         val isActive: Boolean,
+        val description: String?,
         val summary: String,
         val isForIndividualUse: Boolean,
         val isShippingFree: Boolean,

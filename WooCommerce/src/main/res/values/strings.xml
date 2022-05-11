@@ -1001,7 +1001,7 @@
     <string name="card_reader_payment_send_receipt">Send receipt</string>
     <string name="card_reader_payment_save_for_later">Save receipt and continue</string>
 
-    <string name="card_reader_payment_description">Online payment for order %s for %s</string>
+    <string name="card_reader_payment_description">In-Person Payment for Order %s for %s</string>
     <string name="card_reader_payment_receipt_email_subject">Your receipt from %s</string>
     <string name="card_reader_payment_receipt_email_content">Thank you for your purchase! Click the link below for your payment receipt.\n\n%s</string>
     <string name="card_reader_payment_email_client_not_found">Can\'t detect your email client app</string>
