@@ -181,7 +181,7 @@ dependencies {
     }
 
     implementation 'com.google.firebase:firebase-messaging-ktx:23.0.3'
-    implementation 'com.google.android.gms:play-services-auth:20.1.0'
+    implementation 'com.google.android.gms:play-services-auth:20.2.0'
 
     // Support library
     implementation "androidx.legacy:legacy-support-v4:1.0.0"
@@ -265,7 +265,7 @@ dependencies {
         // See https://github.com/wordpress-mobile/WordPress-FluxC-Android/issues/919
         exclude group: 'com.squareup.okhttp3'
     }
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.8.1'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.9.1'
 
     // Dependencies for local unit tests
     testImplementation "junit:junit:$jUnitVersion"
@@ -318,7 +318,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
 
-    testImplementation 'app.cash.turbine:turbine:0.7.0'
+    testImplementation 'app.cash.turbine:turbine:0.8.0'
 
     // Use caution when updating this, as commons-text 1.9 caused the reviews tab to crash on API 21
     implementation "org.apache.commons:commons-text:1.8"

@@ -62,6 +62,7 @@ class OrderCreationProductsAdapter(
         }
 
         fun bind(productModel: ProductUIModel) {
+            binding.root.isEnabled = productModel.item.isSynced()
             binding.productName.text = productModel.item.name
             binding.stepperView.isMinusButtonEnabled = isQuantityButtonsEnabled
             binding.stepperView.isPlusButtonEnabled = isQuantityButtonsEnabled

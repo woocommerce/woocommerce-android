@@ -53,6 +53,8 @@ internal class CardReaderManagerImpl(
 
     override val softwareUpdateAvailability = connectionManager.softwareUpdateAvailability
 
+    override val batteryStatus = connectionManager.batteryStatus
+
     override val displayBluetoothCardReaderMessages = connectionManager.displayBluetoothCardReaderMessages
 
     override fun initialize() {

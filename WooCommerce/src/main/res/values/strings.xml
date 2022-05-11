@@ -1001,7 +1001,7 @@
     <string name="card_reader_payment_send_receipt">Send receipt</string>
     <string name="card_reader_payment_save_for_later">Save receipt and continue</string>
 
-    <string name="card_reader_payment_description">Online payment for order %s for %s</string>
+    <string name="card_reader_payment_description">In-Person Payment for Order %s for %s</string>
     <string name="card_reader_payment_receipt_email_subject">Your receipt from %s</string>
     <string name="card_reader_payment_receipt_email_content">Thank you for your purchase! Click the link below for your payment receipt.\n\n%s</string>
     <string name="card_reader_payment_email_client_not_found">Can\'t detect your email client app</string>
@@ -1953,6 +1953,16 @@
     <string name="coupon_details_allows_free_shipping">Allows free shipping</string>
     <string name="coupon_details_excludes_sale_items">Excludes sale items</string>
     <string name="coupon_details_restricted_emails">Restricted to customers with emails: %1$s</string>
+    <string name="coupon_details_menu_edit">Edit Coupon</string>
+    <string name="coupon_edit_screen_title">Edit %1$s</string>
+    <string name="coupon_edit_details_section">Coupon Details</string>
+    <string name="coupon_edit_amount_hint">Amount (%1$s)</string>
+    <string name="coupon_edit_amount_percentage_helper">Set the percentage of the discount you want to offer.</string>
+    <string name="coupon_edit_amount_rate_helper">Set the amount of the discount you want to offer.</string>
+    <string name="coupon_edit_code_hint">Coupon Code</string>
+    <string name="coupon_edit_code_helper">Customers need to enter this code to use the coupon.</string>
+    <string name="coupon_edit_regenerate_coupon">Regenerate Coupon Code</string>
+    <string name="coupon_edit_save_button">Save</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>
@@ -2358,4 +2368,5 @@
     <string name="about_automattic_back_icon_description">Back icon</string>
     <string name="about_automattic_app_icon_description">App icon</string>
     <string name="error_generic">An error occurred</string>
+    <string name="coupon_edit_expiry_date">Coupon Expiry Date</string>
 </resources>

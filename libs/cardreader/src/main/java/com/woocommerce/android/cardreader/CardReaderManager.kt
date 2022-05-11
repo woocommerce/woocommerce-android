@@ -5,6 +5,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
 import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages
+import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus
@@ -24,6 +25,7 @@ interface CardReaderManager {
     val readerStatus: StateFlow<CardReaderStatus>
     val softwareUpdateStatus: Flow<SoftwareUpdateStatus>
     val softwareUpdateAvailability: Flow<SoftwareUpdateAvailability>
+    val batteryStatus: Flow<CardReaderBatteryStatus>
     val displayBluetoothCardReaderMessages: Flow<BluetoothCardReaderMessages>
 
     fun initialize()

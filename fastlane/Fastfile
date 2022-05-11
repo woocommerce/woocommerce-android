@@ -651,7 +651,7 @@ platform :android do
     gradle(
       task: "assemble",
       flavor: "Jalapeno",
-      build_type: "Release"
+      build_type: "Debug"
     )
 
     upload_path = upload_to_s3(

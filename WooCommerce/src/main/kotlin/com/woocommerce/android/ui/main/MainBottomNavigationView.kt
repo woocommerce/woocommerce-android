@@ -111,16 +111,20 @@ class MainBottomNavigationView @JvmOverloads constructor(
         assignNavigationListeners(true)
     }
 
-    fun showMoreMenuBadge(show: Boolean) {
-        moreMenuBadge.isVisible = show
+    fun showMoreMenuBadge(count: Int) {
+        showBadge(moreMenuBadge, count)
     }
 
     fun setOrderBadgeCount(count: Int) {
+        showBadge(ordersBadge, count)
+    }
+
+    private fun showBadge(badgeDrawable: BadgeDrawable, count: Int) {
         if (count > 0) {
-            ordersBadge.number = count
-            ordersBadge.isVisible = true
+            badgeDrawable.number = count
+            badgeDrawable.isVisible = true
         } else {
-            ordersBadge.isVisible = false
+            badgeDrawable.isVisible = false
         }
     }
 

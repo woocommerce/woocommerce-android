@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph_coupons"
+    app:startDestination="@id/couponListFragment">
+    <fragment
+        android:id="@+id/couponListFragment"
+        android:name="com.woocommerce.android.ui.coupons.CouponListFragment"
+        android:label="CouponListFragment">
+        <action
+            android:id="@+id/action_couponListFragment_to_couponDetailsFragment"
+            app:destination="@id/couponDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/couponDetailsFragment"
+        android:name="com.woocommerce.android.ui.coupons.details.CouponDetailsFragment"
+        android:label="CouponDetailsFragment">
+        <argument
+            android:name="couponId"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_couponDetailsFragment_to_editCouponFragment"
+            app:destination="@id/editCouponFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/editCouponFragment"
+        android:name="com.woocommerce.android.ui.coupons.edit.EditCouponFragment"
+        android:label="EditCouponFragment">
+        <argument
+            android:name="couponId"
+            app:argType="long" />
+    </fragment>
+</navigation>
