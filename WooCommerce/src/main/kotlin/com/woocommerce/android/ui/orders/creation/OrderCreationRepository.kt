@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.orders.creation
 
 import com.woocommerce.android.WooException
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
@@ -32,7 +34,8 @@ class OrderCreationRepository @Inject constructor(
     private val orderUpdateStore: OrderUpdateStore,
     private val orderMapper: OrderMapper,
     private val dispatchers: CoroutineDispatchers,
-    private val wooCommerceStore: WooCommerceStore
+    private val wooCommerceStore: WooCommerceStore,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) {
     suspend fun placeOrder(order: Order): Result<Order> {
         val status = withContext(dispatchers.io) {
@@ -102,9 +105,21 @@ class OrderCreationRepository @Inject constructor(
         }
 
         return when {
-            result.isError -> Result.failure(WooException(result.error))
+            result.isError -> {
+                trackOrderSyncFailed(result.error.type.name, result.error.message)
+                Result.failure(WooException(result.error))
+            }
             else -> Result.success(orderMapper.toAppModel(result.model!!))
         }
+    }
+
+    private fun trackOrderSyncFailed(errorType: String?, errorDescription: String?) {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.ORDER_SYNC_FAILED,
+            errorContext = this@OrderCreationRepository.javaClass.simpleName,
+            errorType = errorType,
+            errorDescription = errorDescription
+        )
     }
 
     suspend fun deleteDraftOrder(order: Order) {
