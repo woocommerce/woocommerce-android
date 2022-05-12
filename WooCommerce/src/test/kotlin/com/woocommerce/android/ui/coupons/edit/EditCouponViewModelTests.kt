@@ -21,6 +21,8 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
+import java.util.Date
+import java.util.concurrent.TimeUnit
 
 private const val COUPON_ID = 1L
 
@@ -136,5 +138,29 @@ class EditCouponViewModelTests : BaseUnitTest() {
         }.last()
 
         assertThat(state.couponDraft.code).isEqualTo(generatedCode)
+    }
+
+    @Test
+    fun `when expiry date is changed, then update the coupon draft`() = testBlocking {
+        val newDate = Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(1))
+        setup()
+
+        val state = viewModel.viewState.runAndCaptureValues {
+            viewModel.onExpiryDateChanged(newDate)
+        }.last()
+
+        assertThat(state.couponDraft.dateExpires).isEqualTo(newDate)
+    }
+
+    @Test
+    fun `when expiry date is removed, then update the coupon draft`() = testBlocking {
+        storedCoupon = storedCoupon.copy(dateExpires = Date())
+        setup()
+
+        val state = viewModel.viewState.runAndCaptureValues {
+            viewModel.onExpiryDateChanged(null)
+        }.last()
+
+        assertThat(state.couponDraft.dateExpires).isNull()
     }
 }

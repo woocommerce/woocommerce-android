@@ -40,13 +40,16 @@ import java.util.Date
 import java.util.GregorianCalendar
 import android.widget.CalendarView as AndroidCalendarView
 
+private const val DEFAULT_MIN_YEAR = 1900
+private const val DEFAULT_MAX_YEAR = 2100
+
 @Composable
 fun DatePickerDialog(
     currentDate: Date?,
     onDateSelected: (Date) -> Unit,
     onDismissRequest: () -> Unit,
-    minDate: Date = GregorianCalendar(1900, 0, 1).time,
-    maxDate: Date = GregorianCalendar(2100, 0, 1).time,
+    minDate: Date = GregorianCalendar(DEFAULT_MIN_YEAR, 0, 1).time,
+    maxDate: Date = GregorianCalendar(DEFAULT_MAX_YEAR, 0, 1).time,
     dateFormat: DateFormat = SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM),
     dialogProperties: DialogProperties = DialogProperties()
 ) {
@@ -62,13 +65,14 @@ fun DatePickerDialog(
     )
 }
 
+@Suppress("LongMethod")
 @Composable
 fun DatePickerDialog(
     currentDate: Calendar?,
     onDateSelected: (Calendar) -> Unit,
     onDismissRequest: () -> Unit,
-    minDate: Calendar = GregorianCalendar(1900, 0, 1),
-    maxDate: Calendar = GregorianCalendar(2100, 0, 1),
+    minDate: Calendar = GregorianCalendar(DEFAULT_MIN_YEAR, 0, 1),
+    maxDate: Calendar = GregorianCalendar(DEFAULT_MAX_YEAR, 0, 1),
     dateFormat: DateFormat = SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM),
     dialogProperties: DialogProperties = DialogProperties()
 ) {
@@ -143,7 +147,6 @@ fun DatePickerDialog(
                         text = stringResource(id = android.R.string.ok),
                     )
                 }
-
             }
         }
     }
@@ -170,11 +173,12 @@ private fun CalendarView(
             view.date = currentDate.timeInMillis
 
             view.setOnDateChangeListener { _, year, month, dayOfMonth ->
-                onDateSelected(Calendar
-                    .getInstance()
-                    .apply {
-                        set(year, month, dayOfMonth)
-                    }
+                onDateSelected(
+                    Calendar
+                        .getInstance()
+                        .apply {
+                            set(year, month, dayOfMonth)
+                        }
                 )
             }
         }
@@ -215,7 +219,6 @@ private var Calendar.year
     get() = this.get(Calendar.YEAR)
     set(value) = set(Calendar.YEAR, value)
 
-
 @Preview
 @Composable
 fun DatePickerPreview() {
@@ -235,7 +238,8 @@ fun DatePickerPreview() {
                         date = it
                         showPicker = false
                     },
-                    onDismissRequest = { showPicker = false })
+                    onDismissRequest = { showPicker = false }
+                )
             }
 
             if (date != null) {

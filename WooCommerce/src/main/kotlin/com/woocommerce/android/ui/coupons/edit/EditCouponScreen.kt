@@ -191,6 +191,7 @@ private fun AmountField(amount: BigDecimal?, amountUnit: String, type: Type?, on
     )
 }
 
+@Suppress("LongMethod")
 @Composable
 private fun ExpiryField(dateExpires: Date?, onExpiryDateChanged: (Date?) -> Unit) {
     val dateFormat = remember { SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM) }
