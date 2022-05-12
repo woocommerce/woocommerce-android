@@ -88,7 +88,8 @@ class OrderCreationProductSelectionFragment :
             ?: ProductListAdapter(
                 clickListener = { id, _ -> productListViewModel.onProductSelected(id) },
                 loadMoreListener = this@OrderCreationProductSelectionFragment,
-                currencyFormatter = currencyFormatter
+                currencyFormatter = currencyFormatter,
+                showSku = true
             ).also { productsList.adapter = it }
         adapter.submitList(products)
     }

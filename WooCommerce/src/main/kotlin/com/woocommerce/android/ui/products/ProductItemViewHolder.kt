@@ -35,7 +35,8 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
     fun bind(
         product: Product,
         currencyFormatter: CurrencyFormatter? = null,
-        isActivated: Boolean = false
+        isActivated: Boolean = false,
+        showSku: Boolean = false
     ) {
         viewBinding.root.isActivated = isActivated
 
@@ -59,9 +60,9 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
         }
 
         with(viewBinding.productSku) {
-            if (product.sku.isNotEmpty()) {
+            if (showSku && product.sku.isNotEmpty()) {
                 visibility = View.VISIBLE
-                text = product.sku
+                text = context.getString(R.string.orderdetail_product_lineitem_sku_value, product.sku)
             } else {
                 visibility = View.GONE
             }
