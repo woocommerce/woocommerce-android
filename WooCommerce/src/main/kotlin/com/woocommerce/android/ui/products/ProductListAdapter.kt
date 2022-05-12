@@ -9,12 +9,14 @@ import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_PRODUCT_TAP
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ProductListItemBinding
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.util.CurrencyFormatter
 
 typealias OnProductClickListener = (remoteProductId: Long, sharedView: View?) -> Unit
 
 class ProductListAdapter(
     private inline val clickListener: OnProductClickListener? = null,
-    private val loadMoreListener: OnLoadMoreListener
+    private val loadMoreListener: OnLoadMoreListener,
+    private val currencyFormatter: CurrencyFormatter? = null
 ) : ListAdapter<Product, ProductItemViewHolder>(ProductItemDiffCallback) {
     // allow the selection library to track the selections of the user
     var tracker: SelectionTracker<Long>? = null
@@ -38,7 +40,7 @@ class ProductListAdapter(
     override fun onBindViewHolder(holder: ProductItemViewHolder, position: Int) {
         val product = getItem(position)
 
-        holder.bind(product, tracker?.isSelected(product.remoteId) ?: false)
+        holder.bind(product, currencyFormatter, isActivated = tracker?.isSelected(product.remoteId) ?: false)
 
         holder.itemView.setOnClickListener {
             AnalyticsTracker.track(PRODUCT_LIST_PRODUCT_TAPPED)
