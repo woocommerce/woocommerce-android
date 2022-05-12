@@ -205,18 +205,13 @@ class SitePickerViewModelTest : BaseUnitTest() {
             var sites: List<SitePickerViewModel.SiteUiModel>? = null
             viewModel.sites.observeForever { sites = it }
 
-            var view: NoStoreView? = null
-            viewModel.event.observeForever {
-                if (it is NoStoreView) view = it
-            }
-
-            assertThat(view).isEqualTo(NoStoreView)
             assertThat(sitePickerData?.isNoStoresViewVisible).isEqualTo(
                 expectedSitePickerViewState.isNoStoresViewVisible
             )
             assertThat(sitePickerData?.primaryBtnText).isEqualTo(expectedSitePickerViewState.primaryBtnText)
             assertThat(sitePickerData?.noStoresLabelText).isEqualTo(expectedSitePickerViewState.noStoresLabelText)
             assertThat(sitePickerData?.noStoresBtnText).isEqualTo(expectedSitePickerViewState.noStoresBtnText)
+            assertThat(sitePickerData?.currentSitePickerEventView).isEqualTo(NoStoreView)
             assertThat(sites).isNull()
         }
 
@@ -270,12 +265,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
                 )
             )
 
-            var view: AccountMismatchView? = null
-            viewModel.event.observeForever {
-                if (it is AccountMismatchView) view = it
-            }
-
-            assertThat(view).isEqualTo(AccountMismatchView)
             assertThat(sitePickerData?.isNoStoresViewVisible).isEqualTo(true)
             assertThat(sitePickerData?.isPrimaryBtnVisible).isEqualTo(true)
             assertThat(sitePickerData?.primaryBtnText).isEqualTo(
@@ -287,6 +276,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
             assertThat(sitePickerData?.noStoresBtnText).isEqualTo(
                 resourceProvider.getString(R.string.login_need_help_finding_email)
             )
+            assertThat(sitePickerData?.currentSitePickerEventView).isEqualTo(AccountMismatchView)
         }
 
     @Test
@@ -309,12 +299,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
                 )
             )
 
-            var view: WooNotFoundView? = null
-            viewModel.event.observeForever {
-                if (it is WooNotFoundView) view = it
-            }
-
-            assertThat(view).isEqualTo(WooNotFoundView)
             assertThat(sitePickerData?.isNoStoresViewVisible).isEqualTo(true)
             assertThat(sitePickerData?.isPrimaryBtnVisible).isEqualTo(true)
             assertThat(sitePickerData?.primaryBtnText).isEqualTo(
@@ -326,6 +310,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
             assertThat(sitePickerData?.noStoresBtnText).isEqualTo(
                 resourceProvider.getString(R.string.login_need_help_finding_email)
             )
+            assertThat(sitePickerData?.currentSitePickerEventView).isEqualTo(WooNotFoundView)
         }
 
     @Test
@@ -515,11 +500,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
         var sitePickerData: SitePickerViewModel.SitePickerViewState? = null
         viewModel.sitePickerViewStateData.observeForever { _, new -> sitePickerData = new }
 
-        var view: StoreListView? = null
-        viewModel.event.observeForever {
-            if (it is StoreListView) view = it
-        }
-
         viewModel.onViewConnectedStoresButtonClick()
 
         verify(analyticsTrackerWrapper, times(1)).track(
@@ -527,6 +507,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
         )
         assertThat(sitePickerData?.isNoStoresViewVisible).isFalse
         assertThat(sitePickerData?.primaryBtnText).isEqualTo(resourceProvider.getString(R.string.continue_button))
-        assertThat(view).isEqualTo(StoreListView)
+        assertThat(sitePickerData?.currentSitePickerEventView).isEqualTo(StoreListView)
     }
 }

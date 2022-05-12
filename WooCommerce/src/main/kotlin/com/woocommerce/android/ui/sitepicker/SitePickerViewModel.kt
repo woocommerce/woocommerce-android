@@ -69,9 +69,9 @@ class SitePickerViewModel @Inject constructor(
             userInfo = getUserInfo(),
             sitePickerLabelText = resourceProvider.getString(string.site_picker_label),
             primaryBtnText = resourceProvider.getString(string.continue_button),
-            secondaryBtnText = resourceProvider.getString(string.login_try_another_account)
+            secondaryBtnText = resourceProvider.getString(string.login_try_another_account),
+            currentSitePickerEventView = SitePickerView.StoreListView
         )
-        triggerEvent(SitePickerView.StoreListView)
     }
 
     private fun loadAndDisplaySites() {
@@ -201,9 +201,9 @@ class SitePickerViewModel @Inject constructor(
             isPrimaryBtnVisible = true,
             primaryBtnText = resourceProvider.getString(string.login_jetpack_view_instructions_alt),
             noStoresLabelText = resourceProvider.getString(string.login_no_stores),
-            noStoresBtnText = resourceProvider.getString(string.login_jetpack_what_is)
+            noStoresBtnText = resourceProvider.getString(string.login_jetpack_what_is),
+            currentSitePickerEventView = SitePickerView.NoStoreView
         )
-        triggerEvent(SitePickerView.NoStoreView)
     }
 
     /**
@@ -225,9 +225,9 @@ class SitePickerViewModel @Inject constructor(
             isPrimaryBtnVisible = sitePickerViewState.hasConnectedStores == true,
             primaryBtnText = resourceProvider.getString(string.login_view_connected_stores),
             noStoresLabelText = resourceProvider.getString(string.login_not_connected_to_account, url),
-            noStoresBtnText = resourceProvider.getString(string.login_need_help_finding_email)
+            noStoresBtnText = resourceProvider.getString(string.login_need_help_finding_email),
+            currentSitePickerEventView = SitePickerView.AccountMismatchView
         )
-        triggerEvent(SitePickerView.AccountMismatchView)
     }
 
     private fun loadWooNotFoundView(url: String) {
@@ -244,9 +244,9 @@ class SitePickerViewModel @Inject constructor(
             isPrimaryBtnVisible = sitePickerViewState.hasConnectedStores == true,
             primaryBtnText = resourceProvider.getString(string.login_view_connected_stores),
             noStoresLabelText = resourceProvider.getString(string.login_not_woo_store, url),
-            noStoresBtnText = resourceProvider.getString(string.login_refresh_app)
+            noStoresBtnText = resourceProvider.getString(string.login_refresh_app),
+            currentSitePickerEventView = SitePickerView.WooNotFoundView
         )
-        triggerEvent(SitePickerView.WooNotFoundView)
     }
 
     private fun getUserInfo() = repository.getUserAccount().let {
@@ -265,9 +265,9 @@ class SitePickerViewModel @Inject constructor(
         trackLoginEvent(clickEvent = UnifiedLoginTracker.Click.VIEW_CONNECTED_STORES)
         sitePickerViewState = sitePickerViewState.copy(
             isNoStoresViewVisible = false,
-            primaryBtnText = resourceProvider.getString(string.continue_button)
+            primaryBtnText = resourceProvider.getString(string.continue_button),
+            currentSitePickerEventView = SitePickerView.StoreListView
         )
-        triggerEvent(SitePickerView.StoreListView)
     }
 
     fun onNeedHelpFindingEmailButtonClick() {
@@ -402,7 +402,8 @@ class SitePickerViewModel @Inject constructor(
         val isToolbarVisible: Boolean = false,
         val isProgressDiaLogVisible: Boolean = false,
         val isPrimaryBtnVisible: Boolean = false,
-        val isSecondaryBtnVisible: Boolean = false
+        val isSecondaryBtnVisible: Boolean = false,
+        val currentSitePickerEventView: SitePickerView = SitePickerView.StoreListView
     ) : Parcelable
 
     @Parcelize
@@ -423,10 +424,7 @@ class SitePickerViewModel @Inject constructor(
         object NavigationToLearnMoreAboutJetpackEvent : SitePickerEvent()
     }
 
-    sealed class SitePickerView : MultiLiveEvent.Event() {
-        object StoreListView : SitePickerView()
-        object NoStoreView : SitePickerView()
-        object AccountMismatchView : SitePickerView()
-        object WooNotFoundView : SitePickerView()
+    enum class SitePickerView {
+        StoreListView, NoStoreView, AccountMismatchView, WooNotFoundView
     }
 }

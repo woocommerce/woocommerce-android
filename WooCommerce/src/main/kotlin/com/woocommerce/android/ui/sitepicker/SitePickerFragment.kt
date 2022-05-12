@@ -122,6 +122,14 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
             new.isProgressDiaLogVisible.takeIfNotEqualTo(old?.isProgressDiaLogVisible) {
                 showProgressDialog(it)
             }
+            new.currentSitePickerEventView.takeIfNotEqualTo(old?.currentSitePickerEventView) {
+                when (it) {
+                    StoreListView -> updateStoreListView()
+                    NoStoreView -> updateNoStoresView()
+                    AccountMismatchView -> updateAccountMismatchView()
+                    WooNotFoundView -> updateWooNotFoundView()
+                }
+            }
         }
 
         viewModel.sites.observe(viewLifecycleOwner) {
@@ -130,10 +138,6 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is StoreListView -> updateStoreListView()
-                is NoStoreView -> updateNoStoresView()
-                is AccountMismatchView -> updateAccountMismatchView()
-                is WooNotFoundView -> updateWooNotFoundView()
                 is NavigateToMainActivityEvent -> (activity as? MainActivity)?.handleSitePickerResult()
                 is ShowWooUpgradeDialogEvent -> showWooUpgradeDialog()
                 is NavigationToHelpFragmentEvent -> navigateToHelpScreen()
