@@ -117,8 +117,10 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
                 binding.switchChargeTaxes.isChecked = chargeTaxes
                 if (chargeTaxes) {
                     binding.listTaxes.isVisible = true
+                    binding.textTaxMessage.isVisible = true
                 } else {
                     binding.listTaxes.isVisible = false
+                    binding.textTaxMessage.isVisible = false
                 }
             }
             new.customerNote.takeIfNotEqualTo(old?.customerNote) { customerNote ->

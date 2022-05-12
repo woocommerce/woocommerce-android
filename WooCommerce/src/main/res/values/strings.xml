@@ -327,6 +327,7 @@
     <string name="simple_payments_charge_taxes">Charge taxes</string>
     <string name="simple_payments_take_payment_button">Take payment (%s)</string>
     <string name="simple_payments_tax_with_percent">Tax (%s%%)</string>
+    <string name="simple_payments_tax_message">Taxes are automatically calculated based on your store address</string>
     <string name="simple_payments_choose_method">Choose your payment method</string>
     <string name="simple_payments_cash_dlg_title">Mark as paid?</string>
     <string name="simple_payments_cash_dlg_message">This will create your order and mark it as paid if you received payment outside of WooCommerce</string>
