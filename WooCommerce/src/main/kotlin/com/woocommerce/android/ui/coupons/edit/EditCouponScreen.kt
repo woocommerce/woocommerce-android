@@ -17,7 +17,11 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
@@ -35,6 +39,7 @@ import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.Coupon.Type
 import com.woocommerce.android.model.Coupon.Type.Percent
 import com.woocommerce.android.ui.compose.component.BigDecimalTextFieldValueMapper
+import com.woocommerce.android.ui.compose.component.DatePickerDialog
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedSpinner
@@ -43,6 +48,8 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import java.math.BigDecimal
+import java.text.SimpleDateFormat
+import java.util.Date
 
 @Composable
 fun EditCouponScreen(viewModel: EditCouponViewModel) {
@@ -51,7 +58,8 @@ fun EditCouponScreen(viewModel: EditCouponViewModel) {
             viewState = it,
             onAmountChanged = viewModel::onAmountChanged,
             onCouponCodeChanged = viewModel::onCouponCodeChanged,
-            onRegenerateCodeClick = viewModel::onRegenerateCodeClick
+            onRegenerateCodeClick = viewModel::onRegenerateCodeClick,
+            onExpiryDateChanged = viewModel::onExpiryDateChanged
         )
     }
 }
@@ -61,7 +69,8 @@ fun EditCouponScreen(
     viewState: EditCouponViewModel.ViewState,
     onAmountChanged: (BigDecimal?) -> Unit = {},
     onCouponCodeChanged: (String) -> Unit = {},
-    onRegenerateCodeClick: () -> Unit = {}
+    onRegenerateCodeClick: () -> Unit = {},
+    onExpiryDateChanged: (Date?) -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -75,7 +84,13 @@ fun EditCouponScreen(
             )
             .fillMaxSize()
     ) {
-        DetailsSection(viewState, onAmountChanged, onCouponCodeChanged, onRegenerateCodeClick)
+        DetailsSection(
+            viewState = viewState,
+            onAmountChanged = onAmountChanged,
+            onCouponCodeChanged = onCouponCodeChanged,
+            onRegenerateCodeClick = onRegenerateCodeClick,
+            onExpiryDateChanged = onExpiryDateChanged
+        )
         ConditionsSection(viewState)
         UsageRestrictionsSection(viewState)
         WCColoredButton(
@@ -93,7 +108,8 @@ private fun DetailsSection(
     viewState: EditCouponViewModel.ViewState,
     onAmountChanged: (BigDecimal?) -> Unit,
     onCouponCodeChanged: (String) -> Unit,
-    onRegenerateCodeClick: () -> Unit
+    onRegenerateCodeClick: () -> Unit,
+    onExpiryDateChanged: (Date?) -> Unit
 ) {
     val couponDraft = viewState.couponDraft
     val focusManager = LocalFocusManager.current
@@ -139,12 +155,7 @@ private fun DetailsSection(
             modifier = Modifier.fillMaxWidth()
         )
 
-        WCOutlinedSpinner(
-            onClick = { /*TODO*/ },
-            value = couponDraft.dateExpires?.toString() ?: "None",
-            label = stringResource(id = R.string.coupon_edit_expiry_date),
-            modifier = Modifier.fillMaxWidth()
-        )
+        ExpiryField(viewState.couponDraft.dateExpires, onExpiryDateChanged)
     }
 }
 
@@ -176,6 +187,32 @@ private fun AmountField(amount: BigDecimal?, amountUnit: String, type: Type?, on
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         modifier = Modifier.fillMaxWidth()
     )
+}
+
+@Composable
+private fun ExpiryField(dateExpires: Date?, onExpiryDateChanged: (Date?) -> Unit) {
+    val dateFormat = remember { SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM) }
+    var showDatePicker by remember { mutableStateOf(false) }
+
+    WCOutlinedSpinner(
+        onClick = { showDatePicker = true },
+        value = dateExpires?.let { dateFormat.format(it) } ?: "None",
+        label = stringResource(id = R.string.coupon_edit_expiry_date),
+        modifier = Modifier.fillMaxWidth()
+    )
+
+    if (showDatePicker) {
+        DatePickerDialog(
+            currentDate = dateExpires,
+            minDate = Date(),
+            onDateSelected = {
+                showDatePicker = false
+                onExpiryDateChanged(it)
+            },
+            onDismissRequest = { showDatePicker = false },
+            dateFormat = dateFormat
+        )
+    }
 }
 
 @Composable

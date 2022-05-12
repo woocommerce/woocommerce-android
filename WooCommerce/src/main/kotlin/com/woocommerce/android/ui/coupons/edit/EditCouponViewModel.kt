@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
+import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -77,6 +78,12 @@ class EditCouponViewModel @Inject constructor(
         val newCode = couponUtils.generateRandomCode()
         couponDraft.update {
             it?.copy(code = newCode)
+        }
+    }
+
+    fun onExpiryDateChanged(expiryDate: Date?) {
+        couponDraft.update {
+            it?.copy(dateExpires = expiryDate)
         }
     }
 
