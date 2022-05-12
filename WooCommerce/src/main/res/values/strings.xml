@@ -368,7 +368,6 @@
     <string name="order_creation_payment">Payment</string>
     <string name="order_creation_payment_products_total">Products Total</string>
     <string name="order_creation_payment_order_total">Order Total</string>
-    <string name="order_creation_payment_tax_hint">Taxes will be automatically calculated based on your store settings.</string>
     <string name="order_creation_payment_fee">Fees</string>
     <string name="order_creation_loading_dialog_title">Creating your order</string>
     <string name="order_creation_loading_dialog_message">Please wait…</string>
