@@ -58,6 +58,15 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
             }
         }
 
+        with(viewBinding.productSku) {
+            if (product.sku.isNotEmpty()) {
+                visibility = View.VISIBLE
+                text = product.sku
+            } else {
+                visibility = View.GONE
+            }
+        }
+
         val firstImage = product.firstImageUrl
         val size: Int
         when {
@@ -159,11 +168,11 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
         }
 
         val stockStatus = if (statusHtml != null) "$statusHtml $bullet $stock" else stock
-        if (product.price != null && currencyFormatter != null) {
+        return if (product.price != null && currencyFormatter != null) {
             val fmtPrice = currencyFormatter.formatCurrency(product.price)
-            return "$stockStatus $bullet $fmtPrice"
+            "$stockStatus $bullet $fmtPrice"
         } else {
-            return stockStatus
+            stockStatus
         }
     }
 
