@@ -139,7 +139,19 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
             }
         }
 
-        val stock = when (product.stockStatus) {
+        val stock = getStockText(product)
+        val stockAndStatus = if (statusHtml != null) "$statusHtml $bullet $stock" else stock
+
+        return if (product.price != null && currencyFormatter != null) {
+            val fmtPrice = currencyFormatter.formatCurrency(product.price)
+            "$stockAndStatus $bullet $fmtPrice"
+        } else {
+            stockAndStatus
+        }
+    }
+
+    private fun getStockText(product: Product): String {
+        return when (product.stockStatus) {
             InStock -> {
                 if (product.productType == VARIABLE) {
                     if (product.numVariations > 0) {
@@ -170,14 +182,6 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
             else -> {
                 product.stockStatus.value
             }
-        }
-
-        val stockStatus = if (statusHtml != null) "$statusHtml $bullet $stock" else stock
-        return if (product.price != null && currencyFormatter != null) {
-            val fmtPrice = currencyFormatter.formatCurrency(product.price)
-            "$stockStatus $bullet $fmtPrice"
-        } else {
-            stockStatus
         }
     }
 

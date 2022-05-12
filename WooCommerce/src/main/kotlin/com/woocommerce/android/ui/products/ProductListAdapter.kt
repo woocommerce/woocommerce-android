@@ -41,7 +41,8 @@ class ProductListAdapter(
     override fun onBindViewHolder(holder: ProductItemViewHolder, position: Int) {
         val product = getItem(position)
 
-        holder.bind(product,
+        holder.bind(
+            product,
             currencyFormatter,
             isActivated = tracker?.isSelected(product.remoteId) ?: false,
             showSku = showSku
