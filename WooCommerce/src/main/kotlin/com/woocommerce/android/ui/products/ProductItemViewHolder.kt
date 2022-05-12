@@ -68,6 +68,18 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
             }
         }
 
+        showProductImage(product, viewBinding)
+
+        ViewCompat.setTransitionName(
+            viewBinding.root,
+            String.format(
+                context.getString(R.string.order_card_transition_name),
+                product.remoteId
+            )
+        )
+    }
+
+    private fun showProductImage(product: Product, viewBinding: ProductListItemBinding) {
         val firstImage = product.firstImageUrl
         val size: Int
         when {
@@ -96,14 +108,6 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
             height = size
             width = size
         }
-
-        ViewCompat.setTransitionName(
-            viewBinding.root,
-            String.format(
-                context.getString(R.string.order_card_transition_name),
-                product.remoteId
-            )
-        )
     }
 
     fun setOnDeleteClickListener(
