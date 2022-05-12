@@ -43,8 +43,6 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
 
     private val viewModel: SitePickerViewModel by viewModels()
 
-    private val sitesAdapter by lazy { SitePickerAdapter(viewModel::onSiteSelected) }
-
     private var skeletonView = SkeletonView()
     private var progressDialog: CustomProgressDialog? = null
 
@@ -66,7 +64,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         binding.buttonHelp.setOnClickListener { viewModel.onHelpButtonClick() }
         binding.sitesRecycler.apply {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            adapter = sitesAdapter
+            adapter = SitePickerAdapter(viewModel::onSiteSelected)
         }
         binding.loginEpilogueButtonBar.buttonSecondary.setOnClickListener {
             viewModel.onTryAnotherAccountButtonClick()
@@ -127,7 +125,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         }
 
         viewModel.sites.observe(viewLifecycleOwner) {
-            sitesAdapter.sites = it
+            (binding.sitesRecycler.adapter as? SitePickerAdapter)?.submitList(it)
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
