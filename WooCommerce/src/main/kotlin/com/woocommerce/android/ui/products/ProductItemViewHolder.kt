@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.products.ProductStockStatus.InStock
 import com.woocommerce.android.ui.products.ProductStockStatus.OnBackorder
 import com.woocommerce.android.ui.products.ProductStockStatus.OutOfStock
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.util.HtmlUtils
 import org.wordpress.android.util.PhotonUtils
@@ -33,6 +34,7 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
 
     fun bind(
         product: Product,
+        currencyFormatter: CurrencyFormatter? = null,
         isActivated: Boolean = false
     ) {
         viewBinding.root.isActivated = isActivated
@@ -43,12 +45,12 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
             HtmlUtils.fastStripHtml(product.name)
         }
 
-        val stockAndStatus = getProductStockStatusText(context, product)
+        val stockStatusPrice = getProductStockStatusPriceText(context, product, currencyFormatter)
         with(viewBinding.productStockAndStatus) {
-            if (stockAndStatus != null) {
+            if (stockStatusPrice.isNotEmpty()) {
                 visibility = View.VISIBLE
                 text = HtmlCompat.fromHtml(
-                    stockAndStatus,
+                    stockStatusPrice,
                     HtmlCompat.FROM_HTML_MODE_LEGACY
                 )
             } else {
@@ -104,10 +106,11 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
         }
     }
 
-    private fun getProductStockStatusText(
+    private fun getProductStockStatusPriceText(
         context: Context,
-        product: Product
-    ): String? {
+        product: Product,
+        currencyFormatter: CurrencyFormatter?
+    ): String {
         val statusHtml = product.status?.let {
             when {
                 it == ProductStatus.PENDING -> {
@@ -155,7 +158,13 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
             }
         }
 
-        return if (statusHtml != null) "$statusHtml $bullet $stock" else stock
+        val stockStatus = if (statusHtml != null) "$statusHtml $bullet $stock" else stock
+        if (product.price != null && currencyFormatter != null) {
+            val fmtPrice = currencyFormatter.formatCurrency(product.price)
+            return "$stockStatus $bullet $fmtPrice"
+        } else {
+            return stockStatus
+        }
     }
 
     /**
