@@ -163,7 +163,7 @@
             app:destination="@id/inboxFragment" />
         <action
             android:id="@+id/action_moreMenu_to_couponListFragment"
-            app:destination="@id/couponListFragment" />
+            app:destination="@id/nav_graph_coupons" />
     </fragment>
     <fragment
         android:id="@+id/feedbackSurveyFragment"
@@ -358,22 +358,6 @@
         android:name="com.woocommerce.android.ui.inbox.InboxFragment"
         android:label="InboxFragment"
         tools:layout="@layout/fragment_inbox" />
-    <fragment
-        android:id="@+id/couponListFragment"
-        android:name="com.woocommerce.android.ui.coupons.CouponListFragment"
-        android:label="CouponListFragment">
-        <action
-            android:id="@+id/action_couponListFragment_to_couponDetailsFragment"
-            app:destination="@id/couponDetailsFragment"/>
-    </fragment>
-    <fragment
-        android:id="@+id/couponDetailsFragment"
-        android:name="com.woocommerce.android.ui.coupons.details.CouponDetailsFragment"
-        android:label="CouponDetailsFragment" >
-        <argument
-            android:name="couponId"
-            app:argType="long" />
-    </fragment>
     <fragment
         android:id="@+id/sitePickerFragment"
         android:name="com.woocommerce.android.ui.sitepicker.SitePickerFragment"
