@@ -21,6 +21,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.woocommerce.android.R
 
@@ -95,4 +96,28 @@ fun ManualsList(
             )
         }
     }
+}
+
+@Preview
+@Composable
+fun Preview() {
+    ManualsList(
+        list = listOf(
+            CardReaderManualsViewModel.ManualItem(
+                icon = R.drawable.ic_chipper_reader,
+                label = R.string.card_reader_bbpos_manual_card_reader,
+                onManualClicked = { }
+            ),
+            CardReaderManualsViewModel.ManualItem(
+                icon = R.drawable.ic_m2_reader,
+                label = R.string.card_reader_m2_manual_card_reader,
+                onManualClicked = { }
+            ),
+            CardReaderManualsViewModel.ManualItem(
+                icon = R.drawable.ic_wisepad3_reader,
+                label = R.string.card_reader_wisepad_3_manual_card_reader,
+                onManualClicked = { }
+            )
+        )
+    )
 }
