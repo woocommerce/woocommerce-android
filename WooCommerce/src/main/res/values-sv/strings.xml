@@ -1,17 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-04-08 11:54:03+0000
+Translation-Revision-Date: 2022-04-26 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
-    <string name="coupon_summary_performance_amount_heading">Belopp</string>
-    <string name="coupon_summary_performance_discounted_order_heading">Rabatterade beställningar</string>
-    <string name="coupon_summary_performance_heading">Prestanda</string>
-    <string name="coupon_summary_maximum_spend">Maximalt beställningsbelopp på %s</string>
-    <string name="coupon_summary_minimum_spend">Minsta beställningsbelopp på %s</string>
-    <string name="coupon_summary_heading">Rabattkodssammanfattning</string>
+    <string name="coupons_list_search_hint">Sök rabattkoder</string>
+    <string name="coupon_details_share_formatting_failure">Det gick inte att generera meddelandet för delning av rabattkoden</string>
+    <string name="coupon_details_share_coupon_error">Det gick inte att dela rabattkoden.</string>
+    <string name="coupon_details_share_coupon_some">Tillämpa %1$s rabatt på utvalda produkter med kampanjkoden %2$s</string>
+    <string name="coupon_details_share_coupon_all">Tillämpa %1$s rabatt på alla produkter med kampanjkoden %2$s</string>
+    <string name="coupon_details_copy_error">Det gick inte att kopiera rabattkoden till urklipp.</string>
+    <string name="coupon_details_copy_success">Rabattkod kopierad till urklipp.</string>
+    <string name="coupon_details_copy_clipboard_label">Rabattkod</string>
+    <string name="coupon_beta_features_subheading">Testa att hantera rabattkoder i appen</string>
+    <string name="coupon_beta_features_heading">Hantering av rabattkoder</string>
+    <string name="coupon_summary_loading_failure">Det gick inte att ladda rabattkodssammanfattningen</string>
+    <string name="coupon_details_expiration_date">Löper ut %1$s</string>
+    <string name="coupon_summary_template">%1$s rabatt på %2$s</string>
+    <string name="coupon_type_custom">Anpassad rabatt (%1$s)</string>
+    <string name="coupon_type_fixed_product">Fast produktrabatt</string>
+    <string name="coupon_type_fixed_cart">Fast varukorgsrabatt</string>
+    <string name="coupon_type_percent">Procentuell rabatt</string>
+    <string name="coupon_details_performance_loading_failure">Det gick inte att ladda rabattkodsprestanda</string>
+    <string name="coupon_details_menu_share">Dela rabattkod</string>
+    <string name="coupon_details_menu_copy">Kopiera rabattkod</string>
+    <string name="inbox_note_survey_actioned">Tack för din feedback!</string>
+    <string name="beta_features_coupons">Hantering av rabattkoder</string>
+    <string name="card_reader_connect_permission_rationale_hint">Kortläsarbetalningar kräver exakt platsbehörighet</string>
+    <string name="card_reader_connect_permission_rationale_header">Åtkomst till plats krävs</string>
+    <string name="simple_payments_share_payment_dialog_title">Kassa – %s</string>
+    <string name="simple_payments_share_payment_link">Dela betalningslänk</string>
+    <string name="amount">Belopp</string>
+    <string name="coupon_details_performance_amount_heading">Belopp</string>
+    <string name="coupon_details_performance_discounted_order_heading">Rabatterade beställningar</string>
+    <string name="coupon_details_performance_heading">Prestanda</string>
+    <string name="coupon_details_maximum_spend">Maximalt beställningsbelopp på %s</string>
+    <string name="coupon_details_minimum_spend">Minsta beställningsbelopp på %s</string>
+    <string name="coupon_details_heading">Rabattkodssammanfattning</string>
     <string name="coupon_list_view_coupon">Visa rabattkodssammanfattning</string>
     <string name="coupon_list_wip_message_enabled">Vi har jobbat på att göra det möjligt att visa och redigera rabattkoder från din enhet.</string>
     <string name="coupon_list_wip_title">Visa och redigera rabattkoder</string>
@@ -19,7 +46,6 @@ Language: sv_SE
     <string name="coupon_list_item_label_included_and_excluded">%1s exkl. %2s</string>
     <string name="coupon_list_item_label_products_and_categories">%1s och %2s</string>
     <string name="coupon_list_item_label_everything">allt</string>
-    <string name="coupon_list_item_label_off">rabatt</string>
     <string name="coupon_list_item_label_expired">Har löpt ut</string>
     <string name="coupon_list_item_label_active">Aktiva</string>
     <string name="coupons">Rabattkoder</string>
@@ -59,14 +85,12 @@ Language: sv_SE
     <string name="card_reader_payment_reader_receipt_sent">Ett kvitto har skickats till &lt;strong&gt;%s&lt;/strong&gt;</string>
     <string name="order_creation_fee_percentage_toggle_text">Procentuell avgift</string>
     <string name="order_creation_fee_percentage_hint">Procent (%)</string>
-    <string name="order_creation_fee_amount_hint">Belopp ($)</string>
     <string name="order_creation_add_fee_removal_hint">Ta bort avgift från beställning</string>
     <string name="order_creation_remove_shipping">Ta bort frakt från beställning</string>
     <string name="order_creation_edit_shipping">Frakt</string>
     <string name="order_creation_add_shipping">Lägg till frakt</string>
     <string name="order_creation_shipping_title_add">Lägg till frakt</string>
     <string name="order_creation_shipping_name">Namn</string>
-    <string name="order_creation_shipping_amount">Belopp</string>
     <string name="order_creation_payment_fee">Avgifter</string>
     <string name="order_creation_customer_details">Kunddetaljer</string>
     <string name="order_creation_add_fee">Lägg till avgift</string>

@@ -7,10 +7,10 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
-import com.woocommerce.android.databinding.FragmentInboxBinding
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -21,10 +21,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class InboxFragment : BaseFragment(R.layout.fragment_inbox) {
-    private var _binding: FragmentInboxBinding? = null
-    private val binding get() = _binding!!
-
+class InboxFragment : BaseFragment() {
     private val viewModel: InboxViewModel by viewModels()
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
@@ -36,30 +33,21 @@ class InboxFragment : BaseFragment(R.layout.fragment_inbox) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentInboxBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
-
-        val view = binding.root
-        binding.inboxComposeView.apply {
+        return ComposeView(requireContext()).apply {
             // Dispose of the Composition when the view's LifecycleOwner is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    Inbox(viewModel = viewModel)
+                    InboxScreen(viewModel = viewModel)
                 }
             }
         }
-        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

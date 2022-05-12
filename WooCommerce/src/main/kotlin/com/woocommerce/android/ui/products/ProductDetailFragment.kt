@@ -307,16 +307,6 @@ class ProductDetailFragment :
             binding.imageGallery.showProductImages(product.images, this)
         }
 
-        // show status badge for unpublished products
-        product.status?.let { status ->
-            if (status != ProductStatus.PUBLISH && viewModel.isAddFlowEntryPoint.not()) {
-                binding.frameStatusBadge.show()
-                binding.textStatusBadge.text = status.toLocalizedString(requireActivity())
-            } else {
-                binding.frameStatusBadge.hide()
-            }
-        }
-
         binding.productDetailAddMoreButton.setOnClickListener {
             // TODO: add tracking events here
             viewModel.onEditProductCardClicked(

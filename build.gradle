@@ -82,7 +82,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = 'trunk-1a2596f838651b813fa10864fc1604e520819167'
+    fluxCVersion = 'trunk-dd3e6b438d25ed8bbb95959d3edad971caa051e6'
     glideVersion = '4.12.0'
     testRunnerVersion = '1.0.1'
     espressoVersion = '3.4.0'
@@ -113,7 +113,7 @@ ext {
     composeVersion = "1.1.1"
     composeAccompanistVersion = "0.23.1"
     lifecycleViewmodelComposeVersion = "2.4.1"
-    composeThemeAdapterVersion = "1.1.6"
+    composeThemeAdapterVersion = "1.1.8"
 }
 
 // Onboarding and dev env setup tasks

@@ -1,17 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-04-08 09:54:03+0000
+Translation-Revision-Date: 2022-04-26 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
-    <string name="coupon_summary_performance_amount_heading">Betrag</string>
-    <string name="coupon_summary_performance_discounted_order_heading">Rabattierte Bestellungen</string>
-    <string name="coupon_summary_performance_heading">Performance</string>
-    <string name="coupon_summary_maximum_spend">Höchstbestellwert: %s</string>
-    <string name="coupon_summary_minimum_spend">Mindestbestellwert: %s</string>
-    <string name="coupon_summary_heading">Gutscheinübersicht</string>
+    <string name="coupons_list_search_hint">Gutschein suchen</string>
+    <string name="coupon_details_share_formatting_failure">Nachricht zum Teilen des Gutscheincodes kann nicht erstellt werden</string>
+    <string name="coupon_details_share_coupon_error">Fehler beim Teilen des Gutscheincodes.</string>
+    <string name="coupon_details_share_coupon_some">Wende mit dem Gutscheincode %2$s einen Rabatt von %1$s auf ausgewählte Produkte an</string>
+    <string name="coupon_details_share_coupon_all">Wende mit dem Gutscheincode %2$s einen Rabatt von %1$s auf alle Produkte an</string>
+    <string name="coupon_details_copy_error">Fehler beim Kopieren des Gutscheincodes in die Zwischenablage.</string>
+    <string name="coupon_details_copy_success">Gutscheincode wurde in die Zwischenablage kopiert.</string>
+    <string name="coupon_details_copy_clipboard_label">Gutscheincode</string>
+    <string name="coupon_beta_features_subheading">Teste das Gutscheinmanagement in der App</string>
+    <string name="coupon_beta_features_heading">Gutscheinmanagement</string>
+    <string name="coupon_summary_loading_failure">Gutscheinübersicht konnte nicht geladen werden</string>
+    <string name="coupon_details_expiration_date">Läuft am %1$s ab</string>
+    <string name="coupon_summary_template">%1$s Rabatt auf %2$s</string>
+    <string name="coupon_type_custom">Individueller Rabatt (%1$s)</string>
+    <string name="coupon_type_fixed_product">Fester Rabatt auf Produkt</string>
+    <string name="coupon_type_fixed_cart">Fester Warenkorb-Rabatt</string>
+    <string name="coupon_type_percent">Prozentualer Rabatt</string>
+    <string name="coupon_details_performance_loading_failure">Gutschein-Performance konnte nicht geladen werden</string>
+    <string name="coupon_details_menu_share">Gutschein teilen</string>
+    <string name="coupon_details_menu_copy">Gutscheincode kopieren</string>
+    <string name="inbox_note_survey_actioned">Vielen Dank für dein Feedback!</string>
+    <string name="beta_features_coupons">Gutscheinmanagement</string>
+    <string name="card_reader_connect_permission_rationale_hint">Für Zahlungen mit Kartenleser sind genaue Standortberechtigungen erforderlich</string>
+    <string name="card_reader_connect_permission_rationale_header">Standortzugriff erforderlich</string>
+    <string name="simple_payments_share_payment_dialog_title">Bezahlen – %s</string>
+    <string name="simple_payments_share_payment_link">Zahlungslink teilen</string>
+    <string name="amount">Betrag</string>
+    <string name="coupon_details_performance_amount_heading">Betrag</string>
+    <string name="coupon_details_performance_discounted_order_heading">Rabattierte Bestellungen</string>
+    <string name="coupon_details_performance_heading">Performance</string>
+    <string name="coupon_details_maximum_spend">Maximalbestellwert: %s</string>
+    <string name="coupon_details_minimum_spend">Mindestbestellwert: %s</string>
+    <string name="coupon_details_heading">Gutscheinübersicht</string>
     <string name="coupon_list_view_coupon">Gutscheinübersicht anzeigen</string>
     <string name="coupon_list_wip_message_enabled">Wir haben daran gearbeitet, das Anzeigen und Bearbeiten von Gutscheinen von deinem Gerät aus zu ermöglichen!</string>
     <string name="coupon_list_wip_title">Gutscheine anzeigen und bearbeiten</string>
@@ -19,7 +46,6 @@ Language: de
     <string name="coupon_list_item_label_included_and_excluded">%1s außer %2s</string>
     <string name="coupon_list_item_label_products_and_categories">%1s und %2s</string>
     <string name="coupon_list_item_label_everything">alles</string>
-    <string name="coupon_list_item_label_off">off</string>
     <string name="coupon_list_item_label_expired">Abgelaufen</string>
     <string name="coupon_list_item_label_active">Aktiv</string>
     <string name="coupons">Gutscheine</string>
@@ -59,14 +85,12 @@ Language: de
     <string name="card_reader_payment_reader_receipt_sent">Es wurde ein Beleg an &lt;strong&gt;%s&lt;/strong&gt; gesendet</string>
     <string name="order_creation_fee_percentage_toggle_text">Prozentuale Gebühr</string>
     <string name="order_creation_fee_percentage_hint">Prozentsatz (%)</string>
-    <string name="order_creation_fee_amount_hint">Betrag ($)</string>
     <string name="order_creation_add_fee_removal_hint">Gebühr aus Bestellung entfernen</string>
     <string name="order_creation_remove_shipping">Versand aus Bestellung entfernen</string>
     <string name="order_creation_edit_shipping">Versand</string>
     <string name="order_creation_add_shipping">Versand hinzufügen</string>
     <string name="order_creation_shipping_title_add">Versand hinzufügen</string>
     <string name="order_creation_shipping_name">Name</string>
-    <string name="order_creation_shipping_amount">Betrag</string>
     <string name="order_creation_payment_fee">Gebühren</string>
     <string name="order_creation_customer_details">Kundendaten</string>
     <string name="order_creation_add_fee">Gebühr hinzufügen</string>

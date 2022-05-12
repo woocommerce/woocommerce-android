@@ -10,6 +10,7 @@ import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentEditCustomerOrderNoteBinding
+import com.woocommerce.android.extensions.showKeyboardWithDelay
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
 
@@ -29,6 +30,7 @@ class OrderCreationCustomerNoteFragment : BaseFragment(R.layout.fragment_edit_cu
         _binding = FragmentEditCustomerOrderNoteBinding.bind(view)
         if (savedInstanceState == null) {
             binding.customerOrderNoteEditor.setText(sharedViewModel.currentDraft.customerNote)
+            binding.customerOrderNoteEditor.showKeyboardWithDelay()
         }
         binding.customerOrderNoteEditor.doAfterTextChanged {
             if (::doneMenuItem.isInitialized) {

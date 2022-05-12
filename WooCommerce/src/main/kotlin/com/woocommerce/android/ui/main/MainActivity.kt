@@ -608,8 +608,8 @@ class MainActivity :
         binding.bottomNav.setOrderBadgeCount(0)
     }
 
-    private fun showMoreMenuBadge(show: Boolean) {
-        binding.bottomNav.showMoreMenuBadge(show)
+    private fun showMoreMenuBadge(count: Int) {
+        binding.bottomNav.showMoreMenuBadge(count)
     }
 
     override fun onNavItemSelected(navPos: BottomNavigationPosition) {
@@ -709,7 +709,7 @@ class MainActivity :
         }
 
         viewModel.unseenReviewsCount.observe(this) { count ->
-            showMoreMenuBadge(count > 0)
+            showMoreMenuBadge(count)
         }
     }
 

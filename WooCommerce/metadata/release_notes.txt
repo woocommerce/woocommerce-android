@@ -1,2 +1,3 @@
-Dates are crucial when you’re running a business! We fixed a glitch when setting a “sale date” on a product – sometimes, that date didn’t end up being what you selected. Community feedback for the win!
-- [***][internal] Introduces In-Person Payments in Canada. [https://github.com/woocommerce/woocommerce-android/pull/6137, https://github.com/woocommerce/woocommerce-android/pull/6138, https://github.com/woocommerce/woocommerce-android/pull/6156, https://github.com/woocommerce/woocommerce-android/pull/6157]
+We’ve been working hard on a new feature to help you manage your coupons. It’s a work in progress, but you can get an early look by turning the beta feature on in Settings under the More tab. We welcome your early feedback!
+
+We also fixed a few bugs with variable products with prices accidentally cleared when changing inventory levels.

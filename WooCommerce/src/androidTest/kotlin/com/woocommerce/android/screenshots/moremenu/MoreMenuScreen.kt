@@ -11,7 +11,7 @@ import com.woocommerce.android.screenshots.util.Screen
 
 class MoreMenuScreen : Screen(MORE_MENU_VIEW) {
     companion object {
-        const val MORE_MENU_VIEW = R.id.menu
+        const val MORE_MENU_VIEW = R.id.more_menu_compose_view
     }
 
     fun openReviewsListScreen(composeTestRule: ComposeTestRule): ReviewsListScreen {

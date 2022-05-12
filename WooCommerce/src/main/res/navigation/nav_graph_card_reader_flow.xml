@@ -39,8 +39,8 @@
         android:name="com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingFragment"
         android:label="CardReaderOnboardingFragment">
         <argument
-            android:name="cardReaderFlowParam"
-            app:argType="com.woocommerce.android.ui.cardreader.onboarding.CardReaderFlowParam"
+            android:name="cardReaderOnboardingParam"
+            app:argType="com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingParams"
             app:nullable="false" />
         <action
             android:id="@+id/action_cardReaderOnboardingFragment_to_cardReaderHubFragment"
@@ -68,6 +68,9 @@
         <action
             android:id="@+id/action_cardReaderHubFragment_to_cardReaderDetailFragment"
             app:destination="@id/cardReaderDetailFragment" />
+        <action
+            android:id="@+id/action_cardReaderHubFragment_to_cardReaderManualsFragment"
+            app:destination="@id/cardReaderManualsFragment" />
     </fragment>
     <fragment
         android:id="@+id/cardReaderDetailFragment"
@@ -169,4 +172,8 @@
             app:argType="com.woocommerce.android.ui.cardreader.onboarding.CardReaderFlowParam$PaymentOrRefund"
             app:nullable="false" />
     </dialog>
+    <fragment
+        android:id="@+id/cardReaderManualsFragment"
+        android:name="com.woocommerce.android.ui.cardreader.manuals.CardReaderManualsFragment"
+        android:label="CardReaderManualsFragment" />
 </navigation>

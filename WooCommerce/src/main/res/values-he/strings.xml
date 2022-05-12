@@ -1,24 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-04-07 15:54:03+0000
+Translation-Revision-Date: 2022-04-27 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
-    <string name="coupon_summary_performance_amount_heading">סכום</string>
-    <string name="coupon_summary_performance_discounted_order_heading">הזמנות מוזלות</string>
-    <string name="coupon_summary_performance_heading">ביצועים</string>
-    <string name="coupon_summary_maximum_spend">הוצאה מקסימלית בגובה %s</string>
-    <string name="coupon_summary_minimum_spend">הוצאה מינימלית בגובה %s</string>
-    <string name="coupon_summary_heading">סיכום קופון</string>
+    <string name="coupons_list_search_hint">לחפש קופונים</string>
+    <string name="coupon_details_share_formatting_failure">לא ניתן ליצור הודעה לשיתוף של קוד הקופון</string>
+    <string name="coupon_details_share_coupon_error">שגיאה בשיתוף קוד הקופון.</string>
+    <string name="coupon_details_share_coupon_some">להחיל הנחה של ⁦%1$s⁩ על מוצרים נבחרים גם קוד המבצע ⁦%2$s⁩</string>
+    <string name="coupon_details_share_coupon_all">להחיל הנחה של ⁦%1$s⁩ על כל המוצרים עם קוד המבצע ⁦%2$s⁩</string>
+    <string name="coupon_details_copy_error">שגיאה בהעתקת קוד הקופון ללוח.</string>
+    <string name="coupon_details_copy_success">קוד הקופון הועתק ללוח.</string>
+    <string name="coupon_details_copy_clipboard_label">קוד קופון</string>
+    <string name="coupon_beta_features_subheading">לנסות ניהול קופונים באפליקציה</string>
+    <string name="coupon_beta_features_heading">ניהול קופונים</string>
+    <string name="coupon_summary_loading_failure">הטעינה של סיכום הקופונים נכשלה</string>
+    <string name="coupon_details_expiration_date">בתוקף עד ⁦%1$s⁩</string>
+    <string name="coupon_summary_template">הנחה של ⁦%1$s⁩ על ⁦%2$s⁩</string>
+    <string name="coupon_type_custom">הנחה מותאמת אישית (⁦%1$s⁩)</string>
+    <string name="coupon_type_fixed_product">הנחת מוצר קבועה</string>
+    <string name="coupon_type_fixed_cart">הנחה קבועה לעגלת הקניות</string>
+    <string name="coupon_type_percent">אחוזי הנחה</string>
+    <string name="coupon_details_performance_loading_failure">הטעינה של ביצועי הקופונים נכשלה</string>
+    <string name="coupon_details_menu_share">לשתף קופון</string>
+    <string name="coupon_details_menu_copy">להעתיק קוד קופון</string>
+    <string name="inbox_note_survey_actioned">תודה ששלחת את המשוב!</string>
+    <string name="beta_features_coupons">ניהול קופונים</string>
+    <string name="card_reader_connect_permission_rationale_hint">לתשלומים בקורא הכרטיסים נדרשת הרשאה למיקום מדויק</string>
+    <string name="card_reader_connect_permission_rationale_header">נדרשת גישה למיקום</string>
+    <string name="simple_payments_share_payment_dialog_title">תשלום בקופה – %s</string>
+    <string name="simple_payments_share_payment_link">לשתף קישור לתשלום</string>
+    <string name="amount">סכום</string>
+    <string name="coupon_details_performance_amount_heading">סכום</string>
+    <string name="coupon_details_performance_discounted_order_heading">הזמנות מוזלות</string>
+    <string name="coupon_details_performance_heading">ביצועים</string>
+    <string name="coupon_details_maximum_spend">הוצאה מקסימלית בגובה %s</string>
+    <string name="coupon_details_minimum_spend">הוצאה מינימלית בגובה %s</string>
+    <string name="coupon_details_heading">סיכום קופונים</string>
     <string name="coupon_list_view_coupon">הצגה של סיכום הקופון</string>
     <string name="coupon_list_wip_message_enabled">אנחנו כרגע עובדים על אפשרות להציג ולערוך קופונים מהמכשיר שלך!</string>
     <string name="coupon_list_wip_title">להציג ולנהל קופונים</string>
     <string name="coupon_list_empty_heading">לא נמצאו קופונים</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s לא כולל %2s</string>
     <string name="coupon_list_item_label_everything">הכול</string>
-    <string name="coupon_list_item_label_off">הנחה</string>
     <string name="coupon_list_item_label_expired">פג תוקף</string>
     <string name="coupon_list_item_label_active">פעיל</string>
     <string name="coupons">קופונים</string>
@@ -58,14 +84,12 @@ Language: he_IL
     <string name="card_reader_payment_reader_receipt_sent">הקבלה נשלחה אל &lt;strong&gt;%s&lt;/strong&gt;</string>
     <string name="order_creation_fee_percentage_toggle_text">עמלת אחוזים</string>
     <string name="order_creation_fee_percentage_hint">אחוזים (%)</string>
-    <string name="order_creation_fee_amount_hint">סכום ($)</string>
     <string name="order_creation_add_fee_removal_hint">להסיר את העמלה מההזמנה</string>
     <string name="order_creation_remove_shipping">להסיר את המשלוח מההזמנה</string>
     <string name="order_creation_edit_shipping">משלוח</string>
     <string name="order_creation_add_shipping">להוסיף משלוח</string>
     <string name="order_creation_shipping_title_add">להוסיף משלוח</string>
     <string name="order_creation_shipping_name">שם</string>
-    <string name="order_creation_shipping_amount">סכום</string>
     <string name="order_creation_payment_fee">עמלות</string>
     <string name="order_creation_customer_details">פרטי לקוח</string>
     <string name="order_creation_add_fee">להוסיף עמלה</string>

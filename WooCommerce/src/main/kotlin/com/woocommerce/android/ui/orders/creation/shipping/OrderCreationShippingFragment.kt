@@ -13,6 +13,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationShippingBinding
 import com.woocommerce.android.extensions.drop
 import com.woocommerce.android.extensions.filterNotNull
+import com.woocommerce.android.extensions.showKeyboardWithDelay
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
@@ -35,6 +36,10 @@ class OrderCreationShippingFragment : BaseFragment(R.layout.fragment_order_creat
         val binding = FragmentOrderCreationShippingBinding.bind(view)
         binding.initUi()
         setupObservers(binding)
+
+        if (savedInstanceState == null) {
+            binding.amountEditText.editText.showKeyboardWithDelay()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

@@ -1,24 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-04-08 09:54:04+0000
+Translation-Revision-Date: 2022-04-28 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
-    <string name="coupon_summary_performance_amount_heading">合計</string>
-    <string name="coupon_summary_performance_discounted_order_heading">割引注文</string>
-    <string name="coupon_summary_performance_heading">パフォーマンス</string>
-    <string name="coupon_summary_maximum_spend">%sの利用上限額</string>
-    <string name="coupon_summary_minimum_spend">%sの利用最小額</string>
-    <string name="coupon_summary_heading">クーポンの概要</string>
+    <string name="coupons_list_search_hint">クーポンを検索</string>
+    <string name="coupon_details_share_formatting_failure">クーポンコードの共有メッセージを生成できません</string>
+    <string name="coupon_details_share_coupon_error">クーポンコードを共有する際にエラーが発生しました。</string>
+    <string name="coupon_details_share_coupon_some">プロモーションコード「%2$s」で特定の商品に %1$s の割引を適用</string>
+    <string name="coupon_details_share_coupon_all">プロモーションコード「%2$s」ですべての商品に %1$s の割引を適用</string>
+    <string name="coupon_details_copy_error">クーポンコードをクリップボードにコピーする際にエラーが発生しました。</string>
+    <string name="coupon_details_copy_success">クーポンコードをクリップボードにコピーしました。</string>
+    <string name="coupon_details_copy_clipboard_label">クーポンコード</string>
+    <string name="coupon_beta_features_subheading">アプリでクーポン管理を試す</string>
+    <string name="coupon_beta_features_heading">クーポン管理</string>
+    <string name="coupon_summary_loading_failure">クーポンの概要の読み込みに失敗しました</string>
+    <string name="coupon_details_expiration_date">有効期限: %1$s</string>
+    <string name="coupon_summary_template">%1$s オフの%2$s</string>
+    <string name="coupon_type_custom">カスタム割引 (%1$s)</string>
+    <string name="coupon_type_fixed_product">商品毎に割引</string>
+    <string name="coupon_type_fixed_cart">お買い物カゴごとに割引</string>
+    <string name="coupon_type_percent">割引率</string>
+    <string name="coupon_details_performance_loading_failure">クーポンのパフォーマンスの読み込みに失敗しました</string>
+    <string name="coupon_details_menu_share">クーポンを共有</string>
+    <string name="coupon_details_menu_copy">クーポンコードをコピー</string>
+    <string name="inbox_note_survey_actioned">フィードバックをありがとうございました。</string>
+    <string name="beta_features_coupons">クーポン管理</string>
+    <string name="card_reader_connect_permission_rationale_hint">カードリーダーでの支払いには、正確な位置情報の許可が必要です</string>
+    <string name="card_reader_connect_permission_rationale_header">位置情報へのアクセスが必須です</string>
+    <string name="simple_payments_share_payment_dialog_title">購入手続き - %s</string>
+    <string name="simple_payments_share_payment_link">支払いリンクを共有する</string>
+    <string name="amount">合計</string>
+    <string name="coupon_details_performance_amount_heading">合計</string>
+    <string name="coupon_details_performance_discounted_order_heading">割引注文</string>
+    <string name="coupon_details_performance_heading">パフォーマンス</string>
+    <string name="coupon_details_maximum_spend">%sの利用上限額</string>
+    <string name="coupon_details_minimum_spend">%sの利用最小額</string>
+    <string name="coupon_details_heading">クーポンの概要</string>
     <string name="coupon_list_view_coupon">クーポンの概要を表示</string>
     <string name="coupon_list_wip_message_enabled">デバイスからクーポンを表示、編集できる機能を開発中です !</string>
     <string name="coupon_list_wip_title">クーポンを表示して編集する</string>
     <string name="coupon_list_empty_heading">クーポンが見つかりません</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s (%2s を除く)</string>
     <string name="coupon_list_item_label_everything">すべて</string>
-    <string name="coupon_list_item_label_off">オフ</string>
     <string name="coupon_list_item_label_expired">期限切れ</string>
     <string name="coupon_list_item_label_active">有効</string>
     <string name="coupons">クーポン</string>
@@ -58,14 +84,12 @@ Language: ja_JP
     <string name="card_reader_payment_reader_receipt_sent">領収書を &lt;strong&gt;%s&lt;/strong&gt; に送信しました</string>
     <string name="order_creation_fee_percentage_toggle_text">パーセンテージ手数料</string>
     <string name="order_creation_fee_percentage_hint">パーセンテージ (%)</string>
-    <string name="order_creation_fee_amount_hint">合計 ($)</string>
     <string name="order_creation_add_fee_removal_hint">注文から手数料を削除</string>
     <string name="order_creation_remove_shipping">注文から配送料を削除</string>
     <string name="order_creation_edit_shipping">配送</string>
     <string name="order_creation_add_shipping">配送料を追加</string>
     <string name="order_creation_shipping_title_add">配送料を追加</string>
     <string name="order_creation_shipping_name">名前</string>
-    <string name="order_creation_shipping_amount">合計</string>
     <string name="order_creation_payment_fee">料金</string>
     <string name="order_creation_customer_details">お客様の詳細</string>
     <string name="order_creation_add_fee">手数料を追加</string>

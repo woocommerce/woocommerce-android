@@ -1,24 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-04-08 15:54:03+0000
+Translation-Revision-Date: 2022-04-25 21:54:18+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
-    <string name="coupon_summary_performance_amount_heading">Quantidade</string>
-    <string name="coupon_summary_performance_discounted_order_heading">Pedidos com desconto</string>
-    <string name="coupon_summary_performance_heading">Desempenho</string>
-    <string name="coupon_summary_maximum_spend">Gasto máximo de %s</string>
-    <string name="coupon_summary_minimum_spend">Gasto mínimo de %s</string>
-    <string name="coupon_summary_heading">Resumo do cupom</string>
+    <string name="coupons_list_search_hint">Pesquisar cupons</string>
+    <string name="coupon_details_share_formatting_failure">Não foi possível gerar a mensagem de compartilhamento de código do cupom</string>
+    <string name="coupon_details_share_coupon_error">Erro ao compartilhar o código do cupom.</string>
+    <string name="coupon_details_share_coupon_some">Aplique %1$s de desconto aos produtos selecionados com o código promocional %2$s</string>
+    <string name="coupon_details_share_coupon_all">Aplique %1$s de desconto a todos os produtos com o código promocional %2$s</string>
+    <string name="coupon_details_copy_error">Erro ao copiar o código do cupom para a área de transferência.</string>
+    <string name="coupon_details_copy_success">Código do cupom copiado para a área de transferência.</string>
+    <string name="coupon_details_copy_clipboard_label">Código do cupom</string>
+    <string name="coupon_beta_features_subheading">Experimente gerenciar os cupons no aplicativo</string>
+    <string name="coupon_beta_features_heading">Gerenciamento de cupons</string>
+    <string name="coupon_summary_loading_failure">Falha ao carregar o resumo dos cupons</string>
+    <string name="coupon_details_expiration_date">Expira em %1$s</string>
+    <string name="coupon_summary_template">%1$s de desconto %2$s</string>
+    <string name="coupon_type_custom">Desconto personalizado (%1$s)</string>
+    <string name="coupon_type_fixed_product">Desconto fixo no produto</string>
+    <string name="coupon_type_fixed_cart">Desconto fixo no carrinho</string>
+    <string name="coupon_type_percent">Desconto em porcentagem</string>
+    <string name="coupon_details_performance_loading_failure">Falha ao carregar o desempenho do cupom</string>
+    <string name="coupon_details_menu_share">Compartilhar cupom</string>
+    <string name="coupon_details_menu_copy">Copiar código do cupom</string>
+    <string name="inbox_note_survey_actioned">Obrigado pelo feedback.</string>
+    <string name="beta_features_coupons">Gerenciamento de cupons</string>
+    <string name="card_reader_connect_permission_rationale_hint">Os pagamentos por leitor de cartão exigem uma permissão de localização precisa</string>
+    <string name="card_reader_connect_permission_rationale_header">Acesso ao local obrigatório</string>
+    <string name="simple_payments_share_payment_dialog_title">Finalizar compra - %s</string>
+    <string name="simple_payments_share_payment_link">Compartilhar link de pagamento</string>
+    <string name="amount">Quantidade</string>
+    <string name="coupon_details_performance_amount_heading">Quantidade</string>
+    <string name="coupon_details_performance_discounted_order_heading">Pedidos com desconto</string>
+    <string name="coupon_details_performance_heading">Desempenho</string>
+    <string name="coupon_details_maximum_spend">Gasto máximo de %s</string>
+    <string name="coupon_details_minimum_spend">Gasto mínimo de %s</string>
+    <string name="coupon_details_heading">Resumo do cupom</string>
     <string name="coupon_list_view_coupon">Visualizar resumo do cupom</string>
     <string name="coupon_list_wip_message_enabled">Estamos trabalhando para permitir a visualização e edição de cupons no seu dispositivo!</string>
     <string name="coupon_list_wip_title">Visualizar e editar cupons</string>
     <string name="coupon_list_empty_heading">Nenhum cupom encontrado</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s sem %2s</string>
     <string name="coupon_list_item_label_everything">tudo</string>
-    <string name="coupon_list_item_label_off">de desconto</string>
     <string name="coupon_list_item_label_expired">Expirado</string>
     <string name="coupon_list_item_label_active">Ativo</string>
     <string name="coupons">Cupons</string>
@@ -58,14 +84,12 @@ Language: pt_BR
     <string name="card_reader_payment_reader_receipt_sent">Um recibo foi enviado para &lt;strong&gt;%s&lt;/strong&gt;</string>
     <string name="order_creation_fee_percentage_toggle_text">Taxa de porcentagem</string>
     <string name="order_creation_fee_percentage_hint">Porcentagem (%)</string>
-    <string name="order_creation_fee_amount_hint">Quantia ($)</string>
     <string name="order_creation_add_fee_removal_hint">Remover taxa do pedido</string>
     <string name="order_creation_remove_shipping">Remover envio do pedido</string>
     <string name="order_creation_edit_shipping">Envio</string>
     <string name="order_creation_add_shipping">Adicionar envio</string>
     <string name="order_creation_shipping_title_add">Adicionar envio</string>
     <string name="order_creation_shipping_name">Nome</string>
-    <string name="order_creation_shipping_amount">Quantidade</string>
     <string name="order_creation_payment_fee">Taxas</string>
     <string name="order_creation_customer_details">Dados do cliente</string>
     <string name="order_creation_add_fee">Adicionar taxa</string>
