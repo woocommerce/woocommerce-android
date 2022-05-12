@@ -145,7 +145,6 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
                 else -> event.isHandled = false
             }
         }
-        viewModel.start()
     }
 
     private fun updateStoreListView() {

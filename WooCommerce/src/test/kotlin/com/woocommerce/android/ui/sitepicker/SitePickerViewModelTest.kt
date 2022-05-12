@@ -133,8 +133,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
         var sitePickerData: SitePickerViewModel.SitePickerViewState? = null
         viewModel.sitePickerViewStateData.observeForever { _, new -> sitePickerData = new }
 
-        viewModel.start()
-
         assertThat(sitePickerData).isEqualTo(SitePickerTestUtils.getDefaultLoginViewState(defaultSitePickerViewState))
     }
 
@@ -146,8 +144,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
 
         var sitePickerData: SitePickerViewModel.SitePickerViewState? = null
         viewModel.sitePickerViewStateData.observeForever { _, new -> sitePickerData = new }
-
-        viewModel.start()
 
         assertThat(sitePickerData).isEqualTo(
             SitePickerTestUtils.getDefaultSwitchStoreViewState(defaultSitePickerViewState)
@@ -162,8 +158,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
 
             var sites: List<SitePickerViewModel.SiteUiModel>? = null
             viewModel.sites.observeForever { sites = it }
-
-            viewModel.start()
 
             verify(repository, times(1)).fetchWooCommerceSites()
             verify(repository, times(1)).getWooCommerceSites()
@@ -188,8 +182,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
         viewModel.event.observeForever {
             if (it is ShowSnackbar) snackbar = it
         }
-
-        viewModel.start()
 
         verify(repository, times(1)).fetchWooCommerceSites()
         verify(repository, times(1)).getWooCommerceSites()
@@ -218,8 +210,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
                 if (it is NoStoreView) view = it
             }
 
-            viewModel.start()
-
             assertThat(view).isEqualTo(NoStoreView)
             assertThat(sitePickerData?.isNoStoresViewVisible).isEqualTo(
                 expectedSitePickerViewState.isNoStoresViewVisible
@@ -233,8 +223,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
     @Test
     fun `given that stores in db are empty, when stores are fetched from api, then skeleton view is displayed`() =
         testBlocking {
-            whenever(repository.getWooCommerceSites()).thenReturn(mutableListOf())
-            whenSitesAreFetched()
+            whenSitesAreFetched(returnsEmpty = true)
             whenViewModelIsCreated()
 
             val isSkeletonShown = ArrayList<Boolean>()
@@ -242,9 +231,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
                 new.isSkeletonViewVisible.takeIfNotEqualTo(old?.isSkeletonViewVisible) { isSkeletonShown.add(it) }
             }
 
-            viewModel.start()
-
-            assertThat(isSkeletonShown).containsExactly(false, true, false)
+            assertThat(isSkeletonShown).containsExactly(false)
         }
 
     @Test
@@ -256,8 +243,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
 
         var sites: List<SitePickerViewModel.SiteUiModel>? = null
         viewModel.sites.observeForever { sites = it }
-
-        viewModel.start()
 
         verify(appPrefsWrapper, atLeastOnce()).getLoginSiteAddress()
         verify(repository, atLeastOnce()).getSiteBySiteUrl(any())
@@ -275,8 +260,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
             val url = SitePickerTestUtils.loginSiteAddress
             var sitePickerData: SitePickerViewModel.SitePickerViewState? = null
             viewModel.sitePickerViewStateData.observeForever { _, new -> sitePickerData = new }
-
-            viewModel.start()
 
             verify(repository, atLeastOnce()).getSiteBySiteUrl(any())
             verify(analyticsTrackerWrapper, atLeastOnce()).track(
@@ -316,8 +299,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
             val url = SitePickerTestUtils.loginSiteAddress
             var sitePickerData: SitePickerViewModel.SitePickerViewState? = null
             viewModel.sitePickerViewStateData.observeForever { _, new -> sitePickerData = new }
-
-            viewModel.start()
 
             verify(repository, atLeastOnce()).getSiteBySiteUrl(any())
             verify(analyticsTrackerWrapper, atLeastOnce()).track(
@@ -364,7 +345,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
         }
 
         val selectedSiteModel = expectedSiteList[1]
-        viewModel.start()
+
         viewModel.onSiteSelected(selectedSiteModel)
         viewModel.onContinueButtonClick()
 
@@ -398,7 +379,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
             }
 
             val selectedSiteModel = expectedSiteList[1]
-            viewModel.start()
+
             viewModel.onSiteSelected(selectedSiteModel)
             viewModel.onContinueButtonClick()
 

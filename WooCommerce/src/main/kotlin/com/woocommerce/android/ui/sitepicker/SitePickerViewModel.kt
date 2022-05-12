@@ -50,18 +50,18 @@ class SitePickerViewModel @Inject constructor(
 
     private val loginSiteAddress = appPrefsWrapper.getLoginSiteAddress()
 
-    override fun onCleared() {
-        super.onCleared()
-        repository.onCleanup()
-    }
-
-    fun start() {
+    init {
         when (navArgs.openedFromLogin) {
             true -> loadLoginView()
             false -> loadStorePickerView()
         }
         updateSiteViewDetails()
         loadAndDisplaySites()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        repository.onCleanup()
     }
 
     private fun updateSiteViewDetails() {
