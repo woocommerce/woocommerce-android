@@ -147,15 +147,6 @@
 
             </androidx.recyclerview.widget.RecyclerView>
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/textTaxMessage"
-                style="@style/Woo.TextView.Caption"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/minor_50"
-                android:layout_marginBottom="@dimen/major_100"
-                android:text="@string/simple_payments_tax_message" />
-
             <!-- Total -->
             <LinearLayout
                 android:id="@+id/containerTotal"
