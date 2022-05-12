@@ -50,18 +50,18 @@ class SitePickerViewModel @Inject constructor(
 
     private val loginSiteAddress = appPrefsWrapper.getLoginSiteAddress()
 
-    override fun onCleared() {
-        super.onCleared()
-        repository.onCleanup()
-    }
-
-    fun start() {
+    init {
         when (navArgs.openedFromLogin) {
             true -> loadLoginView()
             false -> loadStorePickerView()
         }
         updateSiteViewDetails()
         loadAndDisplaySites()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        repository.onCleanup()
     }
 
     private fun updateSiteViewDetails() {
@@ -244,7 +244,7 @@ class SitePickerViewModel @Inject constructor(
             isPrimaryBtnVisible = sitePickerViewState.hasConnectedStores == true,
             primaryBtnText = resourceProvider.getString(string.login_view_connected_stores),
             noStoresLabelText = resourceProvider.getString(string.login_not_woo_store, url),
-            noStoresBtnText = resourceProvider.getString(string.refresh_button)
+            noStoresBtnText = resourceProvider.getString(string.login_refresh_app)
         )
         triggerEvent(SitePickerView.WooNotFoundView)
     }
@@ -263,7 +263,11 @@ class SitePickerViewModel @Inject constructor(
     fun onViewConnectedStoresButtonClick() {
         analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_VIEW_CONNECTED_STORES_BUTTON_TAPPED)
         trackLoginEvent(clickEvent = UnifiedLoginTracker.Click.VIEW_CONNECTED_STORES)
-        loadAndDisplaySites()
+        sitePickerViewState = sitePickerViewState.copy(
+            isNoStoresViewVisible = false,
+            primaryBtnText = resourceProvider.getString(string.continue_button)
+        )
+        triggerEvent(SitePickerView.StoreListView)
     }
 
     fun onNeedHelpFindingEmailButtonClick() {
@@ -275,7 +279,7 @@ class SitePickerViewModel @Inject constructor(
     fun onRefreshButtonClick() {
         analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_NOT_CONNECTED_JETPACK_REFRESH_APP_LINK_TAPPED)
         sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = true)
-        loadAndDisplaySites()
+        launch { fetchSitesFromApi(showSkeleton = false) }
     }
 
     fun onWhatIsJetpackButtonClick() {

@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.ShowWooUpgradeDialogEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerView.AccountMismatchView
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerView.NoStoreView
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerView.StoreListView
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerView.WooNotFoundView
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
@@ -124,7 +125,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Given that user is logging in, the toolbar, help and secondary button is displayed`() = testBlocking {
+    fun `given that user is logging in, the toolbar, help and secondary button is displayed`() = testBlocking {
         givenTheScreenIsFromLogin(true)
         whenSitesAreFetched()
         whenViewModelIsCreated()
@@ -132,13 +133,11 @@ class SitePickerViewModelTest : BaseUnitTest() {
         var sitePickerData: SitePickerViewModel.SitePickerViewState? = null
         viewModel.sitePickerViewStateData.observeForever { _, new -> sitePickerData = new }
 
-        viewModel.start()
-
         assertThat(sitePickerData).isEqualTo(SitePickerTestUtils.getDefaultLoginViewState(defaultSitePickerViewState))
     }
 
     @Test
-    fun `Given that user is switching stores, the toolbar, help and secondary button is hidden`() = testBlocking {
+    fun `given that user is switching stores, the toolbar, help and secondary button is hidden`() = testBlocking {
         givenTheScreenIsFromLogin(false)
         whenSitesAreFetched()
         whenViewModelIsCreated()
@@ -146,23 +145,19 @@ class SitePickerViewModelTest : BaseUnitTest() {
         var sitePickerData: SitePickerViewModel.SitePickerViewState? = null
         viewModel.sitePickerViewStateData.observeForever { _, new -> sitePickerData = new }
 
-        viewModel.start()
-
         assertThat(sitePickerData).isEqualTo(
             SitePickerTestUtils.getDefaultSwitchStoreViewState(defaultSitePickerViewState)
         )
     }
 
     @Test
-    fun `Given that the view model is created, when stores fetch succeeds, then stores are displayed correctly`() =
+    fun `given that the view model is created, when stores fetch succeeds, then stores are displayed correctly`() =
         testBlocking {
             whenSitesAreFetched()
             whenViewModelIsCreated()
 
             var sites: List<SitePickerViewModel.SiteUiModel>? = null
             viewModel.sites.observeForever { sites = it }
-
-            viewModel.start()
 
             verify(repository, times(1)).fetchWooCommerceSites()
             verify(repository, times(1)).getWooCommerceSites()
@@ -176,7 +171,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given that the view model is created, when store fetch is in error, then error is displayed`() = testBlocking {
+    fun `given that the view model is created, when store fetch is in error, then error is displayed`() = testBlocking {
         whenSitesAreFetched(returnsError = true)
         whenViewModelIsCreated()
 
@@ -188,8 +183,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
             if (it is ShowSnackbar) snackbar = it
         }
 
-        viewModel.start()
-
         verify(repository, times(1)).fetchWooCommerceSites()
         verify(repository, times(1)).getWooCommerceSites()
 
@@ -198,7 +191,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Given that the view model is created, when store fetch is empty, then empty view is displayed`() =
+    fun `given that the view model is created, when store fetch is empty, then empty view is displayed`() =
         testBlocking {
             val expectedSitePickerViewState = SitePickerTestUtils.getEmptyViewState(
                 defaultSitePickerViewState, resourceProvider
@@ -217,8 +210,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
                 if (it is NoStoreView) view = it
             }
 
-            viewModel.start()
-
             assertThat(view).isEqualTo(NoStoreView)
             assertThat(sitePickerData?.isNoStoresViewVisible).isEqualTo(
                 expectedSitePickerViewState.isNoStoresViewVisible
@@ -230,10 +221,9 @@ class SitePickerViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given that stores in db are empty, when stores are fetched from api, then skeleton view is displayed`() =
+    fun `given that stores in db are empty, when stores are fetched from api, then skeleton view is displayed`() =
         testBlocking {
-            whenever(repository.getWooCommerceSites()).thenReturn(mutableListOf())
-            whenSitesAreFetched()
+            whenSitesAreFetched(returnsEmpty = true)
             whenViewModelIsCreated()
 
             val isSkeletonShown = ArrayList<Boolean>()
@@ -241,13 +231,11 @@ class SitePickerViewModelTest : BaseUnitTest() {
                 new.isSkeletonViewVisible.takeIfNotEqualTo(old?.isSkeletonViewVisible) { isSkeletonShown.add(it) }
             }
 
-            viewModel.start()
-
-            assertThat(isSkeletonShown).containsExactly(false, true, false)
+            assertThat(isSkeletonShown).containsExactly(false)
         }
 
     @Test
-    fun `Given that user is logging in from site address, auto login should be initiated`() = testBlocking {
+    fun `given that user is logging in from site address, auto login should be initiated`() = testBlocking {
         givenThatUserLoggedInFromEnteringSiteAddress(expectedSiteList[1])
         givenThatSiteVerificationIsCompleted()
         whenSitesAreFetched()
@@ -256,8 +244,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
         var sites: List<SitePickerViewModel.SiteUiModel>? = null
         viewModel.sites.observeForever { sites = it }
 
-        viewModel.start()
-
         verify(appPrefsWrapper, atLeastOnce()).getLoginSiteAddress()
         verify(repository, atLeastOnce()).getSiteBySiteUrl(any())
         assertThat(sites?.get(1)?.isSelected).isTrue
@@ -265,7 +251,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Given the site address entered during login does not match the user account, account error is displayed`() =
+    fun `given the site address entered during login does not match the user account, account error is displayed`() =
         testBlocking {
             givenThatUserLoggedInFromEnteringSiteAddress(null)
             whenSitesAreFetched()
@@ -274,8 +260,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
             val url = SitePickerTestUtils.loginSiteAddress
             var sitePickerData: SitePickerViewModel.SitePickerViewState? = null
             viewModel.sitePickerViewStateData.observeForever { _, new -> sitePickerData = new }
-
-            viewModel.start()
 
             verify(repository, atLeastOnce()).getSiteBySiteUrl(any())
             verify(analyticsTrackerWrapper, atLeastOnce()).track(
@@ -306,7 +290,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given that the site address entered during login does not have Woo, no woo error screen is displayed`() =
+    fun `given that the site address entered during login does not have Woo, no woo error screen is displayed`() =
         testBlocking {
             givenThatUserLoggedInFromEnteringSiteAddress(expectedSiteList[1].apply { hasWooCommerce = false })
             whenSitesAreFetched()
@@ -315,8 +299,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
             val url = SitePickerTestUtils.loginSiteAddress
             var sitePickerData: SitePickerViewModel.SitePickerViewState? = null
             viewModel.sitePickerViewStateData.observeForever { _, new -> sitePickerData = new }
-
-            viewModel.start()
 
             verify(repository, atLeastOnce()).getSiteBySiteUrl(any())
             verify(analyticsTrackerWrapper, atLeastOnce()).track(
@@ -347,7 +329,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given that a site is selected, when verification is initiated, then is successful`() = testBlocking {
+    fun `given that a site is selected, when verification is initiated, then is successful`() = testBlocking {
         givenThatSiteVerificationIsCompleted()
         whenSitesAreFetched()
         whenViewModelIsCreated()
@@ -363,7 +345,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
         }
 
         val selectedSiteModel = expectedSiteList[1]
-        viewModel.start()
+
         viewModel.onSiteSelected(selectedSiteModel)
         viewModel.onContinueButtonClick()
 
@@ -378,7 +360,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Given that a site is selected, when verification is initiated, but then returns upgrade error`() =
+    fun `given that a site is selected, when verification is initiated, but then returns upgrade error`() =
         testBlocking {
             whenever(repository.verifySiteWooAPIVersion(any())).thenReturn(
                 WooResult(SitePickerTestUtils.errorApiVerificationResponse)
@@ -397,7 +379,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
             }
 
             val selectedSiteModel = expectedSiteList[1]
-            viewModel.start()
+
             viewModel.onSiteSelected(selectedSiteModel)
             viewModel.onContinueButtonClick()
 
@@ -412,7 +394,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given user is logging in, then when help button is clicked, help screen is displayed`() = testBlocking {
+    fun `given user is logging in, then when help button is clicked, help screen is displayed`() = testBlocking {
         givenTheScreenIsFromLogin(true)
         whenViewModelIsCreated()
 
@@ -428,7 +410,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Given user is logging in, then when try another account is clicked, logout is initiated`() = testBlocking {
+    fun `given user is logging in, then when try another account is clicked, logout is initiated`() = testBlocking {
         whenever(repository.logout()).thenReturn(true)
         whenever(repository.isUserLoggedIn()).thenReturn(false)
         givenTheScreenIsFromLogin(true)
@@ -447,7 +429,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Given user is logging in, when learn more about Jetpack is clicked, learn more is displayed`() = testBlocking {
+    fun `given user is logging in, when learn more about Jetpack is clicked, learn more is displayed`() = testBlocking {
         givenTheScreenIsFromLogin(true)
         whenViewModelIsCreated()
 
@@ -465,9 +447,10 @@ class SitePickerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Given user is logging in, when refresh button is clicked, refresh the screen`() =
+    fun `given user is logging in, when refresh button is clicked, refresh the screen`() =
         testBlocking {
             givenTheScreenIsFromLogin(true)
+            whenSitesAreFetched()
             whenViewModelIsCreated()
 
             val isProgressShown = ArrayList<Boolean>()
@@ -480,13 +463,12 @@ class SitePickerViewModelTest : BaseUnitTest() {
             verify(analyticsTrackerWrapper, times(1)).track(
                 AnalyticsEvent.SITE_PICKER_NOT_CONNECTED_JETPACK_REFRESH_APP_LINK_TAPPED
             )
-            verify(repository, atLeastOnce()).getWooCommerceSites()
             verify(repository, atLeastOnce()).fetchWooCommerceSites()
             assertThat(isProgressShown).containsExactly(false, true, false)
         }
 
     @Test
-    fun `Given user is logging in, when what is Jetpack is clicked, Jetpack screen is displayed`() = testBlocking {
+    fun `given user is logging in, when what is Jetpack is clicked, Jetpack screen is displayed`() = testBlocking {
         givenTheScreenIsFromLogin(true)
         whenViewModelIsCreated()
 
@@ -504,7 +486,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Given user is logging in, when need help finding email is clicked, find email dialog is displayed`() =
+    fun `given user is logging in, when need help finding email is clicked, find email dialog is displayed`() =
         testBlocking {
             givenTheScreenIsFromLogin(true)
             whenViewModelIsCreated()
@@ -523,16 +505,28 @@ class SitePickerViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given user is logging in, when view connected sites is clicked, screen is refreshed`() = testBlocking {
+    fun `given user is logging in, when view connected sites is clicked, site list is displayed`() = testBlocking {
+        val expectedSite = expectedSiteList[1].apply { hasWooCommerce = false }
+        givenThatUserLoggedInFromEnteringSiteAddress(expectedSite)
         givenTheScreenIsFromLogin(true)
+        whenSitesAreFetched()
         whenViewModelIsCreated()
+
+        var sitePickerData: SitePickerViewModel.SitePickerViewState? = null
+        viewModel.sitePickerViewStateData.observeForever { _, new -> sitePickerData = new }
+
+        var view: StoreListView? = null
+        viewModel.event.observeForever {
+            if (it is StoreListView) view = it
+        }
 
         viewModel.onViewConnectedStoresButtonClick()
 
         verify(analyticsTrackerWrapper, times(1)).track(
             AnalyticsEvent.SITE_PICKER_VIEW_CONNECTED_STORES_BUTTON_TAPPED
         )
-        verify(repository, times(1)).fetchWooCommerceSites()
-        verify(repository, times(1)).getWooCommerceSites()
+        assertThat(sitePickerData?.isNoStoresViewVisible).isFalse
+        assertThat(sitePickerData?.primaryBtnText).isEqualTo(resourceProvider.getString(R.string.continue_button))
+        assertThat(view).isEqualTo(StoreListView)
     }
 }

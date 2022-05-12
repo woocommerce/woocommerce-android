@@ -23,17 +23,22 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.SendTelemetry
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.main.MainActivity
-import com.woocommerce.android.util.*
+import com.woocommerce.android.util.AppThemeUtils
+import com.woocommerce.android.util.ApplicationLifecycleMonitor
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
+import com.woocommerce.android.util.PackageUtils
+import com.woocommerce.android.util.REGEX_API_JETPACK_TUNNEL_METHOD
+import com.woocommerce.android.util.REGEX_API_NUMERIC_PARAM
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.DASHBOARD
 import com.woocommerce.android.util.WooLog.T.UTILS
+import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.util.crashlogging.UploadEncryptedLogs
 import com.woocommerce.android.util.encryptedlogging.ObserveEncryptedLogsUploadResult
 import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.DispatchingAndroidInjector
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -170,7 +175,13 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             dispatcher.dispatch(AccountActionBuilder.newFetchSettingsAction())
             appCoroutineScope.launch {
                 wooCommerceStore.fetchWooCommerceSites()
-                if (!selectedSite.exists() && ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(STARTED)) {
+
+                // Added to fix this crash
+                // https://github.com/woocommerce/woocommerce-android/issues/4842
+                if (selectedSite.getSelectedSiteId() != -1 &&
+                    !selectedSite.exists() &&
+                    ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(STARTED)
+                ) {
                     // The previously selected site is not connected anymore, take the user to the site picker
                     WooLog.i(DASHBOARD, "Selected site no longer exists, showing site picker")
                     val intent = Intent(application, MainActivity::class.java)
