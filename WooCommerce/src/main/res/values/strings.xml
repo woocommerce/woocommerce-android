@@ -1964,6 +1964,7 @@
     <string name="coupon_edit_regenerate_coupon">Regenerate Coupon Code</string>
     <string name="coupon_edit_save_button">Save</string>
     <string name="coupon_edit_expiry_date">Coupon Expiry Date</string>
+    <string name="coupon_edit_expiry_date_none">None</string>
     <string name="coupon_edit_expiry_date_dialog_edit">Edit Expiry Date</string>
     <string name="coupon_edit_expiry_date_dialog_delete">Delete Expiry Date</string>
 

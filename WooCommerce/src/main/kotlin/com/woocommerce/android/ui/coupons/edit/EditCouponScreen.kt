@@ -206,7 +206,7 @@ private fun ExpiryField(dateExpires: Date?, onExpiryDateChanged: (Date?) -> Unit
                 showDatePicker = true
             }
         },
-        value = dateExpires?.let { dateFormat.format(it) } ?: "None",
+        value = dateExpires?.let { dateFormat.format(it) } ?: stringResource(id = R.string.coupon_edit_expiry_date_none),
         label = stringResource(id = R.string.coupon_edit_expiry_date),
         modifier = Modifier.fillMaxWidth()
     )
