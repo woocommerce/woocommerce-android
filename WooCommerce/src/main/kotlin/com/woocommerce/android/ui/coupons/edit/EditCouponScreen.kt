@@ -173,20 +173,20 @@ private fun UsageRestrictionsSection(viewState: EditCouponViewModel.ViewState) {
             color = colorResource(id = R.color.color_on_surface_medium)
         )
 
-        Column {
-            TextButton(onClick = { /*TODO*/ }) {
-                Text(
-                    text = stringResource(id = string.coupon_edit_usage_restrictions),
-                    style = MaterialTheme.typography.body1,
-                    color = colorResource(id = R.color.color_on_surface)
-                )
-            }
-            Divider(
-                modifier = Modifier.padding(start = dimensionResource(id = R.dimen.minor_100)),
-                color = colorResource(id = R.color.divider_color),
-                thickness = dimensionResource(id = R.dimen.minor_10)
+        TextButton(onClick = { /*TODO*/ }) {
+            Text(
+                text = stringResource(id = string.coupon_edit_usage_restrictions),
+                style = MaterialTheme.typography.body1,
+                color = colorResource(id = R.color.color_on_surface),
+                modifier = Modifier.fillMaxWidth()
             )
         }
+
+        Divider(
+            modifier = Modifier.padding(start = dimensionResource(id = R.dimen.minor_100)),
+            color = colorResource(id = R.color.divider_color),
+            thickness = dimensionResource(id = R.dimen.minor_10)
+        )
     }
 }
 
