@@ -27,6 +27,7 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.ShippingLine
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.AddProduct
@@ -149,6 +150,8 @@ class OrderCreationViewModel @Inject constructor(
             }.let { items -> _orderDraft.update { it.updateItems(items) } }
         }
     }
+
+    fun getProductFromOrderItem(item: Order.Item) = orderCreationRepository.getProductFromOrderItem(item)
 
     fun onCustomerAddressEdited(billingAddress: Address, shippingAddress: Address) {
         val hasDifferentShippingDetails = _orderDraft.value.shippingAddress != _orderDraft.value.billingAddress

@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.products.ProductStockStatus.OutOfStock
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.widgets.WCEmptyView
 import org.wordpress.android.util.HtmlUtils
 import org.wordpress.android.util.PhotonUtils
 
