@@ -24,10 +24,10 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigationToLearnMoreAboutJetpackEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigationToWhatIsJetpackFragmentEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.ShowWooUpgradeDialogEvent
-import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerView.AccountMismatchView
-import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerView.NoStoreView
-import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerView.StoreListView
-import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerView.WooNotFoundView
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.AccountMismatchState
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.NoStoreState
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.StoreListState
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.WooNotFoundState
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
@@ -122,12 +122,12 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
             new.isProgressDiaLogVisible.takeIfNotEqualTo(old?.isProgressDiaLogVisible) {
                 showProgressDialog(it)
             }
-            new.currentSitePickerEventView.takeIfNotEqualTo(old?.currentSitePickerEventView) {
+            new.currentSitePickerState.takeIfNotEqualTo(old?.currentSitePickerState) {
                 when (it) {
-                    StoreListView -> updateStoreListView()
-                    NoStoreView -> updateNoStoresView()
-                    AccountMismatchView -> updateAccountMismatchView()
-                    WooNotFoundView -> updateWooNotFoundView()
+                    StoreListState -> updateStoreListView()
+                    NoStoreState -> updateNoStoresView()
+                    AccountMismatchState -> updateAccountMismatchView()
+                    WooNotFoundState -> updateWooNotFoundView()
                 }
             }
         }

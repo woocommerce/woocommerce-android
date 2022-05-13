@@ -17,10 +17,10 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigationToLearnMoreAboutJetpackEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigationToWhatIsJetpackFragmentEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.ShowWooUpgradeDialogEvent
-import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerView.AccountMismatchView
-import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerView.NoStoreView
-import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerView.StoreListView
-import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerView.WooNotFoundView
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.AccountMismatchState
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.NoStoreState
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.StoreListState
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.WooNotFoundState
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -211,7 +211,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
             assertThat(sitePickerData?.primaryBtnText).isEqualTo(expectedSitePickerViewState.primaryBtnText)
             assertThat(sitePickerData?.noStoresLabelText).isEqualTo(expectedSitePickerViewState.noStoresLabelText)
             assertThat(sitePickerData?.noStoresBtnText).isEqualTo(expectedSitePickerViewState.noStoresBtnText)
-            assertThat(sitePickerData?.currentSitePickerEventView).isEqualTo(NoStoreView)
+            assertThat(sitePickerData?.currentSitePickerState).isEqualTo(NoStoreState)
             assertThat(sites).isNull()
         }
 
@@ -276,7 +276,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
             assertThat(sitePickerData?.noStoresBtnText).isEqualTo(
                 resourceProvider.getString(R.string.login_need_help_finding_email)
             )
-            assertThat(sitePickerData?.currentSitePickerEventView).isEqualTo(AccountMismatchView)
+            assertThat(sitePickerData?.currentSitePickerState).isEqualTo(AccountMismatchState)
         }
 
     @Test
@@ -310,7 +310,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
             assertThat(sitePickerData?.noStoresBtnText).isEqualTo(
                 resourceProvider.getString(R.string.login_need_help_finding_email)
             )
-            assertThat(sitePickerData?.currentSitePickerEventView).isEqualTo(WooNotFoundView)
+            assertThat(sitePickerData?.currentSitePickerState).isEqualTo(WooNotFoundState)
         }
 
     @Test
@@ -507,6 +507,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
         )
         assertThat(sitePickerData?.isNoStoresViewVisible).isFalse
         assertThat(sitePickerData?.primaryBtnText).isEqualTo(resourceProvider.getString(R.string.continue_button))
-        assertThat(sitePickerData?.currentSitePickerEventView).isEqualTo(StoreListView)
+        assertThat(sitePickerData?.currentSitePickerState).isEqualTo(StoreListState)
     }
 }

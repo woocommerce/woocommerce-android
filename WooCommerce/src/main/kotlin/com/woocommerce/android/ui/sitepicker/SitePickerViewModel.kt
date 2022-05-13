@@ -70,7 +70,7 @@ class SitePickerViewModel @Inject constructor(
             sitePickerLabelText = resourceProvider.getString(string.site_picker_label),
             primaryBtnText = resourceProvider.getString(string.continue_button),
             secondaryBtnText = resourceProvider.getString(string.login_try_another_account),
-            currentSitePickerEventView = SitePickerView.StoreListView
+            currentSitePickerState = SitePickerState.StoreListState
         )
     }
 
@@ -202,7 +202,7 @@ class SitePickerViewModel @Inject constructor(
             primaryBtnText = resourceProvider.getString(string.login_jetpack_view_instructions_alt),
             noStoresLabelText = resourceProvider.getString(string.login_no_stores),
             noStoresBtnText = resourceProvider.getString(string.login_jetpack_what_is),
-            currentSitePickerEventView = SitePickerView.NoStoreView
+            currentSitePickerState = SitePickerState.NoStoreState
         )
     }
 
@@ -226,7 +226,7 @@ class SitePickerViewModel @Inject constructor(
             primaryBtnText = resourceProvider.getString(string.login_view_connected_stores),
             noStoresLabelText = resourceProvider.getString(string.login_not_connected_to_account, url),
             noStoresBtnText = resourceProvider.getString(string.login_need_help_finding_email),
-            currentSitePickerEventView = SitePickerView.AccountMismatchView
+            currentSitePickerState = SitePickerState.AccountMismatchState
         )
     }
 
@@ -245,7 +245,7 @@ class SitePickerViewModel @Inject constructor(
             primaryBtnText = resourceProvider.getString(string.login_view_connected_stores),
             noStoresLabelText = resourceProvider.getString(string.login_not_woo_store, url),
             noStoresBtnText = resourceProvider.getString(string.login_refresh_app),
-            currentSitePickerEventView = SitePickerView.WooNotFoundView
+            currentSitePickerState = SitePickerState.WooNotFoundState
         )
     }
 
@@ -266,7 +266,7 @@ class SitePickerViewModel @Inject constructor(
         sitePickerViewState = sitePickerViewState.copy(
             isNoStoresViewVisible = false,
             primaryBtnText = resourceProvider.getString(string.continue_button),
-            currentSitePickerEventView = SitePickerView.StoreListView
+            currentSitePickerState = SitePickerState.StoreListState
         )
     }
 
@@ -403,7 +403,7 @@ class SitePickerViewModel @Inject constructor(
         val isProgressDiaLogVisible: Boolean = false,
         val isPrimaryBtnVisible: Boolean = false,
         val isSecondaryBtnVisible: Boolean = false,
-        val currentSitePickerEventView: SitePickerView = SitePickerView.StoreListView
+        val currentSitePickerState: SitePickerState = SitePickerState.StoreListState
     ) : Parcelable
 
     @Parcelize
@@ -424,7 +424,7 @@ class SitePickerViewModel @Inject constructor(
         object NavigationToLearnMoreAboutJetpackEvent : SitePickerEvent()
     }
 
-    enum class SitePickerView {
-        StoreListView, NoStoreView, AccountMismatchView, WooNotFoundView
+    enum class SitePickerState {
+        StoreListState, NoStoreState, AccountMismatchState, WooNotFoundState
     }
 }
