@@ -11,9 +11,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
@@ -70,8 +72,9 @@ fun EditCouponScreen(
             .background(color = MaterialTheme.colors.surface)
             .verticalScroll(scrollState)
             .padding(
-                horizontal = dimensionResource(id = R.dimen.major_100),
-                vertical = dimensionResource(id = R.dimen.major_100)
+                start = dimensionResource(id = R.dimen.major_100),
+                top = dimensionResource(id = R.dimen.major_100),
+                bottom = dimensionResource(id = R.dimen.major_100)
             )
             .fillMaxSize()
     ) {
@@ -81,7 +84,9 @@ fun EditCouponScreen(
         WCColoredButton(
             onClick = { /*TODO*/ },
             text = stringResource(id = R.string.coupon_edit_save_button),
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .padding(end = dimensionResource(id = R.dimen.major_100))
+                .fillMaxWidth(),
             enabled = viewState.hasChanges
         )
     }
@@ -100,6 +105,7 @@ private fun DetailsSection(
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
         modifier = Modifier
+            .padding(end = dimensionResource(id = R.dimen.major_100))
             .fillMaxWidth()
     ) {
         Text(
@@ -157,7 +163,31 @@ private fun ConditionsSection(viewState: EditCouponViewModel.ViewState) {
 @Composable
 @Suppress("UnusedPrivateMember")
 private fun UsageRestrictionsSection(viewState: EditCouponViewModel.ViewState) {
-    /*TODO*/
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = stringResource(id = string.coupon_edit_usage_section).toUpperCase(Locale.current),
+            style = MaterialTheme.typography.body2,
+            color = colorResource(id = R.color.color_on_surface_medium)
+        )
+
+        Column {
+            TextButton(onClick = { /*TODO*/ }) {
+                Text(
+                    text = stringResource(id = string.coupon_edit_usage_restrictions),
+                    style = MaterialTheme.typography.body1,
+                    color = colorResource(id = R.color.color_on_surface)
+                )
+            }
+            Divider(
+                modifier = Modifier.padding(start = dimensionResource(id = R.dimen.minor_100)),
+                color = colorResource(id = R.color.divider_color),
+                thickness = dimensionResource(id = R.dimen.minor_10)
+            )
+        }
+    }
 }
 
 @Composable
