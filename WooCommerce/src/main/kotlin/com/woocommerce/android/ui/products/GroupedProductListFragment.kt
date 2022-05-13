@@ -16,6 +16,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,12 +26,13 @@ import javax.inject.Inject
 class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_product_list), BackPressListener {
     @Inject lateinit var navigator: ProductNavigator
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     val viewModel: GroupedProductListViewModel by viewModels()
 
     private val skeletonView = SkeletonView()
     private val productListAdapter: GroupedProductListAdapter by lazy {
-        GroupedProductListAdapter(viewModel::onProductDeleted)
+        GroupedProductListAdapter(viewModel::onProductDeleted, currencyFormatter)
     }
 
     private var _binding: FragmentGroupedProductListBinding? = null
