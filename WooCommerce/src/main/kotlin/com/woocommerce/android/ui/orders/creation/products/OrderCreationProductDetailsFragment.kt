@@ -46,7 +46,7 @@ class OrderCreationProductDetailsFragment : BaseFragment(R.layout.fragment_order
                 product,
                 currencyFormatter
             )
-            // TODO nbradbury take sharedViewModel.currentDraft.currency into account
+            // TODO nbradbury do we need to take sharedViewModel.currentDraft.currency into account?
 
             removeProductButton.setOnClickListener {
                 sharedViewModel.onRemoveProduct(item)

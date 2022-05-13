@@ -20,7 +20,7 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
         isActivated: Boolean = false
     ) {
         viewBinding.root.isActivated = isActivated
-        viewBinding.productItemView.bind(product, currencyFormatter, isActivated)
+        viewBinding.productItemView.bind(product, currencyFormatter, isActivated = isActivated)
 
         ViewCompat.setTransitionName(
             viewBinding.root,

@@ -20,6 +20,10 @@ import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.util.HtmlUtils
 import org.wordpress.android.util.PhotonUtils
 
+/**
+ * ProductItemView is a reusable view for showing basic product information.
+ * We use this in multiple places to provide a consistent product view.
+ */
 class ProductItemView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
