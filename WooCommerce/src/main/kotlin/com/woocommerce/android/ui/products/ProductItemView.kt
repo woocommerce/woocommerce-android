@@ -38,8 +38,6 @@ class ProductItemView @JvmOverloads constructor(
         currencyFormatter: CurrencyFormatter,
         isActivated: Boolean = false
     ) {
-        binding.root.isActivated = isActivated
-
         binding.productName.text = if (product.name.isEmpty()) {
             context.getString(R.string.untitled)
         } else {
