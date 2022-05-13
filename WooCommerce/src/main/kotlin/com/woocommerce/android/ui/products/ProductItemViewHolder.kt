@@ -34,9 +34,8 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
 
     fun bind(
         product: Product,
-        currencyFormatter: CurrencyFormatter? = null,
-        isActivated: Boolean = false,
-        showSku: Boolean = false
+        currencyFormatter: CurrencyFormatter,
+        isActivated: Boolean = false
     ) {
         viewBinding.root.isActivated = isActivated
 
@@ -60,7 +59,7 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
         }
 
         with(viewBinding.productSku) {
-            if (showSku && product.sku.isNotEmpty()) {
+            if (product.sku.isNotEmpty()) {
                 visibility = View.VISIBLE
                 text = context.getString(R.string.orderdetail_product_lineitem_sku_value, product.sku)
             } else {
@@ -123,7 +122,7 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
     private fun getProductStockStatusPriceText(
         context: Context,
         product: Product,
-        currencyFormatter: CurrencyFormatter?
+        currencyFormatter: CurrencyFormatter
     ): String {
         val statusHtml = product.status?.let {
             when {
@@ -142,7 +141,7 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
         val stock = getStockText(product)
         val stockAndStatus = if (statusHtml != null) "$statusHtml $bullet $stock" else stock
 
-        return if (product.price != null && currencyFormatter != null) {
+        return if (product.price != null) {
             val fmtPrice = currencyFormatter.formatCurrency(product.price)
             "$stockAndStatus $bullet $fmtPrice"
         } else {
