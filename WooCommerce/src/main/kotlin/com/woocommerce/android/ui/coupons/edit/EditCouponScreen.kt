@@ -251,7 +251,6 @@ private fun ExpiryField(dateExpires: Date?, onExpiryDateChanged: (Date?) -> Unit
     if (showDatePicker) {
         DatePickerDialog(
             currentDate = dateExpires,
-            minDate = Date(),
             onDateSelected = {
                 showDatePicker = false
                 onExpiryDateChanged(it)
