@@ -17,7 +17,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -78,9 +78,9 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
             viewLifecycleOwner,
             Observer { event ->
                 when (event) {
-                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    is Exit -> findNavController().navigateUp()
-                    is ExitWithResult<*> -> {
+                    is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                    is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
+                    is MultiLiveEvent.Event.ExitWithResult<*> -> {
                         navigateBackWithResult(viewModel.getKeyForGroupedProductListType(), event.data as List<*>)
                     }
                     is ProductNavigationTarget -> navigator.navigate(this, event)
