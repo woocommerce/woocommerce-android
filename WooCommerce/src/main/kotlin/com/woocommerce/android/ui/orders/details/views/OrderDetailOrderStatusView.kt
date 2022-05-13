@@ -9,6 +9,7 @@ import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderDetailOrderStatusBinding
 import com.woocommerce.android.extensions.getMediumDate
+import com.woocommerce.android.extensions.getTimeString
 import com.woocommerce.android.extensions.isToday
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
@@ -31,22 +32,22 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
         binding.orderStatusOrderTags.tag = OrderStatusTag(orderStatus)
     }
 
-    fun updateOrder(order: Order) {
+    fun updateOrderDate(order: Order) {
         with(order.dateCreated) {
-            when (isToday()) {
-                true, false -> getMediumDate(context)
-                null -> ""
-            }.let { dateStr ->
-                binding.orderStatusSubtitle.text =
-                    when (mode) {
-                        Mode.OrderEdit -> context.getString(
-                            R.string.orderdetail_orderstatus_date_and_ordernum,
-                            dateStr,
-                            order.number
-                        )
-                        Mode.OrderCreation -> dateStr
-                    }
-            }
+            isToday()
+                ?.let { getMediumDate(context)}.orEmpty()
+
+                .let { dateStr ->
+                    binding.orderStatusSubtitle.text =
+                        when (mode) {
+                            Mode.OrderEdit -> context.getString(
+                                R.string.orderdetail_orderstatus_date_and_ordernum,
+                                dateStr,
+                                order.number
+                            )
+                            Mode.OrderCreation -> dateStr
+                        }
+                }
         }
 
         when (mode) {
@@ -55,7 +56,33 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
                     order.getBillingName(context.getString(R.string.orderdetail_customer_name_default))
             }
             Mode.OrderCreation -> {
-                // TODO
+                binding.orderStatusHeader.isVisible = false
+            }
+        }
+    }
+
+    fun updateOrderTime(order: Order) {
+        with(order.dateCreated) {
+            isToday()
+                ?.let { getTimeString(context)}.orEmpty()
+                .let {dateStr ->
+                    binding.orderStatusSubtitle.text =
+                        when(mode) {
+                            Mode.OrderEdit -> context.getString(
+                                R.string.orderdetail_orderstatus_date_and_ordernum,
+                                dateStr,
+                                order.number
+                            )
+                            Mode.OrderCreation -> dateStr
+                        }
+                }
+        }
+        when(mode) {
+            Mode.OrderEdit -> {
+                binding.orderStatusHeader.text =
+                    order.getBillingName(context.getString(R.string.orderdetail_customer_name_default))
+            }
+            Mode.OrderCreation -> {
                 binding.orderStatusHeader.isVisible = false
             }
         }
