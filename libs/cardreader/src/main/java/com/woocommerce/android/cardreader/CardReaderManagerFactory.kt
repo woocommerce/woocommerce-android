@@ -39,6 +39,7 @@ object CardReaderManagerFactory {
             UpdateErrorMapper(batteryLevelProvider)
         )
         val terminalListener = TerminalListenerImpl(logWrapper)
+        val cardReaderConfigFactory = CardReaderConfigFactory()
 
         return CardReaderManagerImpl(
             application,
@@ -53,14 +54,14 @@ object CardReaderManagerFactory {
                     terminal,
                     PaymentUtils(),
                     logWrapper,
-                    CardReaderConfigFactory()
+                    cardReaderConfigFactory
                 ),
                 CollectPaymentAction(terminal, logWrapper),
                 ProcessPaymentAction(terminal, logWrapper),
                 CancelPaymentAction(terminal),
                 PaymentUtils(),
                 PaymentErrorMapper(),
-                CardReaderConfigFactory()
+                cardReaderConfigFactory
             ),
             InteracRefundManager(
                 CollectInteracRefundAction(terminal),
