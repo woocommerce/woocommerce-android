@@ -13,7 +13,6 @@ import com.woocommerce.android.util.CurrencyFormatter
 class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
     RecyclerView.ViewHolder(viewBinding.root) {
     private val context = viewBinding.root.context
-    private lateinit var productItemView: ProductItemView
 
     fun bind(
         product: Product,
@@ -21,10 +20,7 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
         isActivated: Boolean = false
     ) {
         viewBinding.root.isActivated = isActivated
-
-        productItemView = ProductItemView(context)
-        productItemView.bind(product, currencyFormatter, isActivated)
-        viewBinding.root.addView(productItemView)
+        viewBinding.productItemView.bind(product, currencyFormatter, isActivated)
 
         ViewCompat.setTransitionName(
             viewBinding.root,
@@ -39,7 +35,7 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
         product: Product,
         onItemDeleted: (product: Product) -> Unit
     ) {
-        with(productItemView.binding.productBtnDelete) {
+        with(viewBinding.productItemView.binding.productBtnDelete) {
             isVisible = true
             setOnClickListener { onItemDeleted.invoke(product) }
         }
