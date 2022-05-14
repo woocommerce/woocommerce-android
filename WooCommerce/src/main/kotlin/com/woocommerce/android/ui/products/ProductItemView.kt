@@ -10,7 +10,9 @@ import androidx.core.text.HtmlCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ProductItemViewBinding
 import com.woocommerce.android.di.GlideApp
+import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.orders.creation.ProductUIModel
 import com.woocommerce.android.ui.products.ProductStockStatus.InStock
 import com.woocommerce.android.ui.products.ProductStockStatus.OnBackorder
 import com.woocommerce.android.ui.products.ProductStockStatus.OutOfStock
@@ -19,6 +21,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.util.HtmlUtils
 import org.wordpress.android.util.PhotonUtils
+import java.math.BigDecimal
 
 /**
  * ProductItemView is a reusable view for showing basic product information.
@@ -30,6 +33,7 @@ class ProductItemView @JvmOverloads constructor(
     defStyle: Int = 0
 ) : ConstraintLayout(context, attrs, defStyle) {
     val binding = ProductItemViewBinding.inflate(LayoutInflater.from(context), this, true)
+
     private val imageSize = context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
     private val bullet = "\u2022"
     private val statusColor = ContextCompat.getColor(context, R.color.product_status_fg_other)
@@ -46,6 +50,34 @@ class ProductItemView @JvmOverloads constructor(
         showProductSku(product.sku)
         showProductImage(product.firstImageUrl, isActivated)
         showProductStockStatusPrice(product, currencyFormatter)
+    }
+
+    fun bind(
+        productUIModel: ProductUIModel,
+        decimalFormatter: (BigDecimal) -> String,
+    ) {
+        showProductName(productUIModel.item.name)
+        showProductSku(productUIModel.item.sku)
+        showProductImage(productUIModel.imageUrl)
+
+        binding.productStockAndStatus.text = buildString {
+            if (productUIModel.item.isVariation && productUIModel.item.attributesDescription.isNotEmpty()) {
+                append(productUIModel.item.attributesDescription)
+            } else {
+                if (productUIModel.isStockManaged && productUIModel.stockStatus == InStock) {
+                    append(
+                        context.getString(
+                            R.string.order_creation_product_stock_quantity,
+                            productUIModel.stockQuantity.formatToString()
+                        )
+                    )
+                } else {
+                    append(context.getString(productUIModel.stockStatus.stringResource))
+                }
+            }
+            append(" $bullet ")
+            append(decimalFormatter(productUIModel.item.total).replace(" ", "\u00A0"))
+        }
     }
 
     private fun showProductName(productName: String) {
