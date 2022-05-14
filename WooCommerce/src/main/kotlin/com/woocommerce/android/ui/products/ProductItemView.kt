@@ -42,77 +42,68 @@ class ProductItemView @JvmOverloads constructor(
         currencyFormatter: CurrencyFormatter,
         isActivated: Boolean = false
     ) {
-        binding.productName.text = if (product.name.isEmpty()) {
+        showProductName(product.name)
+        showProductSku(product.sku)
+        showProductImage(product.firstImageUrl, isActivated)
+        showProductStockStatusPrice(product, currencyFormatter)
+    }
+
+    private fun showProductName(productName: String) {
+        binding.productName.text = if (productName.isEmpty()) {
             context.getString(R.string.untitled)
         } else {
-            HtmlUtils.fastStripHtml(product.name)
+            HtmlUtils.fastStripHtml(productName)
         }
+    }
 
-        val stockStatusPrice = getProductStockStatusPriceText(context, product, currencyFormatter)
-        with(binding.productStockAndStatus) {
-            if (stockStatusPrice.isNotEmpty()) {
-                visibility = View.VISIBLE
-                text = HtmlCompat.fromHtml(
-                    stockStatusPrice,
-                    HtmlCompat.FROM_HTML_MODE_LEGACY
-                )
-            } else {
-                visibility = View.GONE
-            }
-        }
-
+    private fun showProductSku(sku: String) {
         with(binding.productSku) {
-            if (product.sku.isNotEmpty()) {
+            if (sku.isNotEmpty()) {
                 visibility = View.VISIBLE
-                text = context.getString(R.string.orderdetail_product_lineitem_sku_value, product.sku)
+                text = context.getString(R.string.orderdetail_product_lineitem_sku_value, sku)
             } else {
                 visibility = View.GONE
             }
         }
-
-        showProductImage(product, binding, isActivated)
     }
 
     private fun showProductImage(
-        product: Product,
-        viewBinding: ProductItemViewBinding,
-        isActivated: Boolean
+        imageUrl: String?,
+        isActivated: Boolean = false
     ) {
-        val firstImage = product.firstImageUrl
         val size: Int
         when {
             isActivated -> {
                 size = imageSize / 2
-                viewBinding.productImage.setImageResource(R.drawable.ic_menu_action_mode_check)
-                viewBinding.productImageFrame.setBackgroundColor(selectedBackgroundColor)
+                binding.productImage.setImageResource(R.drawable.ic_menu_action_mode_check)
+                binding.productImageFrame.setBackgroundColor(selectedBackgroundColor)
             }
-            firstImage.isNullOrEmpty() -> {
+            imageUrl.isNullOrEmpty() -> {
                 size = imageSize / 2
-                viewBinding.productImageFrame.setBackgroundColor(unSelectedBackgroundColor)
-                viewBinding.productImage.setImageResource(R.drawable.ic_product)
+                binding.productImageFrame.setBackgroundColor(unSelectedBackgroundColor)
+                binding.productImage.setImageResource(R.drawable.ic_product)
             }
             else -> {
                 size = imageSize
-                viewBinding.productImageFrame.setBackgroundColor(unSelectedBackgroundColor)
-                val imageUrl = PhotonUtils.getPhotonImageUrl(firstImage, imageSize, imageSize)
+                binding.productImageFrame.setBackgroundColor(unSelectedBackgroundColor)
+                val photonUrl = PhotonUtils.getPhotonImageUrl(imageUrl, imageSize, imageSize)
                 GlideApp.with(context)
-                    .load(imageUrl)
+                    .load(photonUrl)
                     .placeholder(R.drawable.ic_product)
-                    .into(viewBinding.productImage)
+                    .into(binding.productImage)
             }
         }
 
-        viewBinding.productImage.layoutParams.apply {
+        binding.productImage.layoutParams.apply {
             height = size
             width = size
         }
     }
 
-    private fun getProductStockStatusPriceText(
-        context: Context,
+    private fun showProductStockStatusPrice(
         product: Product,
         currencyFormatter: CurrencyFormatter
-    ): String {
+    ) {
         val statusHtml = product.status?.let {
             when {
                 it == ProductStatus.PENDING -> {
@@ -129,12 +120,23 @@ class ProductItemView @JvmOverloads constructor(
 
         val stock = getStockText(product)
         val stockAndStatus = if (statusHtml != null) "$statusHtml $bullet $stock" else stock
-
-        return if (product.price != null) {
+        val stockStatusPrice = if (product.price != null) {
             val fmtPrice = currencyFormatter.formatCurrency(product.price)
             "$stockAndStatus $bullet $fmtPrice"
         } else {
             stockAndStatus
+        }
+
+        with(binding.productStockAndStatus) {
+            if (stockStatusPrice.isNotEmpty()) {
+                visibility = View.VISIBLE
+                text = HtmlCompat.fromHtml(
+                    stockStatusPrice,
+                    HtmlCompat.FROM_HTML_MODE_LEGACY
+                )
+            } else {
+                visibility = View.GONE
+            }
         }
     }
 
