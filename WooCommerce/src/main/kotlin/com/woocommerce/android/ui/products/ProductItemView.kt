@@ -44,12 +44,13 @@ class ProductItemView @JvmOverloads constructor(
     fun bind(
         product: Product,
         currencyFormatter: CurrencyFormatter,
+        currencyCode: String? = null,
         isActivated: Boolean = false
     ) {
         showProductName(product.name)
         showProductSku(product.sku)
         showProductImage(product.firstImageUrl, isActivated)
-        showProductStockStatusPrice(product, currencyFormatter)
+        showProductStockStatusPrice(product, currencyFormatter, currencyCode)
     }
 
     fun bind(
@@ -134,13 +135,18 @@ class ProductItemView @JvmOverloads constructor(
 
     private fun showProductStockStatusPrice(
         product: Product,
-        currencyFormatter: CurrencyFormatter
+        currencyFormatter: CurrencyFormatter,
+        currencyCode: String? = null
     ) {
+        val decimalFormatter = currencyCode?.let {
+            currencyFormatter.buildBigDecimalFormatter(it)
+        } ?: currencyFormatter.buildBigDecimalFormatter()
+
         val statusHtml = getProductStatusHtml(product.status)
         val stock = getStockText(product)
         val stockAndStatus = if (statusHtml != null) "$statusHtml $bullet $stock" else stock
         val stockStatusPrice = if (product.price != null) {
-            val fmtPrice = currencyFormatter.formatCurrency(product.price)
+            val fmtPrice = decimalFormatter(product.price)
             "$stockAndStatus $bullet $fmtPrice"
         } else {
             stockAndStatus

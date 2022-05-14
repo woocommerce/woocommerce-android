@@ -44,9 +44,9 @@ class OrderCreationProductDetailsFragment : BaseFragment(R.layout.fragment_order
         with(binding) {
             productItemView.bind(
                 product,
-                currencyFormatter
+                currencyFormatter,
+                sharedViewModel.currentDraft.currency
             )
-            // TODO nbradbury do we need to take sharedViewModel.currentDraft.currency into account?
 
             removeProductButton.setOnClickListener {
                 sharedViewModel.onRemoveProduct(item)
