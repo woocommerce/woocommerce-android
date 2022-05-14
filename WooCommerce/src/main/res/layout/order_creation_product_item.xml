@@ -7,7 +7,7 @@
 
     <com.woocommerce.android.ui.products.ProductItemView
         android:id="@+id/productItemView"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/major_100"
         app:layout_constraintEnd_toStartOf="@id/stepper_view"
