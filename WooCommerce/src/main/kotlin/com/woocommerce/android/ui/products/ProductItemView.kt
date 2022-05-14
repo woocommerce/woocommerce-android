@@ -104,20 +104,7 @@ class ProductItemView @JvmOverloads constructor(
         product: Product,
         currencyFormatter: CurrencyFormatter
     ) {
-        val statusHtml = product.status?.let {
-            when {
-                it == ProductStatus.PENDING -> {
-                    "<font color=$statusPendingColor>${product.status.toLocalizedString(context)}</font>"
-                }
-                it != ProductStatus.PUBLISH -> {
-                    "<font color=$statusColor>${product.status.toLocalizedString(context)}</font>"
-                }
-                else -> {
-                    null
-                }
-            }
-        }
-
+        val statusHtml = getProductStatusHtml(product.status)
         val stock = getStockText(product)
         val stockAndStatus = if (statusHtml != null) "$statusHtml $bullet $stock" else stock
         val stockStatusPrice = if (product.price != null) {
@@ -136,6 +123,22 @@ class ProductItemView @JvmOverloads constructor(
                 )
             } else {
                 visibility = View.GONE
+            }
+        }
+    }
+
+    private fun getProductStatusHtml(productStatus: ProductStatus?): String? {
+        return productStatus?.let {
+            when {
+                it == ProductStatus.PENDING -> {
+                    "<font color=$statusPendingColor>${productStatus.toLocalizedString(context)}</font>"
+                }
+                it != ProductStatus.PUBLISH -> {
+                    "<font color=$statusColor>${productStatus.toLocalizedString(context)}</font>"
+                }
+                else -> {
+                    null
+                }
             }
         }
     }
