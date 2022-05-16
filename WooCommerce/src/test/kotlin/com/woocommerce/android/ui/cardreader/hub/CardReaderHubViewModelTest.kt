@@ -176,7 +176,6 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun ` when screen shown, then manuals row is displayed`() {
-
         assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
             .anyMatch {
                 it.icon == R.drawable.ic_card_reader_manual &&
@@ -186,7 +185,6 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when user clicks on manuals row, then app navigates to manuals screen`() {
-
         (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
             .find {
                 it.label == UiString.UiStringRes(R.string.settings_card_reader_manuals)
