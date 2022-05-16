@@ -66,34 +66,10 @@ class CardReaderHubViewModel @Inject constructor(
             ),
             CardReaderHubListItemViewState(
                 icon = R.drawable.ic_card_reader_manual,
-                label = UiString.UiStringRes(R.string.card_reader_bbpos_manual_card_reader),
-                onItemClicked = ::onBbposManualCardReaderClicked
-            ),
-            CardReaderHubListItemViewState(
-                icon = R.drawable.ic_card_reader_manual,
-                label = UiString.UiStringRes(R.string.card_reader_m2_manual_card_reader),
-                onItemClicked = ::onM2ManualCardReaderClicked
+                label = UiString.UiStringRes(R.string.settings_card_reader_manuals),
+                onItemClicked = ::onCardReaderManualsClicked
             )
-        ).apply {
-            if (inPersonPaymentsCanadaFeatureFlag.isEnabled()) {
-                add(
-                    CardReaderHubListItemViewState(
-                        icon = R.drawable.ic_card_reader_manual,
-                        label = UiString.UiStringRes(R.string.card_reader_wisepad_3_manual_card_reader),
-                        onItemClicked = ::onWisePad3ManualCardReaderClicked
-                    )
-                )
-            }
-            if (cardReaderManualsFeatureFlag.isEnabled()) {
-                add(
-                    CardReaderHubListItemViewState(
-                        icon = R.drawable.ic_card_reader_manual,
-                        label = UiString.UiStringRes(R.string.settings_card_reader_manuals),
-                        onItemClicked = ::onCardReaderManualsClicked
-                    )
-                )
-            }
-        }.toImmutableList()
+        )
     )
 
     val viewStateData: LiveData<CardReaderHubViewState> = viewState
