@@ -1,0 +1,4 @@
+9.1:
+Abbiamo lavorato duro su una nuova funzionalità per aiutarti a gestire i codici promozionali. È un lavoro in evoluzione, ma puoi dare un'occhiata in anteprima attivando la funzionalità beta in Impostazioni nella scheda Altro. Accogliamo con favore il tuo primo feedback.
+
+Abbiamo anche risolto alcuni bug con prodotti variabili con prezzi cancellati accidentalmente quando si cambiano i livelli di inventario.

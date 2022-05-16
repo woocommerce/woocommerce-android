@@ -15,10 +15,10 @@ object CouponTestUtils {
             maximumAmount = BigDecimal("100"),
             dateCreatedGmt = Date(),
             type = Coupon.Type.FixedCart,
-            categories = emptyList(),
-            products = emptyList(),
-            excludedProducts = emptyList(),
-            excludedCategories = emptyList(),
+            categoryIds = emptyList(),
+            productIds = emptyList(),
+            excludedProductIds = emptyList(),
+            excludedCategoryIds = emptyList(),
             restrictedEmails = emptyList()
         )
     }

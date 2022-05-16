@@ -1,0 +1,4 @@
+9.1 :
+Nous travaillons d’arrache-pied à l’élaboration d’une nouvelle fonctionnalité qui vous aidera à gérer vos codes promo. C’est un projet en chantier, mais vous pourrez en avoir un avant-goût en activant la fonctionnalité bêta dans Réglages, sous l’onglet Plus. N’hésitez pas à donner votre avis en avant-première !
+
+Nous avons également corrigé quelques bogues concernant les produits variables ; les prix s’effaçaient malencontreusement lors de la modification des niveaux de stock.
