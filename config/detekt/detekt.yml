@@ -6,9 +6,11 @@ complexity:
     excludes: ['**/test/**']
   LongParameterList:
     ignoreDefaultParameters: true
-    ignoreAnnotated: ['Inject']
+    ignoreAnnotated: ['Inject', 'Composable']
   TooManyFunctions:
     active: false
+  LongMethod:
+    ignoreAnnotated: ['Composable']
 
 formatting:
   active: true
@@ -21,8 +23,9 @@ style:
   UnnecessaryAbstractClass:
     active: true
     ignoreAnnotated: [ 'Module' ]
+  MagicNumber:
+    ignoreAnnotated: [ 'Composable' ]
 
 naming:
   FunctionNaming:
     ignoreAnnotated: [ 'Composable' ]
-
