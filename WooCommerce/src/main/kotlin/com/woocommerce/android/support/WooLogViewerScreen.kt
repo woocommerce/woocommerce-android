@@ -126,7 +126,7 @@ private fun logLevelColor(level: WooLog.LogLevel): Int {
 
 @Preview
 @Composable
-fun WooLogViewerScreenPreview() {
+private fun WooLogViewerScreenPreview() {
     val entries = RollingLogEntries(99).also {
         it.add(
             RollingLogEntries.LogEntry(WooLog.T.ORDERS, WooLog.LogLevel.v, "Verbose")

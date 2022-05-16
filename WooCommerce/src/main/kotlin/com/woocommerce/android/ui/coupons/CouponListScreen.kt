@@ -226,7 +226,7 @@ private fun SearchEmptyList(searchQuery: String) {
 
 @Preview
 @Composable
-fun CouponListPreview() {
+private fun CouponListPreview() {
     val coupons = listOf(
         CouponListItem(
             id = 1,
@@ -255,12 +255,12 @@ fun CouponListPreview() {
 
 @Preview
 @Composable
-fun CouponListEmptyPreview() {
+private fun CouponListEmptyPreview() {
     EmptyCouponList()
 }
 
 @Preview
 @Composable
-fun CouponListSkeletonPreview() {
+private fun CouponListSkeletonPreview() {
     CouponListSkeleton()
 }

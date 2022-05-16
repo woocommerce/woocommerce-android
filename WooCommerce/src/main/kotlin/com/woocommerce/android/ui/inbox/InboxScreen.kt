@@ -343,7 +343,7 @@ private fun InboxNoteButtonsSkeleton() {
 
 @Preview
 @Composable
-fun InboxPreview(@PreviewParameter(SampleInboxProvider::class, 1) state: InboxState) {
+private fun InboxPreview(@PreviewParameter(SampleInboxProvider::class, 1) state: InboxState) {
     InboxScreen(state)
 }
 

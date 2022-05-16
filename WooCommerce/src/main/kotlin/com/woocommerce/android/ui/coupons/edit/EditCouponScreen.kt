@@ -194,7 +194,7 @@ private fun DescriptionButton(description: String?, onButtonClicked: () -> Unit)
 
 @Composable
 @Preview
-fun EditCouponPreview() {
+private fun EditCouponPreview() {
     WooTheme {
         EditCouponScreen(
             viewState = EditCouponViewModel.ViewState(

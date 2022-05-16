@@ -316,7 +316,7 @@ fun MoreMenuBadge(badgeCount: Int) {
 @ExperimentalFoundationApi
 @Preview
 @Composable
-fun MoreMenuPreview() {
+private fun MoreMenuPreview() {
     val state = MoreMenuViewState(
         moreMenuItems = listOf(
             MenuUiButton(VIEW_ADMIN, string.more_menu_button_woo_admin, drawable.ic_more_menu_wp_admin),
