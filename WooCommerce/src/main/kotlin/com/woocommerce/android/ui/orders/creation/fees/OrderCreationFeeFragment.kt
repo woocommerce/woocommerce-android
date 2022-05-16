@@ -17,6 +17,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationFeeBinding
 import com.woocommerce.android.extensions.drop
 import com.woocommerce.android.extensions.filterNotNull
+import com.woocommerce.android.extensions.showKeyboardWithDelay
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
@@ -37,6 +38,8 @@ class OrderCreationFeeFragment :
 
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
+    private var doneMenuItem: MenuItem? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
@@ -44,6 +47,10 @@ class OrderCreationFeeFragment :
             bindViews()
             observeEvents()
             observeViewStateData()
+
+            if (savedInstanceState == null) {
+                feeAmountEditText.editText.showKeyboardWithDelay()
+            }
         }
     }
 
@@ -51,6 +58,8 @@ class OrderCreationFeeFragment :
         super.onCreateOptionsMenu(menu, inflater)
         menu.clear()
         inflater.inflate(R.menu.menu_done, menu)
+        doneMenuItem = menu.findItem(R.id.menu_done)
+        doneMenuItem?.isEnabled = editFeeViewModel.viewStateData.liveData.value?.isDoneButtonEnabled ?: false
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -109,6 +118,9 @@ class OrderCreationFeeFragment :
                 feePercentageCalculatedAmount.isVisible = isChecked
                 feeAmountEditText.isVisible = isChecked.not()
                 feeTypeSwitch.isChecked = isChecked
+            }
+            new.isDoneButtonEnabled.takeIfNotEqualTo(old?.isDoneButtonEnabled) {
+                doneMenuItem?.isEnabled = it
             }
             new.shouldDisplayRemoveFeeButton.takeIfNotEqualTo(old?.shouldDisplayRemoveFeeButton) {
                 removeFeeButton.isVisible = it

@@ -15,7 +15,8 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons.Filled
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -62,6 +63,7 @@ fun EditCouponScreen(viewModel: EditCouponViewModel) {
             onAmountChanged = viewModel::onAmountChanged,
             onCouponCodeChanged = viewModel::onCouponCodeChanged,
             onRegenerateCodeClick = viewModel::onRegenerateCodeClick,
+            onDescriptionButtonClick = viewModel::onDescriptionButtonClick,
             onExpiryDateChanged = viewModel::onExpiryDateChanged
         )
     }
@@ -73,6 +75,7 @@ fun EditCouponScreen(
     onAmountChanged: (BigDecimal?) -> Unit = {},
     onCouponCodeChanged: (String) -> Unit = {},
     onRegenerateCodeClick: () -> Unit = {},
+    onDescriptionButtonClick: () -> Unit = {},
     onExpiryDateChanged: (Date?) -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
@@ -92,6 +95,7 @@ fun EditCouponScreen(
             onAmountChanged = onAmountChanged,
             onCouponCodeChanged = onCouponCodeChanged,
             onRegenerateCodeClick = onRegenerateCodeClick,
+            onDescriptionButtonClick = onDescriptionButtonClick,
             onExpiryDateChanged = onExpiryDateChanged
         )
         ConditionsSection(viewState)
@@ -112,6 +116,7 @@ private fun DetailsSection(
     onAmountChanged: (BigDecimal?) -> Unit,
     onCouponCodeChanged: (String) -> Unit,
     onRegenerateCodeClick: () -> Unit,
+    onDescriptionButtonClick: () -> Unit,
     onExpiryDateChanged: (Date?) -> Unit
 ) {
     val couponDraft = viewState.couponDraft
@@ -143,21 +148,7 @@ private fun DetailsSection(
             },
             text = stringResource(id = R.string.coupon_edit_regenerate_coupon)
         )
-
-        WCOutlinedButton(
-            onClick = { /*TODO*/ },
-            text = "Edit Description",
-            leadingIcon = {
-                Icon(
-                    imageVector = Filled.Edit,
-                    contentDescription = null,
-                    modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
-                )
-            },
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.onSurface),
-            modifier = Modifier.fillMaxWidth()
-        )
-
+        DescriptionButton(viewState.couponDraft.description, onDescriptionButtonClick)
         ExpiryField(viewState.couponDraft.dateExpires, onExpiryDateChanged)
     }
 }
@@ -188,6 +179,26 @@ private fun AmountField(amount: BigDecimal?, amountUnit: String, type: Type?, on
         // TODO use KeyboardType.Decimal after updating to Compose 1.2.0
         //  (https://issuetracker.google.com/issues/209835363)
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        modifier = Modifier.fillMaxWidth()
+    )
+}
+
+@Composable
+private fun DescriptionButton(description: String?, onButtonClicked: () -> Unit) {
+    WCOutlinedButton(
+        onClick = onButtonClicked,
+        text = stringResource(
+            id = if (description.isNullOrEmpty()) R.string.coupon_edit_add_description
+            else R.string.coupon_edit_edit_description
+        ),
+        leadingIcon = {
+            Icon(
+                imageVector = if (description.isNullOrEmpty()) Icons.Filled.Add else Icons.Filled.Edit,
+                contentDescription = null,
+                modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
+            )
+        },
+        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.onSurface),
         modifier = Modifier.fillMaxWidth()
     )
 }
@@ -273,10 +284,10 @@ fun EditCouponPreview() {
                     id = 0L,
                     code = "code",
                     amount = BigDecimal.TEN,
-                    products = emptyList(),
-                    categories = emptyList(),
-                    excludedProducts = emptyList(),
-                    excludedCategories = emptyList(),
+                    productIds = emptyList(),
+                    categoryIds = emptyList(),
+                    excludedProductIds = emptyList(),
+                    excludedCategoryIds = emptyList(),
                     restrictedEmails = emptyList()
                 ),
                 localizedType = "Fixed Rate Discount",

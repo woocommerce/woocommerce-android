@@ -5,6 +5,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.ui.coupons.CouponRepository
+import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenDescriptionEditor
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -78,6 +79,16 @@ class EditCouponViewModel @Inject constructor(
         val newCode = couponUtils.generateRandomCode()
         couponDraft.update {
             it?.copy(code = newCode)
+        }
+    }
+
+    fun onDescriptionButtonClick() {
+        triggerEvent(OpenDescriptionEditor(couponDraft.value?.description))
+    }
+
+    fun onDescriptionChanged(description: String) {
+        couponDraft.update {
+            it?.copy(description = description)
         }
     }
 

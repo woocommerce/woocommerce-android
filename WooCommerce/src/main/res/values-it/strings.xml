@@ -1,11 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-04-26 13:54:03+0000
+Translation-Revision-Date: 2022-05-05 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="coupon_details_restricted_emails">Limitato ai clienti con e-mail: %1$s</string>
+    <string name="coupon_details_excludes_sale_items">Esclude gli elementi in offerta</string>
+    <string name="coupon_details_allows_free_shipping">Permetti la spedizione gratuita</string>
+    <string name="coupon_details_individual_use_only">Solo uso individuale</string>
+    <string name="coupon_details_usage_limit_per_items_single">Limitato a %1$d elemento nel carrello</string>
+    <string name="coupon_details_usage_limit_per_items_multiple">Limitato a %1$d elementi nel carrello</string>
+    <string name="coupon_details_usage_limit_per_coupon_single">Può essere usato %1$d volta</string>
+    <string name="coupon_details_usage_limit_per_coupon_multiple">Può essere usato %1$d volte</string>
+    <string name="coupon_details_usage_limit_per_user_single">%1$d utilizzo per utente</string>
+    <string name="coupon_details_usage_limit_per_user_multiple">%1$d utilizzi per utente</string>
+    <string name="coupon_details_delete_successful">Codice promozionale eliminato</string>
+    <string name="coupon_details_delete_failure">Eliminazione del codice promozionale non riuscita</string>
+    <string name="coupon_details_delete_confirmation">Desideri eliminare questo codice promozionale?</string>
+    <string name="coupon_details_delete">Elimina il codice promozionale</string>
+    <string name="inbox_screen_sync_error">Errore durane la sincronizzazione della casella di posta</string>
+    <string name="inbox_note_dismiss_all_notes">Ignora tutto</string>
+    <string name="inbox_screen_title">Casella di posta</string>
+    <string name="settings_card_reader_manuals">Manuali del lettore di schede</string>
+    <string name="card_reader_interac_refund_refund_payment_hint">Tocca o inserisci per effettuare il rimborso</string>
+    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">L\'ordine è già stato rimborsato</string>
+    <string name="card_reader_interac_refund_refund_failed_cancelled">Rimborso annullato</string>
+    <string name="card_reader_interac_refund_refund_failed_ok">OK</string>
+    <string name="card_reader_interac_refund_refund_failed_test_card">Le carte di prova del sistema non sono autorizzate al rimborso</string>
+    <string name="card_reader_interac_refund_refund_failed_invalid_amount">L\'importo del rimborso non è consentito per la carta presentata</string>
+    <string name="card_reader_interac_refund_refund_failed_insufficient_funds">Rimborso rifiutato per fondi insufficienti</string>
+    <string name="card_reader_interac_refund_refund_failed_duplicate_transaction">Un rimborso identico è stato inoltrato di recente</string>
+    <string name="card_reader_interac_refund_refund_failed_card_not_supported">La carta non supporta questo tipo di rimborso</string>
+    <string name="card_reader_interac_refund_refund_failed_generic">Il rimborso è stato rifiutato per una ragione non specificata</string>
+    <string name="card_reader_interac_refund_refund_failed_fraud">Prova altri mezzi per eseguire il rimborso</string>
+    <string name="card_reader_interac_refund_refund_failed_unknown">Il rimborso è stato rifiutato per una ragione sconosciuta</string>
+    <string name="card_reader_interac_refund_refund_failed_unexpected_error_state">Siamo spiacenti, questo rimborso non può essere elaborato</string>
+    <string name="card_reader_interac_refund_refund_completed_header">Rimborso avvenuto correttamente</string>
+    <string name="card_reader_interac_refund_refund_processing_state">Elaborazione del rimborso</string>
+    <string name="card_reader_interac_refund_refund_payment">Rimborsa il pagamento</string>
+    <string name="card_reader_interac_refund_refund_failed_header">Rimborso non riuscito</string>
+    <string name="card_reader_interac_refund_refund_loading_header">Preparazione dell\'esecuzione del rimborso del pagamento</string>
+    <string name="copy">Copia</string>
     <string name="coupons_list_search_hint">Cerca codici promozionali</string>
     <string name="coupon_details_share_formatting_failure">Impossibile generare il messaggio per la condivisione del codice promozionale</string>
     <string name="coupon_details_share_coupon_error">Errore durante la condivisione del codice promozionale.</string>

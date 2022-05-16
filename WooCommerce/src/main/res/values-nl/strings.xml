@@ -1,11 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-04-26 15:54:15+0000
+Translation-Revision-Date: 2022-05-05 13:54:18+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="coupon_details_restricted_emails">Beperkt tot klanten met e-mails: %1$s</string>
+    <string name="coupon_details_excludes_sale_items">Uitsluiten van afgeprijsde artikelen</string>
+    <string name="coupon_details_allows_free_shipping">Staat gratis verzending toe</string>
+    <string name="coupon_details_individual_use_only">Enkel individueel gebruik</string>
+    <string name="coupon_details_usage_limit_per_items_single">Beperkt tot %1$d artikel in winkelwagen</string>
+    <string name="coupon_details_usage_limit_per_items_multiple">Beperkt tot %1$d artikelen in winkelwagen</string>
+    <string name="coupon_details_usage_limit_per_coupon_single">Kan %1$d keer worden gebruikt</string>
+    <string name="coupon_details_usage_limit_per_coupon_multiple">Kan %1$d keer worden gebruikt</string>
+    <string name="coupon_details_usage_limit_per_user_single">%1$d keer gebruiken per gebruiker</string>
+    <string name="coupon_details_usage_limit_per_user_multiple">%1$d keer gebruiken per gebruiker</string>
+    <string name="coupon_details_delete_successful">Coupon verwijderd</string>
+    <string name="coupon_details_delete_failure">Coupon verwijderen mislukt</string>
+    <string name="coupon_details_delete_confirmation">Weet je zeker dat je deze coupon wilt verwijderen?</string>
+    <string name="coupon_details_delete">Coupon verwijderen</string>
+    <string name="inbox_screen_sync_error">Fout bij het synchroniseren van de inbox</string>
+    <string name="inbox_note_dismiss_all_notes">Alles negeren</string>
+    <string name="inbox_screen_title">Inbox</string>
+    <string name="settings_card_reader_manuals">Handleidingen kaartlezer</string>
+    <string name="card_reader_interac_refund_refund_payment_hint">Tik of voer in om terug te betalen</string>
+    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">De bestelling is al terugbetaald</string>
+    <string name="card_reader_interac_refund_refund_failed_cancelled">Terugbetaling geannuleerd</string>
+    <string name="card_reader_interac_refund_refund_failed_ok">OK</string>
+    <string name="card_reader_interac_refund_refund_failed_test_card">Er mag niet worden terugbetaald met systeemtestkaarten</string>
+    <string name="card_reader_interac_refund_refund_failed_invalid_amount">Het terugbetalingsbedrag is niet toegestaan voor de getoonde kaart</string>
+    <string name="card_reader_interac_refund_refund_failed_insufficient_funds">Terugbetaling geweigerd vanwege onvoldoende saldo</string>
+    <string name="card_reader_interac_refund_refund_failed_duplicate_transaction">Er is recent een identieke terugbetaling ingediend</string>
+    <string name="card_reader_interac_refund_refund_failed_card_not_supported">De kaart ondersteunt dit type terugbetaling niet</string>
+    <string name="card_reader_interac_refund_refund_failed_generic">Terugbetaling geweigerd om onvermelde reden</string>
+    <string name="card_reader_interac_refund_refund_failed_fraud">Probeer een andere manier van terugbetaling</string>
+    <string name="card_reader_interac_refund_refund_failed_unknown">Terugbetaling geweigerd om onbekende reden</string>
+    <string name="card_reader_interac_refund_refund_failed_unexpected_error_state">Deze restitutie kon niet worden verwerkt</string>
+    <string name="card_reader_interac_refund_refund_completed_header">Terugbetaling gelukt</string>
+    <string name="card_reader_interac_refund_refund_processing_state">Terugbetaling verwerken</string>
+    <string name="card_reader_interac_refund_refund_payment">Betaling terugbetalen</string>
+    <string name="card_reader_interac_refund_refund_failed_header">Terugbetaling mislukt</string>
+    <string name="card_reader_interac_refund_refund_loading_header">Aan het voorbereiden op terugbetaling</string>
+    <string name="copy">Kopieer</string>
     <string name="coupons_list_search_hint">Zoek coupons</string>
     <string name="coupon_details_share_formatting_failure">Kon deelbericht voor couponcode niet genereren</string>
     <string name="coupon_details_share_coupon_error">Fout bij delen van couponcode.</string>
@@ -351,7 +388,7 @@ Language: nl
     <string name="support_system_status_report">Systeemstatusrapport</string>
     <string name="card_reader_welcome_dialog_text">Gefeliciteerd, je kunt nu betalingen van creditcards en betaalpassen aannemen met WooCommerce Payments!</string>
     <string name="card_reader_welcome_dialog_header">Ontvang betalingen met een kaartlezer</string>
-    <string name="card_reader_payment_failed_amount_too_small">Bedrag moet minstens 0,50 Amerikaanse dollar bedragen.</string>
+    <string name="card_reader_payment_failed_amount_too_small">Bedrag moet minstens $ 0,50 bedragen.</string>
     <string name="card_reader_payment_payment_failed_ok">OK</string>
     <string name="settings_whats_new_icon_description">Nieuwe afbeelding van functiepictogram</string>
     <string name="settings_switch_store">Winkel wijzigen</string>
