@@ -11,22 +11,11 @@
         android:id="@+id/fullscreen_state_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        style="@style/Widget.Woo.Toolbar"
         android:animateLayoutChanges="true"
         app:navigationIcon="@drawable/ic_close"
-        app:navigationIconTint="@color/color_icon">
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/fullscreen_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp"
-            android:text="@string/variations_bulk_update_dialog_title"
-            android:textColor="@color/color_on_surface_high"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            tools:ignore="RtlHardcoded" />
-    </com.google.android.material.appbar.MaterialToolbar>
+        app:navigationIconTint="@color/color_icon"
+        app:title="@string/variations_bulk_update_dialog_title" />
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/collapsed_state_header"
@@ -34,7 +23,7 @@
         android:layout_height="wrap_content"
         android:background="?selectableItemBackground"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="@dimen/major_100">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/title"
@@ -42,7 +31,7 @@
             android:layout_height="wrap_content"
             android:text="@string/variations_bulk_update_dialog_title"
             android:textColor="@color/color_on_surface_high"
-            android:textSize="20sp"
+            android:textSize="@dimen/text_major_25"
             android:textStyle="bold" />
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -51,7 +40,7 @@
             android:layout_height="wrap_content"
             android:text="@string/variations_bulk_update_dialog_subtitle"
             android:textColor="@color/color_on_surface_medium"
-            android:textSize="14sp" />
+            android:textSize="@dimen/text_minor_100" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -61,17 +50,17 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="@dimen/minor_10"
             android:background="@color/divider_color" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="14dp"
-            android:paddingVertical="12dp"
+            android:paddingHorizontal="@dimen/major_85"
+            android:paddingVertical="@dimen/major_75"
             android:text="@string/variations_bulk_update_dialog_price_section_title"
             android:textColor="@color/color_on_surface_medium"
-            android:textSize="16sp" />
+            android:textSize="@dimen/text_minor_125" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/regular_price"
@@ -81,30 +70,30 @@
             android:clickable="true"
             android:focusable="true"
             android:orientation="vertical"
-            android:paddingVertical="12dp">
+            android:paddingVertical="@dimen/major_75">
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/price_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="16dp"
+                android:paddingHorizontal="@dimen/major_100"
                 android:text="@string/variations_bulk_update_dialog_regular_price_label"
                 android:textColor="@color/color_on_surface_high"
-                android:textSize="16sp" />
+                android:textSize="@dimen/text_minor_125" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/price_subtitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="16dp"
+                android:paddingHorizontal="@dimen/major_100"
                 android:textColor="@color/color_on_surface_medium"
-                android:textSize="14sp"
+                android:textSize="@dimen/text_minor_100"
                 tools:text="$8.00" />
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="@dimen/minor_10"
             android:background="@color/divider_color" />
 
         <View
