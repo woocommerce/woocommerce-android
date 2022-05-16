@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.products.variations
 
 import android.os.Bundle
 import android.os.Parcelable
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
@@ -33,6 +36,7 @@ import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.variations.VariationDetailFragment.Companion.KEY_VARIATION_DETAILS_RESULT
 import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.DeletedVariationData
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowAddAttributeView
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowBulkUpdateAttrPicker
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowVariationDetail
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -161,18 +165,16 @@ class VariationListFragment :
             }
         )
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowVariationDetail -> openVariationDetail(event.variation)
-                    is ShowAddAttributeView -> openAddAttributeView()
-                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_LIST_RESULT, event.data)
-                    is Exit -> activity?.onBackPressed()
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowVariationDetail -> openVariationDetail(event.variation)
+                is ShowAddAttributeView -> openAddAttributeView()
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ShowBulkUpdateAttrPicker -> openBulkUpdateView(event.variationsToUpdate)
+                is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_LIST_RESULT, event.data)
+                is Exit -> activity?.onBackPressed()
             }
-        )
+        }
     }
 
     private fun setupResultHandlers(viewModel: VariationListViewModel) {
@@ -193,6 +195,12 @@ class VariationListFragment :
         VariationListFragmentDirections
             .actionVariationListFragmentToAddAttributeFragment(true)
             .run { findNavController().navigateSafely(this) }
+
+    private fun openBulkUpdateView(variationsToUpdate: List<ProductVariation>) {
+        VariationListFragmentDirections
+            .actionVariationListFragmentToVariationsBulkUpdateAttrPickerFragment(variationsToUpdate.toTypedArray())
+            .run { findNavController().navigateSafely(this) }
+    }
 
     override fun getFragmentTitle() = getString(R.string.product_variations)
 
@@ -256,5 +264,25 @@ class VariationListFragment :
     override fun onRequestAllowBackPress(): Boolean {
         viewModel.onExit()
         return false
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
+        inflater.inflate(R.menu.menu_variation_list_fragment, menu)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        val isBatchUpdateEnabled = viewModel.viewStateLiveData.liveData.value?.isVariationsOptionsMenuEnabled ?: false
+        menu.findItem(R.id.menu_bulk_update)?.isVisible = isBatchUpdateEnabled
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when(item.itemId) {
+            R.id.menu_bulk_update -> {
+                viewModel.onBulkUpdateClicked()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }

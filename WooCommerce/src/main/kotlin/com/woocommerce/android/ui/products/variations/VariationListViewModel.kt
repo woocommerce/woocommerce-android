@@ -7,6 +7,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.Transformations
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIANTS_BULK_UPDATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.track
@@ -88,6 +89,14 @@ class VariationListViewModel @Inject constructor(
 
     fun onLoadMoreRequested(remoteProductId: Long) {
         loadVariations(remoteProductId, loadMore = true)
+    }
+
+
+    fun onBulkUpdateClicked() {
+        track(PRODUCT_VARIANTS_BULK_UPDATE_TAPPED)
+        variationList.value?.let { variations ->
+            triggerEvent(ShowBulkUpdateAttrPicker(variations))
+        }
     }
 
     fun onItemClick(variation: ProductVariation) {
@@ -201,10 +210,11 @@ class VariationListViewModel @Inject constructor(
             if (fetchedVariations.isNullOrEmpty()) {
                 if (!loadMore) {
                     _variationList.value = emptyList()
-                    viewState = viewState.copy(isEmptyViewVisible = true)
+                    viewState = viewState.copy(isEmptyViewVisible = true, isVariationsOptionsMenuEnabled = false)
                 }
             } else {
                 _variationList.value = combineData(fetchedVariations)
+                viewState = viewState.copy(isVariationsOptionsMenuEnabled = true)
             }
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
@@ -245,7 +255,8 @@ class VariationListViewModel @Inject constructor(
         val isEmptyViewVisible: Boolean? = null,
         val isWarningVisible: Boolean? = null,
         val isProgressDialogShown: Boolean? = null,
-        val parentProduct: Product? = null
+        val parentProduct: Product? = null,
+        val isVariationsOptionsMenuEnabled: Boolean = false,
     ) : Parcelable
 
     @Parcelize
@@ -254,5 +265,10 @@ class VariationListViewModel @Inject constructor(
     ) : Parcelable
 
     data class ShowVariationDetail(val variation: ProductVariation) : Event()
+
+    /**
+     * Represents event responsible for displaying [VariationsBulkUpdateAttrPickerDialog].
+     */
+    data class ShowBulkUpdateAttrPicker(val variationsToUpdate: List<ProductVariation>): Event()
     object ShowAddAttributeView : Event()
 }

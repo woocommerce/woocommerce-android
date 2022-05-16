@@ -481,6 +481,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     PRODUCT_VARIANTS_PULLED_TO_REFRESH,
     PRODUCT_VARIANTS_LOADED,
     PRODUCT_VARIANTS_LOAD_ERROR,
+    PRODUCT_VARIANTS_BULK_UPDATE_TAPPED,
 
     // -- Product images
     PRODUCT_IMAGE_ADDED,
