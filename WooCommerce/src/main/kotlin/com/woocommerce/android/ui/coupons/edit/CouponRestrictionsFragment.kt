@@ -44,5 +44,4 @@ class CouponRestrictionsFragment : BaseFragment() {
     }
 
     override fun getFragmentTitle() = getString(R.string.coupon_edit_usage_restrictions)
-
 }
