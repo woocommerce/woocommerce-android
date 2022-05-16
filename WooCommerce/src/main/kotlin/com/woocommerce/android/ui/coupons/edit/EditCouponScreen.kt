@@ -109,7 +109,7 @@ fun EditCouponScreen(
     }
 }
 
-@Suppress("LongMethod, LongParameterList")
+@Suppress("LongMethod", "LongParameterList")
 @Composable
 private fun DetailsSection(
     viewState: EditCouponViewModel.ViewState,

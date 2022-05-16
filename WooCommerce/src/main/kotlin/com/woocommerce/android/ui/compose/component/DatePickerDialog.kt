@@ -29,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -91,6 +92,8 @@ fun DatePickerDialog(
     dialogProperties: DialogProperties = DialogProperties(usePlatformDefaultWidth = false)
 ) {
     Dialog(onDismissRequest = onDismissRequest, properties = dialogProperties) {
+        var selectedDate: Calendar by rememberSaveable { mutableStateOf(currentDate ?: Calendar.getInstance()) }
+
         val orientation = LocalConfiguration.current.orientation
 
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -106,8 +109,9 @@ fun DatePickerDialog(
                     .background(color = MaterialTheme.colors.surface)
             ) {
                 DatePickerContent(
-                    currentDate = currentDate,
-                    onDateSelected = onDateSelected,
+                    selectedDate = selectedDate,
+                    onDateChanged = { selectedDate = it },
+                    onSubmitRequest = { onDateSelected(selectedDate) },
                     onDismissRequest = onDismissRequest,
                     minDate = minDate,
                     maxDate = maxDate,
@@ -124,8 +128,9 @@ fun DatePickerDialog(
                     .background(color = MaterialTheme.colors.surface)
             ) {
                 DatePickerContent(
-                    currentDate = currentDate,
-                    onDateSelected = onDateSelected,
+                    selectedDate = selectedDate,
+                    onDateChanged = { selectedDate = it },
+                    onSubmitRequest = { onDateSelected(selectedDate) },
                     onDismissRequest = onDismissRequest,
                     minDate = minDate,
                     maxDate = maxDate,
@@ -139,14 +144,14 @@ fun DatePickerDialog(
 @Suppress("LongParameterList", "LongMethod")
 @Composable
 private fun Any.DatePickerContent(
-    currentDate: Calendar?,
-    onDateSelected: (Calendar) -> Unit,
+    selectedDate: Calendar,
+    onDateChanged: (Calendar) -> Unit,
+    onSubmitRequest: () -> Unit,
     onDismissRequest: () -> Unit,
     minDate: Calendar,
     maxDate: Calendar,
     dateFormat: DateFormat,
 ) {
-    var selectedDate: Calendar by remember { mutableStateOf(currentDate ?: Calendar.getInstance()) }
     var isShowingYearSelector by remember { mutableStateOf(false) }
     // Keep track of the calculated height for the picker, to pass it to the YearSelector
     var pickerSize by remember { mutableStateOf(IntSize(0, 0)) }
@@ -183,7 +188,7 @@ private fun Any.DatePickerContent(
                 maxDate = maxDate,
                 onYearSelected = {
                     isShowingYearSelector = false
-                    selectedDate = selectedDate.apply { year = it }
+                    onDateChanged(selectedDate.apply { year = it })
                 },
                 modifier = Modifier.size(with(LocalDensity.current) { pickerSize.toSize().toDpSize() })
             )
@@ -192,7 +197,7 @@ private fun Any.DatePickerContent(
                 currentDate = selectedDate,
                 minDate = minDate,
                 maxDate = maxDate,
-                onDateSelected = { selectedDate = it },
+                onDateSelected = onDateChanged,
                 modifier = Modifier.onSizeChanged {
                     pickerSize = it
                 }
@@ -211,7 +216,7 @@ private fun Any.DatePickerContent(
                 )
             }
 
-            TextButton(onClick = { onDateSelected(selectedDate) }) {
+            TextButton(onClick = onSubmitRequest) {
                 Text(
                     text = stringResource(id = android.R.string.ok),
                 )
