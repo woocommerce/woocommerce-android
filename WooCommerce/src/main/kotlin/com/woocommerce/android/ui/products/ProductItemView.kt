@@ -55,11 +55,13 @@ class ProductItemView @JvmOverloads constructor(
 
     fun bind(
         productUIModel: ProductUIModel,
-        decimalFormatter: (BigDecimal) -> String,
+        currencyFormatter: CurrencyFormatter,
+        currencyCode: String? = null
     ) {
         showProductName(productUIModel.item.name)
         showProductSku(productUIModel.item.sku)
         showProductImage(productUIModel.imageUrl)
+        val decimalFormatter = getDecimalFormatter(currencyFormatter, currencyCode)
 
         binding.productStockAndStatus.text = buildString {
             if (productUIModel.item.isVariation && productUIModel.item.attributesDescription.isNotEmpty()) {
@@ -133,14 +135,21 @@ class ProductItemView @JvmOverloads constructor(
         }
     }
 
+    private fun getDecimalFormatter(
+        currencyFormatter: CurrencyFormatter,
+        currencyCode: String? = null
+    ): (BigDecimal) -> String {
+        return currencyCode?.let {
+            currencyFormatter.buildBigDecimalFormatter(it)
+        } ?: currencyFormatter.buildBigDecimalFormatter()
+    }
+
     private fun showProductStockStatusPrice(
         product: Product,
         currencyFormatter: CurrencyFormatter,
         currencyCode: String? = null
     ) {
-        val decimalFormatter = currencyCode?.let {
-            currencyFormatter.buildBigDecimalFormatter(it)
-        } ?: currencyFormatter.buildBigDecimalFormatter()
+        val decimalFormatter = getDecimalFormatter(currencyFormatter, currencyCode)
 
         val statusHtml = getProductStatusHtml(product.status)
         val stock = getStockText(product)

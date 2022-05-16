@@ -10,11 +10,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderCreationProductItemBinding
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.OrderCreationProductsAdapter.ProductViewHolder
-import java.math.BigDecimal
+import com.woocommerce.android.util.CurrencyFormatter
 
 class OrderCreationProductsAdapter(
     private val onProductClicked: (Order.Item) -> Unit,
-    private val currencyFormatter: (BigDecimal) -> String,
+    private val currencyFormatter: CurrencyFormatter,
+    private val currencyCode: String?,
     private val onIncreaseQuantity: (Long) -> Unit,
     private val onDecreaseQuantity: (Long) -> Unit
 ) : ListAdapter<ProductUIModel, ProductViewHolder>(ProductUIModelDiffCallback) {
@@ -37,7 +38,6 @@ class OrderCreationProductsAdapter(
     }
 
     inner class ProductViewHolder(private val binding: OrderCreationProductItemBinding) : ViewHolder(binding.root) {
-        private val context = binding.root.context
         private val safePosition: Int?
             get() = bindingAdapterPosition.takeIf { it != NO_POSITION }
 
@@ -59,7 +59,7 @@ class OrderCreationProductsAdapter(
 
         fun bind(productModel: ProductUIModel) {
             binding.root.isEnabled = productModel.item.isSynced()
-            binding.productItemView.bind(productModel, currencyFormatter)
+            binding.productItemView.bind(productModel, currencyFormatter, currencyCode)
 
             binding.stepperView.isMinusButtonEnabled = isQuantityButtonsEnabled
             binding.stepperView.isPlusButtonEnabled = isQuantityButtonsEnabled

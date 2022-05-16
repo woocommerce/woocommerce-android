@@ -33,17 +33,11 @@ class OrderCreationProductDetailsFragment : BaseFragment(R.layout.fragment_order
 
         val binding = FragmentOrderCreationProductDetailsBinding.bind(view)
         val item = navArgs.item
-        val product = sharedViewModel.getProductFromOrderItem(item)
-
-        if (product == null) {
-            uiMessageResolver.showSnack(R.string.product_detail_load_product_error)
-            findNavController().navigateUp()
-            return
-        }
+        val uiModel = sharedViewModel.getProductUIModelFromItem(item)
 
         with(binding) {
             productItemView.bind(
-                product,
+                uiModel,
                 currencyFormatter,
                 sharedViewModel.currentDraft.currency
             )

@@ -8,8 +8,6 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.model.OrderMapper
-import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
@@ -22,7 +20,6 @@ import org.wordpress.android.fluxc.model.order.UpdateOrderRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.OrderUpdateStore
 import org.wordpress.android.fluxc.store.WCOrderStore
-import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 import org.wordpress.android.fluxc.model.order.FeeLine as WCFeeLine
@@ -36,7 +33,6 @@ class OrderCreationRepository @Inject constructor(
     private val orderStore: WCOrderStore,
     private val orderUpdateStore: OrderUpdateStore,
     private val orderMapper: OrderMapper,
-    private val productStore: WCProductStore,
     private val dispatchers: CoroutineDispatchers,
     private val wooCommerceStore: WooCommerceStore,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
@@ -149,10 +145,6 @@ class OrderCreationRepository @Inject constructor(
                 ?: "0.0"
         }
         return version.semverCompareTo(AUTO_DRAFT_SUPPORTED_VERSION) >= 0
-    }
-
-    fun getProductFromOrderItem(item: Order.Item): Product? {
-        return productStore.getProductByRemoteId(selectedSite.get(), item.productId)?.toAppModel()
     }
 
     private fun ShippingLine.toDataModel() = WCShippingLine(
