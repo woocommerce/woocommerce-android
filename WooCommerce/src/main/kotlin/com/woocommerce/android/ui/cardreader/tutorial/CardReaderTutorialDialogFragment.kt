@@ -42,8 +42,6 @@ class CardReaderTutorialDialogFragment : DialogFragment(R.layout.card_reader_tut
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         val binding = CardReaderTutorialDialogBinding.bind(view)
 
         binding.viewPager.adapter = CardReaderTutorialAdapter(this)
