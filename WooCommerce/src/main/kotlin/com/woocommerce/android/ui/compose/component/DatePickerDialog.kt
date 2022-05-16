@@ -1,14 +1,22 @@
+@file:OptIn(ExperimentalComposeUiApi::class)
+
 package com.woocommerce.android.ui.compose.component
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -23,11 +31,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -51,7 +65,7 @@ fun DatePickerDialog(
     minDate: Date = GregorianCalendar(DEFAULT_MIN_YEAR, 0, 1).time,
     maxDate: Date = GregorianCalendar(DEFAULT_MAX_YEAR, 0, 1).time,
     dateFormat: DateFormat = SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM),
-    dialogProperties: DialogProperties = DialogProperties()
+    dialogProperties: DialogProperties = DialogProperties(usePlatformDefaultWidth = false)
 ) {
     fun Date.toCalendar() = Calendar.getInstance().apply { time = this@toCalendar }
     DatePickerDialog(
@@ -74,79 +88,133 @@ fun DatePickerDialog(
     minDate: Calendar = GregorianCalendar(DEFAULT_MIN_YEAR, 0, 1),
     maxDate: Calendar = GregorianCalendar(DEFAULT_MAX_YEAR, 0, 1),
     dateFormat: DateFormat = SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM),
-    dialogProperties: DialogProperties = DialogProperties()
+    dialogProperties: DialogProperties = DialogProperties(usePlatformDefaultWidth = false)
+) {
+    Dialog(onDismissRequest = onDismissRequest, properties = dialogProperties) {
+        val orientation = LocalConfiguration.current.orientation
+
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            Row(
+                modifier = Modifier
+                    .padding(
+                        vertical = dimensionResource(id = R.dimen.major_100),
+                        horizontal = dimensionResource(id = R.dimen.major_200)
+                    )
+                    .width(IntrinsicSize.Max)
+                    .height(IntrinsicSize.Max)
+                    .clip(MaterialTheme.shapes.medium)
+                    .background(color = MaterialTheme.colors.surface)
+            ) {
+                DatePickerContent(
+                    currentDate = currentDate,
+                    onDateSelected = onDateSelected,
+                    onDismissRequest = onDismissRequest,
+                    minDate = minDate,
+                    maxDate = maxDate,
+                    dateFormat = dateFormat
+                )
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .padding(dimensionResource(id = R.dimen.major_200))
+                    .width(IntrinsicSize.Max)
+                    .height(IntrinsicSize.Max)
+                    .clip(MaterialTheme.shapes.medium)
+                    .background(color = MaterialTheme.colors.surface)
+            ) {
+                DatePickerContent(
+                    currentDate = currentDate,
+                    onDateSelected = onDateSelected,
+                    onDismissRequest = onDismissRequest,
+                    minDate = minDate,
+                    maxDate = maxDate,
+                    dateFormat = dateFormat
+                )
+            }
+        }
+    }
+}
+
+@Suppress("LongParameterList", "LongMethod")
+@Composable
+private fun Any.DatePickerContent(
+    currentDate: Calendar?,
+    onDateSelected: (Calendar) -> Unit,
+    onDismissRequest: () -> Unit,
+    minDate: Calendar,
+    maxDate: Calendar,
+    dateFormat: DateFormat,
 ) {
     var selectedDate: Calendar by remember { mutableStateOf(currentDate ?: Calendar.getInstance()) }
     var isShowingYearSelector by remember { mutableStateOf(false) }
+    // Keep track of the calculated height for the picker, to pass it to the YearSelector
+    var pickerSize by remember { mutableStateOf(IntSize(0, 0)) }
 
-    Dialog(onDismissRequest = onDismissRequest, properties = dialogProperties) {
-        Column(
-            modifier = Modifier
-                .wrapContentSize()
-                .background(
-                    color = MaterialTheme.colors.surface,
-                    shape = MaterialTheme.shapes.large
-                )
+    Column(
+        Modifier
+            .wrapContentSize()
+            .run {
+                // Fill the height or width depending on parent layout
+                if (this@DatePickerContent is RowScope) fillMaxHeight() else fillMaxWidth()
+            }
+            .background(color = MaterialTheme.colors.primary)
+            .padding(dimensionResource(id = R.dimen.major_100))
+    ) {
+        Text(
+            text = selectedDate.year.toString(),
+            style = MaterialTheme.typography.subtitle2,
+            color = MaterialTheme.colors.onPrimary,
+            modifier = Modifier.clickable { isShowingYearSelector = true }
+        )
+
+        Text(
+            text = dateFormat.format(selectedDate.time),
+            style = MaterialTheme.typography.h5,
+            color = MaterialTheme.colors.onPrimary
+        )
+    }
+
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        if (isShowingYearSelector) {
+            YearSelector(
+                currentDate = selectedDate,
+                minDate = minDate,
+                maxDate = maxDate,
+                onYearSelected = {
+                    isShowingYearSelector = false
+                    selectedDate = selectedDate.apply { year = it }
+                },
+                modifier = Modifier.size(with(LocalDensity.current) { pickerSize.toSize().toDpSize() })
+            )
+        } else {
+            CalendarView(
+                currentDate = selectedDate,
+                minDate = minDate,
+                maxDate = maxDate,
+                onDateSelected = { selectedDate = it },
+                modifier = Modifier.onSizeChanged {
+                    pickerSize = it
+                }
+            )
+        }
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(
+                space = dimensionResource(id = R.dimen.minor_100),
+                alignment = Alignment.End
+            ),
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Column(
-                Modifier
-                    .defaultMinSize(minHeight = 72.dp)
-                    .fillMaxWidth()
-                    .background(color = MaterialTheme.colors.primary)
-                    .padding(dimensionResource(id = R.dimen.major_100))
-            ) {
+            TextButton(onClick = onDismissRequest) {
                 Text(
-                    text = selectedDate.year.toString(),
-                    style = MaterialTheme.typography.subtitle2,
-                    color = MaterialTheme.colors.onPrimary,
-                    modifier = Modifier.clickable { isShowingYearSelector = true }
-                )
-
-                Text(
-                    text = dateFormat.format(selectedDate.time),
-                    style = MaterialTheme.typography.h5,
-                    color = MaterialTheme.colors.onPrimary
+                    text = stringResource(id = android.R.string.cancel),
                 )
             }
 
-            if (isShowingYearSelector) {
-                YearSelector(
-                    currentDate = selectedDate,
-                    minDate = minDate,
-                    maxDate = maxDate,
-                    onYearSelected = {
-                        isShowingYearSelector = false
-                        selectedDate = selectedDate
-                            .apply { year = it }
-                    }
+            TextButton(onClick = { onDateSelected(selectedDate) }) {
+                Text(
+                    text = stringResource(id = android.R.string.ok),
                 )
-            } else {
-                CalendarView(
-                    currentDate = selectedDate,
-                    minDate = minDate,
-                    maxDate = maxDate,
-                    onDateSelected = { selectedDate = it }
-                )
-            }
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(
-                    space = dimensionResource(id = R.dimen.minor_100),
-                    alignment = Alignment.End
-                ),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                TextButton(onClick = onDismissRequest) {
-                    Text(
-                        text = stringResource(id = android.R.string.cancel),
-                    )
-                }
-
-                TextButton(onClick = { onDateSelected(selectedDate) }) {
-                    Text(
-                        text = stringResource(id = android.R.string.ok),
-                    )
-                }
             }
         }
     }
@@ -155,12 +223,13 @@ fun DatePickerDialog(
 @Composable
 private fun CalendarView(
     currentDate: Calendar,
-    minDate: Calendar? = null,
-    maxDate: Calendar? = null,
-    onDateSelected: (Calendar) -> Unit
+    minDate: Calendar?,
+    maxDate: Calendar?,
+    onDateSelected: (Calendar) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     AndroidView(
-        modifier = Modifier.wrapContentSize(),
+        modifier = modifier.wrapContentSize(),
         factory = { context ->
             AndroidCalendarView(context)
         },
@@ -186,7 +255,13 @@ private fun CalendarView(
 }
 
 @Composable
-fun YearSelector(currentDate: Calendar, minDate: Calendar, maxDate: Calendar, onYearSelected: (Int) -> Unit) {
+private fun YearSelector(
+    currentDate: Calendar,
+    minDate: Calendar,
+    maxDate: Calendar,
+    onYearSelected: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
     val currentYear = currentDate.year
     val items = (minDate.year..maxDate.year).toList()
 
@@ -195,7 +270,7 @@ fun YearSelector(currentDate: Calendar, minDate: Calendar, maxDate: Calendar, on
         initialFirstVisibleItemScrollOffset = -2
     )
 
-    LazyColumn(state = lazyListState) {
+    LazyColumn(state = lazyListState, modifier = modifier) {
         items(items) {
             Box(
                 contentAlignment = Alignment.Center,
@@ -207,8 +282,7 @@ fun YearSelector(currentDate: Calendar, minDate: Calendar, maxDate: Calendar, on
                 Text(
                     text = it.toString(),
                     style = if (it == currentYear) MaterialTheme.typography.h5 else MaterialTheme.typography.body1,
-                    color = if (it == currentYear) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface,
-                    modifier = Modifier
+                    color = if (it == currentYear) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface
                 )
             }
         }
