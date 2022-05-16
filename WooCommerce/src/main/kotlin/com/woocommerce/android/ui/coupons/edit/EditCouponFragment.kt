@@ -7,9 +7,12 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.coupons.edit.EditCouponViewModel.NavigateToCouponRestrictionsEvent
 import com.woocommerce.android.ui.main.AppBarStatus
 import dagger.hilt.android.AndroidEntryPoint
 import kotlin.properties.Delegates.observable
@@ -50,7 +53,19 @@ class EditCouponFragment : BaseFragment() {
         viewModel.viewState.observe(viewLifecycleOwner) {
             screenTitle = getString(R.string.coupon_edit_screen_title, it.localizedType)
         }
+
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is NavigateToCouponRestrictionsEvent -> navigateToCouponRestrictions()
+            }
+        }
     }
 
     override fun getFragmentTitle() = screenTitle
+
+    private fun navigateToCouponRestrictions() {
+        findNavController().navigateSafely(
+            EditCouponFragmentDirections.actionEditCouponFragmentToCouponRestrictionsFragment()
+        )
+    }
 }

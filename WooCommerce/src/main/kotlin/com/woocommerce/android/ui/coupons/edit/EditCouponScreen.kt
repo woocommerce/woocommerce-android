@@ -53,7 +53,8 @@ fun EditCouponScreen(viewModel: EditCouponViewModel) {
             viewState = it,
             onAmountChanged = viewModel::onAmountChanged,
             onCouponCodeChanged = viewModel::onCouponCodeChanged,
-            onRegenerateCodeClick = viewModel::onRegenerateCodeClick
+            onRegenerateCodeClick = viewModel::onRegenerateCodeClick,
+            onUsageRestrictionsClick = viewModel::onUsageRestrictionsClick
         )
     }
 }
@@ -63,7 +64,8 @@ fun EditCouponScreen(
     viewState: EditCouponViewModel.ViewState,
     onAmountChanged: (BigDecimal?) -> Unit = {},
     onCouponCodeChanged: (String) -> Unit = {},
-    onRegenerateCodeClick: () -> Unit = {}
+    onRegenerateCodeClick: () -> Unit = {},
+    onUsageRestrictionsClick: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -80,7 +82,7 @@ fun EditCouponScreen(
     ) {
         DetailsSection(viewState, onAmountChanged, onCouponCodeChanged, onRegenerateCodeClick)
         ConditionsSection(viewState)
-        UsageRestrictionsSection(viewState)
+        UsageRestrictionsSection(viewState, onUsageRestrictionsClick)
         WCColoredButton(
             onClick = { /*TODO*/ },
             text = stringResource(id = R.string.coupon_edit_save_button),
@@ -162,7 +164,10 @@ private fun ConditionsSection(viewState: EditCouponViewModel.ViewState) {
 
 @Composable
 @Suppress("UnusedPrivateMember")
-private fun UsageRestrictionsSection(viewState: EditCouponViewModel.ViewState) {
+private fun UsageRestrictionsSection(
+    viewState: EditCouponViewModel.ViewState,
+    onUsageRestrictionsClick: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -173,7 +178,7 @@ private fun UsageRestrictionsSection(viewState: EditCouponViewModel.ViewState) {
             color = colorResource(id = R.color.color_on_surface_medium)
         )
 
-        TextButton(onClick = { /*TODO*/ }) {
+        TextButton(onClick = onUsageRestrictionsClick) {
             Text(
                 text = stringResource(id = string.coupon_edit_usage_restrictions),
                 style = MaterialTheme.typography.body1,

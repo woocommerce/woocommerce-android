@@ -7,6 +7,7 @@ import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.ui.coupons.CouponRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.util.CouponUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.navArgs
@@ -80,10 +81,16 @@ class EditCouponViewModel @Inject constructor(
         }
     }
 
+    fun onUsageRestrictionsClick() {
+        triggerEvent(NavigateToCouponRestrictionsEvent)
+    }
+
     data class ViewState(
         val couponDraft: Coupon,
         val localizedType: String?,
         val amountUnit: String,
         val hasChanges: Boolean
     )
+
+    object NavigateToCouponRestrictionsEvent : MultiLiveEvent.Event()
 }
