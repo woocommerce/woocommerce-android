@@ -1,11 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-04-28 09:54:04+0000
+Translation-Revision-Date: 2022-05-06 09:54:22+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="coupon_details_restricted_emails">次のメールアドレスを持つ顧客に限定: %1$s</string>
+    <string name="coupon_details_excludes_sale_items">セール品を除外</string>
+    <string name="coupon_details_allows_free_shipping">無料配送を許可</string>
+    <string name="coupon_details_individual_use_only">併用不可</string>
+    <string name="coupon_details_usage_limit_per_items_single">お買い物カゴ内のアイテムを%1$d点に制限</string>
+    <string name="coupon_details_usage_limit_per_items_multiple">お買い物カゴ内のアイテムを%1$d点に制限</string>
+    <string name="coupon_details_usage_limit_per_coupon_single">%1$d回使用可能</string>
+    <string name="coupon_details_usage_limit_per_coupon_multiple">%1$d回使用可能</string>
+    <string name="coupon_details_usage_limit_per_user_single">1ユーザーにつき%1$d回使用</string>
+    <string name="coupon_details_usage_limit_per_user_multiple">1ユーザーにつき%1$d回使用</string>
+    <string name="coupon_details_delete_successful">クーポン削除</string>
+    <string name="coupon_details_delete_failure">クーポンの削除に失敗</string>
+    <string name="coupon_details_delete_confirmation">このクーポンを削除してもよろしいですか ?</string>
+    <string name="coupon_details_delete">クーポンを削除</string>
+    <string name="inbox_screen_sync_error">受信箱の同期に失敗</string>
+    <string name="inbox_note_dismiss_all_notes">すべて無視する</string>
+    <string name="inbox_screen_title">受信箱</string>
+    <string name="settings_card_reader_manuals">カードリーダーマニュアル</string>
+    <string name="card_reader_interac_refund_refund_payment_hint">タップまたは挿入して返金</string>
+    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">注文はすでに返金されています</string>
+    <string name="card_reader_interac_refund_refund_failed_cancelled">返金を中止しました</string>
+    <string name="card_reader_interac_refund_refund_failed_ok">OK</string>
+    <string name="card_reader_interac_refund_refund_failed_test_card">システムテストカードは返金を許可されていません。</string>
+    <string name="card_reader_interac_refund_refund_failed_invalid_amount">この返金額は提示されたカードで許可されていません</string>
+    <string name="card_reader_interac_refund_refund_failed_insufficient_funds">資金が不足しているため返金が拒否されました</string>
+    <string name="card_reader_interac_refund_refund_failed_duplicate_transaction">同一の返金が最近送信されています</string>
+    <string name="card_reader_interac_refund_refund_failed_card_not_supported">カードはこの種類の返金をサポートしていません</string>
+    <string name="card_reader_interac_refund_refund_failed_generic">不明な理由により返金が拒否されました</string>
+    <string name="card_reader_interac_refund_refund_failed_fraud">別の返金方法をお試しください</string>
+    <string name="card_reader_interac_refund_refund_failed_unknown">不明な理由により返金が拒否されました</string>
+    <string name="card_reader_interac_refund_refund_failed_unexpected_error_state">返金を処理できませんでした</string>
+    <string name="card_reader_interac_refund_refund_completed_header">正常に返金されました</string>
+    <string name="card_reader_interac_refund_refund_processing_state">返金を処理しています</string>
+    <string name="card_reader_interac_refund_refund_payment">支払いを返金</string>
+    <string name="card_reader_interac_refund_refund_failed_header">返金に失敗しました</string>
+    <string name="card_reader_interac_refund_refund_loading_header">支払いを返金する準備をしています</string>
+    <string name="copy">コピー</string>
     <string name="coupons_list_search_hint">クーポンを検索</string>
     <string name="coupon_details_share_formatting_failure">クーポンコードの共有メッセージを生成できません</string>
     <string name="coupon_details_share_coupon_error">クーポンコードを共有する際にエラーが発生しました。</string>

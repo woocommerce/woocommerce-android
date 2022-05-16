@@ -1,2 +1,0 @@
-9.0:
-Datum är viktiga när du driver ett företag. Vi har åtgärdat ett fel som uppstod vid inställningen av ett "säljdatum" för en produkt – ibland stämde datumet som användes inte överens med datumet som valdes. Feedback från vår community är guld värd.
