@@ -5,8 +5,8 @@ import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.parseFromIso8601DateFormat
 import com.woocommerce.android.extensions.parseGmtDateFromIso8601DateFormat
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.persistence.entity.CouponDataModel
 import org.wordpress.android.fluxc.persistence.entity.CouponEntity
+import org.wordpress.android.fluxc.persistence.entity.CouponWithEmails
 import java.math.BigDecimal
 import java.util.Date
 
@@ -29,10 +29,10 @@ data class Coupon(
     val areSaleItemsExcluded: Boolean? = null,
     val minimumAmount: BigDecimal? = null,
     val maximumAmount: BigDecimal? = null,
-    val products: List<Product>,
-    val excludedProducts: List<Product>,
-    val categories: List<ProductCategory>,
-    val excludedCategories: List<ProductCategory>,
+    val productIds: List<Long>,
+    val excludedProductIds: List<Long>,
+    val categoryIds: List<Long>,
+    val excludedCategoryIds: List<Long>,
     val restrictedEmails: List<String>
 ) : Parcelable {
     @Suppress("ComplexMethod")
@@ -52,10 +52,10 @@ data class Coupon(
             areSaleItemsExcluded == otherCoupon.areSaleItemsExcluded &&
             minimumAmount == otherCoupon.minimumAmount &&
             maximumAmount == otherCoupon.maximumAmount &&
-            products == otherCoupon.products &&
-            excludedProducts == otherCoupon.excludedProducts &&
-            categories == otherCoupon.categories &&
-            excludedCategories == otherCoupon.excludedCategories &&
+            productIds == otherCoupon.productIds &&
+            excludedProductIds == otherCoupon.excludedProductIds &&
+            categoryIds == otherCoupon.categoryIds &&
+            excludedCategoryIds == otherCoupon.excludedCategoryIds &&
             restrictedEmails == otherCoupon.restrictedEmails
     }
 
@@ -85,7 +85,7 @@ data class Coupon(
     }
 }
 
-fun CouponDataModel.toAppModel() = Coupon(
+fun CouponWithEmails.toAppModel() = Coupon(
     id = coupon.id,
     code = coupon.code,
     amount = coupon.amount,
@@ -103,9 +103,9 @@ fun CouponDataModel.toAppModel() = Coupon(
     areSaleItemsExcluded = coupon.areSaleItemsExcluded,
     minimumAmount = coupon.minimumAmount,
     maximumAmount = coupon.maximumAmount,
-    products = products.map { it.toAppModel() },
-    excludedProducts = excludedProducts.map { it.toAppModel() },
-    categories = categories.map { it.toAppModel() },
-    excludedCategories = excludedCategories.map { it.toAppModel() },
+    productIds = coupon.includedProductIds.orEmpty(),
+    excludedProductIds = coupon.excludedProductIds.orEmpty(),
+    categoryIds = coupon.includedCategoryIds.orEmpty(),
+    excludedCategoryIds = coupon.excludedCategoryIds.orEmpty(),
     restrictedEmails = restrictedEmails.map { it.email }
 )
