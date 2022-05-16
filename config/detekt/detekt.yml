@@ -3,14 +3,14 @@ build:
 
 complexity:
   LargeClass:
-    excludes: ['**/test/**']
+    excludes: [ '**/test/**' ]
   LongParameterList:
     ignoreDefaultParameters: true
-    ignoreAnnotated: ['Inject', 'Composable']
+    ignoreAnnotated: [ 'Inject', 'Composable' ]
   TooManyFunctions:
     active: false
   LongMethod:
-    ignoreAnnotated: ['Composable']
+    ignoreAnnotated: [ 'Composable' ]
 
 formatting:
   active: true
@@ -25,6 +25,8 @@ style:
     ignoreAnnotated: [ 'Module' ]
   MagicNumber:
     ignoreAnnotated: [ 'Composable' ]
+  UnusedPrivateMember:
+    ignoreAnnotated: [ 'Preview' ]
 
 naming:
   FunctionNaming:
