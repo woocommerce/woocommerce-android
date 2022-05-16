@@ -79,18 +79,6 @@ class CardReaderHubViewModel @Inject constructor(
         triggerEvent(CardReaderHubEvents.NavigateToPurchaseCardReaderFlow(cardReaderPurchaseUrl))
     }
 
-    private fun onBbposManualCardReaderClicked() {
-        triggerEvent(CardReaderHubEvents.NavigateToManualCardReaderFlow(AppUrls.BBPOS_MANUAL_CARD_READER))
-    }
-
-    private fun onM2ManualCardReaderClicked() {
-        triggerEvent(CardReaderHubEvents.NavigateToManualCardReaderFlow(AppUrls.M2_MANUAL_CARD_READER))
-    }
-
-    private fun onWisePad3ManualCardReaderClicked() {
-        triggerEvent(CardReaderHubEvents.NavigateToManualCardReaderFlow(AppUrls.WISEPAD_3_MANUAL_CARD_READER))
-    }
-
     private fun onCardReaderManualsClicked() {
         triggerEvent(CardReaderHubEvents.NavigateToCardReaderManualsScreen)
     }
