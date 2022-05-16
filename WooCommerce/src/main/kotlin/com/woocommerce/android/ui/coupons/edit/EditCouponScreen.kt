@@ -43,6 +43,7 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
 import com.woocommerce.android.ui.compose.component.WCSwitch
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooTheme
+import com.woocommerce.android.ui.coupons.edit.EditCouponViewModel.ViewState
 import java.math.BigDecimal
 
 @Composable
@@ -53,7 +54,8 @@ fun EditCouponScreen(viewModel: EditCouponViewModel) {
             onAmountChanged = viewModel::onAmountChanged,
             onCouponCodeChanged = viewModel::onCouponCodeChanged,
             onRegenerateCodeClick = viewModel::onRegenerateCodeClick,
-            onDescriptionButtonClick = viewModel::onDescriptionButtonClick
+            onDescriptionButtonClick = viewModel::onDescriptionButtonClick,
+            onFreeShippingChanged = viewModel::onFreeShippingChanged
         )
     }
 }
@@ -64,7 +66,8 @@ fun EditCouponScreen(
     onAmountChanged: (BigDecimal?) -> Unit = {},
     onCouponCodeChanged: (String) -> Unit = {},
     onRegenerateCodeClick: () -> Unit = {},
-    onDescriptionButtonClick: () -> Unit = {}
+    onDescriptionButtonClick: () -> Unit = {},
+    onFreeShippingChanged: (Boolean) -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -83,7 +86,8 @@ fun EditCouponScreen(
             onAmountChanged = onAmountChanged,
             onCouponCodeChanged = onCouponCodeChanged,
             onRegenerateCodeClick = onRegenerateCodeClick,
-            onDescriptionButtonClick = onDescriptionButtonClick
+            onDescriptionButtonClick = onDescriptionButtonClick,
+            onFreeShippingChanged = onFreeShippingChanged
         )
         ConditionsSection(viewState)
         UsageRestrictionsSection(viewState)
@@ -99,11 +103,12 @@ fun EditCouponScreen(
 @Suppress("LongMethod")
 @Composable
 private fun DetailsSection(
-    viewState: EditCouponViewModel.ViewState,
+    viewState: ViewState,
     onAmountChanged: (BigDecimal?) -> Unit,
     onCouponCodeChanged: (String) -> Unit,
     onRegenerateCodeClick: () -> Unit,
-    onDescriptionButtonClick: () -> Unit
+    onDescriptionButtonClick: () -> Unit,
+    onFreeShippingChanged: (Boolean) -> Unit
 ) {
     val couponDraft = viewState.couponDraft
     val focusManager = LocalFocusManager.current
@@ -144,7 +149,7 @@ private fun DetailsSection(
         WCSwitch(
             text = stringResource(id = R.string.coupon_edit_free_shipping),
             checked = viewState.couponDraft.isShippingFree ?: false,
-            onCheckedChange = {},
+            onCheckedChange = onFreeShippingChanged,
             modifier = Modifier.fillMaxWidth()
         )
     }
