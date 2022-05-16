@@ -77,7 +77,6 @@ fun MoreMenuScreen(viewModel: MoreMenuViewModel) {
 
 @ExperimentalFoundationApi
 @Composable
-@Suppress("LongMethod")
 fun MoreMenuScreen(
     state: MoreMenuViewState,
     onSwitchStore: () -> Unit,
@@ -317,7 +316,6 @@ fun MoreMenuBadge(badgeCount: Int) {
 @ExperimentalFoundationApi
 @Preview
 @Composable
-@Suppress("MagicNumber")
 fun MoreMenuPreview() {
     val state = MoreMenuViewState(
         moreMenuItems = listOf(

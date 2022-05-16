@@ -160,7 +160,6 @@ private fun CouponListItemInfo(
 }
 
 @Composable
-@Suppress("MagicNumber")
 private fun CouponListSkeleton() {
     val numberOfInboxSkeletonRows = 10
     LazyColumn(Modifier.background(color = MaterialTheme.colors.surface)) {
@@ -227,7 +226,6 @@ private fun SearchEmptyList(searchQuery: String) {
 
 @Preview
 @Composable
-@Suppress("MagicNumber")
 fun CouponListPreview() {
     val coupons = listOf(
         CouponListItem(
