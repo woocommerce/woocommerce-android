@@ -7,7 +7,6 @@ import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.cardreader.InPersonPaymentsCanadaFeatureFlag
-import com.woocommerce.android.ui.cardreader.manuals.CardReaderManualsFeatureFlag
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
@@ -23,7 +22,6 @@ import org.wordpress.android.fluxc.model.SiteModel
 class CardReaderHubViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: CardReaderHubViewModel
     private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag = mock()
-    private val cardReaderManualsFeatureFlag: CardReaderManualsFeatureFlag = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock {
         on(it.getCardReaderPreferredPlugin(any(), any(), any()))
             .thenReturn(WOOCOMMERCE_PAYMENTS)
@@ -76,82 +74,11 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when screen shown, then bbpos manual card reader row present`() {
-        assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
-            .anyMatch {
-                it.label == UiString.UiStringRes(R.string.card_reader_bbpos_manual_card_reader)
-            }
-    }
-
-    @Test
     fun `when screen shown, then manual card reader row icon is present`() {
         assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
             .anyMatch {
                 it.icon == R.drawable.ic_card_reader_manual
             }
-    }
-
-    @Test
-    fun `when screen shown, then m2 manual card reader row present`() {
-        assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
-            .anyMatch {
-                it.label == UiString.UiStringRes(R.string.card_reader_m2_manual_card_reader) &&
-                    it.icon == R.drawable.ic_card_reader_manual
-            }
-    }
-
-    @Test
-    fun `when screen shown, then bbpos chipper manual card reader row present`() {
-        assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
-            .anyMatch {
-                it.label == UiString.UiStringRes(R.string.card_reader_bbpos_manual_card_reader) &&
-                    it.icon == R.drawable.ic_card_reader_manual
-            }
-    }
-
-    @Test
-    fun `given ipp canada enabled, when screen shown, then wisepad manual card reader row present`() {
-        whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(true)
-        initViewModel()
-
-        assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
-            .anyMatch {
-                it.label == UiString.UiStringRes(R.string.card_reader_wisepad_3_manual_card_reader) &&
-                    it.icon == R.drawable.ic_card_reader_manual
-            }
-    }
-
-    @Test
-    fun `given ipp canada disabled, when screen shown, then wisepad manual card reader row not present`() {
-        whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(false)
-        initViewModel()
-
-        assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
-            .noneMatch {
-                it.label == UiString.UiStringRes(R.string.card_reader_wisepad_3_manual_card_reader) &&
-                    it.icon == R.drawable.ic_card_reader_manual
-            }
-    }
-
-    @Test
-    fun `when screen shown, then bbpos manual card reader row present on third position`() {
-        val rows = (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
-        assertThat(rows[2].label).isEqualTo(UiString.UiStringRes(R.string.card_reader_bbpos_manual_card_reader))
-    }
-
-    @Test
-    fun `when screen shown, then m2 manual card reader row present at fourth last`() {
-        val rows = (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
-        assertThat(rows[3].label).isEqualTo(UiString.UiStringRes(R.string.card_reader_m2_manual_card_reader))
-    }
-
-    @Test
-    fun `given ipp canada enabled, when screen shown, then wisepade manual card reader row present at fourth last`() {
-        whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(true)
-        initViewModel()
-
-        val rows = (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
-        assertThat(rows[4].label).isEqualTo(UiString.UiStringRes(R.string.card_reader_wisepad_3_manual_card_reader))
     }
 
     @Test
@@ -248,57 +175,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when user clicks on bbpos manual card reader, then app opens external webview with bbpos link`() {
-        (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
-            .find {
-                it.label == UiString.UiStringRes(R.string.card_reader_bbpos_manual_card_reader)
-            }!!.onItemClicked.invoke()
-
-        assertThat(viewModel.event.value)
-            .isEqualTo(
-                CardReaderHubViewModel.CardReaderHubEvents.NavigateToManualCardReaderFlow(
-                    AppUrls.BBPOS_MANUAL_CARD_READER
-                )
-            )
-    }
-
-    @Test
-    fun `when user clicks on m2 manual card reader, then app opens external webview with m2 link`() {
-        (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
-            .find {
-                it.label == UiString.UiStringRes(R.string.card_reader_m2_manual_card_reader)
-            }!!.onItemClicked.invoke()
-
-        assertThat(viewModel.event.value)
-            .isEqualTo(
-                CardReaderHubViewModel.CardReaderHubEvents.NavigateToManualCardReaderFlow(
-                    AppUrls.M2_MANUAL_CARD_READER
-                )
-            )
-    }
-
-    @Test
-    fun `given ipp canada enabled, when user clicks on wp3 manual card reader, then app opens webview with wp3 link`() {
-        whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(true)
-        initViewModel()
-
-        (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
-            .find {
-                it.label == UiString.UiStringRes(R.string.card_reader_wisepad_3_manual_card_reader)
-            }!!.onItemClicked.invoke()
-
-        assertThat(viewModel.event.value)
-            .isEqualTo(
-                CardReaderHubViewModel.CardReaderHubEvents.NavigateToManualCardReaderFlow(
-                    AppUrls.WISEPAD_3_MANUAL_CARD_READER
-                )
-            )
-    }
-
-    @Test
-    fun `given manuals is enabled, when screen shown, then manuals row is displayed`() {
-        whenever(cardReaderManualsFeatureFlag.isEnabled()).thenReturn(true)
-        initViewModel()
+    fun ` when screen shown, then manuals row is displayed`() {
 
         assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
             .anyMatch {
@@ -308,21 +185,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given manuals disabled, when screen shown, then manuals row is not displayed`() {
-        whenever(cardReaderManualsFeatureFlag.isEnabled()).thenReturn(false)
-        initViewModel()
-
-        assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
-            .noneMatch {
-                it.icon == R.drawable.ic_card_reader_manual &&
-                    it.label == UiString.UiStringRes(R.string.settings_card_reader_manuals)
-            }
-    }
-
-    @Test
-    fun `given manuals enabled, when user clicks on manuals row, then app navigates to manuals screen`() {
-        whenever(cardReaderManualsFeatureFlag.isEnabled()).thenReturn(true)
-        initViewModel()
+    fun `when user clicks on manuals row, then app navigates to manuals screen`() {
 
         (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
             .find {
@@ -339,7 +202,6 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         viewModel = CardReaderHubViewModel(
             savedState,
             inPersonPaymentsCanadaFeatureFlag,
-            cardReaderManualsFeatureFlag,
             appPrefsWrapper,
             selectedSite
         )
