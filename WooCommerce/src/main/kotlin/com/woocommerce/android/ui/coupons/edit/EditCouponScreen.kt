@@ -40,6 +40,7 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedSpinner
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
+import com.woocommerce.android.ui.compose.component.WCSwitch
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import java.math.BigDecimal
@@ -140,6 +141,12 @@ private fun DetailsSection(
             label = stringResource(id = R.string.coupon_edit_expiry_date),
             modifier = Modifier.fillMaxWidth()
         )
+        WCSwitch(
+            text = stringResource(id = R.string.coupon_edit_free_shipping),
+            checked = viewState.couponDraft.isShippingFree ?: false,
+            onCheckedChange = {},
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
@@ -203,6 +210,7 @@ fun EditCouponPreview() {
                     id = 0L,
                     code = "code",
                     amount = BigDecimal.TEN,
+                    isShippingFree = true,
                     productIds = emptyList(),
                     categoryIds = emptyList(),
                     excludedProductIds = emptyList(),
