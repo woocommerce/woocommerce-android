@@ -7,14 +7,24 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CouponRestrictionsFragment : BaseFragment() {
+class CouponRestrictionsFragment : BaseFragment(), BackPressListener {
+    companion object {
+        const val RESTRICTIONS_RESULT = "restrictions-result"
+    }
+
     private val viewModel: CouponRestrictionsViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus
@@ -40,8 +50,20 @@ class CouponRestrictionsFragment : BaseFragment() {
     }
 
     private fun setupObservers() {
-        /* TODO */
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ExitWithResult<*> -> {
+                    navigateBackWithResult(RESTRICTIONS_RESULT, event.data as Coupon.CouponRestrictions)
+                }
+                is Exit -> findNavController().navigateUp()
+            }
+        }
     }
 
     override fun getFragmentTitle() = getString(R.string.coupon_edit_usage_restrictions)
+
+    override fun onRequestAllowBackPress(): Boolean {
+        viewModel.onBackPressed()
+        return false
+    }
 }

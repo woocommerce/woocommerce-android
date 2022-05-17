@@ -9,6 +9,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.texteditor.SimpleTextEditorFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -64,6 +65,10 @@ class EditCouponFragment : BaseFragment() {
     private fun handleResults() {
         handleResult<String>(SimpleTextEditorFragment.SIMPLE_TEXT_EDITOR_RESULT) {
             viewModel.onDescriptionChanged(it)
+        }
+
+        handleResult<Coupon.CouponRestrictions>(CouponRestrictionsFragment.RESTRICTIONS_RESULT) {
+            viewModel.onRestrictionsUpdated(it)
         }
     }
 

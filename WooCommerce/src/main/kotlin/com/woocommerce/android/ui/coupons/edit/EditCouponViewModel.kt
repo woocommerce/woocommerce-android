@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.Coupon
+import com.woocommerce.android.model.Coupon.CouponRestrictions
 import com.woocommerce.android.ui.coupons.CouponRepository
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenCouponRestrictions
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenDescriptionEditor
@@ -95,6 +96,12 @@ class EditCouponViewModel @Inject constructor(
     fun onUsageRestrictionsClick() {
         couponDraft.value?.let {
             triggerEvent(OpenCouponRestrictions(it.restrictions))
+        }
+    }
+
+    fun onRestrictionsUpdated(restrictions: CouponRestrictions) {
+        couponDraft.update {
+            it?.copy(restrictions = restrictions)
         }
     }
 

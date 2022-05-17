@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
 import java.math.BigDecimal
 
 @Composable
+@Suppress("UnusedPrivateMember")
 fun CouponRestrictionsScreen(viewModel: CouponRestrictionsViewModel) {
     val scrollState = rememberScrollState()
     Column(
