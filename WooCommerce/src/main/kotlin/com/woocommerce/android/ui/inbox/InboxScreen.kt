@@ -238,7 +238,6 @@ fun InboxNoteTextAction(inboxAction: InboxNoteActionUi) {
 }
 
 @Composable
-@SuppressWarnings("MagicNumber")
 fun InboxNoteSurveyAction(inboxAction: InboxNoteActionUi) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
@@ -265,7 +264,6 @@ fun InboxNoteSurveyAction(inboxAction: InboxNoteActionUi) {
 }
 
 @Composable
-@Suppress("MagicNumber")
 fun InboxSkeletons() {
     val numberOfInboxSkeletonRows = 4
     LazyColumn {
@@ -345,7 +343,7 @@ private fun InboxNoteButtonsSkeleton() {
 
 @Preview
 @Composable
-fun InboxPreview(@PreviewParameter(SampleInboxProvider::class, 1) state: InboxState) {
+private fun InboxPreview(@PreviewParameter(SampleInboxProvider::class, 1) state: InboxState) {
     InboxScreen(state)
 }
 
