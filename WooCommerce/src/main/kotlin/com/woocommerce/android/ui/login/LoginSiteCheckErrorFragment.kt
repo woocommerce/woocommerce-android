@@ -49,8 +49,6 @@ class LoginSiteCheckErrorFragment : Fragment(R.layout.fragment_login_site_check_
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         setHasOptionsMenu(true)
         activity?.title = getString(R.string.log_in)
 
