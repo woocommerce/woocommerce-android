@@ -27,7 +27,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ActivitySitePickerBinding
 import com.woocommerce.android.di.GlideApp
-import com.woocommerce.android.push.FCMRegistrationIntentService
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
@@ -419,8 +418,6 @@ class SitePickerActivity :
     }
 
     override fun userVerificationCompleted() {
-        FCMRegistrationIntentService.enqueueWork(this)
-
         // if we came here from login, start the main activity
         if (calledFromLogin) {
             // Track login flow completed successfully

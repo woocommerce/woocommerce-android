@@ -168,11 +168,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             application.registerReceiver(connectionReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
         }
 
-        if (isGooglePlayServicesAvailable(application)) {
-            // Register for Cloud messaging
-            FCMRegistrationIntentService.enqueueWork(application)
-        }
-
         if (networkStatus.isConnected()) {
             updateSelectedSite.runIfNotLimited()
         }
