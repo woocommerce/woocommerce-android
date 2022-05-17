@@ -44,7 +44,6 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment(R.layout.fragment_
     private val binding get() = _binding!!
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
 
         _binding = FragmentFeedbackSurveyBinding.bind(view)

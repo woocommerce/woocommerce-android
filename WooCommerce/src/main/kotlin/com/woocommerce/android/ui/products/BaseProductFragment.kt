@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.CallSuper
 import androidx.annotation.LayoutRes
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.Observer
@@ -10,7 +11,9 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
@@ -27,6 +30,7 @@ abstract class BaseProductFragment : BaseFragment, BackPressListener {
 
     protected val viewModel: ProductDetailViewModel by hiltNavGraphViewModels(R.id.nav_graph_products)
 
+    @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -58,6 +62,7 @@ abstract class BaseProductFragment : BaseFragment, BackPressListener {
         )
     }
 
+    @CallSuper
     override fun onStop() {
         super.onStop()
         WooDialog.onCleared()

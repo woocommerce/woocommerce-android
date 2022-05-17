@@ -36,8 +36,6 @@ class LoginPrologueViewPagerItemFragment : Fragment(R.layout.fragment_login_prol
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         arguments?.let { args ->
             val binding = FragmentLoginPrologueViewpagerItemBinding.bind(view)
             binding.textView.setText(args.getInt(ARG_STRING_ID))
