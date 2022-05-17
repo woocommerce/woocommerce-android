@@ -95,7 +95,6 @@ fun EditCouponScreen(
     }
 }
 
-@Suppress("LongMethod")
 @Composable
 private fun DetailsSection(
     viewState: EditCouponViewModel.ViewState,
@@ -195,7 +194,7 @@ private fun DescriptionButton(description: String?, onButtonClicked: () -> Unit)
 
 @Composable
 @Preview
-fun EditCouponPreview() {
+private fun EditCouponPreview() {
     WooTheme {
         EditCouponScreen(
             viewState = EditCouponViewModel.ViewState(
