@@ -79,17 +79,23 @@ class CouponDetailsViewModel @Inject constructor(
                     isActive = coupon.dateExpires?.after(Date()) ?: true,
                     description = coupon.description,
                     summary = couponUtils.generateSummary(coupon, currencyCode),
-                    isForIndividualUse = coupon.isForIndividualUse ?: false,
+                    isForIndividualUse = coupon.restrictions.isForIndividualUse ?: false,
                     isShippingFree = coupon.isShippingFree ?: false,
-                    areSaleItemsExcluded = coupon.areSaleItemsExcluded ?: false,
+                    areSaleItemsExcluded = coupon.restrictions.areSaleItemsExcluded ?: false,
                     discountType = coupon.type?.let { couponUtils.localizeType(it) },
-                    minimumSpending = couponUtils.formatMinimumSpendingInfo(coupon.minimumAmount, currencyCode),
-                    maximumSpending = couponUtils.formatMaximumSpendingInfo(coupon.maximumAmount, currencyCode),
-                    usageLimitPerUser = couponUtils.formatUsageLimitPerUser(coupon.usageLimitPerUser),
-                    usageLimitPerCoupon = couponUtils.formatUsageLimitPerCoupon(coupon.usageLimit),
-                    usageLimitPerItems = couponUtils.formatUsageLimitPerItems(coupon.limitUsageToXItems),
+                    minimumSpending = couponUtils.formatMinimumSpendingInfo(
+                        coupon.restrictions.minimumAmount,
+                        currencyCode
+                    ),
+                    maximumSpending = couponUtils.formatMaximumSpendingInfo(
+                        coupon.restrictions.maximumAmount,
+                        currencyCode
+                    ),
+                    usageLimitPerUser = couponUtils.formatUsageLimitPerUser(coupon.restrictions.usageLimitPerUser),
+                    usageLimitPerCoupon = couponUtils.formatUsageLimitPerCoupon(coupon.restrictions.usageLimit),
+                    usageLimitPerItems = couponUtils.formatUsageLimitPerItems(coupon.restrictions.limitUsageToXItems),
                     expiration = coupon.dateExpires?.let { couponUtils.formatExpirationDate(it) },
-                    emailRestrictions = couponUtils.formatRestrictedEmails(coupon.restrictedEmails)
+                    emailRestrictions = couponUtils.formatRestrictedEmails(coupon.restrictions.restrictedEmails)
                 )
             }
     }
@@ -171,7 +177,7 @@ class CouponDetailsViewModel @Inject constructor(
                 currencyCode = currencyCode,
                 couponCode = coupon.code,
                 includedProducts = coupon.products.size,
-                excludedProducts = coupon.excludedProducts.size
+                excludedProducts = coupon.restrictions.excludedProducts.size
             )
         }?.let {
             triggerEvent(ShareCodeEvent(it))

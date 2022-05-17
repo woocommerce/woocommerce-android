@@ -26,9 +26,9 @@ class CouponUtils @Inject constructor(
         val amount = coupon.amount?.let { formatDiscount(it, coupon.type, currencyCode) }.orEmpty()
         val affectedArticles = formatAffectedArticles(
             coupon.products.size,
-            coupon.excludedProducts.size,
+            coupon.restrictions.excludedProducts.size,
             coupon.categories.size,
-            coupon.excludedCategories.size
+            coupon.restrictions.excludedCategories.size
         )
         return resourceProvider.getString(R.string.coupon_summary_template, amount, affectedArticles)
     }

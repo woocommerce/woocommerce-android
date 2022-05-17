@@ -225,9 +225,11 @@ fun EditCouponPreview() {
                     amount = BigDecimal.TEN,
                     products = emptyList(),
                     categories = emptyList(),
-                    excludedProducts = emptyList(),
-                    excludedCategories = emptyList(),
-                    restrictedEmails = emptyList()
+                    restrictions = Coupon.CouponRestrictions(
+                        excludedProducts = emptyList(),
+                        excludedCategories = emptyList(),
+                        restrictedEmails = emptyList()
+                    )
                 ),
                 localizedType = "Fixed Rate Discount",
                 amountUnit = "%",
