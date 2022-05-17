@@ -56,16 +56,16 @@ class EditCouponFragment : BaseFragment() {
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is NavigateToCouponRestrictionsEvent -> navigateToCouponRestrictions()
+                is NavigateToCouponRestrictionsEvent -> {
+                    findNavController().navigateSafely(
+                        EditCouponFragmentDirections.actionEditCouponFragmentToCouponRestrictionsFragment(
+                            event.restrictions
+                        )
+                    )
+                }
             }
         }
     }
 
     override fun getFragmentTitle() = screenTitle
-
-    private fun navigateToCouponRestrictions() {
-        findNavController().navigateSafely(
-            EditCouponFragmentDirections.actionEditCouponFragmentToCouponRestrictionsFragment()
-        )
-    }
 }

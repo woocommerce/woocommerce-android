@@ -36,5 +36,9 @@
     <fragment
         android:id="@+id/couponRestrictionsFragment"
         android:name="com.woocommerce.android.ui.coupons.edit.CouponRestrictionsFragment"
-        android:label="CouponRestrictionsFragment" />
+        android:label="CouponRestrictionsFragment" >
+        <argument
+            android:name="restrictions"
+            app:argType="com.woocommerce.android.model.Coupon$CouponRestrictions" />
+    </fragment>
 </navigation>
