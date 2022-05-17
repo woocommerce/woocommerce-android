@@ -1,8 +1,8 @@
 package com.woocommerce.android.push
 
 import com.woocommerce.android.AppPrefsWrapper
-import javax.inject.Inject
 import org.wordpress.android.fluxc.store.AccountStore
+import javax.inject.Inject
 
 class RegisterDevice @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,

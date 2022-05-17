@@ -38,8 +38,6 @@ import com.woocommerce.android.util.crashlogging.UploadEncryptedLogs
 import com.woocommerce.android.util.encryptedlogging.ObserveEncryptedLogsUploadResult
 import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.DispatchingAndroidInjector
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
@@ -54,6 +52,8 @@ import org.wordpress.android.fluxc.store.GetDeviceRegistrationStatus
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @Singleton
 class AppInitializer @Inject constructor() : ApplicationLifecycleListener {

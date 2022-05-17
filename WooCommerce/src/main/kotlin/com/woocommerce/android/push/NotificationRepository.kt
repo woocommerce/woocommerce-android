@@ -1,9 +1,9 @@
 package com.woocommerce.android.push
 
 import com.woocommerce.android.util.WooLog
-import javax.inject.Inject
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.NotificationStore
+import javax.inject.Inject
 
 class NotificationRepository @Inject constructor(
     private val accountStore: AccountStore,
