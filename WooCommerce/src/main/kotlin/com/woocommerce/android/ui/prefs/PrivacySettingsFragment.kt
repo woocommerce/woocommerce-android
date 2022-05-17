@@ -27,8 +27,6 @@ class PrivacySettingsFragment : Fragment(R.layout.fragment_settings_privacy), Pr
     @Inject lateinit var presenter: PrivacySettingsContract.Presenter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         presenter.takeView(this)
 
         val binding = FragmentSettingsPrivacyBinding.bind(view)

@@ -66,8 +66,6 @@ class MagicLinkInterceptFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         retryButton = view.findViewById(R.id.login_open_email_client)
         retryContainer = view.findViewById(R.id.login_magic_link_container)
         retryButton?.text = getString(R.string.retry)
