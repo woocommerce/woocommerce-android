@@ -198,7 +198,6 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/major_100"
             android:layout_marginVertical="@dimen/major_100"
-            android:enabled="false"
             android:hint="@string/shipping_label_edit_address_state"
             android:inputType="text"
             android:saveEnabled="false" />
