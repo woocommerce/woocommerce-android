@@ -4,6 +4,7 @@
 -----
 - [*] In-Person Payments: Individual Card Reader Manual tabs removed from IPP Screen and moved to the new screen `Card Reader Manuals` [https://github.com/woocommerce/woocommerce-android/pull/6518]
 
+
 9.2
 -----
 - [*] In-Person Payments: update the reader's battery level when it's changed on the card reader's details screen
