@@ -91,7 +91,6 @@ class VariationListViewModel @Inject constructor(
         loadVariations(remoteProductId, loadMore = true)
     }
 
-
     fun onBulkUpdateClicked() {
         track(PRODUCT_VARIANTS_BULK_UPDATE_TAPPED)
         variationList.value?.let { variations ->

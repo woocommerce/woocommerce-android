@@ -161,7 +161,6 @@ class VariationListFragment :
 
         viewModel.variationList.observe(viewLifecycleOwner) {
             showVariations(it, viewModel.viewStateLiveData.liveData.value?.parentProduct)
-//            requireActivity().invalidateOptionsMenu()
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
