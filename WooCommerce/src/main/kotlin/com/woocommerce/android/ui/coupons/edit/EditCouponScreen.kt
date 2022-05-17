@@ -168,14 +168,14 @@ private fun UsageRestrictionsSection(
             .fillMaxWidth()
     ) {
         Text(
-            text = stringResource(id = string.coupon_edit_usage_section).toUpperCase(Locale.current),
+            text = stringResource(id = R.string.coupon_edit_usage_section).toUpperCase(Locale.current),
             style = MaterialTheme.typography.body2,
             color = colorResource(id = R.color.color_on_surface_medium)
         )
 
         TextButton(onClick = onUsageRestrictionsClick) {
             Text(
-                text = stringResource(id = string.coupon_edit_usage_restrictions),
+                text = stringResource(id = R.string.coupon_edit_usage_restrictions),
                 style = MaterialTheme.typography.body1,
                 color = colorResource(id = R.color.color_on_surface),
                 modifier = Modifier.fillMaxWidth()
