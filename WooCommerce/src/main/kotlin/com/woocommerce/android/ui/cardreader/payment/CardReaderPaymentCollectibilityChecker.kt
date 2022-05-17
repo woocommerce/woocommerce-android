@@ -39,5 +39,9 @@ class CardReaderPaymentCollectibilityChecker @Inject constructor(
             WOOCOMMERCE_BOOKINGS_PAYMENT_TYPE,
         )
 
-    private fun Order.isStatusCollectable() = (listOf(Pending, Processing, OnHold)).any { it == status }
+    private fun Order.isStatusCollectable() = status in arrayOf(
+        Pending,
+        Processing,
+        OnHold,
+    )
 }
