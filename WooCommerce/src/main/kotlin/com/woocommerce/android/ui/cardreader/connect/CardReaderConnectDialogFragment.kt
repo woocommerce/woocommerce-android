@@ -91,8 +91,6 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         val binding = CardReaderConnectDialogBinding.bind(view)
         initMultipleReadersFoundRecyclerView(binding)
         initObservers(binding)

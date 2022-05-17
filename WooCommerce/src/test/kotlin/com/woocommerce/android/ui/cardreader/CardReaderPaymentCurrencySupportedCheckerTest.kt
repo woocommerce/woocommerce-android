@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.cardreader
 
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForCanada
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUnsupportedCountry
@@ -19,7 +18,7 @@ import kotlin.test.assertTrue
 class CardReaderPaymentCurrencySupportedCheckerTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val wooStore: WooCommerceStore = mock()
-    private val cardReaderConfigFactory: CardReaderConfigFactory = mock()
+    private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider = mock()
 
     private val site = SiteModel()
     private val countryCode = "US"
@@ -28,7 +27,7 @@ class CardReaderPaymentCurrencySupportedCheckerTest : BaseUnitTest() {
         coroutinesTestRule.testDispatchers,
         wooStore,
         selectedSite,
-        cardReaderConfigFactory
+        cardReaderCountryConfigProvider,
     )
 
     @Before
@@ -42,7 +41,7 @@ class CardReaderPaymentCurrencySupportedCheckerTest : BaseUnitTest() {
         testBlocking {
             whenever(wooStore.getStoreCountryCode(site)).thenReturn("US")
             whenever(
-                cardReaderConfigFactory.getCardReaderConfigFor("US")
+                cardReaderCountryConfigProvider.provideCountryConfigFor("US")
             ).thenReturn(CardReaderConfigForUSA)
 
             val isCurrencySupported = cardReaderPaymentCurrencySupportedChecker.isCurrencySupported("USD")
@@ -55,7 +54,7 @@ class CardReaderPaymentCurrencySupportedCheckerTest : BaseUnitTest() {
         testBlocking {
             whenever(wooStore.getStoreCountryCode(site)).thenReturn("CA")
             whenever(
-                cardReaderConfigFactory.getCardReaderConfigFor("CA")
+                cardReaderCountryConfigProvider.provideCountryConfigFor("CA")
             ).thenReturn(CardReaderConfigForCanada)
 
             val isCurrencySupported = cardReaderPaymentCurrencySupportedChecker.isCurrencySupported("USD")
@@ -68,7 +67,7 @@ class CardReaderPaymentCurrencySupportedCheckerTest : BaseUnitTest() {
         testBlocking {
             whenever(wooStore.getStoreCountryCode(site)).thenReturn("CA")
             whenever(
-                cardReaderConfigFactory.getCardReaderConfigFor("CA")
+                cardReaderCountryConfigProvider.provideCountryConfigFor("CA")
             ).thenReturn(CardReaderConfigForCanada)
 
             val isCurrencySupported = cardReaderPaymentCurrencySupportedChecker.isCurrencySupported("CAD")
@@ -81,7 +80,7 @@ class CardReaderPaymentCurrencySupportedCheckerTest : BaseUnitTest() {
         testBlocking {
             whenever(wooStore.getStoreCountryCode(site)).thenReturn("US")
             whenever(
-                cardReaderConfigFactory.getCardReaderConfigFor("US")
+                cardReaderCountryConfigProvider.provideCountryConfigFor("US")
             ).thenReturn(CardReaderConfigForUSA)
 
             val isCurrencySupported = cardReaderPaymentCurrencySupportedChecker.isCurrencySupported("CAD")
@@ -94,7 +93,7 @@ class CardReaderPaymentCurrencySupportedCheckerTest : BaseUnitTest() {
         testBlocking {
             whenever(wooStore.getStoreCountryCode(site)).thenReturn("IN")
             whenever(
-                cardReaderConfigFactory.getCardReaderConfigFor("IN")
+                cardReaderCountryConfigProvider.provideCountryConfigFor("IN")
             ).thenReturn(CardReaderConfigForUnsupportedCountry)
 
             val isCurrencySupported = cardReaderPaymentCurrencySupportedChecker.isCurrencySupported("USD")

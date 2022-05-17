@@ -912,9 +912,9 @@
         -->
     <string name="card_reader_manage_card_reader">Manage Card Reader</string>
     <string name="card_reader_purchase_card_reader">Order Card Reader</string>
-    <string name="card_reader_bbpos_manual_card_reader">BBPOS Chipper Card Reader Manual</string>
-    <string name="card_reader_m2_manual_card_reader">Stripe M2 Card Reader Manual</string>
-    <string name="card_reader_wisepad_3_manual_card_reader">WisePad 3 Card Reader Manual</string>
+    <string name="card_reader_bbpos_manual_card_reader" translatable="false">BBPOS Chipper™ 2X BT</string>
+    <string name="card_reader_m2_manual_card_reader" translatable="false">Stripe M2</string>
+    <string name="card_reader_wisepad_3_manual_card_reader" translatable="false">WisePad 3</string>
     <string name="card_reader_icon_content_description">Card Reader Image</string>
 
     <!--
@@ -1962,6 +1962,12 @@
     <string name="coupon_edit_code_helper">Customers need to enter this code to use the coupon.</string>
     <string name="coupon_edit_regenerate_coupon">Regenerate Coupon Code</string>
     <string name="coupon_edit_save_button">Save</string>
+    <string name="coupon_edit_expiry_date">Coupon Expiry Date</string>
+    <string name="coupon_edit_add_description">Add Description (Optional)</string>
+    <string name="coupon_edit_edit_description">Edit Description</string>
+    <string name="coupon_edit_description_editor_title">Coupon Description</string>
+    <string name="coupon_edit_add_description_hint">Add the description of the coupon.</string>
+    <string name="coupon_edit_free_shipping">Include Free Shipping?</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>
@@ -2367,5 +2373,4 @@
     <string name="about_automattic_back_icon_description">Back icon</string>
     <string name="about_automattic_app_icon_description">App icon</string>
     <string name="error_generic">An error occurred</string>
-    <string name="coupon_edit_expiry_date">Coupon Expiry Date</string>
 </resources>

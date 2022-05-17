@@ -54,8 +54,6 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         // Specify transition animations
         dialog?.window?.attributes?.windowAnimations = R.style.Woo_Animations_Dialog
 

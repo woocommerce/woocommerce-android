@@ -208,7 +208,7 @@ fun WCTextButton(
 @Preview(name = "Light mode")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun ButtonsPreview() {
+private fun ButtonsPreview() {
     WooThemeWithBackground {
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp),

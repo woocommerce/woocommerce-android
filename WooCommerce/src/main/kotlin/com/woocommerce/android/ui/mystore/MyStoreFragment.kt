@@ -48,7 +48,6 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
