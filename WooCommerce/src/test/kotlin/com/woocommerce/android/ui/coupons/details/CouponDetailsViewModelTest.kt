@@ -101,13 +101,13 @@ class CouponDetailsViewModelTest : BaseUnitTest() {
         assertThat(state?.couponSummary?.discountType).isEqualTo(couponUtils.localizeType(coupon.type!!))
         assertThat(state?.couponSummary?.minimumSpending).isEqualTo(
             couponUtils.formatMinimumSpendingInfo(
-                coupon.minimumAmount,
+                coupon.restrictions.minimumAmount,
                 "USD"
             )
         )
         assertThat(state?.couponSummary?.maximumSpending).isEqualTo(
             couponUtils.formatMaximumSpendingInfo(
-                coupon.minimumAmount,
+                coupon.restrictions.minimumAmount,
                 "USD"
             )
         )
