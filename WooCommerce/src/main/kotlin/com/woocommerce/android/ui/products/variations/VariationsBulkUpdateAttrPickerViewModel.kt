@@ -1,11 +1,13 @@
 package com.woocommerce.android.ui.products.variations
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
 import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.ui.products.variations.VariationsBulkUpdateAttrPickerViewModel.RegularPriceState
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 
 /**
  * Responsible for calculating view state - [ProductVariation] attribute subtitles
@@ -17,11 +19,11 @@ class VariationsBulkUpdateAttrPickerViewModel(
     private val args: VariationsBulkUpdateAttrPickerDialogArgs by savedState.navArgs()
 
     private val _viewState = MutableStateFlow(ViewState())
-    val viewState: StateFlow<ViewState> = _viewState
+    val viewState: LiveData<ViewState> = _viewState.asLiveData()
 
     init {
         val regularPriceState = calculateRegularPriceState(args.variationsToUpdate)
-        _viewState.value = viewState.value.copy(regularPriceState = regularPriceState)
+        _viewState.value = _viewState.value.copy(regularPriceState = regularPriceState)
     }
 
     private fun calculateRegularPriceState(variations: Array<ProductVariation>): RegularPriceState {

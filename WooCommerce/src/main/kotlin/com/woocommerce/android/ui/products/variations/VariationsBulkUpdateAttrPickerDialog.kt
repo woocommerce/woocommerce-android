@@ -56,7 +56,7 @@ class VariationsBulkUpdateAttrPickerDialog : WCBottomSheetDialogFragment() {
         dialog?.window?.setDimAmount(DEFAULT_BG_DIM)
         renderInternalSheetState(bottomSheetBehavior.state)
         lifecycleScope.launchWhenStarted {
-            viewModel.viewState.collect { newState ->
+            viewModel.viewState.observe(viewLifecycleOwner) { newState ->
                 renderViewState(newState)
             }
         }
