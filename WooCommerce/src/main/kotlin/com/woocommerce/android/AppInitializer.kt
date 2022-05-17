@@ -14,7 +14,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.network.ConnectionChangeReceiver
-import com.woocommerce.android.push.FCMRegistrationIntentService
+import com.woocommerce.android.push.RegisterDevice
 import com.woocommerce.android.push.WooNotificationBuilder
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.tools.NetworkStatus
@@ -23,17 +23,24 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.SendTelemetry
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.main.MainActivity
-import com.woocommerce.android.util.*
+import com.woocommerce.android.util.AppThemeUtils
+import com.woocommerce.android.util.ApplicationLifecycleMonitor
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
+import com.woocommerce.android.util.PackageUtils
+import com.woocommerce.android.util.REGEX_API_JETPACK_TUNNEL_METHOD
+import com.woocommerce.android.util.REGEX_API_NUMERIC_PARAM
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.DASHBOARD
 import com.woocommerce.android.util.WooLog.T.UTILS
+import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.util.crashlogging.UploadEncryptedLogs
 import com.woocommerce.android.util.encryptedlogging.ObserveEncryptedLogsUploadResult
 import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.DispatchingAndroidInjector
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -43,11 +50,10 @@ import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.OnJetpackTimeoutError
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
+import org.wordpress.android.fluxc.store.GetDeviceRegistrationStatus
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
 class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
@@ -73,6 +79,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var sendTelemetry: SendTelemetry
     @Inject lateinit var siteObserver: SiteObserver
     @Inject lateinit var wooLog: WooLogWrapper
+    @Inject lateinit var registerDevice: RegisterDevice
+    @Inject lateinit var getDeviceRegistrationStatus: GetDeviceRegistrationStatus
 
     // Listens for changes in device connectivity
     @Inject lateinit var connectionReceiver: ConnectionChangeReceiver
@@ -141,6 +149,14 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         }
         appCoroutineScope.launch {
             siteObserver.observeAndUpdateSelectedSiteData()
+        }
+
+        appCoroutineScope.launch {
+            getDeviceRegistrationStatus().apply {
+                if (this == GetDeviceRegistrationStatus.Status.UNREGISTERED) {
+                    registerDevice()
+                }
+            }
         }
     }
 
@@ -275,6 +291,12 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             val hasUserOptedOut = !AnalyticsTracker.sendUsageStats
             if (hasUserOptedOut != accountStore.account.tracksOptOut) {
                 AnalyticsTracker.sendUsageStats = !accountStore.account.tracksOptOut
+            }
+        }
+
+        if (!isLoggedOut) {
+            appCoroutineScope.launch {
+                registerDevice()
             }
         }
     }
