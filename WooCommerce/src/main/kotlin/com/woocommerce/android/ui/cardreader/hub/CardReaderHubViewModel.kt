@@ -86,7 +86,6 @@ class CardReaderHubViewModel @Inject constructor(
     sealed class CardReaderHubEvents : MultiLiveEvent.Event() {
         data class NavigateToCardReaderDetail(val cardReaderFlowParam: CardReaderFlowParam) : CardReaderHubEvents()
         data class NavigateToPurchaseCardReaderFlow(val url: String) : CardReaderHubEvents()
-        data class NavigateToManualCardReaderFlow(val url: String) : CardReaderHubEvents()
         object NavigateToCardReaderManualsScreen : CardReaderHubEvents()
     }
 
