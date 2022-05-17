@@ -25,10 +25,10 @@ class CouponUtils @Inject constructor(
     fun generateSummary(coupon: Coupon, currencyCode: String?): String {
         val amount = coupon.amount?.let { formatDiscount(it, coupon.type, currencyCode) }.orEmpty()
         val affectedArticles = formatAffectedArticles(
-            coupon.products.size,
-            coupon.restrictions.excludedProducts.size,
-            coupon.categories.size,
-            coupon.restrictions.excludedCategories.size
+            coupon.productIds.size,
+            coupon.restrictions.excludedProductIds.size,
+            coupon.categoryIds.size,
+            coupon.restrictions.excludedCategoryIds.size
         )
         return resourceProvider.getString(R.string.coupon_summary_template, amount, affectedArticles)
     }

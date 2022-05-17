@@ -9,8 +9,11 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.common.texteditor.SimpleTextEditorFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.coupons.edit.EditCouponViewModel.NavigateToCouponRestrictionsEvent
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -47,6 +50,7 @@ class EditCouponFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers()
+        handleResults()
     }
 
     private fun setupObservers() {
@@ -56,6 +60,7 @@ class EditCouponFragment : BaseFragment() {
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
+                is EditCouponNavigationTarget -> EditCouponNavigator.navigate(this, event)
                 is NavigateToCouponRestrictionsEvent -> {
                     findNavController().navigateSafely(
                         EditCouponFragmentDirections.actionEditCouponFragmentToCouponRestrictionsFragment(
@@ -64,6 +69,12 @@ class EditCouponFragment : BaseFragment() {
                     )
                 }
             }
+        }
+    }
+
+    private fun handleResults() {
+        handleResult<String>(SimpleTextEditorFragment.SIMPLE_TEXT_EDITOR_RESULT) {
+            viewModel.onDescriptionChanged(it)
         }
     }
 

@@ -24,10 +24,12 @@ import com.woocommerce.android.ui.orders.creation.products.OrderCreationProductS
 import com.woocommerce.android.ui.orders.creation.products.OrderCreationProductSelectionViewModel.ViewState
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.ProductListAdapter
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class OrderCreationProductSelectionFragment :
@@ -41,6 +43,8 @@ class OrderCreationProductSelectionFragment :
     private val skeletonView = SkeletonView()
     private var searchMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
+
+    @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -83,7 +87,8 @@ class OrderCreationProductSelectionFragment :
             .let { it as? ProductListAdapter }
             ?: ProductListAdapter(
                 clickListener = { id, _ -> productListViewModel.onProductSelected(id) },
-                loadMoreListener = this@OrderCreationProductSelectionFragment
+                loadMoreListener = this@OrderCreationProductSelectionFragment,
+                currencyFormatter = currencyFormatter
             ).also { productsList.adapter = it }
         adapter.submitList(products)
     }

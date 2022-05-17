@@ -1,2 +1,0 @@
-9.0:
-Datums zijn enorm belangrijk voor het runnen van een bedrijf. We hebben een fout verholpen waarbij bij het instellen van een 'verkoopdatum' op een product soms die datum afweek van de datum die je had gekozen. Bedankt voor jullie feedback!

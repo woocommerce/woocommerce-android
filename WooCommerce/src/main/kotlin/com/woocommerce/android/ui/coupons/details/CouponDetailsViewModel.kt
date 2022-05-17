@@ -176,8 +176,8 @@ class CouponDetailsViewModel @Inject constructor(
                 amount = coupon.amount,
                 currencyCode = currencyCode,
                 couponCode = coupon.code,
-                includedProducts = coupon.products.size,
-                excludedProducts = coupon.restrictions.excludedProducts.size
+                includedProducts = coupon.productIds.size,
+                excludedProducts = coupon.restrictions.excludedProductIds.size
             )
         }?.let {
             triggerEvent(ShareCodeEvent(it))
