@@ -162,6 +162,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             super.onOptionsItemSelected(item)
         }
     }
+
     override fun openOrderProductDetail(remoteProductId: Long) {
         AnalyticsTracker.track(ORDER_DETAIL_PRODUCT_TAPPED)
         (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId)
