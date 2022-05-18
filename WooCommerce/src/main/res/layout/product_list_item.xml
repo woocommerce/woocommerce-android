@@ -66,8 +66,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/minor_00"
-            tools:text="Out of stock this is a really long version to see what happens when we move o"
-            tools:visibility="visible" />
+            tools:text="Out of stock this is a really long version to see what happens when we move o" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/productSku"
+            style="@style/Woo.ListItem.Body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/minor_00"
+            tools:text="SKU" />
     </LinearLayout>
 
     <ImageButton

@@ -64,7 +64,6 @@ fun CouponDetailsScreen(
 }
 
 @Composable
-@Suppress("LongMethod", "LongParameterList")
 fun CouponDetailsScreen(
     state: CouponDetailsState,
     onBackPress: () -> Boolean,
