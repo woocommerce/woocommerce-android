@@ -188,7 +188,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
 
     private fun setupObserversWith(binding: FragmentOrderCreationFormBinding) {
         viewModel.orderDraft.observe(viewLifecycleOwner) { newOrderData ->
-            binding.orderStatusView.updateOrderDate(newOrderData)
+            binding.orderStatusView.updateOrder(newOrderData)
             bindNotesSection(binding.notesSection, newOrderData.customerNote)
             bindCustomerAddressSection(binding.customerSection, newOrderData)
             bindPaymentSection(binding.paymentSection, newOrderData)

@@ -14,6 +14,7 @@ import com.woocommerce.android.extensions.isToday
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.ui.orders.OrderStatusTag
+import java.util.Date
 
 typealias EditStatusClickListener = (View) -> Unit
 
@@ -32,28 +33,22 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
         binding.orderStatusOrderTags.tag = OrderStatusTag(orderStatus)
     }
 
-    fun updateOrderDate(order: Order) {
-        with(order.dateCreated) {
-            isToday()
-                ?.let { getMediumDate(context)}.orEmpty()
-
-                .let { dateStr ->
-                    binding.orderStatusSubtitle.text =
-                        when (mode) {
-                            Mode.OrderEdit -> context.getString(
-                                R.string.orderdetail_orderstatus_date_and_ordernum,
-                                dateStr,
-                                order.number
-                            )
-                            Mode.OrderCreation -> dateStr
-                        }
-                }
-        }
+    fun updateOrder(order: Order) {
+        val dateStr = getFormattedDate(order.dateCreated)
+        binding.orderStatusSubtitle.text =
+            when (mode) {
+                Mode.OrderEdit -> context.getString(
+                    R.string.orderdetail_orderstatus_date_and_ordernum,
+                    dateStr,
+                    order.number
+                )
+                Mode.OrderCreation -> dateStr
+            }
 
         when (mode) {
             Mode.OrderEdit -> {
-                binding.orderStatusHeader.text =
-                    order.getBillingName(context.getString(R.string.orderdetail_customer_name_default))
+                binding.orderStatusHeader.text
+                order.getBillingName(context.getString(R.string.orderdetail_customer_name_default))
             }
             Mode.OrderCreation -> {
                 binding.orderStatusHeader.isVisible = false
@@ -61,29 +56,17 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
         }
     }
 
-    fun updateOrderTime(order: Order) {
-        with(order.dateCreated) {
-            isToday()
-                ?.let { getTimeString(context)}.orEmpty()
-                .let {dateStr ->
-                    binding.orderStatusSubtitle.text =
-                        when(mode) {
-                            Mode.OrderEdit -> context.getString(
-                                R.string.orderdetail_orderstatus_date_and_ordernum,
-                                dateStr,
-                                order.number
-                            )
-                            Mode.OrderCreation -> dateStr
-                        }
-                }
-        }
-        when(mode) {
-            Mode.OrderEdit -> {
-                binding.orderStatusHeader.text =
-                    order.getBillingName(context.getString(R.string.orderdetail_customer_name_default))
-            }
+    private fun getFormattedDate(date: Date): String {
+        return when (mode) {
             Mode.OrderCreation -> {
-                binding.orderStatusHeader.isVisible = false
+                date.getMediumDate(context)
+            }
+            Mode.OrderEdit -> {
+                when (date.isToday()) {
+                    true -> date.getTimeString(context)
+                    false -> date.getMediumDate(context)
+                    null -> ""
+                }
             }
         }
     }
