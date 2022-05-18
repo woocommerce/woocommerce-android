@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.coupons.edit
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -25,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -75,11 +78,7 @@ fun EditCouponScreen(
         modifier = Modifier
             .background(color = MaterialTheme.colors.surface)
             .verticalScroll(scrollState)
-            .padding(
-                start = dimensionResource(id = R.dimen.major_100),
-                top = dimensionResource(id = R.dimen.major_100),
-                bottom = dimensionResource(id = R.dimen.major_100)
-            )
+            .padding(vertical = dimensionResource(id = R.dimen.major_100))
             .fillMaxSize()
     ) {
         DetailsSection(
@@ -95,7 +94,7 @@ fun EditCouponScreen(
             onClick = { /*TODO*/ },
             text = stringResource(id = R.string.coupon_edit_save_button),
             modifier = Modifier
-                .padding(end = dimensionResource(id = R.dimen.major_100))
+                .padding(horizontal = dimensionResource(id = R.dimen.major_100))
                 .fillMaxWidth(),
             enabled = viewState.hasChanges
         )
@@ -116,7 +115,7 @@ private fun DetailsSection(
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
         modifier = Modifier
-            .padding(end = dimensionResource(id = R.dimen.major_100))
+            .padding(horizontal = dimensionResource(id = R.dimen.major_100))
             .fillMaxWidth()
     ) {
         Text(
@@ -170,22 +169,32 @@ private fun UsageRestrictionsSection(
         Text(
             text = stringResource(id = R.string.coupon_edit_usage_section).toUpperCase(Locale.current),
             style = MaterialTheme.typography.body2,
-            color = colorResource(id = R.color.color_on_surface_medium)
+            color = colorResource(id = R.color.color_on_surface_medium),
+            modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
         )
 
-        TextButton(onClick = onUsageRestrictionsClick) {
-            Text(
-                text = stringResource(id = R.string.coupon_edit_usage_restrictions),
-                style = MaterialTheme.typography.body1,
-                color = colorResource(id = R.color.color_on_surface),
-                modifier = Modifier.fillMaxWidth()
-            )
+        TextButton(
+            onClick = onUsageRestrictionsClick,
+            contentPadding = PaddingValues(dimensionResource(id = R.dimen.major_100))
+        ) {
+            Column {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.coupon_edit_usage_restrictions),
+                        style = MaterialTheme.typography.body1,
+                        color = colorResource(id = R.color.color_on_surface)
+                    )
+                    Icon(painter = painterResource(id = R.drawable.ic_arrow_right), contentDescription = null)
+                }
+            }
         }
-
         Divider(
-            modifier = Modifier.padding(start = dimensionResource(id = R.dimen.minor_100)),
             color = colorResource(id = R.color.divider_color),
-            thickness = dimensionResource(id = R.dimen.minor_10)
+            thickness = dimensionResource(id = R.dimen.minor_10),
+            modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100))
         )
     }
 }
