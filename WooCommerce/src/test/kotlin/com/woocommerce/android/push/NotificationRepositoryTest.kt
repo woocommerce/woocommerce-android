@@ -10,7 +10,6 @@ import org.wordpress.android.fluxc.store.NotificationStore
 
 @ExperimentalCoroutinesApi
 class NotificationRepositoryTest : BaseUnitTest() {
-
     lateinit var sut: NotificationRepository
 
     private val notificationStore: NotificationStore = mock()

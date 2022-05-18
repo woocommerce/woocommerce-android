@@ -12,7 +12,6 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.store.AccountStore
 
 class RegisterDeviceTest : BaseUnitTest() {
-
     lateinit var sut: RegisterDevice
 
     private val appPrefs: AppPrefsWrapper = mock {
