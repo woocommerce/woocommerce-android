@@ -175,7 +175,10 @@ private fun UsageRestrictionsSection(
 
         TextButton(
             onClick = onUsageRestrictionsClick,
-            contentPadding = PaddingValues(dimensionResource(id = R.dimen.major_100))
+            contentPadding = PaddingValues(dimensionResource(id = R.dimen.major_100)),
+            colors = ButtonDefaults.textButtonColors(
+                contentColor = colorResource(id = R.color.color_on_surface)
+            )
         ) {
             Column {
                 Row(
@@ -185,12 +188,15 @@ private fun UsageRestrictionsSection(
                     Text(
                         text = stringResource(id = R.string.coupon_edit_usage_restrictions),
                         style = MaterialTheme.typography.body1,
-                        color = colorResource(id = R.color.color_on_surface)
                     )
-                    Icon(painter = painterResource(id = R.drawable.ic_arrow_right), contentDescription = null)
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_arrow_right),
+                        contentDescription = null
+                    )
                 }
             }
         }
+
         Divider(
             color = colorResource(id = R.color.divider_color),
             thickness = dimensionResource(id = R.dimen.minor_10),
