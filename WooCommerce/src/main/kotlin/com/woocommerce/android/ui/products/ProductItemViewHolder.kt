@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.products.ProductStockStatus.InStock
 import com.woocommerce.android.ui.products.ProductStockStatus.OnBackorder
 import com.woocommerce.android.ui.products.ProductStockStatus.OutOfStock
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.util.HtmlUtils
 import org.wordpress.android.util.PhotonUtils
@@ -33,6 +34,7 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
 
     fun bind(
         product: Product,
+        currencyFormatter: CurrencyFormatter,
         isActivated: Boolean = false
     ) {
         viewBinding.root.isActivated = isActivated
@@ -43,12 +45,12 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
             HtmlUtils.fastStripHtml(product.name)
         }
 
-        val stockAndStatus = getProductStockStatusText(context, product)
+        val stockStatusPrice = getProductStockStatusPriceText(context, product, currencyFormatter)
         with(viewBinding.productStockAndStatus) {
-            if (stockAndStatus != null) {
+            if (stockStatusPrice.isNotEmpty()) {
                 visibility = View.VISIBLE
                 text = HtmlCompat.fromHtml(
-                    stockAndStatus,
+                    stockStatusPrice,
                     HtmlCompat.FROM_HTML_MODE_LEGACY
                 )
             } else {
@@ -56,6 +58,27 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
             }
         }
 
+        with(viewBinding.productSku) {
+            if (product.sku.isNotEmpty()) {
+                visibility = View.VISIBLE
+                text = context.getString(R.string.orderdetail_product_lineitem_sku_value, product.sku)
+            } else {
+                visibility = View.GONE
+            }
+        }
+
+        showProductImage(product, viewBinding)
+
+        ViewCompat.setTransitionName(
+            viewBinding.root,
+            String.format(
+                context.getString(R.string.order_card_transition_name),
+                product.remoteId
+            )
+        )
+    }
+
+    private fun showProductImage(product: Product, viewBinding: ProductListItemBinding) {
         val firstImage = product.firstImageUrl
         val size: Int
         when {
@@ -84,14 +107,6 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
             height = size
             width = size
         }
-
-        ViewCompat.setTransitionName(
-            viewBinding.root,
-            String.format(
-                context.getString(R.string.order_card_transition_name),
-                product.remoteId
-            )
-        )
     }
 
     fun setOnDeleteClickListener(
@@ -104,10 +119,11 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
         }
     }
 
-    private fun getProductStockStatusText(
+    private fun getProductStockStatusPriceText(
         context: Context,
-        product: Product
-    ): String? {
+        product: Product,
+        currencyFormatter: CurrencyFormatter
+    ): String {
         val statusHtml = product.status?.let {
             when {
                 it == ProductStatus.PENDING -> {
@@ -122,7 +138,19 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
             }
         }
 
-        val stock = when (product.stockStatus) {
+        val stock = getStockText(product)
+        val stockAndStatus = if (statusHtml != null) "$statusHtml $bullet $stock" else stock
+
+        return if (product.price != null) {
+            val fmtPrice = currencyFormatter.formatCurrency(product.price)
+            "$stockAndStatus $bullet $fmtPrice"
+        } else {
+            stockAndStatus
+        }
+    }
+
+    private fun getStockText(product: Product): String {
+        return when (product.stockStatus) {
             InStock -> {
                 if (product.productType == VARIABLE) {
                     if (product.numVariations > 0) {
@@ -154,8 +182,6 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
                 product.stockStatus.value
             }
         }
-
-        return if (statusHtml != null) "$statusHtml $bullet $stock" else stock
     }
 
     /**

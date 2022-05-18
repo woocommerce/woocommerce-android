@@ -151,7 +151,7 @@ private fun WCOutlinedTextFieldLayout(
 @Preview(name = "Light mode")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun WCOutlinedTextFieldPreview() {
+private fun WCOutlinedTextFieldPreview() {
     WooThemeWithBackground {
         Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             WCOutlinedTextField(value = "", label = "Label", onValueChange = {})

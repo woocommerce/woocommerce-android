@@ -4,6 +4,7 @@ import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.ui.coupons.CouponRepository
 import com.woocommerce.android.ui.coupons.CouponTestUtils
+import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenDescriptionEditor
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.util.CurrencyFormatter
@@ -136,5 +137,48 @@ class EditCouponViewModelTests : BaseUnitTest() {
         }.last()
 
         assertThat(state.couponDraft.code).isEqualTo(generatedCode)
+    }
+
+    @Test
+    fun `when description button is clicked, then open description editor`() = testBlocking {
+        setup()
+
+        viewModel.onDescriptionButtonClick()
+
+        val event = viewModel.event.captureValues().last()
+        assertThat(event).isEqualTo(OpenDescriptionEditor(storedCoupon.description))
+    }
+
+    @Test
+    fun `when description changes, then update coupon draft`() = testBlocking {
+        setup()
+
+        viewModel.onDescriptionChanged("description")
+
+        val state = viewModel.viewState.captureValues().last()
+        assertThat(state.couponDraft.description).isEqualTo("description")
+    }
+
+    @Test
+    fun `given there are description changes, when description button is clicked, then open description editor`() =
+        testBlocking {
+            setup()
+
+            viewModel.onDescriptionChanged("description")
+            viewModel.onDescriptionButtonClick()
+
+            val event = viewModel.event.captureValues().last()
+            assertThat(event).isEqualTo(OpenDescriptionEditor("description"))
+        }
+
+    @Test
+    fun `when free shipping toggle changes, then update coupon draft`() = testBlocking {
+        storedCoupon = storedCoupon.copy(isShippingFree = false)
+        setup()
+
+        viewModel.onFreeShippingChanged(true)
+
+        val state = viewModel.viewState.captureValues().last()
+        assertThat(state.couponDraft.isShippingFree).isTrue()
     }
 }

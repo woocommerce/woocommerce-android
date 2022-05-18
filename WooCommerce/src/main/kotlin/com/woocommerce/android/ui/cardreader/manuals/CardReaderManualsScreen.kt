@@ -100,7 +100,7 @@ fun ManualsList(
 
 @Preview
 @Composable
-fun Preview() {
+private fun Preview() {
     ManualsList(
         list = listOf(
             CardReaderManualsViewModel.ManualItem(

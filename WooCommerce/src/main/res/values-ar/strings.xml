@@ -1,11 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-04-25 18:54:03+0000
+Translation-Revision-Date: 2022-05-05 13:54:18+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="coupon_details_restricted_emails">يقتصر على العملاء الذين لديهم بريد إلكتروني: ⁦%1$s⁩</string>
+    <string name="coupon_details_excludes_sale_items">يستبعد العناصر المعروضة للبيع بسعر مخفَّض</string>
+    <string name="coupon_details_allows_free_shipping">يسمح بالشحن المجاني</string>
+    <string name="coupon_details_individual_use_only">أستخدام القسيمة لوحدها فقط</string>
+    <string name="coupon_details_usage_limit_per_items_single">يقتصر على ⁦%1$d⁩ عنصر في عربة التسوق</string>
+    <string name="coupon_details_usage_limit_per_items_multiple">يقتصر على ⁦%1$d⁩ من العناصر في عربة التسوق</string>
+    <string name="coupon_details_usage_limit_per_coupon_single">يمكن استخدامه ⁦%1$d⁩ مرة</string>
+    <string name="coupon_details_usage_limit_per_coupon_multiple">يمكن استخدامه ⁦%1$d⁩ من المرات</string>
+    <string name="coupon_details_usage_limit_per_user_single">⁦%1$d⁩ مرة استخدام لكل مستخدم</string>
+    <string name="coupon_details_usage_limit_per_user_multiple">⁦%1$d⁩ من مرات الاستخدام لكل مستخدم</string>
+    <string name="coupon_details_delete_successful">حذف قسيمة شرائية</string>
+    <string name="coupon_details_delete_failure">فشل حذف القسيمة</string>
+    <string name="coupon_details_delete_confirmation">هل أنت متأكد من رغبتك في حذف هذه القسيمة؟</string>
+    <string name="coupon_details_delete">حذف قسيمة</string>
+    <string name="inbox_screen_sync_error">خطأ في أثناء مزامنة علبة الوارد</string>
+    <string name="inbox_note_dismiss_all_notes">تجاهل الكل</string>
+    <string name="inbox_screen_title">علبة الوارد</string>
+    <string name="settings_card_reader_manuals">أدلة قارئ البطاقة</string>
+    <string name="card_reader_interac_refund_refund_payment_hint">النقر أو الإدراج لاسترداد المبالغ المدفوعة</string>
+    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">تم رد المبالغ المدفوعة للطلب بالفعل</string>
+    <string name="card_reader_interac_refund_refund_failed_cancelled">تم إلغاء رد المبالغ المدفوعة</string>
+    <string name="card_reader_interac_refund_refund_failed_ok">موافق</string>
+    <string name="card_reader_interac_refund_refund_failed_test_card">غير مسموح لبطاقات اختبار النظام برد المبالغ المدفوعة</string>
+    <string name="card_reader_interac_refund_refund_failed_invalid_amount">غير مسموح بمبلغ رد المبالغ المدفوعة للبطاقة التي تم تقديمها</string>
+    <string name="card_reader_interac_refund_refund_failed_insufficient_funds">تم رفض عملية رد المبالغ المدفوعة لأن الأموال غير كافية</string>
+    <string name="card_reader_interac_refund_refund_failed_duplicate_transaction">تم إرسال عملية رد مبالغ مدفوعة مماثلة مؤخرًا</string>
+    <string name="card_reader_interac_refund_refund_failed_card_not_supported">لا تدعم هذه البطاقة هذا النوع من عملية رد المبالغ المدفوعة</string>
+    <string name="card_reader_interac_refund_refund_failed_generic">تم رفض عملية رد المبالغ المدفوعة لسبب غير محدَّد</string>
+    <string name="card_reader_interac_refund_refund_failed_fraud">تجربة وسائل أخرى لرد المبالغ المدفوعة</string>
+    <string name="card_reader_interac_refund_refund_failed_unknown">تم رفض عملية رد المبالغ المدفوعة لسبب غير معروف</string>
+    <string name="card_reader_interac_refund_refund_failed_unexpected_error_state">عذرًأ، تتعذر معالجة عملية استرداد المبالغ المدفوعة هذه</string>
+    <string name="card_reader_interac_refund_refund_completed_header">تمت عملية رد المبالغ المدفوعة بنجاح</string>
+    <string name="card_reader_interac_refund_refund_processing_state">معالجة عملية استرداد المبالغ المدفوعة</string>
+    <string name="card_reader_interac_refund_refund_payment">عملية الدفع الخاصة باسترداد المبالغ المدفوعة</string>
+    <string name="card_reader_interac_refund_refund_failed_header">فشلت عملية استرداد الأموال</string>
+    <string name="card_reader_interac_refund_refund_loading_header">الاستعداد لدفع عملية رد المبالغ المدفوعة</string>
+    <string name="copy">نسخ</string>
     <string name="coupons_list_search_hint">البحث عن القسائم</string>
     <string name="coupon_details_share_formatting_failure">يتعذر إنشاء رسالة مشاركة رمز القسيمة</string>
     <string name="coupon_details_share_coupon_error">حدث خطأ في أثناء مشاركة رمز القسيمة.</string>
@@ -351,7 +388,7 @@ Language: ar
     <string name="support_system_status_report">تقرير حالة النظام</string>
     <string name="card_reader_welcome_dialog_text">تهانينا، أصبحتَ الآن قادرًا على قبول مدفوعات بطاقات السحب والائتمان باستخدام مدفوعات WooCommerce!</string>
     <string name="card_reader_welcome_dialog_header">جمع المدفوعات باستخدام قارئ البطاقة</string>
-    <string name="card_reader_payment_failed_amount_too_small">يجب أن يكون المبلغ 0.50 دولار أمريكي على الأقل</string>
+    <string name="card_reader_payment_failed_amount_too_small">يجب أن يكون المبلغ 0.50 دولار على الأقل</string>
     <string name="card_reader_payment_payment_failed_ok">موافق</string>
     <string name="settings_whats_new_icon_description">صورة أيقونة الميزة الجديدة</string>
     <string name="settings_switch_store">تبديل المخزن</string>
@@ -1278,7 +1315,6 @@ Language: ar
     <string name="login_jetpack_installed_sign_in">هل لديك Jetpack بالفعل؟ %1$s</string>
     <string name="login_refresh_app_progress_jetpack">جارٍ محاولة تسجيل الدخول باستخدام Jetpack…</string>
     <string name="login_refresh_app_continue">تحديث التطبيق للاستمرار</string>
-    <string name="login_not_connected_jetpack">لاستخدام هذا التطبيق مقابل %1$s، سيتعين عليك إعداد إضافة Jetpack وربطها بهذا الحساب. \n\nبعد الإعداد، %2$s</string>
     <string name="login_try_another_store">تجربة متجر آخر</string>
     <string name="database_downgraded">تم تخفيض قاعدة البيانات إلى المستوى الأدنى وإنشاء الجداول مجددًا وتحميل المتاجر</string>
     <string name="loading_stores">تحميل المتاجر</string>
@@ -1294,7 +1330,6 @@ Language: ar
     <string name="orderdetail_copy_tracking_number">نسخ رقم التعقُّب</string>
     <string name="login_refresh_app_progress">جارٍ التحقُّق من WooCommerce…</string>
     <string name="login_refresh_app">تحديث التطبيق</string>
-    <string name="login_not_woo_store">يبدو أنَّ %1$s ليس موقع WooCommerce. ثبِّت إضافة WooCommerce على موقعك ثم %2$s</string>
     <string name="orderdetail_empty_address">لم يتم تحديد أي عنوان</string>
     <string name="login_need_help_finding_connected_email">هل تحتاج إلى مساعدة على العثور على البريد الإلكتروني التي تواصلت معه؟</string>
     <string name="enter_wordpress_site">موقع الويب الموجود على هذا العنوان ليس موقع وردبرس. لكي نتصل بالموقع، يجب تثبيته على وردبرس.</string>

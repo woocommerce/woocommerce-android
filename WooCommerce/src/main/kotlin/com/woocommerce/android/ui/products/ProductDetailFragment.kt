@@ -350,14 +350,10 @@ class ProductDetailFragment :
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_product_detail_fragment, menu)
-
-        super.onCreateOptionsMenu(menu, inflater)
     }
 
     @SuppressLint("ResourceAsColor")
     override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-
         // change the font color of the trash menu item to red, and only show it if it should be enabled
         with(menu.findItem(R.id.menu_trash_product)) {
             if (this == null) return@with

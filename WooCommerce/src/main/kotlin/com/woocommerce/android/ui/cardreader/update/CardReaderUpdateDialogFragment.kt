@@ -41,8 +41,6 @@ class CardReaderUpdateDialogFragment : DialogFragment(R.layout.card_reader_updat
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         val binding = CardReaderUpdateDialogBinding.bind(view)
 
         initObservers(binding)

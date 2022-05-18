@@ -21,8 +21,6 @@
     <ID>ComplexMethod:ReviewListAdapter.kt$ReviewListAdapter$fun setReviews(reviews: List&lt;ProductReview>)</ID>
     <ID>ComplexMethod:SectionedRecyclerViewAdapter.kt$SectionedRecyclerViewAdapter$override fun getItemViewType(position: Int): Int</ID>
     <ID>ComplexMethod:ShippingCustomsViewModel.kt$ShippingCustomsViewModel$private fun CustomsPackage.validate(): PackageValidationState</ID>
-    <ID>ComplexMethod:SitePickerActivity.kt$SitePickerActivity$override fun onCreate(savedInstanceState: Bundle?)</ID>
-    <ID>ComplexMethod:SitePickerActivity.kt$SitePickerActivity$override fun showStoreList(wcSites: List&lt;SiteModel>)</ID>
     <ID>ComplexMethod:WCEmptyView.kt$WCEmptyView$fun show( type: EmptyViewType, searchQueryOrFilter: String? = null, onButtonClick: (() -> Unit)? = null )</ID>
     <ID>EmptyDefaultConstructor:DisabledAppBarLayoutBehavior.kt$DisabledAppBarLayoutBehavior$()</ID>
     <ID>EmptyFunctionBlock:AddAttributeTermsFragment.kt$AddAttributeTermsFragment.&lt;no name provided>${}</ID>
@@ -78,9 +76,6 @@
     <ID>LongMethod:ShippingCarrierRatesAdapter.kt$ShippingCarrierRatesAdapter.RateListAdapter.RateViewHolder$private fun bindOptions(rateItem: ShippingRateItem, isExpanded: Boolean)</ID>
     <ID>LongMethod:ShippingCarrierRatesViewModel.kt$ShippingCarrierRatesViewModel$@Suppress("UNCHECKED_CAST") private fun generateRateModels(packageRates: List&lt;ShippingPackage>): List&lt;PackageRateListItem></ID>
     <ID>LongMethod:ShippingLabelsStateMachine.kt$ShippingLabelsStateMachine$private fun createStateMachine(initialState: State = State.Idle)</ID>
-    <ID>LongMethod:SitePickerActivity.kt$SitePickerActivity$override fun onCreate(savedInstanceState: Bundle?)</ID>
-    <ID>LongMethod:SitePickerActivity.kt$SitePickerActivity$override fun showSiteNotConnectedJetpackView(url: String)</ID>
-    <ID>LongMethod:SitePickerActivity.kt$SitePickerActivity$override fun showStoreList(wcSites: List&lt;SiteModel>)</ID>
     <ID>LongMethod:WCEmptyView.kt$WCEmptyView$fun show( type: EmptyViewType, searchQueryOrFilter: String? = null, onButtonClick: (() -> Unit)? = null )</ID>
     <ID>LongParameterList:ShippingLabelRepository.kt$ShippingLabelRepository$( orderId: Long, origin: Address, destination: Address, packages: List&lt;ShippingLabelPackage>, rates: List&lt;ShippingRate>, customsPackages: List&lt;CustomsPackage>? )</ID>
     <ID>LongParameterList:WooNotificationBuilder.kt$WooNotificationBuilder$( channelId: String, inboxMessage: String, subject: String, summaryText: String, notification: Notification, shouldDisplaySummaryText: Boolean, )</ID>
@@ -148,7 +143,6 @@
     <ID>NestedBlockDepth:ProductSelectionListViewModel.kt$ProductSelectionListViewModel$private suspend fun fetchProductList( searchQuery: String? = null, loadMore: Boolean = false )</ID>
     <ID>NestedBlockDepth:SectionedRecyclerViewAdapter.kt$SectionedRecyclerViewAdapter$override fun getItemViewType(position: Int): Int</ID>
     <ID>NestedBlockDepth:SectionedRecyclerViewAdapter.kt$SectionedRecyclerViewAdapter$override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int)</ID>
-    <ID>NestedBlockDepth:SitePickerActivity.kt$SitePickerActivity$override fun onCreate(savedInstanceState: Bundle?)</ID>
     <ID>NoWildcardImports:com.woocommerce.android.AppInitializer.kt:26</ID>
     <ID>NoWildcardImports:com.woocommerce.android.AppPrefsTest.kt:4</ID>
     <ID>NoWildcardImports:com.woocommerce.android.cardreader.internal.payments.PaymentErrorMapper.kt:12</ID>

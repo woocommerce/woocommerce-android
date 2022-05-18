@@ -1,11 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-04-26 15:54:03+0000
+Translation-Revision-Date: 2022-05-05 11:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="coupon_details_restricted_emails">仅限使用电子邮件的客户：%1$s</string>
+    <string name="coupon_details_excludes_sale_items">不含促销商品</string>
+    <string name="coupon_details_allows_free_shipping">允许免运费</string>
+    <string name="coupon_details_individual_use_only">仅限单独使用</string>
+    <string name="coupon_details_usage_limit_per_items_single">限购物车中的 %1$d 个物品</string>
+    <string name="coupon_details_usage_limit_per_items_multiple">限购物车中的 %1$d 个物品</string>
+    <string name="coupon_details_usage_limit_per_coupon_single">可使用 %1$d 次</string>
+    <string name="coupon_details_usage_limit_per_coupon_multiple">可使用 %1$d 次</string>
+    <string name="coupon_details_usage_limit_per_user_single">每用户限用 %1$d 次</string>
+    <string name="coupon_details_usage_limit_per_user_multiple">每用户限用 %1$d 次</string>
+    <string name="coupon_details_delete_successful">优惠券已删除</string>
+    <string name="coupon_details_delete_failure">删除优惠券失败</string>
+    <string name="coupon_details_delete_confirmation">是否确定要删除此优惠券？</string>
+    <string name="coupon_details_delete">删除优惠券</string>
+    <string name="inbox_screen_sync_error">同步收件箱时发生错误</string>
+    <string name="inbox_note_dismiss_all_notes">全部忽略</string>
+    <string name="inbox_screen_title">收件箱</string>
+    <string name="settings_card_reader_manuals">读卡器手册</string>
+    <string name="card_reader_interac_refund_refund_payment_hint">点按或插入，进行退款</string>
+    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">此订单已退款</string>
+    <string name="card_reader_interac_refund_refund_failed_cancelled">退款已取消</string>
+    <string name="card_reader_interac_refund_refund_failed_ok">确定</string>
+    <string name="card_reader_interac_refund_refund_failed_test_card">禁止使用系统测试卡退款</string>
+    <string name="card_reader_interac_refund_refund_failed_invalid_amount">当前卡片不支持退款金额</string>
+    <string name="card_reader_interac_refund_refund_failed_insufficient_funds">退款因余额不足被拒</string>
+    <string name="card_reader_interac_refund_refund_failed_duplicate_transaction">近期提交过一笔相同的退款</string>
+    <string name="card_reader_interac_refund_refund_failed_card_not_supported">卡片不支持当前退款类型</string>
+    <string name="card_reader_interac_refund_refund_failed_generic">退款因不明原因被拒</string>
+    <string name="card_reader_interac_refund_refund_failed_fraud">尝试其他退款方式</string>
+    <string name="card_reader_interac_refund_refund_failed_unknown">退款因未知原因被拒</string>
+    <string name="card_reader_interac_refund_refund_failed_unexpected_error_state">抱歉，无法处理本次退款</string>
+    <string name="card_reader_interac_refund_refund_completed_header">退款成功</string>
+    <string name="card_reader_interac_refund_refund_processing_state">正在处理退款</string>
+    <string name="card_reader_interac_refund_refund_payment">退款</string>
+    <string name="card_reader_interac_refund_refund_failed_header">退款失败</string>
+    <string name="card_reader_interac_refund_refund_loading_header">正在准备退款</string>
+    <string name="copy">复制</string>
     <string name="coupons_list_search_hint">搜索优惠券</string>
     <string name="coupon_details_share_formatting_failure">无法生成优惠券代码共享信息</string>
     <string name="coupon_details_share_coupon_error">共享优惠券代码时出错。</string>
@@ -1278,7 +1315,6 @@ Language: zh_CN
     <string name="login_jetpack_installed_sign_in">已有 Jetpack 帐户？%1$s</string>
     <string name="login_refresh_app_progress_jetpack">正在尝试使用 Jetpack 帐户登录…</string>
     <string name="login_refresh_app_continue">刷新应用程序以继续操作</string>
-    <string name="login_not_connected_jetpack">要以 %1$s 的价格使用此应用程序，您需要安装 Jetpack 插件并连接至此帐户。\n\n设置完成后，%2$s</string>
     <string name="login_try_another_store">尝试其他商店</string>
     <string name="database_downgraded">数据库降级、正在重新创建表格及正在加载商店</string>
     <string name="loading_stores">正在加载商店</string>
@@ -1294,7 +1330,6 @@ Language: zh_CN
     <string name="orderdetail_copy_tracking_number">复制跟踪编号</string>
     <string name="login_refresh_app_progress">正在检查 WooCommerce…</string>
     <string name="login_refresh_app">刷新应用程序</string>
-    <string name="login_not_woo_store">%1$s似乎不是 WooCommerce 站点。请在您的站点上安装 WooCommerce 插件，然后 %2$s</string>
     <string name="orderdetail_empty_address">未指定地址</string>
     <string name="login_need_help_finding_connected_email">需要帮助查找您连接的电子邮件？</string>
     <string name="enter_wordpress_site">此地址下的网站不是 WordPress 站点。站点必须安装 WordPress，我们才能建立连接。</string>

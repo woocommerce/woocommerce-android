@@ -14,7 +14,8 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons.Filled
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -30,7 +31,6 @@ import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
-import com.woocommerce.android.R.string
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.Coupon.Type
 import com.woocommerce.android.model.Coupon.Type.Percent
@@ -40,8 +40,10 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedSpinner
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
+import com.woocommerce.android.ui.compose.component.WCSwitch
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooTheme
+import com.woocommerce.android.ui.coupons.edit.EditCouponViewModel.ViewState
 import java.math.BigDecimal
 
 @Composable
@@ -51,7 +53,9 @@ fun EditCouponScreen(viewModel: EditCouponViewModel) {
             viewState = it,
             onAmountChanged = viewModel::onAmountChanged,
             onCouponCodeChanged = viewModel::onCouponCodeChanged,
-            onRegenerateCodeClick = viewModel::onRegenerateCodeClick
+            onRegenerateCodeClick = viewModel::onRegenerateCodeClick,
+            onDescriptionButtonClick = viewModel::onDescriptionButtonClick,
+            onFreeShippingChanged = viewModel::onFreeShippingChanged
         )
     }
 }
@@ -61,7 +65,9 @@ fun EditCouponScreen(
     viewState: EditCouponViewModel.ViewState,
     onAmountChanged: (BigDecimal?) -> Unit = {},
     onCouponCodeChanged: (String) -> Unit = {},
-    onRegenerateCodeClick: () -> Unit = {}
+    onRegenerateCodeClick: () -> Unit = {},
+    onDescriptionButtonClick: () -> Unit = {},
+    onFreeShippingChanged: (Boolean) -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -75,7 +81,14 @@ fun EditCouponScreen(
             )
             .fillMaxSize()
     ) {
-        DetailsSection(viewState, onAmountChanged, onCouponCodeChanged, onRegenerateCodeClick)
+        DetailsSection(
+            viewState = viewState,
+            onAmountChanged = onAmountChanged,
+            onCouponCodeChanged = onCouponCodeChanged,
+            onRegenerateCodeClick = onRegenerateCodeClick,
+            onDescriptionButtonClick = onDescriptionButtonClick,
+            onFreeShippingChanged = onFreeShippingChanged
+        )
         ConditionsSection(viewState)
         UsageRestrictionsSection(viewState)
         WCColoredButton(
@@ -87,13 +100,14 @@ fun EditCouponScreen(
     }
 }
 
-@Suppress("LongMethod")
 @Composable
 private fun DetailsSection(
-    viewState: EditCouponViewModel.ViewState,
+    viewState: ViewState,
     onAmountChanged: (BigDecimal?) -> Unit,
     onCouponCodeChanged: (String) -> Unit,
-    onRegenerateCodeClick: () -> Unit
+    onRegenerateCodeClick: () -> Unit,
+    onDescriptionButtonClick: () -> Unit,
+    onFreeShippingChanged: (Boolean) -> Unit
 ) {
     val couponDraft = viewState.couponDraft
     val focusManager = LocalFocusManager.current
@@ -111,9 +125,9 @@ private fun DetailsSection(
         // Coupon code field: display code uppercased, but always return it lowercased
         WCOutlinedTextField(
             value = couponDraft.code.orEmpty().toUpperCase(Locale.current),
-            label = stringResource(id = string.coupon_edit_code_hint),
+            label = stringResource(id = R.string.coupon_edit_code_hint),
             onValueChange = { onCouponCodeChanged(it.toLowerCase(Locale.current)) },
-            helperText = stringResource(id = string.coupon_edit_code_helper),
+            helperText = stringResource(id = R.string.coupon_edit_code_helper),
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters),
             modifier = Modifier.fillMaxWidth()
         )
@@ -124,25 +138,17 @@ private fun DetailsSection(
             },
             text = stringResource(id = R.string.coupon_edit_regenerate_coupon)
         )
-
-        WCOutlinedButton(
-            onClick = { /*TODO*/ },
-            text = "Edit Description",
-            leadingIcon = {
-                Icon(
-                    imageVector = Filled.Edit,
-                    contentDescription = null,
-                    modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
-                )
-            },
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.onSurface),
-            modifier = Modifier.fillMaxWidth()
-        )
-
+        DescriptionButton(viewState.couponDraft.description, onDescriptionButtonClick)
         WCOutlinedSpinner(
             onClick = { /*TODO*/ },
             value = couponDraft.dateExpires?.toString() ?: "None",
             label = stringResource(id = R.string.coupon_edit_expiry_date),
+            modifier = Modifier.fillMaxWidth()
+        )
+        WCSwitch(
+            text = stringResource(id = R.string.coupon_edit_free_shipping),
+            checked = viewState.couponDraft.isShippingFree ?: false,
+            onCheckedChange = onFreeShippingChanged,
             modifier = Modifier.fillMaxWidth()
         )
     }
@@ -164,12 +170,12 @@ private fun UsageRestrictionsSection(viewState: EditCouponViewModel.ViewState) {
 private fun AmountField(amount: BigDecimal?, amountUnit: String, type: Type?, onAmountChanged: (BigDecimal?) -> Unit) {
     WCOutlinedTypedTextField(
         value = amount ?: BigDecimal.ZERO,
-        label = stringResource(id = string.coupon_edit_amount_hint, amountUnit),
+        label = stringResource(id = R.string.coupon_edit_amount_hint, amountUnit),
         valueMapper = BigDecimalTextFieldValueMapper(supportsNegativeValue = true),
         onValueChange = onAmountChanged,
         helperText = stringResource(
-            if (type is Percent) string.coupon_edit_amount_percentage_helper
-            else string.coupon_edit_amount_rate_helper
+            if (type is Percent) R.string.coupon_edit_amount_percentage_helper
+            else R.string.coupon_edit_amount_rate_helper
         ),
         // TODO use KeyboardType.Decimal after updating to Compose 1.2.0
         //  (https://issuetracker.google.com/issues/209835363)
@@ -179,8 +185,28 @@ private fun AmountField(amount: BigDecimal?, amountUnit: String, type: Type?, on
 }
 
 @Composable
+private fun DescriptionButton(description: String?, onButtonClicked: () -> Unit) {
+    WCOutlinedButton(
+        onClick = onButtonClicked,
+        text = stringResource(
+            id = if (description.isNullOrEmpty()) R.string.coupon_edit_add_description
+            else R.string.coupon_edit_edit_description
+        ),
+        leadingIcon = {
+            Icon(
+                imageVector = if (description.isNullOrEmpty()) Icons.Filled.Add else Icons.Filled.Edit,
+                contentDescription = null,
+                modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
+            )
+        },
+        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.onSurface),
+        modifier = Modifier.fillMaxWidth()
+    )
+}
+
+@Composable
 @Preview
-fun EditCouponPreview() {
+private fun EditCouponPreview() {
     WooTheme {
         EditCouponScreen(
             viewState = EditCouponViewModel.ViewState(
@@ -188,10 +214,11 @@ fun EditCouponPreview() {
                     id = 0L,
                     code = "code",
                     amount = BigDecimal.TEN,
-                    products = emptyList(),
-                    categories = emptyList(),
-                    excludedProducts = emptyList(),
-                    excludedCategories = emptyList(),
+                    isShippingFree = true,
+                    productIds = emptyList(),
+                    categoryIds = emptyList(),
+                    excludedProductIds = emptyList(),
+                    excludedCategoryIds = emptyList(),
                     restrictedEmails = emptyList()
                 ),
                 localizedType = "Fixed Rate Discount",
