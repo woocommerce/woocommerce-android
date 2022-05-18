@@ -1455,7 +1455,17 @@
     <string name="variation_created_title">Variation Created</string>
     <string name="variation_create_dialog_title">Generating variation</string>
     <string name="variation_confirm_delete">Do you want to delete this Variation?</string>
+    <string name="variation_list_menu_bulk_update">Bulk update…</string>
 
+    <!--
+        Variations bulk update
+    -->
+    <string name="variations_bulk_update_dialog_title">Bulk update</string>
+    <string name="variations_bulk_update_dialog_subtitle">Choose a value to update</string>
+    <string name="variations_bulk_update_dialog_price_section_title">Price</string>
+    <string name="variations_bulk_update_dialog_regular_price_label">Regular price</string>
+    <string name="variations_bulk_update_dialog_price_none">None</string>
+    <string name="variations_bulk_update_dialog_price_mixed">Mixed</string>
     <!--
         Product images
     -->
