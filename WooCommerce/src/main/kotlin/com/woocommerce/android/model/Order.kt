@@ -233,9 +233,9 @@ data class Order(
     fun getProductIds() = items.map { it.productId }
 
     fun isEmpty() = this.copy(
-            dateCreated = DEFAULT_EMPTY_ORDER.dateCreated,
-            dateModified = DEFAULT_EMPTY_ORDER.dateModified
-        ) == DEFAULT_EMPTY_ORDER
+        dateCreated = DEFAULT_EMPTY_ORDER.dateCreated,
+        dateModified = DEFAULT_EMPTY_ORDER.dateModified
+    ) == DEFAULT_EMPTY_ORDER
 
     sealed class Status(val value: String) : Parcelable {
         companion object {
