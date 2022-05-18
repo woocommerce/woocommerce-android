@@ -5,13 +5,11 @@ package com.woocommerce.android.ui.compose.component
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,6 +20,8 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -43,12 +43,12 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -99,7 +99,6 @@ fun DatePickerDialog(
         var selectedDate: Calendar by rememberSaveable { mutableStateOf(currentDate ?: Calendar.getInstance()) }
 
         val orientation = LocalConfiguration.current.orientation
-
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             Row(
                 modifier = Modifier
@@ -187,7 +186,11 @@ private fun Any.DatePickerContent(
         )
     }
 
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .verticalScroll(state = rememberScrollState())
+    ) {
         if (isShowingYearSelector) {
             YearSelector(
                 currentDate = selectedDate,
@@ -210,29 +213,31 @@ private fun Any.DatePickerContent(
                 }
             )
         }
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(
-                space = dimensionResource(id = R.dimen.minor_100),
-                alignment = Alignment.Start
-            ),
+        DialogButtonsRowLayout(
+            confirmButton = {
+                TextButton(onClick = onSubmitRequest) {
+                    Text(
+                        text = stringResource(id = android.R.string.ok),
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = onDismissRequest
+                ) {
+                    Text(
+                        text = stringResource(id = android.R.string.cancel),
+                    )
+                }
+            },
+            neutralButton = neutralButton,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(dimensionResource(id = R.dimen.major_100))
-        ) {
-            neutralButton?.invoke()
-            Spacer(modifier = Modifier.weight(1f))
-            TextButton(onClick = onDismissRequest) {
-                Text(
-                    text = stringResource(id = android.R.string.cancel),
+                .padding(
+                    horizontal = dimensionResource(id = R.dimen.minor_100),
+                    vertical = dimensionResource(id = R.dimen.minor_25)
                 )
-            }
-
-            TextButton(onClick = onSubmitRequest) {
-                Text(
-                    text = stringResource(id = android.R.string.ok),
-                )
-            }
-        }
+        )
     }
 }
 
@@ -293,7 +298,7 @@ private fun YearSelector(
                 modifier = Modifier
                     .clickable { onYearSelected(it) }
                     .fillMaxWidth()
-                    .padding(dimensionResource(id = R.dimen.major_75))
+                    .padding(10.dp)
             ) {
                 Text(
                     text = it.toString(),
@@ -311,8 +316,8 @@ private var Calendar.year
 
 @Preview
 @Composable
-private fun DatePickerPreview() {
-    WooThemeWithBackground {
+private fun InteractiveDatePickerPreview() {
+    MaterialTheme {
         var date by remember { mutableStateOf<Date?>(null) }
         var showPicker by remember { mutableStateOf(false) }
 
