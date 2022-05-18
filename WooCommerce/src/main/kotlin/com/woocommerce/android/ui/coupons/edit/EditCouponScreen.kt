@@ -49,8 +49,10 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedSpinner
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
+import com.woocommerce.android.ui.compose.component.WCSwitch
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooTheme
+import com.woocommerce.android.ui.coupons.edit.EditCouponViewModel.ViewState
 import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -64,7 +66,8 @@ fun EditCouponScreen(viewModel: EditCouponViewModel) {
             onCouponCodeChanged = viewModel::onCouponCodeChanged,
             onRegenerateCodeClick = viewModel::onRegenerateCodeClick,
             onDescriptionButtonClick = viewModel::onDescriptionButtonClick,
-            onExpiryDateChanged = viewModel::onExpiryDateChanged
+            onExpiryDateChanged = viewModel::onExpiryDateChanged,
+            onFreeShippingChanged = viewModel::onFreeShippingChanged
         )
     }
 }
@@ -76,7 +79,8 @@ fun EditCouponScreen(
     onCouponCodeChanged: (String) -> Unit = {},
     onRegenerateCodeClick: () -> Unit = {},
     onDescriptionButtonClick: () -> Unit = {},
-    onExpiryDateChanged: (Date?) -> Unit = {}
+    onExpiryDateChanged: (Date?) -> Unit = {},
+    onFreeShippingChanged: (Boolean) -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -96,7 +100,8 @@ fun EditCouponScreen(
             onCouponCodeChanged = onCouponCodeChanged,
             onRegenerateCodeClick = onRegenerateCodeClick,
             onDescriptionButtonClick = onDescriptionButtonClick,
-            onExpiryDateChanged = onExpiryDateChanged
+            onExpiryDateChanged = onExpiryDateChanged,
+            onFreeShippingChanged = onFreeShippingChanged
         )
         ConditionsSection(viewState)
         UsageRestrictionsSection(viewState)
@@ -109,15 +114,15 @@ fun EditCouponScreen(
     }
 }
 
-@Suppress("LongMethod", "LongParameterList")
 @Composable
 private fun DetailsSection(
-    viewState: EditCouponViewModel.ViewState,
+    viewState: ViewState,
     onAmountChanged: (BigDecimal?) -> Unit,
     onCouponCodeChanged: (String) -> Unit,
     onRegenerateCodeClick: () -> Unit,
     onDescriptionButtonClick: () -> Unit,
-    onExpiryDateChanged: (Date?) -> Unit
+    onExpiryDateChanged: (Date?) -> Unit,
+    onFreeShippingChanged: (Boolean) -> Unit
 ) {
     val couponDraft = viewState.couponDraft
     val focusManager = LocalFocusManager.current
@@ -150,6 +155,12 @@ private fun DetailsSection(
         )
         DescriptionButton(viewState.couponDraft.description, onDescriptionButtonClick)
         ExpiryField(viewState.couponDraft.dateExpires, onExpiryDateChanged)
+        WCSwitch(
+            text = stringResource(id = R.string.coupon_edit_free_shipping),
+            checked = viewState.couponDraft.isShippingFree ?: false,
+            onCheckedChange = onFreeShippingChanged,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
@@ -276,7 +287,7 @@ private fun ExpiryField(dateExpires: Date?, onExpiryDateChanged: (Date?) -> Unit
 
 @Composable
 @Preview
-fun EditCouponPreview() {
+private fun EditCouponPreview() {
     WooTheme {
         EditCouponScreen(
             viewState = EditCouponViewModel.ViewState(
@@ -284,6 +295,7 @@ fun EditCouponPreview() {
                     id = 0L,
                     code = "code",
                     amount = BigDecimal.TEN,
+                    isShippingFree = true,
                     productIds = emptyList(),
                     categoryIds = emptyList(),
                     excludedProductIds = emptyList(),

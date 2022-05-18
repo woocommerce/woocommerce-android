@@ -98,6 +98,12 @@ class EditCouponViewModel @Inject constructor(
         }
     }
 
+    fun onFreeShippingChanged(value: Boolean) {
+        couponDraft.update {
+            it?.copy(isShippingFree = value)
+        }
+    }
+
     data class ViewState(
         val couponDraft: Coupon,
         val localizedType: String?,

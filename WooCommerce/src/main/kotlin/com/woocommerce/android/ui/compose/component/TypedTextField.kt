@@ -176,7 +176,7 @@ class NullableBigDecimalTextFieldValueMapper(
 
 @Preview
 @Composable
-fun PreviewTypedTextFields() {
+private fun PreviewTypedTextFields() {
     WooThemeWithBackground {
         Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             var signedDecimal by remember {

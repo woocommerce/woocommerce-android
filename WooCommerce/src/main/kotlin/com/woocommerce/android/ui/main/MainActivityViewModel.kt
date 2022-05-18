@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.main
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.FeatureAnnouncement
@@ -38,6 +39,8 @@ class MainActivityViewModel @Inject constructor(
             featureAnnouncementRepository.getFeatureAnnouncements(fromCache = false)
         }
     }
+
+    val startDestination = if (selectedSite.exists()) R.id.dashboard else R.id.sitePickerFragment
 
     val unseenReviewsCount = unseenReviewsCountHandler.observeUnseenCount().asLiveData()
 
