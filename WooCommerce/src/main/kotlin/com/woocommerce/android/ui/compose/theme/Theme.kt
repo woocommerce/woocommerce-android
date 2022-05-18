@@ -2,10 +2,17 @@ package com.woocommerce.android.ui.compose.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.*
+import androidx.compose.material.ripple.LocalRippleTheme
+import androidx.compose.material.ripple.RippleAlpha
+import androidx.compose.material.ripple.RippleTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.colorResource
 import com.google.android.material.composethemeadapter.createMdcTheme
+import com.woocommerce.android.R
 
 /**
  * This theme should be used to support light/dark colors if the composable root of the view tree
@@ -49,8 +56,12 @@ private fun BaseWooTheme(
         colors = colors ?: MaterialTheme.colors,
         typography = typography ?: MaterialTheme.typography,
         shapes = shapes ?: MaterialTheme.shapes,
-        content = content
-    )
+    ) {
+        CompositionLocalProvider(
+            LocalRippleTheme provides WooRippleTheme,
+            content = content
+        )
+    }
 }
 
 @Composable
@@ -60,6 +71,17 @@ private fun SurfacedContent(
     Surface(color = MaterialTheme.colors.background) {
         content()
     }
+}
+
+object WooRippleTheme : RippleTheme {
+    @Composable
+    override fun defaultColor(): Color = colorResource(id = R.color.color_ripple_overlay)
+
+    @Composable
+    override fun rippleAlpha(): RippleAlpha = RippleTheme.defaultRippleAlpha(
+        Color.Black,
+        lightTheme = !isSystemInDarkTheme()
+    )
 }
 
 @Composable
