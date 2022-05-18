@@ -7,6 +7,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.annotation.CallSuper
 import androidx.annotation.LayoutRes
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
@@ -68,6 +69,7 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
      */
     abstract fun saveChanges(): Boolean
 
+    @CallSuper
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -76,17 +78,20 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
         }
     }
 
+    @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers()
     }
 
+    @CallSuper
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.menu_done, menu)
         doneMenuItem = menu.findItem(R.id.menu_done)
     }
 
+    @CallSuper
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
         updateDoneMenuItem()
@@ -107,6 +112,7 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
         sharedViewModel.start()
     }
 
+    @CallSuper
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
@@ -123,6 +129,7 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
         doneMenuItem?.isVisible = hasChanges()
     }
 
+    @CallSuper
     override fun onRequestAllowBackPress(): Boolean {
         return if (hasChanges()) {
             confirmDiscard()

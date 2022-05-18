@@ -42,7 +42,6 @@ class FeatureAnnouncementDialogFragment : DialogFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         val binding = FeatureAnnouncementDialogFragmentBinding.bind(view)
 
         viewModel.setAnnouncementData(navArgs.announcement)

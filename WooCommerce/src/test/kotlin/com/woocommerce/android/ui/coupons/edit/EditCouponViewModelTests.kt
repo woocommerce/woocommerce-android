@@ -170,4 +170,15 @@ class EditCouponViewModelTests : BaseUnitTest() {
             val event = viewModel.event.captureValues().last()
             assertThat(event).isEqualTo(OpenDescriptionEditor("description"))
         }
+
+    @Test
+    fun `when free shipping toggle changes, then update coupon draft`() = testBlocking {
+        storedCoupon = storedCoupon.copy(isShippingFree = false)
+        setup()
+
+        viewModel.onFreeShippingChanged(true)
+
+        val state = viewModel.viewState.captureValues().last()
+        assertThat(state.couponDraft.isShippingFree).isTrue()
+    }
 }

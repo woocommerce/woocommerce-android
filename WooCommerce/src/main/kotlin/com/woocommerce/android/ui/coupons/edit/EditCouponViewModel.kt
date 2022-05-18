@@ -93,6 +93,12 @@ class EditCouponViewModel @Inject constructor(
         }
     }
 
+    fun onFreeShippingChanged(value: Boolean) {
+        couponDraft.update {
+            it?.copy(isShippingFree = value)
+        }
+    }
+
     fun onUsageRestrictionsClick() {
         couponDraft.value?.let {
             triggerEvent(OpenCouponRestrictions(it.restrictions))

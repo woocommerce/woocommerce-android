@@ -1314,7 +1314,6 @@ Language: id
     <string name="login_jetpack_installed_sign_in">Sudah punya Jetpack? %1$s</string>
     <string name="login_refresh_app_progress_jetpack">Mencoba login dengan Jetpack…</string>
     <string name="login_refresh_app_continue">segarkan aplikasi untuk melanjutkan</string>
-    <string name="login_not_connected_jetpack">Untuk menggunakan aplikasi ini untuk %1$s Anda perlu melakukan penyiapan plugin Jetpack dan terhubung ke akun ini. \n\nSekali penyiapan, %2$s</string>
     <string name="login_try_another_store">Coba toko lain</string>
     <string name="database_downgraded">Database di-downgrade, membuat ulang tabel dan memuat toko</string>
     <string name="loading_stores">Memuat toko</string>
@@ -1330,7 +1329,6 @@ Language: id
     <string name="orderdetail_copy_tracking_number">Salin nomor pelacakan</string>
     <string name="login_refresh_app_progress">Memeriksa WooCommerce…</string>
     <string name="login_refresh_app">segarkan aplikasi</string>
-    <string name="login_not_woo_store">Tampaknya %1$s bukan situs WooCommerce. Instal plugin WooCommerce di situs Anda, lalu %2$s</string>
     <string name="orderdetail_empty_address">Tidak ada alamat yang dicantumkan</string>
     <string name="login_need_help_finding_connected_email">Perlu bantuan untuk menemukan email yang terhubung dengan Anda?</string>
     <string name="enter_wordpress_site">Situs web di alamat ini bukan situs WordPress. Agar kami dapat terhubung ke situs tersebut, situs harus menggunakan WordPress.</string>

@@ -19,7 +19,6 @@ interface MainContract {
     interface View : BaseView<Presenter> {
         fun notifyTokenUpdated()
         fun showLoginScreen()
-        fun showSitePickerScreen()
         fun updateSelectedSite()
         fun updateOfflineStatusBar(isConnected: Boolean)
         fun hideBottomNav()

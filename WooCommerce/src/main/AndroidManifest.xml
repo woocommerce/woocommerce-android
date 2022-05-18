@@ -45,10 +45,6 @@
                   android:windowSoftInputMode="adjustResize">
         </activity>
 
-        <activity
-            android:name=".ui.sitepicker.SitePickerActivity"
-            android:theme="@style/LoginTheme"/>
-
         <activity android:name=".ui.login.MagicLinkInterceptActivity"
             android:exported="true">
             <intent-filter>
