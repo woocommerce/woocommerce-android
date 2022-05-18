@@ -24,8 +24,6 @@ class RenameAttributeFragment : Fragment(R.layout.fragment_rename_attribute), Ba
     private val navArgs: RenameAttributeFragmentArgs by navArgs()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         _binding = FragmentRenameAttributeBinding.bind(view)
         requireActivity().title = getString(R.string.product_rename_attribute)
 

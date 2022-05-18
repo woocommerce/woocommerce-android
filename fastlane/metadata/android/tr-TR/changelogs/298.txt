@@ -1,0 +1,4 @@
+9.1:
+Kuponlarınızı yönetmenize yardımcı olacak yeni bir özellik üzerinde çok çalışıyoruz. Bu çalışma devam ediyor, ancak Diğer sekmesi altındaki Ayarlar'dan beta özelliğini açarak nasıl bir şey olduğunu hemen görebilirsiniz. Geri bildirimleriniz bizim için çok değerli!
+
+Değişken ürünlerde stok seviyelerini değiştirirken fiyatların yanlışlıkla silinmesine neden olan birkaç hatayı da düzelttik.

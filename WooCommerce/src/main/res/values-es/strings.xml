@@ -1,11 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-04-26 11:54:03+0000
+Translation-Revision-Date: 2022-05-05 13:54:18+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="coupon_details_restricted_emails">Restringido a clientes con correos electrónicos: %1$s</string>
+    <string name="coupon_details_excludes_sale_items">Excluye los elementos rebajados</string>
+    <string name="coupon_details_allows_free_shipping">Permite el envío gratuito</string>
+    <string name="coupon_details_individual_use_only">Uso individual</string>
+    <string name="coupon_details_usage_limit_per_items_single">Limitado a %1$d elemento en el carro de compra</string>
+    <string name="coupon_details_usage_limit_per_items_multiple">Limitado a %1$d elementos en el carro de compra</string>
+    <string name="coupon_details_usage_limit_per_coupon_single">Se puede utilizar %1$d vez</string>
+    <string name="coupon_details_usage_limit_per_coupon_multiple">Se puede utilizar %1$d veces</string>
+    <string name="coupon_details_usage_limit_per_user_single">%1$d uso por usuario</string>
+    <string name="coupon_details_usage_limit_per_user_multiple">%1$d usos por usuario</string>
+    <string name="coupon_details_delete_successful">Cupón eliminado</string>
+    <string name="coupon_details_delete_failure">No se ha podido eliminar el cupón.</string>
+    <string name="coupon_details_delete_confirmation">¿Seguro que quieres eliminar este cupón?</string>
+    <string name="coupon_details_delete">Eliminar cupón</string>
+    <string name="inbox_screen_sync_error">Se ha producido un error al sincronizar la bandeja de entrada.</string>
+    <string name="inbox_note_dismiss_all_notes">Descartar todo</string>
+    <string name="inbox_screen_title">Bandeja de entrada</string>
+    <string name="settings_card_reader_manuals">Manuales del lector de tarjetas</string>
+    <string name="card_reader_interac_refund_refund_payment_hint">Toca o inserta para obtener el reembolso</string>
+    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">El pedido ya se ha reembolsado.</string>
+    <string name="card_reader_interac_refund_refund_failed_cancelled">Se ha cancelado el reembolso.</string>
+    <string name="card_reader_interac_refund_refund_failed_ok">Entendido</string>
+    <string name="card_reader_interac_refund_refund_failed_test_card">No se pueden realizar reembolsos con las tarjetas de prueba del sistema.</string>
+    <string name="card_reader_interac_refund_refund_failed_invalid_amount">La tarjeta presentada no permite recibir un reembolso por esta cantidad.</string>
+    <string name="card_reader_interac_refund_refund_failed_insufficient_funds">Se ha rechazado el reembolso porque no hay fondos suficientes.</string>
+    <string name="card_reader_interac_refund_refund_failed_duplicate_transaction">Recientemente se ha emitido un reembolso idéntico.</string>
+    <string name="card_reader_interac_refund_refund_failed_card_not_supported">La tarjeta no admite este tipo de reembolso.</string>
+    <string name="card_reader_interac_refund_refund_failed_generic">Se ha rechazado el reembolso por un motivo no especificado.</string>
+    <string name="card_reader_interac_refund_refund_failed_fraud">Prueba con otro método de reembolso</string>
+    <string name="card_reader_interac_refund_refund_failed_unknown">Se ha rechazado el reembolso por un motivo desconocido.</string>
+    <string name="card_reader_interac_refund_refund_failed_unexpected_error_state">No se ha podido procesar el reembolso.</string>
+    <string name="card_reader_interac_refund_refund_completed_header">El reembolso se ha realizado con éxito.</string>
+    <string name="card_reader_interac_refund_refund_processing_state">El reembolso se está procesando.</string>
+    <string name="card_reader_interac_refund_refund_payment">Pago del reembolso</string>
+    <string name="card_reader_interac_refund_refund_failed_header">No se ha podido realizar el reembolso.</string>
+    <string name="card_reader_interac_refund_refund_loading_header">El pago del reembolso se está preparando.</string>
+    <string name="copy">Copiar</string>
     <string name="coupons_list_search_hint">Buscar cupones</string>
     <string name="coupon_details_share_formatting_failure">No se puede generar un mensaje de uso compartido del código de cupón</string>
     <string name="coupon_details_share_coupon_error">Se ha producido un error al compartir el código de cupón.</string>
@@ -351,7 +388,7 @@ Language: es
     <string name="support_system_status_report">Informe de estado del sistema</string>
     <string name="card_reader_welcome_dialog_text">¡Enhorabuena! Ya puedes aceptar pagos con tarjetas de débito y crédito con WooCommerce Payments.</string>
     <string name="card_reader_welcome_dialog_header">Recibe pagos con un lector de tarjetas</string>
-    <string name="card_reader_payment_failed_amount_too_small">El importe mínimo es de 0,50 $</string>
+    <string name="card_reader_payment_failed_amount_too_small">El importe debe ser como mínimo de 0,50 USD.</string>
     <string name="card_reader_payment_payment_failed_ok">Aceptar</string>
     <string name="settings_whats_new_icon_description">Imagen del icono de la nueva función</string>
     <string name="settings_switch_store">Cambiar de tienda</string>
@@ -1278,7 +1315,6 @@ Language: es
     <string name="login_jetpack_installed_sign_in">¿Ya tienes Jetpack? %1$s</string>
     <string name="login_refresh_app_progress_jetpack">Intentando acceder con Jetpack…</string>
     <string name="login_refresh_app_continue">actualiza la aplicación para continuar</string>
-    <string name="login_not_connected_jetpack">Para poder usar esta aplicación para %1$s, deberás tener el plugin de Jetpack configurado y conectado a esta cuenta. \n\nUna vez configurado, %2$s</string>
     <string name="login_try_another_store">Probar con otra tienda</string>
     <string name="database_downgraded">La base de datos se ha cambiado a una versión inferior, reproduciendo tablas y cargando tiendas</string>
     <string name="loading_stores">Cargando tiendas</string>
@@ -1294,7 +1330,6 @@ Language: es
     <string name="orderdetail_copy_tracking_number">Copiar número de seguimiento</string>
     <string name="login_refresh_app_progress">Comprobando WooCommerce…</string>
     <string name="login_refresh_app">actualizar la aplicación</string>
-    <string name="login_not_woo_store">Parece que %1$s no es un sitio de WooCommerce. Instala el plugin de WooCommerce en tu sitio y luego %2$s</string>
     <string name="orderdetail_empty_address">No se ha indicado ninguna dirección</string>
     <string name="login_need_help_finding_connected_email">¿Necesitas ayuda para saber la dirección de correo electrónico con la que te conectaste?</string>
     <string name="enter_wordpress_site">Esta dirección no pertenece a un sitio de WordPress. El sitio debe tener instalado WordPress para que podamos conectarnos a él.</string>

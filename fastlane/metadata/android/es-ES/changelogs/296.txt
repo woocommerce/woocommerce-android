@@ -1,2 +1,0 @@
-9.0:
-Las fechas son fundamentales cuando diriges un negocio Hemos solucionado un problema que se producía al establecer la "fecha de venta" en un producto. A veces, la fecha no era la que se había seleccionado. ¡Comentarios de la comunidad para ir a por la victoria!

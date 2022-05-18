@@ -2,8 +2,17 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_graph_main"
-    app:startDestination="@id/dashboard">
+    android:id="@+id/nav_graph_main">
+
+    <include app:graph="@navigation/nav_graph_orders" />
+    <include app:graph="@navigation/nav_graph_order_filters" />
+    <include app:graph="@navigation/nav_graph_products" />
+    <include app:graph="@navigation/nav_graph_product_filters" />
+    <include app:graph="@navigation/nav_graph_order_creations" />
+    <include app:graph="@navigation/nav_graph_simple_payments" />
+    <include app:graph="@navigation/nav_graph_jetpack_install" />
+    <include app:graph="@navigation/nav_graph_coupons" />
+
     <fragment
         android:id="@+id/dashboard"
         android:name="com.woocommerce.android.ui.mystore.MyStoreFragment"
@@ -151,8 +160,7 @@
     <fragment
         android:id="@+id/moreMenu"
         android:name="com.woocommerce.android.ui.moremenu.MoreMenuFragment"
-        android:label="fragment_more_menu"
-        tools:layout="@layout/fragment_more_menu">
+        android:label="fragment_more_menu">
         <action
             android:id="@+id/action_moreMenu_to_reviewList"
             app:destination="@id/reviews" />
@@ -234,15 +242,6 @@
             app:popUpTo="@+id/moreMenu" />
     </fragment>
 
-    <include app:graph="@navigation/nav_graph_orders" />
-    <include app:graph="@navigation/nav_graph_order_filters" />
-    <include app:graph="@navigation/nav_graph_products" />
-    <include app:graph="@navigation/nav_graph_product_filters" />
-    <include app:graph="@navigation/nav_graph_order_creations" />
-    <include app:graph="@navigation/nav_graph_simple_payments" />
-    <include app:graph="@navigation/nav_graph_jetpack_install" />
-    <include app:graph="@navigation/nav_graph_coupons" />
-
     <fragment
         android:id="@+id/infoScreenFragment"
         android:name="com.woocommerce.android.ui.common.InfoScreenFragment"
@@ -306,6 +305,9 @@
         app:exitAnim="@null"
         app:popEnterAnim="@null"
         app:popExitAnim="@anim/activity_fade_out" />
+    <action
+        android:id="@+id/action_global_login_to_sitePickerFragment"
+        app:destination="@id/sitePickerFragment" />
     <dialog
         android:id="@+id/productTypesBottomSheetFragment"
         android:name="com.woocommerce.android.ui.products.ProductTypesBottomSheetFragment"
@@ -355,6 +357,37 @@
     <fragment
         android:id="@+id/inboxFragment"
         android:name="com.woocommerce.android.ui.inbox.InboxFragment"
-        android:label="InboxFragment"
-        tools:layout="@layout/fragment_inbox" />
+        android:label="InboxFragment" />
+    <fragment
+        android:id="@+id/sitePickerFragment"
+        android:name="com.woocommerce.android.ui.sitepicker.SitePickerFragment"
+        android:label="fragment_site_picker"
+        tools:layout="@layout/fragment_site_picker">
+        <argument
+            android:name="openedFromLogin"
+            android:defaultValue="true"
+            app:argType="boolean" />
+    </fragment>
+    <fragment
+        android:id="@+id/simpleTextEditorFragment"
+        android:name="com.woocommerce.android.ui.common.texteditor.SimpleTextEditorFragment"
+        android:label="SimpleTextEditorFragment">
+        <argument
+            android:name="currentText"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="screenTitle"
+            app:argType="string" />
+        <argument
+            android:name="hint"
+            app:argType="string" />
+        <argument
+            android:name="requestCode"
+            android:defaultValue="-1"
+            app:argType="integer" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_simpleTextEditorFragment"
+        app:destination="@id/simpleTextEditorFragment" />
 </navigation>
