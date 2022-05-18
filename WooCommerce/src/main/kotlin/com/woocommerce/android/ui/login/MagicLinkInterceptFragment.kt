@@ -18,7 +18,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.ui.sitepicker.SitePickerActivity
+import com.woocommerce.android.ui.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginMode
 
@@ -147,10 +147,9 @@ class MagicLinkInterceptFragment : Fragment() {
     }
 
     private fun showSitePickerScreen() {
-        context?.let {
-            SitePickerActivity.showSitePickerFromLogin(it)
-            activity?.finish()
-        }
+        val intent = Intent(context, MainActivity::class.java)
+        startActivity(intent)
+        activity?.finish()
     }
 
     private fun showLoginScreen() {

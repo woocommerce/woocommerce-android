@@ -124,6 +124,12 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun setProductSortingChoice(siteId: Int, value: String) = AppPrefs.setProductSortingChoice(siteId, value)
 
+    fun getUnifiedLoginLastSource() = AppPrefs.getUnifiedLoginLastSource()
+
+    fun removeLoginSiteAddress() = AppPrefs.removeLoginSiteAddress()
+
+    fun getLoginSiteAddress() = AppPrefs.getLoginSiteAddress().takeIf { it.isNotEmpty() }
+
     /**
      * Observes changes to the preferences
      */

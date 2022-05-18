@@ -2,8 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_graph_main"
-    app:startDestination="@id/dashboard">
+    android:id="@+id/nav_graph_main">
     <fragment
         android:id="@+id/dashboard"
         android:name="com.woocommerce.android.ui.mystore.MyStoreFragment"
@@ -240,8 +239,6 @@
     <include app:graph="@navigation/nav_graph_product_filters" />
     <include app:graph="@navigation/nav_graph_order_creations" />
     <include app:graph="@navigation/nav_graph_simple_payments" />
-    <include app:graph="@navigation/nav_graph_jetpack_install" />
-    <include app:graph="@navigation/nav_graph_coupons" />
 
     <fragment
         android:id="@+id/infoScreenFragment"
@@ -306,6 +303,9 @@
         app:exitAnim="@null"
         app:popEnterAnim="@null"
         app:popExitAnim="@anim/activity_fade_out" />
+    <action
+        android:id="@+id/action_global_login_to_sitePickerFragment"
+        app:destination="@id/sitePickerFragment"/>
     <dialog
         android:id="@+id/productTypesBottomSheetFragment"
         android:name="com.woocommerce.android.ui.products.ProductTypesBottomSheetFragment"
@@ -348,6 +348,7 @@
         android:id="@+id/orderCreationBottomSheetFragment"
         android:name="com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment"
         tools:layout="@layout/dialog_order_creation_bottom_sheet" />
+    <include app:graph="@navigation/nav_graph_jetpack_install" />
     <activity
         android:id="@+id/appSettingsActivity"
         android:name="com.woocommerce.android.ui.prefs.AppSettingsActivity"
@@ -357,6 +358,16 @@
         android:name="com.woocommerce.android.ui.inbox.InboxFragment"
         android:label="InboxFragment"
         tools:layout="@layout/fragment_inbox" />
+    <fragment
+        android:id="@+id/sitePickerFragment"
+        android:name="com.woocommerce.android.ui.sitepicker.SitePickerFragment"
+        android:label="fragment_site_picker"
+        tools:layout="@layout/fragment_site_picker">
+        <argument
+            android:name="openedFromLogin"
+            app:argType="boolean"
+            android:defaultValue="true" />
+    </fragment>
     <fragment
         android:id="@+id/simpleTextEditorFragment"
         android:name="com.woocommerce.android.ui.common.texteditor.SimpleTextEditorFragment"
