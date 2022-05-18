@@ -1,11 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-04-27 11:54:03+0000
+Translation-Revision-Date: 2022-05-05 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="coupon_details_restricted_emails">限用於以下電子郵件的顧客：%1$s</string>
+    <string name="coupon_details_excludes_sale_items">排除特價商品</string>
+    <string name="coupon_details_allows_free_shipping">允許免運費</string>
+    <string name="coupon_details_individual_use_only">限單獨使用</string>
+    <string name="coupon_details_usage_limit_per_items_single">限用於購物車中的 %1$d 個商品</string>
+    <string name="coupon_details_usage_limit_per_items_multiple">限用於購物車中的 %1$d 個商品</string>
+    <string name="coupon_details_usage_limit_per_coupon_single">可使用 %1$d 次</string>
+    <string name="coupon_details_usage_limit_per_coupon_multiple">可使用 %1$d 次</string>
+    <string name="coupon_details_usage_limit_per_user_single">每位使用者限用 %1$d 次 </string>
+    <string name="coupon_details_usage_limit_per_user_multiple">每位使用者限用 %1$d 次 </string>
+    <string name="coupon_details_delete_successful">優惠券已刪除</string>
+    <string name="coupon_details_delete_failure">優惠券刪除失敗</string>
+    <string name="coupon_details_delete_confirmation">確定要刪除此優惠券嗎？</string>
+    <string name="coupon_details_delete">刪除優惠券</string>
+    <string name="inbox_screen_sync_error">同步收件匣時發生錯誤</string>
+    <string name="inbox_note_dismiss_all_notes">全部關閉</string>
+    <string name="inbox_screen_title">收件匣</string>
+    <string name="settings_card_reader_manuals">讀卡機手冊</string>
+    <string name="card_reader_interac_refund_refund_payment_hint">點選或插入以退款</string>
+    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">訂單已退款</string>
+    <string name="card_reader_interac_refund_refund_failed_cancelled">已取消退款</string>
+    <string name="card_reader_interac_refund_refund_failed_ok">確定</string>
+    <string name="card_reader_interac_refund_refund_failed_test_card">不允許使用系統測試卡片退款</string>
+    <string name="card_reader_interac_refund_refund_failed_invalid_amount">顯示的卡片不允許該退款金額</string>
+    <string name="card_reader_interac_refund_refund_failed_insufficient_funds">因餘額不足導致退款遭拒</string>
+    <string name="card_reader_interac_refund_refund_failed_duplicate_transaction">近期有一筆完全相同的退款</string>
+    <string name="card_reader_interac_refund_refund_failed_card_not_supported">卡片不支援此退款類型</string>
+    <string name="card_reader_interac_refund_refund_failed_generic">退款因不明原因遭拒</string>
+    <string name="card_reader_interac_refund_refund_failed_fraud">請嘗試其他退款方式</string>
+    <string name="card_reader_interac_refund_refund_failed_unknown">退款因未知原因遭拒</string>
+    <string name="card_reader_interac_refund_refund_failed_unexpected_error_state">抱歉，無法處理此退款</string>
+    <string name="card_reader_interac_refund_refund_completed_header">退款成功</string>
+    <string name="card_reader_interac_refund_refund_processing_state">正在處理退款</string>
+    <string name="card_reader_interac_refund_refund_payment">退還付款</string>
+    <string name="card_reader_interac_refund_refund_failed_header">退款失敗</string>
+    <string name="card_reader_interac_refund_refund_loading_header">正在準備退還付款</string>
+    <string name="copy">複製</string>
     <string name="coupons_list_search_hint">搜尋優惠券</string>
     <string name="coupon_details_share_formatting_failure">無法產生優惠券代碼分享訊息</string>
     <string name="coupon_details_share_coupon_error">分享優惠券代碼時發生錯誤。</string>

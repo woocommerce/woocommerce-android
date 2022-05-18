@@ -1,11 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-04-26 11:54:03+0000
+Translation-Revision-Date: 2022-05-05 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="coupon_details_restricted_emails">Auf Kunden mit E-Mail-Adressen beschränkt: %1$s</string>
+    <string name="coupon_details_excludes_sale_items">Schließt Produkte aus, die im Angebot sind</string>
+    <string name="coupon_details_allows_free_shipping">Erlaubt kostenlosen Versand</string>
+    <string name="coupon_details_individual_use_only">Nur einzeln anwendbar</string>
+    <string name="coupon_details_usage_limit_per_items_single">Auf %1$d Artikel im Warenkorb begrenzt</string>
+    <string name="coupon_details_usage_limit_per_items_multiple">Auf %1$d Artikel im Warenkorb begrenzt</string>
+    <string name="coupon_details_usage_limit_per_coupon_single">Kann %1$d Mal genutzt werden</string>
+    <string name="coupon_details_usage_limit_per_coupon_multiple">Kann %1$d Mal genutzt werden</string>
+    <string name="coupon_details_usage_limit_per_user_single">%1$d Verwendung pro Benutzer</string>
+    <string name="coupon_details_usage_limit_per_user_multiple">%1$d Verwendungen pro Benutzer</string>
+    <string name="coupon_details_delete_successful">Gutschein gelöscht</string>
+    <string name="coupon_details_delete_failure">Löschen des Gutscheins fehlgeschlagen</string>
+    <string name="coupon_details_delete_confirmation">Möchtest du diesen Gutschein wirklich löschen?</string>
+    <string name="coupon_details_delete">Gutschein löschen</string>
+    <string name="inbox_screen_sync_error">Fehler beim Synchronisieren des Posteingangs</string>
+    <string name="inbox_note_dismiss_all_notes">Alle ignorieren</string>
+    <string name="inbox_screen_title">Posteingang</string>
+    <string name="settings_card_reader_manuals">Handbücher für Kartenlesegerät</string>
+    <string name="card_reader_interac_refund_refund_payment_hint">Zum Erstatten tippen oder eingeben</string>
+    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">Diese Bestellung wird bereits erstattet</string>
+    <string name="card_reader_interac_refund_refund_failed_cancelled">Rückerstattung storniert</string>
+    <string name="card_reader_interac_refund_refund_failed_ok">OK</string>
+    <string name="card_reader_interac_refund_refund_failed_test_card">Karten für Systemtests sind für Rückerstattungen nicht zulässig</string>
+    <string name="card_reader_interac_refund_refund_failed_invalid_amount">Der Erstattungsbetrag ist für die vorliegende Karte nicht zulässig</string>
+    <string name="card_reader_interac_refund_refund_failed_insufficient_funds">Rückerstattung wegen unzureichendem Guthaben abgelehnt</string>
+    <string name="card_reader_interac_refund_refund_failed_duplicate_transaction">Vor Kurzem wurde eine identische Rückerstattung übermittelt</string>
+    <string name="card_reader_interac_refund_refund_failed_card_not_supported">Diese Art von Rückerstattung wird von der Karte nicht unterstützt</string>
+    <string name="card_reader_interac_refund_refund_failed_generic">Die Rückerstattung wurde aus einem nicht näher bezeichneten Grund abgelehnt</string>
+    <string name="card_reader_interac_refund_refund_failed_fraud">Probiere es mit einer anderen Erstattungsmethode</string>
+    <string name="card_reader_interac_refund_refund_failed_unknown">Die Rückerstattung wurde aus einem unbekanntem Grund abgelehnt</string>
+    <string name="card_reader_interac_refund_refund_failed_unexpected_error_state">Leider konnte diese Rückerstattung nicht bearbeitet werden</string>
+    <string name="card_reader_interac_refund_refund_completed_header">Rückerstattung erfolgreich</string>
+    <string name="card_reader_interac_refund_refund_processing_state">Rückerstattung wird bearbeitet</string>
+    <string name="card_reader_interac_refund_refund_payment">Zahlung erstatten</string>
+    <string name="card_reader_interac_refund_refund_failed_header">Rückerstattung fehlgeschlagen</string>
+    <string name="card_reader_interac_refund_refund_loading_header">Vorbereitung für Zahlungserstattung läuft</string>
+    <string name="copy">Kopieren</string>
     <string name="coupons_list_search_hint">Gutschein suchen</string>
     <string name="coupon_details_share_formatting_failure">Nachricht zum Teilen des Gutscheincodes kann nicht erstellt werden</string>
     <string name="coupon_details_share_coupon_error">Fehler beim Teilen des Gutscheincodes.</string>

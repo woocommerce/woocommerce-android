@@ -12,7 +12,6 @@ enum class FeatureFlag {
     ORDER_FILTERS,
     ANALYTICS_HUB,
     IN_PERSON_PAYMENTS_CANADA,
-    CARD_READER_MANUALS,
     MORE_MENU_INBOX,
     COUPONS_M2;
 
@@ -26,7 +25,6 @@ enum class FeatureFlag {
             ORDER_FILTERS,
             ANALYTICS_HUB,
             IN_PERSON_PAYMENTS_CANADA,
-            CARD_READER_MANUALS,
             MORE_MENU_INBOX,
             COUPONS_M2 -> PackageUtils.isDebugBuild()
         }

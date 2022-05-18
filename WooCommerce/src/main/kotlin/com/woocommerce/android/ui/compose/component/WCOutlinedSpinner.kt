@@ -74,7 +74,7 @@ fun WCOutlinedSpinner(
 @Preview(name = "Light mode")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun SpinnerPreview() {
+private fun SpinnerPreview() {
     WooThemeWithBackground {
         var text by remember {
             mutableStateOf("button")

@@ -1,68 +1,102 @@
 <ar>
-9.0:
-تُعد التواريخ بالغة الأهمية عندما تدير نشاطًا تجاريًا! أصلحنا خللاً عند تعيين "تاريخ البيع" على أحد المنتجات – في بعض الأحيان، لم يكن ذلك التاريخ في نهاية المطاف هو ما حدَّدته. ملاحظات المجتمع لنكون الأفضل!
+9.1:
+نعمل جاهدين على ميزة جديدة لمساعدتك على إدارة قسائمك. العمل قيد التقدُّم، ولكن يمكنك الحصول على نظرة مبكرة عن طريق تشغيل الميزة التجريبية في الإعدادات أسفل علامة تبويب المزيد. نرحب بالملحوظات التي تقدِّمها مبكرًا!
+
+أصلحنا كذلك بعض الأخطاء مع المنتجات المتغيرة بشأن مسح الأسعار بالخطأ عند تغيير مستويات المخزون.
 </ar>
 <de-DE>
-9.0:
-Daten sind für Unternehmer enorm wichtig! Wir haben eine Störung beim Festlegen eines „Verkaufsdatums“ bei Produkten behoben – manchmal entsprach das Datum am Ende nicht dem zuvor ausgewählten Datum. Danke für das Feedback der Community!
+9.1:
+Wir haben intensiv an einer neuen Funktion zum Verwalten von Gutscheinen gearbeitet. Sie ist noch nicht ganz fertig, du kannst aber in den Einstellungen unter dem Tab „More“ (Weitere Informationen) die Betafunktion aktivieren, um sie dir schon mal anzuschauen. Wir freuen uns auf dein Feedback!
+
+Zudem haben wir ein paar Fehler bei variablen Produkten behoben, durch die Preise beim Ändern des Lagerbestands versehentlich gelöscht wurden.
 </de-DE>
 <es-ES>
-9.0:
-Las fechas son fundamentales cuando diriges un negocio Hemos solucionado un problema que se producía al establecer la "fecha de venta" en un producto. A veces, la fecha no era la que se había seleccionado. ¡Comentarios de la comunidad para ir a por la victoria!
+9.1:
+Hemos trabajado sin descanso en una nueva función para ayudarte a gestionar cupones. Todavía no está terminada, pero puedes activar la función beta en Ajustes, en la pestaña Más para echarle un primer vistazo. ¡Agradecemos tu opinión anticipada!
+
+También hemos corregido algunos errores en los precios de productos variables que se borraban sin querer al cambiar los niveles de inventario.
 </es-ES>
 <fr-FR>
-9.0 €
-Dates are crucial when you’re running a business! We fixed a glitch when setting a “sale date” on a product – sometimes, that date didn’t end up being what you selected. Community feedback for the win!
+9.1 :
+Nous travaillons d’arrache-pied à l’élaboration d’une nouvelle fonctionnalité qui vous aidera à gérer vos codes promo. C’est un projet en chantier, mais vous pourrez en avoir un avant-goût en activant la fonctionnalité bêta dans Réglages, sous l’onglet Plus. N’hésitez pas à donner votre avis en avant-première !
+
+Nous avons également corrigé quelques bogues concernant les produits variables ; les prix s’effaçaient malencontreusement lors de la modification des niveaux de stock.
 </fr-FR>
 <iw-IL>
-9.0:
-כשיש לך עסק, תאריכים זה דבר חשוב! תיקנו בעיה בהגדרה של 'תאריך המבצע' במוצר – לפעמים התאריך שם לא הופיע בהתאם לבחירה שלך. משוב מהקהילה הוא כלי מנצח!
+9.1:
+עבדנו קשה על אפשרות חדשה שתעזור לנהל את הקופונים. העבודה עדיין לא הסתיימה, אבל אפשר לקבל הצצה מוקדמת על ידי הפעלת אפשרות הביטא בהגדרות שמתחת ללשונית 'עוד'. נשמח לקבל ממך משוב מוקדם!
+
+בנוסף, תיקנו מספר באגים במוצרים משתנים עם מחירים שבטעות נמחקו בזמן שינוי רמות המלאי.
 </iw-IL>
 <id>
-9.0:
-Dalam menjalankan usaha, urusan waktu sangatlah penting! Kami sudah memperbaiki gangguan dalam penentuan "tanggal obral" produk. Terkadang, tanggalnya tidak sesuai dengan yang dipilih. Untung ada masukan dari anggota komunitas!
+9.1:
+Kami bekerja keras membuat fitur baru untuk membantu Anda mengelola kupon. Fitur ini sedang dalam pengembangan tetapi Anda dapat mencobanya dengan mengaktifkan fitur beta di Pengaturan pada tab Lainnya. Kami mengharapkan umpan balik awal Anda!
+
+Kami juga memperbaiki sejumlah bug pada produk yang bervariasi dan harga yang terhapus tiba-tiba saat mengubah level inventaris.
 </id>
 <it-IT>
-9.0:
-Le date sono cruciali quando stai gestendo un'attività. Abbiamo risolto uno errore tecnico durante l'impostazione di una "data di vendita" su un prodotto: a volte, quella data non è stata quella selezionata. Il feedback della community per vincere.
+9.1:
+Abbiamo lavorato duro su una nuova funzionalità per aiutarti a gestire i codici promozionali. È un lavoro in evoluzione, ma puoi dare un'occhiata in anteprima attivando la funzionalità beta in Impostazioni nella scheda Altro. Accogliamo con favore il tuo primo feedback.
+
+Abbiamo anche risolto alcuni bug con prodotti variabili con prezzi cancellati accidentalmente quando si cambiano i livelli di inventario.
 </it-IT>
 <ja-JP>
-9.0:
-ビジネスを営む上で日付はとても重要です。 商品の「販売日」を設定する際に、選択した日付にならないことがある不具合を修正しました。 コミュニティの声はビジネスの成功につながります。
+9.1:
+クーポンを管理しやすくする新機能の開発に取り組んでいます。 まだ開発中ですが、「その他」タブの「設定」でベータ機能をオンにすることで、いち早くご覧いただけます。 早めのフィードバックをお待ちしております。
+
+また、在庫レベルを変更した際に、バリエーションのある商品の価格が誤ってクリアされてしまうバグを修正しました。
 </ja-JP>
 <ko-KR>
-$9.0
-비즈니스를 운영할 때 날짜는 매우 중요합니다. 제품의 “세일 날짜”를 설정할 때 문제가 해결되었습니다. 선택한 날짜와 다를 수 있습니다. 성공을 위한 커뮤니티 피드백!
+9.1:
+쿠폰 관리에 도움이 되는 새 기능을 열심히 작업하고 있습니다. 작업이 진행 중이지만, 더 보기 탭 아래의 설정에서 베타 기능을 사용하기로 설정하여 조기에 살펴볼 수 있습니다. 일찌감치 피드백을 보내주세요!
+
+재고 수준을 변경할 때 실수로 가격이 지워지는 변형 상품의 몇 가지 버그도 수정했습니다.
 </ko-KR>
 <nl-NL>
-9.0:
-Datums zijn enorm belangrijk voor het runnen van een bedrijf. We hebben een fout verholpen waarbij bij het instellen van een 'verkoopdatum' op een product soms die datum afweek van de datum die je had gekozen. Bedankt voor jullie feedback!
+9.1:
+We hebben hard gewerkt aan een nieuwe functie om je te helpen je coupons te beheren. Hij is nog niet helemaal klaar maar je kunt alvast een kijkje nemen door de bèta-functie in te schakelen bij Instellingen op het tabblad Meer. We horen graag je feedback!
+
+We hebben ook wat bugs opgelost waarbij prijzen van variabele producten per ongeluk gewist werden als het voorraadniveau werd aangepast.
 </nl-NL>
 <pt-BR>
-9.0:
-Datas são essenciais ao gerenciar uma empresa. Por isso, corrigimos uma falha na seleção da data da venda de um produto que fazia com que, às vezes, a data exibida não fosse a selecionada. Ponto para o feedback da comunidade!
+9.1:
+Estamos criando uma nova funcionalidade para ajudar você a gerenciar seus cupons. Ela ainda está em andamento, mas é possível conferir como está ao ativar o recurso Beta em Configurações, na guia Mais. Adoraríamos receber seu feedback!
+
+Também corrigimos alguns bugs com produtos variáveis: agora os preços não são excluídos ao mudar de nível de inventário.
 </pt-BR>
 <ru-RU>
-9.0:
-При ведении бизнеса важно придерживаться определённых дат. Мы исправили сбой, в результате которого иногда при задании даты продажи товара выбиралась другая дата. Отзывы участников сообщества решают всё!
+9.1:
+Мы усердно работали над новой функцией, которая поможет вам управлять купонами. Эта работа еще не завершена, но вы можете уже сейчас включить эту бета-функцию в разделе «Настройки» на вкладке «Дополнительно». Ждем ваших отзывов!
+
+Мы также исправили ошибки с вариативными товарами, когда при изменении уровней запаса случайно удалялись цены.
 </ru-RU>
 <sv-SE>
-9.0:
-Datum är viktiga när du driver ett företag. Vi har åtgärdat ett fel som uppstod vid inställningen av ett "säljdatum" för en produkt – ibland stämde datumet som användes inte överens med datumet som valdes. Feedback från vår community är guld värd.
+9.1:
+Vi har arbetat hårt på en ny funktion som hjälper dig att hantera dina rabattkoder. Arbetet pågår fortfarande, men du kan få en tidig titt genom att aktivera betafunktionen i Inställningar under fliken Mer. Vi välkomnar din tidiga feedback!
+
+Vi har också åtgärdat några fel avseende variabla produkter, där priser av misstag försvann när lagernivåerna ändrades.
 </sv-SE>
 <tr-TR>
-9.0 dolar
-Ticaret yapıyorsanız tarihler çok önemlidir! Bir üründe "indirim tarihi" ayarlarken oluşan bir hatayı düzelttik (bazen seçtiğiniz tarihten başka bir tarih görüntüleniyordu). Kazanmak için topluluk geri bildirimi!
+9.1:
+Kuponlarınızı yönetmenize yardımcı olacak yeni bir özellik üzerinde çok çalışıyoruz. Bu çalışma devam ediyor, ancak Diğer sekmesi altındaki Ayarlar'dan beta özelliğini açarak nasıl bir şey olduğunu hemen görebilirsiniz. Geri bildirimleriniz bizim için çok değerli!
+
+Değişken ürünlerde stok seviyelerini değiştirirken fiyatların yanlışlıkla silinmesine neden olan birkaç hatayı da düzelttik.
 </tr-TR>
 <zh-CN>
-9.0：
-对于公司经营来说，数据至关重要！ 我们修复了设置产品的“销售日期”时出现的一个小问题：该日期有时并不是您所选择的日期。 社区反馈助力我们取得胜利！
+9.1：
+我们一直在努力开发一项新功能来帮助您管理优惠券。 此开发工作仍在进行中，但是您可以在“更多”选项卡下的“设置”中开启测试版功能抢先查看。 欢迎大家积极提供早期反馈！
+
+我们也修复了一些可变产品的错误，这些错误在更改库存水平时会意外清除价格。
 </zh-CN>
 <zh-TW>
-9.0：
-營運時，日期是十分關鍵的資訊！ 我們修正了設定產品「銷售日期」時，系統有時最後不會顯示你所選日期的錯誤。 社群意見回饋太有幫助了！
+9.1：
+我們正努力開發新功能以協助你管理優惠券。 此開發工作仍在進行中，但你可以在「更多」分頁下的設定中，開啟測試版功能以便搶先試用。 歡迎提供任何早期意見反應！
+
+另外，我們也修正了子類商品的一些錯誤，例如在變更庫存量時會意外清除價格的問題。
 </zh-TW>
 <en-US>
-9.0:
-Dates are crucial when you’re running a business! We fixed a glitch when setting a “sale date” on a product – sometimes, that date didn’t end up being what you selected. Community feedback for the win!
+9.1:
+We’ve been working hard on a new feature to help you manage your coupons. It’s a work in progress, but you can get an early look by turning the beta feature on in Settings under the More tab. We welcome your early feedback!
+
+We also fixed a few bugs with variable products with prices accidentally cleared when changing inventory levels.
 </en-US>

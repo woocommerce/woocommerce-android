@@ -1,11 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-04-26 13:54:04+0000
+Translation-Revision-Date: 2022-05-05 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="coupon_details_restricted_emails">Réservé aux clients avec e-mails : %1$s</string>
+    <string name="coupon_details_excludes_sale_items">Exclut les articles en promo</string>
+    <string name="coupon_details_allows_free_shipping">Autorise l’expédition gratuite</string>
+    <string name="coupon_details_individual_use_only">Utilisation individuelle uniquement</string>
+    <string name="coupon_details_usage_limit_per_items_single">Limité à %1$d article dans le panier</string>
+    <string name="coupon_details_usage_limit_per_items_multiple">Limité à %1$d articles dans le panier</string>
+    <string name="coupon_details_usage_limit_per_coupon_single">Peut être utilisé %1$d fois</string>
+    <string name="coupon_details_usage_limit_per_coupon_multiple">Peut être utilisé %1$d fois</string>
+    <string name="coupon_details_usage_limit_per_user_single">%1$d utilisation par utilisateur</string>
+    <string name="coupon_details_usage_limit_per_user_multiple">%1$d utilisations par utilisateur</string>
+    <string name="coupon_details_delete_successful">Code promo supprimé</string>
+    <string name="coupon_details_delete_failure">La suppression du code promo a échoué</string>
+    <string name="coupon_details_delete_confirmation">Voulez-vous vraiment supprimer ce code promo ?</string>
+    <string name="coupon_details_delete">Supprimer le code promo</string>
+    <string name="inbox_screen_sync_error">Erreur de synchronisation de la boîte de réception</string>
+    <string name="inbox_note_dismiss_all_notes">Ignorer tout</string>
+    <string name="inbox_screen_title">Boîte de réception</string>
+    <string name="settings_card_reader_manuals">Manuels des lecteurs de carte</string>
+    <string name="card_reader_interac_refund_refund_payment_hint">Appuyez sur le montant à rembourser ou insérez-le</string>
+    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">Votre commande a déjà été remboursée</string>
+    <string name="card_reader_interac_refund_refund_failed_cancelled">Remboursement annulé</string>
+    <string name="card_reader_interac_refund_refund_failed_ok">OK</string>
+    <string name="card_reader_interac_refund_refund_failed_test_card">Les cartes de test système ne sont pas autorisées pour le remboursement</string>
+    <string name="card_reader_interac_refund_refund_failed_invalid_amount">Le montant du remboursement n’est pas autorisé pour la carte présentée</string>
+    <string name="card_reader_interac_refund_refund_failed_insufficient_funds">Le remboursement a été refusé en raison de fonds insuffisants</string>
+    <string name="card_reader_interac_refund_refund_failed_duplicate_transaction">Un remboursement identique a été soumis récemment</string>
+    <string name="card_reader_interac_refund_refund_failed_card_not_supported">La carte ne permet pas ce type de remboursement</string>
+    <string name="card_reader_interac_refund_refund_failed_generic">Le remboursement a été refusé pour une raison non spécifiée</string>
+    <string name="card_reader_interac_refund_refund_failed_fraud">Essayez un autre moyen de remboursement</string>
+    <string name="card_reader_interac_refund_refund_failed_unknown">Le remboursement a été refusé pour une raison inconnue</string>
+    <string name="card_reader_interac_refund_refund_failed_unexpected_error_state">Désolé, impossible de traiter ce remboursement</string>
+    <string name="card_reader_interac_refund_refund_completed_header">Remboursement effectué avec succès</string>
+    <string name="card_reader_interac_refund_refund_processing_state">Traitement du remboursement en cours</string>
+    <string name="card_reader_interac_refund_refund_payment">Rembourser le paiement</string>
+    <string name="card_reader_interac_refund_refund_failed_header">Remboursement échoué</string>
+    <string name="card_reader_interac_refund_refund_loading_header">Prêt à rembourser le paiement</string>
+    <string name="copy">Copier</string>
     <string name="coupons_list_search_hint">Recherche codes promo</string>
     <string name="coupon_details_share_formatting_failure">Impossible de générer le message de partage du code promo</string>
     <string name="coupon_details_share_coupon_error">Erreur lors du partage du code promo.</string>
@@ -351,7 +388,7 @@ Language: fr
     <string name="support_system_status_report">Rapport sur l’état du système</string>
     <string name="card_reader_welcome_dialog_text">Félicitations, vous pouvez désormais accepter les paiements par carte de débit et de crédit avec WooCommerce Payments.</string>
     <string name="card_reader_welcome_dialog_header">Percevez des paiements à l’aide d’un lecteur de carte</string>
-    <string name="card_reader_payment_failed_amount_too_small">Le montant doit s’élever à au moins 0,50 USD.</string>
+    <string name="card_reader_payment_failed_amount_too_small">Le montant doit s’élever à au moins 0,50 $.</string>
     <string name="card_reader_payment_payment_failed_ok">OK</string>
     <string name="settings_whats_new_icon_description">Image de l’icône Nouvelle fonctionnalité</string>
     <string name="settings_switch_store">Changer de boutique</string>

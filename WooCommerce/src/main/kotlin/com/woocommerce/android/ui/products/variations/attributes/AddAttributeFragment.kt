@@ -68,6 +68,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
         layoutManager?.let {
             outState.putParcelable(LIST_STATE_KEY, it.onSaveInstanceState())
         }
@@ -188,7 +189,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
 
                 // add local draft attributes then sort the combined list by name
                 allAttributes.addAll(localDraftAttributes)
-                allAttributes.sortBy { it.name.toLowerCase(Locale.getDefault()) }
+                allAttributes.sortBy { it.name.lowercase(Locale.getDefault()) }
             }
         )
 
