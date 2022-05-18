@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -63,6 +64,7 @@ fun DatePickerDialog(
     currentDate: Date?,
     onDateSelected: (Date) -> Unit,
     onDismissRequest: () -> Unit,
+    neutralButton: (@Composable () -> Unit)? = null,
     minDate: Date = GregorianCalendar(DEFAULT_MIN_YEAR, 0, 1).time,
     maxDate: Date = GregorianCalendar(DEFAULT_MAX_YEAR, 0, 1).time,
     dateFormat: DateFormat = SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM),
@@ -73,6 +75,7 @@ fun DatePickerDialog(
         currentDate = currentDate?.toCalendar(),
         onDateSelected = { onDateSelected(it.time) },
         onDismissRequest = onDismissRequest,
+        neutralButton = neutralButton,
         minDate = minDate.toCalendar(),
         maxDate = maxDate.toCalendar(),
         dateFormat = dateFormat,
@@ -86,6 +89,7 @@ fun DatePickerDialog(
     currentDate: Calendar?,
     onDateSelected: (Calendar) -> Unit,
     onDismissRequest: () -> Unit,
+    neutralButton: (@Composable () -> Unit)? = null,
     minDate: Calendar = GregorianCalendar(DEFAULT_MIN_YEAR, 0, 1),
     maxDate: Calendar = GregorianCalendar(DEFAULT_MAX_YEAR, 0, 1),
     dateFormat: DateFormat = SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM),
@@ -113,6 +117,7 @@ fun DatePickerDialog(
                     onDateChanged = { selectedDate = it },
                     onSubmitRequest = { onDateSelected(selectedDate) },
                     onDismissRequest = onDismissRequest,
+                    neutralButton = neutralButton,
                     minDate = minDate,
                     maxDate = maxDate,
                     dateFormat = dateFormat
@@ -132,6 +137,7 @@ fun DatePickerDialog(
                     onDateChanged = { selectedDate = it },
                     onSubmitRequest = { onDateSelected(selectedDate) },
                     onDismissRequest = onDismissRequest,
+                    neutralButton = neutralButton,
                     minDate = minDate,
                     maxDate = maxDate,
                     dateFormat = dateFormat
@@ -148,6 +154,7 @@ private fun Any.DatePickerContent(
     onDateChanged: (Calendar) -> Unit,
     onSubmitRequest: () -> Unit,
     onDismissRequest: () -> Unit,
+    neutralButton: (@Composable () -> Unit)?,
     minDate: Calendar,
     maxDate: Calendar,
     dateFormat: DateFormat,
@@ -206,10 +213,14 @@ private fun Any.DatePickerContent(
         Row(
             horizontalArrangement = Arrangement.spacedBy(
                 space = dimensionResource(id = R.dimen.minor_100),
-                alignment = Alignment.End
+                alignment = Alignment.Start
             ),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(id = R.dimen.major_100))
         ) {
+            neutralButton?.invoke()
+            Spacer(modifier = Modifier.weight(1f))
             TextButton(onClick = onDismissRequest) {
                 Text(
                     text = stringResource(id = android.R.string.cancel),
@@ -300,7 +311,7 @@ private var Calendar.year
 
 @Preview
 @Composable
-fun DatePickerPreview() {
+private fun DatePickerPreview() {
     WooThemeWithBackground {
         var date by remember { mutableStateOf<Date?>(null) }
         var showPicker by remember { mutableStateOf(false) }
