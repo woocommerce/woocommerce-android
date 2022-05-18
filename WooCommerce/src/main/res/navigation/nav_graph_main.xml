@@ -239,6 +239,8 @@
     <include app:graph="@navigation/nav_graph_product_filters" />
     <include app:graph="@navigation/nav_graph_order_creations" />
     <include app:graph="@navigation/nav_graph_simple_payments" />
+    <include app:graph="@navigation/nav_graph_jetpack_install" />
+    <include app:graph="@navigation/nav_graph_coupons" />
 
     <fragment
         android:id="@+id/infoScreenFragment"
@@ -348,7 +350,6 @@
         android:id="@+id/orderCreationBottomSheetFragment"
         android:name="com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment"
         tools:layout="@layout/dialog_order_creation_bottom_sheet" />
-    <include app:graph="@navigation/nav_graph_jetpack_install" />
     <activity
         android:id="@+id/appSettingsActivity"
         android:name="com.woocommerce.android.ui.prefs.AppSettingsActivity"
