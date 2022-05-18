@@ -3,6 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph_main">
+
+    <include app:graph="@navigation/nav_graph_orders" />
+    <include app:graph="@navigation/nav_graph_order_filters" />
+    <include app:graph="@navigation/nav_graph_products" />
+    <include app:graph="@navigation/nav_graph_product_filters" />
+    <include app:graph="@navigation/nav_graph_order_creations" />
+    <include app:graph="@navigation/nav_graph_simple_payments" />
+    <include app:graph="@navigation/nav_graph_jetpack_install" />
+    <include app:graph="@navigation/nav_graph_coupons" />
+
     <fragment
         android:id="@+id/dashboard"
         android:name="com.woocommerce.android.ui.mystore.MyStoreFragment"
@@ -232,15 +242,6 @@
             app:destination="@id/reviews"
             app:popUpTo="@+id/moreMenu" />
     </fragment>
-
-    <include app:graph="@navigation/nav_graph_orders" />
-    <include app:graph="@navigation/nav_graph_order_filters" />
-    <include app:graph="@navigation/nav_graph_products" />
-    <include app:graph="@navigation/nav_graph_product_filters" />
-    <include app:graph="@navigation/nav_graph_order_creations" />
-    <include app:graph="@navigation/nav_graph_simple_payments" />
-    <include app:graph="@navigation/nav_graph_jetpack_install" />
-    <include app:graph="@navigation/nav_graph_coupons" />
 
     <fragment
         android:id="@+id/infoScreenFragment"
