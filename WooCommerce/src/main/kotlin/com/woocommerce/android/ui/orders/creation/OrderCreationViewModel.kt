@@ -240,7 +240,7 @@ class OrderCreationViewModel @Inject constructor(
     }
 
     fun onBackButtonClicked() {
-        if (_orderDraft.value.copy(currency = "").isEmpty()) {
+        if (_orderDraft.value.isEmpty()) {
             triggerEvent(Exit)
             return
         }
