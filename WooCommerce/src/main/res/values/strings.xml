@@ -1970,8 +1970,7 @@
     <string name="coupon_edit_add_description_hint">Add the description of the coupon.</string>
     <string name="coupon_edit_expiry_date">Coupon Expiry Date</string>
     <string name="coupon_edit_expiry_date_none">None</string>
-    <string name="coupon_edit_expiry_date_dialog_edit">Edit Expiry Date</string>
-    <string name="coupon_edit_expiry_date_dialog_delete">Delete Expiry Date</string>
+    <string name="coupon_edit_expiry_clear_expiry_date">Clear</string>
     <string name="coupon_edit_free_shipping">Include Free Shipping?</string>
 
     <!-- Other -->
