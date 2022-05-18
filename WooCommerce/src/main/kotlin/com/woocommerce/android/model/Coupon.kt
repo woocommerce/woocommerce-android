@@ -42,7 +42,7 @@ data class Coupon(
     }
 
     @Parcelize
-    class CouponRestrictions(
+    data class CouponRestrictions(
         val isForIndividualUse: Boolean? = null,
         val usageLimit: Int? = null,
         val usageLimitPerUser: Int? = null,
