@@ -47,8 +47,10 @@ import javax.inject.Inject
 class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_form), BackPressListener {
     private val viewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
 
-    @Inject lateinit var currencyFormatter: CurrencyFormatter
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    lateinit var currencyFormatter: CurrencyFormatter
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
     private var createOrderMenuItem: MenuItem? = null
     private var progressDialog: CustomProgressDialog? = null

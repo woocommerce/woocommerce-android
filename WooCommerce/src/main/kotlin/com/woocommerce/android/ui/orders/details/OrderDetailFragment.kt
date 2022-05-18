@@ -70,12 +70,18 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     private val viewModel: OrderDetailViewModel by viewModels()
     private val orderEditingViewModel by hiltNavGraphViewModels<OrderEditingViewModel>(R.id.nav_graph_orders)
 
-    @Inject lateinit var navigator: OrderNavigator
-    @Inject lateinit var currencyFormatter: CurrencyFormatter
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var productImageMap: ProductImageMap
-    @Inject lateinit var dateUtils: DateUtils
-    @Inject lateinit var cardReaderManager: CardReaderManager
+    @Inject
+    lateinit var navigator: OrderNavigator
+    @Inject
+    lateinit var currencyFormatter: CurrencyFormatter
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    lateinit var productImageMap: ProductImageMap
+    @Inject
+    lateinit var dateUtils: DateUtils
+    @Inject
+    lateinit var cardReaderManager: CardReaderManager
 
     private var _binding: FragmentOrderDetailBinding? = null
     private val binding get() = _binding!!
@@ -162,6 +168,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             super.onOptionsItemSelected(item)
         }
     }
+
     override fun openOrderProductDetail(remoteProductId: Long) {
         AnalyticsTracker.track(ORDER_DETAIL_PRODUCT_TAPPED)
         (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId)
