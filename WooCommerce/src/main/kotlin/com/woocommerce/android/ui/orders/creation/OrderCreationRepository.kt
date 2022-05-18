@@ -136,7 +136,7 @@ class OrderCreationRepository @Inject constructor(
         }
     }
 
-    private suspend fun isAutoDraftSupported(): Boolean {
+    suspend fun isAutoDraftSupported(): Boolean {
         val version = withContext(dispatchers.io) {
             wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE)?.version
                 ?: "0.0"

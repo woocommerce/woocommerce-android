@@ -8,13 +8,11 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_SOURCE_AMOUNT
 import com.woocommerce.android.annotations.OpenClassOnDebug
-import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.OrderCreationRepository
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -26,7 +24,6 @@ import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.store.OrderUpdateStore
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -38,8 +35,7 @@ class SimplePaymentsDialogViewModel @Inject constructor(
     private val orderUpdateStore: OrderUpdateStore,
     private val networkStatus: NetworkStatus,
     private val orderMapper: OrderMapper,
-    private val wooCommerceStore: WooCommerceStore,
-    private val dispatchers: CoroutineDispatchers
+    private val orderCreationRepository: OrderCreationRepository
 ) : ScopedViewModel(savedState) {
     final val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     internal var viewState by viewStateLiveData
@@ -66,7 +62,7 @@ class SimplePaymentsDialogViewModel @Inject constructor(
         viewState = viewState.copy(isProgressShowing = true, isDoneButtonEnabled = false)
 
         launch(Dispatchers.IO) {
-            val status = if (isAutoDraftSupported()) {
+            val status = if (orderCreationRepository.isAutoDraftSupported()) {
                 WCOrderStatusModel(statusKey = OrderCreationRepository.AUTO_DRAFT)
             } else {
                 null
@@ -92,14 +88,6 @@ class SimplePaymentsDialogViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    private suspend fun isAutoDraftSupported(): Boolean {
-        val version = withContext(dispatchers.io) {
-            wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE)?.version
-                ?: "0.0"
-        }
-        return version.semverCompareTo(OrderCreationRepository.AUTO_DRAFT_SUPPORTED_VERSION) >= 0
     }
 
     @Parcelize
