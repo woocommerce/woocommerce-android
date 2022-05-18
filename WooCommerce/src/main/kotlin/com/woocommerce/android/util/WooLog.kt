@@ -27,6 +27,7 @@ object WooLog {
         REVIEWS,
         MEDIA,
         CARD_READER,
+        SITE_PICKER,
         COUPONS
     }
 

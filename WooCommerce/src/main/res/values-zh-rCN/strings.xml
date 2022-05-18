@@ -1315,7 +1315,6 @@ Language: zh_CN
     <string name="login_jetpack_installed_sign_in">已有 Jetpack 帐户？%1$s</string>
     <string name="login_refresh_app_progress_jetpack">正在尝试使用 Jetpack 帐户登录…</string>
     <string name="login_refresh_app_continue">刷新应用程序以继续操作</string>
-    <string name="login_not_connected_jetpack">要以 %1$s 的价格使用此应用程序，您需要安装 Jetpack 插件并连接至此帐户。\n\n设置完成后，%2$s</string>
     <string name="login_try_another_store">尝试其他商店</string>
     <string name="database_downgraded">数据库降级、正在重新创建表格及正在加载商店</string>
     <string name="loading_stores">正在加载商店</string>
@@ -1331,7 +1330,6 @@ Language: zh_CN
     <string name="orderdetail_copy_tracking_number">复制跟踪编号</string>
     <string name="login_refresh_app_progress">正在检查 WooCommerce…</string>
     <string name="login_refresh_app">刷新应用程序</string>
-    <string name="login_not_woo_store">%1$s似乎不是 WooCommerce 站点。请在您的站点上安装 WooCommerce 插件，然后 %2$s</string>
     <string name="orderdetail_empty_address">未指定地址</string>
     <string name="login_need_help_finding_connected_email">需要帮助查找您连接的电子邮件？</string>
     <string name="enter_wordpress_site">此地址下的网站不是 WordPress 站点。站点必须安装 WordPress，我们才能建立连接。</string>
