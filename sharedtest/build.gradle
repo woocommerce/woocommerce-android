@@ -1,5 +1,5 @@
 plugins {
-    id 'com.android.test'
+    id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
 }
 
@@ -52,14 +52,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 31
 
-        missingDimensionStrategy 'buildType', 'wasabi'
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        testApplicationId "com.woocommerce.android.dev.quicklogin"
-
-        buildConfigField "String", "QUICK_LOGIN_WP_EMAIL", "\"${project.getProperties().get("quickLoginWpEmail")}\""
-        buildConfigField "String", "QUICK_LOGIN_WP_PASSWORD", "\"${project.getProperties().get("quickLoginWpPassword")}\""
-        buildConfigField "String", "QUICK_LOGIN_WP_SITE", "\"${project.getProperties().get("quickLoginWpSite")}\""
+        missingDimensionStrategy 'buildType', 'wasabi', 'vanilla'
     }
 
     compileOptions {
@@ -69,8 +62,6 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-
-    targetProjectPath ':WooCommerce'
 }
 
 dependencies {
@@ -82,8 +73,6 @@ dependencies {
     implementation "androidx.test:runner:1.4.0"
     implementation "androidx.test:rules:1.4.0"
     implementation "androidx.test:core:1.4.0"
-
-    implementation project(path: ':sharedtest')
 }
 
 if (project.hasProperty("debugStoreFile")) {

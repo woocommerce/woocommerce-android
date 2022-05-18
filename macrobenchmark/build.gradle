@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+
 repositories {
     maven {
         url 'https://a8c-libs.s3.amazonaws.com/android'
@@ -46,55 +47,55 @@ repositories {
 }
 
 android {
-    compileSdkVersion 31
-
-    defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 31
-
-        missingDimensionStrategy 'buildType', 'wasabi'
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        testApplicationId "com.woocommerce.android.dev.quicklogin"
-
-        buildConfigField "String", "QUICK_LOGIN_WP_EMAIL", "\"${project.getProperties().get("quickLoginWpEmail")}\""
-        buildConfigField "String", "QUICK_LOGIN_WP_PASSWORD", "\"${project.getProperties().get("quickLoginWpPassword")}\""
-        buildConfigField "String", "QUICK_LOGIN_WP_SITE", "\"${project.getProperties().get("quickLoginWpSite")}\""
-    }
+    compileSdk 31
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = '1.8'
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
 
-    targetProjectPath ':WooCommerce'
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    defaultConfig {
+        minSdk 23
+        targetSdk 31
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        missingDimensionStrategy 'buildType', 'vanilla'
+    }
+
+    buildTypes {
+        // This benchmark buildType is used for benchmarking, and should function like your
+        // release build (for example, with minification on). It's signed with a debug key
+        // for easy local/CI testing.
+        benchmark {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            debuggable = false
+            signingConfig = debug.signingConfig
+
+            matchingFallbacks = ["release"]
+        }
+    }
+
+    targetProjectPath = ":WooCommerce"
+    experimentalProperties["android.experimental.self-instrumenting"] = true
 }
 
 dependencies {
-    implementation "androidx.lifecycle:lifecycle-process:$lifecycleVersion"
-
-    implementation "androidx.test.uiautomator:uiautomator:2.2.0"
-    implementation "junit:junit:$jUnitVersion"
-    implementation "androidx.test.ext:junit:$jUnitExtVersion"
-    implementation "androidx.test:runner:1.4.0"
-    implementation "androidx.test:rules:1.4.0"
-    implementation "androidx.test:core:1.4.0"
+    implementation 'androidx.test.ext:junit:1.1.3'
+    implementation 'androidx.test.espresso:espresso-core:3.4.0'
+    implementation 'androidx.test.uiautomator:uiautomator:2.2.0'
+    implementation 'androidx.benchmark:benchmark-macro-junit4:1.1.0-rc02'
 
     implementation project(path: ':sharedtest')
 }
 
-if (project.hasProperty("debugStoreFile")) {
-    def sharedDebugStore = file(project.debugStoreFile.replaceFirst("^~", System.getProperty("user.home")))
-    if (sharedDebugStore.exists()) {
-        android {
-            signingConfigs {
-                debug {
-                    storeFile sharedDebugStore
-                }
-            }
-        }
+androidComponents {
+    beforeVariants(selector().all()) {
+        enabled = buildType == "benchmark"
     }
 }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest package="com.woocommerce.android"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Mark the camera as optional, as the back camera is missing from some ChromeOS devices-->
     <uses-feature android:name="android.hardware.camera" android:required="false" />
@@ -147,6 +148,11 @@
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
+
+        <!-- enable profiling by macrobenchmark -->
+        <profileable
+            android:shell="true"
+            tools:targetApi="q" />
     </application>
 
 </manifest>
