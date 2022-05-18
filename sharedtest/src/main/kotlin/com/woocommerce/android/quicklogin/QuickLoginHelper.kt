@@ -36,6 +36,15 @@ class QuickLoginHelper(private val packageName: String) {
         selectSiteIfProvided(webSite)
     }
 
+    fun isLoggedIn(): Boolean {
+        startTheApp()
+
+        val loginWithWpButton = device
+            .wait(Until.findObject(By.res(packageName, "button_login_wpcom")), TIMEOUT)
+
+        return loginWithWpButton == null
+    }
+
     private fun startTheApp() {
         device.pressHome()
 
@@ -53,7 +62,9 @@ class QuickLoginHelper(private val packageName: String) {
 
     private fun chooseWpComLogin() {
         val loginWithWpButton = device
-            .wait(Until.findObject(By.res(packageName, "button_login_wpcom")), TIMEOUT) ?: return
+            .wait(Until.findObject(By.res(packageName, "button_login_wpcom")), TIMEOUT)
+
+        if (loginWithWpButton == null) exitFlowWithMessage("You are logged in already")
 
         loginWithWpButton.click()
     }
@@ -118,7 +129,7 @@ class QuickLoginHelper(private val packageName: String) {
             selectedSite.click()
             doneButton.click()
 
-            device.wait(Until.findObject(By.res(packageName, "bottom_nav")), LONG_TIMEOUT)
+            device.wait(Until.findObject(By.res(packageName, "bottom_nav")), TIMEOUT)
         }
     }
 

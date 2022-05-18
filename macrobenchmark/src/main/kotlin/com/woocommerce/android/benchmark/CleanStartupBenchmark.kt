@@ -6,21 +6,12 @@ import androidx.benchmark.macro.StartupMode
 import androidx.benchmark.macro.StartupTimingMetric
 import androidx.benchmark.macro.junit4.MacrobenchmarkRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.woocommerce.android.quicklogin.QuickLoginHelper
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-private const val PACKAGE_NAME = "com.woocommerce.android"
-
-private const val EMAIL = ""
-private const val PASSWORD = ""
-private const val WEB_SITE = ""
-
 @RunWith(AndroidJUnit4::class)
-class StartupBenchmark {
-    private val helper = QuickLoginHelper(PACKAGE_NAME)
-
+class CleanStartupBenchmark {
     @get:Rule
     val benchmarkRule = MacrobenchmarkRule()
 
@@ -45,13 +36,6 @@ class StartupBenchmark {
             iterations = 5,
             startupMode = StartupMode.COLD,
             compilationMode = compilationMode,
-            setupBlock = {
-                helper.loginWithWordpress(
-                    email = EMAIL,
-                    password = PASSWORD,
-                    webSite = WEB_SITE,
-                )
-            }
         ) {
             pressHome()
             startActivityAndWait()
