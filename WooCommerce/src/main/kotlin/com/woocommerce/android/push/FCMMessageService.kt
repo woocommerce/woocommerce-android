@@ -3,11 +3,11 @@ package com.woocommerce.android.push
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -16,11 +16,10 @@ class FCMMessageService : FirebaseMessagingService() {
     @Inject lateinit var notificationMessageHandler: NotificationMessageHandler
     @Inject lateinit var appPrefsWrapper: AppPrefsWrapper
     @Inject lateinit var registerDevice: RegisterDevice
-    @AppCoroutineScope lateinit var appCoroutineScope: CoroutineScope
 
     override fun onNewToken(newToken: String) {
         appPrefsWrapper.setFCMToken(newToken)
-        appCoroutineScope.launch {
+        CoroutineScope(Dispatchers.IO).launch {
             registerDevice()
         }
     }
