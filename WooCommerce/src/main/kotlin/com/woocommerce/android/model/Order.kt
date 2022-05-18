@@ -282,7 +282,7 @@ data class Order(
     }
 
     companion object {
-        val EMPTY by lazy {
+        private val DEFAULT_EMPTY_ORDER by lazy {
             Order(
                 id = 0,
                 number = "",
@@ -318,6 +318,9 @@ data class Order(
                 paymentUrl = ""
             )
         }
+
+        val EMPTY
+            get() = DEFAULT_EMPTY_ORDER.copy(dateCreated = Date(), dateModified = Date())
     }
 }
 
