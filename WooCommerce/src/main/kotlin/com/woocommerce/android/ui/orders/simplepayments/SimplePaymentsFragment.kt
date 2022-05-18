@@ -18,6 +18,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
 import com.woocommerce.android.ui.orders.taxes.OrderTaxesAdapter
 import com.woocommerce.android.util.CurrencyFormatter
@@ -26,7 +27,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
+class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments), BackPressListener {
     private val viewModel: SimplePaymentsFragmentViewModel by viewModels()
     private val sharedViewModel by hiltNavGraphViewModels<SimplePaymentsSharedViewModel>(R.id.nav_graph_main)
 
@@ -84,6 +85,11 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
         AnalyticsTracker.trackViewShown(this)
     }
 
+    override fun onRequestAllowBackPress(): Boolean {
+        viewModel.onBackButtonClicked()
+        return false
+    }
+
     private fun setupObservers(binding: FragmentSimplePaymentsBinding) {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
@@ -95,6 +101,9 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments) {
                 }
                 is SimplePaymentsFragmentViewModel.ShowTakePaymentScreen -> {
                     showTakePaymentScreen()
+                }
+                is SimplePaymentsFragmentViewModel.CancelSimplePayment -> {
+                    viewModel.deleteDraftOrder(viewModel.orderDraft)
                 }
             }
         }
