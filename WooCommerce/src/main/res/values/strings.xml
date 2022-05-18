@@ -213,11 +213,11 @@
     <string name="login_not_connected_to_account">It looks like %1$s is connected to a different WordPress.com account.</string>
     <string name="login_try_another_account">Log in with another account</string>
     <string name="login_try_another_store">Try another store</string>
-    <string name="login_not_woo_store">It looks like %1$s is not a WooCommerce site. Install the WooCommerce plugin on your site and then %2$s</string>
-    <string name="login_not_connected_jetpack">To use this app for %1$s you\'ll need to have the Jetpack plugin setup and connected to this account. \n\nOnce setup, %2$s</string>
+    <string name="login_not_woo_store">It looks like %1$s is not a WooCommerce site. Install the WooCommerce plugin on your site and then refresh the app.</string>
+    <string name="login_not_connected_jetpack">To use this app for %1$s you\'ll need to have the Jetpack plugin setup and connected to this account. \n\nOnce setup, refresh the app</string>
     <string name="login_no_jetpack">To use this app for %1$s you\'ll need to have the Jetpack plugin setup and connected to a WordPress.com account</string>
     <string name="login_not_wordpress_site_v2">We were not able to detect a WordPress site at the address you entered. Please make sure WordPress is installed and that you are running the latest available version.</string>
-    <string name="login_refresh_app">refresh the app</string>
+    <string name="login_refresh_app">Refresh the app</string>
     <string name="login_refresh_app_continue">refresh the app to continue</string>
     <string name="login_refresh_app_progress">Checking for WooCommerce…</string>
     <string name="login_refresh_app_progress_jetpack">Attempting to login with Jetpack…</string>
@@ -1759,7 +1759,9 @@
     <string name="magic_link_sent_login_title">Magic link sent</string>
     <string name="selfhosted_site_login_title">Login credentials</string>
     <string name="verification_2fa_screen_title">Code verification</string>
-    <string name="site_picker_title">Pick store</string>
+    <string name="site_picker_title">Select store</string>
+    <string name="site_picker_label">Select store to connect</string>
+    <string name="site_picker_error">Error fetching stores</string>
 
     <string name="signup_email_screen_title">Email signup</string>
     <string name="signup_magic_link_title">Magic link sent</string>
