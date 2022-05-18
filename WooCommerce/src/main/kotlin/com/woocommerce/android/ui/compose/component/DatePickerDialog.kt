@@ -260,7 +260,7 @@ private fun CalendarView(
             if (maxDate != null)
                 view.maxDate = maxDate.timeInMillis
 
-            view.date = currentDate.timeInMillis
+            view.setDate(currentDate.timeInMillis, false, true)
 
             view.setOnDateChangeListener { _, year, month, dayOfMonth ->
                 onDateSelected(
