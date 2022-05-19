@@ -298,7 +298,7 @@ private fun YearSelector(
                 modifier = Modifier
                     .clickable { onYearSelected(it) }
                     .fillMaxWidth()
-                    .padding(10.dp)
+                    .padding(dimensionResource(id = R.dimen.major_75))
             ) {
                 Text(
                     text = it.toString(),
