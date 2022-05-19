@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.coupons.edit
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,9 +14,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
@@ -30,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -67,7 +72,8 @@ fun EditCouponScreen(viewModel: EditCouponViewModel) {
             onRegenerateCodeClick = viewModel::onRegenerateCodeClick,
             onDescriptionButtonClick = viewModel::onDescriptionButtonClick,
             onExpiryDateChanged = viewModel::onExpiryDateChanged,
-            onFreeShippingChanged = viewModel::onFreeShippingChanged
+            onFreeShippingChanged = viewModel::onFreeShippingChanged,
+            onUsageRestrictionsClick = viewModel::onUsageRestrictionsClick
         )
     }
 }
@@ -80,7 +86,8 @@ fun EditCouponScreen(
     onRegenerateCodeClick: () -> Unit = {},
     onDescriptionButtonClick: () -> Unit = {},
     onExpiryDateChanged: (Date?) -> Unit = {},
-    onFreeShippingChanged: (Boolean) -> Unit = {}
+    onFreeShippingChanged: (Boolean) -> Unit = {},
+    onUsageRestrictionsClick: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -88,10 +95,7 @@ fun EditCouponScreen(
         modifier = Modifier
             .background(color = MaterialTheme.colors.surface)
             .verticalScroll(scrollState)
-            .padding(
-                horizontal = dimensionResource(id = R.dimen.major_100),
-                vertical = dimensionResource(id = R.dimen.major_100)
-            )
+            .padding(vertical = dimensionResource(id = R.dimen.major_100))
             .fillMaxSize()
     ) {
         DetailsSection(
@@ -104,11 +108,13 @@ fun EditCouponScreen(
             onFreeShippingChanged = onFreeShippingChanged
         )
         ConditionsSection(viewState)
-        UsageRestrictionsSection(viewState)
+        UsageRestrictionsSection(viewState, onUsageRestrictionsClick)
         WCColoredButton(
             onClick = { /*TODO*/ },
             text = stringResource(id = R.string.coupon_edit_save_button),
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                .fillMaxWidth(),
             enabled = viewState.hasChanges
         )
     }
@@ -129,6 +135,7 @@ private fun DetailsSection(
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
         modifier = Modifier
+            .padding(horizontal = dimensionResource(id = R.dimen.major_100))
             .fillMaxWidth()
     ) {
         Text(
@@ -172,8 +179,51 @@ private fun ConditionsSection(viewState: EditCouponViewModel.ViewState) {
 
 @Composable
 @Suppress("UnusedPrivateMember")
-private fun UsageRestrictionsSection(viewState: EditCouponViewModel.ViewState) {
-    /*TODO*/
+private fun UsageRestrictionsSection(
+    viewState: EditCouponViewModel.ViewState,
+    onUsageRestrictionsClick: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = stringResource(id = R.string.coupon_edit_usage_section).toUpperCase(Locale.current),
+            style = MaterialTheme.typography.body2,
+            color = colorResource(id = R.color.color_on_surface_medium),
+            modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
+        )
+
+        TextButton(
+            onClick = onUsageRestrictionsClick,
+            contentPadding = PaddingValues(dimensionResource(id = R.dimen.major_100)),
+            colors = ButtonDefaults.textButtonColors(
+                contentColor = colorResource(id = R.color.color_on_surface)
+            )
+        ) {
+            Column {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.coupon_edit_usage_restrictions),
+                        style = MaterialTheme.typography.body1,
+                    )
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_arrow_right),
+                        contentDescription = null
+                    )
+                }
+            }
+        }
+
+        Divider(
+            color = colorResource(id = R.color.divider_color),
+            thickness = dimensionResource(id = R.dimen.minor_10),
+            modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100))
+        )
+    }
 }
 
 @Composable
@@ -298,9 +348,11 @@ private fun EditCouponPreview() {
                     isShippingFree = true,
                     productIds = emptyList(),
                     categoryIds = emptyList(),
-                    excludedProductIds = emptyList(),
-                    excludedCategoryIds = emptyList(),
-                    restrictedEmails = emptyList()
+                    restrictions = Coupon.CouponRestrictions(
+                        excludedProductIds = emptyList(),
+                        excludedCategoryIds = emptyList(),
+                        restrictedEmails = emptyList()
+                    )
                 ),
                 localizedType = "Fixed Rate Discount",
                 amountUnit = "%",
