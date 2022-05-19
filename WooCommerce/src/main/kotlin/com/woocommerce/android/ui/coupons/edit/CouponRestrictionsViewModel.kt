@@ -21,6 +21,7 @@ class CouponRestrictionsViewModel @Inject constructor(
 
     private val restrictionsDraft = savedStateHandle.getStateFlow(
         viewModelScope,
+        // Casting below added to work around IDE bug of not recognizing the nested class type.
         navArgs.restrictions as CouponRestrictions
     )
 
