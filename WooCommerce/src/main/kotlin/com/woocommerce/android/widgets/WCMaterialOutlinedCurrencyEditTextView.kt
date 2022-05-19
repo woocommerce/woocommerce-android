@@ -255,7 +255,7 @@ private class RegularCurrencyEditText(context: Context) : CurrencyEditText(conte
                 // Prevent negative values if they are not supported
                 ""
             }
-            newValue.toBigDecimalOrNull() == null && newValue != decimalSeparator -> {
+            newValue.toBigDecimalOrNull() == null && newValue != "." && newValue != "-." -> {
                 // Prevent entering non-valid numbers
                 ""
             }
