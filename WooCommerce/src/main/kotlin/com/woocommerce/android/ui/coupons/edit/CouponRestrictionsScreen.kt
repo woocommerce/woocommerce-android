@@ -9,6 +9,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -18,8 +19,14 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
 import java.math.BigDecimal
 
 @Composable
-@Suppress("UnusedPrivateMember")
 fun CouponRestrictionsScreen(viewModel: CouponRestrictionsViewModel) {
+    viewModel.viewState.observeAsState().value?.let {
+        CouponRestrictionsScreen(it)
+    }
+}
+
+@Composable
+fun CouponRestrictionsScreen(viewState: CouponRestrictionsViewModel.ViewState) {
     val scrollState = rememberScrollState()
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
@@ -34,17 +41,17 @@ fun CouponRestrictionsScreen(viewModel: CouponRestrictionsViewModel) {
             .fillMaxSize()
     ) {
         WCOutlinedTypedTextField(
-            value = BigDecimal.ZERO,
+            value = viewState.restrictions.minimumAmount ?: BigDecimal.ZERO,
             onValueChange = { },
-            label = stringResource(id = R.string.coupon_restrictions_minimum_spend_hint, "$"),
+            label = stringResource(id = R.string.coupon_restrictions_minimum_spend_hint, viewState.currencyCode),
             valueMapper = BigDecimalTextFieldValueMapper(supportsNegativeValue = false),
             modifier = Modifier.padding(end = dimensionResource(id = R.dimen.major_100))
         )
 
         WCOutlinedTypedTextField(
-            value = BigDecimal.ZERO,
+            value = viewState.restrictions.maximumAmount ?: BigDecimal.ZERO,
             onValueChange = { },
-            label = stringResource(id = R.string.coupon_restrictions_maximum_spend_hint, "$"),
+            label = stringResource(id = R.string.coupon_restrictions_maximum_spend_hint, viewState.currencyCode),
             valueMapper = BigDecimalTextFieldValueMapper(supportsNegativeValue = false),
             modifier = Modifier.padding(end = dimensionResource(id = R.dimen.major_100))
         )
