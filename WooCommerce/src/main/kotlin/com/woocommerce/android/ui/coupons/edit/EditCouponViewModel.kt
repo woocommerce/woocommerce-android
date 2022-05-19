@@ -108,7 +108,7 @@ class EditCouponViewModel @Inject constructor(
 
     fun onUsageRestrictionsClick() {
         couponDraft.value?.let {
-            triggerEvent(OpenCouponRestrictions(it.restrictions))
+            triggerEvent(OpenCouponRestrictions(it.restrictions, currencyCode))
         }
     }
 

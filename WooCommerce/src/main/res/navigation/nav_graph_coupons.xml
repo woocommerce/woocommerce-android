@@ -40,5 +40,8 @@
         <argument
             android:name="restrictions"
             app:argType="com.woocommerce.android.model.Coupon$CouponRestrictions" />
+        <argument
+            android:name="currencyCode"
+            app:argType="string" />
     </fragment>
 </navigation>
