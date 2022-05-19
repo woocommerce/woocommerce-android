@@ -7,30 +7,30 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.common.texteditor.SimpleTextEditorFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
-import kotlin.properties.Delegates.observable
 
 @AndroidEntryPoint
-class EditCouponFragment : BaseFragment() {
-    private val viewModel: EditCouponViewModel by viewModels()
+class CouponRestrictionsFragment : BaseFragment(), BackPressListener {
+    companion object {
+        const val RESTRICTIONS_RESULT = "restrictions-result"
+    }
+
+    private val viewModel: CouponRestrictionsViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Visible(
             navigationIcon = R.drawable.ic_gridicons_cross_24dp
         )
-
-    private var screenTitle: String by observable("") { _, oldValue, newValue ->
-        if (oldValue != newValue) {
-            updateActivityTitle()
-        }
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
@@ -38,7 +38,7 @@ class EditCouponFragment : BaseFragment() {
 
             setContent {
                 WooThemeWithBackground {
-                    EditCouponScreen(viewModel)
+                    CouponRestrictionsScreen(viewModel)
                 }
             }
         }
@@ -47,30 +47,23 @@ class EditCouponFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers()
-        handleResults()
     }
 
     private fun setupObservers() {
-        viewModel.viewState.observe(viewLifecycleOwner) {
-            screenTitle = getString(R.string.coupon_edit_screen_title, it.localizedType)
-        }
-
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is EditCouponNavigationTarget -> EditCouponNavigator.navigate(this, event)
+                is ExitWithResult<*> -> {
+                    navigateBackWithResult(RESTRICTIONS_RESULT, event.data as Coupon.CouponRestrictions)
+                }
+                is Exit -> findNavController().navigateUp()
             }
         }
     }
 
-    private fun handleResults() {
-        handleResult<String>(SimpleTextEditorFragment.SIMPLE_TEXT_EDITOR_RESULT) {
-            viewModel.onDescriptionChanged(it)
-        }
+    override fun getFragmentTitle() = getString(R.string.coupon_edit_usage_restrictions)
 
-        handleResult<Coupon.CouponRestrictions>(CouponRestrictionsFragment.RESTRICTIONS_RESULT) {
-            viewModel.onRestrictionsUpdated(it)
-        }
+    override fun onRequestAllowBackPress(): Boolean {
+        viewModel.onBackPressed()
+        return false
     }
-
-    override fun getFragmentTitle() = screenTitle
 }
