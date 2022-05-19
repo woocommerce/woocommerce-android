@@ -48,7 +48,6 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
@@ -171,7 +170,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                 val index = StatsGranularity.values().indexOf(activeGranularity)
                 // Small delay needed to ensure tablayout scrolls to the selected tab if tab is not visible on screen.
                 Handler(Looper.getMainLooper()).postDelayed(
-                    { tabLayout.getTabAt(index)?.select() }, 300
+                    { _tabLayout?.getTabAt(index)?.select() }, 300
                 )
             }
             binding.myStoreStats.loadDashboardStats(activeGranularity)
