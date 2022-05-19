@@ -55,11 +55,9 @@ class ProductListFragment :
         val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"
     }
 
-    @Inject
-    lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    @Inject
-    lateinit var currencyFormatter: CurrencyFormatter
+    @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     private var _productAdapter: ProductListAdapter? = null
     private val productAdapter: ProductListAdapter
