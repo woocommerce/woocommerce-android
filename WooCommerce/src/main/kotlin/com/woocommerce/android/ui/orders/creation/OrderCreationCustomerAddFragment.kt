@@ -90,11 +90,12 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
             newBilling?.let {
                 billingBinding.update(it)
             }
+            newShipping?.let {
+                shippingBinding.update(it)
+            }
+
             if (newShipping?.address != Address.EMPTY) {
                 showShippingAddressFormSwitch?.addressSwitch?.isChecked = true
-                newShipping?.let {
-                    shippingBinding.update(it)
-                }
             }
         }
         addressViewModel.shouldEnableDoneButton.observe(viewLifecycleOwner) { shouldShowDoneButton: Boolean ->

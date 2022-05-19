@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
+import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -90,6 +91,12 @@ class EditCouponViewModel @Inject constructor(
     fun onDescriptionChanged(description: String) {
         couponDraft.update {
             it?.copy(description = description)
+        }
+    }
+
+    fun onExpiryDateChanged(expiryDate: Date?) {
+        couponDraft.update {
+            it?.copy(dateExpires = expiryDate)
         }
     }
 
