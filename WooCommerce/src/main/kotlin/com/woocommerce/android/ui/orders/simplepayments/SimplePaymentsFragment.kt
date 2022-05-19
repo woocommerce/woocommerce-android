@@ -87,7 +87,7 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments), 
 
     override fun onRequestAllowBackPress(): Boolean {
         viewModel.onBackButtonClicked()
-        return false
+        return true
     }
 
     private fun setupObservers(binding: FragmentSimplePaymentsBinding) {
