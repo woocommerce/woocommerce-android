@@ -37,13 +37,13 @@ fun DialogButtonsRowLayout(
             measurables: List<Measurable>,
             constraints: Constraints
         ): MeasureResult {
-            val loosConstraints = constraints.copy(minWidth = 0)
+            val childConstraints = constraints.copy(minWidth = 0)
             val confirmPlaceable =
-                measurables.first { it.layoutId == "confirm" }.measure(loosConstraints)
+                measurables.first { it.layoutId == "confirm" }.measure(childConstraints)
             val dismissPlaceable =
-                measurables.first { it.layoutId == "dismiss" }.measure(loosConstraints)
+                measurables.first { it.layoutId == "dismiss" }.measure(childConstraints)
             val neutralPlaceable =
-                measurables.firstOrNull { it.layoutId == "neutral" }?.measure(loosConstraints)
+                measurables.firstOrNull { it.layoutId == "neutral" }?.measure(childConstraints)
 
             val placeables = listOfNotNull(neutralPlaceable, dismissPlaceable, confirmPlaceable)
 
