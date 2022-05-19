@@ -282,7 +282,9 @@ private class RegularCurrencyEditText(context: Context) : CurrencyEditText(conte
                 updatedText
             } else text
 
-            _value.value = text?.toString()?.replace(decimalSeparator, ".")?.toBigDecimalOrNull() ?: BigDecimal.ZERO
+            val bigDecimalValue = text?.toString()?.replace(decimalSeparator, ".")?.toBigDecimalOrNull()
+            _value.value = if (supportsEmptyState) bigDecimalValue else bigDecimalValue ?: BigDecimal.ZERO
+
             if (text != null) {
                 // Trim any leading unwanted zeros
                 val cleanedText = text.trimStart('-').trimStart('0')
