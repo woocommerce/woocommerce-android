@@ -143,6 +143,7 @@
     <string name="no_sku">No SKU</string>
     <string name="amount">Amount</string>
     <string name="copy" tools:override="true">Copy</string>
+    <string name="variations_bulk_update_regular_price">Update Regular Price</string>
 
     <!--
         Date/Time Labels
