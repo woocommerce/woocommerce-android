@@ -3,8 +3,18 @@ package com.woocommerce.android.model
 import android.os.Parcelable
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import com.woocommerce.android.extensions.*
-import com.woocommerce.android.ui.products.*
+import com.woocommerce.android.extensions.areSameImagesAs
+import com.woocommerce.android.extensions.fastStripHtml
+import com.woocommerce.android.extensions.formatToString
+import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
+import com.woocommerce.android.extensions.isEquivalentTo
+import com.woocommerce.android.extensions.isNotSet
+import com.woocommerce.android.extensions.parseFromIso8601DateFormat
+import com.woocommerce.android.ui.products.ProductBackorderStatus
+import com.woocommerce.android.ui.products.ProductStatus
+import com.woocommerce.android.ui.products.ProductStockStatus
+import com.woocommerce.android.ui.products.ProductTaxStatus
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.MediaModel
@@ -12,7 +22,7 @@ import org.wordpress.android.fluxc.model.WCProductFileModel
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
-import java.util.*
+import java.util.Date
 
 @Parcelize
 data class Product(
