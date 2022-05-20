@@ -52,6 +52,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -98,6 +99,10 @@ class OrderCreationViewModel @Inject constructor(
         }.asLiveData()
 
     private val retryOrderDraftUpdateTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+
+    fun getProductUIModelFromItem(item: Order.Item) = runBlocking {
+        mapItemToProductUiModel(item)
+    }
 
     val currentDraft
         get() = _orderDraft.value
