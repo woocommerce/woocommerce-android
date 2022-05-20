@@ -3,17 +3,26 @@ package com.woocommerce.android.model
 import android.os.Parcelable
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import com.woocommerce.android.extensions.*
-import com.woocommerce.android.ui.products.*
+import com.woocommerce.android.extensions.areSameImagesAs
+import com.woocommerce.android.extensions.fastStripHtml
+import com.woocommerce.android.extensions.formatToString
+import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
+import com.woocommerce.android.extensions.isEquivalentTo
+import com.woocommerce.android.extensions.isNotSet
+import com.woocommerce.android.extensions.parseFromIso8601DateFormat
+import com.woocommerce.android.ui.products.ProductBackorderStatus
+import com.woocommerce.android.ui.products.ProductStatus
+import com.woocommerce.android.ui.products.ProductStockStatus
+import com.woocommerce.android.ui.products.ProductTaxStatus
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.WCProductFileModel
 import org.wordpress.android.fluxc.model.WCProductModel
-import org.wordpress.android.fluxc.persistence.entity.ProductEntity
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
-import java.util.*
+import java.util.Date
 
 @Parcelize
 data class Product(
@@ -454,66 +463,6 @@ fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductMo
         it.purchasable = isPurchasable
     }
 }
-
-@Suppress("ComplexMethod")
-fun ProductEntity.toAppModel() = Product(
-    remoteId = this.id,
-    name = this.name ?: "",
-    description = this.description ?: "",
-    shortDescription = this.shortDescription ?: "",
-    type = this.type ?: "",
-    status = this.status?.let { ProductStatus.fromString(it) },
-    catalogVisibility = this.catalogVisibility?.let { ProductCatalogVisibility.fromString(it) },
-    isFeatured = this.isFeatured ?: false,
-    stockStatus = ProductStockStatus.fromString(stockStatus),
-    backorderStatus = ProductBackorderStatus.fromString(this.backorders),
-    dateCreated = DateTimeUtils.dateFromIso8601(this.dateCreated) ?: Date(),
-    totalSales = this.totalSales ?: 0L,
-    reviewsAllowed = areReviewsAllowed ?: false,
-    isVirtual = isVirtual ?: false,
-    ratingCount = ratingCount ?: 0,
-    averageRating = this.averageRating?.toFloatOrNull() ?: 0f,
-    permalink = this.permalink ?: "",
-    externalUrl = this.externalUrl ?: "",
-    buttonText = this.buttonText ?: "",
-    price = this.price?.toBigDecimalOrNull(),
-    salePrice = this.salePrice?.toBigDecimalOrNull(),
-    regularPrice = this.regularPrice?.toBigDecimalOrNull(),
-    taxClass = if (this.taxClass.isNullOrEmpty()) Product.TAX_CLASS_DEFAULT else this.taxClass ?: "",
-    isStockManaged = this.isStockManaged ?: false,
-    stockQuantity = this.stockQuantity ?: 0.0,
-    sku = this.sku ?: "",
-    slug = this.slug ?: "",
-    shippingClass = this.shippingClass ?: "",
-    shippingClassId = this.shippingClassId?.toLong() ?: 0,
-    isDownloadable = this.isDownloadable ?: false,
-    downloadLimit = this.downloadLimit ?: 0,
-    downloadExpiry = this.downloadExpiry ?: 0,
-    purchaseNote = this.purchaseNote ?: "",
-    saleEndDateGmt = this.dateOnSaleToGmt.parseFromIso8601DateFormat(),
-    saleStartDateGmt = this.dateOnSaleFromGmt.parseFromIso8601DateFormat(),
-    isSoldIndividually = this.isSoldIndividually ?: false,
-    taxStatus = ProductTaxStatus.fromString(this.taxStatus),
-    isSaleScheduled = !this.dateOnSaleFromGmt.isNullOrEmpty() || !this.dateOnSaleToGmt.isNullOrEmpty(),
-    menuOrder = this.menuOrder ?: 0,
-    isPurchasable = this.isPurchasable ?: false,
-
-    // NOTE: These properties will be added to ProductEntity later
-    firstImageUrl = null,
-    downloads = emptyList(),
-    numVariations = 0,
-    images = emptyList(),
-    attributes = emptyList(),
-    categories = emptyList(),
-    tags = emptyList(),
-    groupedProductIds = emptyList(),
-    crossSellProductIds = emptyList(),
-    upsellProductIds = emptyList(),
-    length = 0f,
-    width = 0f,
-    height = 0f,
-    weight = 0f
-)
 
 fun WCProductModel.toAppModel(): Product {
     return Product(
