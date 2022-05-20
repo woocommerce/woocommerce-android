@@ -23,12 +23,12 @@ class CouponUtils @Inject constructor(
     }
 
     fun generateSummary(coupon: Coupon, currencyCode: String?): String {
-        val amount = formatDiscount(coupon.amount, coupon.type, currencyCode)
+        val amount = coupon.amount?.let { formatDiscount(it, coupon.type, currencyCode) }.orEmpty()
         val affectedArticles = formatAffectedArticles(
-            coupon.products.size,
-            coupon.excludedProducts.size,
-            coupon.categories.size,
-            coupon.excludedCategories.size
+            coupon.productIds.size,
+            coupon.excludedProductIds.size,
+            coupon.categoryIds.size,
+            coupon.excludedCategoryIds.size
         )
         return resourceProvider.getString(R.string.coupon_summary_template, amount, affectedArticles)
     }
@@ -144,13 +144,14 @@ class CouponUtils @Inject constructor(
     }
 
     private fun formatDiscount(
-        amount: BigDecimal?,
+        amount: BigDecimal,
         couponType: Coupon.Type?,
         currencyCode: String?
     ): String {
         return when (couponType) {
-            Coupon.Type.Percent -> "$amount%"
-            else -> formatCurrency(amount, currencyCode)
+            Coupon.Type.Percent -> "${amount.toPlainString()}%"
+            Coupon.Type.FixedCart, Coupon.Type.FixedProduct -> formatCurrency(amount, currencyCode)
+            else -> amount.toPlainString()
         }
     }
 
@@ -214,5 +215,20 @@ class CouponUtils @Inject constructor(
                 one = R.string.category_count_one
             )
         } else ""
+    }
+
+    /**
+     * Generate a random coupon code following the same logic as Core
+     * https://github.com/woocommerce/woocommerce/blob/2e60d47a019a6e35f066f3ef43a56c0e761fc8e3/includes/admin/class-wc-admin-assets.php#L295
+     */
+    @Suppress("MagicNumber")
+    fun generateRandomCode(): String {
+        val availableCharacters = "abcdefghjkmnpqrstuvwxyz23456789".toCharArray()
+        val codeLength = 8
+        return String(
+            (1..codeLength).map {
+                availableCharacters.random()
+            }.toCharArray()
+        )
     }
 }

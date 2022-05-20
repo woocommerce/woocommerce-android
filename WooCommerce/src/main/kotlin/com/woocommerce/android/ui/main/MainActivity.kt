@@ -28,6 +28,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.NavHostFragment
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.material.appbar.AppBarLayout
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
@@ -116,6 +117,7 @@ class MainActivity :
     @Inject lateinit var loginAnalyticsListener: LoginAnalyticsListener
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var crashLogging: CrashLogging
 
     private val viewModel: MainActivityViewModel by viewModels()
 
@@ -626,8 +628,8 @@ class MainActivity :
         binding.bottomNav.setOrderBadgeCount(0)
     }
 
-    private fun showMoreMenuBadge(show: Boolean) {
-        binding.bottomNav.showMoreMenuBadge(show)
+    private fun showMoreMenuBadge(count: Int) {
+        binding.bottomNav.showMoreMenuBadge(count)
     }
 
     override fun onNavItemSelected(navPos: BottomNavigationPosition) {
@@ -727,7 +729,7 @@ class MainActivity :
         }
 
         viewModel.unseenReviewsCount.observe(this) { count ->
-            showMoreMenuBadge(count > 0)
+            showMoreMenuBadge(count)
         }
     }
 
@@ -834,6 +836,7 @@ class MainActivity :
         }
 
         val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(orderId, remoteNoteId)
+        crashLogging.recordEvent("Opening order $orderId")
         navController.navigateSafely(action)
     }
 
@@ -846,6 +849,7 @@ class MainActivity :
         val extras = FragmentNavigatorExtras(sharedView to orderCardDetailTransitionName)
 
         val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(orderId, remoteNoteId)
+        crashLogging.recordEvent("Opening order $orderId")
         navController.navigateSafely(directions = action, extras = extras)
     }
 

@@ -10,7 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 import java.math.MathContext
-import java.math.RoundingMode.HALF_UP
+import java.math.RoundingMode
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,39 +23,45 @@ class OrderCreationFeeViewModel @Inject constructor(
     }
 
     private val navArgs: OrderCreationFeeFragmentArgs by savedState.navArgs()
-    private val orderSubtotal
-        get() = navArgs.orderTotal - (navArgs.currentFeeValue ?: BigDecimal.ZERO)
+    private val orderSubtotal = navArgs.orderSubTotal
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
-    private val activeFeeValue
-        get() = when (viewState.isPercentageSelected) {
-            true -> ((orderSubtotal * viewState.feePercentage) / PERCENTAGE_BASE)
-                .round(MathContext(DEFAULT_SCALE_QUOTIENT))
-            false -> viewState.feeAmount
-        }
+    private fun calculateFeePercentage(percentage: BigDecimal): BigDecimal {
+        return orderSubtotal.multiply(percentage).divide(PERCENTAGE_BASE)
+            .round(MathContext(DEFAULT_SCALE_QUOTIENT))
+    }
 
-    private val appliedPercentageFromCurrentFeeValue
-        get() = navArgs.currentFeeValue
-            ?.takeIf { orderSubtotal > BigDecimal.ZERO }
-            ?.let { it.divide(orderSubtotal, DEFAULT_SCALE_QUOTIENT, HALF_UP) * PERCENTAGE_BASE }
-            ?.stripTrailingZeros()
-            ?: BigDecimal.ZERO
+    private fun calculatePercentageFromValue(value: BigDecimal): BigDecimal {
+        if (orderSubtotal <= BigDecimal.ZERO) return BigDecimal.ZERO
+
+        return value.divide(orderSubtotal, DEFAULT_SCALE_QUOTIENT, RoundingMode.HALF_UP)
+            .multiply(PERCENTAGE_BASE)
+            .stripTrailingZeros()
+    }
 
     init {
-        viewState = viewState.copy(shouldDisplayPercentageSwitch = orderSubtotal > BigDecimal.ZERO)
-        navArgs.currentFeeValue?.let {
+        navArgs.currentFeeValue?.let { currentFee ->
             viewState = viewState.copy(
-                feeAmount = it,
-                feePercentage = appliedPercentageFromCurrentFeeValue,
+                shouldDisplayPercentageSwitch = false,
+                feeAmount = currentFee,
+                feePercentage = calculatePercentageFromValue(currentFee),
+                isDoneButtonEnabled = shouldEnableDoneButtonForAmount(currentFee),
                 shouldDisplayRemoveFeeButton = true
             )
+        } ?: run {
+            viewState = viewState.copy(shouldDisplayPercentageSwitch = orderSubtotal > BigDecimal.ZERO)
         }
     }
 
     fun onDoneSelected() {
-        triggerEvent(UpdateFee(activeFeeValue))
+        val feeAmount = if (viewState.isPercentageSelected) {
+            calculateFeePercentage(viewState.feePercentage)
+        } else {
+            viewState.feeAmount
+        }
+        triggerEvent(UpdateFee(feeAmount))
     }
 
     fun onRemoveFeeClicked() {
@@ -67,20 +73,35 @@ class OrderCreationFeeViewModel @Inject constructor(
     }
 
     fun onFeeAmountChanged(feeAmount: BigDecimal) {
-        viewState = viewState.copy(feeAmount = feeAmount)
-    }
-
-    fun onFeePercentageChanged(feePercentage: String) {
+        // Only update when isPercentageSelected is not enabled
+        if (viewState.isPercentageSelected) return
         viewState = viewState.copy(
-            feePercentage = feePercentage.toBigDecimalOrNull() ?: BigDecimal.ZERO
+            feeAmount = feeAmount,
+            feePercentage = calculatePercentageFromValue(feeAmount),
+            isDoneButtonEnabled = shouldEnableDoneButtonForAmount(feeAmount)
         )
     }
+
+    fun onFeePercentageChanged(feePercentageRaw: String) {
+        // Only update when isPercentageSelected is enabled
+        if (!viewState.isPercentageSelected) return
+        val feePercentage = feePercentageRaw.toBigDecimalOrNull() ?: BigDecimal.ZERO
+        val feeAmount = calculateFeePercentage(feePercentage)
+        viewState = viewState.copy(
+            feePercentage = feePercentage,
+            feeAmount = feeAmount,
+            isDoneButtonEnabled = shouldEnableDoneButtonForAmount(feeAmount)
+        )
+    }
+
+    private fun shouldEnableDoneButtonForAmount(amount: BigDecimal) = amount != BigDecimal.ZERO
 
     @Parcelize
     data class ViewState(
         val feeAmount: BigDecimal = BigDecimal.ZERO,
         val feePercentage: BigDecimal = BigDecimal.ZERO,
         val isPercentageSelected: Boolean = false,
+        val isDoneButtonEnabled: Boolean = false,
         val shouldDisplayRemoveFeeButton: Boolean = false,
         val shouldDisplayPercentageSwitch: Boolean = false
     ) : Parcelable

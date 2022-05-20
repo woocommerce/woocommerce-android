@@ -164,7 +164,7 @@
             app:destination="@id/inboxFragment" />
         <action
             android:id="@+id/action_moreMenu_to_couponListFragment"
-            app:destination="@id/couponListFragment" />
+            app:destination="@id/nav_graph_coupons" />
     </fragment>
     <fragment
         android:id="@+id/feedbackSurveyFragment"
@@ -240,6 +240,8 @@
     <include app:graph="@navigation/nav_graph_product_filters" />
     <include app:graph="@navigation/nav_graph_order_creations" />
     <include app:graph="@navigation/nav_graph_simple_payments" />
+    <include app:graph="@navigation/nav_graph_jetpack_install" />
+    <include app:graph="@navigation/nav_graph_coupons" />
 
     <fragment
         android:id="@+id/infoScreenFragment"
@@ -346,7 +348,6 @@
         android:id="@+id/orderCreationBottomSheetFragment"
         android:name="com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment"
         tools:layout="@layout/dialog_order_creation_bottom_sheet" />
-    <include app:graph="@navigation/nav_graph_jetpack_install" />
     <activity
         android:id="@+id/appSettingsActivity"
         android:name="com.woocommerce.android.ui.prefs.AppSettingsActivity"
@@ -357,19 +358,25 @@
         android:label="InboxFragment"
         tools:layout="@layout/fragment_inbox" />
     <fragment
-        android:id="@+id/couponListFragment"
-        android:name="com.woocommerce.android.ui.coupons.CouponListFragment"
-        android:label="CouponListFragment">
-        <action
-            android:id="@+id/action_couponListFragment_to_couponDetailsFragment"
-            app:destination="@id/couponDetailsFragment"/>
-    </fragment>
-    <fragment
-        android:id="@+id/couponDetailsFragment"
-        android:name="com.woocommerce.android.ui.coupons.details.CouponDetailsFragment"
-        android:label="CouponDetailsFragment" >
+        android:id="@+id/simpleTextEditorFragment"
+        android:name="com.woocommerce.android.ui.common.texteditor.SimpleTextEditorFragment"
+        android:label="SimpleTextEditorFragment">
         <argument
-            android:name="couponId"
-            app:argType="long" />
+            android:name="currentText"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="screenTitle"
+            app:argType="string" />
+        <argument
+            android:name="hint"
+            app:argType="string" />
+        <argument
+            android:name="requestCode"
+            android:defaultValue="-1"
+            app:argType="integer" />
     </fragment>
+    <action
+        android:id="@+id/action_global_simpleTextEditorFragment"
+        app:destination="@id/simpleTextEditorFragment" />
 </navigation>

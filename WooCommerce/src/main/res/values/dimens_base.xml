@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- These dimensions are calculated starting with a baseline, then defined as a percentage of
+<?xml version="1.0" encoding="utf-8"?><!-- These dimensions are calculated starting with a baseline, then defined as a percentage of
 that baseline. The percentage doesn't have to be exact, it's main purpose it to describe
 the relationship of the dimension to the baseline. So < 100 would be smaller and > 100 would
 be larger.
@@ -121,4 +120,9 @@ so that's the baseline as defined in `major_100`.
     <dimen name="progress_bar_mid">56dp</dimen>
     <dimen name="progress_bar_large">91dp</dimen>
     <dimen name="whats_new_dialog_heading_top_margin">64dp</dimen>
+    <dimen name="card_reader_manuals_divider">105dp</dimen>
+
+    <!-- More Menu dimens -->
+    <dimen name="more_menu_button_height">190dp</dimen>
+
 </resources>

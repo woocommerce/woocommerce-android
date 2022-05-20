@@ -420,12 +420,17 @@ class OrderCreationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when hitting the fee button with an existent fee, then trigger EditFee with the expected data`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
         var lastReceivedEvent: Event? = null
         sut.event.observeForever {
             lastReceivedEvent = it
         }
 
         val newFeeTotal = BigDecimal(123.5)
+        val orderSubtotal = (orderDraft?.total ?: BigDecimal.ZERO) - newFeeTotal
         sut.onFeeEdited(newFeeTotal)
         sut.onFeeButtonClicked()
 
@@ -434,7 +439,7 @@ class OrderCreationViewModelTest : BaseUnitTest() {
             .run { this as? EditFee }
             ?.let { editFeeEvent ->
                 assertThat(editFeeEvent.currentFeeValue).isEqualTo(newFeeTotal)
-                assertThat(editFeeEvent.orderTotal).isEqualTo(BigDecimal.ZERO)
+                assertThat(editFeeEvent.orderSubTotal).isEqualTo(orderSubtotal)
             } ?: fail("Last event should be of EditFee type")
     }
 
@@ -665,6 +670,38 @@ class OrderCreationViewModelTest : BaseUnitTest() {
         )
 
         assertThat(viewState.canCreateOrder).isTrue
+    }
+
+    @Test
+    fun `when hitting a product that is not synced then do nothing`() {
+        var lastReceivedEvent: Event? = null
+        sut.event.observeForever {
+            lastReceivedEvent = it
+        }
+
+        val orderItem = Order.Item.EMPTY
+        sut.onProductClicked(orderItem)
+
+        assertThat(lastReceivedEvent).isNull()
+    }
+
+    @Test
+    fun `when hitting a product that is synced then show product details`() {
+        var lastReceivedEvent: Event? = null
+        sut.event.observeForever {
+            lastReceivedEvent = it
+        }
+
+        val orderItem = createOrderItem()
+        sut.onProductClicked(orderItem)
+
+        assertThat(lastReceivedEvent).isNotNull
+        lastReceivedEvent
+            .run { this as? ShowProductDetails }
+            ?.let { showProductDetailsEvent ->
+                val currentOrderItem = showProductDetailsEvent.item
+                assertThat(currentOrderItem).isEqualTo(orderItem)
+            } ?: fail("Last event should be of ShowProductDetails type")
     }
 
     private fun createSut() {

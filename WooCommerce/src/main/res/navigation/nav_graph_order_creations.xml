@@ -61,7 +61,7 @@
             app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right" >
             <argument
-                android:name="orderTotal"
+                android:name="orderSubTotal"
                 app:argType="java.math.BigDecimal" />
             <argument
                 android:name="currentFeeValue"
@@ -162,7 +162,7 @@
         android:label="OrderCreationFeeFragment"
         tools:layout="@layout/fragment_order_creation_fee" >
         <argument
-            android:name="orderTotal"
+            android:name="orderSubTotal"
             app:argType="java.math.BigDecimal" />
         <argument
             android:name="currentFeeValue"

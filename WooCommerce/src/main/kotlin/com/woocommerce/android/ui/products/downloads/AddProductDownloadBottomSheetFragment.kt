@@ -11,7 +11,6 @@ import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.DialogProductAddDownloadableFileBinding
 import com.woocommerce.android.mediapicker.MediaPickerUtil.processDeviceMediaResult
@@ -20,7 +19,10 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.products.ProductDetailViewModel
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadDetails
 import com.woocommerce.android.ui.products.ProductNavigator
-import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel.*
+import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel.PickFileFromDevice
+import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel.PickFileFromMedialLibrary
+import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel.UploadFile
+import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
@@ -29,7 +31,7 @@ import org.wordpress.android.mediapicker.ui.MediaPickerActivity
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AddProductDownloadBottomSheetFragment : BottomSheetDialogFragment() {
+class AddProductDownloadBottomSheetFragment : WCBottomSheetDialogFragment() {
     @Inject lateinit var navigator: ProductNavigator
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var mediaPickerSetupFactory: MediaPickerSetup.Factory

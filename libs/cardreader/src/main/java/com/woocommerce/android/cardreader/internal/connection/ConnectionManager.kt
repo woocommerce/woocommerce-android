@@ -16,7 +16,6 @@ import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlin.coroutines.resume
@@ -30,7 +29,8 @@ internal class ConnectionManager(
 ) {
     val softwareUpdateStatus = bluetoothReaderListener.updateStatusEvents
     val softwareUpdateAvailability = bluetoothReaderListener.updateAvailabilityEvents
-    val displayBluetoothCardReaderMessages = bluetoothReaderListener.displayMessagesEvent
+    val batteryStatus = bluetoothReaderListener.batteryStatusEvents
+    val displayBluetoothCardReaderMessages = bluetoothReaderListener.displayMessagesEvents
 
     fun discoverReaders(isSimulated: Boolean, cardReaderTypesToDiscover: CardReaderTypesToDiscover) =
         discoverReadersAction.discoverReaders(isSimulated).map { state ->

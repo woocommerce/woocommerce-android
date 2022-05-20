@@ -59,6 +59,7 @@ android {
 
         buildConfigField "String", "QUICK_LOGIN_WP_EMAIL", "\"${project.getProperties().get("quickLoginWpEmail")}\""
         buildConfigField "String", "QUICK_LOGIN_WP_PASSWORD", "\"${project.getProperties().get("quickLoginWpPassword")}\""
+        buildConfigField "String", "QUICK_LOGIN_WP_SITE", "\"${project.getProperties().get("quickLoginWpSite")}\""
     }
 
     compileOptions {
