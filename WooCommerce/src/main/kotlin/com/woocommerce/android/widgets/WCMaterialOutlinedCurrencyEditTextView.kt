@@ -277,45 +277,24 @@ private class RegularCurrencyEditText(context: Context) : CurrencyEditText(conte
 
     @Suppress("TooGenericExceptionCaught", "NestedBlockDepth", "SwallowedException")
     override fun onTextChanged(text: CharSequence?, start: Int, lengthBefore: Int, lengthAfter: Int) {
-        fun changeText(updatedText: String) {
-            setText(updatedText)
-            setSelection(updatedText.length)
-        }
-
         if (isInitialized && !isChangingText) {
             isChangingText = true
 
-            val text = when (text.toString()) {
-                "0-" -> {
-                    // The filter allows entering minus at the end of the text if supportsEmptyState is false
-                    // Here we fix the ordering of the text
-                    "-0".also { changeText(it) }
-                }
-                "-" -> {
-                    // The filter allows entering minus without a number
-                    // Here we fix based on supportsEmptyState value
-                    if (supportsEmptyState) {
-                        ""
-                    } else {
-                        "0"
-                    }.also { changeText(it) }
-                }
-                else -> text
-            }
+            val adjustedText = adjustText(text)
 
-            val bigDecimalValue = text?.toString()?.replace(decimalSeparator, ".")?.toBigDecimalOrNull()
+            val bigDecimalValue = adjustedText?.toString()?.replace(decimalSeparator, ".")?.toBigDecimalOrNull()
             _value.value = if (supportsEmptyState) bigDecimalValue else bigDecimalValue ?: BigDecimal.ZERO
 
-            if (text != null) {
+            if (adjustedText != null) {
                 // Trim any leading unwanted zeros
-                val cleanedText = text.trimStart('-').trimStart('0')
+                val cleanedText = adjustedText.trimStart('-').trimStart('0')
                 if (cleanedText.isNotEmpty()) {
-                    val updatedText = "${if (text.startsWith('-')) "-" else ""}$cleanedText"
+                    val updatedText = "${if (adjustedText.startsWith('-')) "-" else ""}$cleanedText"
                     val currentSelectionPosition = selectionStart
                     setText(updatedText)
 
                     try {
-                        setSelection(currentSelectionPosition + updatedText.length - text.length)
+                        setSelection(currentSelectionPosition + updatedText.length - adjustedText.length)
                     } catch (e: IndexOutOfBoundsException) {
                         // Ignore
                     }
@@ -323,6 +302,31 @@ private class RegularCurrencyEditText(context: Context) : CurrencyEditText(conte
             }
 
             isChangingText = false
+        }
+    }
+
+    private fun adjustText(text: CharSequence?): CharSequence? {
+        fun changeText(updatedText: String) {
+            setText(updatedText)
+            setSelection(updatedText.length)
+        }
+
+        return when (text.toString()) {
+            "0-" -> {
+                // The filter allows entering minus at the end of the text if supportsEmptyState is false
+                // Here we fix the ordering of the text
+                "-0".also { changeText(it) }
+            }
+            "-" -> {
+                // The filter allows entering minus without a number
+                // Here we fix based on supportsEmptyState value
+                if (supportsEmptyState) {
+                    ""
+                } else {
+                    "0"
+                }.also { changeText(it) }
+            }
+            else -> text
         }
     }
 }
