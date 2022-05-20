@@ -16,7 +16,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HALF_EX
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentVariationsBulkUpdateAttrPickerBinding
-import com.woocommerce.android.ui.products.variations.VariationsBulkUpdateAttrPickerViewModel.RegularPriceState
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdateAttrPickerViewModel.ViewState
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 
@@ -68,10 +67,10 @@ class VariationsBulkUpdateAttrPickerDialog : WCBottomSheetDialogFragment() {
     }
 
     private fun renderViewState(newState: ViewState) {
-        binding.priceSubtitle.text = when (newState.regularPriceState) {
-            RegularPriceState.None -> getString(R.string.variations_bulk_update_dialog_price_none)
-            RegularPriceState.Mixed -> getString(R.string.variations_bulk_update_dialog_price_mixed)
-            is RegularPriceState.Value -> newState.regularPriceState.price
+        binding.priceSubtitle.text = when (newState.regularPriceGroupType) {
+            VariationsAttrsGroupType.None -> getString(R.string.variations_bulk_update_dialog_price_none)
+            VariationsAttrsGroupType.Mixed -> getString(R.string.variations_bulk_update_dialog_price_mixed)
+            is VariationsAttrsGroupType.Value -> newState.regularPriceGroupType.value
         }
     }
 
