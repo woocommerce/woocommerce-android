@@ -258,7 +258,7 @@ private class RegularCurrencyEditText(context: Context) : CurrencyEditText(conte
                 // Prevent negative values if they are not supported
                 ""
             }
-            newValue.toBigDecimalOrNull() == null -> {
+            newValue.toBigDecimalOrNull() == null && newValue != "." && newValue != "-." -> {
                 // Prevent entering non-valid numbers
                 ""
             }
@@ -299,7 +299,9 @@ private class RegularCurrencyEditText(context: Context) : CurrencyEditText(conte
                 else -> text
             }
 
-            _value.value = text?.toString()?.replace(decimalSeparator, ".")?.toBigDecimalOrNull()
+            val bigDecimalValue = text?.toString()?.replace(decimalSeparator, ".")?.toBigDecimalOrNull()
+            _value.value = if (supportsEmptyState) bigDecimalValue else bigDecimalValue ?: BigDecimal.ZERO
+
             if (text != null) {
                 // Trim any leading unwanted zeros
                 val cleanedText = text.trimStart('-').trimStart('0')
