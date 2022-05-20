@@ -404,7 +404,8 @@ class ProductListFragment :
 
     private fun showProductList(products: List<Product>) {
         productAdapter.submitList(products)
-        //set to false to remove the new feature banner temporarily
+
+        // set to false to remove the new feature banner temporarily
         showProductWIPNoticeCard(false)
     }
 
