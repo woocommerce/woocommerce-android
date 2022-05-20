@@ -267,6 +267,10 @@ private class RegularCurrencyEditText(context: Context) : CurrencyEditText(conte
                 // Prevent entering more decimals than what allowed
                 ""
             }
+            (newValue.startsWith("-0") || newValue.startsWith("00")) && source.startsWith("0") -> {
+                // do not allow to have several zeros at the beginning
+                ""
+            }
             else -> source.toString().replace(".", decimalSeparator)
         }
     }
