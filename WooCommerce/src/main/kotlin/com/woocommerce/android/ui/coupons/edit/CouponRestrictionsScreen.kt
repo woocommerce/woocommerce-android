@@ -127,4 +127,3 @@ private fun SaleItemsSwitch(areSaleItemsExcluded: Boolean, onExcludeSaleItemsCha
         )
     }
 }
-
