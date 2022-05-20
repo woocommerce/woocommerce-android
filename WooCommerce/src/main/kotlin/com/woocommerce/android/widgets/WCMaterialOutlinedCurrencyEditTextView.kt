@@ -25,13 +25,16 @@ import com.woocommerce.android.ui.products.models.CurrencyFormattingParameters
 import com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView.EditTextLayoutMode.FILL
 import com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView.EditTextLayoutMode.WRAP
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.*
+import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.LEFT
+import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.LEFT_SPACE
+import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.RIGHT
+import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.RIGHT_SPACE
 import org.wordpress.android.fluxc.utils.WCCurrencyUtils
 import java.math.BigDecimal
 import java.math.RoundingMode.HALF_UP
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.max
 import kotlin.math.pow
@@ -237,6 +240,7 @@ private class RegularCurrencyEditText(context: Context) : CurrencyEditText(conte
         dstart: Int,
         dend: Int
     ): CharSequence {
+        if (isChangingText) return source.toString().replace(".", decimalSeparator)
         val newValue = StringBuilder(dest).apply {
             replace(dstart, dend, source.subSequence(start, end).toString())
         }.toString().replace(decimalSeparator, ".")
@@ -254,6 +258,10 @@ private class RegularCurrencyEditText(context: Context) : CurrencyEditText(conte
             !supportsNegativeValues && newValue.contains("-") -> {
                 // Prevent negative values if they are not supported
                 ""
+            }
+            supportsEmptyState && supportsNegativeValues && newValue == "-" -> {
+                // Allow entering minus sign
+                source
             }
             newValue.toBigDecimalOrNull() == null -> {
                 // Prevent entering non-valid numbers
@@ -273,34 +281,30 @@ private class RegularCurrencyEditText(context: Context) : CurrencyEditText(conte
         if (isInitialized && !isChangingText) {
             isChangingText = true
 
-            val text = if (text.toString() == "0-") {
-                // The filter allows entering minus at the end of the text if supportsEmptyState is false
-                // Here we fix the ordering of the text
-                val updatedText = "-0"
-                setText(updatedText)
-                setSelection(updatedText.length)
-                updatedText
-            } else text
+            val adjustedText = adjustText(text) ?: ""
 
-            _value.value = text?.toString()?.replace(decimalSeparator, ".")?.toBigDecimalOrNull()
-            if (text != null) {
-                // Trim any leading unwanted zeros
-                val cleanedText = text.trimStart('-').trimStart('0')
-                if (cleanedText.isNotEmpty()) {
-                    val updatedText = "${if (text.startsWith('-')) "-" else ""}$cleanedText"
-                    val currentSelectionPosition = selectionStart
-                    setText(updatedText)
+            _value.value = adjustedText.toString().replace(decimalSeparator, ".").toBigDecimalOrNull()
+            val currentSelectionPosition = selectionStart
 
-                    try {
-                        setSelection(currentSelectionPosition + updatedText.length - text.length)
-                    } catch (e: IndexOutOfBoundsException) {
-                        // Ignore
-                    }
-                }
-            }
+            setText(adjustedText)
+            val selection = (currentSelectionPosition + adjustedText.length - (text?.length ?: 0))
+                .coerceIn(0, adjustedText.length)
+            setSelection(selection)
 
             isChangingText = false
         }
+    }
+
+    private fun adjustText(text: CharSequence?): CharSequence? {
+        if (text == null) return null
+
+        val updatedText = when {
+            text.toString() == "0-" -> "-0"
+            text.matches("^-?0+\\d".toRegex()) -> text.replace("^(-?)0+(\\d)".toRegex(), "$1$2")
+            else -> text
+        }
+
+        return updatedText
     }
 }
 
