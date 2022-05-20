@@ -1964,12 +1964,21 @@
     <string name="coupon_edit_code_helper">Customers need to enter this code to use the coupon.</string>
     <string name="coupon_edit_regenerate_coupon">Regenerate Coupon Code</string>
     <string name="coupon_edit_save_button">Save</string>
-    <string name="coupon_edit_expiry_date">Coupon Expiry Date</string>
     <string name="coupon_edit_add_description">Add Description (Optional)</string>
     <string name="coupon_edit_edit_description">Edit Description</string>
     <string name="coupon_edit_description_editor_title">Coupon Description</string>
     <string name="coupon_edit_add_description_hint">Add the description of the coupon.</string>
+    <string name="coupon_edit_expiry_date">Coupon Expiry Date</string>
+    <string name="coupon_edit_expiry_date_none">None</string>
+    <string name="coupon_edit_expiry_date_dialog_edit">Edit Expiry Date</string>
+    <string name="coupon_edit_expiry_date_dialog_delete">Delete Expiry Date</string>
     <string name="coupon_edit_free_shipping">Include Free Shipping?</string>
+    <string name="coupon_edit_usage_section">Usage Details</string>
+    <string name="coupon_edit_usage_restrictions">Usage Restrictions</string>
+    <string name="coupon_restrictions_minimum_spend_hint">Minimum Spend (%1$s)</string>
+    <string name="coupon_restrictions_maximum_spend_hint">Maximum Spend (%1$s)</string>
+    <string name="coupon_restrictions_limit_per_coupon_hint">Usage Limit Per Coupon</string>
+    <string name="coupon_restrictions_amount_limit_hint">Limit Usage To X Items</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>
