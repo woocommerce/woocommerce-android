@@ -12,6 +12,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.creation.OrderCreationRepository
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -21,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.store.OrderUpdateStore
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -32,7 +34,8 @@ class SimplePaymentsDialogViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val orderUpdateStore: OrderUpdateStore,
     private val networkStatus: NetworkStatus,
-    private val orderMapper: OrderMapper
+    private val orderMapper: OrderMapper,
+    private val orderCreationRepository: OrderCreationRepository
 ) : ScopedViewModel(savedState) {
     final val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     internal var viewState by viewStateLiveData
@@ -59,10 +62,16 @@ class SimplePaymentsDialogViewModel @Inject constructor(
         viewState = viewState.copy(isProgressShowing = true, isDoneButtonEnabled = false)
 
         launch(Dispatchers.IO) {
+            val status = if (orderCreationRepository.isAutoDraftSupported()) {
+                WCOrderStatusModel(statusKey = OrderCreationRepository.AUTO_DRAFT)
+            } else {
+                null
+            }
             val result = orderUpdateStore.createSimplePayment(
                 site = selectedSite.get(),
                 amount = viewState.currentPrice.toString(),
-                isTaxable = true
+                isTaxable = true,
+                status = status
             )
 
             withContext(Dispatchers.Main) {

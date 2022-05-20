@@ -25,9 +25,6 @@ import javax.inject.Inject
 import org.wordpress.android.fluxc.model.order.FeeLine as WCFeeLine
 import org.wordpress.android.fluxc.model.order.ShippingLine as WCShippingLine
 
-private const val AUTO_DRAFT_SUPPORTED_VERSION = "6.3.0"
-private const val AUTO_DRAFT = "auto-draft"
-
 class OrderCreationRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val orderStore: WCOrderStore,
@@ -139,7 +136,7 @@ class OrderCreationRepository @Inject constructor(
         }
     }
 
-    private suspend fun isAutoDraftSupported(): Boolean {
+    suspend fun isAutoDraftSupported(): Boolean {
         val version = withContext(dispatchers.io) {
             wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE)?.version
                 ?: "0.0"
@@ -158,5 +155,10 @@ class OrderCreationRepository @Inject constructor(
         it.id = id
         it.name = name
         it.total = total.toPlainString()
+    }
+
+    companion object {
+        const val AUTO_DRAFT_SUPPORTED_VERSION = "6.3.0"
+        const val AUTO_DRAFT = "auto-draft"
     }
 }

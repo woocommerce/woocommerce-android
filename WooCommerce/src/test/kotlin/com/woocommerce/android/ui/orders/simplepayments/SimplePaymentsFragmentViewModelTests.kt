@@ -44,7 +44,7 @@ class SimplePaymentsFragmentViewModelTests : BaseUnitTest() {
         SimplePaymentsFragmentArgs(order = testOrder).initSavedStateHandle()
 
     private fun initViewModel() {
-        viewModel = SimplePaymentsFragmentViewModel(savedState, mock(), mock())
+        viewModel = SimplePaymentsFragmentViewModel(savedState, mock(), mock(), mock())
     }
 
     @Test
