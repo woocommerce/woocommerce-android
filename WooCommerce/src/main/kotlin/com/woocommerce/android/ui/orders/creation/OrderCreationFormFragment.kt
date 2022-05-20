@@ -297,7 +297,8 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                     layoutManager = LinearLayoutManager(requireContext())
                     adapter = OrderCreationProductsAdapter(
                         onProductClicked = viewModel::onProductClicked,
-                        currencyFormatter = bigDecimalFormatter,
+                        currencyFormatter = currencyFormatter,
+                        currencyCode = viewModel.currentDraft.currency,
                         onIncreaseQuantity = viewModel::onIncreaseProductsQuantity,
                         onDecreaseQuantity = viewModel::onDecreaseProductsQuantity
                     )
