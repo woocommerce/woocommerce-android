@@ -7,6 +7,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.IntrinsicMeasurable
 import androidx.compose.ui.layout.IntrinsicMeasureScope
@@ -32,77 +33,79 @@ fun DialogButtonsRowLayout(
     neutralButton: (@Composable () -> Unit)?,
     modifier: Modifier = Modifier
 ) {
-    val measurePolicy = object : MeasurePolicy {
-        override fun MeasureScope.measure(
-            measurables: List<Measurable>,
-            constraints: Constraints
-        ): MeasureResult {
-            val childConstraints = constraints.copy(minWidth = 0)
-            val confirmPlaceable =
-                measurables.first { it.layoutId == "confirm" }.measure(childConstraints)
-            val dismissPlaceable =
-                measurables.first { it.layoutId == "dismiss" }.measure(childConstraints)
-            val neutralPlaceable =
-                measurables.firstOrNull { it.layoutId == "neutral" }?.measure(childConstraints)
+    val measurePolicy = remember {
+        object : MeasurePolicy {
+            override fun MeasureScope.measure(
+                measurables: List<Measurable>,
+                constraints: Constraints
+            ): MeasureResult {
+                val childConstraints = constraints.copy(minWidth = 0)
+                val confirmPlaceable =
+                    measurables.first { it.layoutId == "confirm" }.measure(childConstraints)
+                val dismissPlaceable =
+                    measurables.first { it.layoutId == "dismiss" }.measure(childConstraints)
+                val neutralPlaceable =
+                    measurables.firstOrNull { it.layoutId == "neutral" }?.measure(childConstraints)
 
-            val placeables = listOfNotNull(neutralPlaceable, dismissPlaceable, confirmPlaceable)
+                val placeables = listOfNotNull(neutralPlaceable, dismissPlaceable, confirmPlaceable)
 
-            val placeablesWidth = placeables.sumOf { it.width }
+                val placeablesWidth = placeables.sumOf { it.width }
 
-            val shouldStackItems = placeablesWidth > constraints.maxWidth
-            val height = if (shouldStackItems) {
-                placeables.sumOf { it.height }
-            } else {
-                placeables.maxOf { it.height }
-            }
-
-            return layout(constraints.maxWidth, height) {
-                if (!shouldStackItems) {
-                    neutralPlaceable?.placeRelative(
-                        x = 0,
-                        y = (height - neutralPlaceable.height) / 2
-                    )
-                    confirmPlaceable.placeRelative(
-                        x = constraints.maxWidth - confirmPlaceable.width,
-                        y = (height - confirmPlaceable.height) / 2
-                    )
-                    dismissPlaceable.placeRelative(
-                        x = constraints.maxWidth - confirmPlaceable.width - dismissPlaceable.width,
-                        y = (height - dismissPlaceable.height) / 2
-                    )
+                val shouldStackItems = placeablesWidth > constraints.maxWidth
+                val height = if (shouldStackItems) {
+                    placeables.sumOf { it.height }
                 } else {
-                    var yPosition = 0
+                    placeables.maxOf { it.height }
+                }
 
-                    placeables.forEach { placeable ->
-                        placeable.placeRelative(
-                            x = constraints.maxWidth - placeable.width,
-                            y = yPosition
+                return layout(constraints.maxWidth, height) {
+                    if (!shouldStackItems) {
+                        neutralPlaceable?.placeRelative(
+                            x = 0,
+                            y = (height - neutralPlaceable.height) / 2
                         )
-                        yPosition += placeable.height
+                        confirmPlaceable.placeRelative(
+                            x = constraints.maxWidth - confirmPlaceable.width,
+                            y = (height - confirmPlaceable.height) / 2
+                        )
+                        dismissPlaceable.placeRelative(
+                            x = constraints.maxWidth - confirmPlaceable.width - dismissPlaceable.width,
+                            y = (height - dismissPlaceable.height) / 2
+                        )
+                    } else {
+                        var yPosition = 0
+
+                        placeables.forEach { placeable ->
+                            placeable.placeRelative(
+                                x = constraints.maxWidth - placeable.width,
+                                y = yPosition
+                            )
+                            yPosition += placeable.height
+                        }
                     }
                 }
             }
-        }
 
-        override fun IntrinsicMeasureScope.minIntrinsicHeight(
-            measurables: List<IntrinsicMeasurable>,
-            width: Int
-        ): Int {
-            return if (measurables.sumOf { it.maxIntrinsicWidth(Constraints.Infinity) } > width) {
-                measurables.sumOf { it.minIntrinsicHeight(width) }
-            } else {
-                measurables.maxOf { it.minIntrinsicHeight(width) }
+            override fun IntrinsicMeasureScope.minIntrinsicHeight(
+                measurables: List<IntrinsicMeasurable>,
+                width: Int
+            ): Int {
+                return if (measurables.sumOf { it.maxIntrinsicWidth(Constraints.Infinity) } > width) {
+                    measurables.sumOf { it.minIntrinsicHeight(width) }
+                } else {
+                    measurables.maxOf { it.minIntrinsicHeight(width) }
+                }
             }
-        }
 
-        override fun IntrinsicMeasureScope.maxIntrinsicHeight(
-            measurables: List<IntrinsicMeasurable>,
-            width: Int
-        ): Int {
-            return if (measurables.sumOf { it.maxIntrinsicWidth(Constraints.Infinity) } > width) {
-                measurables.sumOf { it.maxIntrinsicHeight(width) }
-            } else {
-                measurables.maxOf { it.maxIntrinsicHeight(width) }
+            override fun IntrinsicMeasureScope.maxIntrinsicHeight(
+                measurables: List<IntrinsicMeasurable>,
+                width: Int
+            ): Int {
+                return if (measurables.sumOf { it.maxIntrinsicWidth(Constraints.Infinity) } > width) {
+                    measurables.sumOf { it.maxIntrinsicHeight(width) }
+                } else {
+                    measurables.maxOf { it.maxIntrinsicHeight(width) }
+                }
             }
         }
     }
