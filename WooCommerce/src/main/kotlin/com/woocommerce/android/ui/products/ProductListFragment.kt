@@ -13,11 +13,13 @@ import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import com.woocommerce.android.NavGraphMainDirections
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialFadeThrough
+import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -26,9 +28,11 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
@@ -76,15 +80,10 @@ class ProductListFragment :
     private var _binding: FragmentProductListBinding? = null
     private val binding get() = _binding!!
 
-    /**
-     * Commenting showProductWIPNoticeCard function and code related to it to remove the
-     * banner but leaving the code here since we will be using it in the future to display other features
-     */
-
-//    private val feedbackState: FeedbackState
-//        get() =
-//            FeedbackPrefs.getFeatureFeedbackSettings(PRODUCT_VARIATIONS)?.feedbackState
-//                ?: UNANSWERED
+    private val feedbackState: FeatureFeedbackSettings.FeedbackState
+        get() =
+            FeedbackPrefs.getFeatureFeedbackSettings(FeatureFeedbackSettings.Feature.PRODUCT_VARIATIONS)?.feedbackState
+                ?: FeatureFeedbackSettings.FeedbackState.UNANSWERED
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -392,7 +391,7 @@ class ProductListFragment :
 
     private fun showSkeleton(show: Boolean) {
         if (show) {
-//            showProductWIPNoticeCard(false)
+            showProductWIPNoticeCard(false)
             skeletonView.show(binding.productsRecycler, R.layout.skeleton_product_list, delayed = true)
         } else {
             skeletonView.hide()
@@ -406,30 +405,25 @@ class ProductListFragment :
     private fun showProductList(products: List<Product>) {
         productAdapter.submitList(products)
 
-//        showProductWIPNoticeCard(true)
+        showProductWIPNoticeCard(false)
     }
 
-    /**
-     * Commenting showProductWIPNoticeCard function and code related to it to remove the
-     * banner but leaving the code here since we will be using it in the future to display other features
-     */
+    private fun showProductWIPNoticeCard(show: Boolean) {
+        if (show && feedbackState != FeatureFeedbackSettings.FeedbackState.DISMISSED) {
+            val wipCardTitleId = R.string.product_wip_title_m5
+            val wipCardMessageId = R.string.product_wip_message_variations
 
-//    private fun showProductWIPNoticeCard(show: Boolean) {
-//        if (show && feedbackState != DISMISSED) {
-//            val wipCardTitleId = R.string.product_wip_title_m5
-//            val wipCardMessageId = R.string.product_wip_message_variations
-//
-//            binding.productsWipCard.visibility = View.VISIBLE
-//            binding.productsWipCard.initView(
-//                title = getString(wipCardTitleId),
-//                message = getString(wipCardMessageId),
-//                onGiveFeedbackClick = ::onGiveFeedbackClicked,
-//                onDismissClick = ::onDismissProductWIPNoticeCardClicked
-//            )
-//        } else {
-//            binding.productsWipCard.visibility = View.GONE
-//        }
-//    }
+            binding.productsWipCard.visibility = View.VISIBLE
+            binding.productsWipCard.initView(
+                title = getString(wipCardTitleId),
+                message = getString(wipCardMessageId),
+                onGiveFeedbackClick = ::onGiveFeedbackClicked,
+                onDismissClick = ::onDismissProductWIPNoticeCardClicked
+            )
+        } else {
+            binding.productsWipCard.visibility = View.GONE
+        }
+    }
 
     private fun showProductSortAndFiltersCard(show: Boolean) {
         if (show) {
@@ -509,43 +503,38 @@ class ProductListFragment :
         viewModel.onSortButtonTapped()
     }
 
-    /**
-     * Commenting showProductWIPNoticeCard function and code related to it to remove the
-     * banner but leaving the code here since we will be using it in the future to display other features
-     */
+    private fun onGiveFeedbackClicked() {
+        AnalyticsTracker.track(
+            AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
+            mapOf(
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCTS_VARIATIONS_FEEDBACK,
+                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
+            )
+        )
+        registerFeedbackSetting(FeatureFeedbackSettings.FeedbackState.GIVEN)
+        NavGraphMainDirections
+            .actionGlobalFeedbackSurveyFragment(SurveyType.PRODUCT)
+            .apply { findNavController().navigateSafely(this) }
+    }
 
-//    private fun onGiveFeedbackClicked() {
-//        AnalyticsTracker.track(
-//            FEATURE_FEEDBACK_BANNER,
-//            mapOf(
-//                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCTS_VARIATIONS_FEEDBACK,
-//                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
-//            )
-//        )
-//        registerFeedbackSetting(GIVEN)
-//        NavGraphMainDirections
-//            .actionGlobalFeedbackSurveyFragment(SurveyType.PRODUCT)
-//            .apply { findNavController().navigateSafely(this) }
-//    }
+    private fun onDismissProductWIPNoticeCardClicked() {
+        AnalyticsTracker.track(
+            AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
+            mapOf(
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCTS_VARIATIONS_FEEDBACK,
+                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
+            )
+        )
+        registerFeedbackSetting(FeatureFeedbackSettings.FeedbackState.DISMISSED)
+        showProductWIPNoticeCard(false)
+    }
 
-//    private fun onDismissProductWIPNoticeCardClicked() {
-//        AnalyticsTracker.track(
-//            FEATURE_FEEDBACK_BANNER,
-//            mapOf(
-//                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCTS_VARIATIONS_FEEDBACK,
-//                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
-//            )
-//        )
-//        registerFeedbackSetting(DISMISSED)
-//        showProductWIPNoticeCard(false)
-//    }
-//
-//    private fun registerFeedbackSetting(state: FeedbackState) {
-//        FeatureFeedbackSettings(
-//            PRODUCT_VARIATIONS,
-//            state
-//        ).registerItself()
-//    }
+    private fun registerFeedbackSetting(state: FeatureFeedbackSettings.FeedbackState) {
+        FeatureFeedbackSettings(
+            FeatureFeedbackSettings.Feature.PRODUCT_VARIATIONS,
+            state
+        ).registerItself()
+    }
 
     override fun shouldExpandToolbar(): Boolean {
         return binding.productsRecycler.computeVerticalScrollOffset() == 0 && !viewModel.isSearching()
