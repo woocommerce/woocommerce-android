@@ -123,7 +123,22 @@
         <argument
             android:name="variationsToUpdate"
             app:argType="com.woocommerce.android.model.ProductVariation[]" />
+        <action
+            android:id="@+id/action_variationsBulkUpdateAttrPickerFragment_to_variationsBulkUpdatePriceFragment"
+            app:destination="@id/variationsBulkUpdatePriceFragment">
+            <argument
+                android:name="priceUpdateData"
+                app:argType="com.woocommerce.android.ui.products.variations.VariationsBulkUpdatePriceViewModel$PriceUpdateData" />
+        </action>
     </dialog>
+    <fragment
+        android:id="@+id/variationsBulkUpdatePriceFragment"
+        android:name="com.woocommerce.android.ui.products.variations.VariationsBulkUpdatePriceFragment"
+        android:label="variationsBulkUpdatePriceFragment">
+        <argument
+            android:name="priceUpdateData"
+            app:argType="com.woocommerce.android.ui.products.variations.VariationsBulkUpdatePriceViewModel$PriceUpdateData" />
+    </fragment>
     <fragment
         android:id="@+id/attributeListFragment"
         android:name="com.woocommerce.android.ui.products.variations.attributes.AttributeListFragment"

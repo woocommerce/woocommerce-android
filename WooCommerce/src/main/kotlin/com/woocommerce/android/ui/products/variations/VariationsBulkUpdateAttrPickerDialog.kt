@@ -8,6 +8,7 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED
 import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_DRAGGING
@@ -16,7 +17,9 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HALF_EX
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentVariationsBulkUpdateAttrPickerBinding
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdateAttrPickerViewModel.ViewState
+import com.woocommerce.android.ui.products.variations.VariationsBulkUpdatePriceViewModel.PriceUpdateData
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 
 private const val DEFAULT_BG_DIM = 0.32F
@@ -45,6 +48,7 @@ class VariationsBulkUpdateAttrPickerDialog : WCBottomSheetDialogFragment() {
         val bottomSheetBehavior = getSheetBehavior()
         binding.collapsedStateHeader.setOnClickListener { bottomSheetBehavior.state = STATE_EXPANDED }
         binding.fullscreenStateToolbar.setNavigationOnClickListener { dismiss() }
+        binding.regularPrice.setOnClickListener { viewModel.onRegularPriceUpdateClicked() }
 
         bottomSheetBehavior.apply {
             isFitToContents = false
@@ -54,6 +58,11 @@ class VariationsBulkUpdateAttrPickerDialog : WCBottomSheetDialogFragment() {
         }
         dialog?.window?.setDimAmount(DEFAULT_BG_DIM)
         renderInternalSheetState(bottomSheetBehavior.state)
+        listenForViewStateChange()
+        listenForEvents()
+    }
+
+    private fun listenForViewStateChange() {
         lifecycleScope.launchWhenStarted {
             viewModel.viewState.observe(viewLifecycleOwner) { newState ->
                 renderViewState(newState)
@@ -72,6 +81,23 @@ class VariationsBulkUpdateAttrPickerDialog : WCBottomSheetDialogFragment() {
             VariationsAttrsGroupType.Mixed -> getString(R.string.variations_bulk_update_dialog_price_mixed)
             is VariationsAttrsGroupType.Value -> newState.regularPriceGroupType.value
         }
+    }
+
+    private fun listenForEvents() {
+        viewModel.event.observe(viewLifecycleOwner) {
+            when (it) {
+                is VariationsBulkUpdateAttrPickerViewModel.OpenVariationsBulkUpdatePrice -> {
+                    openRegularPriceUpdate(it.data)
+                }
+            }
+        }
+    }
+
+    private fun openRegularPriceUpdate(data: PriceUpdateData) {
+        VariationsBulkUpdateAttrPickerDialogDirections
+            .actionVariationsBulkUpdateAttrPickerFragmentToVariationsBulkUpdatePriceFragment(data)
+            .run { findNavController().navigateSafely(this) }
+        dismiss()
     }
 
     private fun renderInternalSheetState(bottomSheetState: Int) {
