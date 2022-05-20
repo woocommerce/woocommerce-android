@@ -26,12 +26,20 @@ import java.math.BigDecimal
 @Composable
 fun CouponRestrictionsScreen(viewModel: CouponRestrictionsViewModel) {
     viewModel.viewState.observeAsState().value?.let {
-        CouponRestrictionsScreen(it)
+        CouponRestrictionsScreen(
+            viewState = it,
+            onIndividualUseChanged = viewModel::onIndividualUseChanged,
+            onExcludeSaleItemsChanged = viewModel::onExcludeSaleItemsChanged
+        )
     }
 }
 
 @Composable
-fun CouponRestrictionsScreen(viewState: CouponRestrictionsViewModel.ViewState) {
+fun CouponRestrictionsScreen(
+    viewState: CouponRestrictionsViewModel.ViewState,
+    onIndividualUseChanged: (Boolean) -> Unit,
+    onExcludeSaleItemsChanged: (Boolean) -> Unit
+) {
     val scrollState = rememberScrollState()
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
@@ -57,18 +65,24 @@ fun CouponRestrictionsScreen(viewState: CouponRestrictionsViewModel.ViewState) {
             modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
         )
 
-        IndividualUseSwitch(viewState.restrictions.isForIndividualUse ?: false)
-        SaleItemsSwitch(viewState.restrictions.areSaleItemsExcluded ?: false)
+        IndividualUseSwitch(
+            isForIndividualUse = viewState.restrictions.isForIndividualUse ?: false,
+            onIndividualUseChanged = onIndividualUseChanged
+        )
+        SaleItemsSwitch(
+            areSaleItemsExcluded = viewState.restrictions.areSaleItemsExcluded ?: false,
+            onExcludeSaleItemsChanged = onExcludeSaleItemsChanged
+        )
     }
 }
 
 @Composable
-private fun IndividualUseSwitch(isForIndividualUse: Boolean) {
+private fun IndividualUseSwitch(isForIndividualUse: Boolean, onIndividualUseChanged: (Boolean) -> Unit) {
     Column(Modifier.fillMaxWidth()) {
         WCSwitch(
             text = stringResource(id = R.string.coupon_restrictions_individual_use),
             checked = isForIndividualUse,
-            onCheckedChange = {},
+            onCheckedChange = onIndividualUseChanged,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = dimensionResource(id = R.dimen.major_100))
@@ -89,12 +103,12 @@ private fun IndividualUseSwitch(isForIndividualUse: Boolean) {
 }
 
 @Composable
-private fun SaleItemsSwitch(areSaleItemsExcluded: Boolean) {
+private fun SaleItemsSwitch(areSaleItemsExcluded: Boolean, onExcludeSaleItemsChanged: (Boolean) -> Unit) {
     Column(Modifier.fillMaxWidth()) {
         WCSwitch(
             text = stringResource(id = R.string.coupon_restrictions_exclude_sale_items),
             checked = areSaleItemsExcluded,
-            onCheckedChange = {},
+            onCheckedChange = onExcludeSaleItemsChanged,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = dimensionResource(id = R.dimen.major_100))
