@@ -47,8 +47,8 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
 
         when (mode) {
             Mode.OrderEdit -> {
-                binding.orderStatusHeader.text
-                order.getBillingName(context.getString(R.string.orderdetail_customer_name_default))
+                binding.orderStatusHeader.text =
+                    order.getBillingName(context.getString(R.string.orderdetail_customer_name_default))
             }
             Mode.OrderCreation -> {
                 binding.orderStatusHeader.isVisible = false
