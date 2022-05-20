@@ -25,13 +25,16 @@ import com.woocommerce.android.ui.products.models.CurrencyFormattingParameters
 import com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView.EditTextLayoutMode.FILL
 import com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView.EditTextLayoutMode.WRAP
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.*
+import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.LEFT
+import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.LEFT_SPACE
+import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.RIGHT
+import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.RIGHT_SPACE
 import org.wordpress.android.fluxc.utils.WCCurrencyUtils
 import java.math.BigDecimal
 import java.math.RoundingMode.HALF_UP
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.max
 import kotlin.math.pow
@@ -242,7 +245,7 @@ private class RegularCurrencyEditText(context: Context) : CurrencyEditText(conte
         }.toString().replace(decimalSeparator, ".")
 
         return when {
-            !supportsEmptyState && (newValue.isEmpty() || newValue == "-") -> {
+            !supportsEmptyState && (newValue.isEmpty()) -> {
                 // Prevent clearing the field if supportsEmptyState is false
                 if (source.isEmpty()) "0" else ""
             }
@@ -270,17 +273,31 @@ private class RegularCurrencyEditText(context: Context) : CurrencyEditText(conte
 
     @Suppress("TooGenericExceptionCaught", "NestedBlockDepth", "SwallowedException")
     override fun onTextChanged(text: CharSequence?, start: Int, lengthBefore: Int, lengthAfter: Int) {
+        fun changeText(updatedText: String) {
+            setText(updatedText)
+            setSelection(updatedText.length)
+        }
+
         if (isInitialized && !isChangingText) {
             isChangingText = true
 
-            val text = if (text.toString() == "0-") {
-                // The filter allows entering minus at the end of the text if supportsEmptyState is false
-                // Here we fix the ordering of the text
-                val updatedText = "-0"
-                setText(updatedText)
-                setSelection(updatedText.length)
-                updatedText
-            } else text
+            val text = when (text.toString()) {
+                "0-" -> {
+                    // The filter allows entering minus at the end of the text if supportsEmptyState is false
+                    // Here we fix the ordering of the text
+                    "-0".also { changeText(it) }
+                }
+                "-" -> {
+                    // The filter allows entering minus without a number
+                    // Here we fix based on supportsEmptyState value
+                    if (supportsEmptyState) {
+                        ""
+                    } else {
+                        "0"
+                    }.also { changeText(it) }
+                }
+                else -> text
+            }
 
             _value.value = text?.toString()?.replace(decimalSeparator, ".")?.toBigDecimalOrNull()
             if (text != null) {
