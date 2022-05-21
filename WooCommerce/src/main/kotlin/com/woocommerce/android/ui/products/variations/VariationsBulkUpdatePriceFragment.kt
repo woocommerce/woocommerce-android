@@ -78,7 +78,6 @@ class VariationsBulkUpdatePriceFragment : BaseFragment(R.layout.fragment_variati
         }
     }
 
-
     private fun setupPriceInputField(currency: String, isCurrencyPrefix: Boolean) {
         with(binding.price) {
             if (isCurrencyPrefix) {

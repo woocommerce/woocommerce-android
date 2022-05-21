@@ -25,6 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.math.BigDecimal
 
 private const val DEFAULT_BG_DIM = 0.32F
+private const val HALF_EXPANDED_RATIO = 0.5F
 private const val KEY_EXTRA_SHEET_STATE = "key_sheet_state"
 
 @AndroidEntryPoint
@@ -56,7 +57,7 @@ class VariationsBulkUpdateAttrPickerDialog : WCBottomSheetDialogFragment() {
         bottomSheetBehavior.apply {
             isFitToContents = false
             addBottomSheetCallback(sheetCallback)
-            halfExpandedRatio = 0.5f
+            halfExpandedRatio = HALF_EXPANDED_RATIO
             state = savedInstanceState?.getInt(KEY_EXTRA_SHEET_STATE, STATE_HALF_EXPANDED) ?: STATE_HALF_EXPANDED
         }
         dialog?.window?.setDimAmount(DEFAULT_BG_DIM)

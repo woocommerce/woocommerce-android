@@ -29,7 +29,6 @@ class VariationsBulkUpdateAttrPickerViewModel @Inject constructor(
     savedState: SavedStateHandle,
     parameterRepository: ParameterRepository,
 ) : ScopedViewModel(savedState) {
-
     private val args: VariationsBulkUpdateAttrPickerDialogArgs by savedState.navArgs()
 
     private val parameters: SiteParameters by lazy {

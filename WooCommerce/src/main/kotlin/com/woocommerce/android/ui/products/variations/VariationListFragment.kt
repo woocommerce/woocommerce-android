@@ -275,7 +275,7 @@ class VariationListFragment :
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when(item.itemId) {
+        return when (item.itemId) {
             R.id.menu_bulk_update -> {
                 viewModel.onBulkUpdateClicked()
                 true
