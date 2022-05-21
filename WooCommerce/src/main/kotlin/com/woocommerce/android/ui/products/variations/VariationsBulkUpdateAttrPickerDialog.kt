@@ -7,7 +7,6 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED
@@ -18,6 +17,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentVariationsBulkUpdateAttrPickerBinding
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.ui.products.variations.VariationsBulkUpdateAttrPickerViewModel.OpenVariationsBulkUpdatePrice
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdateAttrPickerViewModel.ViewState
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdatePriceViewModel.PriceUpdateData
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
@@ -67,11 +67,7 @@ class VariationsBulkUpdateAttrPickerDialog : WCBottomSheetDialogFragment() {
     }
 
     private fun listenForViewStateChange() {
-        lifecycleScope.launchWhenStarted {
-            viewModel.viewState.observe(viewLifecycleOwner) { newState ->
-                renderViewState(newState)
-            }
-        }
+        viewModel.viewState.observe(viewLifecycleOwner, ::renderViewState)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -86,11 +82,7 @@ class VariationsBulkUpdateAttrPickerDialog : WCBottomSheetDialogFragment() {
             is ValuesGroupType.Common -> {
                 val price = newState.regularPriceGroupType.data as? BigDecimal?
                 val currency = newState.currency
-                if (price != null && currency != null) {
-                    formatPrice(value = price, currency, isCurrencyPrefix = newState.isCurrencyPrefix)
-                } else {
-                    ""
-                }
+                if (price != null && currency != null) formatPrice(price, currency, newState.isCurrencyPrefix) else ""
             }
         }
     }
@@ -98,9 +90,7 @@ class VariationsBulkUpdateAttrPickerDialog : WCBottomSheetDialogFragment() {
     private fun listenForEvents() {
         viewModel.event.observe(viewLifecycleOwner) {
             when (it) {
-                is VariationsBulkUpdateAttrPickerViewModel.OpenVariationsBulkUpdatePrice -> {
-                    openRegularPriceUpdate(it.data)
-                }
+                is OpenVariationsBulkUpdatePrice -> openRegularPriceUpdate(it.data)
             }
         }
     }
