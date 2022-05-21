@@ -21,10 +21,13 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdateAttrPickerViewModel.ViewState
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdatePriceViewModel.PriceUpdateData
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
+import dagger.hilt.android.AndroidEntryPoint
+import java.math.BigDecimal
 
 private const val DEFAULT_BG_DIM = 0.32F
 private const val KEY_EXTRA_SHEET_STATE = "key_sheet_state"
 
+@AndroidEntryPoint
 class VariationsBulkUpdateAttrPickerDialog : WCBottomSheetDialogFragment() {
     private var _binding: FragmentVariationsBulkUpdateAttrPickerBinding? = null
     private val binding get() = _binding!!
@@ -77,9 +80,17 @@ class VariationsBulkUpdateAttrPickerDialog : WCBottomSheetDialogFragment() {
 
     private fun renderViewState(newState: ViewState) {
         binding.priceSubtitle.text = when (newState.regularPriceGroupType) {
-            VariationsAttrsGroupType.None -> getString(R.string.variations_bulk_update_dialog_price_none)
-            VariationsAttrsGroupType.Mixed -> getString(R.string.variations_bulk_update_dialog_price_mixed)
-            is VariationsAttrsGroupType.Value -> newState.regularPriceGroupType.value
+            ValuesGroupType.None -> getString(R.string.variations_bulk_update_dialog_price_none)
+            ValuesGroupType.Mixed -> getString(R.string.variations_bulk_update_dialog_price_mixed)
+            is ValuesGroupType.Common -> {
+                val price = newState.regularPriceGroupType.data as? BigDecimal?
+                val currency = newState.currency
+                if (price != null && currency != null) {
+                    formatPrice(value = price, currency, isCurrencyPrefix = newState.isCurrencyPrefix)
+                } else {
+                    ""
+                }
+            }
         }
     }
 
