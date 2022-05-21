@@ -1471,6 +1471,9 @@
     <string name="variations_bulk_update_price_info">Price will be updated for %d variations</string>
     <string name="variations_bulk_update_current_price">Current price is %s</string>
     <string name="variations_bulk_update_current_prices_mixed">Current prices are mixed</string>
+    <string name="variations_bulk_update_error">Something went wrong. Please try again.</string>
+    <string name="variations_bulk_update_regular_prices_success">Updated Regular Prices.</string>
+    <string name="variations_bulk_update_regular_sale_prices_success">Updated Sale Prices.</string>
 
     <!--
         Product images
