@@ -5,7 +5,7 @@ import kotlinx.parcelize.Parcelize
 import java.io.Serializable
 
 /**
- * Represent states of the [Collection] elements
+ * Names states of [Collection] elements.
  */
 sealed class ValuesGroupType : Parcelable {
     /**

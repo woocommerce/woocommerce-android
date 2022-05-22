@@ -53,13 +53,11 @@ class VariationsBulkUpdatePriceViewModel @Inject constructor(
         launch(dispatchers.io) {
             val productId = variationsToUpdate.first().remoteProductId
             val variationsIds = variationsToUpdate.map { it.remoteVariationId }
-            // TODO: show progress bar
             val result = when (viewState.priceType) {
                 PriceType.Regular -> variationRepository.bulkUpdateVariations(productId, variationsIds, viewState.price)
                 PriceType.Sale -> variationRepository.bulkUpdateVariations(productId, variationsIds, viewState.price)
             }
             val snackText = if (result) {
-                // TODO: use different text for sale price
                 R.string.variations_bulk_update_regular_prices_success
             } else {
                 R.string.variations_bulk_update_error
