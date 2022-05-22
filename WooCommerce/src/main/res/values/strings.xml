@@ -1958,6 +1958,7 @@
     <string name="coupon_details_menu_edit">Edit Coupon</string>
     <string name="coupon_edit_screen_title">Edit %1$s</string>
     <string name="coupon_edit_details_section">Coupon Details</string>
+    <string name="coupon_edit_conditions_section">Apply this coupon to</string>
     <string name="coupon_edit_amount_hint">Amount (%1$s)</string>
     <string name="coupon_edit_amount_percentage_helper">Set the percentage of the discount you want to offer.</string>
     <string name="coupon_edit_amount_rate_helper">Set the amount of the discount you want to offer.</string>
@@ -1984,6 +1985,9 @@
         <item quantity="one">Select %d product</item>
         <item quantity="other">Select %d products</item>
     </plurals>
+    <string name="coupon_conditions_products_all_products_button_title">All products</string>
+    <string name="coupon_conditions_products_select_products_button_title">Select products</string>
+    <string name="coupon_conditions_products_edit_products_button_title">Edit products (%d)</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>
