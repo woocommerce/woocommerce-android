@@ -9,4 +9,5 @@ sealed class EditCouponNavigationTarget : Event() {
         val restrictions: CouponRestrictions,
         val currencyCode: String
     ) : EditCouponNavigationTarget()
+    data class NavigateToProductSelector(val selectedProductIds: List<Long>) : EditCouponNavigationTarget()
 }

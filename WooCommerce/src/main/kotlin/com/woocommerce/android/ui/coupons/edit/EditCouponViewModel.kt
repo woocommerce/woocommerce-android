@@ -6,10 +6,12 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.Coupon.CouponRestrictions
 import com.woocommerce.android.ui.coupons.CouponRepository
+import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.NavigateToProductSelector
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenCouponRestrictions
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenDescriptionEditor
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.util.CouponUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.navArgs
@@ -109,6 +111,18 @@ class EditCouponViewModel @Inject constructor(
     fun onUsageRestrictionsClick() {
         couponDraft.value?.let {
             triggerEvent(OpenCouponRestrictions(it.restrictions, currencyCode))
+        }
+    }
+
+    fun onAllProductsButtonClick() {
+        couponDraft.value?.let {
+            triggerEvent(NavigateToProductSelector(it.productIds))
+        }
+    }
+
+    fun onEditProductsButtonClick() {
+        couponDraft.value?.let {
+            triggerEvent(NavigateToProductSelector(it.productIds))
         }
     }
 

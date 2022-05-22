@@ -73,21 +73,25 @@ fun EditCouponScreen(viewModel: EditCouponViewModel) {
             onDescriptionButtonClick = viewModel::onDescriptionButtonClick,
             onExpiryDateChanged = viewModel::onExpiryDateChanged,
             onFreeShippingChanged = viewModel::onFreeShippingChanged,
-            onUsageRestrictionsClick = viewModel::onUsageRestrictionsClick
+            onUsageRestrictionsClick = viewModel::onUsageRestrictionsClick,
+            onAllProductsButtonClick = viewModel::onAllProductsButtonClick,
+            onEditProductsButtonClick = viewModel::onEditProductsButtonClick
         )
     }
 }
 
 @Composable
 fun EditCouponScreen(
-    viewState: EditCouponViewModel.ViewState,
+    viewState: ViewState,
     onAmountChanged: (BigDecimal?) -> Unit = {},
     onCouponCodeChanged: (String) -> Unit = {},
     onRegenerateCodeClick: () -> Unit = {},
     onDescriptionButtonClick: () -> Unit = {},
     onExpiryDateChanged: (Date?) -> Unit = {},
     onFreeShippingChanged: (Boolean) -> Unit = {},
-    onUsageRestrictionsClick: () -> Unit = {}
+    onUsageRestrictionsClick: () -> Unit = {},
+    onAllProductsButtonClick: () -> Unit = {},
+    onEditProductsButtonClick: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -107,7 +111,7 @@ fun EditCouponScreen(
             onExpiryDateChanged = onExpiryDateChanged,
             onFreeShippingChanged = onFreeShippingChanged
         )
-        ConditionsSection(viewState)
+        ConditionsSection(viewState, onAllProductsButtonClick, onEditProductsButtonClick)
         UsageRestrictionsSection(viewState, onUsageRestrictionsClick)
         WCColoredButton(
             onClick = { /*TODO*/ },
@@ -173,14 +177,45 @@ private fun DetailsSection(
 
 @Composable
 @Suppress("UnusedPrivateMember")
-private fun ConditionsSection(viewState: EditCouponViewModel.ViewState) {
-    /*TODO*/
+private fun ConditionsSection(
+    viewState: ViewState,
+    onAllProductsButtonClick: () -> Unit,
+    onEditProductsButtonClick: () -> Unit
+) {
+    Text(
+        text = stringResource(id = R.string.coupon_edit_conditions_section).toUpperCase(Locale.current),
+        style = MaterialTheme.typography.body2,
+        color = colorResource(id = R.color.color_on_surface_medium)
+    )
+    WCOutlinedButton(
+        onClick = onAllProductsButtonClick,
+        text = stringResource(id = R.string.coupon_conditions_products_all_products_button_title),
+        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.onSurface),
+        modifier = Modifier.fillMaxWidth()
+    )
+    WCOutlinedButton(
+        onClick = onEditProductsButtonClick,
+        text = stringResource(
+            id = if (viewState.couponDraft.productIds.isEmpty())
+                R.string.coupon_conditions_products_select_products_button_title
+            else R.string.coupon_conditions_products_edit_products_button_title
+        ),
+        leadingIcon = {
+            Icon(
+                imageVector = if (viewState.couponDraft.productIds.isEmpty()) Icons.Filled.Add else Icons.Filled.Edit,
+                contentDescription = null,
+                modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
+            )
+        },
+        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.onSurface),
+        modifier = Modifier.fillMaxWidth()
+    )
 }
 
 @Composable
 @Suppress("UnusedPrivateMember")
 private fun UsageRestrictionsSection(
-    viewState: EditCouponViewModel.ViewState,
+    viewState: ViewState,
     onUsageRestrictionsClick: () -> Unit
 ) {
     Column(
@@ -340,7 +375,7 @@ private fun ExpiryField(dateExpires: Date?, onExpiryDateChanged: (Date?) -> Unit
 private fun EditCouponPreview() {
     WooTheme {
         EditCouponScreen(
-            viewState = EditCouponViewModel.ViewState(
+            viewState = ViewState(
                 couponDraft = Coupon(
                     id = 0L,
                     code = "code",
