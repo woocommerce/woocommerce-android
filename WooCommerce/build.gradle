@@ -349,6 +349,8 @@ dependencies {
     implementation "com.google.android.material:compose-theme-adapter:$composeThemeAdapterVersion"
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$composeVersion"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$composeVersion"
+
+    implementation("io.coil-kt:coil-compose:2.1.0")
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {
