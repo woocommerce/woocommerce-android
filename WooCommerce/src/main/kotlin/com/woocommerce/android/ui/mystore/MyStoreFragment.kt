@@ -170,7 +170,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                 val index = StatsGranularity.values().indexOf(activeGranularity)
                 // Small delay needed to ensure tablayout scrolls to the selected tab if tab is not visible on screen.
                 Handler(Looper.getMainLooper()).postDelayed(
-                    { tabLayout.getTabAt(index)?.select() }, 300
+                    { _tabLayout?.getTabAt(index)?.select() }, 300
                 )
             }
             binding.myStoreStats.loadDashboardStats(activeGranularity)

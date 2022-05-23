@@ -14,6 +14,7 @@ import com.woocommerce.android.extensions.isToday
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.ui.orders.OrderStatusTag
+import java.util.Date
 
 typealias EditStatusClickListener = (View) -> Unit
 
@@ -33,23 +34,16 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
     }
 
     fun updateOrder(order: Order) {
-        with(order.dateCreated) {
-            when (isToday()) {
-                true -> getTimeString(context)
-                false -> getMediumDate(context)
-                null -> ""
-            }.let { dateStr ->
-                binding.orderStatusSubtitle.text =
-                    when (mode) {
-                        Mode.OrderEdit -> context.getString(
-                            R.string.orderdetail_orderstatus_date_and_ordernum,
-                            dateStr,
-                            order.number
-                        )
-                        Mode.OrderCreation -> dateStr
-                    }
+        val dateStr = getFormattedDate(order.dateCreated)
+        binding.orderStatusSubtitle.text =
+            when (mode) {
+                Mode.OrderEdit -> context.getString(
+                    R.string.orderdetail_orderstatus_date_and_ordernum,
+                    dateStr,
+                    order.number
+                )
+                Mode.OrderCreation -> dateStr
             }
-        }
 
         when (mode) {
             Mode.OrderEdit -> {
@@ -57,8 +51,22 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
                     order.getBillingName(context.getString(R.string.orderdetail_customer_name_default))
             }
             Mode.OrderCreation -> {
-                // TODO
                 binding.orderStatusHeader.isVisible = false
+            }
+        }
+    }
+
+    private fun getFormattedDate(date: Date): String {
+        return when (mode) {
+            Mode.OrderCreation -> {
+                date.getMediumDate(context)
+            }
+            Mode.OrderEdit -> {
+                when (date.isToday()) {
+                    true -> date.getTimeString(context)
+                    false -> date.getMediumDate(context)
+                    null -> ""
+                }
             }
         }
     }

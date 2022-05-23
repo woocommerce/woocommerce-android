@@ -17,7 +17,6 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
@@ -74,7 +73,7 @@ class TakePaymentViewModel @Inject constructor(
                         AnalyticsTracker.KEY_PAYMENT_METHOD to VALUE_SIMPLE_PAYMENTS_COLLECT_CASH
                     )
                 )
-                markOrderCompleted()
+                updateOrderStatus(Order.Status.Completed.value)
             }
         } else {
             triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
@@ -99,7 +98,7 @@ class TakePaymentViewModel @Inject constructor(
             )
         )
         launch {
-            markOrderCompleted()
+            updateOrderStatus(Order.Status.Pending.value)
         }
     }
 
@@ -151,16 +150,16 @@ class TakePaymentViewModel @Inject constructor(
         }
     }
 
-    private suspend fun markOrderCompleted() {
-        val status = withContext(dispatchers.io) {
-            orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), CoreOrderStatus.COMPLETED.value)
-                ?: error("Couldn't find a status with key ${CoreOrderStatus.COMPLETED.value}")
+    private suspend fun updateOrderStatus(statusKey: String) {
+        val statusModel = withContext(dispatchers.io) {
+            orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), statusKey)
+                ?: error("Couldn't find a status with key $statusKey")
         }
 
         orderStore.updateOrderStatus(
             navArgs.order.id,
             selectedSite.get(),
-            status
+            statusModel
         ).collect { result ->
             when (result) {
                 is WCOrderStore.UpdateOrderResult.OptimisticUpdateResult -> {

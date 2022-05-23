@@ -4,7 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.Coupon
+import com.woocommerce.android.model.Coupon.CouponRestrictions
 import com.woocommerce.android.ui.coupons.CouponRepository
+import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenCouponRestrictions
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenDescriptionEditor
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.util.CouponUtils
@@ -20,6 +22,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
+import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -91,9 +94,27 @@ class EditCouponViewModel @Inject constructor(
         }
     }
 
+    fun onExpiryDateChanged(expiryDate: Date?) {
+        couponDraft.update {
+            it?.copy(dateExpires = expiryDate)
+        }
+    }
+
     fun onFreeShippingChanged(value: Boolean) {
         couponDraft.update {
             it?.copy(isShippingFree = value)
+        }
+    }
+
+    fun onUsageRestrictionsClick() {
+        couponDraft.value?.let {
+            triggerEvent(OpenCouponRestrictions(it.restrictions, currencyCode))
+        }
+    }
+
+    fun onRestrictionsUpdated(restrictions: CouponRestrictions) {
+        couponDraft.update {
+            it?.copy(restrictions = restrictions)
         }
     }
 

@@ -22,7 +22,6 @@ import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsEvent.FEATURE_FEEDBACK_BANNER
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentProductListBinding
 import com.woocommerce.android.extensions.handleResult
@@ -30,11 +29,6 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
-import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.PRODUCT_VARIATIONS
-import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
-import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
-import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
-import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.UNANSWERED
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -66,6 +60,7 @@ class ProductListFragment :
     }
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     private var _productAdapter: ProductListAdapter? = null
@@ -85,10 +80,10 @@ class ProductListFragment :
     private var _binding: FragmentProductListBinding? = null
     private val binding get() = _binding!!
 
-    private val feedbackState: FeedbackState
+    private val feedbackState: FeatureFeedbackSettings.FeedbackState
         get() =
-            FeedbackPrefs.getFeatureFeedbackSettings(PRODUCT_VARIATIONS)?.feedbackState
-                ?: UNANSWERED
+            FeedbackPrefs.getFeatureFeedbackSettings(FeatureFeedbackSettings.Feature.PRODUCT_VARIATIONS)?.feedbackState
+                ?: FeatureFeedbackSettings.FeedbackState.UNANSWERED
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -410,11 +405,12 @@ class ProductListFragment :
     private fun showProductList(products: List<Product>) {
         productAdapter.submitList(products)
 
-        showProductWIPNoticeCard(true)
+        // set to false to remove the new feature banner temporarily
+        showProductWIPNoticeCard(false)
     }
 
     private fun showProductWIPNoticeCard(show: Boolean) {
-        if (show && feedbackState != DISMISSED) {
+        if (show && feedbackState != FeatureFeedbackSettings.FeedbackState.DISMISSED) {
             val wipCardTitleId = R.string.product_wip_title_m5
             val wipCardMessageId = R.string.product_wip_message_variations
 
@@ -510,13 +506,13 @@ class ProductListFragment :
 
     private fun onGiveFeedbackClicked() {
         AnalyticsTracker.track(
-            FEATURE_FEEDBACK_BANNER,
+            AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
             mapOf(
                 AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCTS_VARIATIONS_FEEDBACK,
                 AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
             )
         )
-        registerFeedbackSetting(GIVEN)
+        registerFeedbackSetting(FeatureFeedbackSettings.FeedbackState.GIVEN)
         NavGraphMainDirections
             .actionGlobalFeedbackSurveyFragment(SurveyType.PRODUCT)
             .apply { findNavController().navigateSafely(this) }
@@ -524,19 +520,19 @@ class ProductListFragment :
 
     private fun onDismissProductWIPNoticeCardClicked() {
         AnalyticsTracker.track(
-            FEATURE_FEEDBACK_BANNER,
+            AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
             mapOf(
                 AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCTS_VARIATIONS_FEEDBACK,
                 AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
             )
         )
-        registerFeedbackSetting(DISMISSED)
+        registerFeedbackSetting(FeatureFeedbackSettings.FeedbackState.DISMISSED)
         showProductWIPNoticeCard(false)
     }
 
-    private fun registerFeedbackSetting(state: FeedbackState) {
+    private fun registerFeedbackSetting(state: FeatureFeedbackSettings.FeedbackState) {
         FeatureFeedbackSettings(
-            PRODUCT_VARIATIONS,
+            FeatureFeedbackSettings.Feature.PRODUCT_VARIATIONS,
             state
         ).registerItself()
     }
