@@ -21,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.BigDecimalTextFieldValueMapper
+import com.woocommerce.android.ui.compose.component.IntTextFieldValueMapper
 import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
 import com.woocommerce.android.ui.compose.component.WCSwitch
 import java.math.BigDecimal
@@ -76,6 +77,17 @@ fun CouponRestrictionsScreen(
             onValueChange = onMaximumAmountChanged,
             label = stringResource(id = R.string.coupon_restrictions_maximum_spend_hint, viewState.currencyCode),
             valueMapper = BigDecimalTextFieldValueMapper(supportsNegativeValue = false),
+            modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100)),
+            // TODO use KeyboardType.Decimal after updating to Compose 1.2.0
+            //  (https://issuetracker.google.com/issues/209835363)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+
+        WCOutlinedTypedTextField(
+            value = viewState.restrictions.usageLimit ?: 0,
+            onValueChange = onUsageLimitPerCouponChanged,
+            label = stringResource(id = R.string.coupon_restrictions_limit_per_coupon_hint),
+            valueMapper = IntTextFieldValueMapper(supportsNegativeValue = false),
             modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100)),
             // TODO use KeyboardType.Decimal after updating to Compose 1.2.0
             //  (https://issuetracker.google.com/issues/209835363)
