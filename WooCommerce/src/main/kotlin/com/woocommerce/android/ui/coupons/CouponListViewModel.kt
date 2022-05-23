@@ -103,6 +103,12 @@ class CouponListViewModel @Inject constructor(
         }
     }
 
+    fun onRefresh() = launch {
+        loadingState.value = LoadingState.Refreshing
+        couponListHandler.fetchCoupons(forceRefresh = true)
+        loadingState.value = LoadingState.Idle
+    }
+
     private fun monitorSearchQuery() {
         viewModelScope.launch {
             searchQuery

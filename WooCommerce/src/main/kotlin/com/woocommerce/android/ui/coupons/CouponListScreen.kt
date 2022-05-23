@@ -31,6 +31,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
@@ -46,6 +49,7 @@ fun CouponListScreen(viewModel: CouponListViewModel) {
     CouponListScreen(
         state = couponListState,
         onCouponClick = viewModel::onCouponClick,
+        onRefresh = viewModel::onRefresh,
         onLoadMore = viewModel::onLoadMore
     )
 }
@@ -54,6 +58,7 @@ fun CouponListScreen(viewModel: CouponListViewModel) {
 fun CouponListScreen(
     state: CouponListState,
     onCouponClick: (Long) -> Unit,
+    onRefresh: () -> Unit,
     onLoadMore: () -> Unit
 ) {
     when {
@@ -61,6 +66,7 @@ fun CouponListScreen(
             coupons = state.coupons,
             loadingState = state.loadingState,
             onCouponClick = onCouponClick,
+            onRefresh = onRefresh,
             onLoadMore = onLoadMore
         )
         state.loadingState == LoadingState.Loading -> CouponListSkeleton()
@@ -100,39 +106,52 @@ private fun CouponList(
     coupons: List<CouponListItem>,
     loadingState: LoadingState,
     onCouponClick: (Long) -> Unit,
+    onRefresh: () -> Unit,
     onLoadMore: () -> Unit
 ) {
-    val listState = rememberLazyListState()
-    LazyColumn(
-        state = listState,
-        modifier = Modifier
-            .background(color = MaterialTheme.colors.surface)
-    ) {
-        itemsIndexed(coupons) { _, coupon ->
-            CouponListItem(
-                coupon = coupon,
-                onCouponClick = onCouponClick
-            )
-            Divider(
-                modifier = Modifier.offset(x = dimensionResource(id = R.dimen.major_100)),
-                color = colorResource(id = R.color.divider_color),
-                thickness = dimensionResource(id = R.dimen.minor_10)
+    SwipeRefresh(
+        state = rememberSwipeRefreshState(isRefreshing = loadingState == LoadingState.Refreshing),
+        onRefresh = onRefresh,
+        indicator = { state, refreshTrigger ->
+            SwipeRefreshIndicator(
+                state = state,
+                refreshTriggerDistance = refreshTrigger,
+                contentColor = MaterialTheme.colors.primary,
             )
         }
-        if (loadingState == LoadingState.Appending) {
-            item {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentWidth()
-                        .padding(vertical = dimensionResource(id = R.dimen.minor_100))
+    ) {
+        val listState = rememberLazyListState()
+        LazyColumn(
+            state = listState,
+            modifier = Modifier
+                .background(color = MaterialTheme.colors.surface)
+        ) {
+            itemsIndexed(coupons) { _, coupon ->
+                CouponListItem(
+                    coupon = coupon,
+                    onCouponClick = onCouponClick
+                )
+                Divider(
+                    modifier = Modifier.offset(x = dimensionResource(id = R.dimen.major_100)),
+                    color = colorResource(id = R.color.divider_color),
+                    thickness = dimensionResource(id = R.dimen.minor_10)
                 )
             }
+            if (loadingState == LoadingState.Appending) {
+                item {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentWidth()
+                            .padding(vertical = dimensionResource(id = R.dimen.minor_100))
+                    )
+                }
+            }
         }
-    }
 
-    InfiniteListHandler(listState = listState) {
-        onLoadMore()
+        InfiniteListHandler(listState = listState) {
+            onLoadMore()
+        }
     }
 }
 
@@ -272,7 +291,7 @@ private fun CouponListPreview() {
         ),
     )
 
-    CouponList(coupons = coupons, loadingState = LoadingState.Idle, {}, {})
+    CouponList(coupons = coupons, loadingState = LoadingState.Idle, {}, {}, {})
 }
 
 @Preview
