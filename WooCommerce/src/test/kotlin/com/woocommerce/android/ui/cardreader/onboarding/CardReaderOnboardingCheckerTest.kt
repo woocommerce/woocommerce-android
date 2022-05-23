@@ -11,6 +11,8 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.cardreader.CardReaderTrackingInfoKeeper
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.PluginIsNotSupportedInTheCountry
+import com.woocommerce.android.ui.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -381,6 +383,23 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             val result = checker.getOnboardingState()
 
             assertThat(result).isEqualTo(CardReaderOnboardingState.WcpayAndStripeActivated)
+        }
+
+    @Test
+    fun `given wcpay and stripe are installed in CA, when get state, then plugin not supported in country returned`() =
+        testBlocking {
+            whenever(wooStore.getStoreCountryCode(site)).thenReturn("CA")
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+                .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+                .thenReturn(buildWCPayPluginInfo(isActive = true))
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isInstanceOf(PluginIsNotSupportedInTheCountry::class.java)
+            assertThat((result as PluginIsNotSupportedInTheCountry).countryCode).isEqualTo("CA")
+            assertThat((result).preferredPlugin).isEqualTo(STRIPE_EXTENSION_GATEWAY)
         }
 
     @Test
