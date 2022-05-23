@@ -56,6 +56,18 @@ class CouponRestrictionsViewModel @Inject constructor(
         }
     }
 
+    fun onIndividualUseChanged(isForIndividualUse: Boolean) {
+        restrictionsDraft.update {
+            it.copy(isForIndividualUse = isForIndividualUse)
+        }
+    }
+
+    fun onExcludeSaleItemsChanged(areSaleItemsExcluded: Boolean) {
+        restrictionsDraft.update {
+            it.copy(areSaleItemsExcluded = areSaleItemsExcluded)
+        }
+    }
+
     data class ViewState(
         val restrictions: CouponRestrictions,
         val currencyCode: String,

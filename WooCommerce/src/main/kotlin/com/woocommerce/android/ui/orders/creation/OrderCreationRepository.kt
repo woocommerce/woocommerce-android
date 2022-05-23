@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.creation
 
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.model.Address
@@ -21,12 +22,10 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.OrderUpdateStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.math.BigDecimal
 import javax.inject.Inject
 import org.wordpress.android.fluxc.model.order.FeeLine as WCFeeLine
 import org.wordpress.android.fluxc.model.order.ShippingLine as WCShippingLine
-
-private const val AUTO_DRAFT_SUPPORTED_VERSION = "6.3.0"
-private const val AUTO_DRAFT = "auto-draft"
 
 class OrderCreationRepository @Inject constructor(
     private val selectedSite: SelectedSite,
@@ -68,6 +67,33 @@ class OrderCreationRepository @Inject constructor(
 
         return when {
             result.isError -> Result.failure(WooException(result.error))
+            else -> Result.success(orderMapper.toAppModel(result.model!!))
+        }
+    }
+
+    suspend fun createSimplePaymentOrder(currentPrice: BigDecimal): Result<Order> {
+        val status = if (isAutoDraftSupported()) {
+            WCOrderStatusModel(statusKey = AUTO_DRAFT)
+        } else {
+            null
+        }
+
+        val result = orderUpdateStore.createSimplePayment(
+            site = selectedSite.get(),
+            amount = currentPrice.toString(),
+            isTaxable = true,
+            status = status
+        )
+
+        return when {
+            result.isError -> {
+                WooLog.e(WooLog.T.ORDERS, "${result.error.type.name}: ${result.error.message}")
+                AnalyticsTracker.track(
+                    AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_FAILED,
+                    mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_AMOUNT)
+                )
+                Result.failure(WooException(result.error))
+            }
             else -> Result.success(orderMapper.toAppModel(result.model!!))
         }
     }
@@ -158,5 +184,10 @@ class OrderCreationRepository @Inject constructor(
         it.id = id
         it.name = name
         it.total = total.toPlainString()
+    }
+
+    companion object {
+        const val AUTO_DRAFT_SUPPORTED_VERSION = "6.3.0"
+        const val AUTO_DRAFT = "auto-draft"
     }
 }
