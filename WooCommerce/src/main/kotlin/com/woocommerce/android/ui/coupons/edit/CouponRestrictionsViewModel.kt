@@ -56,6 +56,18 @@ class CouponRestrictionsViewModel @Inject constructor(
         }
     }
 
+    fun onUsageLimitPerCouponChanged(value: Int) {
+        restrictionsDraft.update {
+            it.copy(usageLimit = value)
+        }
+    }
+
+    fun onLimitUsageToXItemsChanged(value: Int) {
+        restrictionsDraft.update {
+            it.copy(limitUsageToXItems = value)
+        }
+    }
+
     fun onIndividualUseChanged(isForIndividualUse: Boolean) {
         restrictionsDraft.update {
             it.copy(isForIndividualUse = isForIndividualUse)
