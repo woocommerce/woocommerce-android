@@ -94,6 +94,17 @@ fun CouponRestrictionsScreen(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
 
+        WCOutlinedTypedTextField(
+            value = viewState.restrictions.limitUsageToXItems ?: 0,
+            onValueChange = onLimitUsageToXItemsChanged,
+            label = stringResource(id = R.string.coupon_restrictions_amount_limit_hint),
+            valueMapper = IntTextFieldValueMapper(supportsNegativeValue = false),
+            modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100)),
+            // TODO use KeyboardType.Decimal after updating to Compose 1.2.0
+            //  (https://issuetracker.google.com/issues/209835363)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+
         IndividualUseSwitch(
             isForIndividualUse = viewState.restrictions.isForIndividualUse ?: false,
             onIndividualUseChanged = onIndividualUseChanged
