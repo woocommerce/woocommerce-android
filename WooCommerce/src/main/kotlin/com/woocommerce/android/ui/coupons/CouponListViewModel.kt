@@ -8,9 +8,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.coupons.CouponListViewModel.LoadingState.Appending
-import com.woocommerce.android.ui.coupons.CouponListViewModel.LoadingState.Idle
-import com.woocommerce.android.ui.coupons.CouponListViewModel.LoadingState.Loading
 import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -44,12 +41,12 @@ class CouponListViewModel @Inject constructor(
     }
 
     private val searchQuery = savedState.getNullableStateFlow(this, null, clazz = String::class.java)
-    private val isLoading = MutableStateFlow(Idle)
+    private val loadingState = MutableStateFlow(LoadingState.Idle)
 
     val couponsState = combine(
         couponListHandler.couponsFlow
             .map { coupons -> coupons.map { it.toUiModel() } },
-        isLoading,
+        loadingState,
         searchQuery
     ) { coupons, loadingState, searchQuery ->
         CouponListState(
@@ -79,9 +76,9 @@ class CouponListViewModel @Inject constructor(
 
     fun onLoadMore() {
         viewModelScope.launch {
-            isLoading.value = Appending
+            loadingState.value = LoadingState.Appending
             couponListHandler.loadMore()
-            isLoading.value = Idle
+            loadingState.value = LoadingState.Idle
         }
     }
 
@@ -102,7 +99,7 @@ class CouponListViewModel @Inject constructor(
         viewModelScope.launch {
             searchQuery
                 .onEach {
-                    isLoading.value = Loading
+                    loadingState.value = LoadingState.Loading
                 }
                 .debounce {
                     if (it.isNullOrEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS
@@ -115,14 +112,14 @@ class CouponListViewModel @Inject constructor(
                             forceRefresh = index == 0 && query == null // Force refresh on initial loading
                         )
                     } finally {
-                        isLoading.value = Idle
+                        loadingState.value = LoadingState.Idle
                     }
                 }
         }
     }
 
     data class CouponListState(
-        val loadingState: LoadingState = Idle,
+        val loadingState: LoadingState = LoadingState.Idle,
         val searchQuery: String? = null,
         val coupons: List<CouponListItem> = emptyList()
     ) {
