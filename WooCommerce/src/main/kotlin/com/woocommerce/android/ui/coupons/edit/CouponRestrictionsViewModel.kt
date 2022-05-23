@@ -74,7 +74,6 @@ class CouponRestrictionsViewModel @Inject constructor(
         }
     }
 
-
     fun onIndividualUseChanged(isForIndividualUse: Boolean) {
         restrictionsDraft.update {
             it.copy(isForIndividualUse = isForIndividualUse)
