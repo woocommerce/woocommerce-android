@@ -24,7 +24,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import java.math.BigDecimal
 
 class CouponsListViewModelTests : BaseUnitTest() {
     private lateinit var viewModel: CouponListViewModel
@@ -38,9 +37,7 @@ class CouponsListViewModelTests : BaseUnitTest() {
         on { couponsFlow } doReturn couponsStateFlow
     }
     private val wooCommerceStore: WooCommerceStore = mock()
-    private val currencyFormatter: CurrencyFormatter = mock {
-        on { formatCurrency(any<BigDecimal>(), any(), any()) } doAnswer { it.arguments[0].toString() }
-    }
+    private val currencyFormatter: CurrencyFormatter = mock()
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) } doAnswer { it.arguments[0].toString() }
         on { getString(any(), anyVararg()) } doAnswer { it.arguments[0].toString() }
