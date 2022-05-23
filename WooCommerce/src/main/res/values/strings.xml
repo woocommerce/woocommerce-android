@@ -1981,6 +1981,10 @@
     <string name="coupon_restrictions_maximum_spend_hint">Maximum Spend (%1$s)</string>
     <string name="coupon_restrictions_limit_per_coupon_hint">Usage Limit Per Coupon</string>
     <string name="coupon_restrictions_amount_limit_hint">Limit Usage To X Items</string>
+    <string name="coupon_restrictions_individual_use">Individual Use Only</string>
+    <string name="coupon_restrictions_individual_use_hint">Turn this on if the coupon cannot be used in conjunction with other coupons.</string>
+    <string name="coupon_restrictions_exclude_sale_items">Exclude Sale Items</string>
+    <string name="coupon_restrictions_exclude_sale_items_hint">Turn this on if the coupon should not apply to items on sale. Per-item coupons will only work if the item is not on sale. Per-cart coupons will only work if there are items in the cart that are not on sale.</string>
     <plurals name="coupon_select_products_button_title">
         <item quantity="one">Select %d product</item>
         <item quantity="other">Select %d products</item>
