@@ -182,34 +182,45 @@ private fun ConditionsSection(
     onAllProductsButtonClick: () -> Unit,
     onEditProductsButtonClick: () -> Unit
 ) {
-    Text(
-        text = stringResource(id = R.string.coupon_edit_conditions_section).toUpperCase(Locale.current),
-        style = MaterialTheme.typography.body2,
-        color = colorResource(id = R.color.color_on_surface_medium)
-    )
-    WCOutlinedButton(
-        onClick = onAllProductsButtonClick,
-        text = stringResource(id = R.string.coupon_conditions_products_all_products_button_title),
-        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.onSurface),
-        modifier = Modifier.fillMaxWidth()
-    )
-    WCOutlinedButton(
-        onClick = onEditProductsButtonClick,
-        text = stringResource(
-            id = if (viewState.couponDraft.productIds.isEmpty())
-                R.string.coupon_conditions_products_select_products_button_title
-            else R.string.coupon_conditions_products_edit_products_button_title
-        ),
-        leadingIcon = {
-            Icon(
-                imageVector = if (viewState.couponDraft.productIds.isEmpty()) Icons.Filled.Add else Icons.Filled.Edit,
-                contentDescription = null,
-                modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
-            )
-        },
-        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.onSurface),
-        modifier = Modifier.fillMaxWidth()
-    )
+    Column(
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
+        modifier = Modifier
+            .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = stringResource(id = R.string.coupon_edit_conditions_section).toUpperCase(Locale.current),
+            style = MaterialTheme.typography.body2,
+            color = colorResource(id = R.color.color_on_surface_medium)
+        )
+        WCOutlinedButton(
+            onClick = onAllProductsButtonClick,
+            text = stringResource(id = R.string.coupon_conditions_products_all_products_button_title),
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.onSurface),
+            modifier = Modifier.fillMaxWidth()
+        )
+        WCOutlinedButton(
+            onClick = onEditProductsButtonClick,
+            text =
+            if (viewState.couponDraft.productIds.isEmpty()) {
+                stringResource(R.string.coupon_conditions_products_select_products_button_title)
+            } else {
+                stringResource(
+                    R.string.coupon_conditions_products_edit_products_button_title,
+                    viewState.couponDraft.productIds.size
+                )
+            },
+            leadingIcon = {
+                Icon(
+                    imageVector = if (viewState.couponDraft.productIds.isEmpty()) Icons.Filled.Add else Icons.Filled.Edit,
+                    contentDescription = null,
+                    modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
+                )
+            },
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.onSurface),
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
 }
 
 @Composable
