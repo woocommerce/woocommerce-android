@@ -3,10 +3,19 @@ package com.woocommerce.android.ui.coupons
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -27,6 +36,7 @@ import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListItem
 import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListState
+import com.woocommerce.android.ui.coupons.CouponListViewModel.LoadingState
 import com.woocommerce.android.ui.coupons.components.CouponExpirationLabel
 
 @Composable
@@ -49,10 +59,11 @@ fun CouponListScreen(
     when {
         state.coupons.isNotEmpty() -> CouponList(
             coupons = state.coupons,
+            loadingState = state.loadingState,
             onCouponClick = onCouponClick,
             onLoadMore = onLoadMore
         )
-        state.coupons.isEmpty() && state.isLoading -> CouponListSkeleton()
+        state.loadingState == LoadingState.Loading -> CouponListSkeleton()
         state.isSearchOpen -> SearchEmptyList(searchQuery = state.searchQuery.orEmpty())
         else -> EmptyCouponList()
     }
@@ -87,6 +98,7 @@ private fun EmptyCouponList() {
 @Composable
 private fun CouponList(
     coupons: List<CouponListItem>,
+    loadingState: LoadingState,
     onCouponClick: (Long) -> Unit,
     onLoadMore: () -> Unit
 ) {
@@ -106,6 +118,15 @@ private fun CouponList(
                 color = colorResource(id = R.color.divider_color),
                 thickness = dimensionResource(id = R.dimen.minor_10)
             )
+        }
+        if (loadingState == LoadingState.Appending) {
+            item {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentWidth()
+                )
+            }
         }
     }
 
@@ -250,7 +271,7 @@ private fun CouponListPreview() {
         ),
     )
 
-    CouponList(coupons = coupons, {}, {})
+    CouponList(coupons = coupons, loadingState = LoadingState.Idle, {}, {})
 }
 
 @Preview
