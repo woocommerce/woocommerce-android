@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.Date
@@ -51,12 +52,14 @@ class CouponListViewModel @Inject constructor(
     val couponsState = combine(
         flow = couponListHandler.couponsFlow
             .map { coupons -> coupons.map { it.toUiModel() } },
-        flow2 = loadingState.debounce {
-            if (it == LoadingState.Idle) {
-                // When resetting to Idle, wait a bit to make sure the coupons list has been fetched from DB
-                LOADING_STATE_DELAY
-            } else 0L
-        },
+        flow2 = loadingState.withIndex()
+            .debounce {
+                if (it.index != 0 && it.value == LoadingState.Idle) {
+                    // When resetting to Idle, wait a bit to make sure the coupons list has been fetched from DB
+                    LOADING_STATE_DELAY
+                } else 0L
+            }
+            .map { it.value },
         flow3 = searchQuery
     ) { coupons, loadingState, searchQuery ->
         CouponListState(
