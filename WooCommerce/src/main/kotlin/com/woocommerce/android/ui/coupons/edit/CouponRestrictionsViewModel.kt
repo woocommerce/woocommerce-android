@@ -44,13 +44,13 @@ class CouponRestrictionsViewModel @Inject constructor(
         triggerEvent(event)
     }
 
-    fun onMinimumAmountChanged(value: BigDecimal?) {
+    fun onMinimumAmountChanged(value: BigDecimal) {
         restrictionsDraft.update {
             it.copy(minimumAmount = value)
         }
     }
 
-    fun onMaximumAmountChanged(value: BigDecimal?) {
+    fun onMaximumAmountChanged(value: BigDecimal) {
         restrictionsDraft.update {
             it.copy(maximumAmount = value)
         }

@@ -34,8 +34,8 @@ fun CouponRestrictionsScreen(viewModel: CouponRestrictionsViewModel) {
 @Composable
 fun CouponRestrictionsScreen(
     viewState: CouponRestrictionsViewModel.ViewState,
-    onMinimumAmountChanged: (BigDecimal?) -> Unit = {},
-    onMaximumAmountChanged: (BigDecimal?) -> Unit = {}
+    onMinimumAmountChanged: (BigDecimal) -> Unit = {},
+    onMaximumAmountChanged: (BigDecimal) -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
     Column(
