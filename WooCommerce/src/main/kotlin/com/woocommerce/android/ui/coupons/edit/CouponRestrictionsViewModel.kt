@@ -12,6 +12,7 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import java.math.BigDecimal
 import javax.inject.Inject
 
 @HiltViewModel
@@ -41,6 +42,18 @@ class CouponRestrictionsViewModel @Inject constructor(
         } ?: Exit
 
         triggerEvent(event)
+    }
+
+    fun onMinimumAmountChanged(value: BigDecimal) {
+        restrictionsDraft.update {
+            it.copy(minimumAmount = value)
+        }
+    }
+
+    fun onMaximumAmountChanged(value: BigDecimal) {
+        restrictionsDraft.update {
+            it.copy(maximumAmount = value)
+        }
     }
 
     fun onIndividualUseChanged(isForIndividualUse: Boolean) {
