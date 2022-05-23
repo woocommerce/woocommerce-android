@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.Coupon
@@ -106,6 +107,9 @@ class CouponListViewModel @Inject constructor(
     fun onRefresh() = launch {
         loadingState.value = LoadingState.Refreshing
         couponListHandler.fetchCoupons(forceRefresh = true)
+            .onFailure {
+                triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.coupon_list_loading_failed))
+            }
         loadingState.value = LoadingState.Idle
     }
 
@@ -124,7 +128,14 @@ class CouponListViewModel @Inject constructor(
                         couponListHandler.fetchCoupons(
                             searchQuery = query,
                             forceRefresh = index == 0 && query == null // Force refresh on initial loading
-                        )
+                        ).onFailure {
+                            triggerEvent(
+                                MultiLiveEvent.Event.ShowSnackbar(
+                                    if (query.isNullOrEmpty()) R.string.coupon_list_loading_failed
+                                    else R.string.coupon_list_search_failed
+                                )
+                            )
+                        }
                     } finally {
                         loadingState.value = LoadingState.Idle
                     }

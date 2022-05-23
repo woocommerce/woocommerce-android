@@ -24,10 +24,13 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.COUPONS
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.coupons.CouponListViewModel.NavigateToCouponDetailsEvent
 import com.woocommerce.android.ui.feedback.SurveyType
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
@@ -44,6 +47,7 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
             ?: FeatureFeedbackSettings.FeedbackState.UNANSWERED
 
     private val viewModel: CouponListViewModel by viewModels()
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -83,6 +87,7 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is NavigateToCouponDetailsEvent -> navigateToCouponDetails(event.couponId)
+                is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
             }
         }
     }

@@ -1914,6 +1914,8 @@
     <string name="coupon_list_wip_title">View and edit coupons</string>
     <string name="coupon_list_wip_message_enabled">We’ve been working on making it possible to view and edit coupons from your device!</string>
     <string name="coupon_list_view_coupon">View coupon summary</string>
+    <string name="coupon_list_loading_failed">Fetching coupons failed</string>
+    <string name="coupon_list_search_failed">Searching coupons failed</string>
     <string name="coupon_details_heading">Coupon Summary</string>
     <string name="coupon_details_minimum_spend">Minimum spend of %s</string>
     <string name="coupon_details_maximum_spend">Maximum spend of %s</string>
