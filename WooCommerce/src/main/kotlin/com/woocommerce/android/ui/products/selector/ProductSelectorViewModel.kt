@@ -23,7 +23,11 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
@@ -151,7 +155,6 @@ class ProductSelectorViewModel @Inject constructor(
                 }
         }
     }
-
 
     private fun formatCurrency(amount: BigDecimal?, currencyCode: String?): String {
         return if (amount != null) {

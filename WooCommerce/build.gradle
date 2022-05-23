@@ -350,7 +350,7 @@ dependencies {
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$composeVersion"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$composeVersion"
 
-    implementation("io.coil-kt:coil-compose:2.1.0")
+    implementation "io.coil-kt:coil-compose:$coilVersion"
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {

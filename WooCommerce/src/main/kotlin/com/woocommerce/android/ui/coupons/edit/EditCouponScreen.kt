@@ -212,7 +212,10 @@ private fun ConditionsSection(
             },
             leadingIcon = {
                 Icon(
-                    imageVector = if (viewState.couponDraft.productIds.isEmpty()) Icons.Filled.Add else Icons.Filled.Edit,
+                    imageVector = if (viewState.couponDraft.productIds.isEmpty())
+                        Icons.Filled.Add
+                    else
+                        Icons.Filled.Edit,
                     contentDescription = null,
                     modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
                 )

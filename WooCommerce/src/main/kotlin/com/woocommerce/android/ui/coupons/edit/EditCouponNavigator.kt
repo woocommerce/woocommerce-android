@@ -4,10 +4,11 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenCouponRestrictions
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.NavigateToProductSelector
+import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenCouponRestrictions
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenDescriptionEditor
+
 object EditCouponNavigator {
     fun navigate(fragment: Fragment, target: EditCouponNavigationTarget) {
         val navController = fragment.findNavController()

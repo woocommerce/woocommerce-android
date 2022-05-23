@@ -181,7 +181,7 @@ private fun ProductListItem(
     product: ProductListItem,
     onProductClick: (ProductListItem) -> Unit
 ) {
-    Row (
+    Row(
         modifier = Modifier
             .clickable(
                 enabled = true,
@@ -277,7 +277,7 @@ private fun ProductListSkeleton() {
     LazyColumn(Modifier.background(color = MaterialTheme.colors.surface)) {
         repeat(numberOfInboxSkeletonRows) {
             item {
-                Row (
+                Row(
                     modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)),
                     horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_85))
                 ) {
@@ -369,7 +369,7 @@ fun CouponListPreview() {
             id = 3,
             title = "Product 3",
             type = GROUPED,
-            imageUrl = "https://user-images.githubusercontent.com/1657201/168030229-94bc20d4-5334-4ceb-a04f-d94759dcb05c.png",
+            imageUrl = "",
             numVariations = 0,
             stockAndPrice = "Out of stock",
             sku = null

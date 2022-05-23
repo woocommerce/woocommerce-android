@@ -11,7 +11,6 @@ import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenCo
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenDescriptionEditor
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.util.CouponUtils
-import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.navArgs
