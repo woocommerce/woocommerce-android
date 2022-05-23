@@ -8,13 +8,22 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.coupons.CouponListViewModel.LoadingState.Appending
+import com.woocommerce.android.ui.coupons.CouponListViewModel.LoadingState.Idle
+import com.woocommerce.android.ui.coupons.CouponListViewModel.LoadingState.Loading
 import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectIndexed
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.Date
@@ -34,16 +43,16 @@ class CouponListViewModel @Inject constructor(
     }
 
     private val searchQuery = savedState.getNullableStateFlow(this, null, clazz = String::class.java)
-    private val isLoading = MutableStateFlow(false)
+    private val isLoading = MutableStateFlow(Idle)
 
     val couponsState = combine(
         couponListHandler.couponsFlow
             .map { coupons -> coupons.map { it.toUiModel() } },
         isLoading,
         searchQuery
-    ) { coupons, isLoading, searchQuery ->
+    ) { coupons, loadingState, searchQuery ->
         CouponListState(
-            isLoading = isLoading,
+            loadingState = loadingState,
             coupons = coupons,
             searchQuery = searchQuery
         )
@@ -51,14 +60,6 @@ class CouponListViewModel @Inject constructor(
         .asLiveData()
 
     init {
-        if (searchQuery.value == null) {
-            viewModelScope.launch {
-                isLoading.value = true
-                couponListHandler.fetchCoupons(forceRefresh = true)
-                isLoading.value = false
-            }
-        }
-
         monitorSearchQuery()
     }
 
@@ -77,7 +78,9 @@ class CouponListViewModel @Inject constructor(
 
     fun onLoadMore() {
         viewModelScope.launch {
+            isLoading.value = Appending
             couponListHandler.loadMore()
+            isLoading.value = Idle
         }
     }
 
@@ -98,22 +101,27 @@ class CouponListViewModel @Inject constructor(
         viewModelScope.launch {
             searchQuery
                 .onEach {
-                    isLoading.value = true
+                    isLoading.value = Loading
                 }
                 .debounce {
                     if (it.isNullOrEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS
-                }.collectLatest {
+                }
+                .mapLatest { it } // Make sure downstream flow is cancelled on each emit
+                .collectIndexed { index, query ->
                     try {
-                        couponListHandler.fetchCoupons(searchQuery = it)
+                        couponListHandler.fetchCoupons(
+                            searchQuery = query,
+                            forceRefresh = index == 0 && query == null // Force refresh on initial loading
+                        )
                     } finally {
-                        isLoading.value = false
+                        isLoading.value = Idle
                     }
                 }
         }
     }
 
     data class CouponListState(
-        val isLoading: Boolean = false,
+        val loadingState: LoadingState = Idle,
         val searchQuery: String? = null,
         val coupons: List<CouponListItem> = emptyList()
     ) {
@@ -126,6 +134,10 @@ class CouponListViewModel @Inject constructor(
         val summary: String,
         val isActive: Boolean
     )
+
+    enum class LoadingState {
+        Idle, Loading, Refreshing, Appending
+    }
 
     data class NavigateToCouponDetailsEvent(val couponId: Long) : MultiLiveEvent.Event()
 }
