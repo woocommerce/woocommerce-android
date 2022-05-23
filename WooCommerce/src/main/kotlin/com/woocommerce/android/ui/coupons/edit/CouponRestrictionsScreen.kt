@@ -30,8 +30,10 @@ fun CouponRestrictionsScreen(viewModel: CouponRestrictionsViewModel) {
     viewModel.viewState.observeAsState().value?.let {
         CouponRestrictionsScreen(
             viewState = it,
-            viewModel::onMinimumAmountChanged,
-            viewModel::onMaximumAmountChanged,
+            onMinimumAmountChanged = viewModel::onMinimumAmountChanged,
+            onMaximumAmountChanged = viewModel::onMaximumAmountChanged,
+            onUsageLimitPerCouponChanged = viewModel::onUsageLimitPerCouponChanged,
+            onLimitUsageToXItemsChanged = viewModel::onLimitUsageToXItemsChanged,
             onIndividualUseChanged = viewModel::onIndividualUseChanged,
             onExcludeSaleItemsChanged = viewModel::onExcludeSaleItemsChanged
         )
@@ -41,8 +43,10 @@ fun CouponRestrictionsScreen(viewModel: CouponRestrictionsViewModel) {
 @Composable
 fun CouponRestrictionsScreen(
     viewState: CouponRestrictionsViewModel.ViewState,
-    onMinimumAmountChanged: (BigDecimal) -> Unit = {},
-    onMaximumAmountChanged: (BigDecimal) -> Unit = {},
+    onMinimumAmountChanged: (BigDecimal) -> Unit,
+    onMaximumAmountChanged: (BigDecimal) -> Unit,
+    onUsageLimitPerCouponChanged: (Int) -> Unit,
+    onLimitUsageToXItemsChanged: (Int) -> Unit,
     onIndividualUseChanged: (Boolean) -> Unit,
     onExcludeSaleItemsChanged: (Boolean) -> Unit
 ) {
