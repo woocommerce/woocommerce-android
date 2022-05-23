@@ -1,8 +1,13 @@
 package com.woocommerce.android.ui.coupons
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.MenuItem.OnActionExpandListener
+import android.view.View
+import android.view.ViewGroup
 import android.widget.SearchView.OnQueryTextListener
 import androidx.appcompat.widget.SearchView
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -107,22 +112,7 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
                 searchMenuItem.collapseActionView()
             }
         }
-        searchMenuItem.setOnActionExpandListener(object : OnActionExpandListener {
-            override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
-                if (isAdded) {
-                    viewModel.onSearchStateChanged(open = true)
-                }
-                return true
-            }
-
-            override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
-                if (isAdded) {
-                    viewModel.onSearchStateChanged(open = false)
-                }
-                return true
-            }
-        })
-        searchView.setOnQueryTextListener(object : OnQueryTextListener, SearchView.OnQueryTextListener {
+        val textQueryListener = object : OnQueryTextListener, SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 if (isAdded) {
                     viewModel.onSearchQueryChanged(query.orEmpty())
@@ -133,6 +123,23 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
             override fun onQueryTextChange(newText: String?): Boolean {
                 if (isAdded) {
                     viewModel.onSearchQueryChanged(newText.orEmpty())
+                }
+                return true
+            }
+        }
+        searchMenuItem.setOnActionExpandListener(object : OnActionExpandListener {
+            override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+                if (isAdded) {
+                    viewModel.onSearchStateChanged(open = true)
+                    searchView.setOnQueryTextListener(textQueryListener)
+                }
+                return true
+            }
+
+            override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+                if (isAdded) {
+                    searchView.setOnQueryTextListener(null)
+                    viewModel.onSearchStateChanged(open = false)
                 }
                 return true
             }
