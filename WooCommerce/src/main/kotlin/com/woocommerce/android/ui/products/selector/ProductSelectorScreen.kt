@@ -218,7 +218,7 @@ private fun ProductListItem(
                 .crossfade(true)
                 .build(),
             placeholder = painterResource(R.drawable.ic_product),
-            error = painterResource(R.drawable.ic_woo_error_state),
+            error = painterResource(R.drawable.ic_product),
             contentDescription = stringResource(R.string.product_image_content_description),
             contentScale = ContentScale.FillWidth,
             modifier = Modifier
