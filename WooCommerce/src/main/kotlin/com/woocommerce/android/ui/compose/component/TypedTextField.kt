@@ -14,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.KeyboardType
@@ -169,6 +170,24 @@ class NullableBigDecimalTextFieldValueMapper(
         return when {
             clearedText.isEmpty() || clearedText == "-" || clearedText == "." -> clearedText
             clearedText.toBigDecimalOrNull() != null -> clearedText
+            else -> oldText
+        }
+    }
+}
+
+class IntTextFieldValueMapper(
+    private val supportsNegativeValue: Boolean = true
+) : TextFieldValueMapper<Int> {
+    override fun parseText(text: String): Int = text.toInt()
+    override fun printValue(value: Int): String = value.toString()
+    override fun transformText(oldText: String, newText: String): String {
+        val clearedText = if (!supportsNegativeValue) newText.filter { it != '-' } else newText
+        return when {
+            clearedText.isEmpty() || clearedText == "-" -> "0"
+            clearedText.matches("^-?0+\\d".toRegex()) ->
+                // Delete any leading 0s, since this field can't be cleared
+                clearedText.replace("^(-?)0+".toRegex(), "$1")
+            clearedText.toIntOrNull() != null -> clearedText
             else -> oldText
         }
     }
