@@ -125,6 +125,7 @@ private fun CouponList(
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentWidth()
+                        .padding(vertical = dimensionResource(id = R.dimen.minor_100))
                 )
             }
         }
