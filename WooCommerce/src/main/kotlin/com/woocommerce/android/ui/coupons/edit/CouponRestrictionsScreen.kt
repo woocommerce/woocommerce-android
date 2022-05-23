@@ -35,6 +35,7 @@ fun CouponRestrictionsScreen(viewModel: CouponRestrictionsViewModel) {
             onMaximumAmountChanged = viewModel::onMaximumAmountChanged,
             onUsageLimitPerCouponChanged = viewModel::onUsageLimitPerCouponChanged,
             onLimitUsageToXItemsChanged = viewModel::onLimitUsageToXItemsChanged,
+            onUsageLimitPerUserChanged = viewModel::onUsageLimitPerUserChanged,
             onIndividualUseChanged = viewModel::onIndividualUseChanged,
             onExcludeSaleItemsChanged = viewModel::onExcludeSaleItemsChanged
         )
@@ -48,6 +49,7 @@ fun CouponRestrictionsScreen(
     onMaximumAmountChanged: (BigDecimal) -> Unit,
     onUsageLimitPerCouponChanged: (Int) -> Unit,
     onLimitUsageToXItemsChanged: (Int) -> Unit,
+    onUsageLimitPerUserChanged: (Int) -> Unit,
     onIndividualUseChanged: (Boolean) -> Unit,
     onExcludeSaleItemsChanged: (Boolean) -> Unit
 ) {
@@ -98,6 +100,17 @@ fun CouponRestrictionsScreen(
             value = viewState.restrictions.limitUsageToXItems ?: 0,
             onValueChange = onLimitUsageToXItemsChanged,
             label = stringResource(id = R.string.coupon_restrictions_amount_limit_hint),
+            valueMapper = IntTextFieldValueMapper(supportsNegativeValue = false),
+            modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100)),
+            // TODO use KeyboardType.Decimal after updating to Compose 1.2.0
+            //  (https://issuetracker.google.com/issues/209835363)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+
+        WCOutlinedTypedTextField(
+            value = viewState.restrictions.usageLimitPerUser ?: 0,
+            onValueChange = onUsageLimitPerUserChanged,
+            label = stringResource(id = R.string.coupon_restrictions_limit_per_user_hint),
             valueMapper = IntTextFieldValueMapper(supportsNegativeValue = false),
             modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100)),
             // TODO use KeyboardType.Decimal after updating to Compose 1.2.0
