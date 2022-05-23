@@ -36,6 +36,10 @@ class CouponListViewModel @Inject constructor(
     private val couponListHandler: CouponListHandler,
     private val couponUtils: CouponUtils
 ) : ScopedViewModel(savedState) {
+    companion object {
+        private const val LOADING_STATE_DELAY = 100L
+    }
+
     private val currencyCode by lazy {
         wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
     }
@@ -44,18 +48,22 @@ class CouponListViewModel @Inject constructor(
     private val loadingState = MutableStateFlow(LoadingState.Idle)
 
     val couponsState = combine(
-        couponListHandler.couponsFlow
+        flow = couponListHandler.couponsFlow
             .map { coupons -> coupons.map { it.toUiModel() } },
-        loadingState,
-        searchQuery
+        flow2 = loadingState.debounce {
+            if (it == LoadingState.Idle) {
+                // When resetting to Idle, wait a bit to make sure the coupons list has been fetched from DB
+                LOADING_STATE_DELAY
+            } else 0L
+        },
+        flow3 = searchQuery
     ) { coupons, loadingState, searchQuery ->
         CouponListState(
             loadingState = loadingState,
             coupons = coupons,
             searchQuery = searchQuery
         )
-    }
-        .asLiveData()
+    }.asLiveData()
 
     init {
         monitorSearchQuery()
