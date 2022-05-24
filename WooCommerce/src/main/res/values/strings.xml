@@ -1990,7 +1990,6 @@
         <item quantity="other">Select %d products</item>
     </plurals>
     <string name="coupon_conditions_products_all_products_button_title">All products</string>
-    <string name="coupon_conditions_products_select_products_button_title">Select products</string>
     <string name="coupon_conditions_products_edit_products_button_title">Edit products (%d)</string>
 
     <!-- Other -->
