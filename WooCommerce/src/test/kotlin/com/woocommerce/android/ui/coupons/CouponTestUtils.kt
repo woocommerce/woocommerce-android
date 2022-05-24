@@ -26,6 +26,14 @@ object CouponTestUtils {
         )
     }
 
+    fun generateCouponRestrictions() = CouponRestrictions(
+        minimumAmount = BigDecimal.TEN,
+        maximumAmount = BigDecimal("100"),
+        excludedProductIds = emptyList(),
+        excludedCategoryIds = emptyList(),
+        restrictedEmails = emptyList(),
+    )
+
     fun generateTestCouponPerformance(couponId: Long): CouponPerformanceReport {
         return CouponPerformanceReport(
             couponId = couponId,
