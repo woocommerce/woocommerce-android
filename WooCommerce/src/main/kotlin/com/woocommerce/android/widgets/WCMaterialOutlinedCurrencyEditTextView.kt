@@ -12,6 +12,7 @@ import android.util.SparseArray
 import android.util.TypedValue
 import android.view.ViewGroup
 import androidx.annotation.AttrRes
+import androidx.annotation.VisibleForTesting
 import androidx.core.content.res.use
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -190,7 +191,7 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
 }
 
 private abstract class CurrencyEditText(context: Context) : TextInputEditText(context, null, R.attr.editTextStyle) {
-    var supportsEmptyState: Boolean = true
+    open var supportsEmptyState: Boolean = true
     abstract var supportsNegativeValues: Boolean
     abstract val value: LiveData<BigDecimal?>
 
@@ -199,19 +200,35 @@ private abstract class CurrencyEditText(context: Context) : TextInputEditText(co
 }
 
 private class RegularCurrencyEditText(context: Context) : CurrencyEditText(context), InputFilter {
-    private var numberOfDecimals: Int = DEFAULT_DECIMALS_NUMBER
-    private lateinit var decimalSeparator: String
     private var isChangingText = false
     private var isInitialized = false
 
+    private lateinit var decimalSeparator: String
+
     override var supportsNegativeValues: Boolean = false
+        set(value) {
+            field = value
+            if (this::inputHandler.isInitialized) {
+                inputHandler.supportsNegativeValues = value
+            }
+        }
+
+    override var supportsEmptyState: Boolean = super.supportsEmptyState
+        set(value) {
+            field = value
+            if (this::inputHandler.isInitialized) {
+                inputHandler.supportsEmptyState = value
+            }
+        }
+
     private val _value = MutableLiveData<BigDecimal?>()
     override val value: LiveData<BigDecimal?> = _value
+
+    private lateinit var inputHandler: RegularCurrencyInputHandler
 
     override fun initView(formattingParameters: CurrencyFormattingParameters?) {
         decimalSeparator = formattingParameters?.currencyDecimalSeparator
             ?: DecimalFormatSymbols(Locale.getDefault()).decimalSeparator.toString()
-        numberOfDecimals = formattingParameters?.currencyDecimalNumber ?: 2
 
         inputType = InputType.TYPE_CLASS_NUMBER or
             InputType.TYPE_NUMBER_FLAG_DECIMAL or
@@ -219,6 +236,13 @@ private class RegularCurrencyEditText(context: Context) : CurrencyEditText(conte
         val acceptedDigits = "0123456789.$decimalSeparator${if (supportsNegativeValues) "-" else ""}"
         keyListener = DigitsKeyListener.getInstance(acceptedDigits)
         filters = arrayOf(this)
+
+        inputHandler = RegularCurrencyInputHandler(
+            supportsEmptyState = supportsEmptyState,
+            supportsNegativeValues = supportsNegativeValues,
+            decimalSeparator = decimalSeparator,
+            numberOfDecimals = formattingParameters?.currencyDecimalNumber ?: DEFAULT_DECIMALS_NUMBER
+        )
 
         isInitialized = true
         if (!supportsEmptyState) {
@@ -241,6 +265,44 @@ private class RegularCurrencyEditText(context: Context) : CurrencyEditText(conte
         dend: Int
     ): CharSequence {
         if (isChangingText) return source.toString().replace(".", decimalSeparator)
+        return inputHandler.filter(source, start, end, dest, dstart, dend)
+    }
+
+    @Suppress("TooGenericExceptionCaught", "NestedBlockDepth", "SwallowedException")
+    override fun onTextChanged(text: CharSequence?, start: Int, lengthBefore: Int, lengthAfter: Int) {
+        if (isInitialized && !isChangingText) {
+            isChangingText = true
+
+            val adjustedText = inputHandler.adjustText(text)
+
+            _value.value = adjustedText.toString().replace(decimalSeparator, ".").toBigDecimalOrNull()
+            val currentSelectionPosition = selectionStart
+
+            setText(adjustedText)
+            val selection = (currentSelectionPosition + adjustedText.length - (text?.length ?: 0))
+                .coerceIn(0, adjustedText.length)
+            setSelection(selection)
+
+            isChangingText = false
+        }
+    }
+}
+
+@VisibleForTesting
+class RegularCurrencyInputHandler(
+    var supportsEmptyState: Boolean,
+    var supportsNegativeValues: Boolean,
+    val decimalSeparator: String,
+    val numberOfDecimals: Int
+) {
+    fun filter(
+        source: CharSequence,
+        start: Int,
+        end: Int,
+        dest: CharSequence,
+        dstart: Int,
+        dend: Int
+    ): CharSequence {
         val newValue = StringBuilder(dest).apply {
             replace(dstart, dend, source.subSequence(start, end).toString())
         }.toString().replace(decimalSeparator, ".")
@@ -248,7 +310,7 @@ private class RegularCurrencyEditText(context: Context) : CurrencyEditText(conte
         return when {
             !supportsEmptyState && (newValue.isEmpty() || newValue == "-") -> {
                 // Prevent clearing the field if supportsEmptyState is false
-                if (source.isEmpty()) "0" else ""
+                "0"
             }
             !supportsEmptyState && supportsNegativeValues && newValue == "0-" -> {
                 // Allow entering minus sign at the end of the field if supportsEmptyState is false
@@ -276,31 +338,12 @@ private class RegularCurrencyEditText(context: Context) : CurrencyEditText(conte
         }
     }
 
-    @Suppress("TooGenericExceptionCaught", "NestedBlockDepth", "SwallowedException")
-    override fun onTextChanged(text: CharSequence?, start: Int, lengthBefore: Int, lengthAfter: Int) {
-        if (isInitialized && !isChangingText) {
-            isChangingText = true
-
-            val adjustedText = adjustText(text) ?: ""
-
-            _value.value = adjustedText.toString().replace(decimalSeparator, ".").toBigDecimalOrNull()
-            val currentSelectionPosition = selectionStart
-
-            setText(adjustedText)
-            val selection = (currentSelectionPosition + adjustedText.length - (text?.length ?: 0))
-                .coerceIn(0, adjustedText.length)
-            setSelection(selection)
-
-            isChangingText = false
-        }
-    }
-
-    private fun adjustText(text: CharSequence?): CharSequence? {
-        if (text == null) return null
+    fun adjustText(text: CharSequence?): CharSequence {
+        if (text == null) return ""
 
         val updatedText = when {
             text.toString() == "0-" -> "-0"
-            text.matches("^-?0+\\d".toRegex()) -> text.replace("^(-?)0+(\\d)".toRegex(), "$1$2")
+            text.matches("^-?0+\\d+".toRegex()) -> text.replace("^(-?)0+(\\d+)".toRegex(), "$1$2")
             else -> text
         }
 
