@@ -63,6 +63,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     }
 
     @Inject lateinit var crashLogging: CrashLogging
+    @Inject lateinit var fluxCCrashLogger: FluxCCrashLogger
     @Inject lateinit var androidInjector: DispatchingAndroidInjector<Any>
 
     @Inject lateinit var dispatcher: Dispatcher
@@ -118,7 +119,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
         dispatcher.register(this)
 
-        initFluxCCrashLogger()
+        FluxCCrashLoggerProvider.initLogger(fluxCCrashLogger)
 
         AppRatingDialog.init(application)
 
@@ -234,22 +235,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         } else {
             AnalyticsTracker.refreshMetadata(accountStore.account?.userName)
         }
-    }
-
-    private fun initFluxCCrashLogger() {
-        FluxCCrashLoggerProvider.initLogger(object : FluxCCrashLogger {
-            override fun recordEvent(message: String, category: String?) {
-                crashLogging.recordEvent(message, category)
-            }
-
-            override fun recordException(exception: Throwable, category: String?) {
-                crashLogging.recordException(exception, category)
-            }
-
-            override fun sendReport(exception: Throwable?, tags: Map<String, String>, message: String?) {
-                crashLogging.sendReport(exception, tags, message)
-            }
-        })
     }
 
     private fun trackStartupAnalytics() {
