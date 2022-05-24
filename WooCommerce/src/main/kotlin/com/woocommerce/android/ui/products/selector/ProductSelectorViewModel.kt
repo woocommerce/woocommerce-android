@@ -14,6 +14,8 @@ import com.woocommerce.android.ui.products.ProductStockStatus.InStock
 import com.woocommerce.android.ui.products.ProductStockStatus.NotAvailable
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductListItem.SelectionState
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductListItem.SelectionState.PARTIALLY_SELECTED
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductListItem.SelectionState.SELECTED
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductListItem.SelectionState.UNSELECTED
 import com.woocommerce.android.util.CurrencyFormatter
@@ -60,11 +62,10 @@ class ProductSelectorViewModel @Inject constructor(
     ) { products, isLoading, searchQuery, selectedIds ->
         ProductSelectorState(
             isLoading = isLoading,
-            products = products.map { it.toUiModel(selectedIds.contains(it.remoteId)) },
+            products = products.map { it.toUiModel(selectedIds) },
             searchQuery = searchQuery,
         )
-    }
-        .asLiveData()
+    }.asLiveData()
 
     init {
         if (searchQuery.value == null) {
@@ -78,10 +79,25 @@ class ProductSelectorViewModel @Inject constructor(
         monitorSearchQuery()
     }
 
-    private fun Product.toUiModel(isChecked: Boolean): ProductListItem {
+    private fun Product.toUiModel(selectedIds: List<Long>): ProductListItem {
+        fun getProductSelection(): SelectionState {
+            return if (productType == VARIABLE) {
+                val intersection = variationIds.intersect(selectedIds.toSet())
+                if (intersection.isEmpty()) {
+                    UNSELECTED
+                } else if (intersection.size < variationIds.size) {
+                    PARTIALLY_SELECTED
+                } else {
+                    return SELECTED
+                }
+            } else {
+                if (selectedIds.contains(remoteId)) SELECTED else UNSELECTED
+            }
+        }
+
         val stockStatus = when (stockStatus) {
             InStock -> {
-                if (productType > VARIABLE) {
+                if (productType == VARIABLE) {
                     resourceProvider.getString(string.product_stock_status_instock_with_variations, numVariations)
                 } else {
                     val quantity = if (stockQuantity.isInteger()) stockQuantity.toInt() else stockQuantity
@@ -104,7 +120,7 @@ class ProductSelectorViewModel @Inject constructor(
             sku = sku,
             stockAndPrice = stockAndPrice,
             numVariations = numVariations,
-            selectionState = if (isChecked) SELECTED else UNSELECTED
+            selectionState = getProductSelection()
         )
     }
 
