@@ -5,7 +5,6 @@ package com.woocommerce.android.ui.compose.component
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -21,6 +20,8 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -63,6 +64,7 @@ fun DatePickerDialog(
     currentDate: Date?,
     onDateSelected: (Date) -> Unit,
     onDismissRequest: () -> Unit,
+    neutralButton: (@Composable () -> Unit)? = null,
     minDate: Date = GregorianCalendar(DEFAULT_MIN_YEAR, 0, 1).time,
     maxDate: Date = GregorianCalendar(DEFAULT_MAX_YEAR, 0, 1).time,
     dateFormat: DateFormat = SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM),
@@ -73,6 +75,7 @@ fun DatePickerDialog(
         currentDate = currentDate?.toCalendar(),
         onDateSelected = { onDateSelected(it.time) },
         onDismissRequest = onDismissRequest,
+        neutralButton = neutralButton,
         minDate = minDate.toCalendar(),
         maxDate = maxDate.toCalendar(),
         dateFormat = dateFormat,
@@ -86,6 +89,7 @@ fun DatePickerDialog(
     currentDate: Calendar?,
     onDateSelected: (Calendar) -> Unit,
     onDismissRequest: () -> Unit,
+    neutralButton: (@Composable () -> Unit)? = null,
     minDate: Calendar = GregorianCalendar(DEFAULT_MIN_YEAR, 0, 1),
     maxDate: Calendar = GregorianCalendar(DEFAULT_MAX_YEAR, 0, 1),
     dateFormat: DateFormat = SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM),
@@ -95,7 +99,6 @@ fun DatePickerDialog(
         var selectedDate: Calendar by rememberSaveable { mutableStateOf(currentDate ?: Calendar.getInstance()) }
 
         val orientation = LocalConfiguration.current.orientation
-
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             Row(
                 modifier = Modifier
@@ -113,6 +116,7 @@ fun DatePickerDialog(
                     onDateChanged = { selectedDate = it },
                     onSubmitRequest = { onDateSelected(selectedDate) },
                     onDismissRequest = onDismissRequest,
+                    neutralButton = neutralButton,
                     minDate = minDate,
                     maxDate = maxDate,
                     dateFormat = dateFormat
@@ -132,6 +136,7 @@ fun DatePickerDialog(
                     onDateChanged = { selectedDate = it },
                     onSubmitRequest = { onDateSelected(selectedDate) },
                     onDismissRequest = onDismissRequest,
+                    neutralButton = neutralButton,
                     minDate = minDate,
                     maxDate = maxDate,
                     dateFormat = dateFormat
@@ -148,6 +153,7 @@ private fun Any.DatePickerContent(
     onDateChanged: (Calendar) -> Unit,
     onSubmitRequest: () -> Unit,
     onDismissRequest: () -> Unit,
+    neutralButton: (@Composable () -> Unit)?,
     minDate: Calendar,
     maxDate: Calendar,
     dateFormat: DateFormat,
@@ -180,7 +186,11 @@ private fun Any.DatePickerContent(
         )
     }
 
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .verticalScroll(state = rememberScrollState())
+    ) {
         if (isShowingYearSelector) {
             YearSelector(
                 currentDate = selectedDate,
@@ -203,25 +213,31 @@ private fun Any.DatePickerContent(
                 }
             )
         }
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(
-                space = dimensionResource(id = R.dimen.minor_100),
-                alignment = Alignment.End
-            ),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            TextButton(onClick = onDismissRequest) {
-                Text(
-                    text = stringResource(id = android.R.string.cancel),
+        DialogButtonsRowLayout(
+            confirmButton = {
+                TextButton(onClick = onSubmitRequest) {
+                    Text(
+                        text = stringResource(id = android.R.string.ok),
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = onDismissRequest
+                ) {
+                    Text(
+                        text = stringResource(id = android.R.string.cancel),
+                    )
+                }
+            },
+            neutralButton = neutralButton,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = dimensionResource(id = R.dimen.minor_100),
+                    vertical = dimensionResource(id = R.dimen.minor_25)
                 )
-            }
-
-            TextButton(onClick = onSubmitRequest) {
-                Text(
-                    text = stringResource(id = android.R.string.ok),
-                )
-            }
-        }
+        )
     }
 }
 
@@ -244,7 +260,7 @@ private fun CalendarView(
             if (maxDate != null)
                 view.maxDate = maxDate.timeInMillis
 
-            view.date = currentDate.timeInMillis
+            view.setDate(currentDate.timeInMillis, false, true)
 
             view.setOnDateChangeListener { _, year, month, dayOfMonth ->
                 onDateSelected(
@@ -300,7 +316,7 @@ private var Calendar.year
 
 @Preview
 @Composable
-fun DatePickerPreview() {
+private fun InteractiveDatePickerPreview() {
     WooThemeWithBackground {
         var date by remember { mutableStateOf<Date?>(null) }
         var showPicker by remember { mutableStateOf(false) }
