@@ -45,6 +45,8 @@ import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
+import org.wordpress.android.fluxc.logging.FluxCCrashLogger
+import org.wordpress.android.fluxc.logging.FluxCCrashLoggerProvider
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.OnJetpackTimeoutError
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
@@ -115,6 +117,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         AppThemeUtils.setAppTheme()
 
         dispatcher.register(this)
+
+        initFluxCCrashLogger()
 
         AppRatingDialog.init(application)
 
@@ -230,6 +234,23 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         } else {
             AnalyticsTracker.refreshMetadata(accountStore.account?.userName)
         }
+    }
+
+    private fun initFluxCCrashLogger() {
+        FluxCCrashLoggerProvider.initLogger(object : FluxCCrashLogger {
+            override fun recordEvent(message: String, category: String?) {
+                crashLogging.recordEvent(message, category)
+            }
+
+            override fun recordException(exception: Throwable, category: String?) {
+                crashLogging.recordException(exception, category)
+            }
+
+            override fun sendReport(exception: Throwable?, tags: Map<String, String>, message: String?) {
+                crashLogging.sendReport(exception, tags, message)
+            }
+
+        })
     }
 
     private fun trackStartupAnalytics() {
