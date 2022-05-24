@@ -7,6 +7,7 @@ sealed class EditCouponNavigationTarget : Event() {
     data class OpenDescriptionEditor(val currentDescription: String?) : EditCouponNavigationTarget()
     data class OpenCouponRestrictions(
         val restrictions: CouponRestrictions,
-        val currencyCode: String
+        val currencyCode: String,
+        val showLimitUsageToXItems: Boolean = false
     ) : EditCouponNavigationTarget()
 }

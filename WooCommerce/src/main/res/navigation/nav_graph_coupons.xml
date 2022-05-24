@@ -43,5 +43,9 @@
         <argument
             android:name="currencyCode"
             app:argType="string" />
+        <argument
+            android:name="showLimitUsageToXItems"
+            app:argType="boolean"
+            android:defaultValue="false" />
     </fragment>
 </navigation>
