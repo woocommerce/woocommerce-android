@@ -1978,6 +1978,7 @@
     <string name="coupon_restrictions_maximum_spend_hint">Maximum Spend (%1$s)</string>
     <string name="coupon_restrictions_limit_per_coupon_hint">Usage Limit Per Coupon</string>
     <string name="coupon_restrictions_amount_limit_hint">Limit Usage To X Items</string>
+    <string name="coupon_restrictions_limit_per_user_hint">Usage Limit Per User</string>
     <string name="coupon_restrictions_individual_use">Individual Use Only</string>
     <string name="coupon_restrictions_individual_use_hint">Turn this on if the coupon cannot be used in conjunction with other coupons.</string>
     <string name="coupon_restrictions_exclude_sale_items">Exclude Sale Items</string>
