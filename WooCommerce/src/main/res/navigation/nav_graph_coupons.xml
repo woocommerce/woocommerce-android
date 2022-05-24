@@ -29,5 +29,22 @@
         <argument
             android:name="couponId"
             app:argType="long" />
+        <action
+            android:id="@+id/action_editCouponFragment_to_couponRestrictionsFragment"
+            app:destination="@id/couponRestrictionsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/couponRestrictionsFragment"
+        android:name="com.woocommerce.android.ui.coupons.edit.CouponRestrictionsFragment"
+        android:label="CouponRestrictionsFragment" >
+        <argument
+            android:name="restrictions"
+            app:argType="com.woocommerce.android.model.Coupon$CouponRestrictions" />
+        <argument
+            android:name="currencyCode"
+            app:argType="string" />
+        <argument
+            android:name="showLimitUsageToXItems"
+            app:argType="boolean" />
     </fragment>
 </navigation>

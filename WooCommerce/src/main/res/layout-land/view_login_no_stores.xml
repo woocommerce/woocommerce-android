@@ -1,40 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/no_stores_view"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/login_user_info"
-    app:layout_constraintVertical_bias="0.0" >
+    android:layout_height="wrap_content">
 
-    <com.google.android.material.textview.MaterialTextView
-        style="@style/Woo.TextView.Subtitle1"
-        android:id="@+id/no_stores_view_text"
+    <LinearLayout
+        android:id="@+id/no_stores_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/major_100"
-        android:layout_marginStart="@dimen/major_100"
-        android:layout_marginEnd="@dimen/major_100"
-        android:layout_marginBottom="0dp"
-        android:gravity="center_horizontal"
-        android:drawablePadding="@dimen/major_100"
-        android:lineSpacingExtra="@dimen/line_spacing_extra_50"
-        android:text="@string/login_no_stores"
-        android:textStyle="bold" />
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/login_user_info"
+        app:layout_constraintVertical_bias="0.0">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_secondary_action"
-        style="@style/Woo.Button.TextButton.Secondary"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/major_100"
-        android:layout_marginStart="@dimen/major_100"
-        android:layout_marginEnd="@dimen/major_100"
-        android:text="@string/login_jetpack_what_is"
-        android:textAllCaps="false"
-        android:textAlignment="center" />
-</LinearLayout>
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/no_stores_view_text"
+            style="@style/Woo.TextView.Subtitle1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/major_100"
+            android:layout_marginEnd="@dimen/major_100"
+            android:layout_marginBottom="0dp"
+            android:drawablePadding="@dimen/major_100"
+            android:gravity="center_horizontal"
+            android:lineSpacingExtra="@dimen/line_spacing_extra_50"
+            android:text="@string/login_no_stores"
+            android:textStyle="bold" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_secondary_action"
+            style="@style/Woo.Button.TextButton.Secondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/major_100"
+            android:layout_marginEnd="@dimen/major_100"
+            android:text="@string/login_jetpack_what_is"
+            android:textAlignment="center"
+            android:textAllCaps="false" />
+    </LinearLayout>
+</merge>

@@ -11,6 +11,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STATE_
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.orders.creation.OrderCreationRepository
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -34,7 +35,8 @@ import javax.inject.Inject
 class SimplePaymentsFragmentViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val simplePaymentsRepository: SimplePaymentsRepository,
-    private val networkStatus: NetworkStatus
+    private val networkStatus: NetworkStatus,
+    private val orderCreationRepository: OrderCreationRepository
 ) : ScopedViewModel(savedState) {
     final val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     internal final var viewState by viewStateLiveData
@@ -168,6 +170,16 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
         }
     }
 
+    fun deleteDraftOrder(order: Order) {
+        launch(Dispatchers.IO) {
+            orderCreationRepository.deleteDraftOrder(order)
+        }
+    }
+
+    fun onBackButtonClicked() {
+        triggerEvent(CancelSimplePayment)
+    }
+
     @Parcelize
     data class ViewState(
         val chargeTaxes: Boolean = false,
@@ -181,4 +193,5 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
 
     object ShowCustomerNoteEditor : MultiLiveEvent.Event()
     object ShowTakePaymentScreen : MultiLiveEvent.Event()
+    object CancelSimplePayment : MultiLiveEvent.Event()
 }

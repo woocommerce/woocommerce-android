@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.coupons
 
 import com.woocommerce.android.model.Coupon
+import com.woocommerce.android.model.Coupon.CouponRestrictions
 import com.woocommerce.android.model.CouponPerformanceReport
 import java.math.BigDecimal
 import java.util.Date
@@ -11,17 +12,27 @@ object CouponTestUtils {
             id = couponId,
             code = "code1337",
             amount = BigDecimal.TEN,
-            minimumAmount = BigDecimal.TEN,
-            maximumAmount = BigDecimal("100"),
             dateCreatedGmt = Date(),
             type = Coupon.Type.FixedCart,
-            categories = emptyList(),
-            products = emptyList(),
-            excludedProducts = emptyList(),
-            excludedCategories = emptyList(),
-            restrictedEmails = emptyList()
+            categoryIds = emptyList(),
+            productIds = emptyList(),
+            restrictions = CouponRestrictions(
+                minimumAmount = BigDecimal.TEN,
+                maximumAmount = BigDecimal("100"),
+                excludedProductIds = emptyList(),
+                excludedCategoryIds = emptyList(),
+                restrictedEmails = emptyList(),
+            )
         )
     }
+
+    fun generateCouponRestrictions() = CouponRestrictions(
+        minimumAmount = BigDecimal.TEN,
+        maximumAmount = BigDecimal("100"),
+        excludedProductIds = emptyList(),
+        excludedCategoryIds = emptyList(),
+        restrictedEmails = emptyList(),
+    )
 
     fun generateTestCouponPerformance(couponId: Long): CouponPerformanceReport {
         return CouponPerformanceReport(

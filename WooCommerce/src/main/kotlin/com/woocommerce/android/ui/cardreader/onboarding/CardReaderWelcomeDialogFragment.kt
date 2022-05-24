@@ -25,8 +25,6 @@ class CardReaderWelcomeDialogFragment : DialogFragment(R.layout.card_reader_welc
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         val binding = CardReaderWelcomeDialogBinding.bind(view)
         initObservers(binding)
     }

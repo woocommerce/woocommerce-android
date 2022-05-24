@@ -2,6 +2,7 @@ package com.woocommerce.android.widgets
 
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.CallSuper
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.R
@@ -14,9 +15,8 @@ import org.wordpress.android.util.DisplayUtils
  * sheet on large landscape tablets.
  */
 open class WCBottomSheetDialogFragment : BottomSheetDialogFragment() {
+    @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         if (DisplayUtils.isXLargeTablet(requireContext()) && DisplayUtils.isLandscape(requireContext())) {
             dialog?.setOnShowListener {
                 val dialog = it as BottomSheetDialog

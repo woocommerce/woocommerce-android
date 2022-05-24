@@ -1,11 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-04-25 21:54:18+0000
+Translation-Revision-Date: 2022-05-12 12:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="coupon_details_restricted_emails">Restringido a clientes com e-mails: %1$s</string>
+    <string name="coupon_details_excludes_sale_items">Excluir itens em promoção</string>
+    <string name="coupon_details_allows_free_shipping">Permite frete grátis</string>
+    <string name="coupon_details_individual_use_only">Uso individual apenas</string>
+    <string name="coupon_details_usage_limit_per_items_single">Limitado a %1$d item no carrinho</string>
+    <string name="coupon_details_usage_limit_per_items_multiple">Limitado a %1$d itens no carrinho</string>
+    <string name="coupon_details_usage_limit_per_coupon_single">Pode ser usado %1$d vez</string>
+    <string name="coupon_details_usage_limit_per_coupon_multiple">Pode ser usado %1$d vezes</string>
+    <string name="coupon_details_usage_limit_per_user_single">%1$d uso por usuário</string>
+    <string name="coupon_details_usage_limit_per_user_multiple">%1$d usos por usuário</string>
+    <string name="coupon_details_delete_successful">Cupom excluído</string>
+    <string name="coupon_details_delete_failure">Falha ao excluir o cupom</string>
+    <string name="coupon_details_delete_confirmation">Tem certeza de que deseja excluir este cupom?</string>
+    <string name="coupon_details_delete">Excluir cupom</string>
+    <string name="inbox_screen_sync_error">Erro ao sincronizar caixa de entrada</string>
+    <string name="inbox_note_dismiss_all_notes">Ignorar tudo</string>
+    <string name="inbox_screen_title">Caixa de entrada</string>
+    <string name="settings_card_reader_manuals">Manuais de leitor de cartão</string>
+    <string name="card_reader_interac_refund_refund_payment_hint">Toque ou insira para reembolsar</string>
+    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">O pedido já foi reembolsado</string>
+    <string name="card_reader_interac_refund_refund_failed_cancelled">Reembolso cancelado</string>
+    <string name="card_reader_interac_refund_refund_failed_ok">OK</string>
+    <string name="card_reader_interac_refund_refund_failed_test_card">Cartões de teste do sistema não são permitidos para reembolsos</string>
+    <string name="card_reader_interac_refund_refund_failed_invalid_amount">O valor do reembolso não é permitido para o cartão informado</string>
+    <string name="card_reader_interac_refund_refund_failed_insufficient_funds">Reembolso recusado devido a fundos insuficientes</string>
+    <string name="card_reader_interac_refund_refund_failed_duplicate_transaction">Um reembolso idêntico foi enviado recentemente</string>
+    <string name="card_reader_interac_refund_refund_failed_card_not_supported">O cartão não é compatível com este tipo de reembolso</string>
+    <string name="card_reader_interac_refund_refund_failed_generic">Reembolso recusado por um motivo não especificado</string>
+    <string name="card_reader_interac_refund_refund_failed_fraud">Tente outro meio de reembolso</string>
+    <string name="card_reader_interac_refund_refund_failed_unknown">Reembolso recusado por motivos desconhecidos</string>
+    <string name="card_reader_interac_refund_refund_failed_unexpected_error_state">Não foi possível processar este reembolso</string>
+    <string name="card_reader_interac_refund_refund_completed_header">Reembolso realizado com êxito</string>
+    <string name="card_reader_interac_refund_refund_processing_state">Processando reembolso</string>
+    <string name="card_reader_interac_refund_refund_payment">Pagamento de reembolso</string>
+    <string name="card_reader_interac_refund_refund_failed_header">Falha no reembolso</string>
+    <string name="card_reader_interac_refund_refund_loading_header">Preparando para reembolsar pagamento</string>
+    <string name="copy">Copiar</string>
     <string name="coupons_list_search_hint">Pesquisar cupons</string>
     <string name="coupon_details_share_formatting_failure">Não foi possível gerar a mensagem de compartilhamento de código do cupom</string>
     <string name="coupon_details_share_coupon_error">Erro ao compartilhar o código do cupom.</string>
@@ -1276,7 +1313,6 @@ Language: pt_BR
     <string name="login_jetpack_installed_sign_in">Já tem o Jetpack? %1$s</string>
     <string name="login_refresh_app_progress_jetpack">Tentando fazer login com o Jetpack…</string>
     <string name="login_refresh_app_continue">atualize o aplicativo para continuar</string>
-    <string name="login_not_connected_jetpack">Para usar esse aplicativo para %1$s, é necessário ter o plugin do Jetpack configurado e conectado a essa conta. \n\nApós a configuração, %2$s</string>
     <string name="login_try_another_store">Tentar outra loja</string>
     <string name="database_downgraded">Downgrade do banco de dados. Recriando tabelas e carregando lojas</string>
     <string name="loading_stores">Carregando lojas</string>
@@ -1292,7 +1328,6 @@ Language: pt_BR
     <string name="orderdetail_copy_tracking_number">Copie o número de rastreamento</string>
     <string name="login_refresh_app_progress">Verificando o WooCommerce…</string>
     <string name="login_refresh_app">atualize o aplicativo</string>
-    <string name="login_not_woo_store">Parece que %1$s não é um site do WooCommerce. Instale o plugin do WooCommerce no seu site e %2$s</string>
     <string name="orderdetail_empty_address">Nenhum endereço especificado</string>
     <string name="login_need_help_finding_connected_email">Precisa de ajuda para encontrar o e-mail com que se conectou?</string>
     <string name="enter_wordpress_site">O site neste endereço não é um site do WordPress. Para que possamos nos conectar a ele, o site precisa ter o WordPress instalado.</string>

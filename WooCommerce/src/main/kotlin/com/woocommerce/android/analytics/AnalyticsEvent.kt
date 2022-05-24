@@ -194,6 +194,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     ORDER_CREATE_BUTTON_TAPPED,
     ORDER_CREATION_SUCCESS,
     ORDER_CREATION_FAILED,
+    ORDER_SYNC_FAILED,
 
     // -- Refunds
     CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,

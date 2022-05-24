@@ -1,0 +1,4 @@
+9.1:
+Hemos trabajado sin descanso en una nueva función para ayudarte a gestionar cupones. Todavía no está terminada, pero puedes activar la función beta en Ajustes, en la pestaña Más para echarle un primer vistazo. ¡Agradecemos tu opinión anticipada!
+
+También hemos corregido algunos errores en los precios de productos variables que se borraban sin querer al cambiar los niveles de inventario.

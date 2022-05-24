@@ -8,17 +8,14 @@ import androidx.recyclerview.widget.RecyclerView.NO_POSITION
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderCreationProductItemBinding
-import com.woocommerce.android.di.GlideApp
-import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.OrderCreationProductsAdapter.ProductViewHolder
-import com.woocommerce.android.ui.products.ProductStockStatus
-import org.wordpress.android.util.PhotonUtils
-import java.math.BigDecimal
+import com.woocommerce.android.util.CurrencyFormatter
 
 class OrderCreationProductsAdapter(
     private val onProductClicked: (Order.Item) -> Unit,
-    private val currencyFormatter: (BigDecimal) -> String,
+    private val currencyFormatter: CurrencyFormatter,
+    private val currencyCode: String?,
     private val onIncreaseQuantity: (Long) -> Unit,
     private val onDecreaseQuantity: (Long) -> Unit
 ) : ListAdapter<ProductUIModel, ProductViewHolder>(ProductUIModelDiffCallback) {
@@ -41,7 +38,6 @@ class OrderCreationProductsAdapter(
     }
 
     inner class ProductViewHolder(private val binding: OrderCreationProductItemBinding) : ViewHolder(binding.root) {
-        private val context = binding.root.context
         private val safePosition: Int?
             get() = bindingAdapterPosition.takeIf { it != NO_POSITION }
 
@@ -63,45 +59,13 @@ class OrderCreationProductsAdapter(
 
         fun bind(productModel: ProductUIModel) {
             binding.root.isEnabled = productModel.item.isSynced()
-            binding.productName.text = productModel.item.name
+            binding.productItemView.bind(productModel, currencyFormatter, currencyCode)
+
             binding.stepperView.isMinusButtonEnabled = isQuantityButtonsEnabled
             binding.stepperView.isPlusButtonEnabled = isQuantityButtonsEnabled
             binding.stepperView.apply {
                 value = productModel.item.quantity.toInt()
                 contentDescription = context.getString(R.string.count, value.toString())
-            }
-
-            binding.productAttributes.text = buildString {
-                if (productModel.item.isVariation && productModel.item.attributesDescription.isNotEmpty()) {
-                    append(productModel.item.attributesDescription)
-                } else {
-                    if (productModel.isStockManaged && productModel.stockStatus == ProductStockStatus.InStock) {
-                        append(
-                            context.getString(
-                                R.string.order_creation_product_stock_quantity,
-                                productModel.stockQuantity.formatToString()
-                            )
-                        )
-                    } else {
-                        append(context.getString(productModel.stockStatus.stringResource))
-                    }
-                }
-                append(" • ")
-                append(currencyFormatter(productModel.item.total).replace(" ", "\u00A0"))
-            }
-
-            binding.productSku.text = if (productModel.item.sku.isNotEmpty()) {
-                context.getString(R.string.orderdetail_product_lineitem_sku_value, productModel.item.sku)
-            } else {
-                context.getString(R.string.no_sku)
-            }
-
-            val imageSize = context.resources.getDimensionPixelSize(R.dimen.image_major_50)
-            PhotonUtils.getPhotonImageUrl(productModel.imageUrl, imageSize, imageSize)?.let { imageUrl ->
-                GlideApp.with(context)
-                    .load(imageUrl)
-                    .placeholder(R.drawable.ic_product)
-                    .into(binding.productIcon)
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.coupons
 
 import com.woocommerce.android.model.Coupon
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.update
@@ -8,6 +9,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class CouponListHandler @Inject constructor(private val repository: CouponRepository) {
     companion object {
         private const val PAGE_SIZE = 10

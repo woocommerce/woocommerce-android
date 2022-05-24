@@ -5,12 +5,17 @@ import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_O
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_PENDING
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForCanada
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUnsupportedCountry
+import com.woocommerce.android.cardreader.internal.config.SupportedExtension
+import com.woocommerce.android.cardreader.internal.config.SupportedExtensionType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.cardreader.CardReaderTrackingInfoKeeper
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.PluginIsNotSupportedInTheCountry
+import com.woocommerce.android.ui.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -228,7 +233,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             assertThat(result).isEqualTo(
                 CardReaderOnboardingState.OnboardingCompleted(
-                    PluginType.STRIPE_EXTENSION_GATEWAY,
+                    STRIPE_EXTENSION_GATEWAY,
                     stripePluginVersion,
                     countryCode
                 )
@@ -246,7 +251,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             val result = checker.getOnboardingState()
 
             assertThat(result).isEqualTo(
-                CardReaderOnboardingState.PluginUnsupportedVersion(PluginType.STRIPE_EXTENSION_GATEWAY)
+                CardReaderOnboardingState.PluginUnsupportedVersion(STRIPE_EXTENSION_GATEWAY)
             )
         }
 
@@ -282,7 +287,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             assertThat(result).isEqualTo(
                 CardReaderOnboardingState.SetupNotCompleted(
-                    PluginType.STRIPE_EXTENSION_GATEWAY
+                    STRIPE_EXTENSION_GATEWAY
                 )
             )
         }
@@ -362,7 +367,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             assertThat(result).isEqualTo(
                 CardReaderOnboardingState.OnboardingCompleted(
-                    PluginType.STRIPE_EXTENSION_GATEWAY,
+                    STRIPE_EXTENSION_GATEWAY,
                     stripePluginVersion,
                     countryCode
                 )
@@ -381,6 +386,100 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             val result = checker.getOnboardingState()
 
             assertThat(result).isEqualTo(CardReaderOnboardingState.WcpayAndStripeActivated)
+        }
+
+    @Test
+    fun `given wcpay and stripe are installed in CA, when get state, then plugin not supported in country returned`() =
+        testBlocking {
+            whenever(wooStore.getStoreCountryCode(site)).thenReturn("CA")
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+                .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+                .thenReturn(buildWCPayPluginInfo(isActive = true))
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isInstanceOf(PluginIsNotSupportedInTheCountry::class.java)
+        }
+
+    @Test
+    fun `given wcpay and stripe are installed in RU, when get state, then country code RU returned`() =
+        testBlocking {
+            val countryCode = "RU"
+            whenever(wooStore.getStoreCountryCode(site)).thenReturn(countryCode)
+            val cardReaderConfigForSupportedCountry = mock<CardReaderConfigForSupportedCountry>()
+            whenever(cardReaderCountryConfigProvider.provideCountryConfigFor(countryCode))
+                .thenReturn(cardReaderConfigForSupportedCountry)
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+                .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+                .thenReturn(buildWCPayPluginInfo(isActive = true))
+
+            val result = checker.getOnboardingState()
+
+            assertThat((result as PluginIsNotSupportedInTheCountry).countryCode).isEqualTo(countryCode)
+        }
+
+    @Test
+    fun `given wcpay and stripe are installed in RU with Stripe support, when get state, then WCPay returned`() =
+        testBlocking {
+            val countryCode = "RU"
+            whenever(wooStore.getStoreCountryCode(site)).thenReturn(countryCode)
+            val cardReaderConfigForSupportedCountry = mock<CardReaderConfigForSupportedCountry> {
+                on { this.supportedExtensions }.thenReturn(
+                    listOf(
+                        SupportedExtension(
+                            type = SupportedExtensionType.STRIPE,
+                            supportedSince = "4.0.0"
+                        ),
+                    ),
+                )
+            }
+            whenever(cardReaderCountryConfigProvider.provideCountryConfigFor(countryCode))
+                .thenReturn(cardReaderConfigForSupportedCountry)
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+                .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+                .thenReturn(buildWCPayPluginInfo(isActive = true))
+
+            val result = checker.getOnboardingState()
+
+            assertThat((result as PluginIsNotSupportedInTheCountry).preferredPlugin).isEqualTo(
+                PluginType.WOOCOMMERCE_PAYMENTS
+            )
+        }
+
+    @Test
+    fun `given wcpay and stripe are installed in RU with Wcpay support, when get state, then Stripe returned`() =
+        testBlocking {
+            val countryCode = "RU"
+            whenever(wooStore.getStoreCountryCode(site)).thenReturn(countryCode)
+            val cardReaderConfigForSupportedCountry = mock<CardReaderConfigForSupportedCountry> {
+                on { this.supportedExtensions }.thenReturn(
+                    listOf(
+                        SupportedExtension(
+                            type = SupportedExtensionType.WC_PAY,
+                            supportedSince = "4.0.0"
+                        ),
+                    ),
+                )
+            }
+            whenever(cardReaderCountryConfigProvider.provideCountryConfigFor(countryCode))
+                .thenReturn(cardReaderConfigForSupportedCountry)
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+                .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+                .thenReturn(buildWCPayPluginInfo(isActive = true))
+
+            val result = checker.getOnboardingState()
+
+            assertThat((result as PluginIsNotSupportedInTheCountry).preferredPlugin).isEqualTo(
+                PluginType.STRIPE_EXTENSION_GATEWAY
+            )
         }
 
     @Test
@@ -892,7 +991,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             anyLong(),
             captor.capture(),
         )
-        assertThat(captor.firstValue.preferredPlugin).isEqualTo(PluginType.STRIPE_EXTENSION_GATEWAY)
+        assertThat(captor.firstValue.preferredPlugin).isEqualTo(STRIPE_EXTENSION_GATEWAY)
     }
 
     @Test
@@ -942,7 +1041,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isInstanceOf(CardReaderOnboardingState.PluginIsNotSupportedInTheCountry::class.java)
+            assertThat(result).isInstanceOf(PluginIsNotSupportedInTheCountry::class.java)
         }
 
     @Test
@@ -999,7 +1098,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         val result = checker.fetchPreferredPlugin()
 
         assertThat(result).isInstanceOf(PreferredPluginResult.Success::class.java)
-        assertThat((result as PreferredPluginResult.Success).type).isEqualTo(PluginType.STRIPE_EXTENSION_GATEWAY)
+        assertThat((result as PreferredPluginResult.Success).type).isEqualTo(STRIPE_EXTENSION_GATEWAY)
     }
 
     @Test
