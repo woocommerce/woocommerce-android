@@ -45,7 +45,6 @@
             app:argType="string" />
         <argument
             android:name="showLimitUsageToXItems"
-            app:argType="boolean"
-            android:defaultValue="false" />
+            app:argType="boolean" />
     </fragment>
 </navigation>

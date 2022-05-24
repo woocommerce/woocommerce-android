@@ -8,6 +8,6 @@ sealed class EditCouponNavigationTarget : Event() {
     data class OpenCouponRestrictions(
         val restrictions: CouponRestrictions,
         val currencyCode: String,
-        val showLimitUsageToXItems: Boolean = false
+        val showLimitUsageToXItems: Boolean
     ) : EditCouponNavigationTarget()
 }
