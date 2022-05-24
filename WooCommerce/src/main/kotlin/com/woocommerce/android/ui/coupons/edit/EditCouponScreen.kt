@@ -121,8 +121,8 @@ fun EditCouponScreen(
 
     if (viewState.isSaving) {
         ProgressDialog(
-            title = "Saving coupon",
-            subtitle = "Please wait..."
+            title = stringResource(id = R.string.coupon_edit_saving_dialog_title),
+            subtitle = stringResource(id = R.string.coupon_edit_saving_dialog_subtitle)
         )
     }
 }

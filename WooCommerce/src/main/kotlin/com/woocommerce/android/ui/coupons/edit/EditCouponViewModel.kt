@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.coupons.edit
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R.string
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.Coupon.CouponRestrictions
 import com.woocommerce.android.ui.coupons.CouponRepository
@@ -10,13 +11,14 @@ import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenCo
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenDescriptionEditor
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.util.CouponUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
@@ -133,7 +135,16 @@ class EditCouponViewModel @Inject constructor(
 
     fun onSaveClick() = launch {
         isSaving.value = true
-        delay(5000)
+        couponRepository.updateCoupon(couponDraft.value!!)
+            .fold(
+                onSuccess = {
+                    triggerEvent(ShowSnackbar(string.coupon_edit_coupon_updated))
+                    triggerEvent(Exit)
+                },
+                onFailure = {
+                    TODO()
+                }
+            )
         isSaving.value = false
     }
 
