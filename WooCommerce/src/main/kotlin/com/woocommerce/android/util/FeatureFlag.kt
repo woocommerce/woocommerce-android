@@ -9,7 +9,6 @@ enum class FeatureFlag {
     DB_DOWNGRADE,
     CARD_READER,
     JETPACK_CP,
-    ORDER_FILTERS,
     ANALYTICS_HUB,
     IN_PERSON_PAYMENTS_CANADA,
     MORE_MENU_INBOX,
@@ -23,7 +22,6 @@ enum class FeatureFlag {
             }
             JETPACK_CP,
             CARD_READER -> true // Keeping the flag for a few sprints so we can quickly disable the feature if needed
-            ORDER_FILTERS,
             ANALYTICS_HUB,
             IN_PERSON_PAYMENTS_CANADA,
             MORE_MENU_INBOX,
