@@ -180,7 +180,7 @@ class CouponsListViewModelTests : BaseUnitTest() {
             whenever(couponListHandler.fetchCoupons(forceRefresh = true)).thenReturn(Result.failure(Exception()))
         }
 
-        viewModel.onLoadMore()
+        viewModel.onRefresh()
         advanceUntilIdle()
         val event = viewModel.event.captureValues().filterIsInstance<MultiLiveEvent.Event.ShowSnackbar>().last()
 

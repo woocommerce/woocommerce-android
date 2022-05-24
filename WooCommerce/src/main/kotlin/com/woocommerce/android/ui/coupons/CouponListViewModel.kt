@@ -17,11 +17,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collectIndexed
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
@@ -70,6 +70,9 @@ class CouponListViewModel @Inject constructor(
     }.asLiveData()
 
     init {
+        if (searchQuery.value == null) {
+            fetchCoupons()
+        }
         monitorSearchQuery()
     }
 
@@ -118,29 +121,41 @@ class CouponListViewModel @Inject constructor(
         loadingState.value = LoadingState.Idle
     }
 
+    private fun fetchCoupons() = launch {
+        loadingState.value = LoadingState.Loading
+        couponListHandler.fetchCoupons(forceRefresh = true)
+            .onFailure {
+                triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.coupon_list_loading_failed))
+            }
+        loadingState.value = LoadingState.Idle
+    }
+
     private fun monitorSearchQuery() {
         viewModelScope.launch {
             searchQuery
+                .withIndex()
+                .filterNot {
+                    // Skip initial value to avoid double fetching coupons
+                    it.index == 0 && it.value == null
+                }
+                .map { it.value }
                 .onEach {
                     loadingState.value = LoadingState.Loading
                 }
                 .debounce {
                     if (it.isNullOrEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS
                 }
-                .mapLatest { it } // Make sure downstream flow is cancelled on each emit
-                .collectIndexed { index, query ->
+                .collectLatest { query ->
                     try {
-                        couponListHandler.fetchCoupons(
-                            searchQuery = query,
-                            forceRefresh = index == 0 && query == null // Force refresh on initial loading
-                        ).onFailure {
-                            triggerEvent(
-                                MultiLiveEvent.Event.ShowSnackbar(
-                                    if (query == null) R.string.coupon_list_loading_failed
-                                    else R.string.coupon_list_search_failed
+                        couponListHandler.fetchCoupons(searchQuery = query)
+                            .onFailure {
+                                triggerEvent(
+                                    MultiLiveEvent.Event.ShowSnackbar(
+                                        if (query == null) R.string.coupon_list_loading_failed
+                                        else R.string.coupon_list_search_failed
+                                    )
                                 )
-                            )
-                        }
+                            }
                     } finally {
                         loadingState.value = LoadingState.Idle
                     }
