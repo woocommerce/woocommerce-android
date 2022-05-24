@@ -1975,6 +1975,7 @@
     <string name="coupon_edit_usage_section">Usage Details</string>
     <string name="coupon_edit_usage_restrictions">Usage Restrictions</string>
     <string name="coupon_edit_coupon_updated">Coupon updated</string>
+    <string name="coupon_edit_coupon_update_failed">Updating coupon failed</string>
     <string name="coupon_edit_saving_dialog_title">Saving coupon</string>
     <string name="coupon_edit_saving_dialog_subtitle">Please wait…</string>
     <string name="coupon_restrictions_minimum_spend_hint">Minimum Spend (%1$s)</string>

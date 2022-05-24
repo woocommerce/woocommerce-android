@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.coupons.edit
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.R.string
+import com.woocommerce.android.R
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.Coupon.CouponRestrictions
 import com.woocommerce.android.ui.coupons.CouponRepository
@@ -138,11 +138,11 @@ class EditCouponViewModel @Inject constructor(
         couponRepository.updateCoupon(couponDraft.value!!)
             .fold(
                 onSuccess = {
-                    triggerEvent(ShowSnackbar(string.coupon_edit_coupon_updated))
+                    triggerEvent(ShowSnackbar(R.string.coupon_edit_coupon_updated))
                     triggerEvent(Exit)
                 },
                 onFailure = {
-                    TODO()
+                    triggerEvent(ShowSnackbar(R.string.coupon_edit_coupon_update_failed))
                 }
             )
         isSaving.value = false
