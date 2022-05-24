@@ -4,7 +4,7 @@
 -----
 - [*] In-Person Payments: Individual Card Reader Manual tabs removed from IPP Screen and moved to the new screen `Card Reader Manuals` [https://github.com/woocommerce/woocommerce-android/pull/6518]
 - [*] Show "We don't support stripe in Canada" when both WCPay and Stripe are active [https://github.com/woocommerce/woocommerce-android/pull/6573]
-- [***] In-Person Payments: In-Person Payments in Canada is now available for public!
+- [***] In-Person Payments: In-Person Payments in Canada is now available for public! [https://github.com/woocommerce/woocommerce-android/pull/6579]
 
 9.2
 -----
