@@ -46,6 +46,7 @@ import com.woocommerce.android.model.Coupon.Type
 import com.woocommerce.android.model.Coupon.Type.Percent
 import com.woocommerce.android.ui.compose.component.BigDecimalTextFieldValueMapper
 import com.woocommerce.android.ui.compose.component.DatePickerDialog
+import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedSpinner
@@ -70,7 +71,8 @@ fun EditCouponScreen(viewModel: EditCouponViewModel) {
             onDescriptionButtonClick = viewModel::onDescriptionButtonClick,
             onExpiryDateChanged = viewModel::onExpiryDateChanged,
             onFreeShippingChanged = viewModel::onFreeShippingChanged,
-            onUsageRestrictionsClick = viewModel::onUsageRestrictionsClick
+            onUsageRestrictionsClick = viewModel::onUsageRestrictionsClick,
+            onSaveClick = viewModel::onSaveClick
         )
     }
 }
@@ -84,7 +86,8 @@ fun EditCouponScreen(
     onDescriptionButtonClick: () -> Unit = {},
     onExpiryDateChanged: (Date?) -> Unit = {},
     onFreeShippingChanged: (Boolean) -> Unit = {},
-    onUsageRestrictionsClick: () -> Unit = {}
+    onUsageRestrictionsClick: () -> Unit = {},
+    onSaveClick: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -107,12 +110,19 @@ fun EditCouponScreen(
         ConditionsSection(viewState)
         UsageRestrictionsSection(viewState, onUsageRestrictionsClick)
         WCColoredButton(
-            onClick = { /*TODO*/ },
+            onClick = onSaveClick,
             text = stringResource(id = R.string.coupon_edit_save_button),
             modifier = Modifier
                 .padding(horizontal = dimensionResource(id = R.dimen.major_100))
                 .fillMaxWidth(),
             enabled = viewState.hasChanges
+        )
+    }
+
+    if (viewState.isSaving) {
+        ProgressDialog(
+            title = "Saving coupon",
+            subtitle = "Please wait..."
         )
     }
 }
@@ -317,7 +327,8 @@ private fun EditCouponPreview() {
                 ),
                 localizedType = "Fixed Rate Discount",
                 amountUnit = "%",
-                hasChanges = true
+                hasChanges = true,
+                isSaving = true
             )
         )
     }

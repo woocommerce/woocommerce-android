@@ -16,9 +16,11 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
@@ -45,16 +47,21 @@ class EditCouponViewModel @Inject constructor(
     private val currencyCode
         get() = parameterRepository.getParameters(PARAMETERS_KEY, savedState).currencySymbol.orEmpty()
 
-    val viewState = couponDraft
-        .filterNotNull()
-        .map { coupon ->
-            ViewState(
-                couponDraft = coupon,
-                localizedType = coupon.type?.let { couponUtils.localizeType(it) },
-                amountUnit = if (coupon.type == Coupon.Type.Percent) "%" else currencyCode,
-                hasChanges = !coupon.isSameCoupon(storedCoupon.await())
-            )
-        }
+    private val isSaving = MutableStateFlow(false)
+
+    val viewState = combine(
+        flow = couponDraft
+            .filterNotNull(),
+        flow2 = isSaving
+    ) { coupon, isSaving ->
+        ViewState(
+            couponDraft = coupon,
+            localizedType = coupon.type?.let { couponUtils.localizeType(it) },
+            amountUnit = if (coupon.type == Coupon.Type.Percent) "%" else currencyCode,
+            hasChanges = !coupon.isSameCoupon(storedCoupon.await()),
+            isSaving = isSaving
+        )
+    }
         .asLiveData()
 
     init {
@@ -124,10 +131,17 @@ class EditCouponViewModel @Inject constructor(
         }
     }
 
+    fun onSaveClick() = launch {
+        isSaving.value = true
+        delay(5000)
+        isSaving.value = false
+    }
+
     data class ViewState(
         val couponDraft: Coupon,
         val localizedType: String?,
         val amountUnit: String,
-        val hasChanges: Boolean
+        val hasChanges: Boolean,
+        val isSaving: Boolean
     )
 }
