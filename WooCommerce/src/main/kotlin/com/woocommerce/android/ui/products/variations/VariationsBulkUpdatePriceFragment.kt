@@ -63,6 +63,10 @@ class VariationsBulkUpdatePriceFragment : BaseFragment(R.layout.fragment_variati
                     Regular -> getString(R.string.variations_bulk_update_regular_price)
                     Sale -> getString(R.string.variations_bulk_update_sale_price)
                 }
+                binding.price.hint = when(new.priceType) {
+                    Regular -> getString(R.string.product_regular_price)
+                    Sale -> getString(R.string.product_sale_price)
+                }
             }
             new.currency?.takeIfNotEqualTo(old?.currency) {
                 setupPriceInputField(new.currency, new.isCurrencyPrefix)

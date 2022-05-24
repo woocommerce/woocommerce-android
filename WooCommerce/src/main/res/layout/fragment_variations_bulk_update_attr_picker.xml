@@ -91,6 +91,35 @@
                 tools:text="$8.00" />
         </androidx.appcompat.widget.LinearLayoutCompat>
 
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/sale_price"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="vertical"
+            android:paddingVertical="@dimen/major_75">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/sale_price_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="@dimen/major_100"
+                android:text="@string/variations_bulk_update_dialog_sale_price_label"
+                android:textColor="@color/color_on_surface_high"
+                android:textSize="@dimen/text_minor_125" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/sale_price_subtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="@dimen/major_100"
+                android:textColor="@color/color_on_surface_medium"
+                android:textSize="@dimen/text_minor_100"
+                tools:text="$8.00" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="@dimen/minor_10"

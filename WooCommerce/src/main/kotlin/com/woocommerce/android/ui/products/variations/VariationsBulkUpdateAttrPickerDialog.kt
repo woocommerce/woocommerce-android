@@ -53,6 +53,7 @@ class VariationsBulkUpdateAttrPickerDialog : WCBottomSheetDialogFragment() {
         binding.collapsedStateHeader.setOnClickListener { bottomSheetBehavior.state = STATE_EXPANDED }
         binding.fullscreenStateToolbar.setNavigationOnClickListener { dismiss() }
         binding.regularPrice.setOnClickListener { viewModel.onRegularPriceUpdateClicked() }
+        binding.salePrice.setOnClickListener { viewModel.onSalePriceUpdateClicked() }
 
         bottomSheetBehavior.apply {
             isFitToContents = false
@@ -81,6 +82,15 @@ class VariationsBulkUpdateAttrPickerDialog : WCBottomSheetDialogFragment() {
             ValuesGroupType.Mixed -> getString(R.string.variations_bulk_update_dialog_price_mixed)
             is ValuesGroupType.Common -> {
                 val price = newState.regularPriceGroupType.data as? BigDecimal?
+                val currency = newState.currency
+                if (price != null && currency != null) formatPrice(price, currency, newState.isCurrencyPrefix) else ""
+            }
+        }
+        binding.salePriceSubtitle.text = when (newState.salePriceGroupType) {
+            ValuesGroupType.None -> getString(R.string.variations_bulk_update_dialog_price_none)
+            ValuesGroupType.Mixed -> getString(R.string.variations_bulk_update_dialog_price_mixed)
+            is ValuesGroupType.Common -> {
+                val price = newState.salePriceGroupType.data as? BigDecimal?
                 val currency = newState.currency
                 if (price != null && currency != null) formatPrice(price, currency, newState.isCurrencyPrefix) else ""
             }

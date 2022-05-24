@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIANTS_BULK_UPDATE_REGULAR_PRICE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIANTS_BULK_UPDATE_SALE_PRICE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.track
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -45,7 +46,11 @@ class VariationsBulkUpdateAttrPickerViewModel @Inject constructor(
 
     init {
         val regularPriceValues = args.variationsToUpdate.asList().map { it.regularPrice }
-        _viewState.value = _viewState.value.copy(regularPriceGroupType = regularPriceValues.groupType())
+        val salePriceValues = args.variationsToUpdate.asList().map { it.salePrice }
+        _viewState.value = _viewState.value.copy(
+            regularPriceGroupType = regularPriceValues.groupType(),
+            salePriceGroupType = salePriceValues.groupType(),
+        )
     }
 
     fun onRegularPriceUpdateClicked() {
@@ -55,10 +60,18 @@ class VariationsBulkUpdateAttrPickerViewModel @Inject constructor(
         )
     }
 
+    fun onSalePriceUpdateClicked() {
+        track(PRODUCT_VARIANTS_BULK_UPDATE_SALE_PRICE_TAPPED)
+        triggerEvent(
+            OpenVariationsBulkUpdatePrice(PriceUpdateData(args.variationsToUpdate.toList(), PriceType.Sale))
+        )
+    }
+
     data class ViewState(
         private val currencyPosition: WCSettingsModel.CurrencyPosition? = null,
         val currency: String? = null,
         val regularPriceGroupType: ValuesGroupType = ValuesGroupType.None,
+        val salePriceGroupType: ValuesGroupType = ValuesGroupType.None,
     ) {
         val isCurrencyPrefix: Boolean
             get() = currencyPosition == LEFT || currencyPosition == LEFT_SPACE

@@ -55,11 +55,22 @@ class VariationsBulkUpdatePriceViewModel @Inject constructor(
             val productId = variationsToUpdate.first().remoteProductId
             val variationsIds = variationsToUpdate.map { it.remoteVariationId }
             val result = when (viewState.priceType) {
-                PriceType.Regular -> variationRepository.bulkUpdateVariations(productId, variationsIds, viewState.price)
-                PriceType.Sale -> variationRepository.bulkUpdateVariations(productId, variationsIds, viewState.price)
+                PriceType.Regular -> variationRepository.bulkUpdateVariations(
+                    productId,
+                    variationsIds,
+                    newRegularPrice = viewState.price
+                )
+                PriceType.Sale -> variationRepository.bulkUpdateVariations(
+                    productId,
+                    variationsIds,
+                    newSalePrice = viewState.price
+                )
             }
             val snackText = if (result) {
-                R.string.variations_bulk_update_regular_prices_success
+                when (viewState.priceType) {
+                    PriceType.Regular -> R.string.variations_bulk_update_regular_prices_success
+                    PriceType.Sale -> R.string.variations_bulk_update_sale_prices_success
+                }
             } else {
                 R.string.variations_bulk_update_error
             }

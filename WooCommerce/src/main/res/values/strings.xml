@@ -1466,6 +1466,7 @@
     <string name="variations_bulk_update_dialog_subtitle">Choose a value to update</string>
     <string name="variations_bulk_update_dialog_price_section_title">Price</string>
     <string name="variations_bulk_update_dialog_regular_price_label">Regular price</string>
+    <string name="variations_bulk_update_dialog_sale_price_label">Sale price</string>
     <string name="variations_bulk_update_dialog_price_none">None</string>
     <string name="variations_bulk_update_dialog_price_mixed">Mixed</string>
     <string name="variations_bulk_update_price_info">Price will be updated for %d variations</string>
@@ -1473,9 +1474,11 @@
     <string name="variations_bulk_update_current_prices_mixed">Current prices are mixed</string>
     <string name="variations_bulk_update_error">Something went wrong. Please try again.</string>
     <string name="variations_bulk_update_regular_prices_success">Updated Regular Prices.</string>
+    <string name="variations_bulk_update_sale_prices_success">Updated Sale Prices.</string>
     <string name="variations_bulk_update_regular_sale_prices_success">Updated Sale Prices.</string>
     <string name="variations_bulk_update_sale_prices_dialog_title">Updating sale prices</string>
     <string name="variations_bulk_update_regular_prices_dialog_title">Updating regular prices</string>
+
     <!--
         Product images
     -->
