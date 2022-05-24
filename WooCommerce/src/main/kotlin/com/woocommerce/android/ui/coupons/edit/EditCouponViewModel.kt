@@ -112,7 +112,7 @@ class EditCouponViewModel @Inject constructor(
                 OpenCouponRestrictions(
                     restrictions = it.restrictions,
                     currencyCode = currencyCode,
-                    showLimitUsageToXItems = it.type == Coupon.Type.FixedCart
+                    showLimitUsageToXItems = it.type != Coupon.Type.FixedCart
                 )
             )
         }
