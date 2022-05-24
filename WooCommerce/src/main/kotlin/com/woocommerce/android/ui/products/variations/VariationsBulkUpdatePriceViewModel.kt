@@ -50,6 +50,7 @@ class VariationsBulkUpdatePriceViewModel @Inject constructor(
     }
 
     fun onDoneClicked() {
+        viewState = viewState.copy(isProgressDialogShown = true)
         launch(dispatchers.io) {
             val productId = variationsToUpdate.first().remoteProductId
             val variationsIds = variationsToUpdate.map { it.remoteVariationId }
@@ -64,6 +65,7 @@ class VariationsBulkUpdatePriceViewModel @Inject constructor(
             }
 
             withContext(dispatchers.main) {
+                viewState = viewState.copy(isProgressDialogShown = false)
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(snackText))
                 if (result) triggerEvent(MultiLiveEvent.Event.Exit)
             }
@@ -81,6 +83,7 @@ class VariationsBulkUpdatePriceViewModel @Inject constructor(
         val priceType: PriceType,
         val pricesGroupType: ValuesGroupType? = null,
         val variationsToUpdateCount: Int? = null,
+        val isProgressDialogShown: Boolean = false,
         private val currencyPosition: WCSettingsModel.CurrencyPosition? = null,
     ) : Parcelable {
         val isCurrencyPrefix: Boolean
