@@ -136,7 +136,7 @@ class CouponListViewModel @Inject constructor(
                         ).onFailure {
                             triggerEvent(
                                 MultiLiveEvent.Event.ShowSnackbar(
-                                    if (query.isNullOrEmpty()) R.string.coupon_list_loading_failed
+                                    if (query == null) R.string.coupon_list_loading_failed
                                     else R.string.coupon_list_search_failed
                                 )
                             )
