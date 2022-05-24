@@ -232,6 +232,12 @@ data class Order(
 
     fun getProductIds() = items.map { it.productId }
 
+    fun isEmpty() = this.copy(
+        currency = "",
+        dateCreated = DEFAULT_EMPTY_ORDER.dateCreated,
+        dateModified = DEFAULT_EMPTY_ORDER.dateModified
+    ) == DEFAULT_EMPTY_ORDER
+
     sealed class Status(val value: String) : Parcelable {
         companion object {
             fun fromValue(value: String): Status {
@@ -282,7 +288,7 @@ data class Order(
     }
 
     companion object {
-        val EMPTY by lazy {
+        private val DEFAULT_EMPTY_ORDER by lazy {
             Order(
                 id = 0,
                 number = "",
@@ -318,6 +324,9 @@ data class Order(
                 paymentUrl = ""
             )
         }
+
+        val EMPTY
+            get() = DEFAULT_EMPTY_ORDER.copy(dateCreated = Date(), dateModified = Date())
     }
 }
 

@@ -1,3 +1,3 @@
-We’ve been working hard on a new feature to help you manage your coupons. It’s a work in progress, but you can get an early look by turning the beta feature on in Settings under the More tab. We welcome your early feedback!
+Much of the information on an order from a customer is important! We’ve heard you’d like to copy and paste some of those details outside the app. Now you can long-press on most fields to copy them to the clipboard. Paste away in a text message, e-mail, or note!
 
-We also fixed a few bugs with variable products with prices accidentally cleared when changing inventory levels.
+We’ve also addressed several bugs around in-person payments and order creation. Thank you for your feedback!

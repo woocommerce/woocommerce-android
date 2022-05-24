@@ -233,6 +233,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
         if (isConfirmRemoveDialogShowing) {
             outState.putBoolean(KEY_IS_CONFIRM_REMOVE_DIALOG_SHOWING, true)
         }

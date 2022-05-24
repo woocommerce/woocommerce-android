@@ -47,7 +47,6 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
 
         val binding = FragmentLoginNoWpcomAccountFoundBinding.bind(view)

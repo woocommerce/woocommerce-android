@@ -54,8 +54,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
 
     @Suppress("ForbiddenComment", "LongMethod")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         _binding = FragmentSettingsMainBinding.bind(view)
 
         presenter.takeView(this)

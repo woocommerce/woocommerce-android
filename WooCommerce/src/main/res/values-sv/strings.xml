@@ -1,11 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-04-26 13:54:03+0000
+Translation-Revision-Date: 2022-05-05 11:09:07+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="coupon_details_restricted_emails">Begränsad till kunder med följande e-postadresser: %1$s</string>
+    <string name="coupon_details_excludes_sale_items">Gäller inte reavaror</string>
+    <string name="coupon_details_allows_free_shipping">Tillåter gratis frakt</string>
+    <string name="coupon_details_individual_use_only">Kan inte kombineras</string>
+    <string name="coupon_details_usage_limit_per_items_single">Begränsad till %1$d artiklar i varukorgen</string>
+    <string name="coupon_details_usage_limit_per_items_multiple">Begränsad till %1$d artiklar i varukorgen</string>
+    <string name="coupon_details_usage_limit_per_coupon_single">Kan användas %1$d gång</string>
+    <string name="coupon_details_usage_limit_per_coupon_multiple">Kan användas %1$d gånger</string>
+    <string name="coupon_details_usage_limit_per_user_single">%1$d användning per användare</string>
+    <string name="coupon_details_usage_limit_per_user_multiple">%1$d användningar per användare</string>
+    <string name="coupon_details_delete_successful">Rabattkod borttagen</string>
+    <string name="coupon_details_delete_failure">Misslyckades att ta bort rabattkod</string>
+    <string name="coupon_details_delete_confirmation">Är du säker på att du vill ta bort denna rabattkod?</string>
+    <string name="coupon_details_delete">Ta bort rabattkod</string>
+    <string name="inbox_screen_sync_error">Det gick inte att synkronisera inkorgen</string>
+    <string name="inbox_note_dismiss_all_notes">Avfärda alla</string>
+    <string name="inbox_screen_title">Inkorg</string>
+    <string name="settings_card_reader_manuals">Kortläsarmanualer</string>
+    <string name="card_reader_interac_refund_refund_payment_hint">Tryck eller infoga för att återbetala</string>
+    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">Beställningen är redan återbetald</string>
+    <string name="card_reader_interac_refund_refund_failed_cancelled">Återbetalning avbruten</string>
+    <string name="card_reader_interac_refund_refund_failed_ok">OK</string>
+    <string name="card_reader_interac_refund_refund_failed_test_card">Systemtestkort är inte tillåtna för återbetalningen</string>
+    <string name="card_reader_interac_refund_refund_failed_invalid_amount">Återbetalningsbeloppet är inte tillåtet för det aktuella kortet</string>
+    <string name="card_reader_interac_refund_refund_failed_insufficient_funds">Återbetalningen avvisades på grund av otillräckliga medel</string>
+    <string name="card_reader_interac_refund_refund_failed_duplicate_transaction">En identisk återbetalning skickades nyligen</string>
+    <string name="card_reader_interac_refund_refund_failed_card_not_supported">Kortet stöder inte denna typ av återbetalning</string>
+    <string name="card_reader_interac_refund_refund_failed_generic">Återbetalningen avvisades av ospecificerad anledning</string>
+    <string name="card_reader_interac_refund_refund_failed_fraud">Prova ett annat sätt att återbetala</string>
+    <string name="card_reader_interac_refund_refund_failed_unknown">Återbetalningen avvisades av okänd anledning</string>
+    <string name="card_reader_interac_refund_refund_failed_unexpected_error_state">Denna återbetalning kunde inte behandlas</string>
+    <string name="card_reader_interac_refund_refund_completed_header">Återbetalning lyckades</string>
+    <string name="card_reader_interac_refund_refund_processing_state">Behandlar återbetalning</string>
+    <string name="card_reader_interac_refund_refund_payment">Återbetala betalning</string>
+    <string name="card_reader_interac_refund_refund_failed_header">Återbetalning misslyckades</string>
+    <string name="card_reader_interac_refund_refund_loading_header">Förbereder återbetalning av betalning</string>
+    <string name="copy">Kopiera</string>
     <string name="coupons_list_search_hint">Sök rabattkoder</string>
     <string name="coupon_details_share_formatting_failure">Det gick inte att generera meddelandet för delning av rabattkoden</string>
     <string name="coupon_details_share_coupon_error">Det gick inte att dela rabattkoden.</string>
@@ -1278,7 +1315,6 @@ Language: sv_SE
     <string name="login_jetpack_installed_sign_in">Har du redan Jetpack? %1$s</string>
     <string name="login_refresh_app_progress_jetpack">Försöker logga in med Jetpack …</string>
     <string name="login_refresh_app_continue">uppdatera appen för att fortsätta</string>
-    <string name="login_not_connected_jetpack">För att använda den här appen för %1$s behöver du installera Jetpack-tillägget och ansluta det till det här kontot. \n\nEfter installationen %2$s</string>
     <string name="login_try_another_store">Försök med en annan butik</string>
     <string name="database_downgraded">Databasen har nedgraderats, återskapar tabeller och läser in butiker</string>
     <string name="loading_stores">Läser in butiker</string>
@@ -1294,7 +1330,6 @@ Language: sv_SE
     <string name="orderdetail_copy_tracking_number">Kopiera spårningsnummer</string>
     <string name="login_refresh_app_progress">Kollar efter WooCommerce …</string>
     <string name="login_refresh_app">uppdatera appen</string>
-    <string name="login_not_woo_store">Det ser ut som att %1$s inte är en WooCommerce-webbplats. Installera WooCommerce-pluginet på din webbplats och därefter %2$s</string>
     <string name="orderdetail_empty_address">Ingen adress specificerad</string>
     <string name="login_need_help_finding_connected_email">Behöver du hjälp med att hitta e-postadressen som du använde för att ansluta?</string>
     <string name="enter_wordpress_site">Webbplatsen på den här adressen är inte en WordPress-webbplats. Webbplatsen måste använda WordPress för att vi ska kunna ansluta till den.</string>

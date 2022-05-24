@@ -58,10 +58,7 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         val binding = CardReaderPaymentDialogBinding.bind(view)
-
         initObservers(binding)
         initViewModel()
     }

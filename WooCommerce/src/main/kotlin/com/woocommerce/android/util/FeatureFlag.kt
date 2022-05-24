@@ -12,7 +12,6 @@ enum class FeatureFlag {
     ORDER_FILTERS,
     ANALYTICS_HUB,
     IN_PERSON_PAYMENTS_CANADA,
-    CARD_READER_MANUALS,
     MORE_MENU_INBOX,
     COUPONS_M2;
 
@@ -22,11 +21,10 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
             JETPACK_CP,
+            IN_PERSON_PAYMENTS_CANADA,
             CARD_READER -> true // Keeping the flag for a few sprints so we can quickly disable the feature if needed
             ORDER_FILTERS,
             ANALYTICS_HUB,
-            IN_PERSON_PAYMENTS_CANADA,
-            CARD_READER_MANUALS,
             MORE_MENU_INBOX,
             COUPONS_M2 -> PackageUtils.isDebugBuild()
         }

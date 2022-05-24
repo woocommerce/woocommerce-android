@@ -97,6 +97,7 @@ class VariationListFragment :
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
         layoutManager?.let {
             outState.putParcelable(LIST_STATE_KEY, it.onSaveInstanceState())
         }
