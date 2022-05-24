@@ -1091,8 +1091,8 @@
     <string name="card_reader_onboarding_country_not_supported_contact_support">Need some help? &lt;a href=\'\'&gt;Contact support&lt;/a&gt;</string>
     <string name="card_reader_onboarding_country_not_supported_learn_more">&lt;a href=\'\'&gt;Learn more&lt;/a&gt; about accepting payments with your mobile device and ordering card readers</string>
 
-    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">We don\'t support Stripe in %1$s</string>
-    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">We don\'t support WooCommerce Payments in %1$s</string>
+    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">We don\'t support WooCommerce Stripe extension in %1$s</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">We don\'t support WooCommerce Payments extension in %1$s</string>
     <string name="card_reader_onboarding_stripe_account_in_unsupported_country">We don\'t support Stripe accounts registered in %1$s</string>
 
     <string name="card_reader_onboarding_wcpay_not_installed_header">Install WooCommerce Payments</string>
