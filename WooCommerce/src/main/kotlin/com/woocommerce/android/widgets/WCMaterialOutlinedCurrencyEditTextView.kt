@@ -255,7 +255,6 @@ private class RegularCurrencyEditText(context: Context) : CurrencyEditText(conte
         setText(value.toPlainString())
     }
 
-    @Suppress("ComplexMethod")
     override fun filter(
         source: CharSequence,
         start: Int,
@@ -295,6 +294,7 @@ class RegularCurrencyInputHandler(
     val decimalSeparator: String,
     val numberOfDecimals: Int
 ) {
+    @Suppress("LongParameterList", "ComplexMethod")
     fun filter(
         source: CharSequence,
         start: Int,
