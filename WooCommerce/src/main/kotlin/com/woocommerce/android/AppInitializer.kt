@@ -249,7 +249,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             override fun sendReport(exception: Throwable?, tags: Map<String, String>, message: String?) {
                 crashLogging.sendReport(exception, tags, message)
             }
-
         })
     }
 
