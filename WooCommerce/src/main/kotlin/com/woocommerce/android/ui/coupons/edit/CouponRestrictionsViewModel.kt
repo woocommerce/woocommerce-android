@@ -32,7 +32,8 @@ class CouponRestrictionsViewModel @Inject constructor(
             ViewState(
                 restrictions = restrictions,
                 currencyCode = navArgs.currencyCode,
-                hasChanges = !restrictions.isSameRestrictions(navArgs.restrictions)
+                hasChanges = !restrictions.isSameRestrictions(navArgs.restrictions),
+                showLimitUsageToXItems = navArgs.showLimitUsageToXItems
             )
         }.asLiveData()
 
@@ -89,6 +90,7 @@ class CouponRestrictionsViewModel @Inject constructor(
     data class ViewState(
         val restrictions: CouponRestrictions,
         val currencyCode: String,
-        val hasChanges: Boolean
+        val hasChanges: Boolean,
+        val showLimitUsageToXItems: Boolean
     )
 }
