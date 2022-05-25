@@ -23,7 +23,7 @@ object ProductTestUtils {
             localSiteId = 1
             remoteProductId = productId
             status = customStatus ?: "publish"
-            type = "simple"
+            type = productType
             stockStatus = "instock"
             price = "20.00"
             salePrice = "10.00"
@@ -54,6 +54,7 @@ object ProductTestUtils {
             virtual = isVirtual
             stockQuantity = 4.2
             purchasable = isPurchasable
+            reviewsAllowed = false
         }.toAppModel()
     }
 
