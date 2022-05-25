@@ -47,20 +47,18 @@ class ProductSelectorViewModel @Inject constructor(
 
     private val navArgs: ProductSelectorFragmentArgs by savedState.navArgs()
 
-    private val searchQuery = savedState.getNullableStateFlow(this, null, clazz = String::class.java)
     private val isLoading = MutableStateFlow(false)
     private val selectedProductIds = MutableStateFlow(navArgs.productIds.toList())
 
     val productsState = combine(
         productListHandler.productsFlow,
         isLoading,
-        searchQuery,
         selectedProductIds
     ) { products, isLoading, searchQuery, selectedIds ->
+    ) { products, isLoading, selectedIds ->
         ProductSelectorState(
             isLoading = isLoading,
             products = products.map { it.toUiModel(selectedIds.contains(it.remoteId)) },
-            searchQuery = searchQuery,
         )
     }
         .asLiveData()
@@ -73,8 +71,6 @@ class ProductSelectorViewModel @Inject constructor(
                 isLoading.value = false
             }
         }
-
-        monitorSearchQuery()
     }
 
     private fun Product.toUiModel(isChecked: Boolean): ProductListItem {
@@ -124,37 +120,6 @@ class ProductSelectorViewModel @Inject constructor(
             productListHandler.loadMore()
         }
     }
-
-    fun onSearchQueryChanged(query: String) {
-        searchQuery.value = query
-    }
-
-    fun onSearchStateChanged(open: Boolean) {
-        searchQuery.value = if (open) {
-            searchQuery.value.orEmpty()
-        } else {
-            null
-        }
-    }
-
-    private fun monitorSearchQuery() {
-        viewModelScope.launch {
-            searchQuery
-                .onEach {
-                    isLoading.value = true
-                }
-                .debounce {
-                    if (it.isNullOrEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS
-                }.collectLatest {
-                    try {
-                        productListHandler.fetchProducts(searchQuery = it)
-                    } finally {
-                        isLoading.value = false
-                    }
-                }
-        }
-    }
-
     private fun formatCurrency(amount: BigDecimal?, currencyCode: String?): String {
         return if (amount != null) {
             currencyCode?.let { currencyFormatter.formatCurrency(amount, it) }

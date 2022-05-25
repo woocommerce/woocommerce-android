@@ -68,7 +68,6 @@ fun ProductSelectorScreen(
             onLoadMore = onLoadMore
         )
         state.products.isEmpty() && state.isLoading -> ProductListSkeleton()
-        state.isSearchOpen -> SearchEmptyList(searchQuery = state.searchQuery.orEmpty())
         else -> EmptyProductList()
     }
 }
@@ -201,34 +200,6 @@ private fun ProductListSkeleton() {
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun SearchEmptyList(searchQuery: String) {
-    if (searchQuery.isEmpty()) return
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = dimensionResource(id = R.dimen.major_200)),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = stringResource(id = R.string.empty_message_with_search, searchQuery),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.h6,
-            modifier = Modifier.padding(
-                start = dimensionResource(id = R.dimen.major_150),
-                end = dimensionResource(id = R.dimen.major_150)
-            )
-        )
-        Spacer(Modifier.size(dimensionResource(id = R.dimen.major_325)))
-        Image(
-            painter = painterResource(id = R.drawable.img_empty_search),
-            contentDescription = null,
-        )
     }
 }
 
