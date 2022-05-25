@@ -3,12 +3,15 @@ package com.woocommerce.android.ui.products.selector
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -16,6 +19,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -36,6 +40,7 @@ import com.woocommerce.android.R.dimen
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
@@ -54,6 +59,7 @@ fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
 
     ProductSelectorScreen(
         state = viewState,
+        onClearButtonClick = viewModel::onClearButtonClick,
         onProductClick = viewModel::onProductClick,
         onLoadMore = viewModel::onLoadMore
     )
@@ -62,12 +68,14 @@ fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
 @Composable
 fun ProductSelectorScreen(
     state: ViewState,
+    onClearButtonClick: () -> Unit,
     onProductClick: (ProductListItem) -> Unit,
     onLoadMore: () -> Unit
 ) {
     when {
         state.products.isNotEmpty() -> ProductList(
             state = state,
+            onClearButtonClick = onClearButtonClick,
             onProductClick = onProductClick,
             onLoadMore = onLoadMore
         )
@@ -105,6 +113,7 @@ private fun EmptyProductList() {
 @Composable
 private fun ProductList(
     state: ViewState,
+    onClearButtonClick: () -> Unit,
     onProductClick: (ProductListItem) -> Unit,
     onLoadMore: () -> Unit,
 ) {
@@ -114,6 +123,28 @@ private fun ProductList(
             .fillMaxHeight()
             .background(color = MaterialTheme.colors.surface)
     ) {
+        Box(
+            modifier = Modifier
+                .height(dimensionResource(dimen.major_200))
+                .padding(dimensionResource(dimen.minor_100))
+                .fillMaxWidth()
+        ) {
+            if (state.selectedProductsCount > 0) {
+                WCTextButton(
+                    onClick = onClearButtonClick,
+                    text = stringResource(id = R.string.product_selector_clear_button_title),
+                    allCaps = false,
+                    modifier = Modifier.align(Alignment.CenterStart)
+                )
+            }
+
+            WCTextButton(
+                onClick = { },
+                text = stringResource(id = R.string.product_selector_filter_button_title),
+                allCaps = false,
+                modifier = Modifier.align(Alignment.CenterEnd)
+            )
+        }
         LazyColumn(
             state = listState,
             modifier = Modifier
@@ -162,18 +193,25 @@ private fun ProductList(
 
         WCColoredButton(
             onClick = { /*TODO*/ },
-            text = StringUtils.getQuantityString(
-                quantity = state.selectedProductCount,
-                default = R.string.product_selector_select_button_title_default,
-                one = R.string.product_selector_select_button_title_one
-            ),
+            text = getDoneButtonTitle(state.selectedProductsCount),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(dimensionResource(id = R.dimen.major_100)),
-            enabled = state.selectedProductCount > 0
+                .padding(dimensionResource(id = R.dimen.major_100))
         )
     }
 }
+
+@Composable
+private fun getDoneButtonTitle(selectedItemsCount: Int) =
+    if (selectedItemsCount > 0) {
+        StringUtils.getQuantityString(
+            quantity = selectedItemsCount,
+            default = R.string.product_selector_select_button_title_default,
+            one = R.string.product_selector_select_button_title_one
+        )
+    } else {
+        stringResource(R.string.done)
+    }
 
 @Composable
 @Suppress("MagicNumber")
@@ -263,7 +301,7 @@ fun ProductListPreview() {
         )
     )
 
-    ProductList(state = ViewState(products = products), {}, {})
+    ProductList(state = ViewState(products = products, selectedProductsCount = 3), {}, {}, {})
 }
 
 @Preview
