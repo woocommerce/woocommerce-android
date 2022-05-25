@@ -39,7 +39,7 @@ class RegularCurrencyInputHandlerTests {
             supportsNegativeValues = true
         )
 
-        val filteredInput = inputHandler.filter("", 0, 0, "-1", 1, 2)
+        val filteredInput = inputHandler.filter("", 0, 0, "1", 0, 1)
 
         assertThat(filteredInput).isEqualTo("0")
     }
@@ -151,5 +151,19 @@ class RegularCurrencyInputHandlerTests {
         val adjustedText = inputHandler.adjustText("00999")
 
         assertThat(adjustedText).isEqualTo("999")
+    }
+
+    @Test
+    fun `given field doesn't support empty state, when deleting last digit before minus, then update content to 0`() {
+        setup(
+            supportsEmptyState = false,
+            supportsNegativeValues = true,
+        )
+
+        val initialText = "-9"
+        val filteredInput = inputHandler.filter("", 0, 0, initialText, 1, 2)
+        val adjustedText = inputHandler.adjustText(initialText.replaceRange(1, 2, filteredInput))
+
+        assertThat(adjustedText).isEqualTo("0")
     }
 }

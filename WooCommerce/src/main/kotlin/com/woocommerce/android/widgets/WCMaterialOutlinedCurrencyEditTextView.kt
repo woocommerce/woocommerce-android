@@ -308,7 +308,7 @@ class RegularCurrencyInputHandler(
         }.toString().replace(decimalSeparator, ".")
 
         return when {
-            !supportsEmptyState && (newValue.isEmpty() || newValue == "-") -> {
+            !supportsEmptyState && newValue.isEmpty() -> {
                 // Prevent clearing the field if supportsEmptyState is false
                 "0"
             }
@@ -321,7 +321,7 @@ class RegularCurrencyInputHandler(
                 // Prevent negative values if they are not supported
                 ""
             }
-            supportsEmptyState && supportsNegativeValues && newValue == "-" -> {
+            supportsNegativeValues && newValue == "-" -> {
                 // Allow entering minus sign
                 source
             }
@@ -343,6 +343,7 @@ class RegularCurrencyInputHandler(
 
         val updatedText = when {
             text.toString() == "0-" -> "-0"
+            text.toString() == "-" && !supportsEmptyState -> "0"
             text.matches("^-?0+\\d+".toRegex()) -> text.replace("^(-?)0+(\\d+)".toRegex(), "$1$2")
             else -> text
         }
