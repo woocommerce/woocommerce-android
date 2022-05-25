@@ -191,10 +191,10 @@ private fun ConditionsSection(
             onClick = onSelectProductsButtonClick,
             text =
             if (viewState.couponDraft.productIds.isEmpty()) {
-                stringResource(R.string.coupon_conditions_products_select_products_button_title)
+                stringResource(R.string.coupon_conditions_products_select_products_title)
             } else {
                 stringResource(
-                    R.string.coupon_conditions_products_edit_products_button_title,
+                    R.string.coupon_conditions_products_edit_products_title,
                     viewState.couponDraft.productIds.size
                 )
             },

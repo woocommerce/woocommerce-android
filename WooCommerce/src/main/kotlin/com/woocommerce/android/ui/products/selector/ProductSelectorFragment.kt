@@ -12,7 +12,6 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import dagger.hilt.android.AndroidEntryPoint
-import kotlin.properties.Delegates.observable
 
 @AndroidEntryPoint
 class ProductSelectorFragment : BaseFragment() {
@@ -34,4 +33,6 @@ class ProductSelectorFragment : BaseFragment() {
             }
         }
     }
+
+    override fun getFragmentTitle() = getString(R.string.coupon_conditions_products_select_products_title)
 }

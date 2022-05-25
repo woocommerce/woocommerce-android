@@ -1989,8 +1989,8 @@
     <string name="coupon_restrictions_exclude_sale_items_hint">Turn this on if the coupon should not apply to items on sale. Per-item coupons will only work if the item is not on sale. Per-cart coupons will only work if there are items in the cart that are not on sale.</string>
     <string name="coupon_select_products_button_title_one">Select %d product</string>
     <string name="coupon_select_products_button_title_default">Select %d products</string>
-    <string name="coupon_conditions_products_select_products_button_title">Select products</string>
-    <string name="coupon_conditions_products_edit_products_button_title">Edit products (%d)</string>
+    <string name="coupon_conditions_products_select_products_title">Select products</string>
+    <string name="coupon_conditions_products_edit_products_title">Edit products (%d)</string>
     <string name="coupon_conditions_products_select_product_label">Select product %s</string>
     <string name="coupon_conditions_products_sku_value">SKU: %s</string>
 

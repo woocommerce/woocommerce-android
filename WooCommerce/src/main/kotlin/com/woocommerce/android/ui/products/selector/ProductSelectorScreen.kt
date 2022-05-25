@@ -111,15 +111,6 @@ private fun ProductList(
             .fillMaxHeight()
             .background(color = MaterialTheme.colors.surface)
     ) {
-        Text(
-            text = "Select products",
-            style = MaterialTheme.typography.h4,
-            color = MaterialTheme.colors.onSurface,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .padding(dimensionResource(id = R.dimen.major_100))
-        )
-
         LazyColumn(
             state = listState,
             modifier = Modifier
