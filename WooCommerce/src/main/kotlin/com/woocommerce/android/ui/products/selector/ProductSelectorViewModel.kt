@@ -20,7 +20,6 @@ import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.UNSELECTED
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
-import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -58,7 +57,7 @@ class ProductSelectorViewModel @Inject constructor(
     private val loadingState = MutableStateFlow(IDLE)
     private val selectedProductIds = MutableStateFlow(navArgs.productIds.toList())
 
-    val productsState = combine(
+    val viewSate = combine(
         productListHandler.productsFlow,
         loadingState.withIndex()
             .debounce {
@@ -70,7 +69,7 @@ class ProductSelectorViewModel @Inject constructor(
             .map { it.value },
         selectedProductIds
     ) { products, loadingState, selectedIds ->
-        ProductSelectorState(
+        ViewState(
             loadingState = loadingState,
             products = products.map { it.toUiModel(selectedIds) }
         )
@@ -131,7 +130,7 @@ class ProductSelectorViewModel @Inject constructor(
 
     fun onProductClick(item: ProductListItem) {
         if (item.type == VARIABLE) {
-            triggerEvent(NavigateToVariationListEvent(item.id))
+//            triggerEvent(NavigateToVariationListEvent(item.id))
         } else {
             if (selectedProductIds.value.contains(item.id)) {
                 selectedProductIds.value = selectedProductIds.value - item.id
@@ -149,7 +148,7 @@ class ProductSelectorViewModel @Inject constructor(
         }
     }
 
-    data class ProductSelectorState(
+    data class ViewState(
         val loadingState: LoadingState = IDLE,
         val products: List<ProductListItem> = emptyList()
     )
@@ -168,6 +167,4 @@ class ProductSelectorViewModel @Inject constructor(
     enum class LoadingState {
         IDLE, LOADING, APPENDING
     }
-
-    data class NavigateToVariationListEvent(val productId: Long) : MultiLiveEvent.Event()
 }

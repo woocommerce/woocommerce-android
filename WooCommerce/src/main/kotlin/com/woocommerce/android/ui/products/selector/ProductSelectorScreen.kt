@@ -42,7 +42,7 @@ import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.APPENDING
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.LOADING
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductListItem
-import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorState
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ViewState
 import com.woocommerce.android.ui.products.selector.SelectionState.PARTIALLY_SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
 import com.woocommerce.android.ui.products.selector.components.SelectorListItem
@@ -50,10 +50,10 @@ import com.woocommerce.android.util.StringUtils
 
 @Composable
 fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
-    val productSelectorState by viewModel.productsState.observeAsState(ProductSelectorState())
+    val viewState by viewModel.viewSate.observeAsState(ViewState())
 
     ProductSelectorScreen(
-        state = productSelectorState,
+        state = viewState,
         onProductClick = viewModel::onProductClick,
         onLoadMore = viewModel::onLoadMore
     )
@@ -61,7 +61,7 @@ fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
 
 @Composable
 fun ProductSelectorScreen(
-    state: ProductSelectorState,
+    state: ViewState,
     onProductClick: (ProductListItem) -> Unit,
     onLoadMore: () -> Unit
 ) {
@@ -104,7 +104,7 @@ private fun EmptyProductList() {
 
 @Composable
 private fun ProductList(
-    state: ProductSelectorState,
+    state: ViewState,
     onProductClick: (ProductListItem) -> Unit,
     onLoadMore: () -> Unit,
 ) {
@@ -265,7 +265,7 @@ fun CouponListPreview() {
         )
     )
 
-    ProductList(state = ProductSelectorState(products = products), {}, {})
+    ProductList(state = ViewState(items = products), {}, {})
 }
 
 @Preview
