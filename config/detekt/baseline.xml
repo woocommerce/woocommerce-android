@@ -191,9 +191,6 @@
     <ID>NoWildcardImports:com.woocommerce.android.ui.compose.animations.SkeletonAnimation.kt:3</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.compose.component.InfiniteListHandler.kt:4</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.compose.theme.Theme.kt:4</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.coupons.CouponListFragment.kt:4</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.coupons.CouponListScreen.kt:6</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.coupons.CouponListViewModel.kt:17</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.coupons.details.CouponDetailsScreen.kt:10</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.coupons.details.CouponDetailsScreen.kt:19</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.coupons.details.CouponDetailsScreen.kt:3</ID>

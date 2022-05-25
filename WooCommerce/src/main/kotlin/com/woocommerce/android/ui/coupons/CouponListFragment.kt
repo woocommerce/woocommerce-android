@@ -1,8 +1,13 @@
 package com.woocommerce.android.ui.coupons
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.MenuItem.OnActionExpandListener
+import android.view.View
+import android.view.ViewGroup
 import android.widget.SearchView.OnQueryTextListener
 import androidx.appcompat.widget.SearchView
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -19,10 +24,13 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.COUPONS
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.coupons.CouponListViewModel.NavigateToCouponDetailsEvent
 import com.woocommerce.android.ui.feedback.SurveyType
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
@@ -39,6 +47,7 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
             ?: FeatureFeedbackSettings.FeedbackState.UNANSWERED
 
     private val viewModel: CouponListViewModel by viewModels()
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -78,6 +87,7 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is NavigateToCouponDetailsEvent -> navigateToCouponDetails(event.couponId)
+                is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
             }
         }
     }
@@ -107,22 +117,7 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
                 searchMenuItem.collapseActionView()
             }
         }
-        searchMenuItem.setOnActionExpandListener(object : OnActionExpandListener {
-            override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
-                if (isAdded) {
-                    viewModel.onSearchStateChanged(open = true)
-                }
-                return true
-            }
-
-            override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
-                if (isAdded) {
-                    viewModel.onSearchStateChanged(open = false)
-                }
-                return true
-            }
-        })
-        searchView.setOnQueryTextListener(object : OnQueryTextListener, SearchView.OnQueryTextListener {
+        val textQueryListener = object : OnQueryTextListener, SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 if (isAdded) {
                     viewModel.onSearchQueryChanged(query.orEmpty())
@@ -133,6 +128,23 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
             override fun onQueryTextChange(newText: String?): Boolean {
                 if (isAdded) {
                     viewModel.onSearchQueryChanged(newText.orEmpty())
+                }
+                return true
+            }
+        }
+        searchMenuItem.setOnActionExpandListener(object : OnActionExpandListener {
+            override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+                if (isAdded) {
+                    viewModel.onSearchStateChanged(open = true)
+                    searchView.setOnQueryTextListener(textQueryListener)
+                }
+                return true
+            }
+
+            override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+                if (isAdded) {
+                    searchView.setOnQueryTextListener(null)
+                    viewModel.onSearchStateChanged(open = false)
                 }
                 return true
             }

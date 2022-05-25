@@ -46,6 +46,9 @@
         <argument
             android:name="currencyCode"
             app:argType="string" />
+        <argument
+            android:name="showLimitUsageToXItems"
+            app:argType="boolean" />
     </fragment>
     <fragment
         android:id="@+id/productSelectorFragment"

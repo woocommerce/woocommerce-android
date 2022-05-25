@@ -1091,8 +1091,8 @@
     <string name="card_reader_onboarding_country_not_supported_contact_support">Need some help? &lt;a href=\'\'&gt;Contact support&lt;/a&gt;</string>
     <string name="card_reader_onboarding_country_not_supported_learn_more">&lt;a href=\'\'&gt;Learn more&lt;/a&gt; about accepting payments with your mobile device and ordering card readers</string>
 
-    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">We don\'t support Stripe in %1$s</string>
-    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">We don\'t support WooCommerce Payments in %1$s</string>
+    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">We don\'t support WooCommerce Stripe extension in %1$s</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">We don\'t support WooCommerce Payments extension in %1$s</string>
     <string name="card_reader_onboarding_stripe_account_in_unsupported_country">We don\'t support Stripe accounts registered in %1$s</string>
 
     <string name="card_reader_onboarding_wcpay_not_installed_header">Install WooCommerce Payments</string>
@@ -1915,6 +1915,8 @@
     <string name="coupon_list_wip_title">View and edit coupons</string>
     <string name="coupon_list_wip_message_enabled">We’ve been working on making it possible to view and edit coupons from your device!</string>
     <string name="coupon_list_view_coupon">View coupon summary</string>
+    <string name="coupon_list_loading_failed">Fetching coupons failed</string>
+    <string name="coupon_list_search_failed">Searching coupons failed</string>
     <string name="coupon_details_heading">Coupon Summary</string>
     <string name="coupon_details_minimum_spend">Minimum spend of %s</string>
     <string name="coupon_details_maximum_spend">Maximum spend of %s</string>
@@ -1972,8 +1974,7 @@
     <string name="coupon_edit_add_description_hint">Add the description of the coupon.</string>
     <string name="coupon_edit_expiry_date">Coupon Expiry Date</string>
     <string name="coupon_edit_expiry_date_none">None</string>
-    <string name="coupon_edit_expiry_date_dialog_edit">Edit Expiry Date</string>
-    <string name="coupon_edit_expiry_date_dialog_delete">Delete Expiry Date</string>
+    <string name="coupon_edit_expiry_clear_expiry_date">Clear</string>
     <string name="coupon_edit_free_shipping">Include Free Shipping?</string>
     <string name="coupon_edit_usage_section">Usage Details</string>
     <string name="coupon_edit_usage_restrictions">Usage Restrictions</string>
@@ -1981,6 +1982,7 @@
     <string name="coupon_restrictions_maximum_spend_hint">Maximum Spend (%1$s)</string>
     <string name="coupon_restrictions_limit_per_coupon_hint">Usage Limit Per Coupon</string>
     <string name="coupon_restrictions_amount_limit_hint">Limit Usage To X Items</string>
+    <string name="coupon_restrictions_limit_per_user_hint">Usage Limit Per User</string>
     <string name="coupon_restrictions_individual_use">Individual Use Only</string>
     <string name="coupon_restrictions_individual_use_hint">Turn this on if the coupon cannot be used in conjunction with other coupons.</string>
     <string name="coupon_restrictions_exclude_sale_items">Exclude Sale Items</string>

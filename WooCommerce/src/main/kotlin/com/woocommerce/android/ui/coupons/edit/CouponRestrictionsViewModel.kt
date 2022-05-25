@@ -32,7 +32,8 @@ class CouponRestrictionsViewModel @Inject constructor(
             ViewState(
                 restrictions = restrictions,
                 currencyCode = navArgs.currencyCode,
-                hasChanges = !restrictions.isSameRestrictions(navArgs.restrictions)
+                hasChanges = !restrictions.isSameRestrictions(navArgs.restrictions),
+                showLimitUsageToXItems = navArgs.showLimitUsageToXItems
             )
         }.asLiveData()
 
@@ -56,6 +57,24 @@ class CouponRestrictionsViewModel @Inject constructor(
         }
     }
 
+    fun onUsageLimitPerCouponChanged(value: Int) {
+        restrictionsDraft.update {
+            it.copy(usageLimit = value)
+        }
+    }
+
+    fun onLimitUsageToXItemsChanged(value: Int) {
+        restrictionsDraft.update {
+            it.copy(limitUsageToXItems = value)
+        }
+    }
+
+    fun onUsageLimitPerUserChanged(value: Int) {
+        restrictionsDraft.update {
+            it.copy(usageLimitPerUser = value)
+        }
+    }
+
     fun onIndividualUseChanged(isForIndividualUse: Boolean) {
         restrictionsDraft.update {
             it.copy(isForIndividualUse = isForIndividualUse)
@@ -71,6 +90,7 @@ class CouponRestrictionsViewModel @Inject constructor(
     data class ViewState(
         val restrictions: CouponRestrictions,
         val currencyCode: String,
-        val hasChanges: Boolean
+        val hasChanges: Boolean,
+        val showLimitUsageToXItems: Boolean
     )
 }

@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.AlertDialog
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -29,7 +28,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
@@ -42,7 +40,6 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.window.DialogProperties
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.Coupon.Type
@@ -317,59 +314,15 @@ private fun DescriptionButton(description: String?, onButtonClicked: () -> Unit)
 @Composable
 private fun ExpiryField(dateExpires: Date?, onExpiryDateChanged: (Date?) -> Unit) {
     val dateFormat = remember { SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM) }
-    var showEditDateDialog by rememberSaveable { mutableStateOf(false) }
     var showDatePicker by rememberSaveable { mutableStateOf(false) }
 
     WCOutlinedSpinner(
-        onClick = {
-            if (dateExpires != null) {
-                showEditDateDialog = true
-            } else {
-                showDatePicker = true
-            }
-        },
+        onClick = { showDatePicker = true },
         value = dateExpires?.let { dateFormat.format(it) }
             ?: stringResource(id = R.string.coupon_edit_expiry_date_none),
         label = stringResource(id = R.string.coupon_edit_expiry_date),
         modifier = Modifier.fillMaxWidth()
     )
-
-    if (showEditDateDialog) {
-        AlertDialog(
-            onDismissRequest = { showEditDateDialog = false },
-            properties = DialogProperties(),
-            buttons = {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(dimensionResource(id = R.dimen.major_100))
-                        .background(MaterialTheme.colors.surface)
-                ) {
-                    WCOutlinedButton(
-                        text = stringResource(id = R.string.coupon_edit_expiry_date_dialog_edit),
-                        onClick = {
-                            showEditDateDialog = false
-                            showDatePicker = true
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    )
-
-                    WCOutlinedButton(
-                        text = stringResource(id = R.string.coupon_edit_expiry_date_dialog_delete),
-                        onClick = {
-                            showEditDateDialog = false
-                            onExpiryDateChanged(null)
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    )
-                }
-            }
-        )
-    }
 
     if (showDatePicker) {
         DatePickerDialog(
@@ -379,6 +332,14 @@ private fun ExpiryField(dateExpires: Date?, onExpiryDateChanged: (Date?) -> Unit
                 onExpiryDateChanged(it)
             },
             onDismissRequest = { showDatePicker = false },
+            neutralButton = {
+                TextButton(onClick = {
+                    showDatePicker = false
+                    onExpiryDateChanged(null)
+                }) {
+                    Text(stringResource(id = R.string.coupon_edit_expiry_clear_expiry_date))
+                }
+            },
             dateFormat = dateFormat
         )
     }
