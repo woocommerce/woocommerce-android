@@ -119,13 +119,7 @@ class EditCouponViewModel @Inject constructor(
         }
     }
 
-    fun onAllProductsButtonClick() {
-        couponDraft.value?.let {
-            triggerEvent(NavigateToProductSelector(it.productIds))
-        }
-    }
-
-    fun onEditProductsButtonClick() {
+    fun onSelectProductsButtonClick() {
         couponDraft.value?.let {
             triggerEvent(NavigateToProductSelector(it.productIds))
         }

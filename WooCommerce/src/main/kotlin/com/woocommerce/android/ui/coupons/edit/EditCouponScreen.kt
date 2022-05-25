@@ -71,8 +71,7 @@ fun EditCouponScreen(viewModel: EditCouponViewModel) {
             onExpiryDateChanged = viewModel::onExpiryDateChanged,
             onFreeShippingChanged = viewModel::onFreeShippingChanged,
             onUsageRestrictionsClick = viewModel::onUsageRestrictionsClick,
-            onAllProductsButtonClick = viewModel::onAllProductsButtonClick,
-            onEditProductsButtonClick = viewModel::onEditProductsButtonClick
+            onSelectProductsButtonClick = viewModel::onSelectProductsButtonClick
         )
     }
 }
@@ -87,8 +86,7 @@ fun EditCouponScreen(
     onExpiryDateChanged: (Date?) -> Unit = {},
     onFreeShippingChanged: (Boolean) -> Unit = {},
     onUsageRestrictionsClick: () -> Unit = {},
-    onAllProductsButtonClick: () -> Unit = {},
-    onEditProductsButtonClick: () -> Unit = {}
+    onSelectProductsButtonClick: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -108,7 +106,7 @@ fun EditCouponScreen(
             onExpiryDateChanged = onExpiryDateChanged,
             onFreeShippingChanged = onFreeShippingChanged
         )
-        ConditionsSection(viewState, onAllProductsButtonClick, onEditProductsButtonClick)
+        ConditionsSection(viewState, onSelectProductsButtonClick)
         UsageRestrictionsSection(viewState, onUsageRestrictionsClick)
         WCColoredButton(
             onClick = { /*TODO*/ },
@@ -176,8 +174,7 @@ private fun DetailsSection(
 @Suppress("UnusedPrivateMember")
 private fun ConditionsSection(
     viewState: ViewState,
-    onAllProductsButtonClick: () -> Unit,
-    onEditProductsButtonClick: () -> Unit
+    onSelectProductsButtonClick: () -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
@@ -191,13 +188,7 @@ private fun ConditionsSection(
             color = colorResource(id = R.color.color_on_surface_medium)
         )
         WCOutlinedButton(
-            onClick = onAllProductsButtonClick,
-            text = stringResource(id = R.string.coupon_conditions_products_all_products_button_title),
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.onSurface),
-            modifier = Modifier.fillMaxWidth()
-        )
-        WCOutlinedButton(
-            onClick = onEditProductsButtonClick,
+            onClick = onSelectProductsButtonClick,
             text =
             if (viewState.couponDraft.productIds.isEmpty()) {
                 stringResource(R.string.coupon_conditions_products_select_products_button_title)
