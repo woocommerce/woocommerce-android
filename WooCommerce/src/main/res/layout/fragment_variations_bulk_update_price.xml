@@ -15,7 +15,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+            <com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView
                 android:id="@+id/price"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

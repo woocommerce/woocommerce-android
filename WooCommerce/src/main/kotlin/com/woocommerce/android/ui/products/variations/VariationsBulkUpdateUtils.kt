@@ -17,10 +17,3 @@ fun <T : Serializable?> Collection<T>.groupType(): ValuesGroupType {
     }
 }
 
-fun formatPrice(value: BigDecimal, currency: String, isCurrencyPrefix: Boolean): String {
-    return if (isCurrencyPrefix) {
-        "$currency $value"
-    } else {
-        "$value $currency"
-    }
-}

@@ -15,9 +15,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.WCSettingsModel
-import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.LEFT
-import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.LEFT_SPACE
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -41,7 +38,6 @@ class VariationsBulkUpdatePriceViewModel @Inject constructor(
 
     init {
         viewState = viewState.copy(
-            currencyPosition = parameters.currencyFormattingParameters?.currencyPosition,
             currency = parameters.currencySymbol,
             pricesGroupType = data.getPriceCollection().groupType(),
             priceType = data.priceType,
@@ -95,11 +91,7 @@ class VariationsBulkUpdatePriceViewModel @Inject constructor(
         val pricesGroupType: ValuesGroupType? = null,
         val variationsToUpdateCount: Int? = null,
         val isProgressDialogShown: Boolean = false,
-        private val currencyPosition: WCSettingsModel.CurrencyPosition? = null,
-    ) : Parcelable {
-        val isCurrencyPrefix: Boolean
-            get() = currencyPosition == LEFT || currencyPosition == LEFT_SPACE
-    }
+    ) : Parcelable
 
     @Parcelize
     data class PriceUpdateData(

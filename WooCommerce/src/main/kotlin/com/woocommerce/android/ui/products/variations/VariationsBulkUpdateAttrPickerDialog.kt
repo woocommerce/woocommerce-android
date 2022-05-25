@@ -20,9 +20,11 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdateAttrPickerViewModel.OpenVariationsBulkUpdatePrice
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdateAttrPickerViewModel.ViewState
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdatePriceViewModel.PriceUpdateData
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import java.math.BigDecimal
+import javax.inject.Inject
 
 private const val DEFAULT_BG_DIM = 0.32F
 private const val HALF_EXPANDED_RATIO = 0.5F
@@ -30,6 +32,8 @@ private const val KEY_EXTRA_SHEET_STATE = "key_sheet_state"
 
 @AndroidEntryPoint
 class VariationsBulkUpdateAttrPickerDialog : WCBottomSheetDialogFragment() {
+    @Inject lateinit var currencyFormatter: CurrencyFormatter
+
     private var _binding: FragmentVariationsBulkUpdateAttrPickerBinding? = null
     private val binding get() = _binding!!
 
@@ -83,7 +87,11 @@ class VariationsBulkUpdateAttrPickerDialog : WCBottomSheetDialogFragment() {
             is ValuesGroupType.Common -> {
                 val price = newState.regularPriceGroupType.data as? BigDecimal?
                 val currency = newState.currency
-                if (price != null && currency != null) formatPrice(price, currency, newState.isCurrencyPrefix) else ""
+                if (price != null && currency != null) {
+                    currencyFormatter.formatCurrency(amount =  price, currencyCode = currency)
+                } else {
+                    ""
+                }
             }
         }
         binding.salePriceSubtitle.text = when (newState.salePriceGroupType) {
@@ -92,7 +100,11 @@ class VariationsBulkUpdateAttrPickerDialog : WCBottomSheetDialogFragment() {
             is ValuesGroupType.Common -> {
                 val price = newState.salePriceGroupType.data as? BigDecimal?
                 val currency = newState.currency
-                if (price != null && currency != null) formatPrice(price, currency, newState.isCurrencyPrefix) else ""
+                if (price != null && currency != null) {
+                    currencyFormatter.formatCurrency(amount =  price, currencyCode = currency)
+                } else {
+                    ""
+                }
             }
         }
     }
