@@ -38,9 +38,9 @@ import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductListItem
-import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductListItem.SelectionState.PARTIALLY_SELECTED
-import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductListItem.SelectionState.SELECTED
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorState
+import com.woocommerce.android.ui.products.selector.SelectionState.PARTIALLY_SELECTED
+import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
 import com.woocommerce.android.ui.products.selector.components.SelectorListItem
 import com.woocommerce.android.util.StringUtils
 

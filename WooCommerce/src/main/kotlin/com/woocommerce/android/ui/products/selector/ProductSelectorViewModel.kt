@@ -13,8 +13,8 @@ import com.woocommerce.android.ui.products.ProductStockStatus.InStock
 import com.woocommerce.android.ui.products.ProductStockStatus.NotAvailable
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
-import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductListItem.SelectionState.SELECTED
-import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductListItem.SelectionState.UNSELECTED
+import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
+import com.woocommerce.android.ui.products.selector.SelectionState.UNSELECTED
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -181,12 +181,10 @@ class ProductSelectorViewModel @Inject constructor(
         val stockAndPrice: String? = null,
         val sku: String? = null,
         val selectionState: SelectionState = UNSELECTED
-    ) {
-        enum class SelectionState {
-            SELECTED,
-            UNSELECTED,
-            PARTIALLY_SELECTED
-        }
+    )
+
+    enum class LoadingState {
+        IDLE, LOADING, APPENDING
     }
 
     data class NavigateToVariationListEvent(val productId: Long) : MultiLiveEvent.Event()

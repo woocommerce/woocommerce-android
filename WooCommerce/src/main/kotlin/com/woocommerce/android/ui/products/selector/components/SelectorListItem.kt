@@ -31,10 +31,10 @@ import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
-import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductListItem.SelectionState
-import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductListItem.SelectionState.PARTIALLY_SELECTED
-import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductListItem.SelectionState.SELECTED
-import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductListItem.SelectionState.UNSELECTED
+import com.woocommerce.android.ui.products.selector.SelectionState
+import com.woocommerce.android.ui.products.selector.SelectionState.PARTIALLY_SELECTED
+import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
+import com.woocommerce.android.ui.products.selector.SelectionState.UNSELECTED
 
 @Composable
 fun SelectorListItem(
