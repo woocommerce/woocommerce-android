@@ -12,9 +12,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -27,16 +29,18 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.R.dimen
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.APPENDING
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.LOADING
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductListItem
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorState
 import com.woocommerce.android.ui.products.selector.SelectionState.PARTIALLY_SELECTED
@@ -67,7 +71,7 @@ fun ProductSelectorScreen(
             onProductClick = onProductClick,
             onLoadMore = onLoadMore
         )
-        state.products.isEmpty() && state.isLoading -> ProductListSkeleton()
+        state.products.isEmpty() && state.loadingState == LOADING -> ProductListSkeleton()
         else -> EmptyProductList()
     }
 }
@@ -134,6 +138,16 @@ private fun ProductList(
                     color = colorResource(id = R.color.divider_color),
                     thickness = dimensionResource(id = R.dimen.minor_10)
                 )
+            }
+            if (state.loadingState == APPENDING) {
+                item {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentWidth()
+                            .padding(vertical = dimensionResource(id = dimen.minor_100))
+                    )
+                }
             }
         }
 

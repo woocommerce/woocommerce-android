@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.products.selector
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.isInteger
 import com.woocommerce.android.model.Product
@@ -13,25 +12,29 @@ import com.woocommerce.android.ui.products.ProductStockStatus.InStock
 import com.woocommerce.android.ui.products.ProductStockStatus.NotAvailable
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.APPENDING
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.IDLE
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.LOADING
 import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.UNSELECTED
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import java.math.BigDecimal
 import javax.inject.Inject
 
+@OptIn(FlowPreview::class)
 @HiltViewModel
 class ProductSelectorViewModel @Inject constructor(
     savedState: SavedStateHandle,
@@ -41,35 +44,42 @@ class ProductSelectorViewModel @Inject constructor(
     private val productListHandler: ProductListHandler,
     private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedState) {
+    companion object {
+        private const val LOADING_STATE_DELAY = 100L
+    }
+
     private val currencyCode by lazy {
         wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
     }
 
     private val navArgs: ProductSelectorFragmentArgs by savedState.navArgs()
 
-    private val isLoading = MutableStateFlow(false)
+    private val loadingState = MutableStateFlow(IDLE)
     private val selectedProductIds = MutableStateFlow(navArgs.productIds.toList())
 
     val productsState = combine(
         productListHandler.productsFlow,
-        isLoading,
+        loadingState.withIndex()
+            .debounce {
+                if (it.index != 0 && it.value == IDLE) {
+                    // When resetting to IDLE, wait a bit to make sure the list has been fetched from DB
+                    LOADING_STATE_DELAY
+                } else 0L
+            }
+            .map { it.value },
         selectedProductIds
-    ) { products, isLoading, searchQuery, selectedIds ->
     ) { products, isLoading, selectedIds ->
         ProductSelectorState(
-            isLoading = isLoading,
-            products = products.map { it.toUiModel(selectedIds.contains(it.remoteId)) },
+            loadingState = isLoading,
+            products = products.map { it.toUiModel(selectedIds.contains(it.remoteId)) }
         )
-    }
-        .asLiveData()
+    }.asLiveData()
 
     init {
-        if (searchQuery.value == null) {
-            viewModelScope.launch {
-                isLoading.value = true
-                productListHandler.fetchProducts(forceRefresh = true)
-                isLoading.value = false
-            }
+        viewModelScope.launch {
+            loadingState.value = LOADING
+            productListHandler.fetchProducts(forceRefresh = true)
+            loadingState.value = IDLE
         }
     }
 
@@ -87,7 +97,7 @@ class ProductSelectorViewModel @Inject constructor(
             else -> resourceProvider.getString(stockStatus.stringResource)
         }
 
-        val price = price?.let { formatCurrency(price, currencyCode) }
+        val price = price?.let { PriceUtils.formatCurrency(price, currencyCode, currencyFormatter) }
 
         val stockAndPrice = listOfNotNull(stockStatus, price).joinToString(" \u2022 ")
 
@@ -96,7 +106,7 @@ class ProductSelectorViewModel @Inject constructor(
             title = name,
             type = productType,
             imageUrl = firstImageUrl,
-            sku = sku,
+            sku = sku.takeIf { it.isNotBlank() },
             stockAndPrice = stockAndPrice,
             numVariations = numVariations,
             selectionState = if (isChecked) SELECTED else UNSELECTED
@@ -117,25 +127,16 @@ class ProductSelectorViewModel @Inject constructor(
 
     fun onLoadMore() {
         viewModelScope.launch {
+            loadingState.value = APPENDING
             productListHandler.loadMore()
-        }
-    }
-    private fun formatCurrency(amount: BigDecimal?, currencyCode: String?): String {
-        return if (amount != null) {
-            currencyCode?.let { currencyFormatter.formatCurrency(amount, it) }
-                ?: amount.toString()
-        } else {
-            ""
+            loadingState.value = IDLE
         }
     }
 
     data class ProductSelectorState(
-        val isLoading: Boolean = false,
-        val searchQuery: String? = null,
+        val loadingState: LoadingState = IDLE,
         val products: List<ProductListItem> = emptyList()
-    ) {
-        val isSearchOpen = searchQuery != null
-    }
+    )
 
     data class ProductListItem(
         val id: Long,
