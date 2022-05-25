@@ -1,9 +1,7 @@
 package com.woocommerce.android.ui.products.selector
 
-import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -26,35 +23,26 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.woocommerce.android.R
-import com.woocommerce.android.R.drawable
-import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.pluralsResource
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductListItem
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductListItem.SelectionState.PARTIALLY_SELECTED
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductListItem.SelectionState.SELECTED
-import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductListItem.SelectionState.UNSELECTED
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorState
+import com.woocommerce.android.ui.products.selector.components.SelectorListItem
+import com.woocommerce.android.util.StringUtils
 
 @Composable
 fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
@@ -139,10 +127,18 @@ private fun ProductList(
                 .fillMaxHeight()
         ) {
             itemsIndexed(state.products) { _, product ->
-                ProductListItem(
-                    product = product,
-                    onProductClick = onProductClick
-                )
+                SelectorListItem(
+                    title = product.title,
+                    imageUrl = product.imageUrl,
+                    infoLine1 = product.stockAndPrice,
+                    infoLine2 = product.sku?.let {
+                        stringResource(R.string.coupon_conditions_products_sku_value, product.sku)
+                    },
+                    selectionState = product.selectionState,
+                    isArrowVisible = product.type == VARIABLE,
+                ) {
+                    onProductClick(product)
+                }
                 Divider(
                     modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100)),
                     color = colorResource(id = R.color.divider_color),
@@ -175,100 +171,6 @@ private fun ProductList(
             enabled = numSelectedProducts > 0
         )
     }
-}
-
-@Composable
-private fun ProductListItem(
-    product: ProductListItem,
-    onProductClick: (ProductListItem) -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .clickable(
-                enabled = true,
-                role = Role.Button,
-                onClick = {
-                    onProductClick(product)
-                }
-            )
-            .padding(
-                horizontal = dimensionResource(id = R.dimen.major_100),
-                vertical = dimensionResource(id = R.dimen.major_75)
-            )
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))
-    ) {
-        val selectionState = when (product.selectionState) {
-            SELECTED -> drawable.ic_rounded_chcekbox_checked
-            UNSELECTED -> drawable.ic_rounded_chcekbox_unchecked
-            PARTIALLY_SELECTED -> drawable.ic_rounded_chcekbox_partially_checked
-        }
-        Crossfade(
-            targetState = selectionState,
-            modifier = Modifier.padding(top = dimensionResource(R.dimen.major_75))
-        ) { icon ->
-            Image(
-                painter = painterResource(id = icon),
-                contentDescription = stringResource(id = string.product_variations)
-            )
-        }
-
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(product.imageUrl)
-                .crossfade(true)
-                .build(),
-            placeholder = painterResource(R.drawable.ic_product),
-            error = painterResource(R.drawable.ic_product),
-            contentDescription = stringResource(R.string.product_image_content_description),
-            contentScale = ContentScale.FillWidth,
-            modifier = Modifier
-                .size(dimensionResource(R.dimen.major_300))
-                .clip(RoundedCornerShape(3.dp))
-        )
-
-        Column(
-            modifier = Modifier
-                .fillMaxHeight()
-                .weight(1f)
-        ) {
-            Text(
-                text = product.title,
-                style = MaterialTheme.typography.subtitle1,
-                color = MaterialTheme.colors.onSurface,
-            )
-
-            if (!product.stockAndPrice.isNullOrEmpty()) {
-                ProductListItemInfo(product.stockAndPrice)
-            }
-
-            if (!product.sku.isNullOrEmpty()) {
-                ProductListItemInfo("SKU: ${product.sku}")
-            }
-        }
-
-        if (product.type == VARIABLE) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_arrow_right),
-                contentDescription = stringResource(id = string.product_variations),
-                modifier = Modifier
-                    .size(dimensionResource(id = R.dimen.major_200))
-                    .align(Alignment.CenterVertically),
-                contentScale = ContentScale.FillWidth
-            )
-        }
-    }
-}
-
-@Composable
-private fun ProductListItemInfo(
-    summary: String,
-) {
-    Text(
-        text = summary,
-        style = MaterialTheme.typography.caption,
-        color = colorResource(id = R.color.color_on_surface_medium)
-    )
 }
 
 @Composable

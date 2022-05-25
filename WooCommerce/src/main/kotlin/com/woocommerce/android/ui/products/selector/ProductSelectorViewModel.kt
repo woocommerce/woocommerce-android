@@ -8,7 +8,6 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.isInteger
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.ProductListHandler
 import com.woocommerce.android.ui.products.ProductStockStatus.Custom
 import com.woocommerce.android.ui.products.ProductStockStatus.InStock
 import com.woocommerce.android.ui.products.ProductStockStatus.NotAvailable

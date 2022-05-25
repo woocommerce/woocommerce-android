@@ -1,0 +1,137 @@
+package com.woocommerce.android.ui.products.selector.components
+
+import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.woocommerce.android.R.color
+import com.woocommerce.android.R.dimen
+import com.woocommerce.android.R.drawable
+import com.woocommerce.android.R.string
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductListItem.SelectionState
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductListItem.SelectionState.PARTIALLY_SELECTED
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductListItem.SelectionState.SELECTED
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductListItem.SelectionState.UNSELECTED
+
+@Composable
+fun SelectorListItem(
+    title: String,
+    imageUrl: String?,
+    infoLine1: String?,
+    infoLine2: String?,
+    selectionState: SelectionState,
+    isArrowVisible: Boolean,
+    onItemClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .clickable(
+                enabled = true,
+                role = Role.Button,
+                onClick = {
+                    onItemClick()
+                },
+                onClickLabel = stringResource(id = string.coupon_conditions_products_select_product_label, title)
+            )
+            .padding(
+                horizontal = dimensionResource(id = dimen.major_100),
+                vertical = dimensionResource(id = dimen.major_75)
+            )
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.major_100))
+    ) {
+        val selectionDrawable = when (selectionState) {
+            SELECTED -> drawable.ic_rounded_chcekbox_checked
+            UNSELECTED -> drawable.ic_rounded_chcekbox_unchecked
+            PARTIALLY_SELECTED -> drawable.ic_rounded_chcekbox_partially_checked
+        }
+        Crossfade(
+            targetState = selectionDrawable,
+            modifier = Modifier.padding(top = dimensionResource(dimen.major_75))
+        ) { icon ->
+            Image(
+                painter = painterResource(id = icon),
+                contentDescription = stringResource(id = string.product_variations)
+            )
+        }
+
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(imageUrl)
+                .crossfade(true)
+                .build(),
+            placeholder = painterResource(drawable.ic_product),
+            error = painterResource(drawable.ic_product),
+            contentDescription = stringResource(string.product_image_content_description),
+            contentScale = ContentScale.FillWidth,
+            modifier = Modifier
+                .size(dimensionResource(dimen.major_300))
+                .clip(RoundedCornerShape(3.dp))
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .weight(1f)
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.subtitle1,
+                color = MaterialTheme.colors.onSurface,
+            )
+
+            if (!infoLine1.isNullOrEmpty()) {
+                ProductListItemInfo(infoLine1)
+            }
+
+            if (!infoLine2.isNullOrEmpty()) {
+                ProductListItemInfo(infoLine2)
+            }
+        }
+
+        if (isArrowVisible) {
+            Image(
+                painter = painterResource(id = drawable.ic_arrow_right),
+                contentDescription = stringResource(id = string.product_variations),
+                modifier = Modifier
+                    .size(dimensionResource(id = dimen.major_200))
+                    .align(Alignment.CenterVertically),
+                contentScale = ContentScale.FillWidth
+            )
+        }
+    }
+}
+
+@Composable
+private fun ProductListItemInfo(
+    summary: String,
+) {
+    Text(
+        text = summary,
+        style = MaterialTheme.typography.caption,
+        color = colorResource(id = color.color_on_surface_medium)
+    )
+}
