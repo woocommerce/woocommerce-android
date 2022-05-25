@@ -8,6 +8,9 @@ import android.view.View
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentVariationsBulkUpdatePriceBinding
+import com.woocommerce.android.extensions.drop
+import com.woocommerce.android.extensions.filterNotNull
+import com.woocommerce.android.extensions.showKeyboardWithDelay
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -36,11 +39,8 @@ class VariationsBulkUpdatePriceFragment : BaseFragment(R.layout.fragment_variati
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setHasOptionsMenu(true)
         _binding = FragmentVariationsBulkUpdatePriceBinding.bind(view)
-        binding.price.setOnTextChangedListener {
-            val price = it.toString().toBigDecimalOrNull()
-            viewModel.onPriceEntered(price)
-        }
-        binding.price.showKeyboard()
+        binding.price.value.filterNotNull().observe(viewLifecycleOwner) { viewModel.onPriceEntered(it) }
+        binding.price.editText.showKeyboardWithDelay()
         observeViewStateChanges()
         observeEvents()
     }
@@ -61,9 +61,6 @@ class VariationsBulkUpdatePriceFragment : BaseFragment(R.layout.fragment_variati
                     Regular -> getString(R.string.variations_bulk_update_regular_price)
                     Sale -> getString(R.string.variations_bulk_update_sale_price)
                 }
-            }
-            new.currency?.takeIfNotEqualTo(old?.currency) {
-                setupPriceInputField(new.currency, new.isCurrencyPrefix)
             }
             new.variationsToUpdateCount?.takeIfNotEqualTo(old?.variationsToUpdateCount) {
                 binding.priceUpdateInfo.text =
@@ -92,16 +89,6 @@ class VariationsBulkUpdatePriceFragment : BaseFragment(R.layout.fragment_variati
                         ""
                     }
                 }
-            }
-        }
-    }
-
-    private fun setupPriceInputField(currency: String, isCurrencyPrefix: Boolean) {
-        with(binding.price) {
-            if (isCurrencyPrefix) {
-                prefixText = currency
-            } else {
-                suffixText = currency
             }
         }
     }
