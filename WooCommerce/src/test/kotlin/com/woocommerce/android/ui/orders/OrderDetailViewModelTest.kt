@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
@@ -79,6 +81,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val repository: OrderDetailRepository = mock()
     private val addonsRepository: AddonRepository = mock()
     private val cardReaderTracker: CardReaderTracker = mock()
+    private val analyticsTraWrapper: AnalyticsTrackerWrapper = mock()
     private val resources: ResourceProvider = mock {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
         on { getString(any(), any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
@@ -149,6 +152,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 productImageMap,
                 paymentCollectibilityChecker,
                 cardReaderTracker,
+                analyticsTraWrapper,
             )
         )
 
@@ -1095,6 +1099,22 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.onSeeReceiptClicked()
 
             assertThat(viewModel.event.value).isInstanceOf(PreviewReceipt::class.java)
+        }
+
+    @Test
+    fun `when user taps on see receipt, then receipt view event is tracked`() =
+        testBlocking {
+            doReturn(order).whenever(repository).getOrderById(any())
+            doReturn(order).whenever(repository).fetchOrderById(any())
+            doReturn(false).whenever(repository).fetchOrderNotes(any())
+            doReturn("testing url")
+                .whenever(appPrefsWrapper).getReceiptUrl(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+            viewModel.start()
+
+            viewModel.onSeeReceiptClicked()
+
+            verify(analyticsTraWrapper).track(AnalyticsEvent.RECEIPT_VIEW_TAPPED)
         }
 
     @Test

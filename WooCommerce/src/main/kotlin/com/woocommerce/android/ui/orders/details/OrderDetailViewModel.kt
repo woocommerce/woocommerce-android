@@ -19,9 +19,11 @@ import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_TRACKING_ADD
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_TRACKING_DELETE_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_TRACKING_DELETE_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_ADDONS_ORDER_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_VIEW_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.SHIPPING_LABEL_ORDER_IS_ELIGIBLE
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.semverCompareTo
@@ -94,6 +96,7 @@ final class OrderDetailViewModel @Inject constructor(
     private val productImageMap: ProductImageMap,
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
     private val cardReaderTracker: CardReaderTracker,
+    private val trackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
     companion object {
         // The required version to support shipping label creation
@@ -252,6 +255,7 @@ final class OrderDetailViewModel @Inject constructor(
     }
 
     fun onSeeReceiptClicked() {
+        trackerWrapper.track(RECEIPT_VIEW_TAPPED)
         loadReceiptUrl()?.let {
             triggerEvent(PreviewReceipt(order.billingAddress.email, it, order.id))
         } ?: WooLog.e(T.ORDERS, "ReceiptUrl is null, but SeeReceipt button is visible")
