@@ -422,7 +422,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
 
     private fun showOrderRefunds(refunds: List<Refund>, order: Order) {
         // display the refunds count in the refunds section
-        val refundsCount = refunds.sumBy { refund -> refund.items.sumBy { it.quantity } }
+        val refundsCount = refunds.sumOf { refund -> refund.items.sumOf { it.quantity } }
         if (refundsCount > 0) {
             binding.orderDetailRefundsInfo.show()
             binding.orderDetailRefundsInfo.updateRefundCount(refundsCount) {
