@@ -29,7 +29,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.Date
 import javax.inject.Inject
 
-@OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+@OptIn(FlowPreview::class)
 @HiltViewModel
 class CouponListViewModel @Inject constructor(
     savedState: SavedStateHandle,
