@@ -86,7 +86,7 @@ private fun EmptyProductList() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = stringResource(id = R.string.coupon_list_empty_heading),
+            text = stringResource(id = R.string.product_list_empty),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.h6,
             modifier = Modifier.padding(
@@ -96,7 +96,7 @@ private fun EmptyProductList() {
         )
         Spacer(Modifier.size(dimensionResource(id = R.dimen.major_325)))
         Image(
-            painter = painterResource(id = R.drawable.img_empty_coupon_list),
+            painter = painterResource(id = R.drawable.img_empty_products),
             contentDescription = null,
         )
     }
@@ -126,7 +126,7 @@ private fun ProductList(
                     imageUrl = product.imageUrl,
                     infoLine1 = product.stockAndPrice,
                     infoLine2 = product.sku?.let {
-                        stringResource(R.string.coupon_conditions_products_sku_value, product.sku)
+                        stringResource(R.string.product_selector_sku_value, product.sku)
                     },
                     selectionState = product.selectionState,
                     isArrowVisible = product.type == VARIABLE,
@@ -166,8 +166,8 @@ private fun ProductList(
             onClick = { /*TODO*/ },
             text = StringUtils.getQuantityString(
                 quantity = numSelectedProducts,
-                default = R.string.coupon_select_products_button_title_default,
-                one = R.string.coupon_select_products_button_title_one
+                default = R.string.product_selector_select_button_title_default,
+                one = R.string.product_selector_select_button_title_one
             ),
             modifier = Modifier
                 .fillMaxWidth()
@@ -220,7 +220,7 @@ private fun ProductListSkeleton() {
 @Preview
 @Composable
 @Suppress("MagicNumber")
-fun CouponListPreview() {
+fun ProductListPreview() {
     val products = listOf(
         ProductListItem(
             id = 1,
@@ -270,12 +270,12 @@ fun CouponListPreview() {
 
 @Preview
 @Composable
-fun CouponListEmptyPreview() {
+fun ProductListEmptyPreview() {
     EmptyProductList()
 }
 
 @Preview
 @Composable
-fun CouponListSkeletonPreview() {
+fun ProductListSkeletonPreview() {
     ProductListSkeleton()
 }
