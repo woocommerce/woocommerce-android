@@ -164,9 +164,10 @@ private fun ProductList(
         val numSelectedProducts = state.products.sumOf(sumLambda)
         WCColoredButton(
             onClick = { /*TODO*/ },
-            text = pluralsResource(
-                R.plurals.coupon_select_products_button_title,
-                numSelectedProducts
+            text = StringUtils.getQuantityString(
+                quantity = numSelectedProducts,
+                default = R.string.coupon_select_products_button_title_default,
+                one = R.string.coupon_select_products_button_title_one
             ),
             modifier = Modifier
                 .fillMaxWidth()
