@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.coupons.edit
 import com.woocommerce.android.R
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Coupon
+import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.coupons.CouponRepository
 import com.woocommerce.android.ui.coupons.CouponTestUtils
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenDescriptionEditor
@@ -14,6 +15,7 @@ import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
@@ -28,7 +30,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 import java.util.Date
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeUnit.DAYS
 
 private const val COUPON_ID = 1L
 
@@ -180,7 +182,7 @@ class EditCouponViewModelTests : BaseUnitTest() {
 
     @Test
     fun `when expiry date is changed, then update the coupon draft`() = testBlocking {
-        val newDate = Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(1))
+        val newDate = Date(System.currentTimeMillis() + DAYS.toMillis(1))
         setup()
 
         val state = viewModel.viewState.runAndCaptureValues {
@@ -246,6 +248,6 @@ class EditCouponViewModelTests : BaseUnitTest() {
         viewModel.onSaveClick()
 
         val event = viewModel.event.captureValues().last()
-        assertThat(event).isEqualTo(ShowSnackbar(R.string.coupon_edit_coupon_update_failed))
+        assertThat(event).isEqualTo(ShowUiStringSnackbar(UiStringRes(R.string.coupon_edit_coupon_update_failed)))
     }
 }

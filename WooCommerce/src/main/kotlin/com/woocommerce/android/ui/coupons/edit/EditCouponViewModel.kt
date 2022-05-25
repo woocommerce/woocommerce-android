@@ -4,8 +4,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.Coupon.CouponRestrictions
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.coupons.CouponRepository
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenCouponRestrictions
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenDescriptionEditor
@@ -13,6 +15,7 @@ import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.navArgs
@@ -25,6 +28,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
@@ -141,8 +145,11 @@ class EditCouponViewModel @Inject constructor(
                     triggerEvent(ShowSnackbar(R.string.coupon_edit_coupon_updated))
                     triggerEvent(Exit)
                 },
-                onFailure = {
-                    triggerEvent(ShowSnackbar(R.string.coupon_edit_coupon_update_failed))
+                onFailure = { exception ->
+                    val message = (exception as? WooException)?.takeIf { it.error.type == WooErrorType.GENERIC_ERROR }
+                        ?.message?.let { UiString.UiStringText(it) }
+                        ?: UiString.UiStringRes(R.string.coupon_edit_coupon_update_failed)
+                    triggerEvent(ShowUiStringSnackbar(message))
                 }
             )
         isSaving.value = false
