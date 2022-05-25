@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.selector
 
 import com.woocommerce.android.WooException
 import com.woocommerce.android.model.Product
@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.map
 import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
-class ProductRepository @Inject constructor(
+class ProductSelectorRepository @Inject constructor(
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite
 ) {
@@ -27,7 +27,7 @@ class ProductRepository @Inject constructor(
         ).let { result ->
             if (result.isError) {
                 WooLog.w(
-                    WooLog.T.COUPONS,
+                    WooLog.T.PRODUCTS,
                     "Searching products failed, error: ${result.error.type}: ${result.error.message}"
                 )
                 Result.failure(WooException(result.error))
