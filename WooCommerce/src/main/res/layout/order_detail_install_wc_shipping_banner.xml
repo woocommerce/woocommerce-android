@@ -14,7 +14,7 @@
             android:orientation="vertical">
 
             <com.google.android.material.textview.MaterialTextView
-                style="@style/TextAppearance.Woo.Body1"
+                style="@style/TextAppearance.Woo.Subtitle2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/major_100"
@@ -37,9 +37,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/minor_50"
-                android:layout_marginTop="@dimen/major_100"
                 android:focusable="false"
-                android:text="@string/shipping_label_install_wc_shipping_banner_button" />
+                android:text="@string/shipping_label_install_wc_shipping_banner_button"
+                android:textAllCaps="false" />
 
         </LinearLayout>
 
