@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.selector
 
 import com.woocommerce.android.model.Product
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -8,7 +8,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 
-class ProductListHandler @Inject constructor(private val repository: ProductRepository) {
+class ProductListHandler @Inject constructor(private val repository: ProductSelectorRepository) {
     companion object {
         private const val PAGE_SIZE = 10
     }

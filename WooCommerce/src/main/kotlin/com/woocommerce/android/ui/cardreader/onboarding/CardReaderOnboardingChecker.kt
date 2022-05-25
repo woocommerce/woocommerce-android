@@ -115,7 +115,14 @@ class CardReaderOnboardingChecker @Inject constructor(
         val wcPayPluginInfo = wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_PAYMENTS)
         val stripePluginInfo = wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY)
 
-        if (isBothPluginsActivated(wcPayPluginInfo, stripePluginInfo)) return WcpayAndStripeActivated
+        if (isBothPluginsActivated(wcPayPluginInfo, stripePluginInfo)) {
+            PluginType.values().forEach { pluginType ->
+                if (!isPluginSupportedInCountry(pluginType, cardReaderConfig)) {
+                    return PluginIsNotSupportedInTheCountry(pluginType, countryCode!!)
+                }
+            }
+            return WcpayAndStripeActivated
+        }
 
         val preferredPlugin = getPreferredPlugin(stripePluginInfo, wcPayPluginInfo)
 
@@ -124,7 +131,7 @@ class CardReaderOnboardingChecker @Inject constructor(
             STRIPE_EXTENSION_GATEWAY -> throw IllegalStateException("Developer error:`preferredPlugin` should be WCPay")
         }
 
-        if (!isPreferredPluginSupportedInCountry(preferredPlugin, cardReaderConfig))
+        if (!isPluginSupportedInCountry(preferredPlugin.type, cardReaderConfig))
             return PluginIsNotSupportedInTheCountry(preferredPlugin.type, countryCode!!)
 
         if (!isPluginVersionSupported(
@@ -176,10 +183,10 @@ class CardReaderOnboardingChecker @Inject constructor(
         )
     }
 
-    private fun isPreferredPluginSupportedInCountry(
-        preferredPlugin: PluginWrapper,
+    private fun isPluginSupportedInCountry(
+        pluginType: PluginType,
         cardReaderConfig: CardReaderConfigForSupportedCountry
-    ) = cardReaderConfig.isExtensionSupported(preferredPlugin.type.toSupportedExtensionType())
+    ) = cardReaderConfig.isExtensionSupported(pluginType.toSupportedExtensionType())
 
     private fun getMinimumSupportedVersionForPlugin(
         preferredPluginType: PluginType,

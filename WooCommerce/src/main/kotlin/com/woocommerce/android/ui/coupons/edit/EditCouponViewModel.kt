@@ -109,11 +109,17 @@ class EditCouponViewModel @Inject constructor(
 
     fun onUsageRestrictionsClick() {
         couponDraft.value?.let {
-            triggerEvent(OpenCouponRestrictions(it.restrictions, currencyCode))
+            triggerEvent(
+                OpenCouponRestrictions(
+                    restrictions = it.restrictions,
+                    currencyCode = currencyCode,
+                    showLimitUsageToXItems = it.type != Coupon.Type.FixedCart
+                )
+            )
         }
     }
 
-    fun onEditProductsButtonClick() {
+    fun onSelectProductsButtonClick() {
         couponDraft.value?.let {
             triggerEvent(NavigateToProductSelector(it.productIds))
         }

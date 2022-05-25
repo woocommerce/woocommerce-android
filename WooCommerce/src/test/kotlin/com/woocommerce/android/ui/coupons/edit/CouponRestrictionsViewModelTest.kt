@@ -15,7 +15,11 @@ class CouponRestrictionsViewModelTest : BaseUnitTest() {
         prepareMocks()
 
         viewModel = CouponRestrictionsViewModel(
-            savedStateHandle = CouponRestrictionsFragmentArgs(storedRestrictions, "USD").initSavedStateHandle(),
+            savedStateHandle = CouponRestrictionsFragmentArgs(
+                restrictions = storedRestrictions,
+                currencyCode = "USD",
+                showLimitUsageToXItems = true
+            ).initSavedStateHandle(),
         )
     }
 
