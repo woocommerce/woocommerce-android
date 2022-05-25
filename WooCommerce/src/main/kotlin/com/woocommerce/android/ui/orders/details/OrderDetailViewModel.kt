@@ -255,7 +255,13 @@ final class OrderDetailViewModel @Inject constructor(
     }
 
     fun onSeeReceiptClicked() {
-        trackerWrapper.track(RECEIPT_VIEW_TAPPED)
+        trackerWrapper.track(
+            RECEIPT_VIEW_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_ID to order.id,
+                AnalyticsTracker.KEY_STATUS to order.status
+            )
+        )
         loadReceiptUrl()?.let {
             triggerEvent(PreviewReceipt(order.billingAddress.email, it, order.id))
         } ?: WooLog.e(T.ORDERS, "ReceiptUrl is null, but SeeReceipt button is visible")
