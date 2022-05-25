@@ -24,14 +24,27 @@ import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_DETAIL_PRODUCT_TAP
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.FragmentOrderDetailBinding
-import com.woocommerce.android.extensions.*
-import com.woocommerce.android.model.*
+import com.woocommerce.android.extensions.handleDialogNotice
+import com.woocommerce.android.extensions.handleDialogResult
+import com.woocommerce.android.extensions.handleNotice
+import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.show
+import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.extensions.whenNotNullNorEmpty
+import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.SHIPPING_LABEL_M4
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.UNANSWERED
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
+import com.woocommerce.android.model.OrderNote
+import com.woocommerce.android.model.OrderShipmentTracking
+import com.woocommerce.android.model.Refund
+import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -54,7 +67,7 @@ import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragme
 import com.woocommerce.android.ui.refunds.RefundSummaryFragment
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlag.CARD_READER
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.widgets.SkeletonView
@@ -206,6 +219,9 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                 binding.orderRefreshLayout.isRefreshing = it
             }
             new.refreshedProductId?.takeIfNotEqualTo(old?.refreshedProductId) { refreshProduct(it) }
+            new.installWcShippingBanner?.takeIfNotEqualTo(old?.installWcShippingBanner) {
+                showInstallWcShippingBanner(it)
+            }
         }
 
         viewModel.orderNotes.observe(
@@ -264,6 +280,10 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         viewModel.start()
     }
 
+    private fun showInstallWcShippingBanner(show: Boolean) {
+        binding.orderDetailInstallWcShippingBanner.isVisible = show
+    }
+
     private fun setupOrderEditingObservers(orderEditingViewModel: OrderEditingViewModel) {
         orderEditingViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
@@ -299,7 +319,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             key = CardReaderPaymentDialogFragment.KEY_CARD_PAYMENT_RESULT,
             entryId = R.id.orderDetailFragment
         ) {
-            if (FeatureFlag.CARD_READER.isEnabled()) {
+            if (CARD_READER.isEnabled()) {
                 viewModel.onCardReaderPaymentCompleted()
             }
         }
@@ -330,19 +350,19 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
             onIssueRefundClickListener = { viewModel.onIssueOrderRefundClicked() },
             onSeeReceiptClickListener = {
-                if (FeatureFlag.CARD_READER.isEnabled()) {
+                if (CARD_READER.isEnabled()) {
                     viewModel.onSeeReceiptClicked()
                 }
             },
             onCollectCardPresentPaymentClickListener = {
-                if (FeatureFlag.CARD_READER.isEnabled()) {
+                if (CARD_READER.isEnabled()) {
                     cardReaderManager.let {
                         viewModel.onAcceptCardPresentPaymentClicked()
                     }
                 }
             },
             onPrintingInstructionsClickListener = {
-                if (FeatureFlag.CARD_READER.isEnabled()) {
+                if (CARD_READER.isEnabled()) {
                     viewModel.onPrintingInstructionsClicked()
                 }
             }
