@@ -132,9 +132,11 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             it.id = 1
             it.siteId = 1
             it.selfHostedSiteId = 1
+            it.name = "https://www.testname.com"
             it
         }
         doReturn(site).whenever(selectedSite).getIfExists()
+        doReturn(site).whenever(selectedSite).get()
         testBlocking {
             doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any())
         }
@@ -1162,5 +1164,22 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             // Then
             verify(analyticsTraWrapper).track(AnalyticsEvent.ORDER_DETAIL_PULLED_TO_REFRESH)
+        }
+
+    @Test
+    fun `when user clicks on share payment url, then event tracked`() =
+        testBlocking {
+            // Given
+            doReturn(order).whenever(repository).getOrderById(any())
+            doReturn(order).whenever(repository).fetchOrderById(any())
+            doReturn(false).whenever(repository).fetchOrderNotes(any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+            viewModel.start()
+
+            // When
+            viewModel.onSharePaymentUrlClicked()
+
+            // Then
+            verify(analyticsTraWrapper).track(AnalyticsEvent.ORDER_DETAIL_PAYMENT_LINK_SHARED)
         }
 }

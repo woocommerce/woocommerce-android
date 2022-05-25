@@ -245,7 +245,7 @@ final class OrderDetailViewModel @Inject constructor(
     }
 
     fun onSharePaymentUrlClicked() {
-        AnalyticsTracker.track(AnalyticsEvent.ORDER_DETAIL_PAYMENT_LINK_SHARED)
+        trackerWrapper.track(AnalyticsEvent.ORDER_DETAIL_PAYMENT_LINK_SHARED)
         triggerEvent(TakePaymentViewModel.SharePaymentUrl(selectedSite.get().name, order.paymentUrl))
     }
 
