@@ -160,19 +160,17 @@ private fun ProductList(
             thickness = dimensionResource(id = R.dimen.minor_10)
         )
 
-        val sumLambda = { product: ProductListItem -> if (product.selectionState == SELECTED) 1 else 0 }
-        val numSelectedProducts = state.products.sumOf(sumLambda)
         WCColoredButton(
             onClick = { /*TODO*/ },
             text = StringUtils.getQuantityString(
-                quantity = numSelectedProducts,
+                quantity = state.selectedProductCount,
                 default = R.string.product_selector_select_button_title_default,
                 one = R.string.product_selector_select_button_title_one
             ),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(dimensionResource(id = R.dimen.major_100)),
-            enabled = numSelectedProducts > 0
+            enabled = state.selectedProductCount > 0
         )
     }
 }
@@ -265,7 +263,7 @@ fun ProductListPreview() {
         )
     )
 
-    ProductList(state = ViewState(items = products), {}, {})
+    ProductList(state = ViewState(products = products), {}, {})
 }
 
 @Preview

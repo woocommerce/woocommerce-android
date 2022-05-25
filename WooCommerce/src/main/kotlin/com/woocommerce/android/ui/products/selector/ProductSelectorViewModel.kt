@@ -71,7 +71,8 @@ class ProductSelectorViewModel @Inject constructor(
     ) { products, loadingState, selectedIds ->
         ViewState(
             loadingState = loadingState,
-            products = products.map { it.toUiModel(selectedIds) }
+            products = products.map { it.toUiModel(selectedIds) },
+            selectedProductCount = selectedIds.size
         )
     }.asLiveData()
 
@@ -150,7 +151,8 @@ class ProductSelectorViewModel @Inject constructor(
 
     data class ViewState(
         val loadingState: LoadingState = IDLE,
-        val products: List<ProductListItem> = emptyList()
+        val products: List<ProductListItem> = emptyList(),
+        val selectedProductCount: Int = 0
     )
 
     data class ProductListItem(
