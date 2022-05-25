@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.initSavedStateHandle
@@ -1181,5 +1182,58 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             // Then
             verify(analyticsTraWrapper).track(AnalyticsEvent.ORDER_DETAIL_PAYMENT_LINK_SHARED)
+        }
+
+    @Test
+    fun `when user adds a new shipment, then event tracked`() =
+        testBlocking {
+            // Given
+            doReturn(order).whenever(repository).getOrderById(any())
+            doReturn(order).whenever(repository).fetchOrderById(any())
+            doReturn(false).whenever(repository).fetchOrderNotes(any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+            viewModel.start()
+
+            // When
+            viewModel.onNewShipmentTrackingAdded(testOrderShipmentTrackings[0])
+
+            // Then
+            verify(analyticsTraWrapper).track(
+                AnalyticsEvent.ORDER_TRACKING_ADD,
+                mapOf(
+                    AnalyticsTracker.KEY_ID to order.id,
+                    AnalyticsTracker.KEY_STATUS to order.status,
+                    AnalyticsTracker.KEY_CARRIER to testOrderShipmentTrackings[0].trackingProvider
+                )
+            )
+        }
+
+    @Test
+    fun `when order status is changed, then event tracked`() =
+        testBlocking {
+            // Given
+            doReturn(order).whenever(repository).getOrderById(any())
+            doReturn(order).whenever(repository).fetchOrderById(any())
+            doReturn(false).whenever(repository).fetchOrderNotes(any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+            val updateSource = OrderStatusUpdateSource.Dialog(
+                oldStatus = order.status.value,
+                newStatus = CoreOrderStatus.PROCESSING.value
+            )
+            viewModel.start()
+
+            // When
+            viewModel.onOrderStatusChanged(updateSource)
+
+            // Then
+            verify(analyticsTraWrapper).track(
+                AnalyticsEvent.ORDER_STATUS_CHANGE,
+                mapOf(
+                    AnalyticsTracker.KEY_ID to order.id,
+                    AnalyticsTracker.KEY_FROM to order.status.value,
+                    AnalyticsTracker.KEY_TO to updateSource.newStatus,
+                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_FLOW_EDITING
+                )
+            )
         }
 }

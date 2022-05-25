@@ -319,7 +319,7 @@ final class OrderDetailViewModel @Inject constructor(
     }
 
     fun onNewShipmentTrackingAdded(shipmentTracking: OrderShipmentTracking) {
-        AnalyticsTracker.track(
+        trackerWrapper.track(
             ORDER_TRACKING_ADD,
             mapOf(
                 AnalyticsTracker.KEY_ID to order.id,
@@ -357,7 +357,7 @@ final class OrderDetailViewModel @Inject constructor(
     }
 
     fun onOrderStatusChanged(updateSource: OrderStatusUpdateSource) {
-        AnalyticsTracker.track(
+        trackerWrapper.track(
             ORDER_STATUS_CHANGE,
             mapOf(
                 AnalyticsTracker.KEY_ID to order.id,
