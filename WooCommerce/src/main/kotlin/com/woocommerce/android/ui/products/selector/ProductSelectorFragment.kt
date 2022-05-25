@@ -23,12 +23,6 @@ class ProductSelectorFragment : BaseFragment() {
             navigationIcon = R.drawable.ic_gridicons_cross_24dp
         )
 
-    private var screenTitle: String by observable("") { _, oldValue, newValue ->
-        if (oldValue != newValue) {
-            updateActivityTitle()
-        }
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -40,6 +34,4 @@ class ProductSelectorFragment : BaseFragment() {
             }
         }
     }
-
-    override fun getFragmentTitle() = screenTitle
 }
