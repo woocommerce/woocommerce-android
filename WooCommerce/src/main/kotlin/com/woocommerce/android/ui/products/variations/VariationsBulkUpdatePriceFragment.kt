@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.products.variations.ValuesGroupType.Mixed
 import com.woocommerce.android.ui.products.variations.ValuesGroupType.None
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdatePriceViewModel.PriceType.Regular
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdatePriceViewModel.PriceType.Sale
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,6 +26,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class VariationsBulkUpdatePriceFragment : BaseFragment(R.layout.fragment_variations_bulk_update_price) {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     private val viewModel: VariationsBulkUpdatePriceViewModel by viewModels()
 
@@ -85,7 +87,7 @@ class VariationsBulkUpdatePriceFragment : BaseFragment(R.layout.fragment_variati
                     val price = pricesGroupType.data as? BigDecimal?
                     if (currency != null && price != null) {
                         getString(R.string.variations_bulk_update_current_price)
-                            .format(formatPrice(price, currency, isCurrencyPrefix))
+                            .format(currencyFormatter.formatCurrency(amount = price, currencyCode = currency))
                     } else {
                         ""
                     }
