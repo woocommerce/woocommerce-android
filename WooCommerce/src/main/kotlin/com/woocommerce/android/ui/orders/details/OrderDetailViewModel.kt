@@ -217,7 +217,7 @@ final class OrderDetailViewModel @Inject constructor(
     }
 
     fun onRefreshRequested() {
-        AnalyticsTracker.track(ORDER_DETAIL_PULLED_TO_REFRESH)
+        trackerWrapper.track(ORDER_DETAIL_PULLED_TO_REFRESH)
         viewState = viewState.copy(isRefreshing = true)
         launch { fetchOrder(false) }
     }

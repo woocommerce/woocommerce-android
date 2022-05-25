@@ -1148,4 +1148,19 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             // Then
             verify(cardReaderTracker).trackCollectPaymentTapped()
         }
+
+    @Test
+    fun `when user refreshes order, then event tracked`() =
+        testBlocking {
+            // Given
+            doReturn(order).whenever(repository).getOrderById(any())
+            doReturn(order).whenever(repository).fetchOrderById(any())
+            viewModel.start()
+
+            // When
+            viewModel.onRefreshRequested()
+
+            // Then
+            verify(analyticsTraWrapper).track(AnalyticsEvent.ORDER_DETAIL_PULLED_TO_REFRESH)
+        }
 }
