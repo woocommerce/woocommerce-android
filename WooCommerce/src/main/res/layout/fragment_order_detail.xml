@@ -72,6 +72,7 @@
                 <!-- Install WC shipping plugin banner -->
                 <com.woocommerce.android.ui.orders.details.views.OrderDetailInstallWcShippingBanner
                     android:id="@+id/orderDetail_installWcShippingBanner"
+                    style="@style/Woo.Card.WithoutPadding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/minor_100"
