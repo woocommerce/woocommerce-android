@@ -15,7 +15,8 @@ object ProductTestUtils {
         isVirtual: Boolean = false,
         isVariable: Boolean = false,
         isPurchasable: Boolean = true,
-        customStatus: String? = null
+        customStatus: String? = null,
+        productType: String = "simple"
     ): Product {
         return WCProductModel(2).apply {
             dateCreated = "2018-01-05T05:14:30Z"
@@ -44,7 +45,7 @@ object ProductTestUtils {
             width = "2"
             height = "3"
             variations = if (isVariable) "[123]" else "[]"
-            attributes = "[]"
+            attributes = """[{"id":1,"name":"Color","position":0,"visible":true,"variation":true,"options":["Blue","Green","Red"]}]"""
             categories = ""
             ratingCount = 4
             groupedProductIds = "[10,11]"
