@@ -441,10 +441,10 @@ final class OrderDetailViewModel @Inject constructor(
                 navArgs.orderId, shipmentTracking.toDataModel()
             )
             if (!onOrderChanged.isError) {
-                AnalyticsTracker.track(ORDER_TRACKING_DELETE_SUCCESS)
+                trackerWrapper.track(ORDER_TRACKING_DELETE_SUCCESS)
                 triggerEvent(ShowSnackbar(string.order_shipment_tracking_delete_success))
             } else {
-                AnalyticsTracker.track(
+                trackerWrapper.track(
                     ORDER_TRACKING_DELETE_FAILED,
                     prepareTracksEventsDetails(onOrderChanged)
                 )
@@ -465,12 +465,12 @@ final class OrderDetailViewModel @Inject constructor(
                                 if (result.event.isError) {
                                     reloadOrderDetails()
                                     triggerEvent(ShowSnackbar(string.order_error_update_general))
-                                    AnalyticsTracker.track(
+                                    trackerWrapper.track(
                                         ORDER_STATUS_CHANGE_FAILED,
                                         prepareTracksEventsDetails(result.event)
                                     )
                                 } else {
-                                    AnalyticsTracker.track(ORDER_STATUS_CHANGE_SUCCESS)
+                                    trackerWrapper.track(ORDER_STATUS_CHANGE_SUCCESS)
                                 }
                             }
                         }
@@ -651,7 +651,7 @@ final class OrderDetailViewModel @Inject constructor(
         ) {
             // we check against the viewstate to avoid sending the event multiple times
             // if the eligibility was cached, and we had the same value after re-fetching it
-            AnalyticsTracker.track(
+            trackerWrapper.track(
                 stat = SHIPPING_LABEL_ORDER_IS_ELIGIBLE,
                 properties = mapOf(
                     "order_status" to order.status.value
