@@ -15,7 +15,6 @@ class ProductCategorySelectorViewModel @Inject constructor(
     savedState: SavedStateHandle,
     repository: ProductCategorySelectorRepository
 ) : ScopedViewModel(savedState) {
-
     private val selectedCategories = MutableStateFlow(emptyList<Long>())
 
     private val categories = combine(
