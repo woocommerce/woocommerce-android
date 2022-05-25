@@ -1,7 +1,15 @@
 package com.woocommerce.android.ui.products.categories.selector
 
-import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
+import com.woocommerce.android.WooException
+import com.woocommerce.android.model.ProductCategory
+import com.woocommerce.android.model.toProductCategory
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.categories.ProductCategoriesFragment
+import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
+import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import org.wordpress.android.fluxc.model.WCProductCategoryModel
 import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
@@ -11,6 +19,31 @@ import javax.inject.Inject
  * [ProductCategorySelectorFragment] and [ProductCategoriesFragment], and then remove the old one that depends
  * on EventBus.
  */
-class ProductCategorySelectorRepository @Inject constructor(private val store: WCProductStore) {
-    
+class ProductCategorySelectorRepository @Inject constructor(
+    private val selectedSite: SelectedSite,
+    private val store: WCProductStore
+) {
+    fun observeCategories(): Flow<List<ProductCategory>> = store.observeCategories(
+        site = selectedSite.get()
+    ).map {
+        it.map(WCProductCategoryModel::toProductCategory)
+    }
+
+    suspend fun fetchCategories(
+        page: Int,
+        pageSize: Int
+    ): Result<Boolean> {
+        return store.fetchProductCategories(selectedSite.get(), page, pageSize)
+            .let { result ->
+                if (result.isError) {
+                    WooLog.w(
+                        WooLog.T.COUPONS,
+                        "Fetching categories failed, error: ${result.error.type}: ${result.error.message}"
+                    )
+                    Result.failure(WooException(result.error))
+                } else {
+                    Result.success(result.model!!)
+                }
+            }
+    }
 }
