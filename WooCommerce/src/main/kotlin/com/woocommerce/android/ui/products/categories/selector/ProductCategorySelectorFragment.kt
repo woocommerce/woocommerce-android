@@ -12,8 +12,8 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CategorySelectorFragment : BaseFragment() {
-    private val viewModel: CategorySelectorViewModel by viewModels()
+class ProductCategorySelectorFragment : BaseFragment() {
+    private val viewModel: ProductCategorySelectorViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return ComposeView(requireContext()).apply {
