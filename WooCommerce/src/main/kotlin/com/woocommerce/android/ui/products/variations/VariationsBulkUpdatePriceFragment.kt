@@ -38,10 +38,7 @@ class VariationsBulkUpdatePriceFragment : BaseFragment(R.layout.fragment_variati
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setHasOptionsMenu(true)
         _binding = FragmentVariationsBulkUpdatePriceBinding.bind(view)
-        binding.price.setOnTextChangedListener {
-            val price = it.toString().toBigDecimalOrNull()
-            viewModel.onPriceEntered(price)
-        }
+        binding.price.setOnTextChangedListener { viewModel.onPriceEntered(it.toString()) }
         binding.price.showKeyboard()
         observeViewStateChanges()
         observeEvents()

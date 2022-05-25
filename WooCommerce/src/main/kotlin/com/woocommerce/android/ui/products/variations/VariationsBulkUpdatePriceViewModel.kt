@@ -58,12 +58,12 @@ class VariationsBulkUpdatePriceViewModel @Inject constructor(
                 PriceType.Regular -> variationRepository.bulkUpdateVariations(
                     productId,
                     variationsIds,
-                    newRegularPrice = viewState.price
+                    newRegularPrice = viewState.price ?: ""
                 )
                 PriceType.Sale -> variationRepository.bulkUpdateVariations(
                     productId,
                     variationsIds,
-                    newSalePrice = viewState.price
+                    newSalePrice = viewState.price ?: ""
                 )
             }
             val snackText = if (result) {
@@ -83,14 +83,14 @@ class VariationsBulkUpdatePriceViewModel @Inject constructor(
         }
     }
 
-    fun onPriceEntered(price: BigDecimal?) {
+    fun onPriceEntered(price: String) {
         viewState = viewState.copy(price = price)
     }
 
     @Parcelize
     data class ViewState(
         val currency: String? = null,
-        val price: BigDecimal? = null,
+        val price: String? = null,
         val priceType: PriceType,
         val pricesGroupType: ValuesGroupType? = null,
         val variationsToUpdateCount: Int? = null,
