@@ -1236,4 +1236,55 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 )
             )
         }
+
+    @Test
+    fun `when user taps a create shipping label button, then event tracked`() =
+        testBlocking {
+            // Given
+            doReturn(order).whenever(repository).getOrderById(any())
+            doReturn(order).whenever(repository).fetchOrderById(any())
+            doReturn(false).whenever(repository).fetchOrderNotes(any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+            viewModel.start()
+
+            // When
+            viewModel.onCreateShippingLabelButtonTapped()
+
+            // Then
+            verify(analyticsTraWrapper).track(AnalyticsEvent.ORDER_DETAIL_CREATE_SHIPPING_LABEL_BUTTON_TAPPED)
+        }
+
+    @Test
+    fun `when user taps a mark order complete button, then event tracked`() =
+        testBlocking {
+            // Given
+            doReturn(order).whenever(repository).getOrderById(any())
+            doReturn(order).whenever(repository).fetchOrderById(any())
+            doReturn(false).whenever(repository).fetchOrderNotes(any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+            viewModel.start()
+
+            // When
+            viewModel.onMarkOrderCompleteButtonTapped()
+
+            // Then
+            verify(analyticsTraWrapper).track(AnalyticsEvent.ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED)
+        }
+
+    @Test
+    fun `when user taps a view order addon button, then event tracked`() =
+        testBlocking {
+            // Given
+            doReturn(order).whenever(repository).getOrderById(any())
+            doReturn(order).whenever(repository).fetchOrderById(any())
+            doReturn(false).whenever(repository).fetchOrderNotes(any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+            viewModel.start()
+
+            // When
+            viewModel.onViewOrderedAddonButtonTapped(order.items[0])
+
+            // Then
+            verify(analyticsTraWrapper).track(AnalyticsEvent.PRODUCT_ADDONS_ORDER_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED)
+        }
 }
