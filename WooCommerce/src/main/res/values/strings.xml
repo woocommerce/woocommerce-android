@@ -803,6 +803,10 @@
     <string name="shipping_label_move_item_dialog_description">This item is currently in %s. Where would you like to move it?</string>
     <string name="shipping_label_move_item_dialog_new_package_option">Add to new package</string>
     <string name="shipping_label_move_item_dialog_original_packaging_option">Ship in original packaging</string>
+    <string name="shipping_label_install_wc_shipping_banner_title">Need a shipping label?</string>
+    <string name="shipping_label_install_wc_shipping_banner_description">Print labels from your phone, with WooCommerce Shipping.</string>
+    <string name="shipping_label_install_wc_shipping_banner_button">Get WooCommerce Shipping</string>
+
     <!--
             Refunds
         -->
