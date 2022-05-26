@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.details
 
-import androidx.annotation.VisibleForTesting
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.util.FeatureFlag
@@ -9,13 +8,12 @@ import javax.inject.Inject
 class ShippingLabelOnboardingRepository @Inject constructor(
     private val orderDetailRepository: OrderDetailRepository
 ) {
-    companion object {
-        // The required version to support shipping label creation
-        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-        const val SUPPORTED_WCS_VERSION = "1.25.11"
-        const val SUPPORTED_WCS_CURRENCY = "USD"
-        const val SUPPORTED_WCS_COUNTRY = "US"
-    }
+   private companion object {
+       // The required version to support shipping label creation
+       const val SUPPORTED_WCS_VERSION = "1.25.11"
+       const val SUPPORTED_WCS_CURRENCY = "USD"
+       const val SUPPORTED_WCS_COUNTRY = "US"
+   }
 
     val isShippingPluginReady: Boolean by lazy {
         val pluginInfo = orderDetailRepository.getWooServicesPluginInfo()

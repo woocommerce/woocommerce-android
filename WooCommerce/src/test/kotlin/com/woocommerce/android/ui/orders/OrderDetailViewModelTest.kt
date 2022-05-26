@@ -15,7 +15,6 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.ShippingLabel
-import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
@@ -29,7 +28,6 @@ import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderInfo
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.ViewState
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository
-import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository.Companion.SUPPORTED_WCS_VERSION
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -127,8 +125,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun setup() {
         doReturn(true).whenever(networkStatus).isConnected()
 
-        doReturn(WooPlugin(true, true, version = SUPPORTED_WCS_VERSION))
-            .whenever(orderDetailRepository).getWooServicesPluginInfo()
         val site = SiteModel().let {
             it.id = 1
             it.siteId = 1
@@ -473,13 +469,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(orderShippingLabels).whenever(orderDetailRepository).getOrderShippingLabels(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
-            doReturn(
-                WooPlugin(
-                    isInstalled = true,
-                    isActive = true,
-                    version = SUPPORTED_WCS_VERSION
-                )
-            ).whenever(orderDetailRepository).getWooServicesPluginInfo()
             doReturn(Unit).whenever(orderDetailRepository).fetchSLCreationEligibility(order.id)
             doReturn(true).whenever(orderDetailRepository).isOrderEligibleForSLCreation(order.id)
             doReturn(true).whenever(shippingLabelOnboardingRepository).isShippingPluginReady
@@ -520,14 +509,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
-
-            doReturn(
-                WooPlugin(
-                    isInstalled = true,
-                    isActive = true,
-                    version = SUPPORTED_WCS_VERSION
-                )
-            ).whenever(orderDetailRepository).getWooServicesPluginInfo()
 
             doReturn(Unit).whenever(orderDetailRepository).fetchSLCreationEligibility(order.id)
             doReturn(true).whenever(orderDetailRepository).isOrderEligibleForSLCreation(order.id)
@@ -602,17 +583,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
-
-            doReturn(
-                WooPlugin(
-                    isInstalled = true,
-                    isActive = true,
-                    version = SUPPORTED_WCS_VERSION
-                )
-            ).whenever(orderDetailRepository).getWooServicesPluginInfo()
-
-            doReturn(Unit).whenever(orderDetailRepository).fetchSLCreationEligibility(order.id)
-            doReturn(true).whenever(orderDetailRepository).isOrderEligibleForSLCreation(order.id)
 
             val shippingLabels = ArrayList<ShippingLabel>()
             viewModel.shippingLabels.observeForever {
@@ -838,8 +808,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
         doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
 
-        doReturn(WooPlugin(isInstalled = true, isActive = true, version = SUPPORTED_WCS_VERSION))
-            .whenever(orderDetailRepository).getWooServicesPluginInfo()
         doReturn(Unit).whenever(orderDetailRepository).fetchSLCreationEligibility(order.id)
         doReturn(true).whenever(orderDetailRepository).isOrderEligibleForSLCreation(order.id)
 
@@ -867,15 +835,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(orderDetailRepository).getOrderById(any())
             doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
 
-            doReturn(
-                WooPlugin(
-                    isInstalled = true,
-                    isActive = true,
-                    version = "1.25.10"
-                )
-            ).whenever(orderDetailRepository)
-                .getWooServicesPluginInfo()
-
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
             doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
             doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any())
@@ -902,17 +861,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
-            doReturn(
-                WooPlugin(
-                    isInstalled = true,
-                    isActive = true,
-                    version = SUPPORTED_WCS_VERSION
-                )
-            )
-                .whenever(orderDetailRepository).getWooServicesPluginInfo()
-            doReturn(Unit).whenever(orderDetailRepository).fetchSLCreationEligibility(order.id)
-            doReturn(false).whenever(orderDetailRepository).isOrderEligibleForSLCreation(order.id)
-
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
             doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
             doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any())
@@ -934,13 +882,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         testBlocking {
             doReturn(order).whenever(orderDetailRepository).getOrderById(any())
             doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
-
-            doReturn(
-                WooPlugin(
-                    isInstalled = false, isActive = false, version = SUPPORTED_WCS_VERSION
-                )
-            ).whenever(orderDetailRepository).getWooServicesPluginInfo()
-
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
             doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
             doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any())
