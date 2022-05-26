@@ -5,4 +5,4 @@
 
 set -e
 
-#restore_gradle_dependency_cache || true
+restore_gradle_dependency_cache || true
