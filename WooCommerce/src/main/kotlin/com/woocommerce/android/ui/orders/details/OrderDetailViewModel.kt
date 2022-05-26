@@ -24,7 +24,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.extensions.isNotEqualTo
-import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
@@ -96,11 +95,6 @@ final class OrderDetailViewModel @Inject constructor(
     private val cardReaderTracker: CardReaderTracker,
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
-    companion object {
-        // The required version to support shipping label creation
-        const val SUPPORTED_WCS_VERSION = "1.25.11"
-    }
-
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
     final var order: Order
@@ -136,12 +130,6 @@ final class OrderDetailViewModel @Inject constructor(
 
     private val _shippingLabels = MutableLiveData<List<ShippingLabel>>()
     val shippingLabels: LiveData<List<ShippingLabel>> = _shippingLabels
-
-    private val isShippingPluginReady: Boolean by lazy {
-        val pluginInfo = orderDetailRepository.getWooServicesPluginInfo()
-        pluginInfo.isInstalled && pluginInfo.isActive &&
-            (pluginInfo.version ?: "0.0.0").semverCompareTo(SUPPORTED_WCS_VERSION) >= 0
-    }
 
     override fun onCleared() {
         super.onCleared()
@@ -561,7 +549,7 @@ final class OrderDetailViewModel @Inject constructor(
     }
 
     private fun fetchSLCreationEligibilityAsync() = async {
-        if (isShippingPluginReady) {
+        if (shippingLabelOnboardingRepository.isShippingPluginReady) {
             orderDetailRepository.fetchSLCreationEligibility(order.id)
         }
     }
@@ -632,7 +620,7 @@ final class OrderDetailViewModel @Inject constructor(
         val orderEligibleForInPersonPayments = viewState.orderInfo?.isPaymentCollectableWithCardReader == true &&
             FeatureFlag.CARD_READER.isEnabled()
 
-        val isOrderEligibleForSLCreation = isShippingPluginReady &&
+        val isOrderEligibleForSLCreation = shippingLabelOnboardingRepository.isShippingPluginReady &&
             orderDetailRepository.isOrderEligibleForSLCreation(order.id) &&
             !orderEligibleForInPersonPayments
 

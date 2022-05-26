@@ -29,6 +29,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderInfo
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.ViewState
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository
+import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository.Companion.SUPPORTED_WCS_VERSION
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -126,7 +127,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun setup() {
         doReturn(true).whenever(networkStatus).isConnected()
 
-        doReturn(WooPlugin(true, true, version = OrderDetailViewModel.SUPPORTED_WCS_VERSION))
+        doReturn(WooPlugin(true, true, version = SUPPORTED_WCS_VERSION))
             .whenever(repository).getWooServicesPluginInfo()
         val site = SiteModel().let {
             it.id = 1
@@ -476,7 +477,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 WooPlugin(
                     isInstalled = true,
                     isActive = true,
-                    version = OrderDetailViewModel.SUPPORTED_WCS_VERSION
+                    version = SUPPORTED_WCS_VERSION
                 )
             ).whenever(repository).getWooServicesPluginInfo()
             doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.id)
@@ -523,7 +524,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 WooPlugin(
                     isInstalled = true,
                     isActive = true,
-                    version = OrderDetailViewModel.SUPPORTED_WCS_VERSION
+                    version = SUPPORTED_WCS_VERSION
                 )
             ).whenever(repository).getWooServicesPluginInfo()
 
@@ -604,7 +605,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 WooPlugin(
                     isInstalled = true,
                     isActive = true,
-                    version = OrderDetailViewModel.SUPPORTED_WCS_VERSION
+                    version = SUPPORTED_WCS_VERSION
                 )
             ).whenever(repository).getWooServicesPluginInfo()
 
@@ -834,7 +835,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(order).whenever(repository).getOrderById(any())
         doReturn(order).whenever(repository).fetchOrderById(any())
 
-        doReturn(WooPlugin(isInstalled = true, isActive = true, version = OrderDetailViewModel.SUPPORTED_WCS_VERSION))
+        doReturn(WooPlugin(isInstalled = true, isActive = true, version = SUPPORTED_WCS_VERSION))
             .whenever(repository).getWooServicesPluginInfo()
         doReturn(Unit).whenever(repository).fetchSLCreationEligibility(order.id)
         doReturn(true).whenever(repository).isOrderEligibleForSLCreation(order.id)
@@ -895,7 +896,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 WooPlugin(
                     isInstalled = true,
                     isActive = true,
-                    version = OrderDetailViewModel.SUPPORTED_WCS_VERSION
+                    version = SUPPORTED_WCS_VERSION
                 )
             )
                 .whenever(repository).getWooServicesPluginInfo()
@@ -926,7 +927,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(
                 WooPlugin(
-                    isInstalled = false, isActive = false, version = OrderDetailViewModel.SUPPORTED_WCS_VERSION
+                    isInstalled = false, isActive = false, version = SUPPORTED_WCS_VERSION
                 )
             ).whenever(repository).getWooServicesPluginInfo()
 

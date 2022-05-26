@@ -17,7 +17,7 @@ class ShippingLabelOnboardingRepository @Inject constructor(
         const val SUPPORTED_WCS_COUNTRY = "US"
     }
 
-    private val isShippingPluginReady: Boolean by lazy {
+    val isShippingPluginReady: Boolean by lazy {
         val pluginInfo = orderDetailRepository.getWooServicesPluginInfo()
         pluginInfo.isInstalled && pluginInfo.isActive &&
             (pluginInfo.version ?: "0.0.0").semverCompareTo(SUPPORTED_WCS_VERSION) >= 0
