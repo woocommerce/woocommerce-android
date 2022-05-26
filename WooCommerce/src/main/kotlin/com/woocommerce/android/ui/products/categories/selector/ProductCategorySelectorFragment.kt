@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,4 +27,6 @@ class ProductCategorySelectorFragment : BaseFragment() {
             }
         }
     }
+
+    override fun getFragmentTitle(): String = getString(R.string.product_category_selector_title)
 }

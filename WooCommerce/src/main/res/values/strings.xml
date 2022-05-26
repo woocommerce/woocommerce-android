@@ -1431,6 +1431,7 @@
     <string name="product_detail_background_image_upload">Image uploading will continue in the background</string>
     <string name="product_card_transition_name">product_card_%1$s</string>
     <string name="product_card_detail_transition_name">product_card_detail</string>
+    <string name="product_category_selector_title">Select categories</string>
     <!--
         Product Add more details Bottom sheet
     -->
