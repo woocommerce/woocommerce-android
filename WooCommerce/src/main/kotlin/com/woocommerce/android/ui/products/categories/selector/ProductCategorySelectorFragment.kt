@@ -21,7 +21,7 @@ class ProductCategorySelectorFragment : BaseFragment() {
 
             setContent {
                 WooThemeWithBackground {
-                    CategorySelectorScreen(viewModel = viewModel)
+                    ProductCategorySelectorScreen(viewModel = viewModel)
                 }
             }
         }

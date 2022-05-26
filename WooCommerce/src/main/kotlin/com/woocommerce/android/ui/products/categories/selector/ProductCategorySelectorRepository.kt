@@ -30,10 +30,10 @@ class ProductCategorySelectorRepository @Inject constructor(
     }
 
     suspend fun fetchCategories(
-        page: Int,
+        offset: Int,
         pageSize: Int
     ): Result<Boolean> {
-        return store.fetchProductCategories(selectedSite.get(), page, pageSize)
+        return store.fetchProductCategories(selectedSite.get(), offset, pageSize)
             .let { result ->
                 if (result.isError) {
                     WooLog.w(
