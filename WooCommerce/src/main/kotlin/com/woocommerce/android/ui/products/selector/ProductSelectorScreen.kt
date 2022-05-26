@@ -5,13 +5,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -19,7 +17,6 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -125,11 +122,10 @@ private fun ProductList(
     ) {
         Box(
             modifier = Modifier
-                .height(dimensionResource(dimen.major_200))
-                .padding(dimensionResource(dimen.minor_100))
+                .padding(horizontal = dimensionResource(dimen.minor_100))
                 .fillMaxWidth()
         ) {
-            if (state.selectedProductsCount > 0) {
+            if (state.selectedItemsCount > 0) {
                 WCTextButton(
                     onClick = onClearButtonClick,
                     text = stringResource(id = R.string.product_selector_clear_button_title),
@@ -160,7 +156,7 @@ private fun ProductList(
                         stringResource(R.string.product_selector_sku_value, product.sku)
                     },
                     selectionState = product.selectionState,
-                    isArrowVisible = product.type == VARIABLE,
+                    isArrowVisible = product.type == VARIABLE && product.numVariations > 0,
                 ) {
                     onProductClick(product)
                 }
@@ -193,7 +189,7 @@ private fun ProductList(
 
         WCColoredButton(
             onClick = { /*TODO*/ },
-            text = getDoneButtonTitle(state.selectedProductsCount),
+            text = getDoneButtonTitle(state.selectedItemsCount),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(dimensionResource(id = R.dimen.major_100))
@@ -301,7 +297,7 @@ fun ProductListPreview() {
         )
     )
 
-    ProductList(state = ViewState(products = products, selectedProductsCount = 3), {}, {}, {})
+    ProductList(state = ViewState(products = products, selectedItemsCount = 3), {}, {}, {})
 }
 
 @Preview
