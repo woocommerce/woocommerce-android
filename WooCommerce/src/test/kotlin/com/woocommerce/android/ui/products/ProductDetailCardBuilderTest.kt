@@ -2,10 +2,14 @@ package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.addons.AddonRepository
+import com.woocommerce.android.ui.products.models.ProductProperty
+import com.woocommerce.android.ui.products.models.ProductProperty.Type.PROPERTY_GROUP
+import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.fail
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -37,5 +41,30 @@ class ProductDetailCardBuilderTest: BaseUnitTest() {
             addonRepository = addonRepo,
             variationRepository = mock()
         )
+    }
+
+    @Test
+    fun `given a product with at least one attribute, then create Attributes card`() = testBlocking {
+        productStub = ProductTestUtils.generateProduct()
+            .copy(
+                reviewsAllowed = false,
+                type = ProductType.VARIABLE.value,
+                weight = 0F,
+                length = 0F,
+                width = 0F,
+                height = 0F
+            )
+
+        val cards = sut.buildPropertyCards(productStub, "")
+        assertThat(cards).isNotEmpty
+
+        cards.filter { it.type == SECONDARY }
+            .takeIf { it.isNotEmpty() and (it.size == 1) }
+            ?.first()?.properties?.filter { it.type == PROPERTY_GROUP }
+            ?.takeIf { it.isNotEmpty() and (it.size == 1) }
+            ?.first()?.run { this as? ProductProperty.PropertyGroup }
+            ?.properties?.toList()
+            ?.let { assertThat(it.first()).isEqualTo(Pair("Color", "3")) }
+            ?: fail("Expected a Product with a single Attribute named Color with value 3 selected")
     }
 }
