@@ -81,7 +81,6 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
                 attributes = emptyList()
             )
 
-
         var foundAttributesCard = false
         val cards = sut.buildPropertyCards(productStub, "")
         assertThat(cards).isNotEmpty
