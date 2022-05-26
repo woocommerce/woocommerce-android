@@ -15,6 +15,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.push.RegisterDevice
+import com.woocommerce.android.push.RegisterDevice.Mode.IF_NEEDED
 import com.woocommerce.android.push.WooNotificationBuilder
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.tools.NetworkStatus
@@ -48,7 +49,6 @@ import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.OnJetpackTimeoutError
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
-import org.wordpress.android.fluxc.store.GetDeviceRegistrationStatus
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
@@ -80,7 +80,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var siteObserver: SiteObserver
     @Inject lateinit var wooLog: WooLogWrapper
     @Inject lateinit var registerDevice: RegisterDevice
-    @Inject lateinit var getDeviceRegistrationStatus: GetDeviceRegistrationStatus
 
     // Listens for changes in device connectivity
     @Inject lateinit var connectionReceiver: ConnectionChangeReceiver
@@ -150,14 +149,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         appCoroutineScope.launch {
             siteObserver.observeAndUpdateSelectedSiteData()
         }
-
-        appCoroutineScope.launch {
-            getDeviceRegistrationStatus().apply {
-                if (this == GetDeviceRegistrationStatus.Status.UNREGISTERED) {
-                    registerDevice()
-                }
-            }
-        }
     }
 
     override fun onAppComesFromBackground() {
@@ -170,6 +161,10 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
         if (networkStatus.isConnected()) {
             updateSelectedSite.runIfNotLimited()
+
+            appCoroutineScope.launch {
+                registerDevice(IF_NEEDED)
+            }
         }
     }
 
@@ -295,9 +290,10 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             }
         }
 
-        if (!isLoggedOut) {
+        val userAccountFetched = !isLoggedOut && event.causeOfChange == AccountAction.FETCH_ACCOUNT
+        if (userAccountFetched) {
             appCoroutineScope.launch {
-                registerDevice()
+                registerDevice(IF_NEEDED)
             }
         }
     }

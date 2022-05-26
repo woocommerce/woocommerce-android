@@ -3,6 +3,7 @@ package com.woocommerce.android.push
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.push.RegisterDevice.Mode.FORCEFULLY
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,7 +21,7 @@ class FCMMessageService : FirebaseMessagingService() {
     override fun onNewToken(newToken: String) {
         appPrefsWrapper.setFCMToken(newToken)
         CoroutineScope(Dispatchers.IO).launch {
-            registerDevice()
+            registerDevice(FORCEFULLY)
         }
     }
 
