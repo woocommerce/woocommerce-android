@@ -170,7 +170,9 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
         updateMultipleReadersFoundRecyclerView(binding, viewState)
 
         // the scanning for readers and connecting to reader images are AnimatedVectorDrawables
-        (binding.illustration.drawable as? AnimatedVectorDrawable)?.start()
+        binding.illustration.post {
+            (binding.illustration.drawable as? AnimatedVectorDrawable)?.start()
+        }
     }
 
     @Suppress("ComplexMethod", "LongMethod")
