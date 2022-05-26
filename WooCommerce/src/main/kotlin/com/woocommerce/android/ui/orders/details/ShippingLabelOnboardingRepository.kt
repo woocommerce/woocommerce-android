@@ -27,7 +27,6 @@ class ShippingLabelOnboardingRepository @Inject constructor(
             && order.currency == SUPPORTED_WCS_CURRENCY
             && !order.isCashPayment
             && !hasVirtualProductsOnly(order)
-            && FeatureFlag.WC_SHIPPING_BANNER.isEnabled()
     }
 
     private fun hasVirtualProductsOnly(order: Order): Boolean {

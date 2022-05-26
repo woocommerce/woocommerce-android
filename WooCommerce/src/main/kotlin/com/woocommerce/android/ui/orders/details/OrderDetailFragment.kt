@@ -66,6 +66,7 @@ import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragme
 import com.woocommerce.android.ui.refunds.RefundSummaryFragment
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlag.CARD_READER
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
@@ -262,7 +263,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     }
 
     private fun showInstallWcShippingBanner(show: Boolean) {
-        binding.orderDetailInstallWcShippingBanner.isVisible = show
+        binding.orderDetailInstallWcShippingBanner.isVisible = show && FeatureFlag.WC_SHIPPING_BANNER.isEnabled()
     }
 
     private fun setupOrderEditingObservers(orderEditingViewModel: OrderEditingViewModel) {
