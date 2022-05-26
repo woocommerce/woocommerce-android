@@ -15,15 +15,14 @@ object ProductTestUtils {
         isVirtual: Boolean = false,
         isVariable: Boolean = false,
         isPurchasable: Boolean = true,
-        customStatus: String? = null,
-        productType: String = "simple"
+        customStatus: String? = null
     ): Product {
         return WCProductModel(2).apply {
             dateCreated = "2018-01-05T05:14:30Z"
             localSiteId = 1
             remoteProductId = productId
             status = customStatus ?: "publish"
-            type = productType
+            type = "simple"
             stockStatus = "instock"
             price = "20.00"
             salePrice = "10.00"
@@ -54,7 +53,6 @@ object ProductTestUtils {
             virtual = isVirtual
             stockQuantity = 4.2
             purchasable = isPurchasable
-            reviewsAllowed = false
         }.toAppModel()
     }
 
