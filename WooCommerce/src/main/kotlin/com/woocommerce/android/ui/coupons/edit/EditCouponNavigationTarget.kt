@@ -10,4 +10,5 @@ sealed class EditCouponNavigationTarget : Event() {
         val currencyCode: String,
         val showLimitUsageToXItems: Boolean
     ) : EditCouponNavigationTarget()
+    data class EditIncludedProductCategories(val categoryIds: List<Long>) : EditCouponNavigationTarget()
 }

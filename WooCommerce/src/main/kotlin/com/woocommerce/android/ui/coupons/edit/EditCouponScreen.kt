@@ -70,7 +70,8 @@ fun EditCouponScreen(viewModel: EditCouponViewModel) {
             onDescriptionButtonClick = viewModel::onDescriptionButtonClick,
             onExpiryDateChanged = viewModel::onExpiryDateChanged,
             onFreeShippingChanged = viewModel::onFreeShippingChanged,
-            onUsageRestrictionsClick = viewModel::onUsageRestrictionsClick
+            onUsageRestrictionsClick = viewModel::onUsageRestrictionsClick,
+            onSelectCategoriesButtonClick = viewModel::onSelectCategoriesButtonClick
         )
     }
 }
@@ -84,7 +85,8 @@ fun EditCouponScreen(
     onDescriptionButtonClick: () -> Unit = {},
     onExpiryDateChanged: (Date?) -> Unit = {},
     onFreeShippingChanged: (Boolean) -> Unit = {},
-    onUsageRestrictionsClick: () -> Unit = {}
+    onUsageRestrictionsClick: () -> Unit = {},
+    onSelectCategoriesButtonClick: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -104,7 +106,7 @@ fun EditCouponScreen(
             onExpiryDateChanged = onExpiryDateChanged,
             onFreeShippingChanged = onFreeShippingChanged
         )
-        ConditionsSection(viewState)
+        ConditionsSection(viewState, onSelectCategoriesButtonClick)
         UsageRestrictionsSection(viewState, onUsageRestrictionsClick)
         WCColoredButton(
             onClick = { /*TODO*/ },
@@ -170,8 +172,34 @@ private fun DetailsSection(
 
 @Composable
 @Suppress("UnusedPrivateMember")
-private fun ConditionsSection(viewState: ViewState) {
-    /*TODO*/
+private fun ConditionsSection(
+    viewState: ViewState,
+    onSelectCategoriesButtonClick: () -> Unit
+) {
+    WCOutlinedButton(
+        onClick = onSelectCategoriesButtonClick,
+        text =
+        if (viewState.couponDraft.categoryIds.isEmpty()) {
+            stringResource(R.string.coupon_edit_select_categories_title)
+        } else {
+            stringResource(
+                R.string.coupon_edit_edit_products_title,
+                viewState.couponDraft.categoryIds.size
+            )
+        },
+        leadingIcon = {
+            Icon(
+                imageVector = if (viewState.couponDraft.categoryIds.isEmpty())
+                    Icons.Filled.Add
+                else
+                    Icons.Filled.Edit,
+                contentDescription = null,
+                modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
+            )
+        },
+        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.onSurface),
+        modifier = Modifier.fillMaxWidth()
+    )
 }
 
 @Composable
