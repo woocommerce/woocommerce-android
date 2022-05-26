@@ -1432,6 +1432,7 @@
     <string name="product_card_transition_name">product_card_%1$s</string>
     <string name="product_card_detail_transition_name">product_card_detail</string>
     <string name="product_category_selector_title">Select categories</string>
+    <string name="product_category_selector_empty_state">No product categories found</string>
     <!--
         Product Add more details Bottom sheet
     -->
