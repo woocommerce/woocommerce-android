@@ -6,7 +6,6 @@ import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.NavigateToProductSelector
-import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.NavigateToVariationSelector
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenCouponRestrictions
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenDescriptionEditor
 
@@ -29,8 +28,6 @@ object EditCouponNavigator {
                         target.selectedProductIds.toLongArray()
                     )
                 )
-            }
-            is NavigateToVariationSelector -> {
             }
             is OpenCouponRestrictions -> {
                 navController.navigate(

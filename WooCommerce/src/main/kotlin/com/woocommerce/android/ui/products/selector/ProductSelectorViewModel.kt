@@ -7,7 +7,7 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.isInteger
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.NavigateToVariationSelector
+import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToVariationSelector
 import com.woocommerce.android.ui.products.ProductStockStatus.Custom
 import com.woocommerce.android.ui.products.ProductStockStatus.InStock
 import com.woocommerce.android.ui.products.ProductStockStatus.NotAvailable
@@ -21,8 +21,10 @@ import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.UNSELECTED
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
@@ -57,7 +59,7 @@ class ProductSelectorViewModel @Inject constructor(
     private val navArgs: ProductSelectorFragmentArgs by savedState.navArgs()
 
     private val loadingState = MutableStateFlow(IDLE)
-    private val selectedProductIds = MutableStateFlow(navArgs.productIds.toSet())
+    private val selectedProductIds = savedState.getStateFlow(viewModelScope, navArgs.productIds.toSet())
 
     val viewSate = combine(
         productListHandler.productsFlow,
@@ -149,6 +151,10 @@ class ProductSelectorViewModel @Inject constructor(
                 selectedProductIds.value = selectedProductIds.value + item.id
             }
         }
+    }
+
+    fun onDoneButtonClick() {
+        triggerEvent(ExitWithResult(selectedProductIds.value))
     }
 
     fun onLoadMore() {

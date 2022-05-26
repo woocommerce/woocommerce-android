@@ -56,6 +56,7 @@ fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
 
     ProductSelectorScreen(
         state = viewState,
+        onDoneButtonClick = viewModel::onDoneButtonClick,
         onClearButtonClick = viewModel::onClearButtonClick,
         onProductClick = viewModel::onProductClick,
         onLoadMore = viewModel::onLoadMore
@@ -65,6 +66,7 @@ fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
 @Composable
 fun ProductSelectorScreen(
     state: ViewState,
+    onDoneButtonClick: () -> Unit,
     onClearButtonClick: () -> Unit,
     onProductClick: (ProductListItem) -> Unit,
     onLoadMore: () -> Unit
@@ -72,6 +74,7 @@ fun ProductSelectorScreen(
     when {
         state.products.isNotEmpty() -> ProductList(
             state = state,
+            onDoneButtonClick = onDoneButtonClick,
             onClearButtonClick = onClearButtonClick,
             onProductClick = onProductClick,
             onLoadMore = onLoadMore
@@ -110,6 +113,7 @@ private fun EmptyProductList() {
 @Composable
 private fun ProductList(
     state: ViewState,
+    onDoneButtonClick: () -> Unit,
     onClearButtonClick: () -> Unit,
     onProductClick: (ProductListItem) -> Unit,
     onLoadMore: () -> Unit,
@@ -188,7 +192,7 @@ private fun ProductList(
         )
 
         WCColoredButton(
-            onClick = { /*TODO*/ },
+            onClick = onDoneButtonClick,
             text = getDoneButtonTitle(state.selectedItemsCount),
             modifier = Modifier
                 .fillMaxWidth()
@@ -297,7 +301,7 @@ fun ProductListPreview() {
         )
     )
 
-    ProductList(state = ViewState(products = products, selectedItemsCount = 3), {}, {}, {})
+    ProductList(state = ViewState(products = products, selectedItemsCount = 3), {}, {}, {}, {})
 }
 
 @Preview
