@@ -219,7 +219,7 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
     @Test
     fun `when order has custom status with auto-draft, then is not collectable`() =
         testBlocking {
-            val order = getOrder(paymentStatus = Order.Status.Custom("auto-draft"))
+            val order = getOrder(paymentStatus = Order.Status.Custom(Order.Status.AUTO_DRAFT))
 
             val isCollectable = checker.isCollectable(order)
 

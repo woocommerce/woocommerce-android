@@ -44,6 +44,6 @@ class CardReaderPaymentCollectibilityChecker @Inject constructor(
         Pending,
         Processing,
         OnHold,
-        Custom("auto-draft")
+        Custom(Order.Status.AUTO_DRAFT)
     )
 }
