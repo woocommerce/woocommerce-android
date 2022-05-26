@@ -44,7 +44,16 @@ object ProductTestUtils {
             width = "2"
             height = "3"
             variations = if (isVariable) "[123]" else "[]"
-            attributes = """[{"id":1,"name":"Color","position":0,"visible":true,"variation":true,"options":["Blue","Green","Red"]}]"""
+            attributes = """[
+                                {
+                                    "id": 1,
+                                    "name":"Color",
+                                    "position":0",
+                                    "visible":"true",
+                                    "variation":"true",
+                                    "options": ["Blue","Green","Red"]
+                                }
+                            ]"""
             categories = ""
             ratingCount = 4
             groupedProductIds = "[10,11]"
