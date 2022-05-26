@@ -21,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.BigDecimalTextFieldValueMapper
+import com.woocommerce.android.ui.compose.component.IntTextFieldValueMapper
 import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
 import com.woocommerce.android.ui.compose.component.WCSwitch
 import java.math.BigDecimal
@@ -30,8 +31,11 @@ fun CouponRestrictionsScreen(viewModel: CouponRestrictionsViewModel) {
     viewModel.viewState.observeAsState().value?.let {
         CouponRestrictionsScreen(
             viewState = it,
-            viewModel::onMinimumAmountChanged,
-            viewModel::onMaximumAmountChanged,
+            onMinimumAmountChanged = viewModel::onMinimumAmountChanged,
+            onMaximumAmountChanged = viewModel::onMaximumAmountChanged,
+            onUsageLimitPerCouponChanged = viewModel::onUsageLimitPerCouponChanged,
+            onLimitUsageToXItemsChanged = viewModel::onLimitUsageToXItemsChanged,
+            onUsageLimitPerUserChanged = viewModel::onUsageLimitPerUserChanged,
             onIndividualUseChanged = viewModel::onIndividualUseChanged,
             onExcludeSaleItemsChanged = viewModel::onExcludeSaleItemsChanged
         )
@@ -41,8 +45,11 @@ fun CouponRestrictionsScreen(viewModel: CouponRestrictionsViewModel) {
 @Composable
 fun CouponRestrictionsScreen(
     viewState: CouponRestrictionsViewModel.ViewState,
-    onMinimumAmountChanged: (BigDecimal) -> Unit = {},
-    onMaximumAmountChanged: (BigDecimal) -> Unit = {},
+    onMinimumAmountChanged: (BigDecimal) -> Unit,
+    onMaximumAmountChanged: (BigDecimal) -> Unit,
+    onUsageLimitPerCouponChanged: (Int) -> Unit,
+    onLimitUsageToXItemsChanged: (Int) -> Unit,
+    onUsageLimitPerUserChanged: (Int) -> Unit,
     onIndividualUseChanged: (Boolean) -> Unit,
     onExcludeSaleItemsChanged: (Boolean) -> Unit
 ) {
@@ -75,6 +82,35 @@ fun CouponRestrictionsScreen(
             modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100)),
             // TODO use KeyboardType.Decimal after updating to Compose 1.2.0
             //  (https://issuetracker.google.com/issues/209835363)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+
+        WCOutlinedTypedTextField(
+            value = viewState.restrictions.usageLimit ?: 0,
+            onValueChange = onUsageLimitPerCouponChanged,
+            label = stringResource(id = R.string.coupon_restrictions_limit_per_coupon_hint),
+            valueMapper = IntTextFieldValueMapper(supportsNegativeValue = false),
+            modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100)),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+
+        if (viewState.showLimitUsageToXItems) {
+            WCOutlinedTypedTextField(
+                value = viewState.restrictions.limitUsageToXItems ?: 0,
+                onValueChange = onLimitUsageToXItemsChanged,
+                label = stringResource(id = R.string.coupon_restrictions_amount_limit_hint),
+                valueMapper = IntTextFieldValueMapper(supportsNegativeValue = false),
+                modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100)),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            )
+        }
+
+        WCOutlinedTypedTextField(
+            value = viewState.restrictions.usageLimitPerUser ?: 0,
+            onValueChange = onUsageLimitPerUserChanged,
+            label = stringResource(id = R.string.coupon_restrictions_limit_per_user_hint),
+            valueMapper = IntTextFieldValueMapper(supportsNegativeValue = false),
+            modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100)),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
 

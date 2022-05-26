@@ -23,7 +23,8 @@ object EditCouponNavigator {
                 navController.navigate(
                     EditCouponFragmentDirections.actionEditCouponFragmentToCouponRestrictionsFragment(
                         target.restrictions,
-                        target.currencyCode
+                        target.currencyCode,
+                        target.showLimitUsageToXItems
                     )
                 )
             }
