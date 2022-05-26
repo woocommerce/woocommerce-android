@@ -30,7 +30,7 @@ object EditCouponNavigator {
                 )
             }
             is OpenCouponRestrictions -> {
-                navController.navigate(
+                navController.navigateSafely(
                     EditCouponFragmentDirections.actionEditCouponFragmentToCouponRestrictionsFragment(
                         target.restrictions,
                         target.currencyCode,
