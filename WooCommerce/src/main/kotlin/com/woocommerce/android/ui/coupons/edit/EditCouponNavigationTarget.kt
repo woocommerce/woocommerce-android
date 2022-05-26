@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.coupons.edit
 
 import com.woocommerce.android.model.Coupon.CouponRestrictions
-import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 
 sealed class EditCouponNavigationTarget : Event() {
