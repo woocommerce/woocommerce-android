@@ -12,8 +12,4 @@ sealed class EditCouponNavigationTarget : Event() {
         val showLimitUsageToXItems: Boolean
     ) : EditCouponNavigationTarget()
     data class NavigateToProductSelector(val selectedProductIds: List<Long>) : EditCouponNavigationTarget()
-    data class NavigateToVariationSelector(
-        val productId: Long,
-        val selectedVariationIds: Set<Long>
-    ) : EditCouponNavigationTarget()
 }

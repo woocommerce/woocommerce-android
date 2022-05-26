@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.texteditor.SimpleTextEditorFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.products.selector.ProductSelectorFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlin.properties.Delegates.observable
 
@@ -69,6 +70,10 @@ class EditCouponFragment : BaseFragment() {
 
         handleResult<Coupon.CouponRestrictions>(CouponRestrictionsFragment.RESTRICTIONS_RESULT) {
             viewModel.onRestrictionsUpdated(it)
+        }
+
+        handleResult<Set<Long>>(ProductSelectorFragment.PRODUCT_SELECTOR_RESULT) {
+            viewModel.onSelectedProductsUpdated(it)
         }
     }
 

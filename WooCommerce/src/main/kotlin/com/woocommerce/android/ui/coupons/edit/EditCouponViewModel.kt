@@ -131,6 +131,12 @@ class EditCouponViewModel @Inject constructor(
         }
     }
 
+    fun onSelectedProductsUpdated(productIds: Set<Long>) {
+        couponDraft.update {
+            it?.copy(productIds = productIds.toList())
+        }
+    }
+
     data class ViewState(
         val couponDraft: Coupon,
         val localizedType: String?,
