@@ -49,7 +49,7 @@ class ProductSelectorViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedState) {
     companion object {
-        private const val LOADING_STATE_DELAY = 100L
+        private const val STATE_UPDATE_DELAY = 100L
     }
 
     private val currencyCode by lazy {
@@ -67,7 +67,7 @@ class ProductSelectorViewModel @Inject constructor(
             .debounce {
                 if (it.index != 0 && it.value == IDLE) {
                     // When resetting to IDLE, wait a bit to make sure the list has been fetched from DB
-                    LOADING_STATE_DELAY
+                    STATE_UPDATE_DELAY
                 } else 0L
             }
             .map { it.value },
@@ -136,7 +136,7 @@ class ProductSelectorViewModel @Inject constructor(
 
     fun onClearButtonClick() {
         launch {
-            delay(100) // let the animation play out before hiding the button
+            delay(STATE_UPDATE_DELAY) // let the animation play out before hiding the button
             selectedProductIds.value = emptySet()
         }
     }

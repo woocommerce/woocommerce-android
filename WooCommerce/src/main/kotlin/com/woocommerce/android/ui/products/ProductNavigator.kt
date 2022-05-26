@@ -343,7 +343,7 @@ class ProductNavigator @Inject constructor() {
             }
 
             is NavigateToVariationSelector -> {
-
+                // TODO
             }
 
             is ExitProduct -> fragment.findNavController().navigateUp()

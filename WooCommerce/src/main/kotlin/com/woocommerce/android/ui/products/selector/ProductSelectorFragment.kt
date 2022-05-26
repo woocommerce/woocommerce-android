@@ -9,13 +9,8 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateBackWithResult
-import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.coupons.edit.CouponRestrictionsFragment
-import com.woocommerce.android.ui.coupons.edit.CouponRestrictionsFragment.Companion
-import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget
-import com.woocommerce.android.ui.coupons.edit.EditCouponNavigator
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductNavigator
@@ -55,7 +50,6 @@ class ProductSelectorFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupObservers()
-        handleResults()
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -68,9 +62,6 @@ class ProductSelectorFragment : BaseFragment() {
                 is ProductNavigationTarget -> navigator.navigate(this, event)
             }
         }
-    }
-
-    private fun handleResults() {
     }
 
     override fun getFragmentTitle() = getString(R.string.coupon_conditions_products_select_products_title)
