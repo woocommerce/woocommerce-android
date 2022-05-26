@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.Loa
 import com.woocommerce.android.ui.products.selector.SelectionState.PARTIALLY_SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.UNSELECTED
+import com.woocommerce.android.ui.products.selector.VariationSelectorViewModel.VariationSelectionResult
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -46,6 +47,7 @@ class ProductSelectorViewModel @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
     private val productListHandler: ProductListHandler,
+    private val variationSelectorRepository: VariationSelectorRepository,
     private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -163,6 +165,11 @@ class ProductSelectorViewModel @Inject constructor(
             productListHandler.loadMore()
             loadingState.value = IDLE
         }
+    }
+
+    fun onSelectedVariationsUpdated(result: VariationSelectionResult) {
+        val oldIds = variationSelectorRepository.getProduct(result.productId)?.variationIds ?: emptyList()
+        selectedProductIds.value = selectedProductIds.value - oldIds.toSet() + result.selectedVariationIds
     }
 
     data class ViewState(

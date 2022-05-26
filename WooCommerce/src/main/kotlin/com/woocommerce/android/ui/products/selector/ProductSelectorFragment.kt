@@ -8,12 +8,14 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductNavigator
+import com.woocommerce.android.ui.products.selector.VariationSelectorViewModel.VariationSelectionResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -50,6 +52,7 @@ class ProductSelectorFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupObservers()
+        handleResults()
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -61,6 +64,12 @@ class ProductSelectorFragment : BaseFragment() {
                 }
                 is ProductNavigationTarget -> navigator.navigate(this, event)
             }
+        }
+    }
+
+    private fun handleResults() {
+        handleResult<VariationSelectionResult>(VariationSelectorFragment.VARIATION_SELECTOR_RESULT) {
+            viewModel.onSelectedVariationsUpdated(it)
         }
     }
 
