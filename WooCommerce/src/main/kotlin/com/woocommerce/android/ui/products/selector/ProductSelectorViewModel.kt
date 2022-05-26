@@ -26,6 +26,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
@@ -56,7 +57,7 @@ class ProductSelectorViewModel @Inject constructor(
     private val navArgs: ProductSelectorFragmentArgs by savedState.navArgs()
 
     private val loadingState = MutableStateFlow(IDLE)
-    private val selectedProductIds = MutableStateFlow(navArgs.productIds.toList())
+    private val selectedProductIds = MutableStateFlow(navArgs.productIds.toSet())
 
     val viewSate = combine(
         productListHandler.productsFlow,
@@ -73,7 +74,7 @@ class ProductSelectorViewModel @Inject constructor(
         ViewState(
             loadingState = loadingState,
             products = products.map { it.toUiModel(selectedIds) },
-            selectedProductsCount = selectedIds.size
+            selectedItemsCount = selectedIds.size
         )
     }.asLiveData()
 
@@ -85,9 +86,9 @@ class ProductSelectorViewModel @Inject constructor(
         }
     }
 
-    private fun Product.toUiModel(selectedIds: List<Long>): ProductListItem {
+    private fun Product.toUiModel(selectedIds: Set<Long>): ProductListItem {
         fun getProductSelection(): SelectionState {
-            return if (productType == VARIABLE) {
+            return if (productType == VARIABLE && numVariations > 0) {
                 val intersection = variationIds.intersect(selectedIds.toSet())
                 if (intersection.isEmpty()) {
                     UNSELECTED
@@ -126,12 +127,16 @@ class ProductSelectorViewModel @Inject constructor(
             sku = sku.takeIf { it.isNotBlank() },
             stockAndPrice = stockAndPrice,
             numVariations = numVariations,
+            selectedVariationIds = variationIds.intersect(selectedIds),
             selectionState = getProductSelection()
         )
     }
 
     fun onClearButtonClick() {
-        selectedProductIds.value = emptyList()
+        launch {
+            delay(100) // let the animation play out before hiding the button
+            selectedProductIds.value = emptySet()
+        }
     }
 
     fun onProductClick(item: ProductListItem) {
@@ -157,7 +162,7 @@ class ProductSelectorViewModel @Inject constructor(
     data class ViewState(
         val loadingState: LoadingState = IDLE,
         val products: List<ProductListItem> = emptyList(),
-        val selectedProductsCount: Int = 0
+        val selectedItemsCount: Int = 0
     )
 
     data class ProductListItem(
@@ -168,6 +173,7 @@ class ProductSelectorViewModel @Inject constructor(
         val numVariations: Int,
         val stockAndPrice: String? = null,
         val sku: String? = null,
+        val selectedVariationIds: Set<Long> = emptySet(),
         val selectionState: SelectionState = UNSELECTED
     )
 
