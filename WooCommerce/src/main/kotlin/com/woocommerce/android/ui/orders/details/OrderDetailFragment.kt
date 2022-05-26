@@ -82,7 +82,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
 
     private val skeletonView = SkeletonView()
     private var undoSnackbar: Snackbar? = null
-    private var mnuSharePaymentLink: MenuItem? = null
+    private var menuSharePaymentLink: MenuItem? = null
 
     private var screenTitle = ""
         set(value) {
@@ -151,7 +151,9 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.menu_order_detail, menu)
-        mnuSharePaymentLink = menu.findItem(R.id.menu_share_payment_link)
+        menuSharePaymentLink = menu.findItem(R.id.menu_share_payment_link)
+        val menuEditOrder = menu.findItem(R.id.menu_edit_order)
+        menuEditOrder.isVisible = FeatureFlag.UNIFIED_ORDER_EDITING.isEnabled()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -195,7 +197,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                 binding.orderDetailProductList.isVisible = it
             }
             new.isSharePaymentLinkVisible?.takeIfNotEqualTo(old?.isSharePaymentLinkVisible) {
-                mnuSharePaymentLink?.isVisible = new.isSharePaymentLinkVisible
+                menuSharePaymentLink?.isVisible = new.isSharePaymentLinkVisible
             }
             new.toolbarTitle?.takeIfNotEqualTo(old?.toolbarTitle) { screenTitle = it }
             new.isOrderDetailSkeletonShown?.takeIfNotEqualTo(old?.isOrderDetailSkeletonShown) { showSkeleton(it) }
