@@ -53,7 +53,7 @@ private fun LazyListScope.categoryItem(item: CategoryUiModel, depth: Int = 0) {
                 )
             }
 
-            Divider(modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100)))
+            Divider(modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100) * (depth + 1)))
         }
     }
     item.children.forEach {
