@@ -565,7 +565,7 @@ class ProductDetailCardBuilder(
         )
 
     private fun Product.variationAttributes() =
-        takeIf { this.numVariations > 0 && this.variationEnabledAttributes.isNotEmpty() }?.let {
+        takeIf { this.variationEnabledAttributes.isNotEmpty() }?.let {
             val properties = mutableMapOf<String, String>()
             for (attribute in this.variationEnabledAttributes) {
                 properties[attribute.name] = attribute.terms.size.toString()
