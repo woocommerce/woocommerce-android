@@ -24,6 +24,7 @@ import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
@@ -58,7 +59,7 @@ class ProductSelectorViewModel @Inject constructor(
     private val navArgs: ProductSelectorFragmentArgs by savedState.navArgs()
 
     private val loadingState = MutableStateFlow(IDLE)
-    private val selectedProductIds = MutableStateFlow(navArgs.productIds.toSet())
+    private val selectedProductIds = savedState.getStateFlow(viewModelScope, navArgs.productIds.toSet())
 
     val viewSate = combine(
         productListHandler.productsFlow,
