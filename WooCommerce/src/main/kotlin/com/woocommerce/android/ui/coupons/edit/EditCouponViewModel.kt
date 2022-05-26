@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.Coupon.CouponRestrictions
 import com.woocommerce.android.ui.coupons.CouponRepository
-import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.NavigateToProductSelector
+import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.EditIncludedProducts
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenCouponRestrictions
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenDescriptionEditor
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -121,7 +121,7 @@ class EditCouponViewModel @Inject constructor(
 
     fun onSelectProductsButtonClick() {
         couponDraft.value?.let {
-            triggerEvent(NavigateToProductSelector(it.productIds))
+            triggerEvent(EditIncludedProducts(it.productIds))
         }
     }
 
