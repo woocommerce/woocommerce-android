@@ -7,6 +7,7 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.isInteger
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.NavigateToVariationSelector
 import com.woocommerce.android.ui.products.ProductStockStatus.Custom
 import com.woocommerce.android.ui.products.ProductStockStatus.InStock
 import com.woocommerce.android.ui.products.ProductStockStatus.NotAvailable
@@ -134,8 +135,8 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     fun onProductClick(item: ProductListItem) {
-        if (item.type == VARIABLE) {
-//            triggerEvent(NavigateToVariationListEvent(item.id))
+        if (item.type == VARIABLE && item.numVariations > 0) {
+            triggerEvent(NavigateToVariationSelector(item.id, item.selectedVariationIds))
         } else {
             if (selectedProductIds.value.contains(item.id)) {
                 selectedProductIds.value = selectedProductIds.value - item.id
