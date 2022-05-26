@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -24,6 +25,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -32,9 +34,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
+import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.categories.selector.ProductCategorySelectorViewModel.CategoryUiModel
 import com.woocommerce.android.ui.products.categories.selector.ProductCategorySelectorViewModel.LoadingState
+import com.woocommerce.android.util.StringUtils
 
 @Composable
 fun ProductCategorySelectorScreen(viewModel: ProductCategorySelectorViewModel) {
@@ -54,8 +58,7 @@ fun ProductCategorySelectorScreen(
 ) {
     when {
         viewState.categories.isNotEmpty() -> CategoriesList(
-            categories = viewState.categories,
-            isAppending = viewState.loadingState == LoadingState.Appending,
+            viewState = viewState,
             onLoadMore = onLoadMore
         )
         viewState.loadingState == LoadingState.Loading -> CategoriesSkeleton()
@@ -64,29 +67,53 @@ fun ProductCategorySelectorScreen(
 }
 
 @Composable
-private fun CategoriesList(categories: List<CategoryUiModel>, isAppending: Boolean, onLoadMore: () -> Unit = {}) {
-    val lazyListState = rememberLazyListState()
-    LazyColumn(
-        state = lazyListState,
-        modifier = Modifier.background(MaterialTheme.colors.surface)
+private fun CategoriesList(viewState: ProductCategorySelectorViewModel.ViewState, onLoadMore: () -> Unit = {}) {
+    Column(
+        modifier = Modifier
+            .fillMaxHeight()
+            .background(MaterialTheme.colors.surface)
     ) {
-        categories.forEach {
-            categoryItem(item = it)
-        }
+        val lazyListState = rememberLazyListState()
+        LazyColumn(
+            state = lazyListState,
+            modifier = Modifier.weight(1f)
+        ) {
+            viewState.categories.forEach {
+                categoryItem(item = it)
+            }
 
-        if (isAppending) {
-            item {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentWidth()
-                        .padding(vertical = dimensionResource(id = R.dimen.minor_100))
-                )
+            if (viewState.loadingState == LoadingState.Appending) {
+                item {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentWidth()
+                            .padding(vertical = dimensionResource(id = R.dimen.minor_100))
+                    )
+                }
             }
         }
-    }
 
-    InfiniteListHandler(listState = lazyListState, onLoadMore = onLoadMore)
+        InfiniteListHandler(listState = lazyListState, onLoadMore = onLoadMore)
+
+        Divider(
+            color = colorResource(id = R.color.divider_color),
+            thickness = dimensionResource(id = R.dimen.minor_10)
+        )
+
+        WCColoredButton(
+            onClick = { /*TODO*/ },
+            text = StringUtils.getQuantityString(
+                quantity = viewState.selectedCategoriesCount,
+                default = R.string.product_category_selector_select_button_title_default,
+                zero = R.string.done,
+                one = R.string.product_category_selector_select_button_title_one
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(id = R.dimen.major_100)),
+        )
+    }
 }
 
 private fun LazyListScope.categoryItem(item: CategoryUiModel, depth: Int = 0) {
@@ -191,8 +218,9 @@ private fun PreviewProductCategorySelector() {
     WooThemeWithBackground {
         ProductCategorySelectorScreen(
             viewState = ProductCategorySelectorViewModel.ViewState(
-                categories = emptyList(),
-                loadingState = LoadingState.Loading
+                categories = categories,
+                selectedCategoriesCount = 1,
+                loadingState = LoadingState.Idle
             )
         )
     }

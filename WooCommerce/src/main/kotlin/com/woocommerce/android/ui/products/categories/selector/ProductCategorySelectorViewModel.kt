@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.products.categories.selector
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getStateFlow
+import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,20 +25,16 @@ class ProductCategorySelectorViewModel @Inject constructor(
         private const val LOADING_STATE_DELAY = 100L
     }
 
-    private val selectedCategories = MutableStateFlow(emptyList<Long>())
+    private val navArgs: ProductCategorySelectorFragmentArgs by savedState.navArgs()
 
+    private val selectedCategories = savedState.getStateFlow(this, navArgs.categoryIds.toList())
     private val loadingState = MutableStateFlow(LoadingState.Idle)
-
-    private val categories = combine(
-        listHandler.categories,
-        selectedCategories
-    ) { categories, selectedCategories ->
-        categories.map { it.toUiModel(selectedCategories = selectedCategories) }
-    }.toStateFlow(emptyList())
+    private val categories = listHandler.categories
 
     val viewState = combine(
         flow = categories,
-        flow2 = loadingState.withIndex()
+        flow2 = selectedCategories,
+        flow3 = loadingState.withIndex()
             .debounce { (index, loadingState) ->
                 if (index != 0 && loadingState == LoadingState.Idle) {
                     // When resetting to Idle, wait a bit to make sure the data has been fetched from DB
@@ -44,9 +42,10 @@ class ProductCategorySelectorViewModel @Inject constructor(
                 } else 0L
             }
             .map { it.value }
-    ) { categories, loadingState ->
+    ) { categories, selectedCategories, loadingState ->
         ViewState(
-            categories = categories,
+            categories = categories.map { it.toUiModel(selectedCategories = selectedCategories) },
+            selectedCategoriesCount = selectedCategories.size,
             loadingState = loadingState
         )
     }.asLiveData()
@@ -81,6 +80,7 @@ class ProductCategorySelectorViewModel @Inject constructor(
 
     data class ViewState(
         val categories: List<CategoryUiModel>,
+        val selectedCategoriesCount: Int,
         val loadingState: LoadingState
     )
 
