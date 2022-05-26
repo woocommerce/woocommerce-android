@@ -9,6 +9,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
+import org.junit.Assert.assertFalse
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -80,6 +81,8 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
                 attributes = emptyList()
             )
 
+
+        var foundAttributesCard = false
         val cards = sut.buildPropertyCards(productStub, "")
         assertThat(cards).isNotEmpty
 
@@ -89,7 +92,9 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
                 propertyGroup.properties.toList()
                     .find { it.first == "Color" } != null
             }?.properties?.toList()?.let {
-                fail("Expected no Product card with Attributes configured")
+                foundAttributesCard = true
             }
+
+        assertFalse("Expected no Product card with Attributes configured", foundAttributesCard)
     }
 }
