@@ -94,6 +94,7 @@ final class OrderDetailViewModel @Inject constructor(
     private val productImageMap: ProductImageMap,
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
     private val cardReaderTracker: CardReaderTracker,
+    private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
     companion object {
         // The required version to support shipping label creation
@@ -655,7 +656,7 @@ final class OrderDetailViewModel @Inject constructor(
             isShipmentTrackingAvailable = shipmentTracking.isVisible,
             isProductListVisible = orderProducts.isVisible,
             areShippingLabelsVisible = shippingLabels.isVisible,
-            installWcShippingBanner = FeatureFlag.WC_SHIPPING_BANNER.isEnabled()
+            installWcShippingBannerVisible = shippingLabelOnboardingRepository.shouldShowInstallWcShippingFor(order)
         )
     }
 
@@ -696,7 +697,7 @@ final class OrderDetailViewModel @Inject constructor(
         val areShippingLabelsVisible: Boolean? = null,
         val isProductListMenuVisible: Boolean? = null,
         val isSharePaymentLinkVisible: Boolean? = null,
-        val installWcShippingBanner: Boolean? = null
+        val installWcShippingBannerVisible: Boolean? = null
     ) : Parcelable {
         val isMarkOrderCompleteButtonVisible: Boolean?
             get() = if (orderStatus != null) orderStatus.statusKey == CoreOrderStatus.PROCESSING.value else null

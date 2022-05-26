@@ -28,6 +28,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderInfo
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.ViewState
+import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -84,6 +85,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         on { getString(any(), any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
     }
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
+    private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository = mock()
 
     private val savedState = OrderDetailFragmentArgs(orderId = ORDER_ID).initSavedStateHandle()
 
@@ -117,7 +119,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         areShippingLabelsVisible = false,
         isProductListMenuVisible = false,
         isSharePaymentLinkVisible = false,
-        installWcShippingBanner = false
+        installWcShippingBannerVisible = false
     )
 
     @Before
@@ -150,6 +152,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 productImageMap,
                 paymentCollectibilityChecker,
                 cardReaderTracker,
+                shippingLabelOnboardingRepository
             )
         )
 

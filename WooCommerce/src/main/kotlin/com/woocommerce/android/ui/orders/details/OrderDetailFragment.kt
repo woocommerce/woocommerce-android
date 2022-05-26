@@ -219,7 +219,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                 binding.orderRefreshLayout.isRefreshing = it
             }
             new.refreshedProductId?.takeIfNotEqualTo(old?.refreshedProductId) { refreshProduct(it) }
-            new.installWcShippingBanner?.takeIfNotEqualTo(old?.installWcShippingBanner) {
+            new.installWcShippingBannerVisible?.takeIfNotEqualTo(old?.installWcShippingBannerVisible) {
                 showInstallWcShippingBanner(it)
             }
         }
