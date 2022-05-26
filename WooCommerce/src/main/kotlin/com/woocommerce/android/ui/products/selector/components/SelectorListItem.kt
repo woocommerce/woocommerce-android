@@ -24,6 +24,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -57,8 +58,10 @@ fun SelectorListItem(
                 onClickLabel = stringResource(id = string.product_selector_select_product_label, title)
             )
             .padding(
-                horizontal = dimensionResource(id = dimen.major_100),
-                vertical = dimensionResource(id = dimen.major_75)
+                start = dimensionResource(id = dimen.major_100),
+                top = dimensionResource(id = dimen.major_75),
+                bottom = dimensionResource(id = dimen.major_75),
+                end = dimensionResource(id = dimen.minor_75)
             )
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.major_100))
@@ -104,11 +107,11 @@ fun SelectorListItem(
             )
 
             if (!infoLine1.isNullOrEmpty()) {
-                ProductListItemInfo(infoLine1)
+                SelectorListItemInfo(infoLine1)
             }
 
             if (!infoLine2.isNullOrEmpty()) {
-                ProductListItemInfo(infoLine2)
+                SelectorListItemInfo(infoLine2)
             }
         }
 
@@ -126,7 +129,7 @@ fun SelectorListItem(
 }
 
 @Composable
-private fun ProductListItemInfo(
+private fun SelectorListItemInfo(
     summary: String,
 ) {
     Text(
@@ -135,3 +138,16 @@ private fun ProductListItemInfo(
         color = colorResource(id = color.color_on_surface_medium)
     )
 }
+
+@Preview
+@Composable
+private fun SelectorListItemPreview() =
+    SelectorListItem(
+        title = "Item name",
+        imageUrl = null,
+        infoLine1 = "Information 1",
+        infoLine2 = "Information 2",
+        selectionState = SELECTED,
+        isArrowVisible = true,
+        onItemClick = {}
+    )
