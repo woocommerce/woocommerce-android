@@ -240,6 +240,8 @@ data class Order(
 
     sealed class Status(val value: String) : Parcelable {
         companion object {
+            const val AUTO_DRAFT = "auto-draft"
+
             fun fromValue(value: String): Status {
                 return fromDataModel(CoreOrderStatus.fromValue(value)) ?: Custom(value)
             }
