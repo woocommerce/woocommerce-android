@@ -19,7 +19,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/major_100"
-                android:layout_marginTop="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_75"
                 android:focusable="false"
                 android:text="@string/shipping_label_install_wc_shipping_banner_title"
                 android:textStyle="bold" />
