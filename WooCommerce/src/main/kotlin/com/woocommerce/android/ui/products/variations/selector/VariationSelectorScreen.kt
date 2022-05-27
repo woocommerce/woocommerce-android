@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products.selector
+package com.woocommerce.android.ui.products.variations.selector
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -38,10 +38,10 @@ import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
-import com.woocommerce.android.ui.products.selector.VariationSelectorViewModel.LoadingState.APPENDING
-import com.woocommerce.android.ui.products.selector.VariationSelectorViewModel.LoadingState.LOADING
-import com.woocommerce.android.ui.products.selector.VariationSelectorViewModel.VariationListItem
-import com.woocommerce.android.ui.products.selector.VariationSelectorViewModel.ViewState
+import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.LoadingState.APPENDING
+import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.LoadingState.LOADING
+import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.VariationListItem
+import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.ViewState
 import com.woocommerce.android.ui.products.selector.components.SelectorListItem
 
 @Composable

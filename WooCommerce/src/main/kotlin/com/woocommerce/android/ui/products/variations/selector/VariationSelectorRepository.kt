@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products.selector
+package com.woocommerce.android.ui.products.variations.selector
 
 import com.woocommerce.android.WooException
 import com.woocommerce.android.model.ProductVariation

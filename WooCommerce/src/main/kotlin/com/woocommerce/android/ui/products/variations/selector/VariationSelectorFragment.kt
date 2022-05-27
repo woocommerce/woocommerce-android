@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products.selector
+package com.woocommerce.android.ui.products.variations.selector
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,7 +12,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.products.selector.VariationSelectorViewModel.VariationSelectionResult
+import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.VariationSelectionResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
 import kotlin.properties.Delegates.observable

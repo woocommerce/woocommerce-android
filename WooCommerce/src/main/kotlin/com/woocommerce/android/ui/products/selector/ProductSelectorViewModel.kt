@@ -19,7 +19,8 @@ import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.Loa
 import com.woocommerce.android.ui.products.selector.SelectionState.PARTIALLY_SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.UNSELECTED
-import com.woocommerce.android.ui.products.selector.VariationSelectorViewModel.VariationSelectionResult
+import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.VariationSelectionResult
+import com.woocommerce.android.ui.products.variations.selector.VariationSelectorRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult

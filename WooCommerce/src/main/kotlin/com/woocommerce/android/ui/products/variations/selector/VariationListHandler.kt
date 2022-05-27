@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products.selector
+package com.woocommerce.android.ui.products.variations.selector
 
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock

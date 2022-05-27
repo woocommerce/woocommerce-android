@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products.selector
+package com.woocommerce.android.ui.products.variations.selector
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
@@ -11,11 +11,12 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductStockStatus.Custom
 import com.woocommerce.android.ui.products.ProductStockStatus.InStock
 import com.woocommerce.android.ui.products.ProductStockStatus.NotAvailable
+import com.woocommerce.android.ui.products.selector.SelectionState
 import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.UNSELECTED
-import com.woocommerce.android.ui.products.selector.VariationSelectorViewModel.LoadingState.APPENDING
-import com.woocommerce.android.ui.products.selector.VariationSelectorViewModel.LoadingState.IDLE
-import com.woocommerce.android.ui.products.selector.VariationSelectorViewModel.LoadingState.LOADING
+import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.LoadingState.APPENDING
+import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.LoadingState.IDLE
+import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.LoadingState.LOADING
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult

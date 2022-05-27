@@ -63,7 +63,7 @@
     </fragment>
     <fragment
         android:id="@+id/variationSelectorFragment"
-        android:name="com.woocommerce.android.ui.products.selector.VariationSelectorFragment"
+        android:name="com.woocommerce.android.ui.products.variations.selector.VariationSelectorFragment"
         android:label="VariationSelectorFragment" >
         <argument
             android:name="productId"
