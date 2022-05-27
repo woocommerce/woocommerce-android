@@ -30,6 +30,9 @@
             android:name="couponId"
             app:argType="long" />
         <action
+            android:id="@+id/action_editCouponFragment_to_productSelectorFragment"
+            app:destination="@id/productSelectorFragment" />
+        <action
             android:id="@+id/action_editCouponFragment_to_couponRestrictionsFragment"
             app:destination="@id/couponRestrictionsFragment" />
         <action
@@ -49,6 +52,14 @@
         <argument
             android:name="showLimitUsageToXItems"
             app:argType="boolean" />
+    </fragment>
+    <fragment
+        android:id="@+id/productSelectorFragment"
+        android:name="com.woocommerce.android.ui.products.selector.ProductSelectorFragment"
+        android:label="ProductSelectorFragment" >
+        <argument
+            android:name="productIds"
+            app:argType="long[]" />
     </fragment>
     <fragment
         android:id="@+id/productCategorySelectorFragment"

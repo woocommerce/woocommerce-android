@@ -1283,6 +1283,7 @@
     <string name="product_view_in_store">View product on store</string>
     <string name="product_view_affiliate">View affiliate product</string>
     <string name="product_stock_status_instock">In stock</string>
+    <string name="product_stock_status_instock_quantified">%s in stock</string>
     <string name="product_stock_status_instock_with_variations">In stock \u2022 %d variations</string>
     <string name="product_stock_status_out_of_stock">Out of stock</string>
     <string name="product_stock_status_on_backorder">On backorder</string>
@@ -1963,6 +1964,7 @@
     <string name="coupon_details_menu_edit">Edit Coupon</string>
     <string name="coupon_edit_screen_title">Edit %1$s</string>
     <string name="coupon_edit_details_section">Coupon Details</string>
+    <string name="coupon_edit_conditions_section">Apply this coupon to</string>
     <string name="coupon_edit_amount_hint">Amount (%1$s)</string>
     <string name="coupon_edit_amount_percentage_helper">Set the percentage of the discount you want to offer.</string>
     <string name="coupon_edit_amount_rate_helper">Set the amount of the discount you want to offer.</string>
@@ -1995,6 +1997,14 @@
     <string name="coupon_restrictions_individual_use_hint">Turn this on if the coupon cannot be used in conjunction with other coupons.</string>
     <string name="coupon_restrictions_exclude_sale_items">Exclude Sale Items</string>
     <string name="coupon_restrictions_exclude_sale_items_hint">Turn this on if the coupon should not apply to items on sale. Per-item coupons will only work if the item is not on sale. Per-cart coupons will only work if there are items in the cart that are not on sale.</string>
+    <string name="coupon_conditions_products_select_products_title">Select products</string>
+    <string name="coupon_conditions_products_edit_products_title">Edit products (%d)</string>
+
+    <!-- Product selector -->
+    <string name="product_selector_select_product_label">Select product %s</string>
+    <string name="product_selector_sku_value">SKU: %s</string>
+    <string name="product_selector_select_button_title_default">Select %d products</string>
+    <string name="product_selector_select_button_title_one">Select %d product</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>
