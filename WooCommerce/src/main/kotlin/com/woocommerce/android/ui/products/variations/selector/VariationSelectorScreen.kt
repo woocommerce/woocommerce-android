@@ -38,11 +38,11 @@ import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
+import com.woocommerce.android.ui.products.selector.components.SelectorListItem
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.LoadingState.APPENDING
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.LoadingState.LOADING
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.VariationListItem
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.ViewState
-import com.woocommerce.android.ui.products.selector.components.SelectorListItem
 
 @Composable
 fun VariationSelectorScreen(viewModel: VariationSelectorViewModel) {
