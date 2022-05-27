@@ -72,6 +72,7 @@ fun EditCouponScreen(viewModel: EditCouponViewModel) {
             onExpiryDateChanged = viewModel::onExpiryDateChanged,
             onFreeShippingChanged = viewModel::onFreeShippingChanged,
             onUsageRestrictionsClick = viewModel::onUsageRestrictionsClick,
+            onSelectProductsButtonClick = viewModel::onSelectProductsButtonClick,
             onSaveClick = viewModel::onSaveClick
         )
     }
@@ -87,6 +88,7 @@ fun EditCouponScreen(
     onExpiryDateChanged: (Date?) -> Unit = {},
     onFreeShippingChanged: (Boolean) -> Unit = {},
     onUsageRestrictionsClick: () -> Unit = {},
+    onSelectProductsButtonClick: () -> Unit = {},
     onSaveClick: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
@@ -107,7 +109,7 @@ fun EditCouponScreen(
             onExpiryDateChanged = onExpiryDateChanged,
             onFreeShippingChanged = onFreeShippingChanged
         )
-        ConditionsSection(viewState)
+        ConditionsSection(viewState, onSelectProductsButtonClick)
         UsageRestrictionsSection(viewState, onUsageRestrictionsClick)
         WCColoredButton(
             onClick = onSaveClick,
@@ -180,8 +182,46 @@ private fun DetailsSection(
 
 @Composable
 @Suppress("UnusedPrivateMember")
-private fun ConditionsSection(viewState: ViewState) {
-    /*TODO*/
+private fun ConditionsSection(
+    viewState: ViewState,
+    onSelectProductsButtonClick: () -> Unit
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
+        modifier = Modifier
+            .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = stringResource(id = R.string.coupon_edit_conditions_section).toUpperCase(Locale.current),
+            style = MaterialTheme.typography.body2,
+            color = colorResource(id = R.color.color_on_surface_medium)
+        )
+        WCOutlinedButton(
+            onClick = onSelectProductsButtonClick,
+            text =
+            if (viewState.couponDraft.productIds.isEmpty()) {
+                stringResource(R.string.coupon_conditions_products_select_products_title)
+            } else {
+                stringResource(
+                    R.string.coupon_conditions_products_edit_products_title,
+                    viewState.couponDraft.productIds.size
+                )
+            },
+            leadingIcon = {
+                Icon(
+                    imageVector = if (viewState.couponDraft.productIds.isEmpty())
+                        Icons.Filled.Add
+                    else
+                        Icons.Filled.Edit,
+                    contentDescription = null,
+                    modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
+                )
+            },
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.onSurface),
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
 }
 
 @Composable
