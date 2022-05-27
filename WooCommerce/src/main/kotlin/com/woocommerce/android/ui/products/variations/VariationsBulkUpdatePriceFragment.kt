@@ -24,6 +24,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.util.ActivityUtils.hideKeyboard
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -143,5 +144,6 @@ class VariationsBulkUpdatePriceFragment : BaseFragment(R.layout.fragment_variati
     override fun onPause() {
         super.onPause()
         hideProgressDialog()
+        hideKeyboard(requireActivity())
     }
 }
