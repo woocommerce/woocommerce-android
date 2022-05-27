@@ -107,4 +107,9 @@ sealed class ProductNavigationTarget : Event() {
     data class RenameProductAttribute(
         val attributeName: String
     ) : ProductNavigationTarget()
+
+    data class NavigateToVariationSelector(
+        val productId: Long,
+        val selectedVariationIds: Set<Long>
+    ) : ProductNavigationTarget()
 }

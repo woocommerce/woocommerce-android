@@ -199,9 +199,8 @@ private fun ConditionsSection(
         )
         WCOutlinedButton(
             onClick = onSelectProductsButtonClick,
-            text =
-            if (viewState.couponDraft.productIds.isEmpty()) {
-                stringResource(R.string.coupon_conditions_products_select_products_title)
+            text = if (viewState.couponDraft.productIds.isEmpty()) {
+                stringResource(R.string.coupon_conditions_products_all_products_title)
             } else {
                 stringResource(
                     R.string.coupon_conditions_products_edit_products_title,
@@ -209,14 +208,13 @@ private fun ConditionsSection(
                 )
             },
             leadingIcon = {
-                Icon(
-                    imageVector = if (viewState.couponDraft.productIds.isEmpty())
-                        Icons.Filled.Add
-                    else
-                        Icons.Filled.Edit,
-                    contentDescription = null,
-                    modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
-                )
+                if (viewState.couponDraft.productIds.isNotEmpty()) {
+                    Icon(
+                        imageVector = Icons.Filled.Edit,
+                        contentDescription = null,
+                        modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
+                    )
+                }
             },
             colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.onSurface),
             modifier = Modifier.fillMaxWidth()

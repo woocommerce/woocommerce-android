@@ -76,6 +76,7 @@ data class Product(
     val groupedProductIds: List<Long>,
     val crossSellProductIds: List<Long>,
     val upsellProductIds: List<Long>,
+    val variationIds: List<Long>,
     override val length: Float,
     override val width: Float,
     override val height: Float,
@@ -546,6 +547,7 @@ fun WCProductModel.toAppModel(): Product {
         groupedProductIds = this.getGroupedProductIdList(),
         crossSellProductIds = this.getCrossSellProductIdList(),
         upsellProductIds = this.getUpsellProductIdList(),
+        variationIds = this.getVariationIdList(),
         isPurchasable = this.purchasable
     )
 }
