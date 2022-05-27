@@ -66,6 +66,10 @@ class ProductCategorySelectorViewModel @Inject constructor(
         loadingState.value = LoadingState.Idle
     }
 
+    fun onClearSelectionClick() {
+        selectedCategories.value = emptySet()
+    }
+
     fun onDoneClick() {
         triggerEvent(ExitWithResult(selectedCategories.value.toList()))
     }

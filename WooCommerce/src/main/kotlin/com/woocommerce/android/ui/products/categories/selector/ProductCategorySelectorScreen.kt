@@ -53,6 +53,7 @@ fun ProductCategorySelectorScreen(viewModel: ProductCategorySelectorViewModel) {
         ProductCategorySelectorScreen(
             viewState = it,
             onLoadMore = viewModel::onLoadMore,
+            onClearSelectionClick = viewModel::onClearSelectionClick,
             onDoneClick = viewModel::onDoneClick
         )
     }
@@ -62,12 +63,14 @@ fun ProductCategorySelectorScreen(viewModel: ProductCategorySelectorViewModel) {
 fun ProductCategorySelectorScreen(
     viewState: ProductCategorySelectorViewModel.ViewState,
     onLoadMore: () -> Unit = {},
+    onClearSelectionClick: () -> Unit = {},
     onDoneClick: () -> Unit = {},
 ) {
     when {
         viewState.categories.isNotEmpty() -> CategoriesList(
             viewState = viewState,
             onLoadMore = onLoadMore,
+            onClearSelectionClick = onClearSelectionClick,
             onDoneClick = onDoneClick
         )
         viewState.loadingState == LoadingState.Loading -> CategoriesSkeleton()
@@ -79,6 +82,7 @@ fun ProductCategorySelectorScreen(
 private fun CategoriesList(
     viewState: ProductCategorySelectorViewModel.ViewState,
     onLoadMore: () -> Unit,
+    onClearSelectionClick: () -> Unit,
     onDoneClick: () -> Unit
 ) {
     Column(
@@ -87,7 +91,7 @@ private fun CategoriesList(
             .background(MaterialTheme.colors.surface)
     ) {
         WCTextButton(
-            onClick = { /*TODO*/ },
+            onClick = onClearSelectionClick,
             modifier = Modifier.padding(dimensionResource(id = R.dimen.minor_100))
         ) {
             Text(text = stringResource(id = R.string.product_category_selector_clear_selection))
