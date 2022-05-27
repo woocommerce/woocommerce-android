@@ -654,7 +654,8 @@ final class OrderDetailViewModel @Inject constructor(
             isProductListMenuVisible = isOrderEligibleForSLCreation && shippingLabels.isVisible,
             isShipmentTrackingAvailable = shipmentTracking.isVisible,
             isProductListVisible = orderProducts.isVisible,
-            areShippingLabelsVisible = shippingLabels.isVisible
+            areShippingLabelsVisible = shippingLabels.isVisible,
+            installWcShippingBanner = true
         )
     }
 
