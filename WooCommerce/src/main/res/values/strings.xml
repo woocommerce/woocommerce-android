@@ -1437,6 +1437,7 @@
     <string name="product_category_selector_select_button_title_default">Select %1$d Categories</string>
     <string name="product_category_selector_select_button_title_one">Select 1 category</string>
     <string name="product_category_selector_check_content_description">Click to uncheck</string>
+    <string name="product_category_selector_clear_selection">Clear selection</string>
     <!--
         Product Add more details Bottom sheet
     -->

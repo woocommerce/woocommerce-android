@@ -40,6 +40,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.categories.selector.ProductCategorySelectorViewModel.CategoryUiModel
 import com.woocommerce.android.ui.products.categories.selector.ProductCategorySelectorViewModel.LoadingState
@@ -85,6 +86,12 @@ private fun CategoriesList(
             .fillMaxHeight()
             .background(MaterialTheme.colors.surface)
     ) {
+        WCTextButton(
+            onClick = { /*TODO*/ },
+            modifier = Modifier.padding(dimensionResource(id = R.dimen.minor_100))
+        ) {
+            Text(text = stringResource(id = R.string.product_category_selector_clear_selection))
+        }
         val lazyListState = rememberLazyListState()
         LazyColumn(
             state = lazyListState,
