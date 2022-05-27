@@ -18,7 +18,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.BatchUpdateVariationsPayload
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import java.math.BigDecimal
 import javax.inject.Inject
 
 class VariationRepository @Inject constructor(

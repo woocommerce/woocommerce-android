@@ -88,7 +88,7 @@ class VariationsBulkUpdateAttrPickerDialog : WCBottomSheetDialogFragment() {
                 val price = newState.regularPriceGroupType.data as? BigDecimal?
                 val currency = newState.currency
                 if (price != null && currency != null) {
-                    currencyFormatter.formatCurrency(amount =  price, currencyCode = currency)
+                    currencyFormatter.formatCurrency(amount = price, currencyCode = currency)
                 } else {
                     ""
                 }
@@ -101,7 +101,7 @@ class VariationsBulkUpdateAttrPickerDialog : WCBottomSheetDialogFragment() {
                 val price = newState.salePriceGroupType.data as? BigDecimal?
                 val currency = newState.currency
                 if (price != null && currency != null) {
-                    currencyFormatter.formatCurrency(amount =  price, currencyCode = currency)
+                    currencyFormatter.formatCurrency(amount = price, currencyCode = currency)
                 } else {
                     ""
                 }

@@ -65,7 +65,7 @@ class VariationsBulkUpdatePriceFragment : BaseFragment(R.layout.fragment_variati
                     Regular -> getString(R.string.variations_bulk_update_regular_price)
                     Sale -> getString(R.string.variations_bulk_update_sale_price)
                 }
-                binding.price.hint = when(new.priceType) {
+                binding.price.hint = when (new.priceType) {
                     Regular -> getString(R.string.product_regular_price)
                     Sale -> getString(R.string.product_sale_price)
                 }
@@ -78,7 +78,7 @@ class VariationsBulkUpdatePriceFragment : BaseFragment(R.layout.fragment_variati
                 updateCurrentPricesLabel(new.pricesGroupType, new)
             }
             new.isProgressDialogShown.takeIfNotEqualTo(old?.isProgressDialogShown) { isVisible ->
-                val title = when(new.priceType) {
+                val title = when (new.priceType) {
                     Sale -> R.string.variations_bulk_update_sale_prices_dialog_title
                     Regular -> R.string.variations_bulk_update_regular_prices_dialog_title
                 }
