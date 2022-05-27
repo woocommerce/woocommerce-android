@@ -15,7 +15,7 @@
             android:orientation="vertical">
 
             <com.google.android.material.textview.MaterialTextView
-                style="@style/TextAppearance.Woo.Subtitle1"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/major_100"
@@ -25,7 +25,7 @@
                 android:textStyle="bold" />
 
             <com.google.android.material.textview.MaterialTextView
-                style="@style/TextAppearance.Woo.Body2"
+                android:textAppearance="?attr/textAppearanceBody2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/major_100"
