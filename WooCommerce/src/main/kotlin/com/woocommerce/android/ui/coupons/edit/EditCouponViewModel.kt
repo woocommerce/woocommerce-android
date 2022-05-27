@@ -139,6 +139,12 @@ class EditCouponViewModel @Inject constructor(
         }
     }
 
+    fun onSelectedProductsUpdated(productIds: Set<Long>) {
+        couponDraft.update {
+            it?.copy(productIds = productIds.toList())
+        }
+    }
+
     fun onSelectCategoriesButtonClick() {
         couponDraft.value?.let {
             triggerEvent(EditIncludedProductCategories(it.categoryIds))
@@ -154,12 +160,6 @@ class EditCouponViewModel @Inject constructor(
     fun onRestrictionsUpdated(restrictions: CouponRestrictions) {
         couponDraft.update {
             it?.copy(restrictions = restrictions)
-        }
-    }
-
-    fun onSelectedProductsUpdated(productIds: Set<Long>) {
-        couponDraft.update {
-            it?.copy(productIds = productIds.toList())
         }
     }
 
