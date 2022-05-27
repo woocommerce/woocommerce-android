@@ -11,5 +11,5 @@
         android:id="@+id/menu_edit_order"
         android:title="@string/edit"
         android:visible="false"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
 </menu>
