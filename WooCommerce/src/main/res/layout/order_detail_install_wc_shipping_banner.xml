@@ -11,10 +11,11 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:focusable="true"
+            android:layout_gravity="center_vertical"
             android:orientation="vertical">
 
             <com.google.android.material.textview.MaterialTextView
-                style="@style/TextAppearance.Woo.Subtitle2"
+                style="@style/TextAppearance.Woo.Subtitle1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/major_100"
