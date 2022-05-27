@@ -63,7 +63,7 @@ fun CouponRestrictionsScreen(
             .fillMaxSize()
     ) {
         WCOutlinedTypedTextField(
-            value = viewState.restrictions.minimumAmount ?: BigDecimal.ZERO,
+            value = viewState.restrictions.minimumAmount,
             onValueChange = onMinimumAmountChanged,
             label = stringResource(id = R.string.coupon_restrictions_minimum_spend_hint, viewState.currencyCode),
             valueMapper = NullableBigDecimalTextFieldValueMapper(supportsNegativeValue = false),
@@ -106,7 +106,7 @@ fun CouponRestrictionsScreen(
         }
 
         WCOutlinedTypedTextField(
-            value = viewState.restrictions.usageLimitPerUser ?: 0,
+            value = viewState.restrictions.usageLimitPerUser,
             onValueChange = onUsageLimitPerUserChanged,
             label = stringResource(id = R.string.coupon_restrictions_limit_per_user_hint),
             valueMapper = NullableIntTextFieldValueMapper(supportsNegativeValue = false),

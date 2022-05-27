@@ -182,7 +182,7 @@ class NullableIntTextFieldValueMapper(
     override fun transformText(oldText: String, newText: String): String {
         val clearedText = if (!supportsNegativeValue) newText.filter { it != '-' } else newText
         return when {
-            clearedText.isEmpty() || clearedText == "-" -> "0"
+            clearedText.isEmpty() || clearedText == "-" -> ""
             clearedText.matches("^-?0+\\d".toRegex()) ->
                 // Delete any leading 0s, since this field can't be cleared
                 clearedText.replace("^(-?)0+".toRegex(), "$1")
