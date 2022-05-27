@@ -94,7 +94,7 @@ private fun CategoriesList(viewState: ProductCategorySelectorViewModel.ViewState
             }
         }
 
-        InfiniteListHandler(listState = lazyListState, onLoadMore = onLoadMore)
+        InfiniteListHandler(listState = lazyListState, onLoadMore = onLoadMore, buffer = 3)
 
         Divider(
             color = colorResource(id = R.color.divider_color),
