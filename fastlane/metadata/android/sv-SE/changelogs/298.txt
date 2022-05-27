@@ -1,4 +1,0 @@
-9.1:
-Vi har arbetat hårt på en ny funktion som hjälper dig att hantera dina rabattkoder. Arbetet pågår fortfarande, men du kan få en tidig titt genom att aktivera betafunktionen i Inställningar under fliken Mer. Vi välkomnar din tidiga feedback!
-
-Vi har också åtgärdat några fel avseende variabla produkter, där priser av misstag försvann när lagernivåerna ändrades.
