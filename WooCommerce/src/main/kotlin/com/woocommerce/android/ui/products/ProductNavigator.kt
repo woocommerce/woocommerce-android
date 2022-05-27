@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAtt
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
+import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToVariationSelector
 import com.woocommerce.android.ui.products.ProductNavigationTarget.RenameProductAttribute
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
@@ -339,6 +340,10 @@ class ProductNavigator @Inject constructor() {
             is ViewMediaUploadErrors -> {
                 val action = NavGraphProductsDirections.actionGlobalMediaUploadErrorsFragment(target.remoteId)
                 fragment.findNavController().navigateSafely(action)
+            }
+
+            is NavigateToVariationSelector -> {
+                // TODO
             }
 
             is ExitProduct -> fragment.findNavController().navigateUp()

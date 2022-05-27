@@ -5,6 +5,7 @@ import com.woocommerce.android.extensions.STRIPE_PAYMENTS_PAYMENT_TYPE
 import com.woocommerce.android.extensions.WOOCOMMERCE_BOOKINGS_PAYMENT_TYPE
 import com.woocommerce.android.extensions.WOOCOMMERCE_PAYMENTS_PAYMENT_TYPE
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.Order.Status.Custom
 import com.woocommerce.android.model.Order.Status.OnHold
 import com.woocommerce.android.model.Order.Status.Pending
 import com.woocommerce.android.model.Order.Status.Processing
@@ -43,5 +44,6 @@ class CardReaderPaymentCollectibilityChecker @Inject constructor(
         Pending,
         Processing,
         OnHold,
+        Custom(Order.Status.AUTO_DRAFT)
     )
 }

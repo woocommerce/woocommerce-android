@@ -14,6 +14,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import org.wordpress.android.fluxc.logging.FluxCCrashLogger
 import org.wordpress.android.fluxc.model.encryptedlogging.EncryptedLoggingKey
 import javax.inject.Singleton
 
@@ -30,6 +31,11 @@ abstract class CrashLoggingModule {
         @Provides
         fun provideEncryptedLoggingKey(): EncryptedLoggingKey {
             return EncryptedLoggingKey(Key.fromBytes(Base64.decode(BuildConfig.ENCRYPTED_LOGGING_KEY, Base64.DEFAULT)))
+        }
+
+        @Provides
+        fun provideFluxCCrashLogger(crashLogging: CrashLogging): FluxCCrashLogger {
+            return FluxCCrashLoggerImpl(crashLogging)
         }
     }
 

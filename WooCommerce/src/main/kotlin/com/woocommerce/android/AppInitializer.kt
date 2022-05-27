@@ -45,6 +45,8 @@ import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
+import org.wordpress.android.fluxc.logging.FluxCCrashLogger
+import org.wordpress.android.fluxc.logging.FluxCCrashLoggerProvider
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.OnJetpackTimeoutError
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
@@ -61,6 +63,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     }
 
     @Inject lateinit var crashLogging: CrashLogging
+    @Inject lateinit var fluxCCrashLogger: FluxCCrashLogger
     @Inject lateinit var androidInjector: DispatchingAndroidInjector<Any>
 
     @Inject lateinit var dispatcher: Dispatcher
@@ -115,6 +118,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         AppThemeUtils.setAppTheme()
 
         dispatcher.register(this)
+
+        FluxCCrashLoggerProvider.initLogger(fluxCCrashLogger)
 
         AppRatingDialog.init(application)
 

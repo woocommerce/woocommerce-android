@@ -366,14 +366,14 @@ class IssueRefundViewModel @Inject constructor(
                     if (isInteracRefund() && inPersonPaymentsCanadaFeatureFlag.isEnabled()) {
                         triggerEvent(IssueRefundEvent.NavigateToCardReaderScreen(order.id, commonState.refundTotal))
                     } else {
+                        triggerEvent(
+                            ShowSnackbar(
+                                R.string.order_refunds_amount_refund_progress_message,
+                                arrayOf(formatCurrency(commonState.refundTotal))
+                            )
+                        )
                         refund()
                     }
-                    triggerEvent(
-                        ShowSnackbar(
-                            R.string.order_refunds_amount_refund_progress_message,
-                            arrayOf(formatCurrency(commonState.refundTotal))
-                        )
-                    )
 
                     AnalyticsTracker.track(
                         REFUND_CREATE,
