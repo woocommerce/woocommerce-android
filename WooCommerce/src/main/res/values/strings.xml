@@ -1997,6 +1997,7 @@
 
     <!-- Product selector -->
     <string name="product_selector_select_product_label">Select product %s</string>
+    <string name="product_selector_select_variation_label">Select variation %s</string>
     <string name="product_selector_sku_value">SKU: %s</string>
     <string name="product_selector_select_button_title_default">Select %d Products</string>
     <string name="product_selector_select_button_title_one">Select %d Product</string>

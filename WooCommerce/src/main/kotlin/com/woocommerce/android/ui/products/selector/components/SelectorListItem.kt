@@ -55,7 +55,7 @@ fun SelectorListItem(
                 onClick = {
                     onItemClick()
                 },
-                onClickLabel = stringResource(id = string.product_selector_select_product_label, title)
+                onClickLabel = stringResource(id = string.product_selector_select_variation_label, title)
             )
             .padding(
                 start = dimensionResource(id = dimen.major_100),
