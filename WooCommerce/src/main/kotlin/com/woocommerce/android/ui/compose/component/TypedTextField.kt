@@ -174,11 +174,11 @@ class NullableBigDecimalTextFieldValueMapper(
     }
 }
 
-class IntTextFieldValueMapper(
+class NullableIntTextFieldValueMapper(
     private val supportsNegativeValue: Boolean = true
-) : TextFieldValueMapper<Int> {
-    override fun parseText(text: String): Int = text.toInt()
-    override fun printValue(value: Int): String = value.toString()
+) : TextFieldValueMapper<Int?> {
+    override fun parseText(text: String): Int? = text.toIntOrNull()
+    override fun printValue(value: Int?): String = value?.toString().orEmpty()
     override fun transformText(oldText: String, newText: String): String {
         val clearedText = if (!supportsNegativeValue) newText.filter { it != '-' } else newText
         return when {
