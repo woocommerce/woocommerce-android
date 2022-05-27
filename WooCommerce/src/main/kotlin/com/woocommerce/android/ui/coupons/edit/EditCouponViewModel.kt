@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.Coupon.CouponRestrictions
 import com.woocommerce.android.ui.coupons.CouponRepository
+import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.EditIncludedProducts
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenCouponRestrictions
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenDescriptionEditor
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -115,6 +116,12 @@ class EditCouponViewModel @Inject constructor(
                     showLimitUsageToXItems = it.type != Coupon.Type.FixedCart
                 )
             )
+        }
+    }
+
+    fun onSelectProductsButtonClick() {
+        couponDraft.value?.let {
+            triggerEvent(EditIncludedProducts(it.productIds))
         }
     }
 
