@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R.string
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -115,6 +116,8 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
             val message: String,
             val action: View.OnClickListener
         ) : Event()
+
+        data class ShowUiStringSnackbar(val message: UiString) : MultiLiveEvent.Event()
 
         object Logout : Event()
         object Exit : Event()
