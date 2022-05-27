@@ -13,7 +13,7 @@ import org.mockito.kotlin.whenever
 @ExperimentalCoroutinesApi
 class ClearCardReaderDataActionTest : BaseUnitTest() {
     private val cardReaderManager: CardReaderManager = mock()
-    private val appPrefsWrapper: AppPrefsWrapper  = mock()
+    private val appPrefsWrapper: AppPrefsWrapper = mock()
 
     private val sut = ClearCardReaderDataAction(cardReaderManager, appPrefsWrapper)
 
@@ -39,15 +39,16 @@ class ClearCardReaderDataActionTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given card reader not initialised, when clearing card reader data, only remove last know reader`() = testBlocking {
-        whenever(cardReaderManager.initialized).thenReturn(false)
+    fun `given card reader not initialised, when clearing card reader data, only remove last know reader`() =
+        testBlocking {
+            whenever(cardReaderManager.initialized).thenReturn(false)
 
-        sut.invoke()
+            sut.invoke()
 
-        verify(cardReaderManager, never()).clearCachedCredentials()
-        verify(cardReaderManager, never()).disconnectReader()
-        verify(appPrefsWrapper).removeLastConnectedCardReaderId()
-    }
+            verify(cardReaderManager, never()).clearCachedCredentials()
+            verify(cardReaderManager, never()).disconnectReader()
+            verify(appPrefsWrapper).removeLastConnectedCardReaderId()
+        }
 
     @Test
     fun `given card reader initialized, when clearing card reader data, removes last know reader`() =
