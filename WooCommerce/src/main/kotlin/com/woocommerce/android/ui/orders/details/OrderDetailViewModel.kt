@@ -644,7 +644,10 @@ final class OrderDetailViewModel @Inject constructor(
             isShipmentTrackingAvailable = shipmentTracking.isVisible,
             isProductListVisible = orderProducts.isVisible,
             areShippingLabelsVisible = shippingLabels.isVisible,
-            installWcShippingBannerVisible = shippingLabelOnboardingRepository.shouldShowInstallWcShippingFor(order)
+            installWcShippingBannerVisible = shippingLabelOnboardingRepository.shouldShowWcShippingBanner(
+                order,
+                orderEligibleForInPersonPayments
+            )
         )
     }
 
