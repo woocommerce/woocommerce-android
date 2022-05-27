@@ -157,11 +157,18 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return if (item.itemId == R.id.menu_share_payment_link) {
-            viewModel.onSharePaymentUrlClicked()
-            true
-        } else {
-            super.onOptionsItemSelected(item)
+        return when (item.itemId) {
+            R.id.menu_share_payment_link -> {
+                viewModel.onSharePaymentUrlClicked()
+                true
+            }
+            R.id.menu_edit_order -> {
+                viewModel.onEditClicked()
+                true
+            }
+            else -> {
+                super.onOptionsItemSelected(item)
+            }
         }
     }
 

@@ -69,6 +69,9 @@
                 app:nullable="true"
                 android:defaultValue="@null"/>
         </action>
+        <argument
+            android:name="mode"
+            app:argType="com.woocommerce.android.ui.orders.creation.OrderCreationViewModel$Mode" />
     </fragment>
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
