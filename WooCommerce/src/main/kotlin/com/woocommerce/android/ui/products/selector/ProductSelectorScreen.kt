@@ -182,7 +182,7 @@ private fun ProductList(
             }
         }
 
-        InfiniteListHandler(listState = listState) {
+        InfiniteListHandler(listState = listState, buffer = 3) {
             onLoadMore()
         }
 

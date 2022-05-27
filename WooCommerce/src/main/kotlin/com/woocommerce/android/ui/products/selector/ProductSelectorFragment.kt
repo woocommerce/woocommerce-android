@@ -15,8 +15,8 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductNavigator
-import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.VariationSelectionResult
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorFragment
+import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.VariationSelectionResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
