@@ -165,7 +165,7 @@ private fun VariationList(
             }
         }
 
-        InfiniteListHandler(listState = listState) {
+        InfiniteListHandler(listState = listState, buffer = 3) {
             onLoadMore()
         }
     }
