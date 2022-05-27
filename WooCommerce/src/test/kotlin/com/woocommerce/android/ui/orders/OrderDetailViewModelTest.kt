@@ -1120,7 +1120,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             verify(analyticsTraWrapper).track(
                 AnalyticsEvent.RECEIPT_VIEW_TAPPED,
                 mapOf(
-                    AnalyticsTracker.KEY_ID to order.id,
+                    AnalyticsTracker.KEY_ORDER_ID to order.id,
                     AnalyticsTracker.KEY_STATUS to order.status
                 )
             )
