@@ -2,10 +2,12 @@ package com.woocommerce.android.ui.products.categories.selector
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,8 +19,11 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -67,7 +72,10 @@ fun ProductCategorySelectorScreen(
 }
 
 @Composable
-private fun CategoriesList(viewState: ProductCategorySelectorViewModel.ViewState, onLoadMore: () -> Unit = {}) {
+private fun CategoriesList(
+    viewState: ProductCategorySelectorViewModel.ViewState,
+    onLoadMore: () -> Unit = {}
+) {
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -122,14 +130,32 @@ private fun LazyListScope.categoryItem(item: CategoryUiModel, depth: Int = 0) {
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            Row(modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100))) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .defaultMinSize(minHeight = dimensionResource(id = R.dimen.line_height_major_100))
+                    .clickable(onClick = item.onItemClick)
+                    .padding(dimensionResource(id = R.dimen.major_100))
+            ) {
                 Text(
                     text = item.title,
                     style = MaterialTheme.typography.subtitle1,
                     modifier = Modifier.padding(
                         start = dimensionResource(id = R.dimen.major_100) * depth,
-                    )
+                    ),
+                    maxLines = 1
                 )
+
+                if (item.isSelected) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = stringResource(
+                            id = R.string.product_category_selector_check_content_description
+                        ),
+                        tint = MaterialTheme.colors.primary
+                    )
+                }
             }
 
             Divider(modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100) * (depth + 1)))
@@ -206,7 +232,8 @@ private fun PreviewProductCategorySelector() {
             children = if (childrenDepth > 0) {
                 listOf(generateCategory("$childrenDepth$id".toLong(), childrenDepth - 1))
             } else emptyList(),
-            isSelected = (id.mod(2)) == 0
+            isSelected = (id.mod(2)) == 0,
+            onItemClick = {}
         )
     }
 
