@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-05-05 09:54:04+0000
+Translation-Revision-Date: 2022-05-20 11:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="coupon_edit_add_description_hint">新增優惠券說明。</string>
+    <string name="coupon_edit_description_editor_title">優惠券說明。</string>
+    <string name="coupon_edit_edit_description">編輯說明</string>
+    <string name="coupon_edit_add_description">新增說明 (選填)</string>
+    <string name="coupon_edit_expiry_date">優惠券到期日</string>
+    <string name="coupon_edit_save_button">儲存</string>
+    <string name="coupon_edit_regenerate_coupon">重新產生優惠券代碼</string>
+    <string name="coupon_edit_code_helper">顧客需輸入此代碼才能使用優惠券。</string>
+    <string name="coupon_edit_code_hint">優惠券代碼</string>
+    <string name="coupon_edit_amount_rate_helper">設定要提供的折扣金額。</string>
+    <string name="coupon_edit_amount_percentage_helper">設定要提供的折扣百分比。</string>
+    <string name="coupon_edit_amount_hint">金額 (%1$s)</string>
+    <string name="coupon_edit_details_section">優惠券詳細資訊</string>
+    <string name="coupon_edit_screen_title">編輯%1$s</string>
+    <string name="coupon_details_menu_edit">編輯優惠券</string>
+    <string name="product_detail_save_product_error">無法更新商品</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund_failed">套用退款時發生錯誤</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund">為訂單退款</string>
+    <string name="card_reader_icon_content_description">讀卡器圖片</string>
+    <string name="order_creation_fee_percentage_calculated_amount">已計金額：%s</string>
+    <string name="order_creation_fee_percentage_toggle_text">以百分比計算</string>
+    <string name="copied_to_clipboard">複製到剪貼簿</string>
     <string name="coupon_details_restricted_emails">限用於以下電子郵件的顧客：%1$s</string>
     <string name="coupon_details_excludes_sale_items">排除特價商品</string>
     <string name="coupon_details_allows_free_shipping">允許免運費</string>
@@ -119,7 +141,6 @@ Language: zh_TW
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">我們未在 %1$s 支援 Stripe</string>
     <string name="card_reader_connect_scanning_hint">按下讀卡機的電源按鈕</string>
     <string name="card_reader_payment_reader_receipt_sent">收據已傳送至 &lt;strong&gt;%s&lt;/strong&gt;</string>
-    <string name="order_creation_fee_percentage_toggle_text">百分比費用</string>
     <string name="order_creation_fee_percentage_hint">百分比 (%)</string>
     <string name="order_creation_add_fee_removal_hint">從訂單中移除費用</string>
     <string name="order_creation_remove_shipping">從訂單中移除運送方式</string>
@@ -153,7 +174,6 @@ Language: zh_TW
     <string name="card_reader_wisepad_3_manual_card_reader">WisePad 3 讀卡機手冊</string>
     <string name="order_creation_price_calculation_failed">無法更新價格</string>
     <string name="order_creation_payment_tax">稅金</string>
-    <string name="order_creation_payment_tax_hint">稅金會根據你的商店設定自動計算。</string>
     <string name="exclusive_or">或</string>
     <string name="settings_install_jetpack">安裝 Jetpack</string>
     <string name="card_reader_onboarding_account_rejected_header">目前無法親自收款</string>
@@ -571,7 +591,7 @@ Language: zh_TW
     <string name="card_reader_refetching_order_failed">擷取訂單時發生錯誤。 應用程式中的訂單狀態可能已過期。</string>
     <string name="card_reader_payment_email_client_not_found">無法偵測電子郵件用戶端應用程式</string>
     <string name="card_reader_payment_receipt_email_subject">你的 %s 收據</string>
-    <string name="card_reader_payment_description">%s %s 訂單線上付款</string>
+    <string name="card_reader_payment_description">為%s的訂單%s親自付款</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">正在重新整理訂單</string>
     <string name="card_reader_payment_fetch_order_loading_header">正在更新應用程式狀態</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">顧客已選取 %1$s</string>

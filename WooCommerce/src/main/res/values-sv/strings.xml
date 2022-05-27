@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-05-05 11:09:07+0000
+Translation-Revision-Date: 2022-05-20 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="coupon_edit_add_description_hint">Lägg till beskrivningen för rabattkoden.</string>
+    <string name="coupon_edit_description_editor_title">Rabattkodsbeskrivning</string>
+    <string name="coupon_edit_edit_description">Redigera beskrivning</string>
+    <string name="coupon_edit_add_description">Lägg till beskrivning (valfritt)</string>
+    <string name="coupon_edit_expiry_date">Rabattkodens utgångsdatum</string>
+    <string name="coupon_edit_save_button">Spara</string>
+    <string name="coupon_edit_regenerate_coupon">Återskapa rabattkod</string>
+    <string name="coupon_edit_code_helper">Kunder måste ange denna kod för att använda rabattkoden.</string>
+    <string name="coupon_edit_code_hint">Rabattkod</string>
+    <string name="coupon_edit_amount_rate_helper">Ställ in beloppet på rabatten du vill erbjuda.</string>
+    <string name="coupon_edit_amount_percentage_helper">Ställ in procenten för rabatten du vill erbjuda.</string>
+    <string name="coupon_edit_amount_hint">Belopp (%1$s)</string>
+    <string name="coupon_edit_details_section">Rabattkodsinformation</string>
+    <string name="coupon_edit_screen_title">Redigera %1$s</string>
+    <string name="coupon_details_menu_edit">Redigera rabattkod</string>
+    <string name="product_detail_save_product_error">Kan inte uppdatera produkt</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund_failed">Något gick fel när återbetalningen skulle tillämpas</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund">Tillämpar återbetalning för beställning</string>
+    <string name="card_reader_icon_content_description">Kortläsarbild</string>
+    <string name="order_creation_fee_percentage_calculated_amount">Beräknat belopp: %s</string>
+    <string name="order_creation_fee_percentage_toggle_text">Beräkna som procent</string>
+    <string name="copied_to_clipboard">Kopierat till urklipp</string>
     <string name="coupon_details_restricted_emails">Begränsad till kunder med följande e-postadresser: %1$s</string>
     <string name="coupon_details_excludes_sale_items">Gäller inte reavaror</string>
     <string name="coupon_details_allows_free_shipping">Tillåter gratis frakt</string>
@@ -120,7 +142,6 @@ Language: sv_SE
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Vi stöder inte Stripe i %1$s</string>
     <string name="card_reader_connect_scanning_hint">Tryck på strömknappen på din läsare</string>
     <string name="card_reader_payment_reader_receipt_sent">Ett kvitto har skickats till &lt;strong&gt;%s&lt;/strong&gt;</string>
-    <string name="order_creation_fee_percentage_toggle_text">Procentuell avgift</string>
     <string name="order_creation_fee_percentage_hint">Procent (%)</string>
     <string name="order_creation_add_fee_removal_hint">Ta bort avgift från beställning</string>
     <string name="order_creation_remove_shipping">Ta bort frakt från beställning</string>
@@ -154,7 +175,6 @@ Language: sv_SE
     <string name="card_reader_wisepad_3_manual_card_reader">WisePad 3-kortläsarmanual</string>
     <string name="order_creation_price_calculation_failed">Kunde inte uppdatera priser</string>
     <string name="order_creation_payment_tax">Momsen</string>
-    <string name="order_creation_payment_tax_hint">Momsen kommer att beräknas automatiskt baserat på dina butiksinställningar.</string>
     <string name="exclusive_or">eller</string>
     <string name="settings_install_jetpack">Installera Jetpack</string>
     <string name="card_reader_onboarding_account_rejected_header">Personliga betalningar är för närvarande inte tillgängliga</string>
@@ -572,7 +592,7 @@ Language: sv_SE
     <string name="card_reader_refetching_order_failed">Det gick inte att hämta beställningen. Beställningens status i appen kan vara föråldrad.</string>
     <string name="card_reader_payment_email_client_not_found">Lyckas inte hitta ditt e-postprogram</string>
     <string name="card_reader_payment_receipt_email_subject">Ditt kvitto från %s</string>
-    <string name="card_reader_payment_description">Onlinebetalning för beställning %s för %s</string>
+    <string name="card_reader_payment_description">Personlig betalning för beställning %s för %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Uppdaterar beställning</string>
     <string name="card_reader_payment_fetch_order_loading_header">Uppdaterar appstatusen</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Din kund valde %1$s</string>
