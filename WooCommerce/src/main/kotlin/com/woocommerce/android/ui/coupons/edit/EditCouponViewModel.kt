@@ -9,8 +9,8 @@ import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.Coupon.CouponRestrictions
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.coupons.CouponRepository
-import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.EditIncludedProducts
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.EditIncludedProductCategories
+import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.EditIncludedProducts
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenCouponRestrictions
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenDescriptionEditor
 import com.woocommerce.android.ui.products.ParameterRepository
