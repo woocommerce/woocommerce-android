@@ -193,25 +193,18 @@ private fun ProductList(
 
         WCColoredButton(
             onClick = onDoneButtonClick,
-            text = getDoneButtonTitle(state.selectedItemsCount),
+            text = StringUtils.getQuantityString(
+                quantity = state.selectedItemsCount,
+                default = R.string.product_selector_select_button_title_default,
+                one = R.string.product_selector_select_button_title_one,
+                zero = R.string.done
+            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(dimensionResource(id = R.dimen.major_100))
         )
     }
 }
-
-@Composable
-private fun getDoneButtonTitle(selectedItemsCount: Int) =
-    if (selectedItemsCount > 0) {
-        StringUtils.getQuantityString(
-            quantity = selectedItemsCount,
-            default = R.string.product_selector_select_button_title_default,
-            one = R.string.product_selector_select_button_title_one
-        )
-    } else {
-        stringResource(R.string.done)
-    }
 
 @Composable
 @Suppress("MagicNumber")

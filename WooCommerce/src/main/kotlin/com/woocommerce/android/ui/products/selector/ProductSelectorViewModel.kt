@@ -94,12 +94,10 @@ class ProductSelectorViewModel @Inject constructor(
         fun getProductSelection(): SelectionState {
             return if (productType == VARIABLE && numVariations > 0) {
                 val intersection = variationIds.intersect(selectedIds.toSet())
-                if (intersection.isEmpty()) {
-                    UNSELECTED
-                } else if (intersection.size < variationIds.size) {
-                    PARTIALLY_SELECTED
-                } else {
-                    return SELECTED
+                when {
+                    intersection.isEmpty() -> UNSELECTED
+                    intersection.size < variationIds.size -> PARTIALLY_SELECTED
+                    else -> SELECTED
                 }
             } else {
                 if (selectedIds.contains(remoteId)) SELECTED else UNSELECTED
