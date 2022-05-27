@@ -202,7 +202,8 @@ class VariationDetailCardBuilder(
                     ViewAttributes(
                         remoteProductId,
                         remoteVariationId
-                    )
+                    ),
+                    AnalyticsEvent.PRODUCT_VARIATION_DETAILS_ATTRIBUTES_TAPPED
                 )
             }
         )

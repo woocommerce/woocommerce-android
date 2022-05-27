@@ -46,6 +46,7 @@ import com.woocommerce.android.model.Coupon.Type
 import com.woocommerce.android.model.Coupon.Type.Percent
 import com.woocommerce.android.ui.compose.component.BigDecimalTextFieldValueMapper
 import com.woocommerce.android.ui.compose.component.DatePickerDialog
+import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedSpinner
@@ -71,7 +72,8 @@ fun EditCouponScreen(viewModel: EditCouponViewModel) {
             onExpiryDateChanged = viewModel::onExpiryDateChanged,
             onFreeShippingChanged = viewModel::onFreeShippingChanged,
             onUsageRestrictionsClick = viewModel::onUsageRestrictionsClick,
-            onSelectCategoriesButtonClick = viewModel::onSelectCategoriesButtonClick
+            onSelectCategoriesButtonClick = viewModel::onSelectCategoriesButtonClick,
+            onSaveClick = viewModel::onSaveClick
         )
     }
 }
@@ -86,7 +88,8 @@ fun EditCouponScreen(
     onExpiryDateChanged: (Date?) -> Unit = {},
     onFreeShippingChanged: (Boolean) -> Unit = {},
     onUsageRestrictionsClick: () -> Unit = {},
-    onSelectCategoriesButtonClick: () -> Unit = {}
+    onSelectCategoriesButtonClick: () -> Unit = {},
+    onSaveClick: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -109,12 +112,19 @@ fun EditCouponScreen(
         ConditionsSection(viewState, onSelectCategoriesButtonClick)
         UsageRestrictionsSection(viewState, onUsageRestrictionsClick)
         WCColoredButton(
-            onClick = { /*TODO*/ },
+            onClick = onSaveClick,
             text = stringResource(id = R.string.coupon_edit_save_button),
             modifier = Modifier
                 .padding(horizontal = dimensionResource(id = R.dimen.major_100))
                 .fillMaxWidth(),
             enabled = viewState.hasChanges
+        )
+    }
+
+    if (viewState.isSaving) {
+        ProgressDialog(
+            title = stringResource(id = R.string.coupon_edit_saving_dialog_title),
+            subtitle = stringResource(id = R.string.coupon_edit_saving_dialog_subtitle)
         )
     }
 }
@@ -345,7 +355,8 @@ private fun EditCouponPreview() {
                 ),
                 localizedType = "Fixed Rate Discount",
                 amountUnit = "%",
-                hasChanges = true
+                hasChanges = true,
+                isSaving = true
             )
         )
     }
