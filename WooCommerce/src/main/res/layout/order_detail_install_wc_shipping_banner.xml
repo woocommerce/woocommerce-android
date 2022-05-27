@@ -11,7 +11,6 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:focusable="true"
-            android:layout_gravity="center_vertical"
             android:orientation="vertical">
 
             <com.google.android.material.textview.MaterialTextView
@@ -38,6 +37,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:focusable="false"
+                android:layout_marginBottom="@dimen/minor_100"
                 android:text="@string/shipping_label_install_wc_shipping_banner_button"
                 android:textAllCaps="false" />
 
@@ -45,8 +45,9 @@
 
         <ImageView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:importantForAccessibility="no"
+            android:scaleType="fitEnd"
             android:src="@drawable/img_shipping_labels_banner" />
 
     </LinearLayout>
