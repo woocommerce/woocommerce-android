@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.common.texteditor.SimpleTextEditorFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragment
+import com.woocommerce.android.ui.products.categories.selector.ProductCategorySelectorFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -83,6 +84,10 @@ class EditCouponFragment : BaseFragment() {
 
         handleResult<Set<Long>>(ProductSelectorFragment.PRODUCT_SELECTOR_RESULT) {
             viewModel.onSelectedProductsUpdated(it)
+        }
+
+        handleResult<List<Long>>(ProductCategorySelectorFragment.PRODUCT_CATEGORY_SELECTOR_RESULT) {
+            viewModel.onIncludedCategoriesChanged(it)
         }
     }
 

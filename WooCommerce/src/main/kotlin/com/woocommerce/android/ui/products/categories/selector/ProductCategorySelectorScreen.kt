@@ -51,7 +51,8 @@ fun ProductCategorySelectorScreen(viewModel: ProductCategorySelectorViewModel) {
     viewState?.let {
         ProductCategorySelectorScreen(
             viewState = it,
-            onLoadMore = viewModel::onLoadMore
+            onLoadMore = viewModel::onLoadMore,
+            onDoneClick = viewModel::onDoneClick
         )
     }
 }
@@ -59,12 +60,14 @@ fun ProductCategorySelectorScreen(viewModel: ProductCategorySelectorViewModel) {
 @Composable
 fun ProductCategorySelectorScreen(
     viewState: ProductCategorySelectorViewModel.ViewState,
-    onLoadMore: () -> Unit = {}
+    onLoadMore: () -> Unit = {},
+    onDoneClick: () -> Unit = {},
 ) {
     when {
         viewState.categories.isNotEmpty() -> CategoriesList(
             viewState = viewState,
-            onLoadMore = onLoadMore
+            onLoadMore = onLoadMore,
+            onDoneClick = onDoneClick
         )
         viewState.loadingState == LoadingState.Loading -> CategoriesSkeleton()
         else -> EmptyCategoriesList()
@@ -74,7 +77,8 @@ fun ProductCategorySelectorScreen(
 @Composable
 private fun CategoriesList(
     viewState: ProductCategorySelectorViewModel.ViewState,
-    onLoadMore: () -> Unit = {}
+    onLoadMore: () -> Unit,
+    onDoneClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -110,7 +114,7 @@ private fun CategoriesList(
         )
 
         WCColoredButton(
-            onClick = { /*TODO*/ },
+            onClick = onDoneClick,
             text = StringUtils.getQuantityString(
                 quantity = viewState.selectedCategoriesCount,
                 default = R.string.product_category_selector_select_button_title_default,

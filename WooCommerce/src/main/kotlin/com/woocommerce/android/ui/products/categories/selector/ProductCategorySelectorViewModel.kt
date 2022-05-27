@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products.categories.selector
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
@@ -63,6 +64,10 @@ class ProductCategorySelectorViewModel @Inject constructor(
         loadingState.value = LoadingState.Appending
         listHandler.loadMore()
         loadingState.value = LoadingState.Idle
+    }
+
+    fun onDoneClick() {
+        triggerEvent(ExitWithResult(selectedCategories.value.toList()))
     }
 
     private fun ProductCategoryTreeItem.toUiModel(selectedCategories: Set<Long>): CategoryUiModel = CategoryUiModel(
