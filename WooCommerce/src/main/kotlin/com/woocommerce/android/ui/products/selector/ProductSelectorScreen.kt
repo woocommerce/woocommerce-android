@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products.selector
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -36,13 +37,14 @@ import com.woocommerce.android.R.dimen
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.APPENDING
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.LOADING
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductListItem
-import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorState
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ViewState
 import com.woocommerce.android.ui.products.selector.SelectionState.PARTIALLY_SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
 import com.woocommerce.android.ui.products.selector.components.SelectorListItem
@@ -50,10 +52,12 @@ import com.woocommerce.android.util.StringUtils
 
 @Composable
 fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
-    val productSelectorState by viewModel.productsState.observeAsState(ProductSelectorState())
+    val viewState by viewModel.viewSate.observeAsState(ViewState())
 
     ProductSelectorScreen(
-        state = productSelectorState,
+        state = viewState,
+        onDoneButtonClick = viewModel::onDoneButtonClick,
+        onClearButtonClick = viewModel::onClearButtonClick,
         onProductClick = viewModel::onProductClick,
         onLoadMore = viewModel::onLoadMore
     )
@@ -61,13 +65,17 @@ fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
 
 @Composable
 fun ProductSelectorScreen(
-    state: ProductSelectorState,
+    state: ViewState,
+    onDoneButtonClick: () -> Unit,
+    onClearButtonClick: () -> Unit,
     onProductClick: (ProductListItem) -> Unit,
     onLoadMore: () -> Unit
 ) {
     when {
         state.products.isNotEmpty() -> ProductList(
             state = state,
+            onDoneButtonClick = onDoneButtonClick,
+            onClearButtonClick = onClearButtonClick,
             onProductClick = onProductClick,
             onLoadMore = onLoadMore
         )
@@ -104,7 +112,9 @@ private fun EmptyProductList() {
 
 @Composable
 private fun ProductList(
-    state: ProductSelectorState,
+    state: ViewState,
+    onDoneButtonClick: () -> Unit,
+    onClearButtonClick: () -> Unit,
     onProductClick: (ProductListItem) -> Unit,
     onLoadMore: () -> Unit,
 ) {
@@ -114,6 +124,27 @@ private fun ProductList(
             .fillMaxHeight()
             .background(color = MaterialTheme.colors.surface)
     ) {
+        Box(
+            modifier = Modifier
+                .padding(horizontal = dimensionResource(dimen.minor_100))
+                .fillMaxWidth()
+        ) {
+            if (state.selectedItemsCount > 0) {
+                WCTextButton(
+                    onClick = onClearButtonClick,
+                    text = stringResource(id = R.string.product_selector_clear_button_title),
+                    allCaps = false,
+                    modifier = Modifier.align(Alignment.CenterStart)
+                )
+            }
+
+            WCTextButton(
+                onClick = { },
+                text = stringResource(id = R.string.product_selector_filter_button_title),
+                allCaps = false,
+                modifier = Modifier.align(Alignment.CenterEnd)
+            )
+        }
         LazyColumn(
             state = listState,
             modifier = Modifier
@@ -129,7 +160,7 @@ private fun ProductList(
                         stringResource(R.string.product_selector_sku_value, product.sku)
                     },
                     selectionState = product.selectionState,
-                    isArrowVisible = product.type == VARIABLE,
+                    isArrowVisible = product.type == VARIABLE && product.numVariations > 0,
                 ) {
                     onProductClick(product)
                 }
@@ -161,16 +192,16 @@ private fun ProductList(
         )
 
         WCColoredButton(
-            onClick = { /*TODO*/ },
+            onClick = onDoneButtonClick,
             text = StringUtils.getQuantityString(
-                quantity = state.selectedProductCount,
+                quantity = state.selectedItemsCount,
                 default = R.string.product_selector_select_button_title_default,
-                one = R.string.product_selector_select_button_title_one
+                one = R.string.product_selector_select_button_title_one,
+                zero = R.string.done
             ),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(dimensionResource(id = R.dimen.major_100)),
-            enabled = state.selectedProductCount > 0
+                .padding(dimensionResource(id = R.dimen.major_100))
         )
     }
 }
@@ -263,7 +294,7 @@ fun ProductListPreview() {
         )
     )
 
-    ProductList(state = ProductSelectorState(products = products), {}, {})
+    ProductList(state = ViewState(products = products, selectedItemsCount = 3), {}, {}, {}, {})
 }
 
 @Preview

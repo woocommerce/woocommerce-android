@@ -151,6 +151,12 @@ class EditCouponViewModel @Inject constructor(
         }
     }
 
+    fun onSelectedProductsUpdated(productIds: Set<Long>) {
+        couponDraft.update {
+            it?.copy(productIds = productIds.toList())
+        }
+    }
+
     fun onSaveClick() = launch {
         isSaving.value = true
         couponRepository.updateCoupon(couponDraft.value!!)

@@ -7,6 +7,7 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.isInteger
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToVariationSelector
 import com.woocommerce.android.ui.products.ProductStockStatus.Custom
 import com.woocommerce.android.ui.products.ProductStockStatus.InStock
 import com.woocommerce.android.ui.products.ProductStockStatus.NotAvailable
@@ -15,16 +16,19 @@ import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.APPENDING
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.IDLE
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.LOADING
+import com.woocommerce.android.ui.products.selector.SelectionState.PARTIALLY_SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.UNSELECTED
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
-import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
@@ -45,7 +49,7 @@ class ProductSelectorViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedState) {
     companion object {
-        private const val LOADING_STATE_DELAY = 100L
+        private const val STATE_UPDATE_DELAY = 100L
     }
 
     private val currencyCode by lazy {
@@ -55,24 +59,24 @@ class ProductSelectorViewModel @Inject constructor(
     private val navArgs: ProductSelectorFragmentArgs by savedState.navArgs()
 
     private val loadingState = MutableStateFlow(IDLE)
-    private val selectedProductIds = MutableStateFlow(navArgs.productIds.toList())
+    private val selectedProductIds = savedState.getStateFlow(viewModelScope, navArgs.productIds.toSet())
 
-    val productsState = combine(
+    val viewSate = combine(
         productListHandler.productsFlow,
         loadingState.withIndex()
             .debounce {
                 if (it.index != 0 && it.value == IDLE) {
                     // When resetting to IDLE, wait a bit to make sure the list has been fetched from DB
-                    LOADING_STATE_DELAY
+                    STATE_UPDATE_DELAY
                 } else 0L
             }
             .map { it.value },
         selectedProductIds
-    ) { products, isLoading, selectedIds ->
-        ProductSelectorState(
-            loadingState = isLoading,
-            products = products.map { it.toUiModel(selectedIds.contains(it.remoteId)) },
-            selectedProductCount = selectedIds.size
+    ) { products, loadingState, selectedIds ->
+        ViewState(
+            loadingState = loadingState,
+            products = products.map { it.toUiModel(selectedIds) },
+            selectedItemsCount = selectedIds.size
         )
     }.asLiveData()
 
@@ -84,10 +88,23 @@ class ProductSelectorViewModel @Inject constructor(
         }
     }
 
-    private fun Product.toUiModel(isChecked: Boolean): ProductListItem {
+    private fun Product.toUiModel(selectedIds: Set<Long>): ProductListItem {
+        fun getProductSelection(): SelectionState {
+            return if (productType == VARIABLE && numVariations > 0) {
+                val intersection = variationIds.intersect(selectedIds.toSet())
+                when {
+                    intersection.isEmpty() -> UNSELECTED
+                    intersection.size < variationIds.size -> PARTIALLY_SELECTED
+                    else -> SELECTED
+                }
+            } else {
+                if (selectedIds.contains(remoteId)) SELECTED else UNSELECTED
+            }
+        }
+
         val stockStatus = when (stockStatus) {
             InStock -> {
-                if (productType > VARIABLE) {
+                if (productType == VARIABLE) {
                     resourceProvider.getString(string.product_stock_status_instock_with_variations, numVariations)
                 } else {
                     val quantity = if (stockQuantity.isInteger()) stockQuantity.toInt() else stockQuantity
@@ -110,13 +127,21 @@ class ProductSelectorViewModel @Inject constructor(
             sku = sku.takeIf { it.isNotBlank() },
             stockAndPrice = stockAndPrice,
             numVariations = numVariations,
-            selectionState = if (isChecked) SELECTED else UNSELECTED
+            selectedVariationIds = variationIds.intersect(selectedIds),
+            selectionState = getProductSelection()
         )
     }
 
+    fun onClearButtonClick() {
+        launch {
+            delay(STATE_UPDATE_DELAY) // let the animation play out before hiding the button
+            selectedProductIds.value = emptySet()
+        }
+    }
+
     fun onProductClick(item: ProductListItem) {
-        if (item.type == VARIABLE) {
-            triggerEvent(NavigateToVariationListEvent(item.id))
+        if (item.type == VARIABLE && item.numVariations > 0) {
+            triggerEvent(NavigateToVariationSelector(item.id, item.selectedVariationIds))
         } else {
             if (selectedProductIds.value.contains(item.id)) {
                 selectedProductIds.value = selectedProductIds.value - item.id
@@ -124,6 +149,10 @@ class ProductSelectorViewModel @Inject constructor(
                 selectedProductIds.value = selectedProductIds.value + item.id
             }
         }
+    }
+
+    fun onDoneButtonClick() {
+        triggerEvent(ExitWithResult(selectedProductIds.value))
     }
 
     fun onLoadMore() {
@@ -134,10 +163,10 @@ class ProductSelectorViewModel @Inject constructor(
         }
     }
 
-    data class ProductSelectorState(
+    data class ViewState(
         val loadingState: LoadingState = IDLE,
         val products: List<ProductListItem> = emptyList(),
-        val selectedProductCount: Int = 0
+        val selectedItemsCount: Int = 0
     )
 
     data class ProductListItem(
@@ -148,12 +177,11 @@ class ProductSelectorViewModel @Inject constructor(
         val numVariations: Int,
         val stockAndPrice: String? = null,
         val sku: String? = null,
+        val selectedVariationIds: Set<Long> = emptySet(),
         val selectionState: SelectionState = UNSELECTED
     )
 
     enum class LoadingState {
         IDLE, LOADING, APPENDING
     }
-
-    data class NavigateToVariationListEvent(val productId: Long) : MultiLiveEvent.Event()
 }
