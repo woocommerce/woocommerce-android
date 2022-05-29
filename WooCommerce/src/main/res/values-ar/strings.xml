@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-05-05 13:54:18+0000
+Translation-Revision-Date: 2022-05-19 15:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="coupon_edit_add_description_hint">أضف وصف القسيمة.</string>
+    <string name="coupon_edit_description_editor_title">وصف القسيمة</string>
+    <string name="coupon_edit_edit_description">تحرير الوصف</string>
+    <string name="coupon_edit_add_description">إضافة وصف (اختياري)</string>
+    <string name="coupon_edit_expiry_date">تاريخ انتهاء صلاحية القسيمة</string>
+    <string name="coupon_edit_save_button">الحفظ</string>
+    <string name="coupon_edit_regenerate_coupon">إعادة إنشاء رمز القسيمة</string>
+    <string name="coupon_edit_code_helper">يحتاج العملاء إلى إدخال هذا الرمز لاستخدام القسيمة.</string>
+    <string name="coupon_edit_code_hint">رمز القسيمة</string>
+    <string name="coupon_edit_amount_rate_helper">حدِّد مبلغ الخصم الذي ترغب في توفيره.</string>
+    <string name="coupon_edit_amount_percentage_helper">حدِّد النسبة المئوية للخصم الذي ترغب في توفيره.</string>
+    <string name="coupon_edit_amount_hint">المبلغ (⁦%1$s⁩)</string>
+    <string name="coupon_edit_details_section">تفاصيل القسيمة</string>
+    <string name="coupon_edit_screen_title">تحرير ⁦%1$s⁩</string>
+    <string name="coupon_details_menu_edit">تحرير القسيمة</string>
+    <string name="product_detail_save_product_error">يتعذر تحديث المنتج</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund_failed">حدث خطأ ما في أثناء تطبيق عملية رد المبالغ المدفوعة</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund">تطبيق رد المبالغ المدفوعة على الطلب</string>
+    <string name="card_reader_icon_content_description">صورة قارئ البطاقة</string>
+    <string name="order_creation_fee_percentage_calculated_amount">المبلغ المحسوب: %s</string>
+    <string name="order_creation_fee_percentage_toggle_text">الحساب بالنسبة المئوية</string>
+    <string name="copied_to_clipboard">تم النسخ إلى الحافظة</string>
     <string name="coupon_details_restricted_emails">يقتصر على العملاء الذين لديهم بريد إلكتروني: ⁦%1$s⁩</string>
     <string name="coupon_details_excludes_sale_items">يستبعد العناصر المعروضة للبيع بسعر مخفَّض</string>
     <string name="coupon_details_allows_free_shipping">يسمح بالشحن المجاني</string>
@@ -120,7 +142,6 @@ Language: ar
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">لا ندعم Stripe في ⁦%1$s⁩</string>
     <string name="card_reader_connect_scanning_hint">اضغط على زر الطاقة للقارئ الخاص بك</string>
     <string name="card_reader_payment_reader_receipt_sent">تم إرسال إيصال إلى &lt;strong&gt;%s&lt;/strong&gt;</string>
-    <string name="order_creation_fee_percentage_toggle_text">النسبة المئوية للرسوم</string>
     <string name="order_creation_fee_percentage_hint">النسبة المئوية (%)</string>
     <string name="order_creation_add_fee_removal_hint">إزالة الرسوم من الطلب</string>
     <string name="order_creation_remove_shipping">إزالة الشحن من طلب</string>
@@ -154,7 +175,6 @@ Language: ar
     <string name="card_reader_wisepad_3_manual_card_reader">دليل قارئ بطاقة WisePad 3</string>
     <string name="order_creation_price_calculation_failed">يتعذر تحديث الأسعار</string>
     <string name="order_creation_payment_tax">الضرائب</string>
-    <string name="order_creation_payment_tax_hint">سيتم حساب الضرائب تلقائيًا بناءً على إعدادات مخزنك.</string>
     <string name="exclusive_or">أو</string>
     <string name="settings_install_jetpack">تثبيت Jetpack</string>
     <string name="card_reader_onboarding_account_rejected_header">المدفوعات الشخصية غير متاحة في الوقت الحالي</string>
@@ -572,7 +592,7 @@ Language: ar
     <string name="card_reader_refetching_order_failed">حدث خطأ في أثناء إحضار الطلب. قد تكون حالة الطلب الموجودة في التطبيق قديمة.</string>
     <string name="card_reader_payment_email_client_not_found">لا يمكن اكتشاف تطبيق عميل البريد الإلكتروني الخاص بك</string>
     <string name="card_reader_payment_receipt_email_subject">إيصالك من %s</string>
-    <string name="card_reader_payment_description">عملية الدفع عبر الإنترنت للطلب %s مقابل %s</string>
+    <string name="card_reader_payment_description">عملية دفع شخصية للطلب رقم %s مقابل %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">تحديث الطلب</string>
     <string name="card_reader_payment_fetch_order_loading_header">تحديث حالة التطبيق</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">قام عميلك بتحديد ⁦%1$s⁩</string>
