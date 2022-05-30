@@ -1063,9 +1063,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `when user taps on see receipt, then receipt view event is tracked`() =
         testBlocking {
-            doReturn(order).whenever(repository).getOrderById(any())
-            doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(false).whenever(repository).fetchOrderNotes(any())
+            doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
+            doReturn(false).whenever(orderDetailRepository).fetchOrderNotes(any())
             doReturn("testing url")
                 .whenever(appPrefsWrapper).getReceiptUrl(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
@@ -1118,8 +1118,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `when user refreshes order, then event tracked`() =
         testBlocking {
             // Given
-            doReturn(order).whenever(repository).getOrderById(any())
-            doReturn(order).whenever(repository).fetchOrderById(any())
+            doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
             viewModel.start()
 
             // When
@@ -1133,9 +1133,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `when user clicks on share payment url, then event tracked`() =
         testBlocking {
             // Given
-            doReturn(order).whenever(repository).getOrderById(any())
-            doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(false).whenever(repository).fetchOrderNotes(any())
+            doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
+            doReturn(false).whenever(orderDetailRepository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             viewModel.start()
 
@@ -1150,9 +1150,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `when user adds a new shipment, then event tracked`() =
         testBlocking {
             // Given
-            doReturn(order).whenever(repository).getOrderById(any())
-            doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(false).whenever(repository).fetchOrderNotes(any())
+            doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
+            doReturn(false).whenever(orderDetailRepository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             viewModel.start()
 
@@ -1174,9 +1174,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `when order status is changed, then event tracked`() =
         testBlocking {
             // Given
-            doReturn(order).whenever(repository).getOrderById(any())
-            doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(false).whenever(repository).fetchOrderNotes(any())
+            doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
+            doReturn(false).whenever(orderDetailRepository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             val updateSource = OrderStatusUpdateSource.Dialog(
                 oldStatus = order.status.value,
@@ -1203,9 +1203,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `when user taps a create shipping label button, then event tracked`() =
         testBlocking {
             // Given
-            doReturn(order).whenever(repository).getOrderById(any())
-            doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(false).whenever(repository).fetchOrderNotes(any())
+            doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
+            doReturn(false).whenever(orderDetailRepository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             viewModel.start()
 
@@ -1220,9 +1220,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `when user taps a mark order complete button, then event tracked`() =
         testBlocking {
             // Given
-            doReturn(order).whenever(repository).getOrderById(any())
-            doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(false).whenever(repository).fetchOrderNotes(any())
+            doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
+            doReturn(false).whenever(orderDetailRepository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             viewModel.start()
 
@@ -1237,9 +1237,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `when user taps a view order addon button, then event tracked`() =
         testBlocking {
             // Given
-            doReturn(order).whenever(repository).getOrderById(any())
-            doReturn(order).whenever(repository).fetchOrderById(any())
-            doReturn(false).whenever(repository).fetchOrderNotes(any())
+            doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
+            doReturn(false).whenever(orderDetailRepository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             viewModel.start()
 
