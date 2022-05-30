@@ -1,4 +1,0 @@
-9.1:
-Estamos criando uma nova funcionalidade para ajudar você a gerenciar seus cupons. Ela ainda está em andamento, mas é possível conferir como está ao ativar o recurso Beta em Configurações, na guia Mais. Adoraríamos receber seu feedback!
-
-Também corrigimos alguns bugs com produtos variáveis: agora os preços não são excluídos ao mudar de nível de inventário.

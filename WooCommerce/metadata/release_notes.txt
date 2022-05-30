@@ -1,3 +1,6 @@
-Much of the information on an order from a customer is important! We’ve heard you’d like to copy and paste some of those details outside the app. Now you can long-press on most fields to copy them to the clipboard. Paste away in a text message, e-mail, or note!
+- [*] In-Person Payments: Individual Card Reader Manual tabs removed from IPP Screen and moved to the new screen `Card Reader Manuals` [https://github.com/woocommerce/woocommerce-android/pull/6518]
+- [*] Show "We don't support stripe in Canada" when both WCPay and Stripe are active [https://github.com/woocommerce/woocommerce-android/pull/6573]
+- [***] In-Person Payments: In-Person Payments in Canada is now available for public! [https://github.com/woocommerce/woocommerce-android/pull/6579]
+- [*] In-Person Payments: Removed unnecessary notification when interac refund is initiated [https://github.com/woocommerce/woocommerce-android/pull/6601]
+- [*] In-Person Payments: Do not connect to the last know reader automatically after logout and site change [https://github.com/woocommerce/woocommerce-android/pull/6616]
 
-We’ve also addressed several bugs around in-person payments and order creation. Thank you for your feedback!
