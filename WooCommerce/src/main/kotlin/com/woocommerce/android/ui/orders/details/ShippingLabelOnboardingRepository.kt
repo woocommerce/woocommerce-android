@@ -20,14 +20,13 @@ class ShippingLabelOnboardingRepository @Inject constructor(
             (pluginInfo.version ?: "0.0.0").semverCompareTo(SUPPORTED_WCS_VERSION) >= 0
     }
 
-    fun shouldShowWcShippingBanner(order: Order, eligibleForIpp: Boolean): Boolean {
-        return !isShippingPluginReady
-            && orderDetailRepository.getStoreCountryCode() == SUPPORTED_WCS_COUNTRY
-            && order.currency == SUPPORTED_WCS_CURRENCY
-            && !order.isCashPayment
-            && !eligibleForIpp
-            && !hasVirtualProductsOnly(order)
-    }
+    fun shouldShowWcShippingBanner(order: Order, eligibleForIpp: Boolean): Boolean =
+        !isShippingPluginReady &&
+            orderDetailRepository.getStoreCountryCode() == SUPPORTED_WCS_COUNTRY &&
+            order.currency == SUPPORTED_WCS_CURRENCY &&
+            !order.isCashPayment &&
+            !eligibleForIpp &&
+            !hasVirtualProductsOnly(order)
 
     private fun hasVirtualProductsOnly(order: Order): Boolean {
         return if (order.items.isNotEmpty()) {
