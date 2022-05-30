@@ -67,7 +67,7 @@ import com.woocommerce.android.ui.refunds.RefundSummaryFragment
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.FeatureFlag.CARD_READER
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.widgets.SkeletonView
@@ -301,7 +301,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             key = CardReaderPaymentDialogFragment.KEY_CARD_PAYMENT_RESULT,
             entryId = R.id.orderDetailFragment
         ) {
-            if (CARD_READER.isEnabled()) {
+            if (FeatureFlag.CARD_READER.isEnabled()) {
                 viewModel.onCardReaderPaymentCompleted()
             }
         }
@@ -332,19 +332,19 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
             onIssueRefundClickListener = { viewModel.onIssueOrderRefundClicked() },
             onSeeReceiptClickListener = {
-                if (CARD_READER.isEnabled()) {
+                if (FeatureFlag.CARD_READER.isEnabled()) {
                     viewModel.onSeeReceiptClicked()
                 }
             },
             onCollectCardPresentPaymentClickListener = {
-                if (CARD_READER.isEnabled()) {
+                if (FeatureFlag.CARD_READER.isEnabled()) {
                     cardReaderManager.let {
                         viewModel.onAcceptCardPresentPaymentClicked()
                     }
                 }
             },
             onPrintingInstructionsClickListener = {
-                if (CARD_READER.isEnabled()) {
+                if (FeatureFlag.CARD_READER.isEnabled()) {
                     viewModel.onPrintingInstructionsClicked()
                 }
             }

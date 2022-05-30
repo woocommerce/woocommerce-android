@@ -4,6 +4,9 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
@@ -79,6 +82,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val orderDetailRepository: OrderDetailRepository = mock()
     private val addonsRepository: AddonRepository = mock()
     private val cardReaderTracker: CardReaderTracker = mock()
+    private val analyticsTraWrapper: AnalyticsTrackerWrapper = mock()
     private val resources: ResourceProvider = mock {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
         on { getString(any(), any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
@@ -118,7 +122,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         areShippingLabelsVisible = false,
         isProductListMenuVisible = false,
         isSharePaymentLinkVisible = false,
-        installWcShippingBannerVisible = false
+        installWcShippingBannerVisible = true
     )
 
     @Before
@@ -129,9 +133,11 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             it.id = 1
             it.siteId = 1
             it.selfHostedSiteId = 1
+            it.name = "https://www.testname.com"
             it
         }
         doReturn(site).whenever(selectedSite).getIfExists()
+        doReturn(site).whenever(selectedSite).get()
         testBlocking {
             doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any())
         }
@@ -149,6 +155,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 productImageMap,
                 paymentCollectibilityChecker,
                 cardReaderTracker,
+                analyticsTraWrapper,
                 shippingLabelOnboardingRepository
             )
         )
@@ -1054,6 +1061,28 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when user taps on see receipt, then receipt view event is tracked`() =
+        testBlocking {
+            doReturn(order).whenever(repository).getOrderById(any())
+            doReturn(order).whenever(repository).fetchOrderById(any())
+            doReturn(false).whenever(repository).fetchOrderNotes(any())
+            doReturn("testing url")
+                .whenever(appPrefsWrapper).getReceiptUrl(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+            viewModel.start()
+
+            viewModel.onSeeReceiptClicked()
+
+            verify(analyticsTraWrapper).track(
+                AnalyticsEvent.RECEIPT_VIEW_TAPPED,
+                mapOf(
+                    AnalyticsTracker.KEY_ORDER_ID to order.id,
+                    AnalyticsTracker.KEY_STATUS to order.status
+                )
+            )
+        }
+
+    @Test
     fun `when user presses collect payment button, then start card reader payment flow`() =
         testBlocking {
             // Given
@@ -1083,5 +1112,141 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             // Then
             verify(cardReaderTracker).trackCollectPaymentTapped()
+        }
+
+    @Test
+    fun `when user refreshes order, then event tracked`() =
+        testBlocking {
+            // Given
+            doReturn(order).whenever(repository).getOrderById(any())
+            doReturn(order).whenever(repository).fetchOrderById(any())
+            viewModel.start()
+
+            // When
+            viewModel.onRefreshRequested()
+
+            // Then
+            verify(analyticsTraWrapper).track(AnalyticsEvent.ORDER_DETAIL_PULLED_TO_REFRESH)
+        }
+
+    @Test
+    fun `when user clicks on share payment url, then event tracked`() =
+        testBlocking {
+            // Given
+            doReturn(order).whenever(repository).getOrderById(any())
+            doReturn(order).whenever(repository).fetchOrderById(any())
+            doReturn(false).whenever(repository).fetchOrderNotes(any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+            viewModel.start()
+
+            // When
+            viewModel.onSharePaymentUrlClicked()
+
+            // Then
+            verify(analyticsTraWrapper).track(AnalyticsEvent.ORDER_DETAIL_PAYMENT_LINK_SHARED)
+        }
+
+    @Test
+    fun `when user adds a new shipment, then event tracked`() =
+        testBlocking {
+            // Given
+            doReturn(order).whenever(repository).getOrderById(any())
+            doReturn(order).whenever(repository).fetchOrderById(any())
+            doReturn(false).whenever(repository).fetchOrderNotes(any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+            viewModel.start()
+
+            // When
+            viewModel.onNewShipmentTrackingAdded(testOrderShipmentTrackings[0])
+
+            // Then
+            verify(analyticsTraWrapper).track(
+                AnalyticsEvent.ORDER_TRACKING_ADD,
+                mapOf(
+                    AnalyticsTracker.KEY_ID to order.id,
+                    AnalyticsTracker.KEY_STATUS to order.status,
+                    AnalyticsTracker.KEY_CARRIER to testOrderShipmentTrackings[0].trackingProvider
+                )
+            )
+        }
+
+    @Test
+    fun `when order status is changed, then event tracked`() =
+        testBlocking {
+            // Given
+            doReturn(order).whenever(repository).getOrderById(any())
+            doReturn(order).whenever(repository).fetchOrderById(any())
+            doReturn(false).whenever(repository).fetchOrderNotes(any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+            val updateSource = OrderStatusUpdateSource.Dialog(
+                oldStatus = order.status.value,
+                newStatus = CoreOrderStatus.PROCESSING.value
+            )
+            viewModel.start()
+
+            // When
+            viewModel.onOrderStatusChanged(updateSource)
+
+            // Then
+            verify(analyticsTraWrapper).track(
+                AnalyticsEvent.ORDER_STATUS_CHANGE,
+                mapOf(
+                    AnalyticsTracker.KEY_ID to order.id,
+                    AnalyticsTracker.KEY_FROM to order.status.value,
+                    AnalyticsTracker.KEY_TO to updateSource.newStatus,
+                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_FLOW_EDITING
+                )
+            )
+        }
+
+    @Test
+    fun `when user taps a create shipping label button, then event tracked`() =
+        testBlocking {
+            // Given
+            doReturn(order).whenever(repository).getOrderById(any())
+            doReturn(order).whenever(repository).fetchOrderById(any())
+            doReturn(false).whenever(repository).fetchOrderNotes(any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+            viewModel.start()
+
+            // When
+            viewModel.onCreateShippingLabelButtonTapped()
+
+            // Then
+            verify(analyticsTraWrapper).track(AnalyticsEvent.ORDER_DETAIL_CREATE_SHIPPING_LABEL_BUTTON_TAPPED)
+        }
+
+    @Test
+    fun `when user taps a mark order complete button, then event tracked`() =
+        testBlocking {
+            // Given
+            doReturn(order).whenever(repository).getOrderById(any())
+            doReturn(order).whenever(repository).fetchOrderById(any())
+            doReturn(false).whenever(repository).fetchOrderNotes(any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+            viewModel.start()
+
+            // When
+            viewModel.onMarkOrderCompleteButtonTapped()
+
+            // Then
+            verify(analyticsTraWrapper).track(AnalyticsEvent.ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED)
+        }
+
+    @Test
+    fun `when user taps a view order addon button, then event tracked`() =
+        testBlocking {
+            // Given
+            doReturn(order).whenever(repository).getOrderById(any())
+            doReturn(order).whenever(repository).fetchOrderById(any())
+            doReturn(false).whenever(repository).fetchOrderNotes(any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+            viewModel.start()
+
+            // When
+            viewModel.onViewOrderedAddonButtonTapped(order.items[0])
+
+            // Then
+            verify(analyticsTraWrapper).track(AnalyticsEvent.PRODUCT_ADDONS_ORDER_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED)
         }
 }

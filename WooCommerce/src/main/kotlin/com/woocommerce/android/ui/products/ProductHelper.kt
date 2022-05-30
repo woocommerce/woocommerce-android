@@ -87,6 +87,7 @@ object ProductHelper {
             groupedProductIds = listOf(),
             crossSellProductIds = listOf(),
             upsellProductIds = listOf(),
+            variationIds = listOf(),
             downloads = listOf(),
             isPurchasable = false
         )

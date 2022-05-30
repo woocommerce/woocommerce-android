@@ -14,28 +14,29 @@
             android:orientation="vertical">
 
             <com.google.android.material.textview.MaterialTextView
-                style="@style/TextAppearance.Woo.Subtitle2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/major_100"
-                android:layout_marginTop="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_75"
                 android:focusable="false"
                 android:text="@string/shipping_label_install_wc_shipping_banner_title"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
                 android:textStyle="bold" />
 
             <com.google.android.material.textview.MaterialTextView
-                style="@style/TextAppearance.Woo.Body2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginTop="@dimen/minor_100"
                 android:focusable="false"
-                android:text="@string/shipping_label_install_wc_shipping_banner_description" />
+                android:text="@string/shipping_label_install_wc_shipping_banner_description"
+                android:textAppearance="?attr/textAppearanceBody2" />
 
             <com.google.android.material.button.MaterialButton
                 style="@style/Woo.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/minor_100"
                 android:focusable="false"
                 android:text="@string/shipping_label_install_wc_shipping_banner_button"
                 android:textAllCaps="false" />
@@ -43,9 +44,11 @@
         </LinearLayout>
 
         <ImageView
+            android:id="@+id/banner_imageview"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:importantForAccessibility="no"
+            android:scaleType="centerCrop"
             android:src="@drawable/img_shipping_labels_banner" />
 
     </LinearLayout>
