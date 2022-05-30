@@ -16,7 +16,9 @@ import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.store.WCProductStore.BatchUpdateVariationsPayload
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.math.BigDecimal
 import javax.inject.Inject
 
 class VariationRepository @Inject constructor(
@@ -85,6 +87,22 @@ class VariationRepository @Inject constructor(
                 .generateEmptyVariation(selectedSite.get(), product.toDataModel())
                 .handleVariationCreateResult(product)
         }
+
+    /**
+     * Bulk updates variations.
+     */
+    suspend fun bulkUpdateVariations(
+        remoteProductId: Long,
+        variationIds: Collection<Long>,
+        newRegularPrice: BigDecimal? = null,
+        newSalePrice: BigDecimal? = null,
+    ): Boolean {
+        val payloadBuilder = BatchUpdateVariationsPayload.Builder(selectedSite.get(), remoteProductId, variationIds)
+        if (newRegularPrice != null) payloadBuilder.regularPrice(newRegularPrice.toString())
+        if (newSalePrice != null) payloadBuilder.salePrice(newSalePrice.toString())
+        val result = productStore.batchUpdateVariations(payloadBuilder.build())
+        return !result.isError
+    }
 
     private fun WooResult<WCProductVariationModel>.handleVariationCreateResult(
         product: Product

@@ -268,6 +268,6 @@ class VariationListViewModel @Inject constructor(
     /**
      * Represents event responsible for displaying [VariationsBulkUpdateAttrPickerDialog].
      */
-    data class ShowBulkUpdateAttrPicker(val variationsToUpdate: List<ProductVariation>): Event()
+    data class ShowBulkUpdateAttrPicker(val variationsToUpdate: List<ProductVariation>) : Event()
     object ShowAddAttributeView : Event()
 }

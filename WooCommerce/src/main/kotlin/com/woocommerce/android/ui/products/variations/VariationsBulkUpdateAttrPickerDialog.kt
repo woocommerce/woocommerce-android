@@ -7,7 +7,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED
 import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_DRAGGING
@@ -16,14 +16,24 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HALF_EX
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentVariationsBulkUpdateAttrPickerBinding
-import com.woocommerce.android.ui.products.variations.VariationsBulkUpdateAttrPickerViewModel.RegularPriceState
+import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.ui.products.variations.VariationsBulkUpdateAttrPickerViewModel.OpenVariationsBulkUpdatePrice
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdateAttrPickerViewModel.ViewState
+import com.woocommerce.android.ui.products.variations.VariationsBulkUpdatePriceViewModel.PriceUpdateData
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
+import dagger.hilt.android.AndroidEntryPoint
+import java.math.BigDecimal
+import javax.inject.Inject
 
 private const val DEFAULT_BG_DIM = 0.32F
+private const val HALF_EXPANDED_RATIO = 0.5F
 private const val KEY_EXTRA_SHEET_STATE = "key_sheet_state"
 
+@AndroidEntryPoint
 class VariationsBulkUpdateAttrPickerDialog : WCBottomSheetDialogFragment() {
+    @Inject lateinit var currencyFormatter: CurrencyFormatter
+
     private var _binding: FragmentVariationsBulkUpdateAttrPickerBinding? = null
     private val binding get() = _binding!!
 
@@ -46,20 +56,22 @@ class VariationsBulkUpdateAttrPickerDialog : WCBottomSheetDialogFragment() {
         val bottomSheetBehavior = getSheetBehavior()
         binding.collapsedStateHeader.setOnClickListener { bottomSheetBehavior.state = STATE_EXPANDED }
         binding.fullscreenStateToolbar.setNavigationOnClickListener { dismiss() }
+        binding.regularPrice.setOnClickListener { viewModel.onRegularPriceUpdateClicked() }
 
         bottomSheetBehavior.apply {
             isFitToContents = false
             addBottomSheetCallback(sheetCallback)
-            halfExpandedRatio = 0.5f
+            halfExpandedRatio = HALF_EXPANDED_RATIO
             state = savedInstanceState?.getInt(KEY_EXTRA_SHEET_STATE, STATE_HALF_EXPANDED) ?: STATE_HALF_EXPANDED
         }
         dialog?.window?.setDimAmount(DEFAULT_BG_DIM)
         renderInternalSheetState(bottomSheetBehavior.state)
-        lifecycleScope.launchWhenStarted {
-            viewModel.viewState.observe(viewLifecycleOwner) { newState ->
-                renderViewState(newState)
-            }
-        }
+        listenForViewStateChange()
+        listenForEvents()
+    }
+
+    private fun listenForViewStateChange() {
+        viewModel.viewState.observe(viewLifecycleOwner, ::renderViewState)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -68,11 +80,34 @@ class VariationsBulkUpdateAttrPickerDialog : WCBottomSheetDialogFragment() {
     }
 
     private fun renderViewState(newState: ViewState) {
-        binding.priceSubtitle.text = when (newState.regularPriceState) {
-            RegularPriceState.None -> getString(R.string.variations_bulk_update_dialog_price_none)
-            RegularPriceState.Mixed -> getString(R.string.variations_bulk_update_dialog_price_mixed)
-            is RegularPriceState.Value -> newState.regularPriceState.price
+        binding.priceSubtitle.text = when (newState.regularPriceGroupType) {
+            ValuesGroupType.None -> getString(R.string.variations_bulk_update_dialog_price_none)
+            ValuesGroupType.Mixed -> getString(R.string.variations_bulk_update_dialog_price_mixed)
+            is ValuesGroupType.Common -> {
+                val price = newState.regularPriceGroupType.data as? BigDecimal?
+                val currency = newState.currency
+                if (price != null && currency != null) {
+                    currencyFormatter.formatCurrency(amount =  price, currencyCode = currency)
+                } else {
+                    ""
+                }
+            }
         }
+    }
+
+    private fun listenForEvents() {
+        viewModel.event.observe(viewLifecycleOwner) {
+            when (it) {
+                is OpenVariationsBulkUpdatePrice -> openRegularPriceUpdate(it.data)
+            }
+        }
+    }
+
+    private fun openRegularPriceUpdate(data: PriceUpdateData) {
+        VariationsBulkUpdateAttrPickerDialogDirections
+            .actionVariationsBulkUpdateAttrPickerFragmentToVariationsBulkUpdatePriceFragment(data)
+            .run { findNavController().navigateSafely(this) }
+        dismiss()
     }
 
     private fun renderInternalSheetState(bottomSheetState: Int) {
