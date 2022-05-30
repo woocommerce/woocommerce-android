@@ -46,6 +46,7 @@ import com.woocommerce.android.model.Coupon.Type
 import com.woocommerce.android.model.Coupon.Type.Percent
 import com.woocommerce.android.ui.compose.component.BigDecimalTextFieldValueMapper
 import com.woocommerce.android.ui.compose.component.DatePickerDialog
+import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedSpinner
@@ -70,7 +71,9 @@ fun EditCouponScreen(viewModel: EditCouponViewModel) {
             onDescriptionButtonClick = viewModel::onDescriptionButtonClick,
             onExpiryDateChanged = viewModel::onExpiryDateChanged,
             onFreeShippingChanged = viewModel::onFreeShippingChanged,
-            onUsageRestrictionsClick = viewModel::onUsageRestrictionsClick
+            onUsageRestrictionsClick = viewModel::onUsageRestrictionsClick,
+            onSelectProductsButtonClick = viewModel::onSelectProductsButtonClick,
+            onSaveClick = viewModel::onSaveClick
         )
     }
 }
@@ -84,7 +87,9 @@ fun EditCouponScreen(
     onDescriptionButtonClick: () -> Unit = {},
     onExpiryDateChanged: (Date?) -> Unit = {},
     onFreeShippingChanged: (Boolean) -> Unit = {},
-    onUsageRestrictionsClick: () -> Unit = {}
+    onUsageRestrictionsClick: () -> Unit = {},
+    onSelectProductsButtonClick: () -> Unit = {},
+    onSaveClick: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -104,15 +109,22 @@ fun EditCouponScreen(
             onExpiryDateChanged = onExpiryDateChanged,
             onFreeShippingChanged = onFreeShippingChanged
         )
-        ConditionsSection(viewState)
+        ConditionsSection(viewState, onSelectProductsButtonClick)
         UsageRestrictionsSection(viewState, onUsageRestrictionsClick)
         WCColoredButton(
-            onClick = { /*TODO*/ },
+            onClick = onSaveClick,
             text = stringResource(id = R.string.coupon_edit_save_button),
             modifier = Modifier
                 .padding(horizontal = dimensionResource(id = R.dimen.major_100))
                 .fillMaxWidth(),
             enabled = viewState.hasChanges
+        )
+    }
+
+    if (viewState.isSaving) {
+        ProgressDialog(
+            title = stringResource(id = R.string.coupon_edit_saving_dialog_title),
+            subtitle = stringResource(id = R.string.coupon_edit_saving_dialog_subtitle)
         )
     }
 }
@@ -170,8 +182,44 @@ private fun DetailsSection(
 
 @Composable
 @Suppress("UnusedPrivateMember")
-private fun ConditionsSection(viewState: ViewState) {
-    /*TODO*/
+private fun ConditionsSection(
+    viewState: ViewState,
+    onSelectProductsButtonClick: () -> Unit
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
+        modifier = Modifier
+            .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = stringResource(id = R.string.coupon_edit_conditions_section).toUpperCase(Locale.current),
+            style = MaterialTheme.typography.body2,
+            color = colorResource(id = R.color.color_on_surface_medium)
+        )
+        WCOutlinedButton(
+            onClick = onSelectProductsButtonClick,
+            text = if (viewState.couponDraft.productIds.isEmpty()) {
+                stringResource(R.string.coupon_conditions_products_all_products_title)
+            } else {
+                stringResource(
+                    R.string.coupon_conditions_products_edit_products_title,
+                    viewState.couponDraft.productIds.size
+                )
+            },
+            leadingIcon = {
+                if (viewState.couponDraft.productIds.isNotEmpty()) {
+                    Icon(
+                        imageVector = Icons.Filled.Edit,
+                        contentDescription = null,
+                        modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
+                    )
+                }
+            },
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.onSurface),
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
 }
 
 @Composable
@@ -317,7 +365,8 @@ private fun EditCouponPreview() {
                 ),
                 localizedType = "Fixed Rate Discount",
                 amountUnit = "%",
-                hasChanges = true
+                hasChanges = true,
+                isSaving = true
             )
         )
     }

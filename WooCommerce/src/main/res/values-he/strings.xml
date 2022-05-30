@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-05-08 13:54:04+0000
+Translation-Revision-Date: 2022-05-19 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="coupon_edit_add_description_hint">להוסיף את התיאור לקופון.</string>
+    <string name="coupon_edit_description_editor_title">תיאור קופון</string>
+    <string name="coupon_edit_edit_description">לערוך את התיאור</string>
+    <string name="coupon_edit_add_description">להוסיף תיאור (אופציונלי)</string>
+    <string name="coupon_edit_expiry_date">תאריך תפוגת הקופון</string>
+    <string name="coupon_edit_save_button">לשמור</string>
+    <string name="coupon_edit_regenerate_coupon">ליצור מחדש את קוד הקופון</string>
+    <string name="coupon_edit_code_helper">הלקוחות צריכים להזין את הקוד הזה כדי להשתמש בקופון.</string>
+    <string name="coupon_edit_code_hint">קוד קופון</string>
+    <string name="coupon_edit_amount_rate_helper">יש להגדיר את הסכום להנחה שברצונך להציע.</string>
+    <string name="coupon_edit_amount_percentage_helper">יש להגדיר את אחוז ההנחה שברצונך להציע.</string>
+    <string name="coupon_edit_amount_hint">סכום (⁦%1$s⁩)</string>
+    <string name="coupon_edit_details_section">פרטי הקופון</string>
+    <string name="coupon_edit_screen_title">לערוך את ⁦%1$s⁩</string>
+    <string name="coupon_details_menu_edit">לערוך קופון</string>
+    <string name="product_detail_save_product_error">אין אפשרות לעדכן את המוצר</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund_failed">משהו השתבש במהלך ההחלה של ההחזר הכספי</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund">החלת החזר כספי על ההזמנה</string>
+    <string name="card_reader_icon_content_description">תמונה של קורא הכרטיסים</string>
+    <string name="order_creation_fee_percentage_calculated_amount">סכום מחושב: %s</string>
+    <string name="order_creation_fee_percentage_toggle_text">מחושב כאחוז</string>
+    <string name="copied_to_clipboard">הועתק ללוח</string>
     <string name="coupon_details_restricted_emails">מוגבל ללקוחות עם אימיילים: ⁦%1$s⁩</string>
     <string name="coupon_details_excludes_sale_items">לא לכלול פריטים במבצע</string>
     <string name="coupon_details_allows_free_shipping">לאפשר משלוח חינם</string>
@@ -119,7 +141,6 @@ Language: he_IL
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">אנחנו לא תומכים ב-Stripe בתוך ⁦%1$s⁩</string>
     <string name="card_reader_connect_scanning_hint">יש ללחוץ על כפתור ההפעלה של הקורא שלך</string>
     <string name="card_reader_payment_reader_receipt_sent">הקבלה נשלחה אל &lt;strong&gt;%s&lt;/strong&gt;</string>
-    <string name="order_creation_fee_percentage_toggle_text">עמלת אחוזים</string>
     <string name="order_creation_fee_percentage_hint">אחוזים (%)</string>
     <string name="order_creation_add_fee_removal_hint">להסיר את העמלה מההזמנה</string>
     <string name="order_creation_remove_shipping">להסיר את המשלוח מההזמנה</string>
@@ -153,7 +174,6 @@ Language: he_IL
     <string name="card_reader_wisepad_3_manual_card_reader">מדריך לקורא הכרטיסים של WisePad 3</string>
     <string name="order_creation_price_calculation_failed">לא ניתן לעדכן את המחירים</string>
     <string name="order_creation_payment_tax">מיסים</string>
-    <string name="order_creation_payment_tax_hint">המיסים יחושבו באופן אוטומטי בהתאם להגדרות החנות שלך.</string>
     <string name="exclusive_or">או</string>
     <string name="settings_install_jetpack">להתקין את Jetpack</string>
     <string name="card_reader_onboarding_account_rejected_header">תשלומים באופן אישי אינם זמינים כרגע</string>
@@ -571,7 +591,7 @@ Language: he_IL
     <string name="card_reader_refetching_order_failed">שגיאה בהבאת ההזמנה. ייתכן שמצב ההזמנה באפליקציה לא מעודכן.</string>
     <string name="card_reader_payment_email_client_not_found">לא ניתן לאתר את האפליקציה של שירות האימייל שלך</string>
     <string name="card_reader_payment_receipt_email_subject">הקבלה שלך מאת %s</string>
-    <string name="card_reader_payment_description">תשלום מקוון להזמנה %s עבור %s</string>
+    <string name="card_reader_payment_description">תשלום באופן אישי על ההזמנה %s עבור %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">מרענן את ההזמנה</string>
     <string name="card_reader_payment_fetch_order_loading_header">מעדכן את מצב האפליקציה</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">הלקוח בחר את ⁦%1$s⁩</string>

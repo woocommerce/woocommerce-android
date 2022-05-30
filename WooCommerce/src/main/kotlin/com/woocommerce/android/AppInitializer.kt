@@ -14,7 +14,8 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.network.ConnectionChangeReceiver
-import com.woocommerce.android.push.FCMRegistrationIntentService
+import com.woocommerce.android.push.RegisterDevice
+import com.woocommerce.android.push.RegisterDevice.Mode.IF_NEEDED
 import com.woocommerce.android.push.WooNotificationBuilder
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.tools.NetworkStatus
@@ -45,6 +46,8 @@ import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
+import org.wordpress.android.fluxc.logging.FluxCCrashLogger
+import org.wordpress.android.fluxc.logging.FluxCCrashLoggerProvider
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.OnJetpackTimeoutError
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
@@ -61,6 +64,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     }
 
     @Inject lateinit var crashLogging: CrashLogging
+    @Inject lateinit var fluxCCrashLogger: FluxCCrashLogger
     @Inject lateinit var androidInjector: DispatchingAndroidInjector<Any>
 
     @Inject lateinit var dispatcher: Dispatcher
@@ -78,6 +82,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var sendTelemetry: SendTelemetry
     @Inject lateinit var siteObserver: SiteObserver
     @Inject lateinit var wooLog: WooLogWrapper
+    @Inject lateinit var registerDevice: RegisterDevice
 
     // Listens for changes in device connectivity
     @Inject lateinit var connectionReceiver: ConnectionChangeReceiver
@@ -115,6 +120,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         AppThemeUtils.setAppTheme()
 
         dispatcher.register(this)
+
+        FluxCCrashLoggerProvider.initLogger(fluxCCrashLogger)
 
         AppRatingDialog.init(application)
 
@@ -157,13 +164,12 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             application.registerReceiver(connectionReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
         }
 
-        if (isGooglePlayServicesAvailable(application)) {
-            // Register for Cloud messaging
-            FCMRegistrationIntentService.enqueueWork(application)
-        }
-
         if (networkStatus.isConnected()) {
             updateSelectedSite.runIfNotLimited()
+
+            appCoroutineScope.launch {
+                registerDevice(IF_NEEDED)
+            }
         }
     }
 
@@ -286,6 +292,13 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             val hasUserOptedOut = !AnalyticsTracker.sendUsageStats
             if (hasUserOptedOut != accountStore.account.tracksOptOut) {
                 AnalyticsTracker.sendUsageStats = !accountStore.account.tracksOptOut
+            }
+        }
+
+        val userAccountFetched = !isLoggedOut && event.causeOfChange == AccountAction.FETCH_ACCOUNT
+        if (userAccountFetched) {
+            appCoroutineScope.launch {
+                registerDevice(IF_NEEDED)
             }
         }
     }
