@@ -12,11 +12,9 @@ import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SelectedSite.SelectedSiteChangedEvent
 import com.woocommerce.android.ui.cardreader.ClearCardReaderDataAction
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -47,8 +45,7 @@ class MainPresenter @Inject constructor(
     private val productImageMap: ProductImageMap,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val wcOrderStore: WCOrderStore,
-    private val clearCardReaderDataAction: ClearCardReaderDataAction,
-    private val dispatchers: CoroutineDispatchers
+    private val clearCardReaderDataAction: ClearCardReaderDataAction
 ) : MainContract.Presenter {
     private var mainView: MainContract.View? = null
 
@@ -61,21 +58,19 @@ class MainPresenter @Inject constructor(
         ConnectionChangeReceiver.getEventBus().register(this)
 
         coroutineScope.launch {
-            withContext(dispatchers.io) {
-                selectedSite.getIfExists()?.let { siteModel ->
-                    wcOrderStore.observeOrderCountForSite(
-                        siteModel, listOf(PROCESSING.value)
-                    ).collect { count ->
-                        AnalyticsTracker.track(
-                            AnalyticsEvent.UNFULFILLED_ORDERS_LOADED,
-                            mapOf(AnalyticsTracker.KEY_HAS_UNFULFILLED_ORDERS to count)
-                        )
+            selectedSite.getIfExists()?.let { siteModel ->
+                wcOrderStore.observeOrderCountForSite(
+                    siteModel, listOf(PROCESSING.value)
+                ).collect { count ->
+                    AnalyticsTracker.track(
+                        AnalyticsEvent.UNFULFILLED_ORDERS_LOADED,
+                        mapOf(AnalyticsTracker.KEY_HAS_UNFULFILLED_ORDERS to count)
+                    )
 
-                        if (count > 0) {
-                            mainView?.showOrderBadge(count)
-                        } else {
-                            mainView?.hideOrderBadge()
-                        }
+                    if (count > 0) {
+                        mainView?.showOrderBadge(count)
+                    } else {
+                        mainView?.hideOrderBadge()
                     }
                 }
             }

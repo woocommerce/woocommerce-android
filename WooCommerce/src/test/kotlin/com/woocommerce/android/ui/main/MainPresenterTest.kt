@@ -77,8 +77,7 @@ class MainPresenterTest : BaseUnitTest() {
                 productImageMap,
                 appPrefs,
                 wcOrderStore,
-                clearCardReaderDataAction,
-                coroutinesTestRule.testDispatchers
+                clearCardReaderDataAction
             )
         )
         actionCaptor = argumentCaptor()
