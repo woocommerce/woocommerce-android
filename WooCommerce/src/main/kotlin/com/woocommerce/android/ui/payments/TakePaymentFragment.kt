@@ -6,34 +6,34 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentTakePaymentBinding
+import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
-import com.woocommerce.android.ui.orders.OrderNavigationTarget
+import com.woocommerce.android.ui.payments.TakePaymentViewModel.NavigateToCardReaderHubFlow
+import com.woocommerce.android.ui.payments.TakePaymentViewModel.NavigateToCardReaderPaymentFlow
+import com.woocommerce.android.ui.payments.TakePaymentViewModel.NavigateToCardReaderRefundFlow
 import com.woocommerce.android.ui.payments.TakePaymentViewModel.SharePaymentUrl
+import com.woocommerce.android.ui.payments.TakePaymentViewModel.TakePaymentViewState.Loading
+import com.woocommerce.android.ui.payments.TakePaymentViewModel.TakePaymentViewState.Success
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectDialogFragment
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragment
-import com.woocommerce.android.ui.payments.simplepayments.SimplePaymentsSharedViewModel
-import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
     private val viewModel: TakePaymentViewModel by viewModels()
-    private val sharedViewModel by hiltNavGraphViewModels<SimplePaymentsSharedViewModel>(R.id.nav_graph_main)
-
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
-
     private val sharePaymentUrlLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
@@ -44,6 +44,41 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
         super.onViewCreated(view, savedInstanceState)
 
         val binding = FragmentTakePaymentBinding.bind(view)
+
+        setUpObservers(binding)
+        setupResultHandlers()
+    }
+
+    private fun setUpObservers(binding: FragmentTakePaymentBinding) {
+        handleViewState(binding)
+        handleEvents(binding)
+    }
+
+    private fun handleViewState(binding: FragmentTakePaymentBinding) {
+        viewModel.viewStateData.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                Loading -> renderLoadingState(binding)
+                is Success -> renderSuccessfulState(binding, state)
+            }.exhaustive
+        }
+    }
+
+    private fun renderLoadingState(binding: FragmentTakePaymentBinding) {
+        binding.container.isVisible = false
+        binding.pbLoading.isVisible = true
+    }
+
+    private fun renderSuccessfulState(
+        binding: FragmentTakePaymentBinding,
+        state: Success
+    ) {
+        binding.container.isVisible = true
+        binding.pbLoading.isVisible = false
+        requireActivity().title = getString(
+            R.string.simple_payments_take_payment_button,
+            state.orderTotal
+        )
+
         binding.textCash.setOnClickListener {
             viewModel.onCashPaymentClicked()
         }
@@ -51,40 +86,56 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
             viewModel.onCardPaymentClicked()
         }
 
-        if (viewModel.order.paymentUrl.isNotEmpty()) {
+        if (state.paymentUrl.isNotEmpty()) {
             binding.textShare.setOnClickListener {
                 viewModel.onSharePaymentUrlClicked()
             }
         } else {
             binding.textShare.isVisible = false
         }
-
-        setUpObservers()
-        setupResultHandlers()
     }
 
-    private fun setUpObservers() {
+    private fun handleEvents(binding: FragmentTakePaymentBinding) {
         viewModel.event.observe(
             viewLifecycleOwner
         ) { event ->
             when (event) {
-                is MultiLiveEvent.Event.ShowDialog -> {
+                is ShowDialog -> {
                     event.showDialog()
                 }
-                is MultiLiveEvent.Event.ShowSnackbar -> {
-                    uiMessageResolver.showSnack(event.message)
+                is ShowSnackbar -> {
+                    Snackbar.make(
+                        binding.container,
+                        event.message,
+                        BaseTransientBottomBar.LENGTH_LONG
+                    ).show()
                 }
-                is MultiLiveEvent.Event.Exit -> {
+                is Exit -> {
                     findNavController().navigateSafely(R.id.orders)
-                }
-                is OrderNavigationTarget.StartCardReaderPaymentFlow -> {
-                    val action = TakePaymentFragmentDirections.actionTakePaymentFragmentToCardReaderFlow(
-                        CardReaderFlowParam.PaymentOrRefund.Payment(event.orderId)
-                    )
-                    findNavController().navigateSafely(action)
                 }
                 is SharePaymentUrl -> {
                     sharePaymentUrl(event.storeName, event.paymentUrl)
+                }
+                is NavigateToCardReaderPaymentFlow -> {
+                    val action =
+                        TakePaymentFragmentDirections.actionTakePaymentFragmentToCardReaderPaymentFlow(
+                            event.cardReaderFlowParam
+                        )
+                    findNavController().navigate(action)
+                }
+                is NavigateToCardReaderHubFlow -> {
+                    val action =
+                        TakePaymentFragmentDirections.actionTakePaymentFragmentToCardReaderHubFlow(
+                            event.cardReaderFlowParam
+                        )
+                    findNavController().navigate(action)
+                }
+                is NavigateToCardReaderRefundFlow -> {
+                    val action =
+                        TakePaymentFragmentDirections.actionTakePaymentFragmentToCardReaderRefundFlow(
+                            event.cardReaderFlowParam
+                        )
+                    findNavController().navigate(action)
                 }
             }
         }
@@ -125,10 +176,5 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
     override fun onStop() {
         super.onStop()
         WooDialog.onCleared()
-    }
-
-    override fun getFragmentTitle(): String {
-        val totalStr = sharedViewModel.formatAmount(viewModel.orderTotal)
-        return getString(R.string.simple_payments_take_payment_button, totalStr)
     }
 }

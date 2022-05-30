@@ -223,7 +223,7 @@
 
         <action
             android:id="@+id/action_orderDetailFragment_to_cardReaderFlow"
-            app:destination="@id/cardReaderFlow">
+            app:destination="@id/paymentFlow">
             <argument
                 android:name="cardReaderFlowParam"
                 app:argType="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam"
@@ -538,5 +538,5 @@
             app:argType="string" />
     </fragment>
 
-    <include app:graph="@navigation/nav_graph_card_reader_flow" />
+    <include app:graph="@navigation/nav_graph_payment_flow" />
 </navigation>

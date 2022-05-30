@@ -1,7 +1,30 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/cardReaderFlow"
-    app:startDestination="@id/cardReaderStatusCheckerDialogFragment">
+    android:id="@+id/paymentFlow"
+    app:startDestination="@id/takePaymentFragment">
+
+    <fragment
+        android:id="@+id/takePaymentFragment"
+        android:name="com.woocommerce.android.ui.payments.TakePaymentFragment"
+        android:label="TakePaymentFragment">
+        <argument
+            android:name="cardReaderFlowParam"
+            app:argType="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam"
+            app:nullable="false" />
+        <action
+            android:id="@+id/action_takePaymentFragment_to_cardReaderPaymentFlow"
+            app:destination="@id/cardReaderStatusCheckerDialogFragment" />
+        <action
+            android:id="@+id/action_takePaymentFragment_to_cardReaderHubFlow"
+            app:destination="@id/cardReaderStatusCheckerDialogFragment"
+            app:popUpTo="@+id/takePaymentFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_takePaymentFragment_to_cardReaderRefundFlow"
+            app:destination="@id/cardReaderStatusCheckerDialogFragment"
+            app:popUpTo="@+id/takePaymentFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
 
     <!-- Onboarding flow -->
     <dialog
@@ -49,9 +72,9 @@
             app:popUpToInclusive="false" />
         <action
             android:id="@+id/action_cardReaderOnboardingFragment_to_cardReaderConnectDialogFragment"
+            app:destination="@id/cardReaderConnectDialogFragment"
             app:popUpTo="@+id/cardReaderOnboardingFragment"
-            app:popUpToInclusive="true"
-            app:destination="@id/cardReaderConnectDialogFragment" />
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/cardReaderHubFragment"
