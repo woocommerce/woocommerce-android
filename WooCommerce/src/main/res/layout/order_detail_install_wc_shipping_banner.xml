@@ -47,20 +47,21 @@
         <com.woocommerce.android.util.ScalableImageView
             android:layout_width="132dp"
             android:layout_height="match_parent"
-            android:maxWidth="@dimen/major_100"
             android:importantForAccessibility="no"
-            app:scaleType="fitTop"
-            android:src="@drawable/img_shipping_labels_banner" />
+            android:maxWidth="@dimen/major_100"
+            android:src="@drawable/img_shipping_labels_banner"
+            app:scaleType="fitTop" />
 
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/dismiss_shippingLabel_button"
+    <ImageButton
+        android:id="@+id/dismiss_shippingLabelBanner_button"
+        style="@style/Woo.ImageButton.Close"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
-        android:padding="@dimen/major_100"
         android:contentDescription="@string/order_refunds_amount_refund_confirmation_message"
+        android:padding="@dimen/major_100"
         android:src="@drawable/ic_gridicons_cross_grey_24dp" />
 
 </merge>
