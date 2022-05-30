@@ -43,6 +43,7 @@ import com.woocommerce.android.tools.ProductImageMap.OnProductFetchedListener
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.cardreader.payment.CardReaderPaymentCollectibilityChecker
+import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
@@ -247,6 +248,10 @@ final class OrderDetailViewModel @Inject constructor(
     fun onSharePaymentUrlClicked() {
         trackerWrapper.track(AnalyticsEvent.ORDER_DETAIL_PAYMENT_LINK_SHARED)
         triggerEvent(TakePaymentViewModel.SharePaymentUrl(selectedSite.get().name, order.paymentUrl))
+    }
+
+    fun onEditClicked() {
+        triggerEvent(OrderNavigationTarget.EditOrder(order.id))
     }
 
     fun onAcceptCardPresentPaymentClicked() {
