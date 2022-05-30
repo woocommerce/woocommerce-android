@@ -130,6 +130,12 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getLoginSiteAddress() = AppPrefs.getLoginSiteAddress().takeIf { it.isNotEmpty() }
 
+    fun setWcShippingBannerDismissed(dismissed: Boolean) {
+        AppPrefs.setWcShippingBannerDismissed(dismissed)
+    }
+
+    fun getWcShippingBannerDismissed() = AppPrefs.getWcShippingBannerDismissed()
+
     /**
      * Observes changes to the preferences
      */

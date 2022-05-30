@@ -1,11 +1,13 @@
 package com.woocommerce.android.ui.orders.details
 
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.model.Order
 import javax.inject.Inject
 
 class ShippingLabelOnboardingRepository @Inject constructor(
-    private val orderDetailRepository: OrderDetailRepository
+    private val orderDetailRepository: OrderDetailRepository,
+    private val appSharedPrefs: AppPrefsWrapper,
 ) {
     companion object {
         // The required version to support shipping label creation
@@ -27,6 +29,10 @@ class ShippingLabelOnboardingRepository @Inject constructor(
             !order.isCashPayment &&
             !eligibleForIpp &&
             !hasVirtualProductsOnly(order)
+
+    fun markWcShippingBannerAsDismissed() {
+        appSharedPrefs.setWcShippingBannerDismissed(dismissed = true)
+    }
 
     private fun hasVirtualProductsOnly(order: Order): Boolean {
         return if (order.items.isNotEmpty()) {

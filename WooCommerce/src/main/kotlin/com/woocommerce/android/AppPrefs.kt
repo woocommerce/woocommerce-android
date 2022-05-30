@@ -132,6 +132,9 @@ object AppPrefs {
 
         // card reader welcome dialog was shown
         CARD_READER_WELCOME_SHOWN,
+
+        // Hide banner in order detail to install WC Shipping plugin
+        WC_SHIPPING_BANNER_DISMISSED,
     }
 
     fun init(context: Context) {
@@ -630,6 +633,12 @@ object AppPrefs {
             endDateMillis
         )
     }
+
+    fun setWcShippingBannerDismissed(dismissed: Boolean) {
+        setBoolean(UndeletablePrefKey.WC_SHIPPING_BANNER_DISMISSED, dismissed)
+    }
+
+    fun getWcShippingBannerDismissed() = getBoolean(UndeletablePrefKey.WC_SHIPPING_BANNER_DISMISSED, false)
 
     /**
      * Remove all user and site-related preferences.

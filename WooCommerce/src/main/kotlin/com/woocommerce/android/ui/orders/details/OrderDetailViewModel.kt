@@ -654,12 +654,18 @@ final class OrderDetailViewModel @Inject constructor(
             isShipmentTrackingAvailable = shipmentTracking.isVisible,
             isProductListVisible = orderProducts.isVisible,
             areShippingLabelsVisible = shippingLabels.isVisible,
-            installWcShippingBannerVisible = shippingLabelOnboardingRepository.shouldShowWcShippingBanner(
-                order,
-                orderEligibleForInPersonPayments
-            )
+            wcShippingBannerStatus = getWcShippingBannerStatus(order, orderEligibleForInPersonPayments)
         )
     }
+
+    private fun getWcShippingBannerStatus(order: Order, orderEligibleForInPersonPayments: Boolean) =
+        WcShippingBannerStatus(
+            isVisible = shippingLabelOnboardingRepository.shouldShowWcShippingBanner(
+                order,
+                orderEligibleForInPersonPayments
+            ),
+            onDismiss = ::onWcShippingBannerDismissed
+        )
 
     override fun onProductFetched(remoteProductId: Long) {
         viewState = viewState.copy(refreshedProductId = remoteProductId)
@@ -684,6 +690,10 @@ final class OrderDetailViewModel @Inject constructor(
         }
     }
 
+    private fun onWcShippingBannerDismissed() {
+        shippingLabelOnboardingRepository.markWcShippingBannerAsDismissed()
+    }
+
     @Parcelize
     data class ViewState(
         val orderInfo: OrderInfo? = null,
@@ -698,7 +708,7 @@ final class OrderDetailViewModel @Inject constructor(
         val areShippingLabelsVisible: Boolean? = null,
         val isProductListMenuVisible: Boolean? = null,
         val isSharePaymentLinkVisible: Boolean? = null,
-        val installWcShippingBannerVisible: Boolean? = null
+        val wcShippingBannerStatus: WcShippingBannerStatus? = null
     ) : Parcelable {
         val isMarkOrderCompleteButtonVisible: Boolean?
             get() = if (orderStatus != null) orderStatus.statusKey == CoreOrderStatus.PROCESSING.value else null
@@ -712,6 +722,12 @@ final class OrderDetailViewModel @Inject constructor(
         val order: Order? = null,
         val isPaymentCollectableWithCardReader: Boolean = false,
         val isReceiptButtonsVisible: Boolean = false
+    ) : Parcelable
+
+    @Parcelize
+    data class WcShippingBannerStatus(
+        val isVisible: Boolean,
+        val onDismiss: () -> Unit,
     ) : Parcelable
 
     sealed class OrderStatusUpdateSource(open val oldStatus: String, open val newStatus: String) : Parcelable {
