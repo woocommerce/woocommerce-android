@@ -226,7 +226,7 @@
             app:destination="@id/cardReaderFlow">
             <argument
                 android:name="cardReaderFlowParam"
-                app:argType="com.woocommerce.android.ui.cardreader.onboarding.CardReaderFlowParam"
+                app:argType="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam"
                 app:nullable="false" />
         </action>
     </fragment>
@@ -419,7 +419,7 @@
     </fragment>
     <fragment
         android:id="@+id/receiptPreviewFragment"
-        android:name="com.woocommerce.android.ui.cardreader.receipt.ReceiptPreviewFragment"
+        android:name="com.woocommerce.android.ui.payments.cardreader.receipt.ReceiptPreviewFragment"
         android:label="ReceiptPreviewFragment"
         tools:layout="@layout/fragment_receipt_preview">
         <argument

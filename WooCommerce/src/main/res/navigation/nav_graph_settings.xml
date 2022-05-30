@@ -14,7 +14,7 @@
             app:destination="@id/cardReaderFlow" >
             <argument
                 android:name="cardReaderFlowParam"
-                app:argType="com.woocommerce.android.ui.cardreader.onboarding.CardReaderFlowParam"
+                app:argType="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam"
                 app:nullable="false" />
         </action>
         <action

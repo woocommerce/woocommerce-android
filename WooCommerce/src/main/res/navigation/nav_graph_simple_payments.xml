@@ -5,7 +5,7 @@
     app:startDestination="@id/simplePaymentsDialog">
     <dialog
         android:id="@+id/simplePaymentsDialog"
-        android:name="com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsDialog"
+        android:name="com.woocommerce.android.ui.payments.simplepayments.SimplePaymentsDialog"
         android:label="SimplePaymentsDialog">
         <action
             android:id="@+id/action_simplePaymentDialog_to_simplePaymentFragment"
@@ -17,7 +17,7 @@
     </dialog>
     <fragment
         android:id="@+id/simplePaymentsFragment"
-        android:name="com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsFragment"
+        android:name="com.woocommerce.android.ui.payments.simplepayments.SimplePaymentsFragment"
         android:label="SimplePaymentsFragment">
         <argument
             android:name="order"
@@ -40,7 +40,7 @@
     </fragment>
     <fragment
         android:id="@+id/simplePaymentsCustomerNoteFragment"
-        android:name="com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsCustomerNoteFragment"
+        android:name="com.woocommerce.android.ui.payments.simplepayments.SimplePaymentsCustomerNoteFragment"
         android:label="SimplePaymentsCustomerNoteFragment">
         <argument
             android:name="customerNote"
@@ -49,7 +49,7 @@
     </fragment>
     <fragment
         android:id="@+id/takePaymentFragment"
-        android:name="com.woocommerce.android.ui.orders.simplepayments.TakePaymentFragment"
+        android:name="com.woocommerce.android.ui.payments.TakePaymentFragment"
         android:label="TakePaymentFragment">
         <argument
             android:name="order"
@@ -60,7 +60,7 @@
             app:destination="@id/cardReaderFlow">
             <argument
                 android:name="cardReaderFlowParam"
-                app:argType="com.woocommerce.android.ui.cardreader.onboarding.CardReaderFlowParam"
+                app:argType="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam"
                 app:nullable="false" />
         </action>
     </fragment>
