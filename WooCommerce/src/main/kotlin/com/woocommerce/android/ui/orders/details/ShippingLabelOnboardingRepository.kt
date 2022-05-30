@@ -28,7 +28,8 @@ class ShippingLabelOnboardingRepository @Inject constructor(
             order.currency == SUPPORTED_WCS_CURRENCY &&
             !order.isCashPayment &&
             !eligibleForIpp &&
-            !hasVirtualProductsOnly(order)
+            !hasVirtualProductsOnly(order) &&
+            !appSharedPrefs.getWcShippingBannerDismissed()
 
     fun markWcShippingBannerAsDismissed() {
         appSharedPrefs.setWcShippingBannerDismissed(dismissed = true)
