@@ -74,4 +74,16 @@ class EditFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest() {
 
         assertThat(lastReceivedEvent).isInstanceOf(Event.ShowDialog::class.java)
     }
+
+    @Test
+    fun `when creating the order, then dismiss the screen`() {
+        var lastReceivedEvent: Event? = null
+        sut.event.observeForever {
+            lastReceivedEvent = it
+        }
+
+        sut.onCreateOrderClicked(defaultOrderValue)
+
+        assertThat(lastReceivedEvent).isEqualTo(Exit)
+    }
 }
