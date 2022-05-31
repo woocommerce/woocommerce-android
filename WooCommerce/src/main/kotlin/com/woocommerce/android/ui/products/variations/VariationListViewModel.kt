@@ -47,6 +47,9 @@ import javax.inject.Inject
  * With that said, when we update the Variation list, we should also update the
  * [ViewState.parentProduct] so the correct information is returned [onExit]
  */
+
+private const val BULK_UPDATE_VARIATIONS_LIMIT = 100
+
 @HiltViewModel
 class VariationListViewModel @Inject constructor(
     savedState: SavedStateHandle,
@@ -94,7 +97,11 @@ class VariationListViewModel @Inject constructor(
     fun onBulkUpdateClicked() {
         track(PRODUCT_VARIANTS_BULK_UPDATE_TAPPED)
         variationList.value?.let { variations ->
-            triggerEvent(ShowBulkUpdateAttrPicker(variations))
+            if (variations.size > BULK_UPDATE_VARIATIONS_LIMIT) {
+                triggerEvent(ShowBulkUpdateLimitExceededWarning)
+            } else {
+                triggerEvent(ShowBulkUpdateAttrPicker(variations))
+            }
         }
     }
 
@@ -270,4 +277,9 @@ class VariationListViewModel @Inject constructor(
      */
     data class ShowBulkUpdateAttrPicker(val variationsToUpdate: List<ProductVariation>) : Event()
     object ShowAddAttributeView : Event()
+
+    /**
+     * Informs about exceeded limit of 100 variations bulk update.
+     */
+    object ShowBulkUpdateLimitExceededWarning : Event()
 }

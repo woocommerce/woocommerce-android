@@ -1477,6 +1477,8 @@
     <string name="variations_bulk_update_sale_prices_success">Updated Sale Prices.</string>
     <string name="variations_bulk_update_sale_prices_dialog_title">Updating sale prices</string>
     <string name="variations_bulk_update_regular_prices_dialog_title">Updating regular prices</string>
+    <string name="variations_bulk_update_warning_title">Bulk update limit exceeded</string>
+    <string name="variations_bulk_update_warning_message">Bulk update allows modifying up to 100 variations at once.</string>
 
     <!--
         Product images

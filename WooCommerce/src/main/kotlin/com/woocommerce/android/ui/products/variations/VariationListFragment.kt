@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -36,6 +37,7 @@ import com.woocommerce.android.ui.products.variations.VariationDetailFragment.Co
 import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.DeletedVariationData
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowAddAttributeView
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowBulkUpdateAttrPicker
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowBulkUpdateLimitExceededWarning
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowVariationDetail
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -170,10 +172,19 @@ class VariationListFragment :
                 is ShowAddAttributeView -> openAddAttributeView()
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowBulkUpdateAttrPicker -> openBulkUpdateView(event.variationsToUpdate)
+                is ShowBulkUpdateLimitExceededWarning -> showBulkUpdateLimitExceededWarning()
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_LIST_RESULT, event.data)
                 is Exit -> activity?.onBackPressed()
             }
         }
+    }
+
+    private fun showBulkUpdateLimitExceededWarning() {
+        val builder = MaterialAlertDialogBuilder(requireContext())
+        builder.setTitle(getString(R.string.variations_bulk_update_warning_title))
+            .setMessage(getString(R.string.variations_bulk_update_warning_message))
+            .setNegativeButton("OK", null)
+            .show()
     }
 
     private fun setupResultHandlers(viewModel: VariationListViewModel) {
