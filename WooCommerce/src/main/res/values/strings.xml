@@ -1475,7 +1475,6 @@
     <string name="variations_bulk_update_error">Something went wrong. Please try again.</string>
     <string name="variations_bulk_update_regular_prices_success">Updated Regular Prices.</string>
     <string name="variations_bulk_update_sale_prices_success">Updated Sale Prices.</string>
-    <string name="variations_bulk_update_regular_sale_prices_success">Updated Sale Prices.</string>
     <string name="variations_bulk_update_sale_prices_dialog_title">Updating sale prices</string>
     <string name="variations_bulk_update_regular_prices_dialog_title">Updating regular prices</string>
 
