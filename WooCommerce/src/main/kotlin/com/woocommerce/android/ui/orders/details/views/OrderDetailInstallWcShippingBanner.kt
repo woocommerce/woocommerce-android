@@ -11,7 +11,6 @@ class OrderDetailInstallWcShippingBanner @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
-
     private val binding = OrderDetailInstallWcShippingBannerBinding.inflate(LayoutInflater.from(ctx), this)
 
     fun setOnDismissListener(onDismiss: () -> Unit) {

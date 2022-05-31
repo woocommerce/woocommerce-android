@@ -23,7 +23,6 @@ class ScalableImageView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = -1
 ) : AppCompatImageView(context, attrs, defStyleAttr) {
-
     private var matrixType: MatrixType? = null
 
     init {
