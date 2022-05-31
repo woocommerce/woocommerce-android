@@ -4,8 +4,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -146,9 +146,8 @@ private fun LazyListScope.categoryItem(item: CategoryUiModel, depth: Int = 0) {
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
+            Box(
+                Modifier
                     .fillMaxWidth()
                     .defaultMinSize(minHeight = dimensionResource(id = R.dimen.line_height_major_100))
                     .clickable(onClick = item.onItemClick)
@@ -157,9 +156,12 @@ private fun LazyListScope.categoryItem(item: CategoryUiModel, depth: Int = 0) {
                 Text(
                     text = item.title,
                     style = MaterialTheme.typography.subtitle1,
-                    modifier = Modifier.padding(
-                        start = dimensionResource(id = R.dimen.major_100) * depth,
-                    ),
+                    modifier = Modifier
+                        .padding(
+                            start = dimensionResource(id = R.dimen.major_100) * depth,
+                            end = dimensionResource(id = R.dimen.major_150)
+                        )
+                        .align(Alignment.CenterStart),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -170,7 +172,8 @@ private fun LazyListScope.categoryItem(item: CategoryUiModel, depth: Int = 0) {
                         contentDescription = stringResource(
                             id = R.string.product_category_selector_check_content_description
                         ),
-                        tint = MaterialTheme.colors.primary
+                        tint = MaterialTheme.colors.primary,
+                        modifier = Modifier.align(Alignment.CenterEnd)
                     )
                 }
             }
