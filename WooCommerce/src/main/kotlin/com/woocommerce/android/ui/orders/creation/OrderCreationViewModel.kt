@@ -81,6 +81,7 @@ class OrderCreationViewModel @Inject constructor(
 
     private val args: OrderCreationFormFragmentArgs by savedState.navArgs()
     private val mode: Mode = args.mode
+    private var initialOrder: Order? = null
 
     private val _orderDraft = savedState.getStateFlow(viewModelScope, Order.EMPTY)
     val orderDraft = _orderDraft
@@ -120,8 +121,10 @@ class OrderCreationViewModel @Inject constructor(
         if (mode is Mode.Edit)
             viewModelScope.launch {
                 orderDetailRepository.getOrderById(mode.orderId).let {
-                    if (it != null)
+                    if (it != null) {
                         _orderDraft.value = it
+                        initialOrder = it
+                    }
                 }
             }
     }
@@ -276,19 +279,19 @@ class OrderCreationViewModel @Inject constructor(
                 }
             }
             is Mode.Edit -> {
-                viewModelScope.launch {
-                    val existingOrder = orderDetailRepository.getOrderById(mode.orderId)
-                    if (_orderDraft.value == existingOrder) {
-                        triggerEvent(Exit)
-                    } else {
-                        triggerEvent(
-                            ShowDialog.buildDiscardDialogEvent(
-                                positiveBtnAction = { _, _ ->
+                if (_orderDraft.value == initialOrder) {
+                    triggerEvent(Exit)
+                } else {
+                    triggerEvent(
+                        ShowDialog.buildDiscardDialogEvent(
+                            positiveBtnAction = { _, _ ->
+                                launch {
+                                    initialOrder?.let { orderCreationRepository.placeOrder(it) }
                                     triggerEvent(Exit)
                                 }
-                            )
+                            }
                         )
-                    }
+                    )
                 }
             }
         }
