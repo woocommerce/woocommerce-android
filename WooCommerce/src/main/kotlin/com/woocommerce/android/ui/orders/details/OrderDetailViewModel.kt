@@ -690,7 +690,7 @@ final class OrderDetailViewModel @Inject constructor(
         }
     }
 
-    private fun onWcShippingBannerDismissed() {
+    fun onWcShippingBannerDismissed() {
         shippingLabelOnboardingRepository.markWcShippingBannerAsDismissed()
     }
 
