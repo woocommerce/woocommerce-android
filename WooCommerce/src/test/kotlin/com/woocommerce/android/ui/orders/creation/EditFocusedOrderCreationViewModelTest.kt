@@ -49,8 +49,7 @@ class EditFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest() {
 
         sut.onBackButtonClicked()
 
-        assertThat(lastReceivedEvent).isNotNull
-        assertThat(lastReceivedEvent).isInstanceOf(Exit::class.java)
+        assertThat(lastReceivedEvent).isEqualTo(Exit)
     }
 
     @Test
@@ -73,7 +72,6 @@ class EditFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest() {
         sut.onIncreaseProductsQuantity(addedProductItemId)
         sut.onBackButtonClicked()
 
-        assertThat(lastReceivedEvent).isNotNull
         assertThat(lastReceivedEvent).isInstanceOf(Event.ShowDialog::class.java)
     }
 }

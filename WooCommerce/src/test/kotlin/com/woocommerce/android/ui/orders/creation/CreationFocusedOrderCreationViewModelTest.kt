@@ -692,7 +692,7 @@ class CreationFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest(
     }
 
     @Test
-    fun `should not load order from repository`() {
+    fun `should initialize with empty order`() {
         sut.orderDraft.observeForever {}
 
         assertThat(sut.orderDraft.value).isEqualToIgnoringGivenFields(Order.EMPTY, "dateCreated", "dateModified")
