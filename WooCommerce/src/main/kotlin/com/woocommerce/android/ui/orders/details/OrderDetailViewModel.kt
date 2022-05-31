@@ -59,6 +59,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstr
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.ui.orders.simplepayments.TakePaymentViewModel
 import com.woocommerce.android.ui.products.addons.AddonRepository
+import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
@@ -664,7 +665,8 @@ final class OrderDetailViewModel @Inject constructor(
                 order,
                 orderEligibleForInPersonPayments
             ),
-            onDismiss = ::onWcShippingBannerDismissed
+            onDismiss = ::onWcShippingBannerDismissed,
+            onGetWcShippingClicked = { triggerEvent(InstallWcShippingFlowViewModel.InstallWcShipping) }
         )
 
     override fun onProductFetched(remoteProductId: Long) {
@@ -728,6 +730,7 @@ final class OrderDetailViewModel @Inject constructor(
     data class WcShippingBannerStatus(
         val isVisible: Boolean,
         val onDismiss: () -> Unit,
+        val onGetWcShippingClicked: () -> Unit
     ) : Parcelable
 
     sealed class OrderStatusUpdateSource(open val oldStatus: String, open val newStatus: String) : Parcelable {
