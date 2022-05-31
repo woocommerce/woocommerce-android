@@ -19,6 +19,11 @@ INSTALLABLE_BUILD_DOMAIN = 'https://d2twmm2nzpx3bg.cloudfront.net'
 METADATA_DIR_PATH = File.join(PROJECT_ROOT_FOLDER, 'WooCommerce', 'metadata')
 RELEASE_NOTES_PATH = File.join(METADATA_DIR_PATH, 'release_notes.txt')
 
+# URL of the GlotPress project containing the app's strings
+GLOTPRESS_APP_STRINGS_URL = 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/'
+# URL of the GlotPress project containing the Play Store metadata (title, keywords, release notes, …)
+GLOTPRESS_METADATA_PROJECT_URL = 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/release-notes/'
+
 ########################################################################
 # Environment
 ########################################################################
@@ -231,7 +236,7 @@ platform :android do
   lane :download_translations do |options|
     android_download_translations(
       res_dir: File.join(ENV['PROJECT_NAME'], 'src', 'main', 'res'),
-      glotpress_url: 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/',
+      glotpress_url: GLOTPRESS_APP_STRINGS_URL,
       locales: SUPPORTED_LOCALES,
       lint_task: 'lintVanillaRelease'
     )
@@ -258,12 +263,12 @@ platform :android do
 
     UI.message('Checking app strings translation status...')
     check_translation_progress(
-      glotpress_url: 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/',
+      glotpress_url: GLOTPRESS_APP_STRINGS_URL,
       abort_on_violations: false
     )
     UI.message("Checking release notes strings translation status...")
     check_translation_progress(
-      glotpress_url: 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/release-notes/',
+      glotpress_url: GLOTPRESS_METADATA_PROJECT_URL,
       abort_on_violations: false
     )
 
@@ -504,7 +509,7 @@ platform :android do
     delete_old_changelogs(build: options[:build_number])
     download_path = METADATA_DIR_PATH
     gp_downloadmetadata(
-      project_url: "https://translate.wordpress.com/projects/woocommerce/woocommerce-android/release-notes/",
+      project_url: GLOTPRESS_METADATA_PROJECT_URL,
       target_files: files,
       locales: SUPPORTED_LOCALES.map { |hsh| [hsh[:glotpress], hsh[:google_play]] },
       source_locale: "en-US",
