@@ -16,7 +16,6 @@ import com.woocommerce.android.databinding.ActivityHelpBinding
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PackageUtils
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.model.SiteModel
@@ -63,7 +62,7 @@ class HelpActivity : AppCompatActivity() {
         }
 
         with(binding.contactPaymentsContainer) {
-            visibility = if (FeatureFlag.CARD_READER.isEnabled()) View.VISIBLE else View.GONE
+            visibility = View.VISIBLE
             setOnClickListener { createNewZendeskTicket(TicketType.Payments) }
         }
 
