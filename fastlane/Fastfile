@@ -521,6 +521,7 @@ platform :android do
       relese_notes_path: download_path + "/release_notes.xml",
       version_name: options[:version]
     )
+    # TODO: use Fastlane API to add, commit, and ask caller whether they want to push
     sh("git add #{download_path} && (git diff-index --quiet HEAD || git commit -m \"Update metadata translations for #{options[:version]}\") && git push")
   end
 
