@@ -1140,7 +1140,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.onAcceptCardPresentPaymentClicked()
 
             // Then
-            assertThat(viewModel.event.value).isInstanceOf(OrderNavigationTarget.NavigateToPaymentFlow::class.java)
+            assertThat(viewModel.event.value).isInstanceOf(OrderNavigationTarget.StartPaymentFlow::class.java)
         }
 
     @Test
