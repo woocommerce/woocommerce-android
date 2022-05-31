@@ -496,10 +496,10 @@ platform :android do
   lane :download_metadata_strings do |options|
     values = options[:version].split('.')
     files = {
-      "release_note_#{values[0].to_s.rjust(2, "0")}#{values[1]}" => {desc: "changelogs/#{options[:build_number]}.txt", max_size: 0},
-      play_store_promo: {desc:"short_description.txt", max_size: 80},
-      play_store_desc: {desc:"full_description.txt", max_size: 0},
-      play_store_app_title: {desc:"title.txt", max_size: 50}
+      "release_note_#{values[0].to_s.rjust(2, "0")}#{values[1]}" => { desc: "changelogs/#{options[:build_number]}.txt", max_size: 0 },
+      play_store_promo: { desc: "short_description.txt", max_size: 80 },
+      play_store_desc: { desc: "full_description.txt", max_size: 0 },
+      play_store_app_title: { desc: "title.txt", max_size: 50 }
     }
 
     delete_old_changelogs(build: options[:build_number])
@@ -510,7 +510,7 @@ platform :android do
                         source_locale: "en-US",
                         download_path: download_path)
 
-    android_create_xml_release_notes(download_path: download_path, build_number: "#{options[:build_number]}", locales: SUPPORTED_LOCALES.map {| hsh | [ hsh[:glotpress], hsh[:google_play] ]})
+    android_create_xml_release_notes(download_path: download_path, build_number: "#{options[:build_number]}", locales: SUPPORTED_LOCALES.map { |hsh| [hsh[:glotpress], hsh[:google_play]] })
     add_us_release_notes(relese_notes_path: download_path + "/release_notes.xml", version_name: options[:version])
     sh("git add #{download_path} && (git diff-index --quiet HEAD || git commit -m \"Update metadata translations for #{options[:version]}\") && git push")
   end
