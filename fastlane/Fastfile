@@ -522,7 +522,7 @@ platform :android do
       locales: SUPPORTED_LOCALES.map { |hsh| [hsh[:glotpress], hsh[:google_play]] }
     )
     add_us_release_notes(
-      relese_notes_path: download_path + "/release_notes.xml",
+      release_notes_path: download_path + "/release_notes.xml",
       version_name: options[:version]
     )
     # TODO: use Fastlane API to add, commit, and ask caller whether they want to push
@@ -699,7 +699,7 @@ platform :android do
 
   private_lane :add_us_release_notes do | options |
     en_release_notes_path = RELEASE_NOTES_PATH
-    File.open(options[:relese_notes_path], "a") { |f|
+    File.open(options[:release_notes_path], "a") { |f|
       f.puts("<en-US>")
       f.puts("#{options[:version_name]}:")
       f.puts(File.open(en_release_notes_path).read)
