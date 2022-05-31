@@ -503,7 +503,7 @@ platform :android do
     }
 
     delete_old_changelogs(build: options[:build_number])
-    download_path=Dir.pwd + "/metadata/android"
+    download_path = File.join(Dir.pwd, 'metadata', 'android')
     gp_downloadmetadata(project_url: "https://translate.wordpress.com/projects/woocommerce/woocommerce-android/release-notes/",
                         target_files: files,
                         locales: SUPPORTED_LOCALES.map {| hsh | [ hsh[:glotpress], hsh[:google_play] ]},
