@@ -76,7 +76,7 @@ class EditFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest() {
     }
 
     @Test
-    fun `when creating the order, then dismiss the screen`() {
+    fun `when confirming order edit, then dismiss the screen`() {
         var lastReceivedEvent: Event? = null
         sut.event.observeForever {
             lastReceivedEvent = it
