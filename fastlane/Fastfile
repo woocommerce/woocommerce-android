@@ -504,14 +504,23 @@ platform :android do
 
     delete_old_changelogs(build: options[:build_number])
     download_path = File.join(Dir.pwd, 'metadata', 'android')
-    gp_downloadmetadata(project_url: "https://translate.wordpress.com/projects/woocommerce/woocommerce-android/release-notes/",
-                        target_files: files,
-                        locales: SUPPORTED_LOCALES.map {| hsh | [ hsh[:glotpress], hsh[:google_play] ]},
-                        source_locale: "en-US",
-                        download_path: download_path)
+    gp_downloadmetadata(
+      project_url: "https://translate.wordpress.com/projects/woocommerce/woocommerce-android/release-notes/",
+      target_files: files,
+      locales: SUPPORTED_LOCALES.map { |hsh| [hsh[:glotpress], hsh[:google_play]] },
+      source_locale: "en-US",
+      download_path: download_path
+    )
 
-    android_create_xml_release_notes(download_path: download_path, build_number: "#{options[:build_number]}", locales: SUPPORTED_LOCALES.map { |hsh| [hsh[:glotpress], hsh[:google_play]] })
-    add_us_release_notes(relese_notes_path: download_path + "/release_notes.xml", version_name: options[:version])
+    android_create_xml_release_notes(
+      download_path: download_path,
+      build_number: "#{options[:build_number]}",
+      locales: SUPPORTED_LOCALES.map { |hsh| [hsh[:glotpress], hsh[:google_play]] }
+    )
+    add_us_release_notes(
+      relese_notes_path: download_path + "/release_notes.xml",
+      version_name: options[:version]
+    )
     sh("git add #{download_path} && (git diff-index --quiet HEAD || git commit -m \"Update metadata translations for #{options[:version]}\") && git push")
   end
 
