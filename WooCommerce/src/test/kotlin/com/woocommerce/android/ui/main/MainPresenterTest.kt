@@ -14,7 +14,16 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.KArgumentCaptor
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS_COUNT
@@ -201,12 +210,10 @@ class MainPresenterTest : BaseUnitTest() {
     }
 
     @Test
-    fun `When selected site changes, then card reader data is cleared`() = testBlocking {
-        if (FeatureFlag.CARD_READER.isEnabled()) {
-            mainPresenter.selectedSiteChanged(site = selectedSite.get())
+    fun `when selected site changes, then card reader data is cleared`() = testBlocking {
+        mainPresenter.selectedSiteChanged(site = selectedSite.get())
 
-            verify(clearCardReaderDataAction).invoke()
-        }
+        verify(clearCardReaderDataAction).invoke()
     }
 
     private fun generateFakeOrders(size: Int): List<OrderEntity> {
