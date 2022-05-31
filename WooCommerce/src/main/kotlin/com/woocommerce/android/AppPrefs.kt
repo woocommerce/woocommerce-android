@@ -634,11 +634,18 @@ object AppPrefs {
         )
     }
 
-    fun setWcShippingBannerDismissed(dismissed: Boolean) {
-        setBoolean(UndeletablePrefKey.WC_SHIPPING_BANNER_DISMISSED, dismissed)
+    fun setWcShippingBannerDismissed(dismissed: Boolean, currentSiteId: Int) {
+        setBoolean(
+            PrefKeyString("${UndeletablePrefKey.WC_SHIPPING_BANNER_DISMISSED}:$currentSiteId"),
+            dismissed
+        )
     }
 
-    fun getWcShippingBannerDismissed() = getBoolean(UndeletablePrefKey.WC_SHIPPING_BANNER_DISMISSED, false)
+    fun getWcShippingBannerDismissed(currentSiteId: Int) =
+        getBoolean(
+            PrefKeyString("${UndeletablePrefKey.WC_SHIPPING_BANNER_DISMISSED}:$currentSiteId"),
+            false
+        )
 
     /**
      * Remove all user and site-related preferences.
