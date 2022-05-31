@@ -118,8 +118,6 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun setFCMToken(token: String) = AppPrefs.setFCMToken(token)
 
-    fun removeFCMToken() = AppPrefs.removeFCMToken()
-
     fun getProductSortingChoice(siteId: Int) = AppPrefs.getProductSortingChoice(siteId)
 
     fun setProductSortingChoice(siteId: Int, value: String) = AppPrefs.setProductSortingChoice(siteId, value)

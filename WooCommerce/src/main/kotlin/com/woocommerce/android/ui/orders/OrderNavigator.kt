@@ -8,6 +8,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.common.InfoScreenFragment.InfoScreenLinkAction.LearnMoreAboutShippingLabels
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.EditOrder
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
@@ -25,6 +26,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProdu
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShipmentTrackingProviders
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelFormatOptions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelPaperSizes
+import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragmentDirections
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragmentDirections
@@ -173,6 +175,12 @@ class OrderNavigator @Inject constructor() {
                         orderId = target.remoteOrderID,
                         orderItemId = target.orderItemID,
                         addonsProductId = target.addonsProductID
+                    ).let { fragment.findNavController().navigateSafely(it) }
+            }
+            is EditOrder -> {
+                OrderDetailFragmentDirections
+                    .actionOrderDetailFragmentToOrderCreationFragment(
+                        OrderCreationViewModel.Mode.Edit(target.orderId)
                     ).let { fragment.findNavController().navigateSafely(it) }
             }
         }

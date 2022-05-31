@@ -52,8 +52,7 @@ class AppSettingsPresenter @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onDeviceUnregistered(event: OnDeviceUnregistered) {
-        // Now that we've unregistered the device, we can clear the token and logout
-        appSettingsView?.clearNotificationPreferences()
+        // Now that we've unregistered the device, we can logout
         dispatcher.dispatch(AccountActionBuilder.newSignOutAction())
         dispatcher.dispatch(SiteActionBuilder.newRemoveWpcomAndJetpackSitesAction())
     }

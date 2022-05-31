@@ -27,6 +27,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import java.math.BigDecimal
@@ -722,7 +723,7 @@ class OrderCreationViewModelTest : BaseUnitTest() {
         val defaultOrderItem = createOrderItem()
         val emptyOrder = Order.EMPTY
         viewState = ViewState()
-        savedState = mock {
+        savedState = spy(OrderCreationFormFragmentArgs(OrderCreationViewModel.Mode.Creation).toSavedStateHandle()) {
             on { getLiveData(viewState.javaClass.name, viewState) } doReturn MutableLiveData(viewState)
             on { getLiveData(eq(Order.EMPTY.javaClass.name), any<Order>()) } doReturn MutableLiveData(emptyOrder)
         }

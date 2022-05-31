@@ -43,16 +43,6 @@ class AppPrefsTest {
     }
 
     @Test
-    fun whenFCMTokenIsRemovedThenGetReturnsEmptyString() {
-        val token = "fcm_token"
-        AppPrefs.setFCMToken(token)
-
-        AppPrefs.removeFCMToken()
-
-        assertThat(AppPrefs.getFCMToken()).isEmpty()
-    }
-
-    @Test
     fun whenCardReaderOnboardingCompletedWithStripeExtThenCorrectOnboardingStatusIsStored() {
         AppPrefs.setCardReaderOnboardingData(
             localSiteId = 0,
