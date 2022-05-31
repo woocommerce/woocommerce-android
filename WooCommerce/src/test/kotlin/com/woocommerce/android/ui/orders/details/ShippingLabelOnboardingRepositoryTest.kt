@@ -97,7 +97,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Given WC shipping not ready, when order is eligible for SL but banner was dismissed, then show shipping banner is false`() {
+    fun `Given WC shipping not ready, when install WCS banner is dismissed, then show shipping banner is false`() {
         givenWcShippingPlugin(installed = false, active = false)
         givenStoreCountryCode(SUPPORTED_WCS_COUNTRY)
         givenWcShippingBannerIsDismissed(dismissed = true)
