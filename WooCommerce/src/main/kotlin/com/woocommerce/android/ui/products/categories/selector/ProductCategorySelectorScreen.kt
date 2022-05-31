@@ -35,6 +35,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
@@ -159,7 +160,8 @@ private fun LazyListScope.categoryItem(item: CategoryUiModel, depth: Int = 0) {
                     modifier = Modifier.padding(
                         start = dimensionResource(id = R.dimen.major_100) * depth,
                     ),
-                    maxLines = 1
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
 
                 if (item.isSelected) {
