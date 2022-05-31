@@ -8,6 +8,7 @@ import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.ShippingLine
+import com.woocommerce.android.model.Order.Status.Companion.AUTO_DRAFT
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -188,6 +189,5 @@ class OrderCreationRepository @Inject constructor(
 
     companion object {
         const val AUTO_DRAFT_SUPPORTED_VERSION = "6.3.0"
-        const val AUTO_DRAFT = "auto-draft"
     }
 }

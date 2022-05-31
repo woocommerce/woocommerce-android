@@ -1,4 +1,0 @@
-9.1:
-Kami bekerja keras membuat fitur baru untuk membantu Anda mengelola kupon. Fitur ini sedang dalam pengembangan tetapi Anda dapat mencobanya dengan mengaktifkan fitur beta di Pengaturan pada tab Lainnya. Kami mengharapkan umpan balik awal Anda!
-
-Kami juga memperbaiki sejumlah bug pada produk yang bervariasi dan harga yang terhapus tiba-tiba saat mengubah level inventaris.

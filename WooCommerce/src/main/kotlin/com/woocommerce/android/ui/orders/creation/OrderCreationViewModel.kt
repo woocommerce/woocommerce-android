@@ -46,6 +46,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
+import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -77,6 +78,9 @@ class OrderCreationViewModel @Inject constructor(
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
+
+    private val args: OrderCreationFormFragmentArgs by savedState.navArgs()
+    private val mode = args.mode
 
     private val _orderDraft = savedState.getStateFlow(viewModelScope, Order.EMPTY)
     val orderDraft = _orderDraft
@@ -112,6 +116,14 @@ class OrderCreationViewModel @Inject constructor(
             it.copy(currency = parameterRepository.getParameters(PARAMETERS_KEY, savedState).currencyCode.orEmpty())
         }
         monitorOrderChanges()
+
+        if (mode is Mode.Edit)
+            viewModelScope.launch {
+                orderDetailRepository.getOrderById(mode.orderId).let {
+                    if (it != null)
+                        _orderDraft.value = it
+                }
+            }
     }
 
     fun onCustomerNoteEdited(newNote: String) = _orderDraft.update { it.copy(customerNote = newNote) }
@@ -370,6 +382,14 @@ class OrderCreationViewModel @Inject constructor(
 
         @IgnoredOnParcel
         val isIdle: Boolean = !isUpdatingOrderDraft && !willUpdateOrderDraft
+    }
+
+    sealed class Mode : Parcelable {
+        @Parcelize
+        object Creation : Mode()
+
+        @Parcelize
+        data class Edit(val orderId: Long) : Mode()
     }
 }
 

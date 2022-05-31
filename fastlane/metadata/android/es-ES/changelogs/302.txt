@@ -1,0 +1,4 @@
+9.2:
+Gran parte de la información del pedido de un cliente es importante. Sabemos que te sería útil copiar y pegar algunos de esos datos fuera de la aplicación. Por eso, ahora si mantienes pulsados la mayoría de los campos se copian en el portapapeles. Pega esta información en un mensaje de texto, correo electrónico o nota.
+
+También hemos solucionado varios errores relacionados con los pagos en persona y la creación de pedidos. ¡Gracias por tus comentarios!
