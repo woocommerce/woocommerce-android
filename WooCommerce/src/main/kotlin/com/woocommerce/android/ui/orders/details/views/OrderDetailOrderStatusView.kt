@@ -62,11 +62,7 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
                 date.getMediumDate(context)
             }
             Mode.OrderEdit -> {
-                when (date.isToday()) {
-                    true -> date.getTimeString(context)
-                    false -> date.getMediumDate(context)
-                    null -> ""
-                }
+                "${date.getMediumDate(context)}, ${date.getTimeString(context)}"
             }
         }
     }
