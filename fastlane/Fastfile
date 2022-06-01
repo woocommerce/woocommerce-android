@@ -526,6 +526,8 @@ platform :android do
       version_name: options[:version]
     )
 
+    # We need to explicitly call `git_add`, despite the path being passed to `git_commit` as well.
+    # That's because we might have new file, that the commit command would otherwise miss.
     git_add(path: download_path)
     git_commit(
       path: download_path,
