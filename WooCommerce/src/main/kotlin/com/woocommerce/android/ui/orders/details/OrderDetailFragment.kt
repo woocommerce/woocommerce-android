@@ -12,7 +12,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialContainerTransform
@@ -228,64 +227,46 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                 binding.orderRefreshLayout.isRefreshing = it
             }
             new.refreshedProductId?.takeIfNotEqualTo(old?.refreshedProductId) { refreshProduct(it) }
-            new.installWcShippingBanner?.takeIfNotEqualTo(old?.installWcShippingBanner) {
+            new.installWcShippingBannerVisible?.takeIfNotEqualTo(old?.installWcShippingBannerVisible) {
                 showInstallWcShippingBanner(it)
             }
         }
 
-        viewModel.orderNotes.observe(
-            viewLifecycleOwner,
-            Observer {
-                showOrderNotes(it)
-            }
-        )
-        viewModel.orderRefunds.observe(
-            viewLifecycleOwner,
-            Observer {
-                showOrderRefunds(it, viewModel.order)
-            }
-        )
-        viewModel.productList.observe(
-            viewLifecycleOwner,
-            Observer {
-                showOrderProducts(it, viewModel.order.currency)
-            }
-        )
-        viewModel.shipmentTrackings.observe(
-            viewLifecycleOwner,
-            Observer {
-                showShipmentTrackings(it)
-            }
-        )
-        viewModel.shippingLabels.observe(
-            viewLifecycleOwner,
-            Observer {
-                showShippingLabels(it, viewModel.order.currency)
-            }
-        )
+        viewModel.orderNotes.observe(viewLifecycleOwner) {
+            showOrderNotes(it)
+        }
+        viewModel.orderRefunds.observe(viewLifecycleOwner) {
+            showOrderRefunds(it, viewModel.order)
+        }
+        viewModel.productList.observe(viewLifecycleOwner) {
+            showOrderProducts(it, viewModel.order.currency)
+        }
+        viewModel.shipmentTrackings.observe(viewLifecycleOwner) {
+            showShipmentTrackings(it)
+        }
+        viewModel.shippingLabels.observe(viewLifecycleOwner) {
+            showShippingLabels(it, viewModel.order.currency)
+        }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> {
-                        if (event.args.isNotEmpty()) {
-                            uiMessageResolver.getSnack(event.message, *event.args).show()
-                        } else {
-                            uiMessageResolver.showSnack(event.message)
-                        }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowSnackbar -> {
+                    if (event.args.isNotEmpty()) {
+                        uiMessageResolver.getSnack(event.message, *event.args).show()
+                    } else {
+                        uiMessageResolver.showSnack(event.message)
                     }
-                    is ShowUndoSnackbar -> {
-                        displayUndoSnackbar(event.message, event.undoAction, event.dismissAction)
-                    }
-                    is OrderNavigationTarget -> navigator.navigate(this, event)
-                    is TakePaymentViewModel.SharePaymentUrl -> {
-                        sharePaymentUrl(event.storeName, event.paymentUrl)
-                    }
-                    else -> event.isHandled = false
                 }
+                is ShowUndoSnackbar -> {
+                    displayUndoSnackbar(event.message, event.undoAction, event.dismissAction)
+                }
+                is OrderNavigationTarget -> navigator.navigate(this, event)
+                is TakePaymentViewModel.SharePaymentUrl -> {
+                    sharePaymentUrl(event.storeName, event.paymentUrl)
+                }
+                else -> event.isHandled = false
             }
-        )
+        }
         viewModel.start()
     }
 
