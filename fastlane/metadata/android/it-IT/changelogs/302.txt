@@ -1,0 +1,4 @@
+9.2:
+Molte delle informazioni su un ordine di un cliente sono importanti. Abbiamo sentito che vorresti copiare e incollare alcuni di questi dettagli al di fuori dell'app. Ora puoi premere in modo prolungato sulla maggior parte dei campi per copiarli negli appunti. Incolla in un messaggio di testo, e-mail o nota.
+
+Abbiamo anche risolto diversi bug relativi ai pagamenti di persona e alla creazione degli ordini. Grazie per il feedback!
