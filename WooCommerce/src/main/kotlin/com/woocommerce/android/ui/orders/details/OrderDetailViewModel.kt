@@ -61,7 +61,6 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProdu
 import com.woocommerce.android.ui.orders.simplepayments.TakePaymentViewModel
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -507,8 +506,7 @@ final class OrderDetailViewModel @Inject constructor(
             orderInfo = OrderInfo(
                 order = order,
                 isPaymentCollectableWithCardReader = isPaymentCollectable,
-                isReceiptButtonsVisible = FeatureFlag.CARD_READER.isEnabled() &&
-                    !loadReceiptUrl().isNullOrEmpty()
+                isReceiptButtonsVisible = !loadReceiptUrl().isNullOrEmpty()
             ),
             orderStatus = orderStatus,
             toolbarTitle = resourceProvider.getString(
@@ -632,8 +630,7 @@ final class OrderDetailViewModel @Inject constructor(
             _shipmentTrackings.value = shipmentTracking.list
         }
 
-        val orderEligibleForInPersonPayments = viewState.orderInfo?.isPaymentCollectableWithCardReader == true &&
-            FeatureFlag.CARD_READER.isEnabled()
+        val orderEligibleForInPersonPayments = viewState.orderInfo?.isPaymentCollectableWithCardReader == true
 
         val isOrderEligibleForSLCreation = shippingLabelOnboardingRepository.isShippingPluginReady &&
             orderDetailRepository.isOrderEligibleForSLCreation(order.id) &&
