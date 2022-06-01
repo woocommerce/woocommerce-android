@@ -4,7 +4,6 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.cardreader.ClearCardReaderDataAction
-import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,7 +27,6 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS_COUNT
 import org.wordpress.android.fluxc.annotations.action.Action
-import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
@@ -61,7 +59,7 @@ class MainPresenterTest : BaseUnitTest() {
     private val clearCardReaderDataAction: ClearCardReaderDataAction = mock()
 
     private val wcOrderStore: WCOrderStore = mock {
-        on { observeOrdersForSite(any(), any()) } doReturn emptyFlow()
+        on { observeOrderCountForSite(any(), any()) } doReturn emptyFlow()
     }
 
     private lateinit var mainPresenter: MainPresenter
@@ -143,9 +141,8 @@ class MainPresenterTest : BaseUnitTest() {
     @Test
     fun `Displays unfilled orders count correctly`() {
         val totalOrders = 25
-        whenever(wcOrderStore.observeOrdersForSite(any(), eq(listOf(CoreOrderStatus.PROCESSING.value)))).doReturn(
-            flowOf(generateFakeOrders(totalOrders))
-        )
+        whenever(wcOrderStore.observeOrderCountForSite(any(), eq(listOf(CoreOrderStatus.PROCESSING.value))))
+            .doReturn(flowOf(totalOrders))
 
         mainPresenter.takeView(mainContractView)
 
@@ -154,9 +151,8 @@ class MainPresenterTest : BaseUnitTest() {
 
     @Test
     fun `Hides orders badge correctly`() {
-        whenever(wcOrderStore.observeOrdersForSite(any(), eq(listOf(CoreOrderStatus.PROCESSING.value)))).doReturn(
-            flowOf(emptyList())
-        )
+        whenever(wcOrderStore.observeOrderCountForSite(any(), eq(listOf(CoreOrderStatus.PROCESSING.value))))
+            .doReturn(flowOf(0))
 
         mainPresenter.takeView(mainContractView)
 
@@ -182,19 +178,18 @@ class MainPresenterTest : BaseUnitTest() {
     fun `Updates orders badge on new unfilled orders`() = runBlocking {
         val initialOrderCount = 25
         val postUpdateOrderCount = 30
-        val fakeObserveResult = MutableSharedFlow<List<OrderEntity>>()
-        whenever(wcOrderStore.observeOrdersForSite(any(), eq(listOf(CoreOrderStatus.PROCESSING.value)))).doReturn(
-            fakeObserveResult
-        )
+        val fakeObserveResult = MutableSharedFlow<Int>()
+        whenever(wcOrderStore.observeOrderCountForSite(any(), eq(listOf(CoreOrderStatus.PROCESSING.value))))
+            .doReturn(fakeObserveResult)
         mainPresenter.takeView(mainContractView)
 
-        fakeObserveResult.emit(generateFakeOrders(initialOrderCount))
+        fakeObserveResult.emit(initialOrderCount)
         verify(mainContractView).showOrderBadge(initialOrderCount)
 
-        fakeObserveResult.emit(generateFakeOrders(postUpdateOrderCount))
+        fakeObserveResult.emit(postUpdateOrderCount)
         verify(mainContractView).showOrderBadge(postUpdateOrderCount)
 
-        fakeObserveResult.emit(emptyList())
+        fakeObserveResult.emit(0)
         verify(mainContractView).hideOrderBadge()
     }
 
@@ -214,13 +209,5 @@ class MainPresenterTest : BaseUnitTest() {
         mainPresenter.selectedSiteChanged(site = selectedSite.get())
 
         verify(clearCardReaderDataAction).invoke()
-    }
-
-    private fun generateFakeOrders(size: Int): List<OrderEntity> {
-        return mutableListOf<OrderEntity>().also { list ->
-            repeat(size) {
-                list.add(OrderTestUtils.generateOrder())
-            }
-        }
     }
 }
