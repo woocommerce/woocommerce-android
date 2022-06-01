@@ -533,7 +533,14 @@ platform :android do
       allow_nothing_to_commit: true
     )
 
-    push_to_git_remote(tags: false)
+    if prompt_for_confirmation(
+      message: 'Push changes to remote?',
+      bypass: ENV.fetch('RELEASE_TOOLKIT_SKIP_PUSH_CONFIRM', false)
+    )
+      push_to_git_remote(tags: false)
+    else
+      UI.message('Lane completed without pushing')
+    end
   end
 
   ########################################################################
@@ -775,5 +782,16 @@ platform :android do
 
       return "#{branch}-#{commit}"
     end
+  end
+
+  # Wrapper around Fastlane `UI.confirm` that adds the option to bypass the
+  # prompt if a given flag is true
+  #
+  # @param [String] message The text to pass to `UI.confirm` to show the user
+  # @param [Boolean] bypass A flag that allows bypassing the `UI.confirm` prompt, i.e. acting as if the prompt returned `true`
+  def prompt_for_confirmation(message:, bypass:)
+    return true if bypass
+
+    UI.confirm(message)
   end
 end
