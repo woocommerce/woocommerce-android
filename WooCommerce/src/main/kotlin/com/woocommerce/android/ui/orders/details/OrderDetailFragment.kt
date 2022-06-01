@@ -309,9 +309,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             key = CardReaderPaymentDialogFragment.KEY_CARD_PAYMENT_RESULT,
             entryId = R.id.orderDetailFragment
         ) {
-            if (FeatureFlag.CARD_READER.isEnabled()) {
-                viewModel.onCardReaderPaymentCompleted()
-            }
+            viewModel.onCardReaderPaymentCompleted()
         }
         handleNotice(RefundSummaryFragment.REFUND_ORDER_NOTICE_KEY) {
             viewModel.onOrderItemRefunded()
@@ -340,21 +338,15 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
             onIssueRefundClickListener = { viewModel.onIssueOrderRefundClicked() },
             onSeeReceiptClickListener = {
-                if (FeatureFlag.CARD_READER.isEnabled()) {
-                    viewModel.onSeeReceiptClicked()
-                }
+                viewModel.onSeeReceiptClicked()
             },
             onCollectCardPresentPaymentClickListener = {
-                if (FeatureFlag.CARD_READER.isEnabled()) {
-                    cardReaderManager.let {
-                        viewModel.onAcceptCardPresentPaymentClicked()
-                    }
+                cardReaderManager.let {
+                    viewModel.onAcceptCardPresentPaymentClicked()
                 }
             },
             onPrintingInstructionsClickListener = {
-                if (FeatureFlag.CARD_READER.isEnabled()) {
-                    viewModel.onPrintingInstructionsClicked()
-                }
+                viewModel.onPrintingInstructionsClicked()
             }
         )
     }

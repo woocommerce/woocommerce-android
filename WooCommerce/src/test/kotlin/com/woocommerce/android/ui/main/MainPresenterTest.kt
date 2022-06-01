@@ -205,11 +205,9 @@ class MainPresenterTest : BaseUnitTest() {
     }
 
     @Test
-    fun `When selected site changes, then card reader data is cleared`() = testBlocking {
-        if (FeatureFlag.CARD_READER.isEnabled()) {
-            mainPresenter.selectedSiteChanged(site = selectedSite.get())
+    fun `when selected site changes, then card reader data is cleared`() = testBlocking {
+        mainPresenter.selectedSiteChanged(site = selectedSite.get())
 
-            verify(clearCardReaderDataAction).invoke()
-        }
+        verify(clearCardReaderDataAction).invoke()
     }
 }

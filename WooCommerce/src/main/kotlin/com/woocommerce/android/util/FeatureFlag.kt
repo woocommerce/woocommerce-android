@@ -7,10 +7,9 @@ import android.content.Context
  */
 enum class FeatureFlag {
     DB_DOWNGRADE,
-    CARD_READER,
     JETPACK_CP,
     ANALYTICS_HUB,
-    IN_PERSON_PAYMENTS_CANADA,
+    IN_PERSON_PAYMENTS_CANADA, // Keeping the flag for a few sprints so we can quickly disable the feature if needed
     MORE_MENU_INBOX,
     COUPONS_M2,
     IPP_SELECT_PAYMENT_GATEWAY,
@@ -23,8 +22,7 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
             JETPACK_CP,
-            IN_PERSON_PAYMENTS_CANADA,
-            CARD_READER -> true // Keeping the flag for a few sprints so we can quickly disable the feature if needed
+            IN_PERSON_PAYMENTS_CANADA -> true
             ANALYTICS_HUB,
             MORE_MENU_INBOX,
             COUPONS_M2,
