@@ -12,7 +12,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialContainerTransform
@@ -24,14 +23,27 @@ import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_DETAIL_PRODUCT_TAP
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.FragmentOrderDetailBinding
-import com.woocommerce.android.extensions.*
-import com.woocommerce.android.model.*
+import com.woocommerce.android.extensions.handleDialogNotice
+import com.woocommerce.android.extensions.handleDialogResult
+import com.woocommerce.android.extensions.handleNotice
+import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.show
+import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.extensions.whenNotNullNorEmpty
+import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.SHIPPING_LABEL_M4
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.UNANSWERED
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
+import com.woocommerce.android.model.OrderNote
+import com.woocommerce.android.model.OrderShipmentTracking
+import com.woocommerce.android.model.Refund
+import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -215,62 +227,51 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                 binding.orderRefreshLayout.isRefreshing = it
             }
             new.refreshedProductId?.takeIfNotEqualTo(old?.refreshedProductId) { refreshProduct(it) }
+            new.installWcShippingBannerVisible?.takeIfNotEqualTo(old?.installWcShippingBannerVisible) {
+                showInstallWcShippingBanner(it)
+            }
         }
 
-        viewModel.orderNotes.observe(
-            viewLifecycleOwner,
-            Observer {
-                showOrderNotes(it)
-            }
-        )
-        viewModel.orderRefunds.observe(
-            viewLifecycleOwner,
-            Observer {
-                showOrderRefunds(it, viewModel.order)
-            }
-        )
-        viewModel.productList.observe(
-            viewLifecycleOwner,
-            Observer {
-                showOrderProducts(it, viewModel.order.currency)
-            }
-        )
-        viewModel.shipmentTrackings.observe(
-            viewLifecycleOwner,
-            Observer {
-                showShipmentTrackings(it)
-            }
-        )
-        viewModel.shippingLabels.observe(
-            viewLifecycleOwner,
-            Observer {
-                showShippingLabels(it, viewModel.order.currency)
-            }
-        )
+        viewModel.orderNotes.observe(viewLifecycleOwner) {
+            showOrderNotes(it)
+        }
+        viewModel.orderRefunds.observe(viewLifecycleOwner) {
+            showOrderRefunds(it, viewModel.order)
+        }
+        viewModel.productList.observe(viewLifecycleOwner) {
+            showOrderProducts(it, viewModel.order.currency)
+        }
+        viewModel.shipmentTrackings.observe(viewLifecycleOwner) {
+            showShipmentTrackings(it)
+        }
+        viewModel.shippingLabels.observe(viewLifecycleOwner) {
+            showShippingLabels(it, viewModel.order.currency)
+        }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> {
-                        if (event.args.isNotEmpty()) {
-                            uiMessageResolver.getSnack(event.message, *event.args).show()
-                        } else {
-                            uiMessageResolver.showSnack(event.message)
-                        }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowSnackbar -> {
+                    if (event.args.isNotEmpty()) {
+                        uiMessageResolver.getSnack(event.message, *event.args).show()
+                    } else {
+                        uiMessageResolver.showSnack(event.message)
                     }
-                    is ShowUndoSnackbar -> {
-                        displayUndoSnackbar(event.message, event.undoAction, event.dismissAction)
-                    }
-                    is OrderNavigationTarget -> navigator.navigate(this, event)
-                    is TakePaymentViewModel.SharePaymentUrl -> {
-                        sharePaymentUrl(event.storeName, event.paymentUrl)
-                    }
-                    else -> event.isHandled = false
                 }
+                is ShowUndoSnackbar -> {
+                    displayUndoSnackbar(event.message, event.undoAction, event.dismissAction)
+                }
+                is OrderNavigationTarget -> navigator.navigate(this, event)
+                is TakePaymentViewModel.SharePaymentUrl -> {
+                    sharePaymentUrl(event.storeName, event.paymentUrl)
+                }
+                else -> event.isHandled = false
             }
-        )
+        }
         viewModel.start()
+    }
+
+    private fun showInstallWcShippingBanner(show: Boolean) {
+        binding.orderDetailInstallWcShippingBanner.isVisible = show && FeatureFlag.WC_SHIPPING_BANNER.isEnabled()
     }
 
     private fun setupOrderEditingObservers(orderEditingViewModel: OrderEditingViewModel) {
@@ -308,9 +309,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             key = CardReaderPaymentDialogFragment.KEY_CARD_PAYMENT_RESULT,
             entryId = R.id.orderDetailFragment
         ) {
-            if (FeatureFlag.CARD_READER.isEnabled()) {
-                viewModel.onCardReaderPaymentCompleted()
-            }
+            viewModel.onCardReaderPaymentCompleted()
         }
         handleNotice(RefundSummaryFragment.REFUND_ORDER_NOTICE_KEY) {
             viewModel.onOrderItemRefunded()
@@ -339,21 +338,15 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
             onIssueRefundClickListener = { viewModel.onIssueOrderRefundClicked() },
             onSeeReceiptClickListener = {
-                if (FeatureFlag.CARD_READER.isEnabled()) {
-                    viewModel.onSeeReceiptClicked()
-                }
+                viewModel.onSeeReceiptClicked()
             },
             onCollectCardPresentPaymentClickListener = {
-                if (FeatureFlag.CARD_READER.isEnabled()) {
-                    cardReaderManager.let {
-                        viewModel.onAcceptCardPresentPaymentClicked()
-                    }
+                cardReaderManager.let {
+                    viewModel.onAcceptCardPresentPaymentClicked()
                 }
             },
             onPrintingInstructionsClickListener = {
-                if (FeatureFlag.CARD_READER.isEnabled()) {
-                    viewModel.onPrintingInstructionsClicked()
-                }
+                viewModel.onPrintingInstructionsClicked()
             }
         )
     }
@@ -411,7 +404,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
 
     private fun showOrderRefunds(refunds: List<Refund>, order: Order) {
         // display the refunds count in the refunds section
-        val refundsCount = refunds.sumBy { refund -> refund.items.sumBy { it.quantity } }
+        val refundsCount = refunds.sumOf { refund -> refund.items.sumOf { it.quantity } }
         if (refundsCount > 0) {
             binding.orderDetailRefundsInfo.show()
             binding.orderDetailRefundsInfo.updateRefundCount(refundsCount) {
