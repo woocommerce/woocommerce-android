@@ -10,7 +10,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderDetailOrderStatusBinding
 import com.woocommerce.android.extensions.getMediumDate
 import com.woocommerce.android.extensions.getTimeString
-import com.woocommerce.android.extensions.isToday
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.ui.orders.OrderStatusTag
