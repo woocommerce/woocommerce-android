@@ -34,16 +34,7 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
     }
 
     fun updateOrder(order: Order) {
-        val dateStr = getFormattedDate(order.dateCreated)
-        binding.orderStatusSubtitle.text =
-            when (mode) {
-                Mode.OrderEdit -> context.getString(
-                    R.string.orderdetail_orderstatus_date_and_ordernum,
-                    dateStr,
-                    order.number
-                )
-                Mode.OrderCreation -> dateStr
-            }
+        binding.orderStatusSubtitle.text = getFormattedDate(order.dateCreated)
 
         when (mode) {
             Mode.OrderEdit -> {
