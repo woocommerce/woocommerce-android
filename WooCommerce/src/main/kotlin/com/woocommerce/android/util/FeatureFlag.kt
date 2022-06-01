@@ -9,7 +9,7 @@ enum class FeatureFlag {
     DB_DOWNGRADE,
     JETPACK_CP,
     ANALYTICS_HUB,
-    IN_PERSON_PAYMENTS_CANADA,// Keeping the flag for a few sprints so we can quickly disable the feature if needed
+    IN_PERSON_PAYMENTS_CANADA, // Keeping the flag for a few sprints so we can quickly disable the feature if needed
     MORE_MENU_INBOX,
     COUPONS_M2,
     IPP_SELECT_PAYMENT_GATEWAY,
