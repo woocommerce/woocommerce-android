@@ -669,7 +669,8 @@ final class OrderDetailViewModel @Inject constructor(
             isProductListMenuVisible = isOrderEligibleForSLCreation && shippingLabels.isVisible,
             isShipmentTrackingAvailable = shipmentTracking.isVisible,
             isProductListVisible = orderProducts.isVisible,
-            areShippingLabelsVisible = shippingLabels.isVisible
+            areShippingLabelsVisible = shippingLabels.isVisible,
+            installWcShippingBanner = true
         )
     }
 
@@ -709,7 +710,8 @@ final class OrderDetailViewModel @Inject constructor(
         val isProductListVisible: Boolean? = null,
         val areShippingLabelsVisible: Boolean? = null,
         val isProductListMenuVisible: Boolean? = null,
-        val isSharePaymentLinkVisible: Boolean? = null
+        val isSharePaymentLinkVisible: Boolean? = null,
+        val installWcShippingBanner: Boolean? = null
     ) : Parcelable {
         val isMarkOrderCompleteButtonVisible: Boolean?
             get() = if (orderStatus != null) orderStatus.statusKey == CoreOrderStatus.PROCESSING.value else null

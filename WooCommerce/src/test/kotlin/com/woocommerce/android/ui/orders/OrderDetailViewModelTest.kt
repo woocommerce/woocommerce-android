@@ -120,7 +120,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         isProductListVisible = true,
         areShippingLabelsVisible = false,
         isProductListMenuVisible = false,
-        isSharePaymentLinkVisible = false
+        isSharePaymentLinkVisible = false,
+        installWcShippingBanner = true
     )
 
     @Before
