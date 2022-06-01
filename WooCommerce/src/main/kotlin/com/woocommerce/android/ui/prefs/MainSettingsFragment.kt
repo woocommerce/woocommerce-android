@@ -252,8 +252,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     }
 
     private fun updateStoreSettings() {
-        binding.storeSettingsContainer.visibility = View.VISIBLE
-
         generateBetaFeaturesTitleList()
             .joinToString(", ")
             .takeIf { it.isNotEmpty() }

@@ -12,7 +12,7 @@ enum class FeatureFlag {
     IN_PERSON_PAYMENTS_CANADA,
     MORE_MENU_INBOX,
     COUPONS_M2,
-    IPP_SELECT_PAYMENT_GATEWAY,
+    IPP_SELECT_PAYMENT_GATEWAY, // Keeping the flag for a few sprints so we can quickly disable the feature if needed
     UNIFIED_ORDER_EDITING;
 
     fun isEnabled(context: Context? = null): Boolean {

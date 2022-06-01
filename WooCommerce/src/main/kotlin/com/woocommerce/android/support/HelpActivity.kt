@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.woocommerce.android.AppPrefs
@@ -62,7 +61,6 @@ class HelpActivity : AppCompatActivity() {
         }
 
         with(binding.contactPaymentsContainer) {
-            visibility = View.VISIBLE
             setOnClickListener { createNewZendeskTicket(TicketType.Payments) }
         }
 
