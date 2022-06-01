@@ -14,6 +14,7 @@ enum class FeatureFlag {
     MORE_MENU_INBOX,
     COUPONS_M2,
     IPP_SELECT_PAYMENT_GATEWAY,
+    WC_SHIPPING_BANNER,
     UNIFIED_ORDER_EDITING;
 
     fun isEnabled(context: Context? = null): Boolean {
@@ -27,6 +28,7 @@ enum class FeatureFlag {
             ANALYTICS_HUB,
             MORE_MENU_INBOX,
             COUPONS_M2,
+            WC_SHIPPING_BANNER,
             IPP_SELECT_PAYMENT_GATEWAY,
             UNIFIED_ORDER_EDITING -> PackageUtils.isDebugBuild()
         }

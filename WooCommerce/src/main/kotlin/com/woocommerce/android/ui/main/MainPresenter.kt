@@ -59,16 +59,16 @@ class MainPresenter @Inject constructor(
 
         coroutineScope.launch {
             selectedSite.getIfExists()?.let { siteModel ->
-                wcOrderStore.observeOrdersForSite(
+                wcOrderStore.observeOrderCountForSite(
                     siteModel, listOf(PROCESSING.value)
-                ).collect {
+                ).collect { count ->
                     AnalyticsTracker.track(
                         AnalyticsEvent.UNFULFILLED_ORDERS_LOADED,
-                        mapOf(AnalyticsTracker.KEY_HAS_UNFULFILLED_ORDERS to it.size)
+                        mapOf(AnalyticsTracker.KEY_HAS_UNFULFILLED_ORDERS to count)
                     )
 
-                    if (it.isNotEmpty()) {
-                        mainView?.showOrderBadge(it.size)
+                    if (count > 0) {
+                        mainView?.showOrderBadge(count)
                     } else {
                         mainView?.hideOrderBadge()
                     }

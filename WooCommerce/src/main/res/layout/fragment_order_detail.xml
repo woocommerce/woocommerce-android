@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/orderRefreshLayout"
     android:layout_width="match_parent"
@@ -38,7 +37,7 @@
                     android:id="@+id/orderDetail_orderStatus"
                     style="@style/Woo.Card"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content" />
 
                 <!-- Order Shipping method warning card -->
                 <com.woocommerce.android.ui.orders.OrderDetailShippingMethodNoticeCard
@@ -53,12 +52,12 @@
                 <com.woocommerce.android.ui.orders.details.views.OrderDetailProductListView
                     android:id="@+id/orderDetail_productList"
                     style="@style/Woo.Card"
-                    android:visibility="gone"
-                    tools:visibility="visible"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:clipToPadding="false"
-                    android:contentDescription="@string/products"/>
+                    android:contentDescription="@string/products"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
 
                 <!-- Refunds Info -->
                 <com.woocommerce.android.ui.orders.details.views.OrderDetailRefundsView
@@ -67,8 +66,18 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:clipToPadding="false"
+                    android:contentDescription="@string/refunds"
+                    android:visibility="gone" />
+
+                <!-- Install WC shipping plugin banner -->
+                <com.woocommerce.android.ui.orders.details.views.OrderDetailInstallWcShippingBanner
+                    android:id="@+id/orderDetail_installWcShippingBanner"
+                    style="@style/Woo.Card.WithoutPadding"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/minor_100"
                     android:visibility="gone"
-                    android:contentDescription="@string/refunds"/>
+                    tools:visibility="visible" />
 
                 <!-- Shipping Labels List -->
                 <com.woocommerce.android.ui.orders.details.views.OrderDetailShippingLabelsView
@@ -76,8 +85,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:clipToPadding="false"
-                    android:visibility="gone"
-                    android:contentDescription="@string/shipping_labels"/>
+                    android:contentDescription="@string/shipping_labels"
+                    android:visibility="gone" />
 
                 <!-- Payments -->
                 <com.woocommerce.android.ui.orders.details.views.OrderDetailPaymentInfoView
@@ -86,14 +95,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:animateLayoutChanges="true"
-                    android:focusable="true"/>
+                    android:focusable="true" />
 
                 <!-- Customer Info -->
                 <com.woocommerce.android.ui.orders.details.views.OrderDetailCustomerInfoView
                     android:id="@+id/orderDetail_customerInfo"
                     style="@style/Woo.Card"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content" />
 
                 <!-- Shipment Tracking -->
                 <com.woocommerce.android.ui.orders.details.views.OrderDetailShipmentTrackingListView
@@ -104,14 +113,14 @@
                     android:clipToPadding="false"
                     android:contentDescription="@string/order_shipment_tracking_section_cd"
                     android:visibility="gone"
-                    tools:visibility="visible"/>
+                    tools:visibility="visible" />
 
                 <!-- Order Notes -->
                 <com.woocommerce.android.ui.orders.details.views.OrderDetailOrderNotesView
                     android:id="@+id/orderDetail_noteList"
                     style="@style/Woo.Card"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content" />
             </LinearLayout>
         </FrameLayout>
     </androidx.core.widget.NestedScrollView>
