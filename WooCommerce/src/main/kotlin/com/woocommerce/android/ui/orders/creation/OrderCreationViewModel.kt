@@ -80,7 +80,8 @@ class OrderCreationViewModel @Inject constructor(
     private var viewState by viewStateData
 
     private val args: OrderCreationFormFragmentArgs by savedState.navArgs()
-    private val mode = args.mode
+    private val mode: Mode = args.mode
+    private var initialOrder: Order? = null
 
     private val _orderDraft = savedState.getStateFlow(viewModelScope, Order.EMPTY)
     val orderDraft = _orderDraft
@@ -120,8 +121,10 @@ class OrderCreationViewModel @Inject constructor(
         if (mode is Mode.Edit)
             viewModelScope.launch {
                 orderDetailRepository.getOrderById(mode.orderId).let {
-                    if (it != null)
+                    if (it != null) {
                         _orderDraft.value = it
+                        initialOrder = it
+                    }
                 }
             }
     }
@@ -257,21 +260,41 @@ class OrderCreationViewModel @Inject constructor(
     }
 
     fun onBackButtonClicked() {
-        if (_orderDraft.value.isEmpty()) {
-            triggerEvent(Exit)
-            return
-        }
-        triggerEvent(
-            ShowDialog.buildDiscardDialogEvent(
-                positiveBtnAction = { _, _ ->
-                    val draft = _orderDraft.value
-                    if (draft.id != 0L) {
-                        launch { orderCreationRepository.deleteDraftOrder(draft) }
-                    }
+        when (mode) {
+            Mode.Creation -> {
+                if (_orderDraft.value.isEmpty()) {
                     triggerEvent(Exit)
+                } else {
+                    triggerEvent(
+                        ShowDialog.buildDiscardDialogEvent(
+                            positiveBtnAction = { _, _ ->
+                                val draft = _orderDraft.value
+                                if (draft.id != 0L) {
+                                    launch { orderCreationRepository.deleteDraftOrder(draft) }
+                                }
+                                triggerEvent(Exit)
+                            }
+                        )
+                    )
                 }
-            )
-        )
+            }
+            is Mode.Edit -> {
+                if (_orderDraft.value == initialOrder) {
+                    triggerEvent(Exit)
+                } else {
+                    triggerEvent(
+                        ShowDialog.buildDiscardDialogEvent(
+                            positiveBtnAction = { _, _ ->
+                                launch {
+                                    initialOrder?.let { orderCreationRepository.placeOrder(it) }
+                                    triggerEvent(Exit)
+                                }
+                            }
+                        )
+                    )
+                }
+            }
+        }
     }
 
     /**
