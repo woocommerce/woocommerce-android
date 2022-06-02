@@ -82,16 +82,19 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
         binding.textCash.setOnClickListener {
             viewModel.onCashPaymentClicked()
         }
-        binding.textCard.setOnClickListener {
-            viewModel.onCardPaymentClicked()
+
+        with(binding.textCard) {
+            isVisible = state.isPaymentCollectableWithCardReader
+            setOnClickListener {
+                viewModel.onCardPaymentClicked()
+            }
         }
 
-        if (state.paymentUrl.isNotEmpty()) {
-            binding.textShare.setOnClickListener {
+        with(binding.textShare) {
+            isVisible = state.paymentUrl.isNotEmpty()
+            setOnClickListener {
                 viewModel.onSharePaymentUrlClicked()
             }
-        } else {
-            binding.textShare.isVisible = false
         }
     }
 

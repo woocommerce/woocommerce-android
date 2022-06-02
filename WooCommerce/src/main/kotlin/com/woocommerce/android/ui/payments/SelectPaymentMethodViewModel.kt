@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Refund
+import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -43,6 +44,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val wooCommerceStore: WooCommerceStore,
     private val orderMapper: OrderMapper,
+    private val cardPaymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
 ) : ScopedViewModel(savedState) {
     private val navArgs: SelectPaymentMethodFragmentArgs by savedState.navArgs()
 
@@ -74,7 +76,8 @@ class SelectPaymentMethodViewModel @Inject constructor(
                         orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode)
                         viewState.value = TakePaymentViewState.Success(
                             paymentUrl = order.paymentUrl,
-                            orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode)
+                            orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode),
+                            isPaymentCollectableWithCardReader = cardPaymentCollectibilityChecker.isCollectable(order)
                         )
                     }
                     is Refund -> triggerEvent(NavigateToCardReaderRefundFlow(param))
@@ -228,7 +231,8 @@ class SelectPaymentMethodViewModel @Inject constructor(
         object Loading : TakePaymentViewState()
         data class Success(
             val paymentUrl: String,
-            val orderTotal: String
+            val orderTotal: String,
+            val isPaymentCollectableWithCardReader: Boolean,
         ) : TakePaymentViewState()
     }
 
