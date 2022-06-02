@@ -4,8 +4,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -30,6 +30,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -146,8 +147,9 @@ private fun LazyListScope.categoryItem(item: CategoryUiModel, depth: Int = 0) {
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            Box(
-                Modifier
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
                     .fillMaxWidth()
                     .defaultMinSize(minHeight = dimensionResource(id = R.dimen.line_height_major_100))
                     .clickable(onClick = item.onItemClick)
@@ -157,25 +159,20 @@ private fun LazyListScope.categoryItem(item: CategoryUiModel, depth: Int = 0) {
                     text = item.title,
                     style = MaterialTheme.typography.subtitle1,
                     modifier = Modifier
-                        .padding(
-                            start = dimensionResource(id = R.dimen.major_100) * depth,
-                            end = dimensionResource(id = R.dimen.major_150)
-                        )
-                        .align(Alignment.CenterStart),
+                        .padding(start = dimensionResource(id = R.dimen.major_100) * depth)
+                        .weight(1f),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
 
-                if (item.isSelected) {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = stringResource(
-                            id = R.string.product_category_selector_check_content_description
-                        ),
-                        tint = MaterialTheme.colors.primary,
-                        modifier = Modifier.align(Alignment.CenterEnd)
-                    )
-                }
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = stringResource(
+                        id = R.string.product_category_selector_check_content_description
+                    ),
+                    tint = MaterialTheme.colors.primary,
+                    modifier = Modifier.alpha(if (item.isSelected) 1f else 0f)
+                )
             }
 
             Divider(modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100) * (depth + 1)))
