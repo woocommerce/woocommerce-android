@@ -4,7 +4,7 @@
     android:duration="@integer/activity_transition_duration">
 
     <translate
-        android:fromXDelta="0"
-        android:toXDelta="-100%p" />
+        android:fromXDelta="100%p"
+        android:toXDelta="0" />
 
 </set>
