@@ -18,12 +18,12 @@ import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.dialog.WooDialog
-import com.woocommerce.android.ui.payments.TakePaymentViewModel.NavigateToCardReaderHubFlow
-import com.woocommerce.android.ui.payments.TakePaymentViewModel.NavigateToCardReaderPaymentFlow
-import com.woocommerce.android.ui.payments.TakePaymentViewModel.NavigateToCardReaderRefundFlow
-import com.woocommerce.android.ui.payments.TakePaymentViewModel.SharePaymentUrl
-import com.woocommerce.android.ui.payments.TakePaymentViewModel.TakePaymentViewState.Loading
-import com.woocommerce.android.ui.payments.TakePaymentViewModel.TakePaymentViewState.Success
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderHubFlow
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderPaymentFlow
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderRefundFlow
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.SharePaymentUrl
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Loading
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Success
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectDialogFragment
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -32,8 +32,8 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
-    private val viewModel: TakePaymentViewModel by viewModels()
+class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment) {
+    private val viewModel: SelectPaymentMethodViewModel by viewModels()
     private val sharePaymentUrlLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
@@ -118,21 +118,21 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
                 }
                 is NavigateToCardReaderPaymentFlow -> {
                     val action =
-                        TakePaymentFragmentDirections.actionTakePaymentFragmentToCardReaderPaymentFlow(
+                        SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToCardReaderPaymentFlow(
                             event.cardReaderFlowParam
                         )
                     findNavController().navigate(action)
                 }
                 is NavigateToCardReaderHubFlow -> {
                     val action =
-                        TakePaymentFragmentDirections.actionTakePaymentFragmentToCardReaderHubFlow(
+                        SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToCardReaderHubFlow(
                             event.cardReaderFlowParam
                         )
                     findNavController().navigate(action)
                 }
                 is NavigateToCardReaderRefundFlow -> {
                     val action =
-                        TakePaymentFragmentDirections.actionTakePaymentFragmentToCardReaderRefundFlow(
+                        SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToCardReaderRefundFlow(
                             event.cardReaderFlowParam
                         )
                     findNavController().navigate(action)
@@ -144,14 +144,14 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
     private fun setupResultHandlers() {
         handleDialogResult<Boolean>(
             key = CardReaderConnectDialogFragment.KEY_CONNECT_TO_READER_RESULT,
-            entryId = R.id.takePaymentFragment
+            entryId = R.id.selectPaymentMethodFragment
         ) { connected ->
             viewModel.onConnectToReaderResultReceived(connected)
         }
 
         handleDialogNotice<String>(
             key = CardReaderPaymentDialogFragment.KEY_CARD_PAYMENT_RESULT,
-            entryId = R.id.takePaymentFragment
+            entryId = R.id.selectPaymentMethodFragment
         ) {
             viewModel.onCardReaderPaymentCompleted()
         }

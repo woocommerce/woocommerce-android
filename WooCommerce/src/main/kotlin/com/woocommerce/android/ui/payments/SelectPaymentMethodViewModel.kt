@@ -14,7 +14,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.payments.TakePaymentViewModel.TakePaymentViewState.Loading
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Loading
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment
@@ -34,7 +34,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 @HiltViewModel
-class TakePaymentViewModel @Inject constructor(
+class SelectPaymentMethodViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val selectedSite: SelectedSite,
     private val orderStore: WCOrderStore,
@@ -44,7 +44,7 @@ class TakePaymentViewModel @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val orderMapper: OrderMapper,
 ) : ScopedViewModel(savedState) {
-    private val navArgs: TakePaymentFragmentArgs by savedState.navArgs()
+    private val navArgs: SelectPaymentMethodFragmentArgs by savedState.navArgs()
 
     private val viewState = MutableLiveData<TakePaymentViewState>(Loading)
     val viewStateData: LiveData<TakePaymentViewState> = viewState

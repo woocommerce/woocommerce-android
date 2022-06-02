@@ -6,10 +6,10 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.payments.TakePaymentViewModel.NavigateToCardReaderHubFlow
-import com.woocommerce.android.ui.payments.TakePaymentViewModel.NavigateToCardReaderRefundFlow
-import com.woocommerce.android.ui.payments.TakePaymentViewModel.TakePaymentViewState.Loading
-import com.woocommerce.android.ui.payments.TakePaymentViewModel.TakePaymentViewState.Success
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderHubFlow
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderRefundFlow
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Loading
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Success
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment
@@ -34,7 +34,7 @@ private const val PAYMENT_URL = "paymentUrl"
 private const val ORDER_TOTAL = "100$"
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class TakePaymentViewModelTest : BaseUnitTest() {
+class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     private val site = SiteModel()
     private val order: Order = mock {
         on { paymentUrl }.thenReturn(PAYMENT_URL)
@@ -143,8 +143,8 @@ class TakePaymentViewModelTest : BaseUnitTest() {
         assertThat((events.last() as ShowDialog).negativeButtonId).isEqualTo(R.string.cancel)
     }
 
-    private fun initViewModel(cardReaderFlowParam: CardReaderFlowParam): TakePaymentViewModel {
-        return TakePaymentViewModel(
+    private fun initViewModel(cardReaderFlowParam: CardReaderFlowParam): SelectPaymentMethodViewModel {
+        return SelectPaymentMethodViewModel(
             TakePaymentFragmentArgs(cardReaderFlowParam = cardReaderFlowParam).initSavedStateHandle(),
             selectedSite,
             orderStore,
