@@ -806,6 +806,7 @@
     <string name="shipping_label_install_wc_shipping_banner_title">Need a shipping label?</string>
     <string name="shipping_label_install_wc_shipping_banner_description">Print labels from your phone, with WooCommerce Shipping.</string>
     <string name="shipping_label_install_wc_shipping_banner_button">Get WooCommerce Shipping</string>
+    <string name="shipping_label_install_wc_shipping_banner_dismiss_button_description">Dismiss banner to install WC Shipping</string>
 
     <!--
             Refunds

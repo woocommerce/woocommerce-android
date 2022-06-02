@@ -23,6 +23,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_DETAIL_PRODUCT_TAP
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.FragmentOrderDetailBinding
+import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleNotice
@@ -227,8 +228,8 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                 binding.orderRefreshLayout.isRefreshing = it
             }
             new.refreshedProductId?.takeIfNotEqualTo(old?.refreshedProductId) { refreshProduct(it) }
-            new.installWcShippingBannerVisible?.takeIfNotEqualTo(old?.installWcShippingBannerVisible) {
-                showInstallWcShippingBanner(it)
+            new.wcShippingBannerStatus?.takeIfNotEqualTo(old?.wcShippingBannerStatus) {
+                showInstallWcShippingBanner(it.isVisible, it.onDismiss)
             }
         }
 
@@ -270,8 +271,13 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         viewModel.start()
     }
 
-    private fun showInstallWcShippingBanner(show: Boolean) {
-        binding.orderDetailInstallWcShippingBanner.isVisible = show && FeatureFlag.WC_SHIPPING_BANNER.isEnabled()
+    private fun showInstallWcShippingBanner(show: Boolean, onDismissed: () -> Unit) {
+        val banner = binding.orderDetailInstallWcShippingBanner
+        banner.isVisible = show && FeatureFlag.WC_SHIPPING_BANNER.isEnabled()
+        banner.setOnDismissListener {
+            onDismissed()
+            banner.collapse()
+        }
     }
 
     private fun setupOrderEditingObservers(orderEditingViewModel: OrderEditingViewModel) {

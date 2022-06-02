@@ -1,11 +1,14 @@
 package com.woocommerce.android.ui.orders.details
 
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.WooPlugin
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository.Companion.SUPPORTED_WCS_COUNTRY
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository.Companion.SUPPORTED_WCS_CURRENCY
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
@@ -15,6 +18,7 @@ import kotlin.test.assertTrue
 
 class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
     private companion object {
+        const val SITE_ID = 1
         const val DEFAULT_SUPPORTED_WCS_VERSION = "1.25.11"
         val ELIGIBLE_ORDER_FOR_WCS_LABELS =
             Order.EMPTY.copy(
@@ -24,12 +28,22 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
                 items = OrderTestUtils.generateTestOrderItems(productId = 15),
             )
         val ORDER_PAYED_IN_EUROS = ELIGIBLE_ORDER_FOR_WCS_LABELS.copy(currency = "EUR")
-        val CASH_PAYMENT_ORDER = ELIGIBLE_ORDER_FOR_WCS_LABELS.copy(isCashPayment = true)
     }
 
     private val orderDetailRepository: OrderDetailRepository = mock()
+    private val appPrefsWrapper: AppPrefsWrapper = mock()
+    private val selectedSite: SelectedSite = mock()
 
-    private val sut = ShippingLabelOnboardingRepository(orderDetailRepository)
+    private val sut = ShippingLabelOnboardingRepository(
+        orderDetailRepository,
+        appPrefsWrapper,
+        selectedSite
+    )
+
+    @Before
+    fun setup() {
+        whenever(selectedSite.getSelectedSiteId()).thenReturn(SITE_ID)
+    }
 
     @Test
     fun `Given WC shipping not ready, when order is eligible for shipping label, then show shipping banner is true`() {
@@ -92,6 +106,17 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
         }
     }
 
+    @Test
+    fun `Given WC shipping not ready, when install WCS banner is dismissed, then show shipping banner is false`() {
+        givenWcShippingPlugin(installed = false, active = false)
+        givenStoreCountryCode(SUPPORTED_WCS_COUNTRY)
+        givenWcShippingBannerIsDismissed(dismissed = true)
+
+        assertFalse {
+            sut.shouldShowWcShippingBanner(ELIGIBLE_ORDER_FOR_WCS_LABELS, eligibleForIpp = false)
+        }
+    }
+
     private fun givenWcShippingPlugin(
         installed: Boolean,
         active: Boolean,
@@ -109,5 +134,10 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
     private fun givenOrderHasVirtualProductsOnly() {
         whenever(orderDetailRepository.hasVirtualProductsOnly(any()))
             .thenReturn(true)
+    }
+
+    private fun givenWcShippingBannerIsDismissed(dismissed: Boolean) {
+        whenever(appPrefsWrapper.getWcShippingBannerDismissed(SITE_ID))
+            .thenReturn(dismissed)
     }
 }

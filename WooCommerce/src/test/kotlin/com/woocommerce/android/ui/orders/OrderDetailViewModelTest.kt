@@ -30,6 +30,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderInfo
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.ViewState
+import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.WcShippingBannerStatus
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.ContinuationWrapper
@@ -106,6 +107,10 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         orderId = ORDER_ID,
         localSiteId = ORDER_SITE_ID,
     )
+    private val testWcShippingBannerStatus = WcShippingBannerStatus(
+        isVisible = false,
+        onDismiss = {}
+    )
     private val orderShippingLabels = OrderTestUtils.generateShippingLabels(totalCount = 5)
     private val testOrderRefunds = OrderTestUtils.generateRefunds(1)
     private lateinit var viewModel: OrderDetailViewModel
@@ -122,7 +127,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         areShippingLabelsVisible = false,
         isProductListMenuVisible = false,
         isSharePaymentLinkVisible = false,
-        installWcShippingBannerVisible = false
+        wcShippingBannerStatus = testWcShippingBannerStatus
     )
 
     @Before
@@ -179,7 +184,12 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `Displays the order detail view correctly`() = testBlocking {
         val nonRefundedOrder = order.copy(refundTotal = BigDecimal.ZERO)
 
-        val expectedViewState = orderWithParameters.copy(orderInfo = orderInfo.copy(order = nonRefundedOrder))
+        val expectedViewState = orderWithParameters.copy(
+            orderInfo = orderInfo.copy(order = nonRefundedOrder),
+            wcShippingBannerStatus = testWcShippingBannerStatus.copy(
+                onDismiss = viewModel::onWcShippingBannerDismissed
+            )
+        )
 
         doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any())
 
