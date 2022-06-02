@@ -13,11 +13,13 @@ sealed class CardReaderConnectViewState(
     @StringRes val hintLabel: Int? = null,
     val primaryActionLabel: Int? = null,
     val secondaryActionLabel: Int? = null,
+    val tertiaryActionLabel: Int? = null,
     @DimenRes val illustrationTopMargin: Int = R.dimen.major_200,
     open val listItems: List<CardReaderConnectViewModel.ListItemViewState>? = null
 ) {
     open val onPrimaryActionClicked: (() -> Unit)? = null
     open val onSecondaryActionClicked: (() -> Unit)? = null
+    open val onTertiaryActionClicked: (() -> Unit)? = null
 
     data class ScanningState(override val onSecondaryActionClicked: (() -> Unit)) : CardReaderConnectViewState(
         headerLabel = UiString.UiStringRes(R.string.card_reader_connect_scanning_header),
@@ -29,6 +31,7 @@ sealed class CardReaderConnectViewState(
     data class ReaderFoundState(
         override val onPrimaryActionClicked: (() -> Unit),
         override val onSecondaryActionClicked: (() -> Unit),
+        override val onTertiaryActionClicked: (() -> Unit),
         val readerId: String,
     ) : CardReaderConnectViewState(
         headerLabel = UiString.UiStringRes(
@@ -38,8 +41,9 @@ sealed class CardReaderConnectViewState(
         ),
         illustration = R.drawable.img_card_reader,
         primaryActionLabel = R.string.card_reader_connect_to_reader,
-        secondaryActionLabel = R.string.cancel,
-        illustrationTopMargin = R.dimen.major_275
+        secondaryActionLabel = R.string.card_reader_connect_keep_searching_button,
+        tertiaryActionLabel = R.string.cancel,
+        illustrationTopMargin = R.dimen.major_150
     )
 
     data class MultipleReadersFoundState(
