@@ -19,6 +19,7 @@ INSTALLABLE_BUILD_DOMAIN = 'https://d2twmm2nzpx3bg.cloudfront.net'
 METADATA_DIR_PATH = File.join(PROJECT_ROOT_FOLDER, 'WooCommerce', 'metadata')
 RELEASE_NOTES_PATH = File.join(METADATA_DIR_PATH, 'release_notes.txt')
 MAIN_STRINGS_PATH = File.join('WooCommerce', 'src', 'main', 'res', 'values', 'strings.xml')
+FROZEN_STRINGS_DIR_PATH = "./fastlane/resources/values/"
 
 # URL of the GlotPress project containing the app's strings
 GLOTPRESS_APP_STRINGS_PROJECT_URL = 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/'
@@ -58,8 +59,6 @@ SUPPORTED_LOCALES = [
 ].freeze
 
 SCREENSHOT_DIRECTORY = File.join(Dir.pwd, 'screenshots')
-
-update_strings_path = "./fastlane/resources/values/"
 
 platform :android do
   ########################################################################
@@ -732,7 +731,7 @@ platform :android do
   end
 
   private_lane :send_strings_for_translation do | options |
-    sh("cd .. && mkdir -p #{update_strings_path} && cp #{MAIN_STRINGS_PATH} #{update_strings_path} && git add #{update_strings_path}strings.xml")
+    sh("cd .. && mkdir -p #{FROZEN_STRINGS_DIR_PATH} && cp #{MAIN_STRINGS_PATH} #{FROZEN_STRINGS_DIR_PATH} && git add #{FROZEN_STRINGS_DIR_PATH}strings.xml")
     sh("git diff-index --quiet HEAD || git commit -m \"Send strings to translation.\"")
     sh("git push origin HEAD")
   end
