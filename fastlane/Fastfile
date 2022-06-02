@@ -509,10 +509,6 @@ platform :android do
                         locales: SUPPORTED_LOCALES.map {| hsh | [ hsh[:glotpress], hsh[:google_play] ]},
                         source_locale: "en-US",
                         download_path: download_path)
-
-    android_create_xml_release_notes(download_path: download_path, build_number: "#{options[:build_number]}", locales: SUPPORTED_LOCALES.map {| hsh | [ hsh[:glotpress], hsh[:google_play] ]})
-    add_us_release_notes(relese_notes_path: download_path + "/release_notes.xml", version_name: options[:version])
-    sh("git add #{download_path} && (git diff-index --quiet HEAD || git commit -m \"Update metadata translations for #{options[:version]}\") && git push")
   end
 
   ########################################################################
