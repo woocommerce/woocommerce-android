@@ -20,6 +20,22 @@ METADATA_DIR_PATH = File.join(PROJECT_ROOT_FOLDER, 'WooCommerce', 'metadata')
 RELEASE_NOTES_PATH = File.join(METADATA_DIR_PATH, 'release_notes.txt')
 MAIN_STRINGS_PATH = File.join('WooCommerce', 'src', 'main', 'res', 'values', 'strings.xml')
 FROZEN_STRINGS_DIR_PATH = "./fastlane/resources/values/"
+REMOTE_LIBRARIES_STRINGS_PATHS = [
+  {
+    name: "Login Library",
+    import_key: "wordPressLoginVersion",
+    repository: "wordpress-mobile/WordPress-Login-Flow-Android",
+    strings_file_path: "WordPressLoginFlow/src/main/res/values/strings.xml",
+    exclusions: ["default_web_client_id"]
+  },
+  {
+    name: "About Library",
+    import_key: "aboutAutomatticVersion", # key used in build.gradle to reference the version
+    repository: "Automattic/about-automattic-android",
+    strings_file_path: "library/src/main/res/values/strings.xml",
+    exclusions: []
+  }
+]
 
 # URL of the GlotPress project containing the app's strings
 GLOTPRESS_APP_STRINGS_PROJECT_URL = 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/'
@@ -432,24 +448,7 @@ platform :android do
   #####################################################################################
   desc "Merge libraries strings files into the main app one"
   lane :localize_libs do | options |
-    binary_imported_libraries = [
-      {
-        name: "Login Library",
-        import_key: "wordPressLoginVersion",
-        repository: "wordpress-mobile/WordPress-Login-Flow-Android",
-        strings_file_path: "WordPressLoginFlow/src/main/res/values/strings.xml",
-        exclusions: ["default_web_client_id"]
-      },
-      {
-        name: "About Library",
-        import_key: "aboutAutomatticVersion", # key used in build.gradle to reference the version
-        repository: "Automattic/about-automattic-android",
-        strings_file_path: "library/src/main/res/values/strings.xml",
-        exclusions: []
-      },
-    ]
-
-  binary_imported_libraries.each do  | lib |
+  REMOTE_LIBRARIES_STRINGS_PATHS.each do  | lib |
     download_path = android_download_file_by_version(
       library_name: lib[:name],
       import_key: lib[:import_key],
