@@ -457,9 +457,11 @@ platform :android do
     )
 
   if download_path.nil?
-    error_message = "Can't download strings file for #{lib[:name]}.\r\n"
-    error_message += "Strings for this library won't get translated.\r\n"
-    error_message += "Do you want to continue anyway?"
+    error_message = <<~ERROR
+      Can't download strings file for #{lib[:name]}.
+      Strings for this library won't get translated.
+      Do you want to continue anyway?
+    ERROR
     UI.user_error! "Abort." unless UI.confirm(error_message)
   else
     UI.message("Strings.xml file for #{lib[:name]} downloaded to #{download_path}.")
