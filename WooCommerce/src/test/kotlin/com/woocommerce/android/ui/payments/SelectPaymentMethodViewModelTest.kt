@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Refund
+import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.captureValues
@@ -24,6 +25,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -58,6 +60,9 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     }
     private val orderMapper: OrderMapper = mock {
         on { toAppModel(orderEntity) }.thenReturn(order)
+    }
+    private val cardPaymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock {
+        onBlocking { isCollectable(order) }.thenReturn(false)
     }
 
     @Test
@@ -109,10 +114,29 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         assertThat(viewModel.viewStateData.value).isEqualTo(
             Success(
                 orderTotal = ORDER_TOTAL,
-                paymentUrl = PAYMENT_URL
+                paymentUrl = PAYMENT_URL,
+                isPaymentCollectableWithCardReader = false,
             )
         )
     }
+
+    @Test
+    fun `given payment flow and payment collectable, when view model init, then success emitted with collect true`() =
+        testBlocking {
+            // GIVEN & WHEN
+            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
+            val orderId = 1L
+            val viewModel = initViewModel(Payment(orderId))
+
+            // THEN
+            assertThat(viewModel.viewStateData.value).isEqualTo(
+                Success(
+                    orderTotal = ORDER_TOTAL,
+                    paymentUrl = PAYMENT_URL,
+                    isPaymentCollectableWithCardReader = true,
+                )
+            )
+        }
 
     @Test
     fun `given refund flow, when view model init, then navigate to refund flow emitted`() = testBlocking {
@@ -145,14 +169,15 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
 
     private fun initViewModel(cardReaderFlowParam: CardReaderFlowParam): SelectPaymentMethodViewModel {
         return SelectPaymentMethodViewModel(
-            TakePaymentFragmentArgs(cardReaderFlowParam = cardReaderFlowParam).initSavedStateHandle(),
+            SelectPaymentMethodFragmentArgs(cardReaderFlowParam = cardReaderFlowParam).initSavedStateHandle(),
             selectedSite,
             orderStore,
             dispatchers,
             networkStatus,
             currencyFormatter,
             wooCommerceStore,
-            orderMapper
+            orderMapper,
+            cardPaymentCollectibilityChecker,
         )
     }
 }
