@@ -734,8 +734,11 @@ platform :android do
     Dir.chdir('..') do
       FileUtils.mkdir_p(FROZEN_STRINGS_DIR_PATH)
       FileUtils.cp(MAIN_STRINGS_PATH, FROZEN_STRINGS_DIR_PATH)
-      sh("git add #{FROZEN_STRINGS_DIR_PATH}strings.xml")
-      sh("git diff-index --quiet HEAD || git commit -m \"Send strings to translation.\"")
+      git_commit(
+        path: File.join(FROZEN_STRINGS_DIR_PATH, 'strings.xml'),
+        message: 'Freeze strings for translation',
+        allow_nothing_to_commit: true
+      )
       sh("git push origin HEAD")
     end
   end
