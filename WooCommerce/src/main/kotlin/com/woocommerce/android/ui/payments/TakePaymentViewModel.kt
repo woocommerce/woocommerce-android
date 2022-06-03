@@ -180,6 +180,8 @@ class TakePaymentViewModel @Inject constructor(
                         AnalyticsTracker.KEY_PAYMENT_METHOD to VALUE_SIMPLE_PAYMENTS_COLLECT_CARD
                     )
                 )
+                delay(DELAY_MS)
+                triggerEvent(MultiLiveEvent.Event.Exit)
             } else {
                 analyticsTrackerWrapper.track(
                     AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_FAILED,
@@ -189,9 +191,6 @@ class TakePaymentViewModel @Inject constructor(
                     )
                 )
             }
-
-            delay(DELAY_MS)
-            triggerEvent(MultiLiveEvent.Event.Exit)
         }
     }
 
