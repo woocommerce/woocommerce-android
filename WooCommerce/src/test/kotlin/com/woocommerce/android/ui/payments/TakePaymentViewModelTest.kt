@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.payments
 
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
@@ -59,6 +60,7 @@ class TakePaymentViewModelTest : BaseUnitTest() {
     private val orderMapper: OrderMapper = mock {
         on { toAppModel(orderEntity) }.thenReturn(order)
     }
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     @Test
     fun `given hub flow, when view model init, then navigate to hub flow emitted`() = testBlocking {
@@ -152,7 +154,8 @@ class TakePaymentViewModelTest : BaseUnitTest() {
             networkStatus,
             currencyFormatter,
             wooCommerceStore,
-            orderMapper
+            orderMapper,
+            analyticsTrackerWrapper,
         )
     }
 }

@@ -9,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_COLLECT_CARD
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_COLLECT_CASH
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_COLLECT_LINK
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
@@ -43,6 +44,7 @@ class TakePaymentViewModel @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val wooCommerceStore: WooCommerceStore,
     private val orderMapper: OrderMapper,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
     private val navArgs: TakePaymentFragmentArgs by savedState.navArgs()
 
@@ -84,7 +86,7 @@ class TakePaymentViewModel @Inject constructor(
     }
 
     fun onCashPaymentClicked() {
-        AnalyticsTracker.track(
+        analyticsTrackerWrapper.track(
             AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_COLLECT,
             mapOf(
                 AnalyticsTracker.KEY_PAYMENT_METHOD to VALUE_SIMPLE_PAYMENTS_COLLECT_CASH
@@ -109,7 +111,7 @@ class TakePaymentViewModel @Inject constructor(
     private fun onCashPaymentConfirmed() {
         if (networkStatus.isConnected()) {
             launch {
-                AnalyticsTracker.track(
+                analyticsTrackerWrapper.track(
                     AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_COMPLETED,
                     mapOf(
                         AnalyticsTracker.KEY_AMOUNT to orderTotal,
@@ -124,7 +126,7 @@ class TakePaymentViewModel @Inject constructor(
     }
 
     fun onSharePaymentUrlClicked() {
-        AnalyticsTracker.track(
+        analyticsTrackerWrapper.track(
             AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_COLLECT,
             mapOf(
                 AnalyticsTracker.KEY_PAYMENT_METHOD to VALUE_SIMPLE_PAYMENTS_COLLECT_LINK
@@ -134,7 +136,7 @@ class TakePaymentViewModel @Inject constructor(
     }
 
     fun onSharePaymentUrlCompleted() {
-        AnalyticsTracker.track(
+        analyticsTrackerWrapper.track(
             AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_COMPLETED,
             mapOf(
                 AnalyticsTracker.KEY_PAYMENT_METHOD to VALUE_SIMPLE_PAYMENTS_COLLECT_LINK
@@ -146,7 +148,7 @@ class TakePaymentViewModel @Inject constructor(
     }
 
     fun onCardPaymentClicked() {
-        AnalyticsTracker.track(
+        analyticsTrackerWrapper.track(
             AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_COLLECT,
             mapOf(
                 AnalyticsTracker.KEY_PAYMENT_METHOD to VALUE_SIMPLE_PAYMENTS_COLLECT_CARD
@@ -157,7 +159,7 @@ class TakePaymentViewModel @Inject constructor(
 
     fun onConnectToReaderResultReceived(connected: Boolean) {
         if (!connected) {
-            AnalyticsTracker.track(
+            analyticsTrackerWrapper.track(
                 AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_FAILED,
                 mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD)
             )
@@ -171,7 +173,7 @@ class TakePaymentViewModel @Inject constructor(
             // status of the order to determine whether payment succeeded
             val status = orderStore.getOrderByIdAndSite(cardReaderPaymentFlowParam.orderId, selectedSite.get())?.status
             if (status == CoreOrderStatus.COMPLETED.value) {
-                AnalyticsTracker.track(
+                analyticsTrackerWrapper.track(
                     AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_COMPLETED,
                     mapOf(
                         AnalyticsTracker.KEY_AMOUNT to orderTotal,
@@ -179,7 +181,7 @@ class TakePaymentViewModel @Inject constructor(
                     )
                 )
             } else {
-                AnalyticsTracker.track(
+                analyticsTrackerWrapper.track(
                     AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_FAILED,
                     mapOf(
                         AnalyticsTracker.KEY_SOURCE to
@@ -211,7 +213,7 @@ class TakePaymentViewModel @Inject constructor(
                 is WCOrderStore.UpdateOrderResult.RemoteUpdateResult -> {
                     if (result.event.isError) {
                         triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.order_error_update_general))
-                        AnalyticsTracker.track(
+                        analyticsTrackerWrapper.track(
                             AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_FAILED,
                             mapOf(
                                 AnalyticsTracker.KEY_SOURCE to
