@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.shipping
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -43,7 +44,7 @@ fun InstallWcShippingOnboardingScreen(viewmodel: InstallWcShippingFlowViewModel)
 }
 
 @Composable
-fun InstallWcShippingOnboardingScreen(onboardingUi: InstallWcShippingOnboardingUi) {
+fun InstallWcShippingOnboardingScreen(onboardingFlowUiState: InstallWcShippingOnboardingUi) {
     Column(
         modifier = Modifier
             .background(color = MaterialTheme.colors.surface)
@@ -60,7 +61,7 @@ fun InstallWcShippingOnboardingScreen(onboardingUi: InstallWcShippingOnboardingU
             Text(
                 modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_350)),
                 style = MaterialTheme.typography.h5,
-                text = stringResource(id = onboardingUi.title),
+                text = stringResource(id = onboardingFlowUiState.title),
                 textAlign = TextAlign.Center,
                 fontSize = 28.sp,
                 lineHeight = 34.sp
@@ -69,17 +70,17 @@ fun InstallWcShippingOnboardingScreen(onboardingUi: InstallWcShippingOnboardingU
                 modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)),
                 style = MaterialTheme.typography.h5,
                 fontWeight = FontWeight.Bold,
-                text = stringResource(id = onboardingUi.subtitle),
+                text = stringResource(id = onboardingFlowUiState.subtitle),
                 textAlign = TextAlign.Center,
 
                 )
             Spacer(Modifier.size(dimensionResource(id = R.dimen.major_325)))
-            InstallWcsOnboardingBullets(onboardingBullets = onboardingUi.bullets)
-            Text(
+            InstallWcsOnboardingBullets(onboardingBullets = onboardingFlowUiState.bullets)
+            LinkText(
                 modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_200)),
-                style = MaterialTheme.typography.subtitle1,
-                color = colorResource(id = R.color.link_text),
-                text = stringResource(id = R.string.install_wc_shipping_flow_onboarding_screen_link)
+                text = stringResource(id = R.string.install_wc_shipping_flow_onboarding_screen_link),
+                url = onboardingFlowUiState.linkUrl,
+                onClick = onboardingFlowUiState.onLinkClicked
             )
         }
         Column(
@@ -93,7 +94,7 @@ fun InstallWcShippingOnboardingScreen(onboardingUi: InstallWcShippingOnboardingU
         ) {
             WCColoredButton(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = { /*TODO*/ },
+                onClick = { onboardingFlowUiState.onInstallClicked() },
             ) {
                 Text(
                     text = stringResource(id = R.string.install_wc_shipping_flow_onboarding_screen_add_extension_button),
@@ -102,7 +103,7 @@ fun InstallWcShippingOnboardingScreen(onboardingUi: InstallWcShippingOnboardingU
             Spacer(Modifier.size(dimensionResource(id = R.dimen.major_100)))
             WCOutlinedButton(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = {  /*TODO*/ },
+                onClick = { onboardingFlowUiState.onDismissFlowClicked() },
             ) {
                 Text(
                     text = stringResource(id = R.string.install_wc_shipping_flow_onboarding_screen_not_now_button),
@@ -112,6 +113,21 @@ fun InstallWcShippingOnboardingScreen(onboardingUi: InstallWcShippingOnboardingU
             }
         }
     }
+}
+
+@Composable
+private fun LinkText(
+    modifier: Modifier,
+    text: String,
+    url: String,
+    onClick: (String) -> Unit
+) {
+    Text(
+        modifier = modifier.clickable { onClick(url) },
+        style = MaterialTheme.typography.subtitle1,
+        color = colorResource(id = R.color.link_text),
+        text = text,
+    )
 }
 
 @Composable

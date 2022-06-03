@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel.InstallWcShippingFlowEvent.ExitInstallFlowEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,13 +16,21 @@ import javax.inject.Inject
 class InstallWcShippingFlowViewModel @Inject constructor(
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
+    private companion object {
+        const val WC_SHIPPING_INFO_URL = "https://woocommerce.com/woocommerce-shipping/"
+    }
+
     val installWcShippingFlowState = flow {
         emit(
             InstallWcShippingState(
                 InstallWcShippingOnboardingUi(
                     title = R.string.install_wc_shipping_flow_onboarding_screen_title,
                     subtitle = R.string.install_wc_shipping_flow_onboarding_screen_subtitle,
-                    bullets = getBulletPointsForInstallingWcShippingFlow()
+                    bullets = getBulletPointsForInstallingWcShippingFlow(),
+                    linkUrl = WC_SHIPPING_INFO_URL,
+                    onLinkClicked = ::onLinkClicked,
+                    onInstallClicked = ::onInstallWcShippingClicked,
+                    onDismissFlowClicked = ::onDismissWcShippingFlowClicked
                 )
             )
         )
@@ -46,6 +55,25 @@ class InstallWcShippingFlowViewModel @Inject constructor(
             ),
         )
 
+    private fun onInstallWcShippingClicked() {
+        // TODO update UI state with install flow wizard
+    }
+
+    private fun onDismissWcShippingFlowClicked() {
+        triggerEvent(ExitInstallFlowEvent)
+    }
+
+    private fun onLinkClicked(url: String) {
+        triggerEvent(InstallWcShippingFlowEvent.OpenLinkEvent(url))
+    }
+
+    sealed class InstallWcShippingFlowEvent : MultiLiveEvent.Event() {
+        object ExitInstallFlowEvent : InstallWcShippingFlowEvent()
+        data class OpenLinkEvent(
+            val url: String,
+        ) : InstallWcShippingFlowEvent()
+    }
+
     data class InstallWcShippingState(
         val installWcShippingOnboardingUi: InstallWcShippingOnboardingUi? = null
     )
@@ -53,7 +81,11 @@ class InstallWcShippingFlowViewModel @Inject constructor(
     data class InstallWcShippingOnboardingUi(
         @StringRes val title: Int,
         @StringRes val subtitle: Int,
-        val bullets: List<InstallWcShippingOnboardingBulletUi>
+        val bullets: List<InstallWcShippingOnboardingBulletUi>,
+        val linkUrl: String,
+        val onInstallClicked: () -> Unit = {},
+        val onDismissFlowClicked: () -> Unit = {},
+        val onLinkClicked: (String) -> Unit = {}
     )
 
     data class InstallWcShippingOnboardingBulletUi(
