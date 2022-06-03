@@ -728,10 +728,14 @@ platform :android do
     )
   end
 
-  private_lane :send_strings_for_translation do | options |
-    sh("cd .. && mkdir -p #{FROZEN_STRINGS_DIR_PATH} && cp #{MAIN_STRINGS_PATH} #{FROZEN_STRINGS_DIR_PATH} && git add #{FROZEN_STRINGS_DIR_PATH}strings.xml")
-    sh("git diff-index --quiet HEAD || git commit -m \"Send strings to translation.\"")
-    sh("git push origin HEAD")
+  private_lane :send_strings_for_translation do
+    # When you run commands from the `Fastfile`, they run relative to the `./fastfile` folder.
+    # The `*_DIR_PATH` paths, however, are relative to the repo root, so we need to `cd` there.
+    Dir.chdir('..') do
+      sh("mkdir -p #{FROZEN_STRINGS_DIR_PATH} && cp #{MAIN_STRINGS_PATH} #{FROZEN_STRINGS_DIR_PATH} && git add #{FROZEN_STRINGS_DIR_PATH}strings.xml")
+      sh("git diff-index --quiet HEAD || git commit -m \"Send strings to translation.\"")
+      sh("git push origin HEAD")
+    end
   end
 
   #####################################################################################
