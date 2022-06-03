@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-05-08 09:54:16+0000
+Translation-Revision-Date: 2022-05-20 16:54:14+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="coupon_edit_add_description_hint">쿠폰 설명을 추가하세요.</string>
+    <string name="coupon_edit_description_editor_title">쿠폰 설명</string>
+    <string name="coupon_edit_edit_description">설명 편집</string>
+    <string name="coupon_edit_add_description">설명 추가(선택 사항)</string>
+    <string name="coupon_edit_expiry_date">쿠폰 만료일</string>
+    <string name="coupon_edit_save_button">저장</string>
+    <string name="coupon_edit_regenerate_coupon">쿠폰 코드 재생성</string>
+    <string name="coupon_edit_code_helper">고객이 쿠폰을 사용하려면 이 코드를 입력해야 합니다.</string>
+    <string name="coupon_edit_code_hint">쿠폰 코드</string>
+    <string name="coupon_edit_amount_rate_helper">제공하려는 할인 금액을 설정하세요.</string>
+    <string name="coupon_edit_amount_percentage_helper">제공하려는 할인 비율을 설정하세요.</string>
+    <string name="coupon_edit_amount_hint">금액(%1$s)</string>
+    <string name="coupon_edit_details_section">쿠폰 상세 정보</string>
+    <string name="coupon_edit_screen_title">%1$s 편집</string>
+    <string name="coupon_details_menu_edit">쿠폰 편집</string>
+    <string name="product_detail_save_product_error">상품을 업데이트할 수 없음</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund_failed">환불 적용 중 문제 발생</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund">주문에 환불 적용하기</string>
+    <string name="card_reader_icon_content_description">카드 리더 이미지</string>
+    <string name="order_creation_fee_percentage_calculated_amount">계산한 금액: %s</string>
+    <string name="order_creation_fee_percentage_toggle_text">비율로 계산</string>
+    <string name="copied_to_clipboard">클립보드에 복사됨</string>
     <string name="coupon_details_restricted_emails">이메일(%1$s)이 있는 고객으로 제한됨</string>
     <string name="coupon_details_excludes_sale_items">세일 아이템 제외</string>
     <string name="coupon_details_allows_free_shipping">무료 배송 허용</string>
@@ -120,7 +142,6 @@ Language: ko_KR
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">%1$s에서 Stripe는 지원되지 않습니다.</string>
     <string name="card_reader_connect_scanning_hint">리더의 전원 버튼을 누르세요.</string>
     <string name="card_reader_payment_reader_receipt_sent">영수증이 &lt;strong&gt;%s&lt;/strong&gt;(으)로 발송되었습니다.</string>
-    <string name="order_creation_fee_percentage_toggle_text">퍼센트 수수료</string>
     <string name="order_creation_fee_percentage_hint">퍼센트(%)</string>
     <string name="order_creation_add_fee_removal_hint">주문에서 수수료 제거</string>
     <string name="order_creation_remove_shipping">주문에서 배송 제거</string>
@@ -154,7 +175,6 @@ Language: ko_KR
     <string name="card_reader_wisepad_3_manual_card_reader">WisePad 3 카드 리더 사용설명서</string>
     <string name="order_creation_price_calculation_failed">가격을 업데이트할 수 없음</string>
     <string name="order_creation_payment_tax">세금</string>
-    <string name="order_creation_payment_tax_hint">스토어 설정에 따라 세금이 자동으로 계산됩니다.</string>
     <string name="exclusive_or">또는</string>
     <string name="settings_install_jetpack">젯팩 설치</string>
     <string name="card_reader_onboarding_account_rejected_header">현재 직접 결제 사용 불가능</string>
@@ -572,7 +592,7 @@ Language: ko_KR
     <string name="card_reader_refetching_order_failed">주문을 가져오는 중 오류가 발생했습니다. 앱의 주문 상태가 기한이 지났을 수 있습니다.</string>
     <string name="card_reader_payment_email_client_not_found">이메일 클라이언트 앱을 감지할 수 없습니다.</string>
     <string name="card_reader_payment_receipt_email_subject">%s에서 받은 영수증</string>
-    <string name="card_reader_payment_description">%s의 주문 %s에 대한 온라인 결제</string>
+    <string name="card_reader_payment_description">%s에 대한 주문 %s 직접 결제</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">주문 새로 고치기</string>
     <string name="card_reader_payment_fetch_order_loading_header">앱 상태 업데이트하기</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">고객이 %1$s을(를) 선택함</string>

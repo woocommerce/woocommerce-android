@@ -234,6 +234,18 @@
         </action>
 
         <action
+            android:id="@+id/action_orderDetailFragment_to_orderCreationFragment"
+            app:destination="@id/nav_graph_order_creations"
+            app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@anim/activity_fade_out" >
+            <argument
+                android:name="mode"
+                app:argType="com.woocommerce.android.ui.orders.creation.OrderCreationViewModel$Mode" />
+        </action>
+
+        <action
             android:id="@+id/action_orderDetailFragment_to_installWcShippingFlow"
             app:destination="@id/installWcShippingFlowFragment" />
     </fragment>

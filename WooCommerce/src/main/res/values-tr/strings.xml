@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-05-06 12:54:04+0000
+Translation-Revision-Date: 2022-05-20 11:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="coupon_edit_add_description_hint">Kuponun açıklamasını ekleyin.</string>
+    <string name="coupon_edit_description_editor_title">Kupon Açıklaması</string>
+    <string name="coupon_edit_edit_description">Açıklamayı düzenle</string>
+    <string name="coupon_edit_add_description">Açıklama Ekle (İsteğe bağlı)</string>
+    <string name="coupon_edit_expiry_date">Kupon Son Kullanma Tarihi</string>
+    <string name="coupon_edit_save_button">Kaydet</string>
+    <string name="coupon_edit_regenerate_coupon">Kupon Kodunu Yeniden Oluştur</string>
+    <string name="coupon_edit_code_helper">Kuponu kullanabilmek için müşterilerin bu kodu girmeleri gerekir.</string>
+    <string name="coupon_edit_code_hint">Kupon kodu</string>
+    <string name="coupon_edit_amount_rate_helper">Sunmak istediğiniz indirimin tutarını belirleyin.</string>
+    <string name="coupon_edit_amount_percentage_helper">Sunmak istediğiniz indirimin yüzdesini ayarlayın.</string>
+    <string name="coupon_edit_amount_hint">Tutar (%1$s)</string>
+    <string name="coupon_edit_details_section">Kupon Ayrıntıları</string>
+    <string name="coupon_edit_screen_title">Düzenle: %1$s</string>
+    <string name="coupon_details_menu_edit">Kuponu Düzenle</string>
+    <string name="product_detail_save_product_error">Ürün güncellenemiyor</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund_failed">Geri ödeme uygulanırken bir hata oldu</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund">Siparişe geri ödeme uygulanıyor</string>
+    <string name="card_reader_icon_content_description">Kart Okuyucu Görüntüsü</string>
+    <string name="order_creation_fee_percentage_calculated_amount">Hesaplanan miktar: %s</string>
+    <string name="order_creation_fee_percentage_toggle_text">Yüzde olarak hesapla</string>
+    <string name="copied_to_clipboard">Panoya kopyalandı</string>
     <string name="coupon_details_restricted_emails">E-postaları olan müşterilerle sınırlıdır: %1$s</string>
     <string name="coupon_details_excludes_sale_items">Satılan ürünleri hariç tutar</string>
     <string name="coupon_details_allows_free_shipping">Ücretsiz gönderime izin verir</string>
@@ -120,7 +142,6 @@ Language: tr
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">%1$s için Stripe\'ı desteklemiyoruz</string>
     <string name="card_reader_connect_scanning_hint">Okuyucunuzun güç düğmesine basın</string>
     <string name="card_reader_payment_reader_receipt_sent">&lt;strong&gt;%s&lt;/strong&gt; adresine bir makbuz gönderildi</string>
-    <string name="order_creation_fee_percentage_toggle_text">Yüzde ücreti</string>
     <string name="order_creation_fee_percentage_hint">Yüzde (%)</string>
     <string name="order_creation_add_fee_removal_hint">Ücreti siparişten kaldır</string>
     <string name="order_creation_remove_shipping">Gönderiyi siparişten kaldır </string>
@@ -154,7 +175,6 @@ Language: tr
     <string name="card_reader_wisepad_3_manual_card_reader">WisePad 3 Kart Okuyucu Kılavuzu</string>
     <string name="order_creation_price_calculation_failed">Fiyatlandırma güncellenemedi</string>
     <string name="order_creation_payment_tax">Vergiler</string>
-    <string name="order_creation_payment_tax_hint">Vergiler mağaza ayarlarınıza göre otomatik olarak hesaplanır.</string>
     <string name="exclusive_or">veya</string>
     <string name="settings_install_jetpack">Jetpack\'i Kur</string>
     <string name="card_reader_onboarding_account_rejected_header">Şahsen Ödemeler şu anda kullanılamıyor</string>
@@ -572,7 +592,7 @@ Language: tr
     <string name="card_reader_refetching_order_failed">Sipariş alınırken hata oluştu Uygulamadaki sipariş durumu eski olabilir.</string>
     <string name="card_reader_payment_email_client_not_found">E-posta istemcisi uygulamanızı tespit edemiyoruz</string>
     <string name="card_reader_payment_receipt_email_subject">%s makbuzunuz</string>
-    <string name="card_reader_payment_description">%s (%s) siparişi için çevrimiçi ödeme</string>
+    <string name="card_reader_payment_description">%s siparişi (%s) için Şahsen Ödeme</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Sipariş yenileniyor</string>
     <string name="card_reader_payment_fetch_order_loading_header">Uygulama durumu güncelleniyor</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Müşteriniz seçildi %1$s</string>

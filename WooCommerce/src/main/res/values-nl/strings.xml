@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-05-05 13:54:18+0000
+Translation-Revision-Date: 2022-05-23 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="coupon_edit_add_description_hint">Voeg de beschrijving van de coupon toe.</string>
+    <string name="coupon_edit_description_editor_title">Couponbeschrijving</string>
+    <string name="coupon_edit_edit_description">Beschrijving bewerken</string>
+    <string name="coupon_edit_add_description">Beschrijving toevoegen (optioneel)</string>
+    <string name="coupon_edit_expiry_date">Vervaldatum coupon</string>
+    <string name="coupon_edit_save_button">Opslaan</string>
+    <string name="coupon_edit_regenerate_coupon">Couponcode opnieuw genereren</string>
+    <string name="coupon_edit_code_helper">Klanten moeten deze code invoeren om de coupon te gebruiken.</string>
+    <string name="coupon_edit_code_hint">Couponcode</string>
+    <string name="coupon_edit_amount_rate_helper">Stel de korting die je wilt bieden in.</string>
+    <string name="coupon_edit_amount_percentage_helper">Stel de korting die je wilt bieden, in procenten in.</string>
+    <string name="coupon_edit_amount_hint">Bedrag (%1$s)</string>
+    <string name="coupon_edit_details_section">Gegevens coupon</string>
+    <string name="coupon_edit_screen_title">%1$s bewerken</string>
+    <string name="coupon_details_menu_edit">Coupon bewerken</string>
+    <string name="product_detail_save_product_error">Kan product niet bijwerken</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund_failed">Er is iets fout gegaan tijdens het toepassen van de restitutie</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund">Restitutie toepassen op bestelling</string>
+    <string name="card_reader_icon_content_description">Afbeelding kaartlezer</string>
+    <string name="order_creation_fee_percentage_calculated_amount">Berekende bedrag: %s</string>
+    <string name="order_creation_fee_percentage_toggle_text">Bereken als percentage</string>
+    <string name="copied_to_clipboard">Gekopieerd naar klembord</string>
     <string name="coupon_details_restricted_emails">Beperkt tot klanten met e-mails: %1$s</string>
     <string name="coupon_details_excludes_sale_items">Uitsluiten van afgeprijsde artikelen</string>
     <string name="coupon_details_allows_free_shipping">Staat gratis verzending toe</string>
@@ -120,7 +142,6 @@ Language: nl
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">We ondersteunen Stripe niet in %1$s</string>
     <string name="card_reader_connect_scanning_hint">Druk op de aan-uitknop van je lezer</string>
     <string name="card_reader_payment_reader_receipt_sent">Er is een kwitantie verzonden naar &lt;strong&gt;%s&lt;/strong&gt;</string>
-    <string name="order_creation_fee_percentage_toggle_text">Percentage kosten</string>
     <string name="order_creation_fee_percentage_hint">Percentage (%)</string>
     <string name="order_creation_add_fee_removal_hint">Kosten verwijderen uit bestelling</string>
     <string name="order_creation_remove_shipping">Verzending verwijderen uit bestelling</string>
@@ -154,7 +175,6 @@ Language: nl
     <string name="card_reader_wisepad_3_manual_card_reader">Handleiding WisePad3-kaartlezer</string>
     <string name="order_creation_price_calculation_failed">Kon prijzen niet bijwerken</string>
     <string name="order_creation_payment_tax">Belastingen</string>
-    <string name="order_creation_payment_tax_hint">Btw wordt automatisch berekend op basis van je winkelinstellingen.</string>
     <string name="exclusive_or">of</string>
     <string name="settings_install_jetpack">Jetpack installeren</string>
     <string name="card_reader_onboarding_account_rejected_header">Fysieke betalingen zijn momenteel niet beschikbaar.</string>
@@ -572,7 +592,7 @@ Language: nl
     <string name="card_reader_refetching_order_failed">Fout bij ophalen bestelling. De bestellingsstatus in de app kan verouderd zijn.</string>
     <string name="card_reader_payment_email_client_not_found">Detectie van mailclient-app mislukt</string>
     <string name="card_reader_payment_receipt_email_subject">Je kwitantie van %s</string>
-    <string name="card_reader_payment_description">Online betaling voor bestelling %s voor %s</string>
+    <string name="card_reader_payment_description">Fysieke betaling voor bestelling %s voor %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Bestelling aan het vernieuwen…</string>
     <string name="card_reader_payment_fetch_order_loading_header">Status in de app aan het bijwerken…</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Je klant heeft het volgende geselecteerd %1$s</string>

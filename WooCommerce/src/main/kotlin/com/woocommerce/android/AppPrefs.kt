@@ -86,7 +86,6 @@ object AppPrefs {
     private enum class DeletableSitePrefKey : PrefKey {
         TRACKING_EXTENSION_AVAILABLE,
         JETPACK_BENEFITS_BANNER_DISMISSAL_DATE,
-        WC_PREF_NOTIFICATIONS_TOKEN,
     }
 
     /**
@@ -132,6 +131,8 @@ object AppPrefs {
 
         // card reader welcome dialog was shown
         CARD_READER_WELCOME_SHOWN,
+
+        WC_PREF_NOTIFICATIONS_TOKEN,
 
         // Hide banner in order detail to install WC Shipping plugin
         WC_SHIPPING_BANNER_DISMISSED,
@@ -207,14 +208,10 @@ object AppPrefs {
         setDeletableInt(UndeletablePrefKey.CANCELLED_APP_VERSION_CODE, versionCode)
     }
 
-    fun getFCMToken() = getString(DeletableSitePrefKey.WC_PREF_NOTIFICATIONS_TOKEN)
+    fun getFCMToken() = getString(UndeletablePrefKey.WC_PREF_NOTIFICATIONS_TOKEN)
 
     fun setFCMToken(token: String) {
-        setString(DeletableSitePrefKey.WC_PREF_NOTIFICATIONS_TOKEN, token)
-    }
-
-    fun removeFCMToken() {
-        remove(DeletableSitePrefKey.WC_PREF_NOTIFICATIONS_TOKEN)
+        setString(UndeletablePrefKey.WC_PREF_NOTIFICATIONS_TOKEN, token)
     }
 
     fun setSupportEmail(email: String?) {
@@ -634,11 +631,18 @@ object AppPrefs {
         )
     }
 
-    fun setWcShippingBannerDismissed(dismissed: Boolean) {
-        setBoolean(UndeletablePrefKey.WC_SHIPPING_BANNER_DISMISSED, dismissed)
+    fun setWcShippingBannerDismissed(dismissed: Boolean, currentSiteId: Int) {
+        setBoolean(
+            PrefKeyString("${UndeletablePrefKey.WC_SHIPPING_BANNER_DISMISSED}:$currentSiteId"),
+            dismissed
+        )
     }
 
-    fun getWcShippingBannerDismissed() = getBoolean(UndeletablePrefKey.WC_SHIPPING_BANNER_DISMISSED, false)
+    fun getWcShippingBannerDismissed(currentSiteId: Int) =
+        getBoolean(
+            PrefKeyString("${UndeletablePrefKey.WC_SHIPPING_BANNER_DISMISSED}:$currentSiteId"),
+            false
+        )
 
     /**
      * Remove all user and site-related preferences.

@@ -6,4 +6,10 @@
         android:title="@string/simple_payments_share_payment_link"
         android:visible="false"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_edit_order"
+        android:title="@string/edit"
+        android:visible="false"
+        app:showAsAction="never" />
 </menu>

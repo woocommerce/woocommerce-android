@@ -18,6 +18,12 @@ import com.woocommerce.android.util.ScalableImageView.ScaleType.FIT_TOP
 import com.woocommerce.android.util.ScalableImageView.ScaleType.FIT_XY
 import com.woocommerce.android.util.ScalableImageView.ScaleType.MATRIX
 
+/**
+ * Android ImageView's scaletype has limited options for cropping the image: center_crop. This class adds 2 new
+ * scaleType options:
+ *  FIT_TOP -> Will crop the image starting from the bottom so the top of the image will be guaranteed to be displayed
+ *  FIT_BOTTOM -> Will crop the image from the top. The bottom of the image will be guaranteed to be displayed
+ */
 class ScalableImageView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,

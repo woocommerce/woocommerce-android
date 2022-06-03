@@ -1,19 +1,23 @@
 package com.woocommerce.android.ui.orders.creation
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
-import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus.*
+import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus.Failed
+import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus.Ongoing
+import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus.PendingDebounce
+import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus.Succeeded
+import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.Mode
+import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.Mode.Creation
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.ViewState
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.*
-import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import com.woocommerce.android.ui.products.ParameterRepository
-import com.woocommerce.android.ui.products.ProductStockStatus
-import com.woocommerce.android.ui.products.models.SiteParameters
-import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.AddProduct
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.EditCustomer
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.EditCustomerNote
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.EditFee
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.EditShipping
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.ShowCreatedOrder
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.ShowProductDetails
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -21,35 +25,17 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
-import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
-class OrderCreationViewModelTest : BaseUnitTest() {
-    private lateinit var sut: OrderCreationViewModel
-    private lateinit var viewState: ViewState
-    private lateinit var savedState: SavedStateHandle
-    private lateinit var mapItemToProductUIModel: MapItemToProductUiModel
-    private lateinit var createOrUpdateOrderUseCase: CreateOrUpdateOrderDraft
-    private lateinit var createOrderItemUseCase: CreateOrderItem
-    private lateinit var orderCreationRepository: OrderCreationRepository
-    private lateinit var orderDetailRepository: OrderDetailRepository
-    private lateinit var parameterRepository: ParameterRepository
-
-    private val defaultOrderValue = Order.EMPTY.copy(id = 123)
-
-    @Before
-    fun setUp() {
-        initMocks()
-        createSut()
-    }
+class CreationFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest() {
+    override val mode: Mode = Creation
 
     @Test
     fun `when initializing the view model, then register the orderDraft flowState`() {
@@ -705,70 +691,10 @@ class OrderCreationViewModelTest : BaseUnitTest() {
             } ?: fail("Last event should be of ShowProductDetails type")
     }
 
-    private fun createSut() {
-        sut = OrderCreationViewModel(
-            savedState = savedState,
-            dispatchers = coroutinesTestRule.testDispatchers,
-            orderDetailRepository = orderDetailRepository,
-            orderCreationRepository = orderCreationRepository,
-            mapItemToProductUiModel = mapItemToProductUIModel,
-            createOrUpdateOrderDraft = createOrUpdateOrderUseCase,
-            createOrderItem = createOrderItemUseCase,
-            parameterRepository = parameterRepository
-        )
+    @Test
+    fun `should initialize with empty order`() {
+        sut.orderDraft.observeForever {}
+
+        assertThat(sut.orderDraft.value).isEqualToIgnoringGivenFields(Order.EMPTY, "dateCreated", "dateModified")
     }
-
-    private fun initMocks() {
-        val defaultOrderItem = createOrderItem()
-        val emptyOrder = Order.EMPTY
-        viewState = ViewState()
-        savedState = mock {
-            on { getLiveData(viewState.javaClass.name, viewState) } doReturn MutableLiveData(viewState)
-            on { getLiveData(eq(Order.EMPTY.javaClass.name), any<Order>()) } doReturn MutableLiveData(emptyOrder)
-        }
-        createOrUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(Order.EMPTY))
-        }
-        createOrderItemUseCase = mock {
-            onBlocking { invoke(123, null) } doReturn defaultOrderItem
-        }
-        parameterRepository = mock {
-            on { getParameters("parameters_key", savedState) } doReturn
-                SiteParameters(
-                    currencyCode = "",
-                    currencySymbol = null,
-                    currencyFormattingParameters = null,
-                    weightUnit = null,
-                    dimensionUnit = null,
-                    gmtOffset = 0F
-                )
-        }
-        orderCreationRepository = mock {
-            onBlocking { placeOrder(defaultOrderValue) } doReturn Result.success(defaultOrderValue)
-        }
-        orderDetailRepository = mock {
-            on { getOrderStatusOptions() } doReturn orderStatusList
-        }
-        mapItemToProductUIModel = mock {
-            onBlocking { invoke(any()) } doReturn ProductUIModel(
-                item = defaultOrderItem,
-                imageUrl = "",
-                isStockManaged = false,
-                stockQuantity = 0.0,
-                stockStatus = ProductStockStatus.InStock
-            )
-        }
-    }
-
-    private fun createOrderItem(withId: Long = 123) =
-        Order.Item.EMPTY.copy(
-            productId = withId,
-            itemId = (1L..1000000000L).random()
-        )
-
-    private val orderStatusList = listOf(
-        Order.OrderStatus("first key", "first status"),
-        Order.OrderStatus("second key", "second status"),
-        Order.OrderStatus("third key", "third status")
-    )
 }
