@@ -197,7 +197,7 @@
 
 
     <!-- Woo application log -->
-    R.col
+    <color name="log_text_verbose">@color/woo_gray_40</color>
     <color name="log_text_debug">@color/woo_blue_50</color>
     <color name="log_text_info">@color/woo_black</color>
     <color name="log_text_warning">@color/woo_purple_50</color>
