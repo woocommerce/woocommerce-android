@@ -479,10 +479,11 @@ platform :android do
       end
     end
 
-    is_repo_clean = ("git status --porcelain").empty?
-    unless is_repo_clean then
-      commit_strings(options)
-    end
+    git_commit(
+      path: MAIN_STRINGS_PATH,
+      message: 'Merge strings from libraries for translation',
+      allow_nothing_to_commit: true
+    )
   end
 
   #####################################################################################
@@ -537,20 +538,6 @@ platform :android do
     )
 
     push_to_git_remote_with_confirmation
-  end
-
-  ########################################################################
-  # Helper Lanes
-  ########################################################################
-  private_lane :commit_strings do | options |
-    if (options[:auto_commit]) then
-      sh("cd .. && git add #{MAIN_STRINGS_PATH}")
-      sh("git commit -m 'Update strings for translation'")
-      sh("git push origin HEAD")
-    else
-      UI.important("Your #{MAIN_STRINGS_PATH} has changed.")
-      UI.input("Please, review the changes, commit them and press return to continue.")
-    end
   end
 
   #####################################################################################
