@@ -733,7 +733,8 @@ platform :android do
     # The `*_DIR_PATH` paths, however, are relative to the repo root, so we need to `cd` there.
     Dir.chdir('..') do
       FileUtils.mkdir_p(FROZEN_STRINGS_DIR_PATH)
-      sh("cp #{MAIN_STRINGS_PATH} #{FROZEN_STRINGS_DIR_PATH} && git add #{FROZEN_STRINGS_DIR_PATH}strings.xml")
+      FileUtils.cp(MAIN_STRINGS_PATH, FROZEN_STRINGS_DIR_PATH)
+      sh("git add #{FROZEN_STRINGS_DIR_PATH}strings.xml")
       sh("git diff-index --quiet HEAD || git commit -m \"Send strings to translation.\"")
       sh("git push origin HEAD")
     end
