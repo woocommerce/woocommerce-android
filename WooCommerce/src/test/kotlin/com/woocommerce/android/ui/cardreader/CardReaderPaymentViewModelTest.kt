@@ -919,7 +919,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when loading data, then only progress is visible`() = testBlocking {
+    fun `when loading data, then only progress and cancel button is visible`() = testBlocking {
         viewModel.start()
         val viewState = viewModel.viewStateData.value!!
 
@@ -935,11 +935,12 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         assertThat(viewState.hintLabel).describedAs("hintLabel")
             .isEqualTo(R.string.card_reader_payment_collect_payment_loading_hint)
         assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel").isNull()
-        assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel").isNull()
+        assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel")
+            .isEqualTo(R.string.cancel)
     }
 
     @Test
-    fun `when collecting payment, then progress and buttons are hidden`() =
+    fun `when collecting payment, then progress and cancel button is visible`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(CollectingPayment) }
@@ -950,7 +951,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse
             assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel").isNull()
-            assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel").isNull()
+            assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel")
+                .isEqualTo(R.string.cancel)
         }
 
     @Test
@@ -978,7 +980,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when processing payment, then progress and buttons are hidden`() =
+    fun `when processing payment, then progress and cancel button is visible`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(ProcessingPayment) }
@@ -989,7 +991,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse
             assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel").isNull()
-            assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel").isNull()
+            assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel")
+                .isEqualTo(R.string.cancel)
         }
 
     @Test
@@ -1017,7 +1020,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when capturing payment, then progress and buttons are hidden`() =
+    fun `when capturing payment, then progress and cancel button is visible`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(CapturingPayment) }
@@ -1028,7 +1031,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse
             assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel").isNull()
-            assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel").isNull()
+            assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel")
+                .isEqualTo(R.string.cancel)
         }
 
     @Test
@@ -1441,7 +1445,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `given payment flow is loading, when user presses back button, then cancel event is tracked`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(LoadingDataState) }
+                flow { emit(LoadingDataState(mock())) }
             }
             viewModel.start()
 
