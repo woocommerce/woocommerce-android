@@ -35,7 +35,7 @@ REMOTE_LIBRARIES_STRINGS_PATHS = [
     strings_file_path: "library/src/main/res/values/strings.xml",
     exclusions: []
   }
-]
+].freeze
 
 # URL of the GlotPress project containing the app's strings
 GLOTPRESS_APP_STRINGS_PROJECT_URL = 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/'
