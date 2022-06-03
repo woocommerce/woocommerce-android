@@ -109,7 +109,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     )
     private val testWcShippingBannerStatus = WcShippingBannerStatus(
         isVisible = false,
-        onDismiss = {}
+        onDismiss = {},
+        onGetWcShippingClicked = {}
     )
     private val orderShippingLabels = OrderTestUtils.generateShippingLabels(totalCount = 5)
     private val testOrderRefunds = OrderTestUtils.generateRefunds(1)
