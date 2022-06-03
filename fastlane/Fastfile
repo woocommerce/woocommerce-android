@@ -131,6 +131,9 @@ platform :android do
     localize_libs()
     send_strings_for_translation()
 
+    ensure_git_status_clean
+    push_to_git_remote
+
     new_version = android_get_app_version()
     trigger_release_build(branch_to_build: "release/#{new_version}")
   end
@@ -739,7 +742,6 @@ platform :android do
         message: 'Freeze strings for translation',
         allow_nothing_to_commit: true
       )
-      sh("git push origin HEAD")
     end
   end
 
