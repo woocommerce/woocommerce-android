@@ -1996,6 +1996,8 @@
     <string name="coupon_restrictions_individual_use_hint">Turn this on if the coupon cannot be used in conjunction with other coupons.</string>
     <string name="coupon_restrictions_exclude_sale_items">Exclude Sale Items</string>
     <string name="coupon_restrictions_exclude_sale_items_hint">Turn this on if the coupon should not apply to items on sale. Per-item coupons will only work if the item is not on sale. Per-cart coupons will only work if there are items in the cart that are not on sale.</string>
+    <string name="coupon_restrictions_allowed_emails">Allowed emails</string>
+    <string name="coupon_restrictions_allowed_emails_placeholder">No restrictions</string>
     <string name="coupon_conditions_products_select_products_title">Select Products</string>
     <string name="coupon_conditions_products_all_products_title">All Products</string>
     <string name="coupon_conditions_products_edit_products_title">Edit Products (%d)</string>

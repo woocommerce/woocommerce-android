@@ -22,6 +22,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.BigDecimalTextFieldValueMapper
 import com.woocommerce.android.ui.compose.component.IntTextFieldValueMapper
+import com.woocommerce.android.ui.compose.component.WCFullWidthTextButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
 import com.woocommerce.android.ui.compose.component.WCSwitch
 import java.math.BigDecimal
@@ -114,6 +115,8 @@ fun CouponRestrictionsScreen(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
 
+        AllowedEmailsButton()
+
         IndividualUseSwitch(
             isForIndividualUse = viewState.restrictions.isForIndividualUse ?: false,
             onIndividualUseChanged = onIndividualUseChanged
@@ -147,6 +150,24 @@ private fun IndividualUseSwitch(isForIndividualUse: Boolean, onIndividualUseChan
             style = MaterialTheme.typography.caption,
             color = colorResource(id = R.color.color_on_surface_medium),
             modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
+        )
+    }
+}
+
+@Composable
+private fun AllowedEmailsButton() {
+    Column(Modifier.fillMaxWidth()) {
+        WCFullWidthTextButton(
+            onClick = { /* TODO */ },
+            text = stringResource(id = R.string.coupon_restrictions_allowed_emails),
+            inlineText = stringResource(id = R.string.coupon_restrictions_allowed_emails_placeholder),
+            showChevron = false
+        )
+        Divider(
+            modifier = Modifier.padding(
+                bottom = dimensionResource(id = R.dimen.major_100),
+                start = dimensionResource(id = R.dimen.major_100)
+            )
         )
     }
 }
