@@ -60,6 +60,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstr
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.ui.orders.simplepayments.TakePaymentViewModel
 import com.woocommerce.android.ui.products.addons.AddonRepository
+import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -262,6 +263,10 @@ final class OrderDetailViewModel @Inject constructor(
 
     fun onPrintingInstructionsClicked() {
         triggerEvent(ViewPrintingInstructions)
+    }
+
+    fun onGetWcShippingClicked() {
+        triggerEvent(InstallWcShippingFlowViewModel.InstallWcShipping)
     }
 
     /**
@@ -656,18 +661,12 @@ final class OrderDetailViewModel @Inject constructor(
             isShipmentTrackingAvailable = shipmentTracking.isVisible,
             isProductListVisible = orderProducts.isVisible,
             areShippingLabelsVisible = shippingLabels.isVisible,
-            wcShippingBannerStatus = getWcShippingBannerStatus(order, orderEligibleForInPersonPayments)
-        )
-    }
-
-    private fun getWcShippingBannerStatus(order: Order, orderEligibleForInPersonPayments: Boolean) =
-        WcShippingBannerStatus(
-            isVisible = shippingLabelOnboardingRepository.shouldShowWcShippingBanner(
+            wcShippingBannerVisible = shippingLabelOnboardingRepository.shouldShowWcShippingBanner(
                 order,
                 orderEligibleForInPersonPayments
-            ),
-            onDismiss = ::onWcShippingBannerDismissed
+            )
         )
+    }
 
     override fun onProductFetched(remoteProductId: Long) {
         viewState = viewState.copy(refreshedProductId = remoteProductId)
@@ -710,7 +709,7 @@ final class OrderDetailViewModel @Inject constructor(
         val areShippingLabelsVisible: Boolean? = null,
         val isProductListMenuVisible: Boolean? = null,
         val isSharePaymentLinkVisible: Boolean? = null,
-        val wcShippingBannerStatus: WcShippingBannerStatus? = null
+        val wcShippingBannerVisible: Boolean? = null
     ) : Parcelable {
         val isMarkOrderCompleteButtonVisible: Boolean?
             get() = if (orderStatus != null) orderStatus.statusKey == CoreOrderStatus.PROCESSING.value else null
@@ -724,12 +723,6 @@ final class OrderDetailViewModel @Inject constructor(
         val order: Order? = null,
         val isPaymentCollectableWithCardReader: Boolean = false,
         val isReceiptButtonsVisible: Boolean = false
-    ) : Parcelable
-
-    @Parcelize
-    data class WcShippingBannerStatus(
-        val isVisible: Boolean,
-        val onDismiss: () -> Unit,
     ) : Parcelable
 
     sealed class OrderStatusUpdateSource(open val oldStatus: String, open val newStatus: String) : Parcelable {

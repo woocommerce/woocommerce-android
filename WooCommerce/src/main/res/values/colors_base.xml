@@ -202,4 +202,7 @@
     <color name="log_text_info">@color/woo_black</color>
     <color name="log_text_warning">@color/woo_purple_50</color>
     <color name="log_text_error">@color/woo_red_50</color>
+
+    <!-- Text colors -->
+    <color name="link_text">@color/woo_blue_40</color>
 </resources>
