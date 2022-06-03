@@ -124,7 +124,7 @@ class CardReaderPaymentViewModel
         }
 
     // The app shouldn't store the state as payment flow gets canceled when the vm dies
-    private val viewState = MutableLiveData<ViewState>(LoadingDataState)
+    private val viewState = MutableLiveData<ViewState>(LoadingDataState(::onCancelPaymentFlow))
     val viewStateData: LiveData<ViewState> = viewState
 
     private var paymentFlowJob: Job? = null
@@ -164,7 +164,7 @@ class CardReaderPaymentViewModel
 
     private fun initPaymentFlow(isRetry: Boolean) {
         paymentFlowJob = launch {
-            viewState.postValue((LoadingDataState))
+            viewState.postValue((LoadingDataState(::onCancelPaymentFlow)))
             if (isRetry) {
                 delay(ARTIFICIAL_RETRY_DELAY)
             }
@@ -229,7 +229,7 @@ class CardReaderPaymentViewModel
 
     fun retry(orderId: Long, billingEmail: String, paymentData: PaymentData, amountLabel: String) {
         paymentFlowJob = launch {
-            viewState.postValue((LoadingDataState))
+            viewState.postValue(LoadingDataState(::onCancelPaymentFlow))
             delay(ARTIFICIAL_RETRY_DELAY)
             cardReaderManager.retryCollectPayment(orderId, paymentData).collect { paymentStatus ->
                 onPaymentStatusChanged(orderId, billingEmail, paymentStatus, amountLabel)
@@ -237,7 +237,7 @@ class CardReaderPaymentViewModel
         }
     }
 
-    fun retryInteracRefund() {
+    private fun retryInteracRefund() {
         initRefundFlow(isRetry = true)
     }
 
@@ -278,9 +278,19 @@ class CardReaderPaymentViewModel
     ) {
         paymentDataForRetry = null
         when (paymentStatus) {
-            InitializingPayment -> viewState.postValue(LoadingDataState)
-            CollectingPayment -> viewState.postValue(CollectPaymentState(amountLabel))
-            ProcessingPayment -> viewState.postValue(ProcessingPaymentState(amountLabel))
+            InitializingPayment -> viewState.postValue(LoadingDataState(::onCancelPaymentFlow))
+            CollectingPayment -> viewState.postValue(
+                CollectPaymentState(
+                    amountLabel,
+                    onSecondaryActionClicked = ::onCancelPaymentFlow
+                )
+            )
+            ProcessingPayment -> viewState.postValue(
+                ProcessingPaymentState(
+                    amountLabel,
+                    onSecondaryActionClicked = ::onCancelPaymentFlow
+                )
+            )
             is ProcessingPaymentCompleted -> {
                 cardReaderTrackingInfoKeeper.setPaymentMethodType(paymentStatus.paymentMethodType.stringRepresentation)
                 when (paymentStatus.paymentMethodType) {
@@ -289,7 +299,7 @@ class CardReaderPaymentViewModel
                     else -> {}
                 }
             }
-            CapturingPayment -> viewState.postValue(CapturingPaymentState(amountLabel))
+            CapturingPayment -> viewState.postValue(CapturingPaymentState(amountLabel, ::onCancelPaymentFlow))
             is PaymentCompleted -> {
                 tracker.trackPaymentSucceeded()
                 onPaymentCompleted(paymentStatus, orderId)
@@ -522,7 +532,7 @@ class CardReaderPaymentViewModel
         }
 
     private fun onSaveForLaterClicked() {
-        onBackPressed()
+        onCancelPaymentFlow()
     }
 
     private fun onPrintReceiptClicked(amountWithCurrencyLabel: String, receiptUrl: String, documentName: String) {
@@ -590,6 +600,10 @@ class CardReaderPaymentViewModel
     }
 
     fun onBackPressed() {
+        onCancelPaymentFlow()
+    }
+
+    private fun onCancelPaymentFlow() {
         if (refetchOrderJob?.isActive == true) {
             if (viewState.value != ReFetchingOrderState) {
                 viewState.value = ReFetchingOrderState
