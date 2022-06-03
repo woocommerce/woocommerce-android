@@ -6,13 +6,13 @@ import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
 
-interface PaymentFlow {
+interface TrackableState {
     val nameForTracking: String
 }
 
-interface InteracRefundFlow {
-    val nameForTracking: String
-}
+interface PaymentFlow : TrackableState
+
+interface InteracRefundFlow : TrackableState
 
 sealed class ViewState(
     @StringRes open val hintLabel: Int? = null,
