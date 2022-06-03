@@ -1456,6 +1456,7 @@
     <string name="variation_list_generate_new_variation">Generate new variation</string>
     <string name="variation_created_title">Variation Created</string>
     <string name="variation_create_dialog_title">Generating variation</string>
+    <string name="variation_loading_dialog_title">Fetching variations…</string>
     <string name="variation_confirm_delete">Do you want to delete this Variation?</string>
     <string name="variation_list_menu_bulk_update">Bulk update…</string>
 
@@ -1478,7 +1479,7 @@
     <string name="variations_bulk_update_sale_prices_dialog_title">Updating sale prices</string>
     <string name="variations_bulk_update_regular_prices_dialog_title">Updating regular prices</string>
     <string name="variations_bulk_update_warning_title">Bulk update limit exceeded</string>
-    <string name="variations_bulk_update_warning_message">Bulk update allows modifying up to 100 variations at once.</string>
+    <string name="variations_bulk_update_warning_message">Currently bulk update is supported for 100 variations maximum.</string>
 
     <!--
         Product images

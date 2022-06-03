@@ -155,10 +155,15 @@ class VariationListFragment :
             }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible, ::handleEmptyViewChanges)
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) {
+                hideProgressDialog()
                 showProgressDialog(it, R.string.variation_create_dialog_title)
             }
             new.isVariationsOptionsMenuEnabled.takeIfNotEqualTo(old?.isVariationsOptionsMenuEnabled) {
                 requireActivity().invalidateOptionsMenu()
+            }
+            new.isBulkUpdateProgressDialogShown.takeIfNotEqualTo(old?.isBulkUpdateProgressDialogShown) {
+                hideProgressDialog()
+                showProgressDialog(it, R.string.variation_loading_dialog_title)
             }
         }
 
@@ -206,7 +211,7 @@ class VariationListFragment :
             .actionVariationListFragmentToAddAttributeFragment(true)
             .run { findNavController().navigateSafely(this) }
 
-    private fun openBulkUpdateView(variationsToUpdate: List<ProductVariation>) {
+    private fun openBulkUpdateView(variationsToUpdate: Collection<ProductVariation>) {
         VariationListFragmentDirections
             .actionVariationListFragmentToVariationsBulkUpdateAttrPickerFragment(variationsToUpdate.toTypedArray())
             .run { findNavController().navigateSafely(this) }
