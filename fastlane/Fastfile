@@ -26,14 +26,16 @@ REMOTE_LIBRARIES_STRINGS_PATHS = [
     import_key: 'wordPressLoginVersion',
     repository: 'wordpress-mobile/WordPress-Login-Flow-Android',
     strings_file_path: 'WordPressLoginFlow/src/main/res/values/strings.xml',
-    exclusions: ['default_web_client_id']
+    exclusions: ['default_web_client_id'],
+    source_id: 'login'
   },
   {
     name: 'About Library',
     import_key: 'aboutAutomatticVersion', # key used in build.gradle to reference the version
     repository: 'Automattic/about-automattic-android',
     strings_file_path: 'library/src/main/res/values/strings.xml',
-    exclusions: []
+    exclusions: [],
+    source_id: 'about'
   }
 ].freeze
 
@@ -468,7 +470,9 @@ platform :android do
         lib_to_merge = [{
           library: lib[:name],
           strings_path: download_path,
-          exclusions: lib[:exclusions]
+          exclusions: lib[:exclusions],
+          source_id: lib[:source_id],
+          add_ignore_attr: true # The linter is not be able to detect if a merged string is used by a binary dependency
         }]
         an_localize_libs(app_strings_path: MAIN_STRINGS_PATH, libs_strings_path: lib_to_merge)
         File.delete(download_path) if File.exist?(download_path)
