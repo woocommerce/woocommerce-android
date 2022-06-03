@@ -53,9 +53,9 @@ fun InstallWcShippingOnboardingScreen(onboardingFlowUiState: InstallWcShippingOn
                 start = dimensionResource(id = R.dimen.major_200),
                 end = dimensionResource(id = R.dimen.major_200)
             )
+            .verticalScroll(rememberScrollState())
     ) {
         Column(
-            modifier = Modifier.verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
