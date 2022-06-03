@@ -972,11 +972,21 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given app in reader found state, when user clicks on cancel, then flow finishes`() =
+    fun `given app in reader found state, when user clicks on keep searching, then scanning state emitted`() =
         testBlocking {
             init(scanState = READER_FOUND)
 
             (viewModel.viewStateData.value as ReaderFoundState).onSecondaryActionClicked.invoke()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ScanningState::class.java)
+        }
+
+    @Test
+    fun `given app in reader found state, when user clicks on cancel, then flow finishes`() =
+        testBlocking {
+            init(scanState = READER_FOUND)
+
+            (viewModel.viewStateData.value as ReaderFoundState).onTertiaryActionClicked.invoke()
 
             assertThat(viewModel.event.value).isEqualTo(Event.ExitWithResult(false))
         }
@@ -1063,13 +1073,16 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 .isEqualTo(R.string.card_reader_connect_to_reader)
             assertThat(viewModel.viewStateData.value!!.secondaryActionLabel)
                 .describedAs("Check secondaryActionLabel")
+                .isEqualTo(R.string.card_reader_connect_keep_searching_button)
+            assertThat(viewModel.viewStateData.value!!.tertiaryActionLabel)
+                .describedAs("Check tertiaryActionLabel")
                 .isEqualTo(R.string.cancel)
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
                 .isEqualTo(R.drawable.img_card_reader)
             assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
                 .describedAs("Check illustration vertical margin")
-                .isEqualTo(R.dimen.major_275)
+                .isEqualTo(R.dimen.major_150)
         }
 
     @Test
