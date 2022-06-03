@@ -1,11 +1,18 @@
 package com.woocommerce.android.ui.shipping
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -13,10 +20,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel.InstallWcShippingOnboardingBulletUi
 import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel.InstallWcShippingOnboardingUi
 import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel.InstallWcShippingState
@@ -31,49 +44,81 @@ fun InstallWcShippingOnboardingScreen(viewmodel: InstallWcShippingFlowViewModel)
 
 @Composable
 fun InstallWcShippingOnboardingScreen(onboardingUi: InstallWcShippingOnboardingUi) {
-    Column {
+    Column(
+        modifier = Modifier
+            .background(color = MaterialTheme.colors.surface)
+            .fillMaxSize()
+            .padding(
+                start = dimensionResource(id = R.dimen.major_200),
+                end = dimensionResource(id = R.dimen.major_200)
+            )
+    ) {
         Column(
-            modifier = Modifier
-                .verticalScroll(rememberScrollState()),
+            modifier = Modifier.verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
+                modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_350)),
                 style = MaterialTheme.typography.h5,
-                text = stringResource(id = R.string.install_wc_shipping_flow_onboarding_screen_title)
+                text = stringResource(id = onboardingUi.title),
+                textAlign = TextAlign.Center,
+                fontSize = 28.sp,
+                lineHeight = 34.sp
             )
             Text(
-                style = MaterialTheme.typography.h6,
+                modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)),
+                style = MaterialTheme.typography.h5,
                 fontWeight = FontWeight.Bold,
-                text = stringResource(id = R.string.install_wc_shipping_flow_onboarding_screen_title)
-            )
+                text = stringResource(id = onboardingUi.subtitle),
+                textAlign = TextAlign.Center,
+
+                )
+            Spacer(Modifier.size(dimensionResource(id = R.dimen.major_325)))
             InstallWcsOnboardingBullets(onboardingBullets = onboardingUi.bullets)
-        }
-        Text(
-            style = MaterialTheme.typography.h5,
-            text = stringResource(id = R.string.install_wc_shipping_flow_onboarding_screen_link)
-        )
-        Button(onClick = { /*TODO*/ }) {
             Text(
-                text = stringResource(id = R.string.install_wc_shipping_flow_onboarding_screen_add_extension_button)
+                modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_200)),
+                style = MaterialTheme.typography.subtitle1,
+                color = colorResource(id = R.color.link_text),
+                text = stringResource(id = R.string.install_wc_shipping_flow_onboarding_screen_link)
             )
         }
-        Button(onClick = { /*TODO*/ }) {
-            Text(
-                text = stringResource(id = R.string.install_wc_shipping_flow_onboarding_screen_not_now_button)
-            )
+        Column(
+            modifier = Modifier
+                .padding(
+                    top = dimensionResource(id = R.dimen.major_200),
+                    bottom = dimensionResource(id = R.dimen.major_200),
+                )
+                .fillMaxHeight(),
+            verticalArrangement = Arrangement.Bottom
+        ) {
+            WCColoredButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = { /*TODO*/ },
+            ) {
+                Text(
+                    text = stringResource(id = R.string.install_wc_shipping_flow_onboarding_screen_add_extension_button),
+                )
+            }
+            Spacer(Modifier.size(dimensionResource(id = R.dimen.major_100)))
+            WCOutlinedButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {  /*TODO*/ },
+            ) {
+                Text(
+                    text = stringResource(id = R.string.install_wc_shipping_flow_onboarding_screen_not_now_button),
+                    fontWeight = FontWeight.Bold,
+                    color = colorResource(id = R.color.color_on_surface_high),
+                )
+            }
         }
     }
 }
 
 @Composable
-fun InstallWcsOnboardingBullets(
-    modifier: Modifier = Modifier,
-    onboardingBullets: List<InstallWcShippingOnboardingBulletUi>
-) {
-    Column(modifier) {
-        onboardingBullets.forEach {
-            InstallWcsOnboardingBullet(bullet = it)
-        }
+fun InstallWcsOnboardingBullets(onboardingBullets: List<InstallWcShippingOnboardingBulletUi>) {
+    onboardingBullets.forEach {
+        InstallWcsOnboardingBullet(bullet = it)
+        Spacer(Modifier.size(dimensionResource(id = R.dimen.major_100)))
     }
 }
 
@@ -82,7 +127,10 @@ fun InstallWcsOnboardingBullet(
     modifier: Modifier = Modifier,
     bullet: InstallWcShippingOnboardingBulletUi
 ) {
-    Row(modifier) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))
+    ) {
         Image(
             painter = painterResource(id = bullet.icon),
             contentDescription = null,
@@ -90,7 +138,8 @@ fun InstallWcsOnboardingBullet(
         Column {
             Text(
                 style = MaterialTheme.typography.subtitle1,
-                text = stringResource(id = bullet.title)
+                text = stringResource(id = bullet.title),
+                fontWeight = FontWeight.Bold
             )
             Text(
                 style = MaterialTheme.typography.body2,
