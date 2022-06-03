@@ -61,7 +61,7 @@ fun InstallWcShippingOnboardingScreen(onboardingFlowUiState: InstallWcShippingOn
             Text(
                 modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_350)),
                 style = MaterialTheme.typography.h5,
-                text = stringResource(id = onboardingFlowUiState.title),
+                text = stringResource(onboardingFlowUiState.title),
                 textAlign = TextAlign.Center,
                 fontSize = 28.sp,
                 lineHeight = 34.sp
@@ -70,15 +70,14 @@ fun InstallWcShippingOnboardingScreen(onboardingFlowUiState: InstallWcShippingOn
                 modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)),
                 style = MaterialTheme.typography.h5,
                 fontWeight = FontWeight.Bold,
-                text = stringResource(id = onboardingFlowUiState.subtitle),
+                text = stringResource(onboardingFlowUiState.subtitle),
                 textAlign = TextAlign.Center,
-
-                )
+            )
             Spacer(Modifier.size(dimensionResource(id = R.dimen.major_325)))
             InstallWcsOnboardingBullets(onboardingBullets = onboardingFlowUiState.bullets)
             LinkText(
                 modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_200)),
-                text = stringResource(id = R.string.install_wc_shipping_flow_onboarding_screen_link),
+                text = stringResource(R.string.install_wc_shipping_flow_onboarding_screen_link),
                 url = onboardingFlowUiState.linkUrl,
                 onClick = onboardingFlowUiState.onLinkClicked
             )
@@ -97,7 +96,7 @@ fun InstallWcShippingOnboardingScreen(onboardingFlowUiState: InstallWcShippingOn
                 onClick = { onboardingFlowUiState.onInstallClicked() },
             ) {
                 Text(
-                    text = stringResource(id = R.string.install_wc_shipping_flow_onboarding_screen_add_extension_button),
+                    text = stringResource(R.string.install_wc_shipping_flow_onboarding_screen_add_extension_button),
                 )
             }
             Spacer(Modifier.size(dimensionResource(id = R.dimen.major_100)))
@@ -106,7 +105,7 @@ fun InstallWcShippingOnboardingScreen(onboardingFlowUiState: InstallWcShippingOn
                 onClick = { onboardingFlowUiState.onDismissFlowClicked() },
             ) {
                 Text(
-                    text = stringResource(id = R.string.install_wc_shipping_flow_onboarding_screen_not_now_button),
+                    text = stringResource(R.string.install_wc_shipping_flow_onboarding_screen_not_now_button),
                     fontWeight = FontWeight.Bold,
                     color = colorResource(id = R.color.color_on_surface_high),
                 )
@@ -154,12 +153,12 @@ fun InstallWcsOnboardingBullet(
         Column {
             Text(
                 style = MaterialTheme.typography.subtitle1,
-                text = stringResource(id = bullet.title),
+                text = stringResource(bullet.title),
                 fontWeight = FontWeight.Bold
             )
             Text(
                 style = MaterialTheme.typography.body2,
-                text = stringResource(id = bullet.description)
+                text = stringResource(bullet.description)
             )
         }
     }
