@@ -228,7 +228,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                 binding.orderRefreshLayout.isRefreshing = it
             }
             new.refreshedProductId?.takeIfNotEqualTo(old?.refreshedProductId) { refreshProduct(it) }
-            new.wcShippingBannerStatus?.takeIfNotEqualTo(old?.wcShippingBannerStatus) {
+            new.wcShippingBannerVisible?.takeIfNotEqualTo(old?.wcShippingBannerVisible) {
                 showInstallWcShippingBanner(it)
             }
         }
@@ -278,12 +278,12 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         )
     }
 
-    private fun showInstallWcShippingBanner(wcShippingBannerStatus: OrderDetailViewModel.WcShippingBannerStatus) {
+    private fun showInstallWcShippingBanner(isVisible: Boolean) {
         val banner = binding.orderDetailInstallWcShippingBanner
-        banner.isVisible = wcShippingBannerStatus.isVisible && FeatureFlag.WC_SHIPPING_BANNER.isEnabled()
+        banner.isVisible = isVisible && FeatureFlag.WC_SHIPPING_BANNER.isEnabled()
         banner.setClickListeners(
-            onInstallWcShipping = wcShippingBannerStatus.onGetWcShippingClicked,
-            onDismiss = wcShippingBannerStatus.onDismiss
+            onInstallWcShipping = { viewModel.onGetWcShippingClicked() },
+            onDismiss = { viewModel.onWcShippingBannerDismissed() }
         )
     }
 
