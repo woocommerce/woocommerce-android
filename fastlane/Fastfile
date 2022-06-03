@@ -22,17 +22,17 @@ MAIN_STRINGS_PATH = File.join('WooCommerce', 'src', 'main', 'res', 'values', 'st
 FROZEN_STRINGS_DIR_PATH = "./fastlane/resources/values/"
 REMOTE_LIBRARIES_STRINGS_PATHS = [
   {
-    name: "Login Library",
-    import_key: "wordPressLoginVersion",
-    repository: "wordpress-mobile/WordPress-Login-Flow-Android",
-    strings_file_path: "WordPressLoginFlow/src/main/res/values/strings.xml",
-    exclusions: ["default_web_client_id"]
+    name: 'Login Library',
+    import_key: 'wordPressLoginVersion',
+    repository: 'wordpress-mobile/WordPress-Login-Flow-Android',
+    strings_file_path: 'WordPressLoginFlow/src/main/res/values/strings.xml',
+    exclusions: ['default_web_client_id']
   },
   {
-    name: "About Library",
-    import_key: "aboutAutomatticVersion", # key used in build.gradle to reference the version
-    repository: "Automattic/about-automattic-android",
-    strings_file_path: "library/src/main/res/values/strings.xml",
+    name: 'About Library',
+    import_key: 'aboutAutomatticVersion', # key used in build.gradle to reference the version
+    repository: 'Automattic/about-automattic-android',
+    strings_file_path: 'library/src/main/res/values/strings.xml',
     exclusions: []
   }
 ].freeze
