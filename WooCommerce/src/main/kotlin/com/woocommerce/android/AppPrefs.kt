@@ -133,6 +133,9 @@ object AppPrefs {
         CARD_READER_WELCOME_SHOWN,
 
         WC_PREF_NOTIFICATIONS_TOKEN,
+
+        // Hide banner in order detail to install WC Shipping plugin
+        WC_SHIPPING_BANNER_DISMISSED,
     }
 
     fun init(context: Context) {
@@ -627,6 +630,19 @@ object AppPrefs {
             endDateMillis
         )
     }
+
+    fun setWcShippingBannerDismissed(dismissed: Boolean, currentSiteId: Int) {
+        setBoolean(
+            PrefKeyString("${UndeletablePrefKey.WC_SHIPPING_BANNER_DISMISSED}:$currentSiteId"),
+            dismissed
+        )
+    }
+
+    fun getWcShippingBannerDismissed(currentSiteId: Int) =
+        getBoolean(
+            PrefKeyString("${UndeletablePrefKey.WC_SHIPPING_BANNER_DISMISSED}:$currentSiteId"),
+            false
+        )
 
     /**
      * Remove all user and site-related preferences.

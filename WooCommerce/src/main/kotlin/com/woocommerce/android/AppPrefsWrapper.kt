@@ -128,6 +128,12 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getLoginSiteAddress() = AppPrefs.getLoginSiteAddress().takeIf { it.isNotEmpty() }
 
+    fun setWcShippingBannerDismissed(dismissed: Boolean, currentSiteId: Int) {
+        AppPrefs.setWcShippingBannerDismissed(dismissed, currentSiteId)
+    }
+
+    fun getWcShippingBannerDismissed(currentSiteId: Int) = AppPrefs.getWcShippingBannerDismissed(currentSiteId)
+
     /**
      * Observes changes to the preferences
      */
