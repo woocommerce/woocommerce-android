@@ -9,7 +9,6 @@ import javax.inject.Inject
 class EmailRestrictionViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ScopedViewModel(savedStateHandle) {
-
     fun onBackPressed() {
         /* TODO */
     }
