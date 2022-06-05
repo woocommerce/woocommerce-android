@@ -38,7 +38,8 @@ fun CouponRestrictionsScreen(viewModel: CouponRestrictionsViewModel) {
             onLimitUsageToXItemsChanged = viewModel::onLimitUsageToXItemsChanged,
             onUsageLimitPerUserChanged = viewModel::onUsageLimitPerUserChanged,
             onIndividualUseChanged = viewModel::onIndividualUseChanged,
-            onExcludeSaleItemsChanged = viewModel::onExcludeSaleItemsChanged
+            onExcludeSaleItemsChanged = viewModel::onExcludeSaleItemsChanged,
+            onAllowedEmailsButtonClicked = viewModel::onAllowedEmailsButtonClicked
         )
     }
 }
@@ -52,7 +53,8 @@ fun CouponRestrictionsScreen(
     onLimitUsageToXItemsChanged: (Int) -> Unit,
     onUsageLimitPerUserChanged: (Int) -> Unit,
     onIndividualUseChanged: (Boolean) -> Unit,
-    onExcludeSaleItemsChanged: (Boolean) -> Unit
+    onExcludeSaleItemsChanged: (Boolean) -> Unit,
+    onAllowedEmailsButtonClicked: () -> Unit
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -115,7 +117,10 @@ fun CouponRestrictionsScreen(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
 
-        AllowedEmailsButton(viewState.restrictions.restrictedEmails)
+        AllowedEmailsButton(
+            allowedEmails = viewState.restrictions.restrictedEmails,
+            onClick = onAllowedEmailsButtonClicked
+        )
 
         IndividualUseSwitch(
             isForIndividualUse = viewState.restrictions.isForIndividualUse ?: false,
@@ -155,10 +160,10 @@ private fun IndividualUseSwitch(isForIndividualUse: Boolean, onIndividualUseChan
 }
 
 @Composable
-private fun AllowedEmailsButton(allowedEmails: List<String>) {
+private fun AllowedEmailsButton(allowedEmails: List<String>, onClick: () -> Unit) {
     Column(Modifier.fillMaxWidth()) {
         WCFullWidthTextButton(
-            onClick = { /* TODO */ },
+            onClick = onClick,
             text = stringResource(id = R.string.coupon_restrictions_allowed_emails),
             showChevron = false,
             inlineText = if (allowedEmails.isEmpty()) {
