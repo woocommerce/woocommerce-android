@@ -9,6 +9,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Coupon
@@ -49,6 +50,7 @@ class CouponRestrictionsFragment : BaseFragment(), BackPressListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers()
+        handleResults()
     }
 
     private fun setupObservers() {
@@ -66,6 +68,12 @@ class CouponRestrictionsFragment : BaseFragment(), BackPressListener {
                 }
                 is Exit -> findNavController().navigateUp()
             }
+        }
+    }
+
+    private fun handleResults() {
+        handleResult<List<String>>(EmailRestrictionFragment.ALLOWED_EMAILS) {
+            viewModel.onAllowedEmailsUpdated(it)
         }
     }
 

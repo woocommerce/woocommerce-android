@@ -92,6 +92,12 @@ class CouponRestrictionsViewModel @Inject constructor(
         triggerEvent(OpenAllowedEmailsEditor(restrictionsDraft.value.restrictedEmails))
     }
 
+    fun onAllowedEmailsUpdated(allowedEmails: List<String>) {
+        restrictionsDraft.update {
+            it.copy(restrictedEmails = allowedEmails)
+        }
+    }
+
     data class ViewState(
         val restrictions: CouponRestrictions,
         val currencyCode: String,
