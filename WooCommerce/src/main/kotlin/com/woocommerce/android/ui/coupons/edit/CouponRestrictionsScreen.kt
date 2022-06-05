@@ -115,7 +115,7 @@ fun CouponRestrictionsScreen(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
 
-        AllowedEmailsButton()
+        AllowedEmailsButton(viewState.restrictions.restrictedEmails)
 
         IndividualUseSwitch(
             isForIndividualUse = viewState.restrictions.isForIndividualUse ?: false,
@@ -155,13 +155,17 @@ private fun IndividualUseSwitch(isForIndividualUse: Boolean, onIndividualUseChan
 }
 
 @Composable
-private fun AllowedEmailsButton() {
+private fun AllowedEmailsButton(allowedEmails: List<String>) {
     Column(Modifier.fillMaxWidth()) {
         WCFullWidthTextButton(
             onClick = { /* TODO */ },
             text = stringResource(id = R.string.coupon_restrictions_allowed_emails),
-            inlineText = stringResource(id = R.string.coupon_restrictions_allowed_emails_placeholder),
-            showChevron = false
+            showChevron = false,
+            inlineText = if (allowedEmails.isEmpty()) {
+                stringResource(id = R.string.coupon_restrictions_allowed_emails_placeholder)
+            } else {
+                allowedEmails.joinToString(", ")
+            }
         )
         Divider(
             modifier = Modifier.padding(
