@@ -320,6 +320,12 @@ private fun ButtonsPreview() {
             }
             WCTextButton(onClick = {}, text = "Text Button")
 
+            /* Full width text button without inline text */
+            WCFullWidthTextButton(
+                onClick = { },
+                text = "Full Width Text Button"
+            )
+
             WCFullWidthTextButton(
                 onClick = { },
                 text = "Full Width Text Button",
