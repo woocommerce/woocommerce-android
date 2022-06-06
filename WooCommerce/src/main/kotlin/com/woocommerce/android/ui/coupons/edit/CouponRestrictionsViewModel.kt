@@ -45,31 +45,31 @@ class CouponRestrictionsViewModel @Inject constructor(
         triggerEvent(event)
     }
 
-    fun onMinimumAmountChanged(value: BigDecimal) {
+    fun onMinimumAmountChanged(value: BigDecimal?) {
         restrictionsDraft.update {
             it.copy(minimumAmount = value)
         }
     }
 
-    fun onMaximumAmountChanged(value: BigDecimal) {
+    fun onMaximumAmountChanged(value: BigDecimal?) {
         restrictionsDraft.update {
             it.copy(maximumAmount = value)
         }
     }
 
-    fun onUsageLimitPerCouponChanged(value: Int) {
+    fun onUsageLimitPerCouponChanged(value: Int?) {
         restrictionsDraft.update {
             it.copy(usageLimit = value)
         }
     }
 
-    fun onLimitUsageToXItemsChanged(value: Int) {
+    fun onLimitUsageToXItemsChanged(value: Int?) {
         restrictionsDraft.update {
             it.copy(limitUsageToXItems = value)
         }
     }
 
-    fun onUsageLimitPerUserChanged(value: Int) {
+    fun onUsageLimitPerUserChanged(value: Int?) {
         restrictionsDraft.update {
             it.copy(usageLimitPerUser = value)
         }
