@@ -3,8 +3,11 @@ package com.woocommerce.android.ui.coupons.edit
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
+import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
@@ -36,7 +39,16 @@ class EmailRestrictionViewModel @Inject constructor(
 
     fun onBackPressed() {
         val event = viewState.value?.takeIf { it.hasChanges }?.let { viewState ->
-            ExitWithResult(viewState.allowedEmails)
+            val emails = viewState.allowedEmails.split(",").map { it.trim() }
+            val invalidEmails = emails.filter {
+                !StringUtils.isValidEmail(email = it, allowWildCardLocalPart = true)
+            }
+
+            if (invalidEmails.isEmpty()) {
+                ExitWithResult(viewState.allowedEmails)
+            } else {
+                ShowSnackbar(R.string.coupon_restrictions_allowed_emails_invalid)
+            }
         } ?: Exit
 
         triggerEvent(event)
