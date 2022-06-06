@@ -1521,6 +1521,84 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given payment flow is initializing payment state, when user presses cancel, then cancel event is tracked`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(InitializingPayment) }
+            }
+            viewModel.start()
+
+            (viewModel.viewStateData.value as LoadingDataState).onSecondaryActionClicked.invoke()
+
+            verify(tracker).trackPaymentCancelled("Loading")
+        }
+
+    @Test
+    fun `given payment flow is initializing payment state, when user presses cancel, then exit event emitted`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(InitializingPayment) }
+            }
+            viewModel.start()
+
+            (viewModel.viewStateData.value as LoadingDataState).onSecondaryActionClicked.invoke()
+
+            assertThat(viewModel.event.value).isInstanceOf(Exit::class.java)
+        }
+
+    @Test
+    fun `given payment flow is collection payment state, when user presses cancel, then cancel event is tracked`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(CollectingPayment) }
+            }
+            viewModel.start()
+
+            (viewModel.viewStateData.value as CollectPaymentState).onSecondaryActionClicked.invoke()
+
+            verify(tracker).trackPaymentCancelled("Collecting")
+        }
+
+    @Test
+    fun `given payment flow is collection payment state, when user presses cancel, then exit event emitted`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(CollectingPayment) }
+            }
+            viewModel.start()
+
+            (viewModel.viewStateData.value as CollectPaymentState).onSecondaryActionClicked.invoke()
+
+            assertThat(viewModel.event.value).isInstanceOf(Exit::class.java)
+        }
+
+    @Test
+    fun `given payment flow is processing payment state, when user presses cancel, then cancel event is tracked`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(ProcessingPayment) }
+            }
+            viewModel.start()
+
+            (viewModel.viewStateData.value as ProcessingPaymentState).onSecondaryActionClicked.invoke()
+
+            verify(tracker).trackPaymentCancelled("Processing")
+        }
+
+    @Test
+    fun `given payment flow is processing payment state, when user presses cancel, then exit event emitted`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(ProcessingPayment) }
+            }
+            viewModel.start()
+
+            (viewModel.viewStateData.value as ProcessingPaymentState).onSecondaryActionClicked.invoke()
+
+            assertThat(viewModel.event.value).isInstanceOf(Exit::class.java)
+        }
+
+    @Test
     fun `given payment flow is receipt print state, when user presses back button, then cancel event is not tracked`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
