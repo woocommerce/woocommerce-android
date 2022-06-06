@@ -360,8 +360,13 @@ class CardReaderPaymentViewModel
         amountLabel: String
     ) {
         when (refundStatus) {
-            InitializingInteracRefund -> viewState.postValue(RefundLoadingDataState)
-            CollectingInteracRefund -> viewState.postValue(CollectRefundState(amountLabel))
+            InitializingInteracRefund -> viewState.postValue(RefundLoadingDataState(::onCancelPaymentFlow))
+            CollectingInteracRefund -> viewState.postValue(
+                CollectRefundState(
+                    amountLabel,
+                    onSecondaryActionClicked = ::onCancelPaymentFlow
+                )
+            )
             ProcessingInteracRefund -> viewState.postValue(ProcessingRefundState(amountLabel))
             is InteracRefundSuccess -> {
                 viewState.postValue(RefundSuccessfulState(amountLabel))

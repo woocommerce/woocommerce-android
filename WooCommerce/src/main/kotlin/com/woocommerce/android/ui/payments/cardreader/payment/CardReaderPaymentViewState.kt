@@ -149,12 +149,13 @@ sealed class ViewState(
      * Interac Refund UI States
      **********************************************************/
 
-    object RefundLoadingDataState :
+    data class RefundLoadingDataState(override val onSecondaryActionClicked: (() -> Unit)) :
         ViewState(
             headerLabel = R.string.card_reader_interac_refund_refund_loading_header,
             hintLabel = R.string.card_reader_payment_collect_payment_loading_hint,
             paymentStateLabel = R.string.card_reader_payment_collect_payment_loading_payment_state,
-            isProgressVisible = true
+            isProgressVisible = true,
+            secondaryActionLabel = R.string.cancel,
         ),
         InteracRefundFlow {
         override val nameForTracking: String
@@ -165,7 +166,7 @@ sealed class ViewState(
         private val errorType: InteracRefundFlowError,
         override val amountWithCurrencyLabel: String?,
         private val primaryLabel: Int? = R.string.try_again,
-        override val onPrimaryActionClicked: (() -> Unit)
+        override val onPrimaryActionClicked: (() -> Unit),
     ) : ViewState(
         headerLabel = R.string.card_reader_interac_refund_refund_failed_header,
         paymentStateLabel = errorType.message,
@@ -178,9 +179,11 @@ sealed class ViewState(
         override val amountWithCurrencyLabel: String,
         override val hintLabel: Int = R.string.card_reader_interac_refund_refund_payment_hint,
         override val headerLabel: Int = R.string.card_reader_interac_refund_refund_payment,
+        override val onSecondaryActionClicked: (() -> Unit),
     ) : ViewState(
         paymentStateLabel = R.string.card_reader_payment_collect_payment_state,
-        illustration = R.drawable.img_card_reader_available
+        illustration = R.drawable.img_card_reader_available,
+        secondaryActionLabel = R.string.cancel,
     ),
         InteracRefundFlow {
         override val nameForTracking: String
