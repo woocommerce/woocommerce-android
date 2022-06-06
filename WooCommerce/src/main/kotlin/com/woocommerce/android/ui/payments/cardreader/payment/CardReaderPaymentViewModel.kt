@@ -299,7 +299,7 @@ class CardReaderPaymentViewModel
                     else -> {}
                 }
             }
-            CapturingPayment -> viewState.postValue(CapturingPaymentState(amountLabel, ::onCancelPaymentFlow))
+            CapturingPayment -> viewState.postValue(CapturingPaymentState(amountLabel))
             is PaymentCompleted -> {
                 tracker.trackPaymentSucceeded()
                 onPaymentCompleted(paymentStatus, orderId)
