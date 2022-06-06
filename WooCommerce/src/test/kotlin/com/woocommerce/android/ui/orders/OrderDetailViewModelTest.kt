@@ -122,7 +122,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         areShippingLabelsVisible = false,
         isProductListMenuVisible = false,
         isSharePaymentLinkVisible = false,
-        installWcShippingBannerVisible = false
+        wcShippingBannerVisible = false
     )
 
     @Before
@@ -179,7 +179,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `Displays the order detail view correctly`() = testBlocking {
         val nonRefundedOrder = order.copy(refundTotal = BigDecimal.ZERO)
 
-        val expectedViewState = orderWithParameters.copy(orderInfo = orderInfo.copy(order = nonRefundedOrder))
+        val expectedViewState = orderWithParameters.copy(
+            orderInfo = orderInfo.copy(order = nonRefundedOrder)
+        )
 
         doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any())
 
