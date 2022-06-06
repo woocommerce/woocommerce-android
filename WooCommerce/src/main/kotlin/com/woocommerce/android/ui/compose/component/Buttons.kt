@@ -217,13 +217,14 @@ fun WCTextButton(
 fun WCFullWidthTextButton(
     onClick: () -> Unit,
     text: String,
+    modifier: Modifier = Modifier,
     label: String? = null,
     inlineText: String? = null,
     enabled: Boolean = true,
-    showChevron: Boolean = true,
+    showChevron: Boolean = true
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(dimensionResource(id = R.dimen.min_tap_target))
             .clickable(
