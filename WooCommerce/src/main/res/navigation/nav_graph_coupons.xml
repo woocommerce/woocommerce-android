@@ -67,6 +67,6 @@
         android:label="EmailRestrictionFragment">
         <argument
             android:name="allowedEmails"
-            app:argType="string[]" />
+            app:argType="string" />
     </fragment>
 </navigation>

@@ -59,7 +59,7 @@ class CouponRestrictionsFragment : BaseFragment(), BackPressListener {
                 is OpenAllowedEmailsEditor -> {
                     findNavController().navigateSafely(
                         CouponRestrictionsFragmentDirections.actionCouponRestrictionsFragmentToEmailRestrictionFragment(
-                            event.allowedEmails.toTypedArray()
+                            event.allowedEmails
                         )
                     )
                 }

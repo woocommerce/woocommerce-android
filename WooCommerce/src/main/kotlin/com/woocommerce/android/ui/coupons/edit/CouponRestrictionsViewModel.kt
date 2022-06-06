@@ -89,7 +89,7 @@ class CouponRestrictionsViewModel @Inject constructor(
     }
 
     fun onAllowedEmailsButtonClicked() {
-        triggerEvent(OpenAllowedEmailsEditor(restrictionsDraft.value.restrictedEmails))
+        triggerEvent(OpenAllowedEmailsEditor(restrictionsDraft.value.restrictedEmails.joinToString(", ")))
     }
 
     fun onAllowedEmailsUpdated(allowedEmails: List<String>) {
@@ -105,5 +105,5 @@ class CouponRestrictionsViewModel @Inject constructor(
         val showLimitUsageToXItems: Boolean
     )
 
-    data class OpenAllowedEmailsEditor(val allowedEmails: List<String>) : MultiLiveEvent.Event()
+    data class OpenAllowedEmailsEditor(val allowedEmails: String) : MultiLiveEvent.Event()
 }
