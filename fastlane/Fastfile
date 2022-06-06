@@ -448,7 +448,7 @@ platform :android do
   #####################################################################################
   desc "Merge libraries strings files into the main app one"
   lane :localize_libs do
-    REMOTE_LIBRARIES_STRINGS_PATHS.each do  | lib |
+    REMOTE_LIBRARIES_STRINGS_PATHS.each do |lib|
       download_path = android_download_file_by_version(
         library_name: lib[:name],
         import_key: lib[:import_key],
