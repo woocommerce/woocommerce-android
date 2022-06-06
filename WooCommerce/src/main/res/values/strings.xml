@@ -1437,6 +1437,10 @@
     <string name="product_detail_background_image_upload">Image uploading will continue in the background</string>
     <string name="product_card_transition_name">product_card_%1$s</string>
     <string name="product_card_detail_transition_name">product_card_detail</string>
+    <string name="product_category_selector_title">Select categories</string>
+    <string name="product_category_selector_empty_state">No product categories found</string>
+    <string name="product_category_selector_select_button_title_default">Select %1$d Categories</string>
+    <string name="product_category_selector_select_button_title_one">Select 1 category</string>
     <!--
         Product Add more details Bottom sheet
     -->
@@ -1983,6 +1987,8 @@
     <string name="coupon_edit_free_shipping">Include Free Shipping?</string>
     <string name="coupon_edit_usage_section">Usage Details</string>
     <string name="coupon_edit_usage_restrictions">Usage Restrictions</string>
+    <string name="coupon_edit_select_categories_title">Select Product Categories</string>
+    <string name="coupon_edit_edit_products_title">Edit Product Categories (%1$d)</string>
     <string name="coupon_edit_coupon_updated">Coupon updated</string>
     <string name="coupon_edit_coupon_update_failed">Updating coupon failed</string>
     <string name="coupon_edit_saving_dialog_title">Saving coupon</string>

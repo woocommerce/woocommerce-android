@@ -35,11 +35,14 @@
         <action
             android:id="@+id/action_editCouponFragment_to_couponRestrictionsFragment"
             app:destination="@id/couponRestrictionsFragment" />
+        <action
+            android:id="@+id/action_editCouponFragment_to_productCategorySelectorFragment"
+            app:destination="@id/productCategorySelectorFragment" />
     </fragment>
     <fragment
         android:id="@+id/couponRestrictionsFragment"
         android:name="com.woocommerce.android.ui.coupons.edit.CouponRestrictionsFragment"
-        android:label="CouponRestrictionsFragment" >
+        android:label="CouponRestrictionsFragment">
         <argument
             android:name="restrictions"
             app:argType="com.woocommerce.android.model.Coupon$CouponRestrictions" />
@@ -56,6 +59,14 @@
         android:label="ProductSelectorFragment" >
         <argument
             android:name="productIds"
+            app:argType="long[]" />
+    </fragment>
+    <fragment
+        android:id="@+id/productCategorySelectorFragment"
+        android:name="com.woocommerce.android.ui.products.categories.selector.ProductCategorySelectorFragment"
+        android:label="ProductCategorySelectorFragment">
+        <argument
+            android:name="categoryIds"
             app:argType="long[]" />
     </fragment>
 </navigation>
