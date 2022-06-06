@@ -12,9 +12,7 @@ import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SelectedSite.SelectedSiteChangedEvent
 import com.woocommerce.android.ui.cardreader.ClearCardReaderDataAction
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -60,16 +58,16 @@ class MainPresenter @Inject constructor(
 
         coroutineScope.launch {
             selectedSite.getIfExists()?.let { siteModel ->
-                wcOrderStore.observeOrdersForSite(
+                wcOrderStore.observeOrderCountForSite(
                     siteModel, listOf(PROCESSING.value)
-                ).collect {
+                ).collect { count ->
                     AnalyticsTracker.track(
                         AnalyticsEvent.UNFULFILLED_ORDERS_LOADED,
-                        mapOf(AnalyticsTracker.KEY_HAS_UNFULFILLED_ORDERS to it.size)
+                        mapOf(AnalyticsTracker.KEY_HAS_UNFULFILLED_ORDERS to count)
                     )
 
-                    if (it.isNotEmpty()) {
-                        mainView?.showOrderBadge(it.size)
+                    if (count > 0) {
+                        mainView?.showOrderBadge(count)
                     } else {
                         mainView?.hideOrderBadge()
                     }
@@ -104,9 +102,7 @@ class MainPresenter @Inject constructor(
             WCOrderActionBuilder
                 .newFetchOrderStatusOptionsAction(FetchOrderStatusOptionsPayload(site))
         )
-        if (FeatureFlag.CARD_READER.isEnabled()) {
-            coroutineScope.launch { clearCardReaderDataAction() }
-        }
+        coroutineScope.launch { clearCardReaderDataAction() }
     }
 
     override fun fetchUnfilledOrderCount() {
