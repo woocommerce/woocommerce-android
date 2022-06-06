@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    tools:context=".ui.cardreader.update.CardReaderUpdateDialogFragment">
+    tools:context="com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateDialogFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="@dimen/payments_dialog_width"

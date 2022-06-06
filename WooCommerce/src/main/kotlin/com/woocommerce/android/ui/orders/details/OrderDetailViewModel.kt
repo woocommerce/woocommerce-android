@@ -40,8 +40,6 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.ProductImageMap.OnProductFetchedListener
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.cardreader.CardReaderTracker
-import com.woocommerce.android.ui.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
@@ -49,7 +47,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderPaymentFlow
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartPaymentFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabelCreationFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderFulfillInfo
@@ -58,8 +56,11 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderedAddons
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintCustomsForm
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstructions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
-import com.woocommerce.android.ui.orders.simplepayments.TakePaymentViewModel
+import com.woocommerce.android.ui.payments.TakePaymentViewModel
+import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.products.addons.AddonRepository
+import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -244,7 +245,7 @@ final class OrderDetailViewModel @Inject constructor(
 
     fun onAcceptCardPresentPaymentClicked() {
         cardReaderTracker.trackCollectPaymentTapped()
-        triggerEvent(StartCardReaderPaymentFlow(orderId = order.id))
+        triggerEvent(StartPaymentFlow(orderId = order.id))
     }
 
     fun onSeeReceiptClicked() {
@@ -262,6 +263,10 @@ final class OrderDetailViewModel @Inject constructor(
 
     fun onPrintingInstructionsClicked() {
         triggerEvent(ViewPrintingInstructions)
+    }
+
+    fun onGetWcShippingClicked() {
+        triggerEvent(InstallWcShippingFlowViewModel.InstallWcShipping)
     }
 
     /**
@@ -656,7 +661,7 @@ final class OrderDetailViewModel @Inject constructor(
             isShipmentTrackingAvailable = shipmentTracking.isVisible,
             isProductListVisible = orderProducts.isVisible,
             areShippingLabelsVisible = shippingLabels.isVisible,
-            installWcShippingBannerVisible = shippingLabelOnboardingRepository.shouldShowWcShippingBanner(
+            wcShippingBannerVisible = shippingLabelOnboardingRepository.shouldShowWcShippingBanner(
                 order,
                 orderEligibleForInPersonPayments
             )
@@ -686,6 +691,10 @@ final class OrderDetailViewModel @Inject constructor(
         }
     }
 
+    fun onWcShippingBannerDismissed() {
+        shippingLabelOnboardingRepository.markWcShippingBannerAsDismissed()
+    }
+
     @Parcelize
     data class ViewState(
         val orderInfo: OrderInfo? = null,
@@ -700,7 +709,7 @@ final class OrderDetailViewModel @Inject constructor(
         val areShippingLabelsVisible: Boolean? = null,
         val isProductListMenuVisible: Boolean? = null,
         val isSharePaymentLinkVisible: Boolean? = null,
-        val installWcShippingBannerVisible: Boolean? = null
+        val wcShippingBannerVisible: Boolean? = null
     ) : Parcelable {
         val isMarkOrderCompleteButtonVisible: Boolean?
             get() = if (orderStatus != null) orderStatus.statusKey == CoreOrderStatus.PROCESSING.value else null
