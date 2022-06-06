@@ -72,7 +72,7 @@ class CouponRestrictionsFragment : BaseFragment(), BackPressListener {
     }
 
     private fun handleResults() {
-        handleResult<List<String>>(EmailRestrictionFragment.ALLOWED_EMAILS) {
+        handleResult<String>(EmailRestrictionFragment.ALLOWED_EMAILS) {
             viewModel.onAllowedEmailsUpdated(it)
         }
     }

@@ -53,7 +53,7 @@ class EmailRestrictionFragment : BaseFragment(), BackPressListener {
             when (event) {
                 is Exit -> findNavController().navigateUp()
                 is ExitWithResult<*> -> {
-                    navigateBackWithResult(ALLOWED_EMAILS, event.data as List<*>)
+                    navigateBackWithResult(ALLOWED_EMAILS, event.data)
                 }
             }
         }

@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -15,19 +14,24 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 
 @Composable
 fun EmailRestrictionScreen(viewModel: EmailRestrictionViewModel) {
     viewModel.viewState.observeAsState().value?.let {
-        EmailRestrictionScreen(viewState = it)
+        EmailRestrictionScreen(
+            viewState = it,
+            onAllowedEmailsChanged = viewModel::onAllowedEmailsChanged
+        )
     }
 }
 
 @Composable
-fun EmailRestrictionScreen(viewState: EmailRestrictionViewModel.ViewState) {
+fun EmailRestrictionScreen(
+    viewState: EmailRestrictionViewModel.ViewState,
+    onAllowedEmailsChanged: (String) -> Unit
+) {
     val scrollState = rememberScrollState()
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
@@ -38,12 +42,10 @@ fun EmailRestrictionScreen(viewState: EmailRestrictionViewModel.ViewState) {
             .fillMaxSize()
     ) {
         WCOutlinedTextField(
-            value = viewState.allowedEmails.joinToString(", "),
+            value = viewState.allowedEmails,
             label = stringResource(id = R.string.coupon_restrictions_allowed_emails),
-            onValueChange = { /*TODO */ },
+            onValueChange = onAllowedEmailsChanged,
             helperText = stringResource(id = R.string.coupon_restrictions_allowed_emails_hint),
-            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters),
-            singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = dimensionResource(id = R.dimen.major_100))

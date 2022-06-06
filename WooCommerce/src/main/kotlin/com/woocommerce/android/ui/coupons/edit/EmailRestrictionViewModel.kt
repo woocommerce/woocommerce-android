@@ -20,15 +20,19 @@ class EmailRestrictionViewModel @Inject constructor(
 
     private val allowedEmailsDraft = savedStateHandle.getStateFlow(
         viewModelScope,
-        navArgs.allowedEmails.toList()
+        navArgs.allowedEmails
     )
 
     val viewState = allowedEmailsDraft.map {
         ViewState(
-            hasChanges = it != navArgs.allowedEmails.toList(),
+            hasChanges = it != navArgs.allowedEmails,
             allowedEmails = allowedEmailsDraft.value
         )
     }.asLiveData()
+
+    fun onAllowedEmailsChanged(inputText: String) {
+        allowedEmailsDraft.value = inputText
+    }
 
     fun onBackPressed() {
         val event = viewState.value?.takeIf { it.hasChanges }?.let { viewState ->
@@ -40,6 +44,6 @@ class EmailRestrictionViewModel @Inject constructor(
 
     data class ViewState(
         val hasChanges: Boolean,
-        val allowedEmails: List<String>
+        val allowedEmails: String
     )
 }

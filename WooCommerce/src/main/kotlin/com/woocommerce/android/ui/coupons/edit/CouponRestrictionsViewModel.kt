@@ -92,9 +92,9 @@ class CouponRestrictionsViewModel @Inject constructor(
         triggerEvent(OpenAllowedEmailsEditor(restrictionsDraft.value.restrictedEmails.joinToString(", ")))
     }
 
-    fun onAllowedEmailsUpdated(allowedEmails: List<String>) {
+    fun onAllowedEmailsUpdated(allowedEmailsInput: String) {
         restrictionsDraft.update {
-            it.copy(restrictedEmails = allowedEmails)
+            it.copy(restrictedEmails = allowedEmailsInput.split(","))
         }
     }
 
