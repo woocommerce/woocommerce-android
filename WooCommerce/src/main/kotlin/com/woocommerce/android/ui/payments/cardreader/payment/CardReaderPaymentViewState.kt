@@ -75,13 +75,11 @@ sealed class ViewState(
 
     data class ProcessingPaymentState(
         override val amountWithCurrencyLabel: String,
-        override val onSecondaryActionClicked: (() -> Unit),
     ) : ViewState(
         hintLabel = R.string.card_reader_payment_processing_payment_hint,
         headerLabel = R.string.card_reader_payment_processing_payment_header,
         paymentStateLabel = R.string.card_reader_payment_processing_payment_state,
         illustration = R.drawable.img_card_reader_available,
-        secondaryActionLabel = R.string.cancel,
     ),
         PaymentFlow {
         override val nameForTracking: String
