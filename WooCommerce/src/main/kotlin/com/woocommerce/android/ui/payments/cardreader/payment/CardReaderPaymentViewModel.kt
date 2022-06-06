@@ -286,7 +286,10 @@ class CardReaderPaymentViewModel
                 )
             )
             ProcessingPayment -> viewState.postValue(
-                ProcessingPaymentState(amountLabel)
+                ProcessingPaymentState(
+                    amountLabel,
+                    onSecondaryActionClicked = ::onCancelPaymentFlow
+                )
             )
             is ProcessingPaymentCompleted -> {
                 cardReaderTrackingInfoKeeper.setPaymentMethodType(paymentStatus.paymentMethodType.stringRepresentation)
