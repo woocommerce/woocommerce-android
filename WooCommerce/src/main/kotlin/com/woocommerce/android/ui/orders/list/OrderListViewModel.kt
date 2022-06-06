@@ -31,9 +31,6 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
@@ -139,12 +136,6 @@ class OrderListViewModel @Inject constructor(
                 )
             }
         }
-
-        // Observe any order list changes
-        orderStore.observeOrdersForSite(selectedSite.get())
-            .distinctUntilChanged()
-            .onEach { loadOrders() }
-            .launchIn(viewModelScope)
     }
 
     fun loadOrders() {
