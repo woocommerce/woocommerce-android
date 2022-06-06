@@ -60,6 +60,7 @@ import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.products.addons.AddonRepository
+import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -262,6 +263,10 @@ final class OrderDetailViewModel @Inject constructor(
 
     fun onPrintingInstructionsClicked() {
         triggerEvent(ViewPrintingInstructions)
+    }
+
+    fun onGetWcShippingClicked() {
+        triggerEvent(InstallWcShippingFlowViewModel.InstallWcShipping)
     }
 
     /**
@@ -656,7 +661,7 @@ final class OrderDetailViewModel @Inject constructor(
             isShipmentTrackingAvailable = shipmentTracking.isVisible,
             isProductListVisible = orderProducts.isVisible,
             areShippingLabelsVisible = shippingLabels.isVisible,
-            installWcShippingBannerVisible = shippingLabelOnboardingRepository.shouldShowWcShippingBanner(
+            wcShippingBannerVisible = shippingLabelOnboardingRepository.shouldShowWcShippingBanner(
                 order,
                 orderEligibleForInPersonPayments
             )
@@ -686,6 +691,10 @@ final class OrderDetailViewModel @Inject constructor(
         }
     }
 
+    fun onWcShippingBannerDismissed() {
+        shippingLabelOnboardingRepository.markWcShippingBannerAsDismissed()
+    }
+
     @Parcelize
     data class ViewState(
         val orderInfo: OrderInfo? = null,
@@ -700,7 +709,7 @@ final class OrderDetailViewModel @Inject constructor(
         val areShippingLabelsVisible: Boolean? = null,
         val isProductListMenuVisible: Boolean? = null,
         val isSharePaymentLinkVisible: Boolean? = null,
-        val installWcShippingBannerVisible: Boolean? = null
+        val wcShippingBannerVisible: Boolean? = null
     ) : Parcelable {
         val isMarkOrderCompleteButtonVisible: Boolean?
             get() = if (orderStatus != null) orderStatus.statusKey == CoreOrderStatus.PROCESSING.value else null

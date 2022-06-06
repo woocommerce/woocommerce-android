@@ -4,6 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph_orders"
     app:startDestination="@id/orderDetailFragment">
+
+    <include app:graph="@navigation/nav_graph_payment_flow" />
+    <include app:graph="@navigation/nav_graph_refunds" />
+
     <dialog
         android:id="@+id/itemSelectorDialog"
         android:name="com.woocommerce.android.ui.ItemSelectorDialog"
@@ -130,7 +134,6 @@
             android:name="orderId"
             app:argType="long" />
     </fragment>
-    <include app:graph="@navigation/nav_graph_refunds" />
     <dialog
         android:id="@+id/shippingLabelPaperSizeSelectorDialog"
         android:name="com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog">
@@ -241,6 +244,10 @@
                 android:name="mode"
                 app:argType="com.woocommerce.android.ui.orders.creation.OrderCreationViewModel$Mode" />
         </action>
+
+        <action
+            android:id="@+id/action_orderDetailFragment_to_installWcShippingFlow"
+            app:destination="@id/installWcShippingFlowFragment" />
     </fragment>
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
@@ -549,6 +556,8 @@
             android:name="requestKey"
             app:argType="string" />
     </fragment>
-
-    <include app:graph="@navigation/nav_graph_payment_flow" />
+    <fragment
+        android:id="@+id/installWcShippingFlowFragment"
+        android:name="com.woocommerce.android.ui.shipping.InstallWcShippingFlowFragment"
+        android:label="InstallWcShippingFlowFragment" />
 </navigation>

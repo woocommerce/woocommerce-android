@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.payments
 
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
@@ -64,6 +65,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     private val cardPaymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock {
         onBlocking { isCollectable(order) }.thenReturn(false)
     }
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     @Test
     fun `given hub flow, when view model init, then navigate to hub flow emitted`() = testBlocking {
@@ -177,6 +179,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             currencyFormatter,
             wooCommerceStore,
             orderMapper,
+            analyticsTrackerWrapper,
             cardPaymentCollectibilityChecker,
         )
     }
