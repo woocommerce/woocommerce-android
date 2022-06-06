@@ -65,13 +65,15 @@ fun CouponRestrictionsScreen(
         SpendingRestrictionField(
             value = viewState.restrictions.minimumAmount,
             onValueChange = onMinimumAmountChanged,
-            label = stringResource(id = R.string.coupon_restrictions_minimum_spend_hint, viewState.currencyCode)
+            label = stringResource(id = R.string.coupon_restrictions_minimum_spend_hint, viewState.currencyCode),
+            modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
         )
 
         SpendingRestrictionField(
             value = viewState.restrictions.maximumAmount,
             onValueChange = onMaximumAmountChanged,
-            label = stringResource(id = R.string.coupon_restrictions_maximum_spend_hint, viewState.currencyCode)
+            label = stringResource(id = R.string.coupon_restrictions_maximum_spend_hint, viewState.currencyCode),
+            modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
         )
 
         WCOutlinedTypedTextField(
@@ -121,14 +123,15 @@ fun CouponRestrictionsScreen(
 private fun SpendingRestrictionField(
     value: BigDecimal?,
     onValueChange: (BigDecimal?) -> Unit,
-    label: String
+    label: String,
+    modifier: Modifier = Modifier
 ) {
     WCOutlinedTypedTextField(
         value = value,
         onValueChange = onValueChange,
         label = label,
         valueMapper = NullableBigDecimalTextFieldValueMapper(supportsNegativeValue = false),
-        modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100)),
+        modifier = modifier,
         // TODO use KeyboardType.Decimal after updating to Compose 1.2.0
         //  (https://issuetracker.google.com/issues/209835363)
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
