@@ -2439,7 +2439,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when collecting interac refund, then progress and buttons are hidden`() =
+    fun `when collecting interac refund, then progress and cancel button is visible`() =
         testBlocking {
             setupViewModelForInteracRefund()
             whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
@@ -2451,7 +2451,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse
             assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel").isNull()
-            assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel").isNull()
+            assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel")
+                .isEqualTo(R.string.cancel)
         }
 
     @Test
@@ -2550,6 +2551,62 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             assertThat(viewState.isProgressVisible).describedAs("Progress visibility").isFalse
             assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel").isNull()
+        }
+
+    @Test
+    fun `given refund flow is initializing state, when user presses cancel, then cancel event is tracked`() =
+        testBlocking {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow { emit(CardInteracRefundStatus.InitializingInteracRefund) }
+            }
+            viewModel.start()
+
+            (viewModel.viewStateData.value as RefundLoadingDataState).onSecondaryActionClicked.invoke()
+
+            verify(tracker).trackInteracRefundCancelled("Loading")
+        }
+
+    @Test
+    fun `given refund flow is initializing state, when user presses cancel, then exit event emitted`() =
+        testBlocking {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow { emit(CardInteracRefundStatus.InitializingInteracRefund) }
+            }
+            viewModel.start()
+
+            (viewModel.viewStateData.value as RefundLoadingDataState).onSecondaryActionClicked.invoke()
+
+            assertThat(viewModel.event.value).isInstanceOf(Exit::class.java)
+        }
+
+    @Test
+    fun `given refund flow is collection state, when user presses cancel, then cancel event is tracked`() =
+        testBlocking {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow { emit(CardInteracRefundStatus.CollectingInteracRefund) }
+            }
+            viewModel.start()
+
+            (viewModel.viewStateData.value as CollectRefundState).onSecondaryActionClicked.invoke()
+
+            verify(tracker).trackInteracRefundCancelled("Collecting")
+        }
+
+    @Test
+    fun `given refund flow is collection state, when user presses cancel, then exit event emitted`() =
+        testBlocking {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow { emit(CardInteracRefundStatus.CollectingInteracRefund) }
+            }
+            viewModel.start()
+
+            (viewModel.viewStateData.value as CollectRefundState).onSecondaryActionClicked.invoke()
+
+            assertThat(viewModel.event.value).isInstanceOf(Exit::class.java)
         }
 
     @Test
