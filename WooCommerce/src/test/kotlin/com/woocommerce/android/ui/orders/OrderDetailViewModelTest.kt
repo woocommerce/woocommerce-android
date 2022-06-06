@@ -21,8 +21,6 @@ import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.cardreader.CardReaderTracker
-import com.woocommerce.android.ui.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
@@ -31,6 +29,8 @@ import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderInfo
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.ViewState
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository
+import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -1096,7 +1096,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.onAcceptCardPresentPaymentClicked()
 
             // Then
-            assertThat(viewModel.event.value).isInstanceOf(OrderNavigationTarget.StartCardReaderPaymentFlow::class.java)
+            assertThat(viewModel.event.value).isInstanceOf(OrderNavigationTarget.StartPaymentFlow::class.java)
         }
 
     @Test

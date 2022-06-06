@@ -47,7 +47,6 @@ import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.cardreader.payment.CardReaderPaymentDialogFragment
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
@@ -61,8 +60,9 @@ import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragment
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment
-import com.woocommerce.android.ui.orders.simplepayments.TakePaymentViewModel
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment
+import com.woocommerce.android.ui.payments.TakePaymentViewModel
+import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragment
 import com.woocommerce.android.ui.refunds.RefundSummaryFragment
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
