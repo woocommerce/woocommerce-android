@@ -2,10 +2,12 @@ package com.woocommerce.android.ui.products.categories.selector
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,24 +19,30 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.categories.selector.ProductCategorySelectorViewModel.CategoryUiModel
 import com.woocommerce.android.ui.products.categories.selector.ProductCategorySelectorViewModel.LoadingState
@@ -46,7 +54,9 @@ fun ProductCategorySelectorScreen(viewModel: ProductCategorySelectorViewModel) {
     viewState?.let {
         ProductCategorySelectorScreen(
             viewState = it,
-            onLoadMore = viewModel::onLoadMore
+            onLoadMore = viewModel::onLoadMore,
+            onClearSelectionClick = viewModel::onClearSelectionClick,
+            onDoneClick = viewModel::onDoneClick
         )
     }
 }
@@ -54,12 +64,16 @@ fun ProductCategorySelectorScreen(viewModel: ProductCategorySelectorViewModel) {
 @Composable
 fun ProductCategorySelectorScreen(
     viewState: ProductCategorySelectorViewModel.ViewState,
-    onLoadMore: () -> Unit = {}
+    onLoadMore: () -> Unit = {},
+    onClearSelectionClick: () -> Unit = {},
+    onDoneClick: () -> Unit = {},
 ) {
     when {
         viewState.categories.isNotEmpty() -> CategoriesList(
             viewState = viewState,
-            onLoadMore = onLoadMore
+            onLoadMore = onLoadMore,
+            onClearSelectionClick = onClearSelectionClick,
+            onDoneClick = onDoneClick
         )
         viewState.loadingState == LoadingState.Loading -> CategoriesSkeleton()
         else -> EmptyCategoriesList()
@@ -67,12 +81,23 @@ fun ProductCategorySelectorScreen(
 }
 
 @Composable
-private fun CategoriesList(viewState: ProductCategorySelectorViewModel.ViewState, onLoadMore: () -> Unit = {}) {
+private fun CategoriesList(
+    viewState: ProductCategorySelectorViewModel.ViewState,
+    onLoadMore: () -> Unit,
+    onClearSelectionClick: () -> Unit,
+    onDoneClick: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxHeight()
             .background(MaterialTheme.colors.surface)
     ) {
+        WCTextButton(
+            onClick = onClearSelectionClick,
+            modifier = Modifier.padding(dimensionResource(id = R.dimen.minor_100))
+        ) {
+            Text(text = stringResource(id = R.string.product_category_selector_clear_selection))
+        }
         val lazyListState = rememberLazyListState()
         LazyColumn(
             state = lazyListState,
@@ -102,7 +127,7 @@ private fun CategoriesList(viewState: ProductCategorySelectorViewModel.ViewState
         )
 
         WCColoredButton(
-            onClick = { /*TODO*/ },
+            onClick = onDoneClick,
             text = StringUtils.getQuantityString(
                 quantity = viewState.selectedCategoriesCount,
                 default = R.string.product_category_selector_select_button_title_default,
@@ -122,13 +147,31 @@ private fun LazyListScope.categoryItem(item: CategoryUiModel, depth: Int = 0) {
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            Row(modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100))) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .defaultMinSize(minHeight = dimensionResource(id = R.dimen.line_height_major_100))
+                    .clickable(onClick = item.onItemClick)
+                    .padding(dimensionResource(id = R.dimen.major_100))
+            ) {
                 Text(
                     text = item.title,
                     style = MaterialTheme.typography.subtitle1,
-                    modifier = Modifier.padding(
-                        start = dimensionResource(id = R.dimen.major_100) * depth,
-                    )
+                    modifier = Modifier
+                        .padding(start = dimensionResource(id = R.dimen.major_100) * depth)
+                        .weight(1f),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = stringResource(
+                        id = R.string.product_category_selector_check_content_description
+                    ),
+                    tint = MaterialTheme.colors.primary,
+                    modifier = Modifier.alpha(if (item.isSelected) 1f else 0f)
                 )
             }
 
@@ -206,7 +249,8 @@ private fun PreviewProductCategorySelector() {
             children = if (childrenDepth > 0) {
                 listOf(generateCategory("$childrenDepth$id".toLong(), childrenDepth - 1))
             } else emptyList(),
-            isSelected = (id.mod(2)) == 0
+            isSelected = (id.mod(2)) == 0,
+            onItemClick = {}
         )
     }
 

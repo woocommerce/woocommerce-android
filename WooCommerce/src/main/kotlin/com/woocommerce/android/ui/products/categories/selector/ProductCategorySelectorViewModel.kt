@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products.categories.selector
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
@@ -11,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,7 +29,7 @@ class ProductCategorySelectorViewModel @Inject constructor(
 
     private val navArgs: ProductCategorySelectorFragmentArgs by savedState.navArgs()
 
-    private val selectedCategories = savedState.getStateFlow(this, navArgs.categoryIds.toList())
+    private val selectedCategories = savedState.getStateFlow(this, navArgs.categoryIds.toSet())
     private val loadingState = MutableStateFlow(LoadingState.Idle)
     private val categories = listHandler.categories
 
@@ -64,18 +66,36 @@ class ProductCategorySelectorViewModel @Inject constructor(
         loadingState.value = LoadingState.Idle
     }
 
-    private fun ProductCategoryTreeItem.toUiModel(selectedCategories: List<Long>): CategoryUiModel = CategoryUiModel(
+    fun onClearSelectionClick() {
+        selectedCategories.value = emptySet()
+    }
+
+    fun onDoneClick() {
+        triggerEvent(ExitWithResult(selectedCategories.value.toList()))
+    }
+
+    private fun ProductCategoryTreeItem.toUiModel(selectedCategories: Set<Long>): CategoryUiModel = CategoryUiModel(
         id = productCategory.remoteCategoryId,
         title = productCategory.name,
         children = children.map { it.toUiModel(selectedCategories) },
-        isSelected = selectedCategories.contains(productCategory.remoteCategoryId)
+        isSelected = selectedCategories.contains(productCategory.remoteCategoryId),
+        onItemClick = {
+            this@ProductCategorySelectorViewModel.selectedCategories.update {
+                if (it.contains(productCategory.remoteCategoryId)) {
+                    it - productCategory.remoteCategoryId
+                } else {
+                    it + productCategory.remoteCategoryId
+                }
+            }
+        }
     )
 
     data class CategoryUiModel(
         val id: Long,
         val title: String,
         val children: List<CategoryUiModel>,
-        val isSelected: Boolean
+        val isSelected: Boolean,
+        val onItemClick: () -> Unit
     )
 
     data class ViewState(
