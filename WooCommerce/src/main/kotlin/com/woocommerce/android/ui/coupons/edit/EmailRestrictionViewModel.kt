@@ -39,15 +39,22 @@ class EmailRestrictionViewModel @Inject constructor(
 
     fun onBackPressed() {
         val event = viewState.value?.takeIf { it.hasChanges }?.let { viewState ->
-            val emails = viewState.allowedEmails.split(",").map { it.trim() }
-            val invalidEmails = emails.filter {
-                !StringUtils.isValidEmail(email = it, allowWildCardLocalPart = true)
-            }
+            val inputText = viewState.allowedEmails
 
-            if (invalidEmails.isEmpty()) {
-                ExitWithResult(viewState.allowedEmails)
+            // Return early as we allow emptying field
+            if (inputText.isEmpty()) {
+                ExitWithResult(inputText)
             } else {
-                ShowSnackbar(R.string.coupon_restrictions_allowed_emails_invalid)
+                val emails = inputText.split(",").map { it.trim() }
+                val invalidEmails = emails.filter {
+                    !StringUtils.isValidEmail(email = it, allowWildCardLocalPart = true)
+                }
+
+                if (invalidEmails.isEmpty()) {
+                    ExitWithResult(inputText)
+                } else {
+                    ShowSnackbar(R.string.coupon_restrictions_allowed_emails_invalid)
+                }
             }
         } ?: Exit
 
