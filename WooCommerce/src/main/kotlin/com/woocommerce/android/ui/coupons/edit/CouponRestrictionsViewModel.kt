@@ -93,7 +93,11 @@ class CouponRestrictionsViewModel @Inject constructor(
     }
 
     fun onAllowedEmailsUpdated(allowedEmailsInput: String) {
-        val emails = allowedEmailsInput.split(",").map { it.trim() }
+        val emails = if (allowedEmailsInput.isEmpty()) {
+            emptyList()
+        } else {
+            allowedEmailsInput.split(",").map { it.trim() }
+        }
         restrictionsDraft.update {
             it.copy(restrictedEmails = emails)
         }
