@@ -21,6 +21,16 @@ class StepperView @JvmOverloads constructor(
             val text = value.toString()
             if (text != binding.valueText.text) {
                 binding.valueText.text = text
+                binding.minusButton.contentDescription = context.getString(
+                    R.string.order_creation_change_product_quantity,
+                    value,
+                    value - 1
+                )
+                binding.plusButton.contentDescription = context.getString(
+                    R.string.order_creation_change_product_quantity,
+                    value,
+                    value + 1
+                )
             }
         }
 
