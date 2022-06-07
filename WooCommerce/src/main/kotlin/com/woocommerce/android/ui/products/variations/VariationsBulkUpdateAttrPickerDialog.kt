@@ -81,31 +81,18 @@ class VariationsBulkUpdateAttrPickerDialog : WCBottomSheetDialogFragment() {
     }
 
     private fun renderViewState(newState: ViewState) {
-        binding.priceSubtitle.text = when (newState.regularPriceGroupType) {
-            ValuesGroupType.None -> getString(R.string.variations_bulk_update_dialog_price_none)
-            ValuesGroupType.Mixed -> getString(R.string.variations_bulk_update_dialog_price_mixed)
-            is ValuesGroupType.Common -> {
-                val price = newState.regularPriceGroupType.data as? BigDecimal?
-                val currency = newState.currency
-                if (price != null && currency != null) {
-                    currencyFormatter.formatCurrency(amount = price, currencyCode = currency)
-                } else {
-                    ""
-                }
-            }
+        if (newState.currency != null) {
+            binding.priceSubtitle.text = formatPriceSubtitle(newState.currency, newState.regularPriceGroupType)
+            binding.salePriceSubtitle.text = formatPriceSubtitle(newState.currency, newState.salePriceGroupType)
         }
-        binding.salePriceSubtitle.text = when (newState.salePriceGroupType) {
-            ValuesGroupType.None -> getString(R.string.variations_bulk_update_dialog_price_none)
-            ValuesGroupType.Mixed -> getString(R.string.variations_bulk_update_dialog_price_mixed)
-            is ValuesGroupType.Common -> {
-                val price = newState.salePriceGroupType.data as? BigDecimal?
-                val currency = newState.currency
-                if (price != null && currency != null) {
-                    currencyFormatter.formatCurrency(amount = price, currencyCode = currency)
-                } else {
-                    ""
-                }
-            }
+    }
+
+    private fun formatPriceSubtitle(currency: String, priceGroupType: ValuesGroupType) = when (priceGroupType) {
+        ValuesGroupType.None -> getString(R.string.variations_bulk_update_dialog_price_none)
+        ValuesGroupType.Mixed -> getString(R.string.variations_bulk_update_dialog_price_mixed)
+        is ValuesGroupType.Common -> {
+            val price = priceGroupType.data as? BigDecimal?
+            if (price != null) currencyFormatter.formatCurrency(amount = price, currencyCode = currency) else ""
         }
     }
 
