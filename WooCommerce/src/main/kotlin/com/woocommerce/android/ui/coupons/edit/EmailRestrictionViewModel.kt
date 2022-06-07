@@ -47,6 +47,9 @@ class EmailRestrictionViewModel @Inject constructor(
             } else {
                 val emails = inputText.split(",").map { it.trim() }
 
+                // To match core, we want to allow:
+                // - regular emails, e.g: woo@woocommerce.com
+                // - emails with wildcard local part, e.g: *@woocommerce.com
                 if (emails.all { StringUtils.isValidEmail(email = it, allowWildCardLocalPart = true) }) {
                     ExitWithResult(inputText)
                 } else {
