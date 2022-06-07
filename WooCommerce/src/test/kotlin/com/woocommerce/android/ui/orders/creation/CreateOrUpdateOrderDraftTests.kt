@@ -31,7 +31,8 @@ class CreateOrUpdateOrderDraftTests : BaseUnitTest() {
             Result.success(order.copy(total = order.total + BigDecimal.TEN))
         }
     }
-    private val orderDraftChanges = MutableStateFlow(Order.EMPTY)
+    private val order = Order.EMPTY.copy(items = OrderTestUtils.generateTestOrderItems())
+    private val orderDraftChanges = MutableStateFlow(order)
     private val retryTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
     private val sut: CreateOrUpdateOrderDraft = CreateOrUpdateOrderDraft(
@@ -45,10 +46,6 @@ class CreateOrUpdateOrderDraftTests : BaseUnitTest() {
         val job = sut(orderDraftChanges, retryTrigger)
             .onEach { updateStatuses.add(it) }
             .launchIn(this)
-
-        orderDraftChanges.update { draft ->
-            draft.copy(items = OrderTestUtils.generateTestOrderItems())
-        }
 
         advanceUntilIdle()
 
@@ -71,10 +68,6 @@ class CreateOrUpdateOrderDraftTests : BaseUnitTest() {
         val job = sut(orderDraftChanges, retryTrigger)
             .onEach { updateStatuses.add(it) }
             .launchIn(this)
-
-        orderDraftChanges.update { draft ->
-            draft.copy(items = OrderTestUtils.generateTestOrderItems())
-        }
 
         advanceUntilIdle()
 
