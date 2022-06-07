@@ -46,11 +46,8 @@ class EmailRestrictionViewModel @Inject constructor(
                 ExitWithResult(inputText)
             } else {
                 val emails = inputText.split(",").map { it.trim() }
-                val invalidEmails = emails.filter {
-                    !StringUtils.isValidEmail(email = it, allowWildCardLocalPart = true)
-                }
 
-                if (invalidEmails.isEmpty()) {
+                if (emails.all { StringUtils.isValidEmail(email = it, allowWildCardLocalPart = true) }) {
                     ExitWithResult(inputText)
                 } else {
                     ShowSnackbar(R.string.coupon_restrictions_allowed_emails_invalid)
