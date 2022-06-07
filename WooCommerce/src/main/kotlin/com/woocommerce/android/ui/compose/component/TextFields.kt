@@ -46,7 +46,8 @@ fun WCOutlinedTextField(
     singleLine: Boolean = false,
     maxLines: Int = Int.MAX_VALUE,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors()
+    colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors(),
+    placeholderText: String? = null
 ) {
     WCOutlinedTextFieldLayout(
         modifier = modifier,
@@ -71,7 +72,12 @@ fun WCOutlinedTextField(
             keyboardActions = keyboardActions,
             singleLine = singleLine,
             maxLines = maxLines,
-            interactionSource = interactionSource
+            interactionSource = interactionSource,
+            placeholder = {
+                placeholderText?.let {
+                    Text(text = it)
+                }
+            }
         )
     }
 }
@@ -97,7 +103,8 @@ fun WCOutlinedTextField(
     singleLine: Boolean = false,
     maxLines: Int = Int.MAX_VALUE,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors()
+    colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors(),
+    placeholderText: String? = null
 ) {
     WCOutlinedTextFieldLayout(
         modifier = modifier,
@@ -122,7 +129,12 @@ fun WCOutlinedTextField(
             keyboardActions = keyboardActions,
             singleLine = singleLine,
             maxLines = maxLines,
-            interactionSource = interactionSource
+            interactionSource = interactionSource,
+            placeholder = {
+                placeholderText?.let {
+                    Text(text = it)
+                }
+            }
         )
     }
 }
