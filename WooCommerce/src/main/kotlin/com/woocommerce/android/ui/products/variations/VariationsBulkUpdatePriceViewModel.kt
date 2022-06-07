@@ -46,37 +46,51 @@ class VariationsBulkUpdatePriceViewModel @Inject constructor(
     }
 
     fun onDoneClicked() {
+        viewState = viewState.copy(isProgressDialogShown = true)
         launch(dispatchers.io) {
             val productId = variationsToUpdate.first().remoteProductId
             val variationsIds = variationsToUpdate.map { it.remoteVariationId }
             val result = when (viewState.priceType) {
-                PriceType.Regular -> variationRepository.bulkUpdateVariations(productId, variationsIds, viewState.price)
-                PriceType.Sale -> variationRepository.bulkUpdateVariations(productId, variationsIds, viewState.price)
+                PriceType.Regular -> variationRepository.bulkUpdateVariations(
+                    productId,
+                    variationsIds,
+                    newRegularPrice = viewState.price ?: ""
+                )
+                PriceType.Sale -> variationRepository.bulkUpdateVariations(
+                    productId,
+                    variationsIds,
+                    newSalePrice = viewState.price ?: ""
+                )
             }
             val snackText = if (result) {
-                R.string.variations_bulk_update_regular_prices_success
+                when (viewState.priceType) {
+                    PriceType.Regular -> R.string.variations_bulk_update_regular_prices_success
+                    PriceType.Sale -> R.string.variations_bulk_update_sale_prices_success
+                }
             } else {
                 R.string.variations_bulk_update_error
             }
 
             withContext(dispatchers.main) {
+                viewState = viewState.copy(isProgressDialogShown = false)
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(snackText))
                 if (result) triggerEvent(MultiLiveEvent.Event.Exit)
             }
         }
     }
 
-    fun onPriceEntered(price: BigDecimal?) {
+    fun onPriceEntered(price: String) {
         viewState = viewState.copy(price = price)
     }
 
     @Parcelize
     data class ViewState(
         val currency: String? = null,
-        val price: BigDecimal? = null,
+        val price: String? = null,
         val priceType: PriceType,
         val pricesGroupType: ValuesGroupType? = null,
         val variationsToUpdateCount: Int? = null,
+        val isProgressDialogShown: Boolean = false,
     ) : Parcelable
 
     @Parcelize

@@ -5,10 +5,10 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.annotation.StringRes
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentVariationsBulkUpdatePriceBinding
-import com.woocommerce.android.extensions.drop
 import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.extensions.showKeyboardWithDelay
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -22,7 +22,9 @@ import com.woocommerce.android.ui.products.variations.VariationsBulkUpdatePriceV
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.util.ActivityUtils.hideKeyboard
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -36,10 +38,12 @@ class VariationsBulkUpdatePriceFragment : BaseFragment(R.layout.fragment_variati
     private var _binding: FragmentVariationsBulkUpdatePriceBinding? = null
     private val binding get() = _binding!!
 
+    private var progressDialog: CustomProgressDialog? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setHasOptionsMenu(true)
         _binding = FragmentVariationsBulkUpdatePriceBinding.bind(view)
-        binding.price.value.filterNotNull().observe(viewLifecycleOwner) { viewModel.onPriceEntered(it) }
+        binding.price.value.filterNotNull().observe(viewLifecycleOwner) { viewModel.onPriceEntered(it.toString()) }
         binding.price.editText.showKeyboardWithDelay()
         observeViewStateChanges()
         observeEvents()
@@ -61,6 +65,10 @@ class VariationsBulkUpdatePriceFragment : BaseFragment(R.layout.fragment_variati
                     Regular -> getString(R.string.variations_bulk_update_regular_price)
                     Sale -> getString(R.string.variations_bulk_update_sale_price)
                 }
+                binding.price.hint = when (new.priceType) {
+                    Regular -> getString(R.string.product_regular_price)
+                    Sale -> getString(R.string.product_sale_price)
+                }
             }
             new.variationsToUpdateCount?.takeIfNotEqualTo(old?.variationsToUpdateCount) {
                 binding.priceUpdateInfo.text =
@@ -69,7 +77,32 @@ class VariationsBulkUpdatePriceFragment : BaseFragment(R.layout.fragment_variati
             new.pricesGroupType?.takeIfNotEqualTo(old?.pricesGroupType) {
                 updateCurrentPricesLabel(new.pricesGroupType, new)
             }
+            new.isProgressDialogShown.takeIfNotEqualTo(old?.isProgressDialogShown) { isVisible ->
+                val title = when (new.priceType) {
+                    Sale -> R.string.variations_bulk_update_sale_prices_dialog_title
+                    Regular -> R.string.variations_bulk_update_regular_prices_dialog_title
+                }
+                updateProgressbarDialogVisibility(isVisible, title)
+            }
         }
+    }
+
+    private fun updateProgressbarDialogVisibility(visible: Boolean, @StringRes title: Int) {
+        if (visible) {
+            hideProgressDialog()
+            progressDialog = CustomProgressDialog.show(
+                getString(title),
+                getString(R.string.product_update_dialog_message)
+            ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
+            progressDialog?.isCancelable = false
+        } else {
+            hideProgressDialog()
+        }
+    }
+
+    private fun hideProgressDialog() {
+        progressDialog?.dismiss()
+        progressDialog = null
     }
 
     private fun updateCurrentPricesLabel(
@@ -106,5 +139,11 @@ class VariationsBulkUpdatePriceFragment : BaseFragment(R.layout.fragment_variati
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        hideProgressDialog()
+        hideKeyboard(requireActivity())
     }
 }

@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.products.variations
 
 import java.io.Serializable
-import java.math.BigDecimal
 
 /**
  * Calculates group type of a [Collection]. In case the [Collection] has common values first of them is written
@@ -16,4 +15,3 @@ fun <T : Serializable?> Collection<T>.groupType(): ValuesGroupType {
         else -> ValuesGroupType.Mixed
     }
 }
-

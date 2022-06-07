@@ -22,7 +22,6 @@
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginTop="@dimen/major_75"
                 android:layout_marginEnd="@dimen/major_100"
-                android:hint="@string/product_regular_price"
                 android:inputType="numberDecimal|numberSigned" />
 
             <androidx.appcompat.widget.AppCompatTextView
