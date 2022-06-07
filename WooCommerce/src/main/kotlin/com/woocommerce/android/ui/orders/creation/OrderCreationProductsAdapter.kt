@@ -53,7 +53,8 @@ class OrderCreationProductsAdapter(
                 },
                 onMinusButtonClick = {
                     safePosition?.let { onDecreaseQuantity(getItem(it).item.itemId) }
-                }
+                },
+                plusMinusContentDescription = R.string.order_creation_change_product_quantity
             )
         }
 
