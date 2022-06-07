@@ -188,7 +188,7 @@ class VariationListFragment :
         val builder = MaterialAlertDialogBuilder(requireContext())
         builder.setTitle(getString(R.string.variations_bulk_update_warning_title))
             .setMessage(getString(R.string.variations_bulk_update_warning_message))
-            .setNegativeButton("OK", null)
+            .setNegativeButton(getString(R.string.variations_bulk_limit_exceeded_button_ok), null)
             .show()
     }
 
