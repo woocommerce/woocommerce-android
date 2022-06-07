@@ -39,7 +39,7 @@ class OrderCreationRepository @Inject constructor(
 ) {
     suspend fun placeOrder(order: Order): Result<Order> {
         val request = UpdateOrderRequest(
-            status =  order.status.toDataModel(),
+            status = order.status.toDataModel(),
             lineItems = order.items.map { item ->
                 LineItem(
                     id = item.itemId.takeIf { it != 0L },
@@ -169,7 +169,7 @@ class OrderCreationRepository @Inject constructor(
         return version.semverCompareTo(AUTO_DRAFT_SUPPORTED_VERSION) >= 0
     }
 
-    private suspend fun Order.Status.toDataModel(): WCOrderStatusModel{
+    private suspend fun Order.Status.toDataModel(): WCOrderStatusModel {
         val key = this.value
         return withContext(dispatchers.io) {
             // Currently this query will run on the current thread, so forcing the usage of IO dispatcher

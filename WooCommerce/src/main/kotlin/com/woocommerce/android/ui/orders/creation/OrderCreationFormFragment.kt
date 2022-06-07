@@ -211,14 +211,14 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             }
             new.isIdle.takeIfNotEqualTo(old?.isIdle) { enabled ->
                 binding.paymentSection.loadingProgress.isVisible = !enabled
-                if(new.isEditable) {
+                if (new.isEditable) {
                     binding.paymentSection.shippingButton.isEnabled = enabled
                     binding.paymentSection.feeButton.isEnabled = enabled
                     binding.productsSection.isEachAddButtonEnabled = enabled
                 }
             }
             new.isUpdatingOrderDraft.takeIfNotEqualTo(old?.isUpdatingOrderDraft) { show ->
-                if(new.isEditable) {
+                if (new.isEditable) {
                     binding.productsSection.content.productsAdapter?.areProductsEditable = show.not()
                 }
             }
