@@ -333,7 +333,8 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun buildSingleReaderFoundState(reader: CardReader) =
         ReaderFoundState(
             onPrimaryActionClicked = { onConnectToReaderClicked(reader) },
-            onSecondaryActionClicked = ::onCancelClicked,
+            onSecondaryActionClicked = ::onKeepSearchingClicked,
+            onTertiaryActionClicked = ::onCancelClicked,
             readerId = reader.id.orEmpty()
         )
 
@@ -427,6 +428,10 @@ class CardReaderConnectViewModel @Inject constructor(
             triggerEvent(OpenGenericWebView(result.url))
             exitFlow(connected = false)
         }
+    }
+
+    private fun onKeepSearchingClicked() {
+        viewState.value = ScanningState(::onCancelClicked)
     }
 
     private fun onCancelClicked() {

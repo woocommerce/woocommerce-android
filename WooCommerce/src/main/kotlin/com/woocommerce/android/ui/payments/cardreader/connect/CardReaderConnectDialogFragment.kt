@@ -156,11 +156,15 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
         UiHelpers.setTextOrHide(binding.hintLabel, viewState.hintLabel)
         UiHelpers.setTextOrHide(binding.primaryActionBtn, viewState.primaryActionLabel)
         UiHelpers.setTextOrHide(binding.secondaryActionBtn, viewState.secondaryActionLabel)
+        UiHelpers.setTextOrHide(binding.tertiaryActionBtn, viewState.tertiaryActionLabel)
         binding.primaryActionBtn.setOnClickListener {
             viewState.onPrimaryActionClicked?.invoke()
         }
         binding.secondaryActionBtn.setOnClickListener {
             viewState.onSecondaryActionClicked?.invoke()
+        }
+        binding.tertiaryActionBtn.setOnClickListener {
+            viewState.onTertiaryActionClicked?.invoke()
         }
 
         with(binding.illustration.layoutParams as ViewGroup.MarginLayoutParams) {

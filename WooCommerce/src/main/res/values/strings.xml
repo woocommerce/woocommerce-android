@@ -1026,6 +1026,7 @@
     <string name="card_reader_connect_multiple_readers_found_header">Several readers found</string>
     <string name="card_reader_connect_to_reader">Connect to reader</string>
     <string name="card_reader_connect_connect_button">Connect</string>
+    <string name="card_reader_connect_keep_searching_button">Keep Searching</string>
     <string name="card_reader_connect_connecting_header">Connecting to reader</string>
     <string name="card_reader_connect_connecting_hint" translatable="false">@string/please_wait</string>
     <string name="card_reader_connect_failed_header">We couldn\’t connect your reader</string>
