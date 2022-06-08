@@ -75,7 +75,7 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
         updateDiscountsSection(order, formatCurrencyForDisplay)
         updateFeesSection(order, formatCurrencyForDisplay)
         updateRefundSection(order, formatCurrencyForDisplay, onIssueRefundClickListener)
-        updateCollectPaymentSection(isPaymentCollectableWithCardReader, onCollectCardPresentPaymentClickListener)
+        updateCollectPaymentSection(order, onCollectCardPresentPaymentClickListener)
         updateSeeReceiptSection(isReceiptAvailable, onSeeReceiptClickListener)
         updatePrintingInstructionSection(isPaymentCollectableWithCardReader, onPrintingInstructionsClickListener)
     }
@@ -128,16 +128,16 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
     }
 
     private fun updateCollectPaymentSection(
-        isPaymentCollectableWithCardReader: Boolean,
+        order: Order,
         onCollectCardPresentPaymentClickListener: (view: View) -> Unit
     ) {
-        if (isPaymentCollectableWithCardReader) {
+        if (order.isOrderPaid) {
+            binding.paymentInfoCollectCardPresentPaymentButton.visibility = GONE
+        } else {
             binding.paymentInfoCollectCardPresentPaymentButton.visibility = VISIBLE
             binding.paymentInfoCollectCardPresentPaymentButton.setOnClickListener(
                 onCollectCardPresentPaymentClickListener
             )
-        } else {
-            binding.paymentInfoCollectCardPresentPaymentButton.visibility = GONE
         }
     }
 

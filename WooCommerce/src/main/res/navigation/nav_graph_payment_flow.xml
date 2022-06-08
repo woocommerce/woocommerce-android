@@ -1,28 +1,28 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/paymentFlow"
-    app:startDestination="@id/takePaymentFragment">
+    app:startDestination="@id/selectPaymentMethodFragment">
 
     <fragment
-        android:id="@+id/takePaymentFragment"
-        android:name="com.woocommerce.android.ui.payments.TakePaymentFragment"
-        android:label="TakePaymentFragment">
+        android:id="@+id/selectPaymentMethodFragment"
+        android:name="com.woocommerce.android.ui.payments.SelectPaymentMethodFragment"
+        android:label="SelectPaymentMethodFragment">
         <argument
             android:name="cardReaderFlowParam"
             app:argType="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam"
             app:nullable="false" />
         <action
-            android:id="@+id/action_takePaymentFragment_to_cardReaderPaymentFlow"
+            android:id="@+id/action_selectPaymentMethodFragment_to_cardReaderPaymentFlow"
             app:destination="@id/cardReaderStatusCheckerDialogFragment" />
         <action
-            android:id="@+id/action_takePaymentFragment_to_cardReaderHubFlow"
+            android:id="@+id/action_selectPaymentMethodFragment_to_cardReaderHubFlow"
             app:destination="@id/cardReaderStatusCheckerDialogFragment"
-            app:popUpTo="@+id/takePaymentFragment"
+            app:popUpTo="@+id/selectPaymentMethodFragment"
             app:popUpToInclusive="true" />
         <action
-            android:id="@+id/action_takePaymentFragment_to_cardReaderRefundFlow"
+            android:id="@+id/action_selectPaymentMethodFragment_to_cardReaderRefundFlow"
             app:destination="@id/cardReaderStatusCheckerDialogFragment"
-            app:popUpTo="@+id/takePaymentFragment"
+            app:popUpTo="@+id/selectPaymentMethodFragment"
             app:popUpToInclusive="true" />
     </fragment>
 

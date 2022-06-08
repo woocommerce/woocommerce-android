@@ -56,7 +56,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderedAddons
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintCustomsForm
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstructions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
-import com.woocommerce.android.ui.payments.TakePaymentViewModel
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.products.addons.AddonRepository
@@ -236,7 +236,7 @@ final class OrderDetailViewModel @Inject constructor(
 
     fun onSharePaymentUrlClicked() {
         trackerWrapper.track(AnalyticsEvent.ORDER_DETAIL_PAYMENT_LINK_SHARED)
-        triggerEvent(TakePaymentViewModel.SharePaymentUrl(selectedSite.get().name, order.paymentUrl))
+        triggerEvent(SelectPaymentMethodViewModel.SharePaymentUrl(selectedSite.get().name, order.paymentUrl))
     }
 
     fun onEditClicked() {

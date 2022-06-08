@@ -61,7 +61,7 @@ import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragment
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment
-import com.woocommerce.android.ui.payments.TakePaymentViewModel
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragment
 import com.woocommerce.android.ui.refunds.RefundSummaryFragment
 import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel
@@ -262,7 +262,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                     displayUndoSnackbar(event.message, event.undoAction, event.dismissAction)
                 }
                 is OrderNavigationTarget -> navigator.navigate(this, event)
-                is TakePaymentViewModel.SharePaymentUrl -> {
+                is SelectPaymentMethodViewModel.SharePaymentUrl -> {
                     sharePaymentUrl(event.storeName, event.paymentUrl)
                 }
                 is InstallWcShippingFlowViewModel.InstallWcShipping -> navigateToInstallWcShippingFlow()
