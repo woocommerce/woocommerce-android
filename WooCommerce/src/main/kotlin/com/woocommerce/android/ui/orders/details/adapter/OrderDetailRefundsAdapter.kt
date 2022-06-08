@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.details.adapter
 
+import android.content.Context
 import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -10,6 +11,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderDetailRefundPaymentItemBinding
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.model.Refund
+import com.woocommerce.android.util.StringUtils
 import java.math.BigDecimal
 
 class OrderDetailRefundsAdapter(
@@ -58,6 +60,11 @@ class OrderDetailRefundsAdapter(
     ) {
         fun bind(refund: Refund) {
             val context = viewBinding.root.context
+
+            viewBinding.refundsListLblRefund.text = context.getString(
+                R.string.orderdetail_refunded,
+                buildRefundLine(context, refund)
+            )
             viewBinding.refundsListRefundAmount.text = context.getString(
                 R.string.orderdetail_refund_amount,
                 formatCurrency(refund.amount)
@@ -75,6 +82,27 @@ class OrderDetailRefundsAdapter(
             viewBinding.refundsListItemRoot.setOnClickListener {
                 // TODO: open refund detail screen
             }
+        }
+
+        private fun buildRefundLine(context: Context, refund: Refund): String {
+            val tokens = mutableListOf<String>()
+            if (refund.items.isNotEmpty()) {
+                val quantity = refund.items.sumOf { it.quantity }
+                val productString = StringUtils.getQuantityString(
+                    context = context,
+                    quantity = quantity,
+                    default = R.string.orderdetail_product_multiple,
+                    one = R.string.orderdetail_product
+                )
+                tokens.add("$quantity $productString")
+            }
+            if (refund.shippingLines.isNotEmpty()) {
+                tokens.add(context.getString(R.string.product_shipping))
+            }
+            if (refund.feeLines.isNotEmpty()) {
+                tokens.add(context.getString(R.string.orderdetail_payment_fees))
+            }
+            return tokens.joinToString(separator = ", ") { it.lowercase() }
         }
     }
 

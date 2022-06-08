@@ -438,7 +438,7 @@
     <string name="orderdetail_payment_summary_completed">%1$s via %2$s</string>
     <string name="orderdetail_payment_summary_onhold">Awaiting payment via %s</string>
     <string name="orderdetail_payment_paid_by_customer">Paid</string>
-    <string name="orderdetail_refunded">Refunded</string>
+    <string name="orderdetail_refunded">Refunded: %s</string>
     <string name="orderdetail_refunded_products">Refunded products</string>
     <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="orderdetail_net">Net Payment</string>
