@@ -260,10 +260,6 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         menu.clear()
-        inflater.inflate(R.menu.menu_done, menu)
-        doneMenuItem = menu.findItem(R.id.menu_done).apply {
-            isEnabled = addressViewModel.shouldEnableDoneButton.value ?: false
-        }
 
         menu.add(
             Menu.NONE,
@@ -273,6 +269,11 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
         ).also {
             it.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
             it.setIcon(R.drawable.ic_search_24dp)
+        }
+
+        inflater.inflate(R.menu.menu_done, menu)
+        doneMenuItem = menu.findItem(R.id.menu_done).apply {
+            isEnabled = addressViewModel.shouldEnableDoneButton.value ?: false
         }
     }
 
