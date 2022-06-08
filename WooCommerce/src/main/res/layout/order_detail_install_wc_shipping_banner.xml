@@ -34,6 +34,7 @@
                 android:textAppearance="?attr/textAppearanceBody2" />
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/installWcShipping_button"
                 style="@style/Woo.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

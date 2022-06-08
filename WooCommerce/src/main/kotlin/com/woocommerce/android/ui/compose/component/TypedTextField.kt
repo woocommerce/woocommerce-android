@@ -49,7 +49,8 @@ fun <T> WCOutlinedTypedTextField(
     singleLine: Boolean = true,
     maxLines: Int = Int.MAX_VALUE,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors()
+    colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors(),
+    placeholderText: String? = null
 ) {
     var currentValue by remember {
         mutableStateOf(value)
@@ -99,7 +100,8 @@ fun <T> WCOutlinedTypedTextField(
         singleLine = singleLine,
         maxLines = maxLines,
         interactionSource = interactionSource,
-        colors = colors
+        colors = colors,
+        placeholderText = placeholderText
     )
 }
 
@@ -167,22 +169,24 @@ class NullableBigDecimalTextFieldValueMapper(
     override fun transformText(oldText: String, newText: String): String {
         val clearedText = if (!supportsNegativeValue) newText.filter { it != '-' } else newText
         return when {
-            clearedText.isEmpty() || clearedText == "-" || clearedText == "." -> clearedText
+            clearedText.isEmpty() -> ""
+            clearedText == "0" || clearedText == "-" || clearedText == "." -> clearedText
             clearedText.toBigDecimalOrNull() != null -> clearedText
             else -> oldText
         }
     }
 }
 
-class IntTextFieldValueMapper(
+class NullableIntTextFieldValueMapper(
     private val supportsNegativeValue: Boolean = true
-) : TextFieldValueMapper<Int> {
-    override fun parseText(text: String): Int = text.toInt()
-    override fun printValue(value: Int): String = value.toString()
+) : TextFieldValueMapper<Int?> {
+    override fun parseText(text: String): Int? = text.toIntOrNull()
+    override fun printValue(value: Int?): String = value?.toString().orEmpty()
     override fun transformText(oldText: String, newText: String): String {
         val clearedText = if (!supportsNegativeValue) newText.filter { it != '-' } else newText
         return when {
-            clearedText.isEmpty() || clearedText == "-" -> "0"
+            clearedText.isEmpty() -> ""
+            clearedText == "-" -> clearedText
             clearedText.matches("^-?0+\\d".toRegex()) ->
                 // Delete any leading 0s, since this field can't be cleared
                 clearedText.replace("^(-?)0+".toRegex(), "$1")

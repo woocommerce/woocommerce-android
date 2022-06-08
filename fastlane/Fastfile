@@ -522,11 +522,20 @@ platform :android do
       locales: SUPPORTED_LOCALES.map { |hsh| [hsh[:glotpress], hsh[:google_play]] }
     )
     add_us_release_notes(
-      release_notes_path: File.join(download_path, release_notes.xml),
+      release_notes_path: File.join(download_path, 'release_notes.xml'),
       version_name: options[:version]
     )
-    # TODO: use Fastlane API to add, commit, and ask caller whether they want to push
-    sh("git add #{download_path} && (git diff-index --quiet HEAD || git commit -m \"Update metadata translations for #{options[:version]}\") && git push")
+
+    # We need to explicitly call `git_add`, despite the path being passed to `git_commit` as well.
+    # That's because we might have new files, that the commit command would otherwise miss.
+    git_add(path: download_path)
+    git_commit(
+      path: download_path,
+      message: "Update metadata translations for #{options[:version]}",
+      allow_nothing_to_commit: true
+    )
+
+    push_to_git_remote_with_confirmation
   end
 
   ########################################################################
@@ -767,6 +776,19 @@ platform :android do
       branch = repo.revparse('HEAD')[0, 7]
 
       return "#{branch}-#{commit}"
+    end
+  end
+
+  # Asks the user whether they want to push to the Git remote using `UI.confirm`.
+  #
+  # @note It supports an override environment variable flag, `RELEASE_TOOLKIT_SKIP_PUSH_CONFIRM`.
+  # If set to `false` the user won't be asked for confirmation.
+  #
+  def push_to_git_remote_with_confirmation
+    if ENV.fetch('RELEASE_TOOLKIT_SKIP_PUSH_CONFIRM', false) || UI.confirm('Push changes to remote?')
+      push_to_git_remote(tags: false)
+    else
+      UI.message('Continuing without pushing')
     end
   end
 end

@@ -1,17 +1,14 @@
 package com.woocommerce.android.ui.compose.component
 
 import android.content.res.Configuration
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -31,13 +28,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.intl.Locale
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -213,61 +205,6 @@ fun WCTextButton(
     }
 }
 
-@Composable
-fun WCFullWidthTextButton(
-    onClick: () -> Unit,
-    text: String,
-    modifier: Modifier = Modifier,
-    label: String? = null,
-    inlineText: String? = null,
-    enabled: Boolean = true,
-    showChevron: Boolean = true
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(dimensionResource(id = R.dimen.min_tap_target))
-            .clickable(
-                enabled = enabled,
-                onClickLabel = label,
-                role = Role.Button,
-                onClick = onClick
-            ),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.subtitle1,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier
-                .padding(start = dimensionResource(id = R.dimen.major_100))
-                .weight(1f)
-        )
-
-        inlineText?.let {
-            Text(
-                text = it,
-                style = MaterialTheme.typography.subtitle1,
-                color = colorResource(id = R.color.color_on_surface_disabled),
-                textAlign = TextAlign.End,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
-                    .weight(0.75f)
-            )
-        }
-
-        if (showChevron) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_arrow_right),
-                contentDescription = null
-            )
-        }
-    }
-}
-
 @Preview(name = "Light mode")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
@@ -320,26 +257,6 @@ private fun ButtonsPreview() {
                 Text(text = "Text button")
             }
             WCTextButton(onClick = {}, text = "Text Button")
-
-            /* Full width text button without inline text */
-            WCFullWidthTextButton(
-                onClick = { },
-                text = "Full Width Text Button"
-            )
-
-            WCFullWidthTextButton(
-                onClick = { },
-                text = "Full Width Text Button",
-                inlineText = "Optional inline text",
-                showChevron = true
-            )
-
-            WCFullWidthTextButton(
-                onClick = { },
-                text = "Full Width Text Button",
-                inlineText = "Optional inline text",
-                showChevron = false
-            )
         }
     }
 }
