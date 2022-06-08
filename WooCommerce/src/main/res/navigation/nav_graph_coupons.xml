@@ -52,6 +52,9 @@
         <argument
             android:name="showLimitUsageToXItems"
             app:argType="boolean" />
+        <action
+            android:id="@+id/action_couponRestrictionsFragment_to_emailRestrictionFragment"
+            app:destination="@id/emailRestrictionFragment" />
     </fragment>
     <fragment
         android:id="@+id/productSelectorFragment"
@@ -68,5 +71,13 @@
         <argument
             android:name="categoryIds"
             app:argType="long[]" />
+    </fragment>
+    <fragment
+        android:id="@+id/emailRestrictionFragment"
+        android:name="com.woocommerce.android.ui.coupons.edit.EmailRestrictionFragment"
+        android:label="EmailRestrictionFragment">
+        <argument
+            android:name="allowedEmails"
+            app:argType="string[]" />
     </fragment>
 </navigation>
