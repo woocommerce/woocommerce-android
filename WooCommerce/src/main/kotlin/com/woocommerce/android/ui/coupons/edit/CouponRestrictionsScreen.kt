@@ -1,10 +1,12 @@
 package com.woocommerce.android.ui.coupons.edit
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -18,11 +20,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.KeyboardType
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.BigDecimalTextFieldValueMapper
 import com.woocommerce.android.ui.compose.component.IntTextFieldValueMapper
-import com.woocommerce.android.ui.compose.component.WCFullWidthTextButton
+import com.woocommerce.android.ui.compose.component.WCListItemWithInlineSubtitle
 import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
 import com.woocommerce.android.ui.compose.component.WCSwitch
 import java.math.BigDecimal
@@ -162,16 +165,27 @@ private fun IndividualUseSwitch(isForIndividualUse: Boolean, onIndividualUseChan
 @Composable
 private fun AllowedEmailsButton(allowedEmails: List<String>, onClick: () -> Unit) {
     Column(Modifier.fillMaxWidth()) {
-        WCFullWidthTextButton(
-            onClick = onClick,
+        val subtitle = if (allowedEmails.isEmpty()) {
+            stringResource(id = R.string.coupon_restrictions_allowed_emails_placeholder)
+        } else {
+            allowedEmails.joinToString(", ")
+        }
+
+        WCListItemWithInlineSubtitle(
             text = stringResource(id = R.string.coupon_restrictions_allowed_emails),
+            subtitle = subtitle,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(dimensionResource(id = R.dimen.min_tap_target))
+                .clickable(
+                    enabled = true,
+                    onClickLabel = stringResource(id = R.string.coupon_restrictions_allowed_emails),
+                    role = Role.Button,
+                    onClick = onClick
+                ),
             showChevron = false,
-            inlineText = if (allowedEmails.isEmpty()) {
-                stringResource(id = R.string.coupon_restrictions_allowed_emails_placeholder)
-            } else {
-                allowedEmails.joinToString(", ")
-            }
         )
+
         Divider(
             modifier = Modifier.padding(
                 bottom = dimensionResource(id = R.dimen.major_100),
