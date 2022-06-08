@@ -15,12 +15,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -28,6 +32,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
@@ -43,7 +50,7 @@ fun OrderCreationCustomerScreen(viewModel: CustomerListViewModel) {
 @Composable
 fun CustomerListScreen(
     customers: List<WCCustomerModel>,
-    onCustomerClick: (WCCustomerModel) -> Unit?
+    onCustomerClick: ((WCCustomerModel) -> Unit?)? = null
 ) {
     when {
         customers.isNotEmpty() -> CustomerList(customers, onCustomerClick)
@@ -80,7 +87,7 @@ private fun EmptyCustomerList() {
 @Composable
 private fun CustomerList(
     customers: List<WCCustomerModel>,
-    onCustomerClick: (WCCustomerModel) -> Unit?
+    onCustomerClick: ((WCCustomerModel) -> Unit?)? = null
 ) {
     val listState = rememberLazyListState()
     LazyColumn(
@@ -112,7 +119,7 @@ private fun CustomerList(
 @Composable
 private fun CustomerListItem(
     customer: WCCustomerModel,
-    onCustomerClick: (WCCustomerModel) -> Unit?
+    onCustomerClick: ((WCCustomerModel) -> Unit?)? = null
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_50)),
@@ -121,7 +128,11 @@ private fun CustomerListItem(
             .clickable(
                 enabled = true,
                 role = Role.Button,
-                onClick = { onCustomerClick(customer) }
+                onClick = {
+                    onCustomerClick?.let {
+                        it(customer)
+                    }
+                }
             )
             .padding(
                 horizontal = dimensionResource(id = R.dimen.major_100),
@@ -129,10 +140,18 @@ private fun CustomerListItem(
             ),
     ) {
         Row() {
-            Image(
-                painter = painterResource(id = R.drawable.ic_photos_grey_c_24dp),
-                contentDescription = null
-                // TODO nbracbury Glide
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(customer.avatarUrl)
+                    .crossfade(true)
+                    .build(),
+                placeholder = painterResource(R.drawable.ic_photos_grey_c_24dp),
+                error = painterResource(R.drawable.ic_photos_grey_c_24dp),
+                contentDescription = null,
+                contentScale = ContentScale.FillWidth,
+                modifier = Modifier
+                    .size(dimensionResource(R.dimen.major_300))
+                    .clip(RoundedCornerShape(3.dp))
             )
         }
         Row() {
@@ -210,7 +229,7 @@ private fun SearchEmptyList(searchQuery: String) {
     }
 }
 
-@Preview
+/*@Preview
 @Composable
 private fun CustomerListPreview() {
     val customers = listOf(
@@ -222,7 +241,7 @@ private fun CustomerListPreview() {
     )
 
     CustomerList(customers)
-}
+}*/
 
 @Preview
 @Composable
