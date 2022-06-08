@@ -40,16 +40,8 @@ import com.woocommerce.android.ui.compose.animations.SkeletonView
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 
 @Composable
-fun OrderCreationCustomerScreen(viewModel: CustomerListViewModel) {
-    CustomerListScreen(
-        customers = emptyList(),
-        onCustomerClick = viewModel::onCustomerClick
-    )
-}
-
-@Composable
 fun CustomerListScreen(
-    customers: List<WCCustomerModel>,
+    customers: List<WCCustomerModel> = emptyList(),
     onCustomerClick: ((WCCustomerModel) -> Unit?)? = null
 ) {
     when {
