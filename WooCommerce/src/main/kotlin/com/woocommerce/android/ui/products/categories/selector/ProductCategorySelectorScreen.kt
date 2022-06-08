@@ -42,6 +42,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCSearchView
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.categories.selector.ProductCategorySelectorViewModel.CategoryUiModel
@@ -56,6 +57,7 @@ fun ProductCategorySelectorScreen(viewModel: ProductCategorySelectorViewModel) {
             viewState = it,
             onLoadMore = viewModel::onLoadMore,
             onClearSelectionClick = viewModel::onClearSelectionClick,
+            onSearchQueryChanged = viewModel::onSearchQueryChanged,
             onDoneClick = viewModel::onDoneClick
         )
     }
@@ -66,17 +68,35 @@ fun ProductCategorySelectorScreen(
     viewState: ProductCategorySelectorViewModel.ViewState,
     onLoadMore: () -> Unit = {},
     onClearSelectionClick: () -> Unit = {},
+    onSearchQueryChanged: (String) -> Unit = {},
     onDoneClick: () -> Unit = {},
 ) {
-    when {
-        viewState.categories.isNotEmpty() -> CategoriesList(
-            viewState = viewState,
-            onLoadMore = onLoadMore,
-            onClearSelectionClick = onClearSelectionClick,
-            onDoneClick = onDoneClick
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colors.surface)
+    ) {
+        WCSearchView(
+            value = viewState.searchQuery,
+            onValueChange = onSearchQueryChanged,
+            hint = stringResource(id = R.string.product_category_selector_search_hint),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = dimensionResource(id = R.dimen.major_100),
+                    vertical = dimensionResource(id = R.dimen.minor_100)
+                )
         )
-        viewState.loadingState == LoadingState.Loading -> CategoriesSkeleton()
-        else -> EmptyCategoriesList()
+        when {
+            viewState.categories.isNotEmpty() -> CategoriesList(
+                viewState = viewState,
+                onLoadMore = onLoadMore,
+                onClearSelectionClick = onClearSelectionClick,
+                onDoneClick = onDoneClick
+            )
+            viewState.loadingState == LoadingState.Loading -> CategoriesSkeleton()
+            else -> EmptyCategoriesList()
+        }
     }
 }
 
@@ -90,7 +110,6 @@ private fun CategoriesList(
     Column(
         modifier = Modifier
             .fillMaxHeight()
-            .background(MaterialTheme.colors.surface)
     ) {
         WCTextButton(
             onClick = onClearSelectionClick,
@@ -212,7 +231,7 @@ private fun EmptyCategoriesList() {
 @Composable
 private fun CategoriesSkeleton() {
     val numberOfInboxSkeletonRows = 20
-    LazyColumn(Modifier.background(color = MaterialTheme.colors.surface)) {
+    LazyColumn {
         repeat(numberOfInboxSkeletonRows) {
             item {
                 Column(
@@ -264,7 +283,8 @@ private fun PreviewProductCategorySelector() {
             viewState = ProductCategorySelectorViewModel.ViewState(
                 categories = categories,
                 selectedCategoriesCount = 1,
-                loadingState = LoadingState.Idle
+                loadingState = LoadingState.Idle,
+                searchQuery = ""
             )
         )
     }
