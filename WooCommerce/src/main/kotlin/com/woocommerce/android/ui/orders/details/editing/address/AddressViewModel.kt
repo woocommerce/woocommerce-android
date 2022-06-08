@@ -176,6 +176,10 @@ class AddressViewModel @Inject constructor(
         triggerEvent(event)
     }
 
+    fun onCustomerSearchClicked() {
+        // TODO nbradbury
+    }
+
     fun onDoneSelected(addDifferentShippingChecked: Boolean? = null) {
         // order creation/editing will fail if billing email address is invalid
         viewState.addressSelectionStates.get(AddressType.BILLING)?.address?.email?.let { billingEmail ->
