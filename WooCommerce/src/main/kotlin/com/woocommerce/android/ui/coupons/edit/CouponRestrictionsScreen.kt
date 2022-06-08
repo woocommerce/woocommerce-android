@@ -25,6 +25,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.NullableBigDecimalTextFieldValueMapper
 import com.woocommerce.android.ui.compose.component.NullableIntTextFieldValueMapper
+import com.woocommerce.android.ui.compose.component.WCListItemWithInlineSubtitle
 import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
 import com.woocommerce.android.ui.compose.component.WCSwitch
 import java.math.BigDecimal
