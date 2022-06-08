@@ -10,10 +10,13 @@ import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProductCategorySelectorFragment : BaseFragment() {
@@ -22,6 +25,8 @@ class ProductCategorySelectorFragment : BaseFragment() {
     }
 
     private val viewModel: ProductCategorySelectorViewModel by viewModels()
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Visible(
@@ -49,6 +54,7 @@ class ProductCategorySelectorFragment : BaseFragment() {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ExitWithResult<*> -> navigateBackWithResult(PRODUCT_CATEGORY_SELECTOR_RESULT, event.data)
             }
         }

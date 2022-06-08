@@ -4,7 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
+import com.woocommerce.android.R
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
@@ -64,14 +66,18 @@ class ProductCategorySelectorViewModel @Inject constructor(
         monitorSearchQuery()
         launch {
             loadingState.value = LoadingState.Loading
-            listHandler.fetchCategories(forceRefresh = true)
+            listHandler.fetchCategories(forceRefresh = true).onFailure {
+                triggerEvent(ShowSnackbar(R.string.product_category_selector_loading_failed))
+            }
             loadingState.value = LoadingState.Idle
         }
     }
 
     fun onLoadMore() = launch {
         loadingState.value = LoadingState.Appending
-        listHandler.loadMore()
+        listHandler.loadMore().onFailure {
+            triggerEvent(ShowSnackbar(R.string.product_category_selector_loading_failed))
+        }
         loadingState.value = LoadingState.Idle
     }
 
@@ -106,7 +112,9 @@ class ProductCategorySelectorViewModel @Inject constructor(
                     try {
                         listHandler.fetchCategories(searchQuery = query)
                             .onFailure {
-                                TODO()
+                                val message = if (query.isEmpty()) R.string.product_category_selector_loading_failed
+                                else R.string.product_category_selector_search_failed
+                                triggerEvent(ShowSnackbar(message))
                             }
                     } finally {
                         loadingState.value = LoadingState.Idle

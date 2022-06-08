@@ -1441,6 +1441,9 @@
     <string name="product_category_selector_select_button_title_one">Select 1 category</string>
     <string name="product_category_selector_check_content_description">Click to uncheck</string>
     <string name="product_category_selector_clear_selection">Clear selection</string>
+    <string name="product_category_selector_search_hint">Search Categories</string>
+    <string name="product_category_selector_loading_failed">Loading product categories failed</string>
+    <string name="product_category_selector_search_failed">Searching product categories failed</string>
     <!--
         Product Add more details Bottom sheet
     -->
@@ -2019,7 +2022,6 @@
     <string name="product_selector_select_button_title_one">Select %d Product</string>
     <string name="product_selector_clear_button_title">Clear Selection</string>
     <string name="product_selector_filter_button_title">Filter</string>
-    <string name="product_category_selector_search_hint">Search Categories</string>
 
     <!-- WC Shipping installation flow -->
     <string name="install_wc_shipping_flow_onboarding_screen_title">Fulfill your orders with WooCommerce Shipping</string>
