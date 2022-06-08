@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.creation.customers
+package com.woocommerce.android.ui.orders.creation.customerlist
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -139,7 +139,7 @@ private fun CustomerListItem(
                 vertical = dimensionResource(id = R.dimen.minor_100)
             ),
     ) {
-        Row() {
+        Row {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(customer.avatarUrl)
@@ -154,7 +154,7 @@ private fun CustomerListItem(
                     .clip(RoundedCornerShape(3.dp))
             )
         }
-        Row() {
+        Row {
             Text(
                 text = "${customer.lastName}, $(customer.firstName)",
                 style = MaterialTheme.typography.subtitle1,
@@ -166,9 +166,9 @@ private fun CustomerListItem(
 
 @Composable
 private fun CustomerListSkeleton() {
-    val numberOfInboxSkeletonRows = 10
+    val numberOfSkeletonRows = 10
     LazyColumn(Modifier.background(color = MaterialTheme.colors.surface)) {
-        repeat(numberOfInboxSkeletonRows) {
+        repeat(numberOfSkeletonRows) {
             item {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_50)),
@@ -201,34 +201,6 @@ private fun CustomerListSkeleton() {
     }
 }
 
-@Composable
-private fun SearchEmptyList(searchQuery: String) {
-    if (searchQuery.isEmpty()) return
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = dimensionResource(id = R.dimen.major_200)),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = stringResource(id = R.string.empty_message_with_search, searchQuery),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.h6,
-            modifier = Modifier.padding(
-                start = dimensionResource(id = R.dimen.major_150),
-                end = dimensionResource(id = R.dimen.major_150)
-            )
-        )
-        Spacer(Modifier.size(dimensionResource(id = R.dimen.major_325)))
-        Image(
-            painter = painterResource(id = R.drawable.img_empty_search),
-            contentDescription = null,
-        )
-    }
-}
-
 /*@Preview
 @Composable
 private fun CustomerListPreview() {
@@ -245,7 +217,7 @@ private fun CustomerListPreview() {
 
 @Preview
 @Composable
-private fun CustomerListEmptyPreview() {
+private fun EmptyCustomerListPreview() {
     EmptyCustomerList()
 }
 

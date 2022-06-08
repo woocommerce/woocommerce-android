@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.creation.customers
+package com.woocommerce.android.ui.orders.creation.customerlist
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.viewmodel.ScopedViewModel
