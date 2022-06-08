@@ -232,6 +232,16 @@ private fun EmptyCategoriesList() {
 private fun CategoriesSkeleton() {
     val numberOfInboxSkeletonRows = 20
     LazyColumn {
+        item {
+            SkeletonView(
+                modifier = Modifier
+                    .padding(dimensionResource(id = R.dimen.major_100))
+                    .size(
+                        width = dimensionResource(id = R.dimen.skeleton_text_medium_width),
+                        height = dimensionResource(R.dimen.major_125)
+                    )
+            )
+        }
         repeat(numberOfInboxSkeletonRows) {
             item {
                 Column(
