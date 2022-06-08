@@ -18,7 +18,6 @@ import dagger.hilt.android.AndroidEntryPoint
 class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
     override fun getFragmentTitle() = resources.getString(R.string.card_reader_onboarding_title)
     val viewModel: CardReaderHubViewModel by viewModels()
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
