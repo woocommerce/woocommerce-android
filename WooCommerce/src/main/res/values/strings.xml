@@ -386,6 +386,7 @@
     <string name="order_creation_fee_percentage_calculated_amount">Calculated amount: %s</string>
     <string name="order_creation_customer_search_title">Customers</string>
     <string name="order_creation_customer_search_empty">No customers found</string>
+    <string name="order_creation_customer_search_hint">Search customers</string>
     <!--
         Order Filters
     -->
