@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.Coupon.CouponRestrictions
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -45,31 +46,31 @@ class CouponRestrictionsViewModel @Inject constructor(
         triggerEvent(event)
     }
 
-    fun onMinimumAmountChanged(value: BigDecimal) {
+    fun onMinimumAmountChanged(value: BigDecimal?) {
         restrictionsDraft.update {
             it.copy(minimumAmount = value)
         }
     }
 
-    fun onMaximumAmountChanged(value: BigDecimal) {
+    fun onMaximumAmountChanged(value: BigDecimal?) {
         restrictionsDraft.update {
             it.copy(maximumAmount = value)
         }
     }
 
-    fun onUsageLimitPerCouponChanged(value: Int) {
+    fun onUsageLimitPerCouponChanged(value: Int?) {
         restrictionsDraft.update {
             it.copy(usageLimit = value)
         }
     }
 
-    fun onLimitUsageToXItemsChanged(value: Int) {
+    fun onLimitUsageToXItemsChanged(value: Int?) {
         restrictionsDraft.update {
             it.copy(limitUsageToXItems = value)
         }
     }
 
-    fun onUsageLimitPerUserChanged(value: Int) {
+    fun onUsageLimitPerUserChanged(value: Int?) {
         restrictionsDraft.update {
             it.copy(usageLimitPerUser = value)
         }
@@ -87,10 +88,22 @@ class CouponRestrictionsViewModel @Inject constructor(
         }
     }
 
+    fun onAllowedEmailsButtonClicked() {
+        triggerEvent(OpenAllowedEmailsEditor(restrictionsDraft.value.restrictedEmails))
+    }
+
+    fun onAllowedEmailsUpdated(allowedEmails: List<String>) {
+        restrictionsDraft.update {
+            it.copy(restrictedEmails = allowedEmails)
+        }
+    }
+
     data class ViewState(
         val restrictions: CouponRestrictions,
         val currencyCode: String,
         val hasChanges: Boolean,
         val showLimitUsageToXItems: Boolean
     )
+
+    data class OpenAllowedEmailsEditor(val allowedEmails: List<String>) : MultiLiveEvent.Event()
 }
