@@ -47,7 +47,6 @@ import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.cardreader.payment.CardReaderPaymentDialogFragment
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
@@ -61,9 +60,11 @@ import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragment
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment
-import com.woocommerce.android.ui.orders.simplepayments.TakePaymentViewModel
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment
+import com.woocommerce.android.ui.payments.TakePaymentViewModel
+import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragment
 import com.woocommerce.android.ui.refunds.RefundSummaryFragment
+import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
@@ -227,7 +228,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                 binding.orderRefreshLayout.isRefreshing = it
             }
             new.refreshedProductId?.takeIfNotEqualTo(old?.refreshedProductId) { refreshProduct(it) }
-            new.installWcShippingBannerVisible?.takeIfNotEqualTo(old?.installWcShippingBannerVisible) {
+            new.wcShippingBannerVisible?.takeIfNotEqualTo(old?.wcShippingBannerVisible) {
                 showInstallWcShippingBanner(it)
             }
         }
@@ -264,14 +265,26 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                 is TakePaymentViewModel.SharePaymentUrl -> {
                     sharePaymentUrl(event.storeName, event.paymentUrl)
                 }
+                is InstallWcShippingFlowViewModel.InstallWcShipping -> navigateToInstallWcShippingFlow()
                 else -> event.isHandled = false
             }
         }
         viewModel.start()
     }
 
-    private fun showInstallWcShippingBanner(show: Boolean) {
-        binding.orderDetailInstallWcShippingBanner.isVisible = show && FeatureFlag.WC_SHIPPING_BANNER.isEnabled()
+    private fun navigateToInstallWcShippingFlow() {
+        findNavController().navigateSafely(
+            OrderDetailFragmentDirections.actionOrderDetailFragmentToInstallWcShippingFlow()
+        )
+    }
+
+    private fun showInstallWcShippingBanner(isVisible: Boolean) {
+        val banner = binding.orderDetailInstallWcShippingBanner
+        banner.isVisible = isVisible && FeatureFlag.WC_SHIPPING_BANNER.isEnabled()
+        banner.setClickListeners(
+            onInstallWcShipping = { viewModel.onGetWcShippingClicked() },
+            onDismiss = { viewModel.onWcShippingBannerDismissed() }
+        )
     }
 
     private fun setupOrderEditingObservers(orderEditingViewModel: OrderEditingViewModel) {

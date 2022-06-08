@@ -73,12 +73,12 @@
         android:label="RefundConfirmationDialog" >
         <action
             android:id="@+id/action_refundConfirmationDialog_to_cardReaderFlow"
-            app:destination="@id/cardReaderFlow"
+            app:destination="@id/paymentFlow"
             app:popUpTo="@+id/refundConfirmationDialog"
             app:popUpToInclusive="true">
             <argument
                 android:name="cardReaderFlowParam"
-                app:argType="com.woocommerce.android.ui.cardreader.onboarding.CardReaderFlowParam"
+                app:argType="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam"
                 app:nullable="false" />
         </action>
         <argument

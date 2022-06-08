@@ -4,6 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph_orders"
     app:startDestination="@id/orderDetailFragment">
+
+    <include app:graph="@navigation/nav_graph_payment_flow" />
+    <include app:graph="@navigation/nav_graph_refunds" />
+
     <dialog
         android:id="@+id/itemSelectorDialog"
         android:name="com.woocommerce.android.ui.ItemSelectorDialog"
@@ -130,7 +134,6 @@
             android:name="orderId"
             app:argType="long" />
     </fragment>
-    <include app:graph="@navigation/nav_graph_refunds" />
     <dialog
         android:id="@+id/shippingLabelPaperSizeSelectorDialog"
         android:name="com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog">
@@ -223,10 +226,10 @@
 
         <action
             android:id="@+id/action_orderDetailFragment_to_cardReaderFlow"
-            app:destination="@id/cardReaderFlow">
+            app:destination="@id/paymentFlow">
             <argument
                 android:name="cardReaderFlowParam"
-                app:argType="com.woocommerce.android.ui.cardreader.onboarding.CardReaderFlowParam"
+                app:argType="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam"
                 app:nullable="false" />
         </action>
 
@@ -241,6 +244,10 @@
                 android:name="mode"
                 app:argType="com.woocommerce.android.ui.orders.creation.OrderCreationViewModel$Mode" />
         </action>
+
+        <action
+            android:id="@+id/action_orderDetailFragment_to_installWcShippingFlow"
+            app:destination="@id/installWcShippingFlowFragment" />
     </fragment>
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
@@ -431,7 +438,7 @@
     </fragment>
     <fragment
         android:id="@+id/receiptPreviewFragment"
-        android:name="com.woocommerce.android.ui.cardreader.receipt.ReceiptPreviewFragment"
+        android:name="com.woocommerce.android.ui.payments.cardreader.receipt.ReceiptPreviewFragment"
         android:label="ReceiptPreviewFragment"
         tools:layout="@layout/fragment_receipt_preview">
         <argument
@@ -549,6 +556,8 @@
             android:name="requestKey"
             app:argType="string" />
     </fragment>
-
-    <include app:graph="@navigation/nav_graph_card_reader_flow" />
+    <fragment
+        android:id="@+id/installWcShippingFlowFragment"
+        android:name="com.woocommerce.android.ui.shipping.InstallWcShippingFlowFragment"
+        android:label="InstallWcShippingFlowFragment" />
 </navigation>

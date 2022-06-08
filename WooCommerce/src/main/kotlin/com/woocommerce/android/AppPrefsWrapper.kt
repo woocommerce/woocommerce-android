@@ -1,8 +1,8 @@
 package com.woocommerce.android
 
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
-import com.woocommerce.android.ui.cardreader.onboarding.PersistentOnboardingData
-import com.woocommerce.android.ui.cardreader.onboarding.PluginType
+import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
+import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -127,6 +127,12 @@ class AppPrefsWrapper @Inject constructor() {
     fun removeLoginSiteAddress() = AppPrefs.removeLoginSiteAddress()
 
     fun getLoginSiteAddress() = AppPrefs.getLoginSiteAddress().takeIf { it.isNotEmpty() }
+
+    fun setWcShippingBannerDismissed(dismissed: Boolean, currentSiteId: Int) {
+        AppPrefs.setWcShippingBannerDismissed(dismissed, currentSiteId)
+    }
+
+    fun getWcShippingBannerDismissed(currentSiteId: Int) = AppPrefs.getWcShippingBannerDismissed(currentSiteId)
 
     /**
      * Observes changes to the preferences

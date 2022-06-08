@@ -20,9 +20,9 @@ METADATA_DIR_PATH = File.join(PROJECT_ROOT_FOLDER, 'WooCommerce', 'metadata')
 RELEASE_NOTES_PATH = File.join(METADATA_DIR_PATH, 'release_notes.txt')
 
 # URL of the GlotPress project containing the app's strings
-GLOTPRESS_APP_STRINGS_URL = 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/'
+GLOTPRESS_APP_STRINGS_PROJECT_URL = 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/'
 # URL of the GlotPress project containing the Play Store metadata (title, keywords, release notes, …)
-GLOTPRESS_METADATA_PROJECT_URL = 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/release-notes/'
+GLOTPRESS_PLAYSTORE_METADATA_PROJECT_URL = 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/release-notes/'
 
 ########################################################################
 # Environment
@@ -236,7 +236,7 @@ platform :android do
   lane :download_translations do |options|
     android_download_translations(
       res_dir: File.join(ENV['PROJECT_NAME'], 'src', 'main', 'res'),
-      glotpress_url: GLOTPRESS_APP_STRINGS_URL,
+      glotpress_url: GLOTPRESS_APP_STRINGS_PROJECT_URL,
       locales: SUPPORTED_LOCALES,
       lint_task: 'lintVanillaRelease'
     )
@@ -263,12 +263,12 @@ platform :android do
 
     UI.message('Checking app strings translation status...')
     check_translation_progress(
-      glotpress_url: GLOTPRESS_APP_STRINGS_URL,
+      glotpress_url: GLOTPRESS_APP_STRINGS_PROJECT_URL,
       abort_on_violations: false
     )
     UI.message("Checking release notes strings translation status...")
     check_translation_progress(
-      glotpress_url: GLOTPRESS_METADATA_PROJECT_URL,
+      glotpress_url: GLOTPRESS_PLAYSTORE_METADATA_PROJECT_URL,
       abort_on_violations: false
     )
 
@@ -509,7 +509,7 @@ platform :android do
     delete_old_changelogs(build: options[:build_number])
     download_path = METADATA_DIR_PATH
     gp_downloadmetadata(
-      project_url: GLOTPRESS_METADATA_PROJECT_URL,
+      project_url: GLOTPRESS_PLAYSTORE_METADATA_PROJECT_URL,
       target_files: files,
       locales: SUPPORTED_LOCALES.map { |hsh| [hsh[:glotpress], hsh[:google_play]] },
       source_locale: "en-US",
@@ -522,11 +522,20 @@ platform :android do
       locales: SUPPORTED_LOCALES.map { |hsh| [hsh[:glotpress], hsh[:google_play]] }
     )
     add_us_release_notes(
-      release_notes_path: File.join(download_path, release_notes.xml),
+      release_notes_path: File.join(download_path, 'release_notes.xml'),
       version_name: options[:version]
     )
-    # TODO: use Fastlane API to add, commit, and ask caller whether they want to push
-    sh("git add #{download_path} && (git diff-index --quiet HEAD || git commit -m \"Update metadata translations for #{options[:version]}\") && git push")
+
+    # We need to explicitly call `git_add`, despite the path being passed to `git_commit` as well.
+    # That's because we might have new files, that the commit command would otherwise miss.
+    git_add(path: download_path)
+    git_commit(
+      path: download_path,
+      message: "Update metadata translations for #{options[:version]}",
+      allow_nothing_to_commit: true
+    )
+
+    push_to_git_remote_with_confirmation
   end
 
   ########################################################################
@@ -767,6 +776,19 @@ platform :android do
       branch = repo.revparse('HEAD')[0, 7]
 
       return "#{branch}-#{commit}"
+    end
+  end
+
+  # Asks the user whether they want to push to the Git remote using `UI.confirm`.
+  #
+  # @note It supports an override environment variable flag, `RELEASE_TOOLKIT_SKIP_PUSH_CONFIRM`.
+  # If set to `false` the user won't be asked for confirmation.
+  #
+  def push_to_git_remote_with_confirmation
+    if ENV.fetch('RELEASE_TOOLKIT_SKIP_PUSH_CONFIRM', false) || UI.confirm('Push changes to remote?')
+      push_to_git_remote(tags: false)
+    else
+      UI.message('Continuing without pushing')
     end
   end
 end
