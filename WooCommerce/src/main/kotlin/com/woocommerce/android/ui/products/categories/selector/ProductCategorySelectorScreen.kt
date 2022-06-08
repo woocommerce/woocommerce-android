@@ -95,7 +95,7 @@ fun ProductCategorySelectorScreen(
                 onDoneClick = onDoneClick
             )
             viewState.loadingState == LoadingState.Loading -> CategoriesSkeleton()
-            else -> EmptyCategoriesList()
+            else -> EmptyCategoriesList(viewState.searchQuery)
         }
     }
 }
@@ -203,7 +203,7 @@ private fun LazyListScope.categoryItem(item: CategoryUiModel, depth: Int = 0) {
 }
 
 @Composable
-private fun EmptyCategoriesList() {
+private fun EmptyCategoriesList(searchQuery: String) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -211,8 +211,13 @@ private fun EmptyCategoriesList() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        val message = if (searchQuery.isEmpty()) {
+            stringResource(id = R.string.product_category_selector_empty_state)
+        } else {
+            stringResource(id = R.string.empty_message_with_search, searchQuery)
+        }
         Text(
-            text = stringResource(id = R.string.product_category_selector_empty_state),
+            text = message,
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.h6,
             modifier = Modifier.padding(
