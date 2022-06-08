@@ -23,9 +23,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.KeyboardType
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.component.BigDecimalTextFieldValueMapper
-import com.woocommerce.android.ui.compose.component.IntTextFieldValueMapper
-import com.woocommerce.android.ui.compose.component.WCListItemWithInlineSubtitle
+import com.woocommerce.android.ui.compose.component.NullableBigDecimalTextFieldValueMapper
+import com.woocommerce.android.ui.compose.component.NullableIntTextFieldValueMapper
 import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
 import com.woocommerce.android.ui.compose.component.WCSwitch
 import java.math.BigDecimal
@@ -50,11 +49,11 @@ fun CouponRestrictionsScreen(viewModel: CouponRestrictionsViewModel) {
 @Composable
 fun CouponRestrictionsScreen(
     viewState: CouponRestrictionsViewModel.ViewState,
-    onMinimumAmountChanged: (BigDecimal) -> Unit,
-    onMaximumAmountChanged: (BigDecimal) -> Unit,
-    onUsageLimitPerCouponChanged: (Int) -> Unit,
-    onLimitUsageToXItemsChanged: (Int) -> Unit,
-    onUsageLimitPerUserChanged: (Int) -> Unit,
+    onMinimumAmountChanged: (BigDecimal?) -> Unit,
+    onMaximumAmountChanged: (BigDecimal?) -> Unit,
+    onUsageLimitPerCouponChanged: (Int?) -> Unit,
+    onLimitUsageToXItemsChanged: (Int?) -> Unit,
+    onUsageLimitPerUserChanged: (Int?) -> Unit,
     onIndividualUseChanged: (Boolean) -> Unit,
     onExcludeSaleItemsChanged: (Boolean) -> Unit,
     onAllowedEmailsButtonClicked: () -> Unit
@@ -68,56 +67,50 @@ fun CouponRestrictionsScreen(
             .padding(vertical = dimensionResource(id = R.dimen.major_100))
             .fillMaxSize()
     ) {
-        WCOutlinedTypedTextField(
-            value = viewState.restrictions.minimumAmount ?: BigDecimal.ZERO,
+        SpendingRestrictionField(
+            value = viewState.restrictions.minimumAmount,
             onValueChange = onMinimumAmountChanged,
             label = stringResource(id = R.string.coupon_restrictions_minimum_spend_hint, viewState.currencyCode),
-            valueMapper = BigDecimalTextFieldValueMapper(supportsNegativeValue = false),
-            modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100)),
-            // TODO use KeyboardType.Decimal after updating to Compose 1.2.0
-            //  (https://issuetracker.google.com/issues/209835363)
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-
+            modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
         )
 
-        WCOutlinedTypedTextField(
-            value = viewState.restrictions.maximumAmount ?: BigDecimal.ZERO,
+        SpendingRestrictionField(
+            value = viewState.restrictions.maximumAmount,
             onValueChange = onMaximumAmountChanged,
             label = stringResource(id = R.string.coupon_restrictions_maximum_spend_hint, viewState.currencyCode),
-            valueMapper = BigDecimalTextFieldValueMapper(supportsNegativeValue = false),
-            modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100)),
-            // TODO use KeyboardType.Decimal after updating to Compose 1.2.0
-            //  (https://issuetracker.google.com/issues/209835363)
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
         )
 
         WCOutlinedTypedTextField(
-            value = viewState.restrictions.usageLimit ?: 0,
+            value = viewState.restrictions.usageLimit,
             onValueChange = onUsageLimitPerCouponChanged,
             label = stringResource(id = R.string.coupon_restrictions_limit_per_coupon_hint),
-            valueMapper = IntTextFieldValueMapper(supportsNegativeValue = false),
+            valueMapper = NullableIntTextFieldValueMapper(supportsNegativeValue = false),
             modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100)),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            placeholderText = stringResource(id = R.string.coupon_restrictions_limit_per_coupon_placeholder)
         )
 
         if (viewState.showLimitUsageToXItems) {
             WCOutlinedTypedTextField(
-                value = viewState.restrictions.limitUsageToXItems ?: 0,
+                value = viewState.restrictions.limitUsageToXItems,
                 onValueChange = onLimitUsageToXItemsChanged,
                 label = stringResource(id = R.string.coupon_restrictions_amount_limit_hint),
-                valueMapper = IntTextFieldValueMapper(supportsNegativeValue = false),
+                valueMapper = NullableIntTextFieldValueMapper(supportsNegativeValue = false),
                 modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100)),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                placeholderText = stringResource(id = R.string.coupon_restrictions_amount_limit_placeholder)
             )
         }
 
         WCOutlinedTypedTextField(
-            value = viewState.restrictions.usageLimitPerUser ?: 0,
+            value = viewState.restrictions.usageLimitPerUser,
             onValueChange = onUsageLimitPerUserChanged,
             label = stringResource(id = R.string.coupon_restrictions_limit_per_user_hint),
-            valueMapper = IntTextFieldValueMapper(supportsNegativeValue = false),
+            valueMapper = NullableIntTextFieldValueMapper(supportsNegativeValue = false),
             modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100)),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            placeholderText = stringResource(id = R.string.coupon_restrictions_limit_per_user_placeholder)
         )
 
         AllowedEmailsButton(
@@ -134,6 +127,26 @@ fun CouponRestrictionsScreen(
             onExcludeSaleItemsChanged = onExcludeSaleItemsChanged
         )
     }
+}
+
+@Composable
+private fun SpendingRestrictionField(
+    value: BigDecimal?,
+    onValueChange: (BigDecimal?) -> Unit,
+    label: String,
+    modifier: Modifier = Modifier
+) {
+    WCOutlinedTypedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = label,
+        valueMapper = NullableBigDecimalTextFieldValueMapper(supportsNegativeValue = false),
+        modifier = modifier,
+        // TODO use KeyboardType.Decimal after updating to Compose 1.2.0
+        //  (https://issuetracker.google.com/issues/209835363)
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        placeholderText = stringResource(id = R.string.coupon_restrictions_minimum_maximum_spend_placeholder)
+    )
 }
 
 @Composable

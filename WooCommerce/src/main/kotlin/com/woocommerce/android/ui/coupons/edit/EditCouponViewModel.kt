@@ -5,10 +5,12 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
+import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.Coupon.CouponRestrictions
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.coupons.CouponRepository
+import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.EditIncludedProductCategories
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.EditIncludedProducts
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenCouponRestrictions
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenDescriptionEditor
@@ -122,9 +124,20 @@ class EditCouponViewModel @Inject constructor(
 
     fun onUsageRestrictionsClick() {
         couponDraft.value?.let {
+            // If a Coupon has no set minimum or maximum spend restriction, the REST API returns their values
+            // as BigDecimal `0.00`. Yet, in wp-admin, a Coupon with no minimum or maximum spend restriction has the
+            // "No minimum" or "No maximum" placeholders displayed, instead of `0.00`.
+            // To replicate that behavior on the app's Coupon Restriction Screen, here we set `0.00` values as null.
+            val minimumAmount =
+                if (it.restrictions.minimumAmount isEqualTo BigDecimal.ZERO) null else it.restrictions.minimumAmount
+            val maximumAmount =
+                if (it.restrictions.maximumAmount isEqualTo BigDecimal.ZERO) null else it.restrictions.maximumAmount
             triggerEvent(
                 OpenCouponRestrictions(
-                    restrictions = it.restrictions,
+                    restrictions = it.restrictions.copy(
+                        minimumAmount = minimumAmount,
+                        maximumAmount = maximumAmount
+                    ),
                     currencyCode = currencyCode,
                     showLimitUsageToXItems = it.type != Coupon.Type.FixedCart
                 )
@@ -138,15 +151,27 @@ class EditCouponViewModel @Inject constructor(
         }
     }
 
-    fun onRestrictionsUpdated(restrictions: CouponRestrictions) {
-        couponDraft.update {
-            it?.copy(restrictions = restrictions)
-        }
-    }
-
     fun onSelectedProductsUpdated(productIds: Set<Long>) {
         couponDraft.update {
             it?.copy(productIds = productIds.toList())
+        }
+    }
+
+    fun onSelectCategoriesButtonClick() {
+        couponDraft.value?.let {
+            triggerEvent(EditIncludedProductCategories(it.categoryIds))
+        }
+    }
+
+    fun onIncludedCategoriesChanged(includedCategoryIds: List<Long>) {
+        couponDraft.update {
+            it?.copy(categoryIds = includedCategoryIds)
+        }
+    }
+
+    fun onRestrictionsUpdated(restrictions: CouponRestrictions) {
+        couponDraft.update {
+            it?.copy(restrictions = restrictions)
         }
     }
 
