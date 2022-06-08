@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.categories.selector
 
+import androidx.annotation.VisibleForTesting
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -13,7 +14,8 @@ class ProductCategoryListHandler @Inject constructor(
     private val repository: ProductCategorySelectorRepository
 ) {
     companion object {
-        private const val PAGE_SIZE = 25
+        @VisibleForTesting
+        const val PAGE_SIZE = 25
     }
 
     private val mutex = Mutex()
@@ -23,8 +25,8 @@ class ProductCategoryListHandler @Inject constructor(
     private val searchQuery = MutableStateFlow("")
     private val searchResults = MutableStateFlow(emptyList<ProductCategoryTreeItem>())
 
-    val categories: Flow<List<ProductCategoryTreeItem>> = searchQuery.flatMapLatest {
-        if (it.isEmpty()) {
+    val categories: Flow<List<ProductCategoryTreeItem>> = searchQuery.flatMapLatest { query ->
+        if (query.isEmpty()) {
             repository.observeCategories()
                 .map { it.convertToTree() }
         } else {
@@ -76,7 +78,7 @@ class ProductCategoryListHandler @Inject constructor(
             pageSize = PAGE_SIZE
         ).onSuccess { result ->
             // Return results as flat tree
-            val mappedResults = result.productCategories.map { ProductCategoryTreeItem(it, emptyList()) }
+            val mappedResults = result.productCategories.convertToFlatTree()
             searchResults.update { it + mappedResults }
             canLoadMore = result.canLoadMore
             offset += PAGE_SIZE
