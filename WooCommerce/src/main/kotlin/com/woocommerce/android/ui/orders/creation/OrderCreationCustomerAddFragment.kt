@@ -306,7 +306,7 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
 
     private fun showCustomerSearchScreen() {
         findNavController().navigateSafely(
-            OrderDetailFragmentDirections.actionGlobalCustomerListFragment()
+            OrderCreationCustomerAddFragmentDirections.actionGlobalCustomerListFragment()
         )
     }
 }

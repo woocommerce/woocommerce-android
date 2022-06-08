@@ -559,13 +559,4 @@
         android:id="@+id/installWcShippingFlowFragment"
         android:name="com.woocommerce.android.ui.shipping.InstallWcShippingFlowFragment"
         android:label="InstallWcShippingFlowFragment" />
-
-    <action
-        android:id="@+id/action_global_customerListFragment"
-        app:destination="@id/customerListFragment" />
-    <fragment
-        android:id="@+id/customerListFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.customerlist.CustomerListFragment"
-        android:label="customerListFragment"
-        tools:layout="@layout/fragment_customer_list" />
 </navigation>
