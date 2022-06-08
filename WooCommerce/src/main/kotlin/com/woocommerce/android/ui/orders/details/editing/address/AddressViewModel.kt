@@ -177,7 +177,7 @@ class AddressViewModel @Inject constructor(
     }
 
     fun onCustomerSearchClicked() {
-        // TODO nbradbury
+        triggerEvent(SearchCustomers)
     }
 
     fun onDoneSelected(addDifferentShippingChecked: Boolean? = null) {
@@ -268,4 +268,6 @@ class AddressViewModel @Inject constructor(
     enum class Field {
         FirstName, LastName, Company, Phone, Address1, Address2, City, State, Zip, Email
     }
+
+    object SearchCustomers : MultiLiveEvent.Event()
 }

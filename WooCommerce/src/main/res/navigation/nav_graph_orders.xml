@@ -223,6 +223,9 @@
         <action
             android:id="@+id/action_orderDetailFragment_to_billingAddressEditingFragment"
             app:destination="@id/billingAddressEditingFragment" />
+        <action
+            android:id="@+id/action_orderDetailFragment_to_customerListFragment"
+            app:destination="@id/customerListFragment" />
 
         <action
             android:id="@+id/action_orderDetailFragment_to_cardReaderFlow"
@@ -560,4 +563,9 @@
         android:id="@+id/installWcShippingFlowFragment"
         android:name="com.woocommerce.android.ui.shipping.InstallWcShippingFlowFragment"
         android:label="InstallWcShippingFlowFragment" />
+    <fragment
+        android:id="@+id/customerListFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.customerlist.CustomerListFragment"
+        android:label="customerListFragment"
+        tools:layout="@layout/fragment_customer_list" />
 </navigation>

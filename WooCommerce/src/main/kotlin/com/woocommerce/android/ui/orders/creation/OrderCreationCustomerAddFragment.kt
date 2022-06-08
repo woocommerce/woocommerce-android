@@ -123,6 +123,7 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
                     )
                     findNavController().navigateUp()
                 }
+                is AddressViewModel.SearchCustomers -> showCustomerSearchScreen()
             }
         }
     }
@@ -301,5 +302,11 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
         shippingBinding = null
         billingBinding = null
         showShippingAddressFormSwitch = null
+    }
+
+    private fun showCustomerSearchScreen() {
+        findNavController().navigateSafely(
+            OrderDetailFragmentDirections.actionOrderDetailFragmentToCustomerListFragment()
+        )
     }
 }
