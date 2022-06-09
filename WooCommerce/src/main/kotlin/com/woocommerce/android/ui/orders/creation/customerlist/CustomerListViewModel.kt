@@ -7,7 +7,6 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -23,18 +22,19 @@ import javax.inject.Inject
 @HiltViewModel
 class CustomerListViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val networkStatus: NetworkStatus
+    private val networkStatus: NetworkStatus,
+    private val customerListRepository: CustomerListRepository
 ) : ScopedViewModel(savedState) {
     private val _customerList = MutableLiveData<List<WCCustomerModel>>()
     val customerList: LiveData<List<WCCustomerModel>> = _customerList
 
-    val customerListViewStateLiveData = LiveDataDelegate(savedState, CustomerListViewState())
-    private var customernListViewState by customerListViewStateLiveData
+    val viewStateLiveData = LiveDataDelegate(savedState, CustomerListViewState())
+    private var viewState by viewStateLiveData
 
     private var searchJob: Job? = null
 
     fun onCustomerClick(customer: WCCustomerModel) {
-        // TODO
+        // TODO nbradbury
     }
 
     fun onSearchQueryChanged(query: String) {
@@ -44,68 +44,33 @@ class CustomerListViewModel @Inject constructor(
             searchJob?.cancel()
             searchJob = launch {
                 delay(AppConstants.SEARCH_TYPING_DELAY_MS)
-                customernListViewState = customernListViewState.copy(
-                    isSkeletonShown = true,
-                    isEmptyViewVisible = false,
-                    searchQuery = query
-                )
-                fetchCustomerList()
+                searchCustomerList()
             }
         } else {
             launch {
                 searchJob?.cancelAndJoin()
                 _customerList.value = emptyList()
-                customernListViewState = customernListViewState.copy(isEmptyViewVisible = false)
+                viewState = viewState.copy(isEmptyViewVisible = false)
             }
         }
     }
 
-    private suspend fun fetchCustomerList() {
+    private suspend fun searchCustomerList() {
         if (!networkStatus.isConnected()) {
-            triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
-        } else if (customernListViewState.searchQuery.isNullOrEmpty()) {
+            triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error)) // TODO
+        } else if (viewState.searchQuery.isNullOrEmpty()) {
             _customerList.value = emptyList()
         } else {
-        }
-            if (searchQuery.isNullOrEmpty()) {
-                _productList.value = productRepository.fetchProductList(
-                    loadMore,
-                    excludedProductIds = excludedProductIds
-                )
-            } else {
-                productRepository.searchProductList(
-                    searchQuery,
-                    loadMore,
-                    excludedProductIds
-                )?.let { fetchedProducts ->
-                    // make sure the search query hasn't changed while the fetch was processing
-                    if (searchQuery == productRepository.lastSearchQuery) {
-                        if (loadMore) {
-                            _productList.value = _productList.value.orEmpty() + fetchedProducts
-                        } else {
-                            _productList.value = fetchedProducts
-                        }
-                    } else {
-                        WooLog.d(WooLog.T.PRODUCTS, "Search query changed")
-                    }
-                }
-            }
-
-            productSelectionListViewState = productSelectionListViewState.copy(
-                isLoading = true,
-                canLoadMore = productRepository.canLoadMoreProducts,
-                isEmptyViewVisible = _productList.value?.isEmpty() == true
+            viewState = viewState.copy(
+                isSkeletonShown = true,
+                isEmptyViewVisible = false
             )
-        } else {
-            triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
+            _customerList.value = customerListRepository.searchCustomerList(viewState.searchQuery!!)
+            viewState = viewState.copy(
+                isSkeletonShown = false,
+                isEmptyViewVisible = _customerList.value?.isEmpty() == true
+            )
         }
-
-        productSelectionListViewState = productSelectionListViewState.copy(
-            isSkeletonShown = false,
-            isLoading = false,
-            isLoadingMore = false,
-            isRefreshing = false
-        )
     }
 
     @Parcelize
