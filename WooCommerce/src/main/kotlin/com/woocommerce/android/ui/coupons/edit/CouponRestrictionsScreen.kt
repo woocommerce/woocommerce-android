@@ -54,8 +54,8 @@ fun CouponRestrictionsScreen(viewModel: CouponRestrictionsViewModel) {
             onIndividualUseChanged = viewModel::onIndividualUseChanged,
             onExcludeSaleItemsChanged = viewModel::onExcludeSaleItemsChanged,
             onAllowedEmailsButtonClicked = viewModel::onAllowedEmailsButtonClicked,
-            onExcludeProductsButtonClick = {},
-            onExcludeCategoriesButtonClick = {}
+            onExcludeProductsButtonClick = viewModel::onExcludeProductsButtonClick,
+            onExcludeCategoriesButtonClick = viewModel::onExcludeCategoriesButtonClick
         )
     }
 }

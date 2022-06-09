@@ -55,6 +55,12 @@
         <action
             android:id="@+id/action_couponRestrictionsFragment_to_emailRestrictionFragment"
             app:destination="@id/emailRestrictionFragment" />
+        <action
+            android:id="@+id/action_couponRestrictions_to_productCategorySelector"
+            app:destination="@id/productCategorySelectorFragment" />
+        <action
+            android:id="@+id/action_couponRestrictionsFragment_to_productSelectorFragment"
+            app:destination="@id/productSelectorFragment" />
     </fragment>
     <fragment
         android:id="@+id/productSelectorFragment"

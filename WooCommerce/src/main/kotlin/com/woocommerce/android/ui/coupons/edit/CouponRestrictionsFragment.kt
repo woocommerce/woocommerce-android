@@ -56,6 +56,7 @@ class CouponRestrictionsFragment : BaseFragment(), BackPressListener {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
+                is EditCouponNavigationTarget -> EditCouponNavigator.navigate(this, event)
                 is OpenAllowedEmailsEditor -> {
                     findNavController().navigateSafely(
                         CouponRestrictionsFragmentDirections.actionCouponRestrictionsFragmentToEmailRestrictionFragment(
