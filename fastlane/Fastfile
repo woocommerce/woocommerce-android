@@ -18,6 +18,24 @@ BUILD_PRODUCTS_PATH = File.join(PROJECT_ROOT_FOLDER, 'artifacts')
 INSTALLABLE_BUILD_DOMAIN = 'https://d2twmm2nzpx3bg.cloudfront.net'
 METADATA_DIR_PATH = File.join(PROJECT_ROOT_FOLDER, 'WooCommerce', 'metadata')
 RELEASE_NOTES_PATH = File.join(METADATA_DIR_PATH, 'release_notes.txt')
+MAIN_STRINGS_PATH = File.join('WooCommerce', 'src', 'main', 'res', 'values', 'strings.xml')
+FROZEN_STRINGS_DIR_PATH = "./fastlane/resources/values/"
+REMOTE_LIBRARIES_STRINGS_PATHS = [
+  {
+    name: 'Login Library',
+    import_key: 'wordPressLoginVersion',
+    repository: 'wordpress-mobile/WordPress-Login-Flow-Android',
+    strings_file_path: 'WordPressLoginFlow/src/main/res/values/strings.xml',
+    exclusions: ['default_web_client_id']
+  },
+  {
+    name: 'About Library',
+    import_key: 'aboutAutomatticVersion', # key used in build.gradle to reference the version
+    repository: 'Automattic/about-automattic-android',
+    strings_file_path: 'library/src/main/res/values/strings.xml',
+    exclusions: []
+  }
+].freeze
 
 # URL of the GlotPress project containing the app's strings
 GLOTPRESS_APP_STRINGS_PROJECT_URL = 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/'
@@ -57,9 +75,6 @@ SUPPORTED_LOCALES = [
 ].freeze
 
 SCREENSHOT_DIRECTORY = File.join(Dir.pwd, 'screenshots')
-
-main_strings_path = "./WooCommerce/src/main/res/values/strings.xml"
-update_strings_path = "./fastlane/resources/values/"
 
 platform :android do
   ########################################################################
@@ -433,38 +448,20 @@ platform :android do
   #####################################################################################
   desc "Merge libraries strings files into the main app one"
   lane :localize_libs do | options |
-    binary_imported_libraries = [
-      {
-        name: "Login Library",
-        import_key: "wordPressLoginVersion",
-        repository: "wordpress-mobile/WordPress-Login-Flow-Android",
-        strings_file_path: "WordPressLoginFlow/src/main/res/values/strings.xml",
-        github_release_prefix: "",
-        exclusions: ["default_web_client_id"]
-      },
-      {
-        name: "About Library",
-        import_key: "aboutAutomatticVersion", # key used in build.gradle to reference the version
-        repository: "Automattic/about-automattic-android",
-        strings_file_path: "library/src/main/res/values/strings.xml",
-        github_release_prefix: "",
-        exclusions: []
-      },
-    ]
-
-  binary_imported_libraries.each do  | lib |
+  REMOTE_LIBRARIES_STRINGS_PATHS.each do  | lib |
     download_path = android_download_file_by_version(
       library_name: lib[:name],
       import_key: lib[:import_key],
       repository: lib[:repository],
-      file_path: lib[:strings_file_path],
-      github_release_prefix: lib[:github_release_prefix]
+      file_path: lib[:strings_file_path]
     )
 
   if download_path.nil?
-    error_message = "Can't download strings file for #{lib[:name]}.\r\n"
-    error_message += "Strings for this library won't get translated.\r\n"
-    error_message += "Do you want to continue anyway?"
+    error_message = <<~ERROR
+      Can't download strings file for #{lib[:name]}.
+      Strings for this library won't get translated.
+      Do you want to continue anyway?
+    ERROR
     UI.user_error! "Abort." unless UI.confirm(error_message)
   else
     UI.message("Strings.xml file for #{lib[:name]} downloaded to #{download_path}.")
@@ -473,7 +470,7 @@ platform :android do
       strings_path: download_path,
       exclusions: lib[:exclusions]
     }]
-    an_localize_libs(app_strings_path: main_strings_path, libs_strings_path: lib_to_merge)
+    an_localize_libs(app_strings_path: MAIN_STRINGS_PATH, libs_strings_path: lib_to_merge)
     File.delete(download_path) if File.exist?(download_path)
   end
   end
@@ -543,11 +540,11 @@ platform :android do
   ########################################################################
   private_lane :commit_strings do | options |
     if (options[:auto_commit]) then
-      sh("cd .. && git add #{main_strings_path}")
+      sh("cd .. && git add #{MAIN_STRINGS_PATH}")
       sh("git commit -m 'Update strings for translation'")
       sh("git push origin HEAD")
     else
-      UI.important("Your #{main_strings_path} has changed.")
+      UI.important("Your #{MAIN_STRINGS_PATH} has changed.")
       UI.input("Please, review the changes, commit them and press return to continue.")
     end
   end
@@ -741,7 +738,7 @@ platform :android do
   end
 
   private_lane :send_strings_for_translation do | options |
-    sh("cd .. && mkdir -p #{update_strings_path} && cp #{main_strings_path} #{update_strings_path} && git add #{update_strings_path}strings.xml")
+    sh("cd .. && mkdir -p #{FROZEN_STRINGS_DIR_PATH} && cp #{MAIN_STRINGS_PATH} #{FROZEN_STRINGS_DIR_PATH} && git add #{FROZEN_STRINGS_DIR_PATH}strings.xml")
     sh("git diff-index --quiet HEAD || git commit -m \"Send strings to translation.\"")
     sh("git push origin HEAD")
   end
