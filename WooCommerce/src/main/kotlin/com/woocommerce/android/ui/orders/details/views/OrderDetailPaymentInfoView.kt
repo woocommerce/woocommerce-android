@@ -16,13 +16,19 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailRefundsAdapter
+import com.woocommerce.android.ui.orders.details.adapter.OrderDetailRefundsLineBuilder
+import dagger.hilt.android.AndroidEntryPoint
 import java.math.BigDecimal
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class OrderDetailPaymentInfoView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
+    @Inject lateinit var orderDetailRefundsLineBuilder: OrderDetailRefundsLineBuilder
+
     private val binding = OrderDetailPaymentInfoBinding.inflate(LayoutInflater.from(ctx), this)
 
     @Suppress("LongParameterList")
@@ -174,7 +180,12 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
         formatCurrencyForDisplay: (BigDecimal) -> String
     ) {
         val adapter = binding.paymentInfoRefunds.adapter as? OrderDetailRefundsAdapter
-            ?: OrderDetailRefundsAdapter(order.isCashPayment, order.paymentMethodTitle, formatCurrencyForDisplay)
+            ?: OrderDetailRefundsAdapter(
+                order.isCashPayment,
+                order.paymentMethodTitle,
+                orderDetailRefundsLineBuilder,
+                formatCurrencyForDisplay,
+            )
         binding.paymentInfoRefunds.adapter = adapter
         adapter.refundList = refunds
 
