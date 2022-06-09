@@ -63,7 +63,10 @@ class OrderDetailRefundsAdapter(
             val context = viewBinding.root.context
 
             val refundLine = orderDetailRefundsLineBuilder.buildRefundLine(refund)
-            viewBinding.refundsListLblRefund.text = context.getString(R.string.orderdetail_refunded, refundLine)
+            viewBinding.refundsListLblRefund.text = context.getString(
+                R.string.orderdetail_refunded_line_with_info,
+                refundLine
+            )
             viewBinding.refundsListRefundAmount.text = context.getString(
                 R.string.orderdetail_refund_amount,
                 formatCurrency(refund.amount)
