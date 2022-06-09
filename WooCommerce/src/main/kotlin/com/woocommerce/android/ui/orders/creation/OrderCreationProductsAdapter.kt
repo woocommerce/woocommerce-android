@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.creation
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -19,7 +20,7 @@ class OrderCreationProductsAdapter(
     private val onIncreaseQuantity: (Long) -> Unit,
     private val onDecreaseQuantity: (Long) -> Unit
 ) : ListAdapter<ProductUIModel, ProductViewHolder>(ProductUIModelDiffCallback) {
-    var isQuantityButtonsEnabled = false
+    var areProductsEditable = false
         set(value) {
             if (value != field) {
                 field = value
@@ -56,14 +57,15 @@ class OrderCreationProductsAdapter(
                 },
                 plusMinusContentDescription = R.string.order_creation_change_product_quantity
             )
+            binding.productItemView.binding.divider.visibility = View.GONE
         }
 
         fun bind(productModel: ProductUIModel) {
-            binding.root.isEnabled = productModel.item.isSynced()
+            binding.root.isEnabled = productModel.item.isSynced() && areProductsEditable
             binding.productItemView.bind(productModel, currencyFormatter, currencyCode)
 
-            binding.stepperView.isMinusButtonEnabled = isQuantityButtonsEnabled
-            binding.stepperView.isPlusButtonEnabled = isQuantityButtonsEnabled
+            binding.stepperView.isMinusButtonEnabled = areProductsEditable
+            binding.stepperView.isPlusButtonEnabled = areProductsEditable
             binding.stepperView.apply {
                 value = productModel.item.quantity.toInt()
                 contentDescription = context.getString(R.string.count, value.toString())

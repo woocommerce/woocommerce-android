@@ -50,6 +50,7 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -307,7 +308,7 @@ class OrderCreationViewModel @Inject constructor(
      */
     private fun monitorOrderChanges() {
         viewModelScope.launch {
-            createOrUpdateOrderDraft(_orderDraft, retryOrderDraftUpdateTrigger)
+            createOrUpdateOrderDraft(_orderDraft.drop(1), retryOrderDraftUpdateTrigger)
                 .collect { updateStatus ->
                     when (updateStatus) {
                         OrderDraftUpdateStatus.PendingDebounce ->
@@ -317,7 +318,11 @@ class OrderCreationViewModel @Inject constructor(
                         OrderDraftUpdateStatus.Failed ->
                             viewState = viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = true)
                         is OrderDraftUpdateStatus.Succeeded -> {
-                            viewState = viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = false)
+                            viewState = viewState.copy(
+                                isUpdatingOrderDraft = false,
+                                showOrderUpdateSnackbar = false,
+                                isEditable = updateStatus.order.isEditable || mode is Mode.Creation
+                            )
                             _orderDraft.update { currentDraft ->
                                 // Keep the user's selected status
                                 updateStatus.order.copy(status = currentDraft.status)
@@ -403,7 +408,8 @@ class OrderCreationViewModel @Inject constructor(
         val isProgressDialogShown: Boolean = false,
         val willUpdateOrderDraft: Boolean = false,
         val isUpdatingOrderDraft: Boolean = false,
-        val showOrderUpdateSnackbar: Boolean = false
+        val showOrderUpdateSnackbar: Boolean = false,
+        val isEditable: Boolean = true
     ) : Parcelable {
         @IgnoredOnParcel
         val canCreateOrder: Boolean = !willUpdateOrderDraft && !isUpdatingOrderDraft && !showOrderUpdateSnackbar
