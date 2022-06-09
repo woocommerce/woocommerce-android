@@ -91,7 +91,7 @@ class ProductCategoryListHandlerTests : BaseUnitTest() {
     fun `given search is active, when we load more, then search for next page`() = testBlocking {
         val searchQuery = "query"
         setup {
-            whenever(repository.searchCategories(searchQuery, 0, ProductCategoryListHandler.PAGE_SIZE))
+            whenever(repository.searchCategories(eq(searchQuery), any(), eq(ProductCategoryListHandler.PAGE_SIZE)))
                 .thenReturn(
                     Result.success(
                         ProductCategorySelectorRepository.SearchResult(
