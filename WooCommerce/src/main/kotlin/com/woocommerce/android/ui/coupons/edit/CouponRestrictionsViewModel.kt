@@ -108,6 +108,18 @@ class CouponRestrictionsViewModel @Inject constructor(
         triggerEvent(EditExcludedProductCategories(restrictionsDraft.value.excludedCategoryIds))
     }
 
+    fun onExcludedProductChanged(excludedProductIds: Set<Long>) {
+        restrictionsDraft.update {
+            it.copy(excludedProductIds = excludedProductIds.toList())
+        }
+    }
+
+    fun onExcludedProductCategoriesChanged(excludedCategoryIds: Set<Long>) {
+        restrictionsDraft.update {
+            it.copy(excludedCategoryIds = excludedCategoryIds.toList())
+        }
+    }
+
     data class ViewState(
         val restrictions: CouponRestrictions,
         val currencyCode: String,

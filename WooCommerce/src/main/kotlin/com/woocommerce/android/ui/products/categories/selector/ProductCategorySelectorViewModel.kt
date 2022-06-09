@@ -90,7 +90,7 @@ class ProductCategorySelectorViewModel @Inject constructor(
     }
 
     fun onDoneClick() {
-        triggerEvent(ExitWithResult(selectedCategories.value.toList()))
+        triggerEvent(ExitWithResult(selectedCategories.value))
     }
 
     private fun monitorSearchQuery() {
