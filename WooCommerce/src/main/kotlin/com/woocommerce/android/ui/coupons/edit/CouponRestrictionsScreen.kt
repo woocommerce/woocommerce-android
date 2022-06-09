@@ -269,7 +269,7 @@ private fun ExclusionsSection(
         )
 
         val productsButtonSuffix = if (viewState.restrictions.excludedProductIds.isEmpty()) ""
-        else "(${viewState.restrictions.excludedProductIds.size})"
+        else " (${viewState.restrictions.excludedProductIds.size})"
         WCOutlinedButton(
             onClick = onExcludeProductsButtonClick,
             text = "${stringResource(R.string.coupon_restrictions_exclude_products)}$productsButtonSuffix",
@@ -286,7 +286,7 @@ private fun ExclusionsSection(
         )
 
         val categoriesButtonSuffix = if (viewState.restrictions.excludedCategoryIds.isEmpty()) ""
-        else "(${viewState.restrictions.excludedCategoryIds.size})"
+        else " (${viewState.restrictions.excludedCategoryIds.size})"
         WCOutlinedButton(
             onClick = onExcludeCategoriesButtonClick,
             text = "${stringResource(R.string.coupon_restrictions_exclude_categories)}$categoriesButtonSuffix",
