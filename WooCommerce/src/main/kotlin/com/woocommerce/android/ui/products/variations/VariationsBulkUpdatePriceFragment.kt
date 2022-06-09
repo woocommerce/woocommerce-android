@@ -41,6 +41,8 @@ class VariationsBulkUpdatePriceFragment : BaseFragment(R.layout.fragment_variati
     private var progressDialog: CustomProgressDialog? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         setHasOptionsMenu(true)
         _binding = FragmentVariationsBulkUpdatePriceBinding.bind(view)
         binding.price.value.filterNotNull().observe(viewLifecycleOwner) { viewModel.onPriceEntered(it.toString()) }
