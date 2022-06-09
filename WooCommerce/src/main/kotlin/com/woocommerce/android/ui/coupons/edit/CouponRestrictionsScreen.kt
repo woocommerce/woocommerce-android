@@ -263,7 +263,8 @@ private fun ExclusionsSection(
         modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
     ) {
         Text(
-            text = stringResource(id = R.string.coupon_restrictions_exclusions_section_title).toUpperCase(Locale.current),
+            text = stringResource(id = R.string.coupon_restrictions_exclusions_section_title)
+                .toUpperCase(Locale.current),
             style = MaterialTheme.typography.body2,
             color = colorResource(id = R.color.color_on_surface_medium)
         )
