@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -36,6 +37,7 @@ import com.woocommerce.android.ui.products.variations.VariationDetailFragment.Co
 import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.DeletedVariationData
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowAddAttributeView
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowBulkUpdateAttrPicker
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowBulkUpdateLimitExceededWarning
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowVariationDetail
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -153,10 +155,15 @@ class VariationListFragment :
             }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible, ::handleEmptyViewChanges)
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) {
+                hideProgressDialog()
                 showProgressDialog(it, R.string.variation_create_dialog_title)
             }
             new.isVariationsOptionsMenuEnabled.takeIfNotEqualTo(old?.isVariationsOptionsMenuEnabled) {
                 requireActivity().invalidateOptionsMenu()
+            }
+            new.isBulkUpdateProgressDialogShown.takeIfNotEqualTo(old?.isBulkUpdateProgressDialogShown) {
+                hideProgressDialog()
+                showProgressDialog(it, R.string.variation_loading_dialog_title)
             }
         }
 
@@ -170,10 +177,19 @@ class VariationListFragment :
                 is ShowAddAttributeView -> openAddAttributeView()
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowBulkUpdateAttrPicker -> openBulkUpdateView(event.variationsToUpdate)
+                is ShowBulkUpdateLimitExceededWarning -> showBulkUpdateLimitExceededWarning()
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_LIST_RESULT, event.data)
                 is Exit -> activity?.onBackPressed()
             }
         }
+    }
+
+    private fun showBulkUpdateLimitExceededWarning() {
+        val builder = MaterialAlertDialogBuilder(requireContext())
+        builder.setTitle(getString(R.string.variations_bulk_update_warning_title))
+            .setMessage(getString(R.string.variations_bulk_update_warning_message))
+            .setNegativeButton(getString(R.string.variations_bulk_limit_exceeded_button_ok), null)
+            .show()
     }
 
     private fun setupResultHandlers(viewModel: VariationListViewModel) {
@@ -195,7 +211,7 @@ class VariationListFragment :
             .actionVariationListFragmentToAddAttributeFragment(true)
             .run { findNavController().navigateSafely(this) }
 
-    private fun openBulkUpdateView(variationsToUpdate: List<ProductVariation>) {
+    private fun openBulkUpdateView(variationsToUpdate: Collection<ProductVariation>) {
         VariationListFragmentDirections
             .actionVariationListFragmentToVariationsBulkUpdateAttrPickerFragment(variationsToUpdate.toTypedArray())
             .run { findNavController().navigateSafely(this) }

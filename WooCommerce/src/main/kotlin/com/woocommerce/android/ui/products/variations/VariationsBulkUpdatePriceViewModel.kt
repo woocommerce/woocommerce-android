@@ -3,6 +3,9 @@ package com.woocommerce.android.ui.products.variations
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIANTS_BULK_UPDATE_REGULAR_PRICE_DONE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIANTS_BULK_UPDATE_SALE_PRICE_DONE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.track
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
@@ -46,6 +49,8 @@ class VariationsBulkUpdatePriceViewModel @Inject constructor(
     }
 
     fun onDoneClicked() {
+        track(getDoneClickedAnalyticsEvent())
+
         viewState = viewState.copy(isProgressDialogShown = true)
         launch(dispatchers.io) {
             val productId = variationsToUpdate.first().remoteProductId
@@ -81,6 +86,11 @@ class VariationsBulkUpdatePriceViewModel @Inject constructor(
 
     fun onPriceEntered(price: String) {
         viewState = viewState.copy(price = price)
+    }
+
+    private fun getDoneClickedAnalyticsEvent() = when (data.priceType) {
+        PriceType.Regular -> PRODUCT_VARIANTS_BULK_UPDATE_REGULAR_PRICE_DONE_TAPPED
+        PriceType.Sale -> PRODUCT_VARIANTS_BULK_UPDATE_SALE_PRICE_DONE_TAPPED
     }
 
     @Parcelize
