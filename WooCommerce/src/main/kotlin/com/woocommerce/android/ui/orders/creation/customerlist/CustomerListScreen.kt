@@ -20,6 +20,10 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,14 +43,51 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 
+var customerList = mutableStateListOf<WCCustomerModel>()
+
 @Composable
 fun CustomerListScreen(
-    customers: List<WCCustomerModel> = emptyList(),
+    viewModel: CustomerListViewModel,
     onCustomerClick: ((WCCustomerModel) -> Unit?)? = null
 ) {
+    val state = viewModel.customerList.observeAsState()
+    customerList = viewModel.customerList.value?.toMutableStateList() ?: SnapshotStateList()
     when {
-        customers.isNotEmpty() -> CustomerList(customers, onCustomerClick)
+        customerList.isNotEmpty() -> CustomerList(onCustomerClick)
         else -> EmptyCustomerList()
+    }
+}
+
+@Composable
+private fun CustomerList(
+    onCustomerClick: ((WCCustomerModel) -> Unit?)? = null
+) {
+    val listState = rememberLazyListState()
+    LazyColumn(
+        state = listState,
+        modifier = Modifier.background(color = MaterialTheme.colors.surface)
+    ) {
+        itemsIndexed(
+            items = customerList,
+            key = { _, customer -> customer.id }
+        ) { _, customer ->
+            CustomerListItem(customer, onCustomerClick)
+            Divider(
+                modifier = Modifier.offset(x = dimensionResource(id = R.dimen.major_100)),
+                color = colorResource(id = R.color.divider_color),
+                thickness = dimensionResource(id = R.dimen.minor_10)
+            )
+        }
+        /*if (loadingState == LoadingState.Appending) {
+            item {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentWidth()
+                        .padding(vertical = dimensionResource(id = R.dimen.minor_100))
+                )
+            }
+        }*/
     }
 }
 
@@ -73,38 +114,6 @@ private fun EmptyCustomerList() {
             painter = painterResource(id = R.drawable.img_empty_search),
             contentDescription = null,
         )
-    }
-}
-
-@Composable
-private fun CustomerList(
-    customers: List<WCCustomerModel>,
-    onCustomerClick: ((WCCustomerModel) -> Unit?)? = null
-) {
-    val listState = rememberLazyListState()
-    LazyColumn(
-        state = listState,
-        modifier = Modifier
-            .background(color = MaterialTheme.colors.surface)
-    ) {
-        itemsIndexed(customers) { _, customer ->
-            CustomerListItem(customer, onCustomerClick)
-            Divider(
-                modifier = Modifier.offset(x = dimensionResource(id = R.dimen.major_100)),
-                color = colorResource(id = R.color.divider_color),
-                thickness = dimensionResource(id = R.dimen.minor_10)
-            )
-        }
-        /*if (loadingState == LoadingState.Appending) {
-            item {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentWidth()
-                        .padding(vertical = dimensionResource(id = R.dimen.minor_100))
-                )
-            }
-        }*/
     }
 }
 

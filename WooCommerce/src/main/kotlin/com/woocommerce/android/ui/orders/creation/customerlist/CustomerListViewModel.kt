@@ -16,6 +16,7 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import kotlinx.parcelize.RawValue
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import javax.inject.Inject
 
