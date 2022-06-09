@@ -13,6 +13,7 @@ import com.woocommerce.android.databinding.FragmentCardReaderOnboardingBothPlugi
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingGenericErrorBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingLoadingBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingNetworkErrorBinding
+import com.woocommerce.android.databinding.FragmentCardReaderOnboardingSelectPaymentGatewayBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingStripeBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingUnsupportedBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingWcpayBinding
@@ -113,7 +114,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         view: View,
         state: CardReaderOnboardingViewModel.OnboardingViewState.WcPayAndStripeInstalledState
     ) {
-        val binding = FragmentCardReaderOnboardingBothPluginsActivatedBinding.bind(view)
+        val binding = FragmentCardReaderOnboardingSelectPaymentGatewayBinding.bind(view)
         UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
         UiHelpers.setTextOrHide(binding.hintLabel, state.hintLabel)
         UiHelpers.setTextOrHide(binding.hintPluginOneLabel, state.hintPluginOneLabel)
