@@ -172,4 +172,24 @@ class OrderDetailRefundsLineBuilderTest : BaseUnitTest() {
         // THEN
         assertThat(result).isEqualTo("1 product, shipping, fees")
     }
+
+    @Test
+    fun `given refund with product and fees, when building line, then product and fees returned`() {
+        // GIVEN
+        val item = mock<Item> {
+            on { quantity }.thenReturn(1)
+        }
+        whenever(refund.items).thenReturn(
+            listOf(item)
+        )
+        whenever(refund.feeLines).thenReturn(
+            listOf(mock())
+        )
+
+        // WHEN
+        val result = builder.buildRefundLine(refund)
+
+        // THEN
+        assertThat(result).isEqualTo("1 product, fees")
+    }
 }
