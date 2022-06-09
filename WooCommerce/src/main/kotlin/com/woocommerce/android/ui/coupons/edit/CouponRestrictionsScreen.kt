@@ -4,16 +4,23 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
@@ -22,12 +29,16 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.toUpperCase
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.NullableBigDecimalTextFieldValueMapper
 import com.woocommerce.android.ui.compose.component.NullableIntTextFieldValueMapper
 import com.woocommerce.android.ui.compose.component.WCListItemWithInlineSubtitle
+import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
 import com.woocommerce.android.ui.compose.component.WCSwitch
+import com.woocommerce.android.ui.coupons.edit.CouponRestrictionsViewModel.ViewState
 import java.math.BigDecimal
 
 @Composable
@@ -42,7 +53,9 @@ fun CouponRestrictionsScreen(viewModel: CouponRestrictionsViewModel) {
             onUsageLimitPerUserChanged = viewModel::onUsageLimitPerUserChanged,
             onIndividualUseChanged = viewModel::onIndividualUseChanged,
             onExcludeSaleItemsChanged = viewModel::onExcludeSaleItemsChanged,
-            onAllowedEmailsButtonClicked = viewModel::onAllowedEmailsButtonClicked
+            onAllowedEmailsButtonClicked = viewModel::onAllowedEmailsButtonClicked,
+            onExcludeProductsButtonClick = {},
+            onExcludeCategoriesButtonClick = {}
         )
     }
 }
@@ -57,7 +70,9 @@ fun CouponRestrictionsScreen(
     onUsageLimitPerUserChanged: (Int?) -> Unit,
     onIndividualUseChanged: (Boolean) -> Unit,
     onExcludeSaleItemsChanged: (Boolean) -> Unit,
-    onAllowedEmailsButtonClicked: () -> Unit
+    onAllowedEmailsButtonClicked: () -> Unit,
+    onExcludeProductsButtonClick: () -> Unit,
+    onExcludeCategoriesButtonClick: () -> Unit,
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -127,6 +142,8 @@ fun CouponRestrictionsScreen(
             areSaleItemsExcluded = viewState.restrictions.areSaleItemsExcluded ?: false,
             onExcludeSaleItemsChanged = onExcludeSaleItemsChanged
         )
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+        ExclusionsSection(viewState, onExcludeProductsButtonClick, onExcludeCategoriesButtonClick)
     }
 }
 
@@ -231,6 +248,58 @@ private fun SaleItemsSwitch(areSaleItemsExcluded: Boolean, onExcludeSaleItemsCha
             style = MaterialTheme.typography.caption,
             color = colorResource(id = R.color.color_on_surface_medium),
             modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
+        )
+    }
+}
+
+@Composable
+private fun ExclusionsSection(
+    viewState: ViewState,
+    onExcludeProductsButtonClick: () -> Unit,
+    onExcludeCategoriesButtonClick: () -> Unit
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
+        modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
+    ) {
+        Text(
+            text = stringResource(id = R.string.coupon_restrictions_exclusions_section_title).toUpperCase(Locale.current),
+            style = MaterialTheme.typography.body2,
+            color = colorResource(id = R.color.color_on_surface_medium)
+        )
+
+        val productsButtonSuffix = if (viewState.restrictions.excludedProductIds.isEmpty()) ""
+        else "(${viewState.restrictions.excludedProductIds.size})"
+        WCOutlinedButton(
+            onClick = onExcludeProductsButtonClick,
+            text = "${stringResource(R.string.coupon_restrictions_exclude_products)}$productsButtonSuffix",
+            leadingIcon = {
+                Icon(
+                    imageVector = if (viewState.restrictions.excludedProductIds.isEmpty()) Icons.Filled.Add
+                    else Icons.Filled.Edit,
+                    contentDescription = null,
+                    modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
+                )
+            },
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.onSurface),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        val categoriesButtonSuffix = if (viewState.restrictions.excludedCategoryIds.isEmpty()) ""
+        else "(${viewState.restrictions.excludedCategoryIds.size})"
+        WCOutlinedButton(
+            onClick = onExcludeCategoriesButtonClick,
+            text = "${stringResource(R.string.coupon_restrictions_exclude_categories)}$categoriesButtonSuffix",
+            leadingIcon = {
+                Icon(
+                    imageVector = if (viewState.restrictions.excludedCategoryIds.isEmpty()) Icons.Filled.Add
+                    else Icons.Filled.Edit,
+                    contentDescription = null,
+                    modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
+                )
+            },
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.onSurface),
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }
