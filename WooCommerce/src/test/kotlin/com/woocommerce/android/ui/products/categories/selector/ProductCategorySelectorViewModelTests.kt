@@ -1,10 +1,12 @@
 package com.woocommerce.android.ui.products.categories.selector
 
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.categories.selector.ProductCategorySelectorViewModel.LoadingState
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -66,7 +68,8 @@ class ProductCategorySelectorViewModelTests : BaseUnitTest() {
             advanceUntilIdle()
         }.last()
 
-        assertThat(state.categories.map { it.id }).isEqualTo(defaultProductCategoriesList.map { it.productCategory.remoteCategoryId })
+        assertThat(state.categories.map { it.id })
+            .isEqualTo(defaultProductCategoriesList.map { it.productCategory.remoteCategoryId })
         assertThat(state.loadingState).isEqualTo(LoadingState.Idle)
     }
 
@@ -92,58 +95,46 @@ class ProductCategorySelectorViewModelTests : BaseUnitTest() {
         verify(productCategoryListHandler).loadMore()
     }
 
-//    @Test
-//    fun `when fetching coupons fails, then show an error`() = testBlocking {
-//        setup {
-//            whenever(productCategoryListHandler.fetchCoupons(forceRefresh = true)).thenReturn(Result.failure(Exception()))
-//        }
-//
-//        val event = viewModel.event.captureValues().filterIsInstance<MultiLiveEvent.Event.ShowSnackbar>().last()
-//
-//        assertThat(event.message).isEqualTo(R.string.coupon_list_loading_failed)
-//    }
+    @Test
+    fun `when fetching coupons fails, then show an error`() = testBlocking {
+        setup {
+            whenever(productCategoryListHandler.fetchCategories(forceRefresh = true)).thenReturn(
+                Result.failure(
+                    Exception()
+                )
+            )
+        }
 
-//    @Test
-//    fun `when searching coupons fails, then show an error`() = testBlocking {
-//        setup {
-//            whenever(
-//                productCategoryListHandler.fetchCoupons(
-//                    any(),
-//                    anyBoolean()
-//                )
-//            ).thenReturn(Result.failure(Exception()))
-//        }
-//
-//        viewModel.onSearchQueryChanged("Search")
-//        advanceUntilIdle()
-//        val event = viewModel.event.captureValues().filterIsInstance<MultiLiveEvent.Event.ShowSnackbar>().last()
-//
-//        assertThat(event.message).isEqualTo(R.string.coupon_list_search_failed)
-//    }
-//
-//    @Test
-//    fun `when loading next page, then show an error`() = testBlocking {
-//        setup {
-//            whenever(productCategoryListHandler.loadMore()).thenReturn(Result.failure(Exception()))
-//        }
-//
-//        viewModel.onLoadMore()
-//        advanceUntilIdle()
-//        val event = viewModel.event.captureValues().filterIsInstance<MultiLiveEvent.Event.ShowSnackbar>().last()
-//
-//        assertThat(event.message).isEqualTo(R.string.coupon_list_loading_failed)
-//    }
-//
-//    @Test
-//    fun `when refreshing fails, then show an error`() = testBlocking {
-//        setup {
-//            whenever(productCategoryListHandler.fetchCoupons(forceRefresh = true)).thenReturn(Result.failure(Exception()))
-//        }
-//
-//        viewModel.onRefresh()
-//        advanceUntilIdle()
-//        val event = viewModel.event.captureValues().filterIsInstance<MultiLiveEvent.Event.ShowSnackbar>().last()
-//
-//        assertThat(event.message).isEqualTo(R.string.coupon_list_loading_failed)
-//    }
+        val event = viewModel.event.captureValues().filterIsInstance<MultiLiveEvent.Event.ShowSnackbar>().last()
+
+        assertThat(event.message).isEqualTo(R.string.product_category_selector_loading_failed)
+    }
+
+    @Test
+    fun `when searching coupons fails, then show an error`() = testBlocking {
+        setup {
+            whenever(
+                productCategoryListHandler.fetchCategories(searchQuery = "Search")
+            ).thenReturn(Result.failure(Exception()))
+        }
+
+        viewModel.onSearchQueryChanged("Search")
+        advanceUntilIdle()
+        val event = viewModel.event.captureValues().filterIsInstance<MultiLiveEvent.Event.ShowSnackbar>().last()
+
+        assertThat(event.message).isEqualTo(R.string.product_category_selector_search_failed)
+    }
+
+    @Test
+    fun `when loading next page, then show an error`() = testBlocking {
+        setup {
+            whenever(productCategoryListHandler.loadMore()).thenReturn(Result.failure(Exception()))
+        }
+
+        viewModel.onLoadMore()
+        advanceUntilIdle()
+        val event = viewModel.event.captureValues().filterIsInstance<MultiLiveEvent.Event.ShowSnackbar>().last()
+
+        assertThat(event.message).isEqualTo(R.string.product_category_selector_loading_failed)
+    }
 }
