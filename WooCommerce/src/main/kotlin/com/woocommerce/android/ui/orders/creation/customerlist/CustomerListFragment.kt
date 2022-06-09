@@ -14,8 +14,11 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCustomerListBinding
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class CustomerListFragment :
@@ -23,10 +26,9 @@ class CustomerListFragment :
     MenuItem.OnActionExpandListener,
     SearchView.OnQueryTextListener
 {
-    private val viewModel by viewModels<CustomerListViewModel>()
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private var searchMenuItem: MenuItem? = null
-    private var searchView: SearchView? = null
+    private val viewModel by viewModels<CustomerListViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,22 +49,35 @@ class CustomerListFragment :
             }
         }
 
+        setupObservers()
+
         return binding.root
     }
 
     override fun getFragmentTitle() = getString(R.string.order_creation_customer_search_title)
 
+    private fun setupObservers() {
+        viewModel.event.observe(
+            viewLifecycleOwner
+        ) { event ->
+            when (event) {
+                is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+            }
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_search, menu)
 
-        searchMenuItem = menu.findItem(R.id.menu_search)
-        searchMenuItem?.expandActionView()
-        searchMenuItem?.setOnActionExpandListener(this)
-
-        searchView = searchMenuItem?.actionView as SearchView?
-        searchView?.queryHint = getString(R.string.order_creation_customer_search_hint)
-        searchView?.setIconifiedByDefault(false)
-        searchView?.setOnQueryTextListener(this)
+        menu.findItem(R.id.menu_search)?.let { searchMenuItem ->
+            searchMenuItem.expandActionView()
+            searchMenuItem.setOnActionExpandListener(this)
+            (searchMenuItem.actionView as? SearchView)?.let { searchView ->
+                searchView.queryHint = getString(R.string.order_creation_customer_search_hint)
+                searchView.setIconifiedByDefault(false)
+                searchView.setOnQueryTextListener(this)
+            }
+        }
 
         super.onCreateOptionsMenu(menu, inflater)
     }
@@ -79,10 +94,12 @@ class CustomerListFragment :
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
-        viewModel.onSearchQueryChanged(newText)
+        viewModel.onSearchQueryChanged(query)
+        return true
     }
 
-    override fun onQueryTextChange(newText: String?): Boolean {
-        viewModel.onSearchQueryChanged(newText)
+    override fun onQueryTextChange(query: String?): Boolean {
+        viewModel.onSearchQueryChanged(query)
+        return true
     }
 }

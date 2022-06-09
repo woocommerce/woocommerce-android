@@ -37,14 +37,14 @@ class CustomerListViewModel @Inject constructor(
         // TODO nbradbury
     }
 
-    fun onSearchQueryChanged(query: String) {
-        if (query.length > 2) {
+    fun onSearchQueryChanged(query: String?) {
+        if (query != null && query.length > 2) {
             // cancel any existing search, then start a new one after a brief delay so we don't
             // actually perform the fetch until the user stops typing
             searchJob?.cancel()
             searchJob = launch {
                 delay(AppConstants.SEARCH_TYPING_DELAY_MS)
-                searchCustomerList()
+                searchCustomerList(query)
             }
         } else {
             launch {
@@ -55,29 +55,25 @@ class CustomerListViewModel @Inject constructor(
         }
     }
 
-    private suspend fun searchCustomerList() {
-        if (!networkStatus.isConnected()) {
-            triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error)) // TODO
-        } else if (viewState.searchQuery.isNullOrEmpty()) {
-            _customerList.value = emptyList()
-        } else {
+    private suspend fun searchCustomerList(query: String) {
+        if (networkStatus.isConnected()) {
             viewState = viewState.copy(
                 isSkeletonShown = true,
                 isEmptyViewVisible = false
             )
-            _customerList.value = customerListRepository.searchCustomerList(viewState.searchQuery!!)
+            _customerList.value = customerListRepository.searchCustomerList(query)
             viewState = viewState.copy(
                 isSkeletonShown = false,
                 isEmptyViewVisible = _customerList.value?.isEmpty() == true
             )
+        } else {
+            triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
         }
     }
 
     @Parcelize
     data class CustomerListViewState(
         val isSkeletonShown: Boolean? = null,
-        val isEmptyViewVisible: Boolean? = null,
-        val searchQuery: String? = null,
-        val isSearchActive: Boolean? = null
+        val isEmptyViewVisible: Boolean? = null
     ) : Parcelable
 }
