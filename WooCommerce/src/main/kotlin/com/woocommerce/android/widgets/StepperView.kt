@@ -3,6 +3,7 @@ package com.woocommerce.android.widgets
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import androidx.annotation.StringRes
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.content.ContextCompat
 import com.woocommerce.android.R
@@ -14,6 +15,7 @@ class StepperView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : LinearLayoutCompat(context, attrs, defStyleAttr) {
     private val binding = ViewStepperBinding.inflate(LayoutInflater.from(context), this)
+    private var plusMinusContentDescription: Int? = null
 
     var value: Int
         get() = binding.valueText.text.toString().toIntOrNull() ?: 0
@@ -21,6 +23,18 @@ class StepperView @JvmOverloads constructor(
             val text = value.toString()
             if (text != binding.valueText.text) {
                 binding.valueText.text = text
+                plusMinusContentDescription?.let {
+                    binding.minusButton.contentDescription = context.getString(
+                        it,
+                        value,
+                        value - 1
+                    )
+                    binding.plusButton.contentDescription = context.getString(
+                        it,
+                        value,
+                        value + 1
+                    )
+                }
             }
         }
 
@@ -44,9 +58,11 @@ class StepperView @JvmOverloads constructor(
     fun init(
         currentValue: Int = 0,
         onPlusButtonClick: () -> Unit,
-        onMinusButtonClick: () -> Unit
+        onMinusButtonClick: () -> Unit,
+        @StringRes plusMinusContentDescription: Int? = null
     ) {
         value = currentValue
+        this.plusMinusContentDescription = plusMinusContentDescription
         binding.plusButton.setOnClickListener { onPlusButtonClick() }
         binding.minusButton.setOnClickListener { onMinusButtonClick() }
     }
