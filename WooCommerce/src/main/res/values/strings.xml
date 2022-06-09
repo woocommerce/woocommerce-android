@@ -133,8 +133,6 @@
     <string name="generic_string" translatable="false">%s</string>
     <string name="error_required_field">Required field</string>
     <string name="analytics">Analytics</string>
-    <string name="minus_one">Minus one</string>
-    <string name="plus_one">Plus one</string>
     <string name="card">Card</string>
     <string name="cash">Cash</string>
     <string name="create">Create</string>
@@ -384,9 +382,7 @@
     <string name="order_creation_fee_percentage_hint">Percentage (%)</string>
     <string name="order_creation_fee_percentage_toggle_text">Calculate as percentage</string>
     <string name="order_creation_fee_percentage_calculated_amount">Calculated amount: %s</string>
-    <string name="order_creation_customer_search_title">Customers</string>
-    <string name="order_creation_customer_search_empty">No customers found</string>
-    <string name="order_creation_customer_search_hint">Search customers</string>
+    <string name="order_creation_change_product_quantity">Change the product quantity from %d to %d</string>
     <!--
         Order Filters
     -->
