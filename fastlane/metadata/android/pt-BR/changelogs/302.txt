@@ -1,4 +1,0 @@
-9.2:
-Muitas das informações de um cliente no pedido são importantes. Ficamos sabendo que vocês gostam de copiar alguns desses dados para colar fora do aplicativo. Agora basta tocar e manter pressionado na maioria dos campos para copiá-los para a área de transferência. Copie e cole uma mensagem de texto, e-mail ou anotação!
-
-Também corrigimos vários bugs de pagamentos presenciais e criação de pedidos. Obrigado pelo feedback!

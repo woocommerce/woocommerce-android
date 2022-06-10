@@ -1,4 +1,0 @@
-9.2:
-Bir müşteriden gelen siparişle ilgili bilgilerin çoğu önemlidir! Bu ayrıntılardan bazılarını uygulamanın dışına kopyalayıp yapıştırmak istediğinizi duyduk. Artık çoğu alan uzun basarak panoya kopyalayabilirsiniz. Bir metin mesajına, e-postaya veya nota yapıştırın!
-
-Ayrıca şahsen ödemeler ve sipariş oluşturma ile ilgili birkaç hatayı da düzelttik. Geri bildiriminiz için teşekkürler!

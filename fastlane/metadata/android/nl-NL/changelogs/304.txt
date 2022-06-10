@@ -1,0 +1,4 @@
+9.3:
+Canada, zeg hallo tegen fysieke betalingen! We zijn blij te kunnen vertellen dat fysieke betalingen nu beschikbaar zijn voor Canadese verkopers die nu WooCommerce Payments gebruiken.
+
+Deze release bevat ook een aantal kleine verbeteringen. Wederom bedankt voor jullie geweldige feedback. Blijf zo doorgaan!

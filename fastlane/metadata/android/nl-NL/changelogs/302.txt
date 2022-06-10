@@ -1,4 +1,0 @@
-9.2:
-Veel van de informatie over een order van een klant is belangrijk! We hebben gehoord dat jullie deze details ook buiten de app willen kunnen kopiëren en plakken. Nu kun je de meeste velden kopiëren naar het klembord door erop te klikken en ingedrukt te houden. Plak dit in een tekstbericht, e-mail of bestandje.
-
-We hebben ook verschillende bugs voor fysieke betalingen en het aanmaken van bestellingen opgelost. Bedankt voor je feedback!

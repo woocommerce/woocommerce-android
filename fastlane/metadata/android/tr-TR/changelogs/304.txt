@@ -1,0 +1,4 @@
+9.3:
+Kanadalılar, şahsen ödemelere merhaba deyin! Şu anda WooCommerce Payments'ı kullanan Kanadalı satıcıların artık şahsen ödemeleri de kabul edebileceğini duyurmaktan heyecan duyuyoruz.
+
+Bu sürümde ayrıca birkaç küçük iyileştirme de var. Harika geri bildirimleriniz için herkese tekrar teşekkür ederim. Devam edin!
