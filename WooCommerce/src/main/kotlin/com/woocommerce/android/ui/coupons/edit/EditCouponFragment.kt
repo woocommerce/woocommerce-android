@@ -86,7 +86,7 @@ class EditCouponFragment : BaseFragment() {
             viewModel.onSelectedProductsUpdated(it)
         }
 
-        handleResult<List<Long>>(ProductCategorySelectorFragment.PRODUCT_CATEGORY_SELECTOR_RESULT) {
+        handleResult<Set<Long>>(ProductCategorySelectorFragment.PRODUCT_CATEGORY_SELECTOR_RESULT) {
             viewModel.onIncludedCategoriesChanged(it)
         }
     }
