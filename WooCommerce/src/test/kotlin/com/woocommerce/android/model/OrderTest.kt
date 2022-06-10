@@ -9,7 +9,6 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class OrderTest {
-
     @Test
     fun `given order has date paid, when check is order paid, then returns true`() {
         // GIVEN
