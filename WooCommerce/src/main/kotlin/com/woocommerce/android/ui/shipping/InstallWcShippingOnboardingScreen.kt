@@ -130,7 +130,7 @@ private fun LinkText(
 }
 
 @Composable
-fun InstallWcsOnboardingBullets(onboardingBullets: List<InstallWcShippingOnboardingBulletUi>) {
+private fun InstallWcsOnboardingBullets(onboardingBullets: List<InstallWcShippingOnboardingBulletUi>) {
     onboardingBullets.forEach {
         InstallWcsOnboardingBullet(bullet = it, modifier = Modifier.fillMaxWidth())
         Spacer(Modifier.size(dimensionResource(id = R.dimen.major_100)))
@@ -138,7 +138,7 @@ fun InstallWcsOnboardingBullets(onboardingBullets: List<InstallWcShippingOnboard
 }
 
 @Composable
-fun InstallWcsOnboardingBullet(
+private fun InstallWcsOnboardingBullet(
     bullet: InstallWcShippingOnboardingBulletUi,
     modifier: Modifier = Modifier
 ) {
