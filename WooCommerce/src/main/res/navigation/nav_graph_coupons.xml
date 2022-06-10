@@ -63,6 +63,20 @@
         <argument
             android:name="productIds"
             app:argType="long[]" />
+        <action
+            android:id="@+id/action_productSelectorFragment_to_variationSelectorFragment"
+            app:destination="@id/variationSelectorFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/variationSelectorFragment"
+        android:name="com.woocommerce.android.ui.products.variations.selector.VariationSelectorFragment"
+        android:label="VariationSelectorFragment" >
+        <argument
+            android:name="productId"
+            app:argType="long" />
+        <argument
+            android:name="variationIds"
+            app:argType="long[]" />
     </fragment>
     <fragment
         android:id="@+id/productCategorySelectorFragment"

@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products.selector
+package com.woocommerce.android.ui.products.variations.selector
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -37,56 +37,47 @@ import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
-import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.products.ProductType.GROUPED
-import com.woocommerce.android.ui.products.ProductType.SIMPLE
-import com.woocommerce.android.ui.products.ProductType.VARIABLE
-import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.APPENDING
-import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.LOADING
-import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductListItem
-import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ViewState
-import com.woocommerce.android.ui.products.selector.SelectionState.PARTIALLY_SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
 import com.woocommerce.android.ui.products.selector.components.SelectorListItem
-import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.LoadingState.APPENDING
+import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.LoadingState.LOADING
+import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.VariationListItem
+import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.ViewState
 
 @Composable
-fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
+fun VariationSelectorScreen(viewModel: VariationSelectorViewModel) {
     val viewState by viewModel.viewSate.observeAsState(ViewState())
 
-    ProductSelectorScreen(
+    VariationSelectorScreen(
         state = viewState,
-        onDoneButtonClick = viewModel::onDoneButtonClick,
         onClearButtonClick = viewModel::onClearButtonClick,
-        onProductClick = viewModel::onProductClick,
+        onVariationClick = viewModel::onVariationClick,
         onLoadMore = viewModel::onLoadMore
     )
 }
 
 @Composable
-fun ProductSelectorScreen(
+fun VariationSelectorScreen(
     state: ViewState,
-    onDoneButtonClick: () -> Unit,
     onClearButtonClick: () -> Unit,
-    onProductClick: (ProductListItem) -> Unit,
+    onVariationClick: (VariationListItem) -> Unit,
     onLoadMore: () -> Unit
 ) {
     when {
-        state.products.isNotEmpty() -> ProductList(
+        state.variations.isNotEmpty() -> VariationList(
             state = state,
-            onDoneButtonClick = onDoneButtonClick,
             onClearButtonClick = onClearButtonClick,
-            onProductClick = onProductClick,
+            onVariationClick = onVariationClick,
             onLoadMore = onLoadMore
         )
-        state.products.isEmpty() && state.loadingState == LOADING -> ProductListSkeleton()
-        else -> EmptyProductList()
+        state.variations.isEmpty() && state.loadingState == LOADING -> VariationListSkeleton()
+        else -> EmptyVariationList()
     }
 }
 
 @Composable
-private fun EmptyProductList() {
+private fun EmptyVariationList() {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -112,11 +103,10 @@ private fun EmptyProductList() {
 }
 
 @Composable
-private fun ProductList(
+private fun VariationList(
     state: ViewState,
-    onDoneButtonClick: () -> Unit,
     onClearButtonClick: () -> Unit,
-    onProductClick: (ProductListItem) -> Unit,
+    onVariationClick: (VariationListItem) -> Unit,
     onLoadMore: () -> Unit,
 ) {
     val listState = rememberLazyListState()
@@ -138,13 +128,6 @@ private fun ProductList(
                     modifier = Modifier.align(Alignment.CenterStart)
                 )
             }
-
-            WCTextButton(
-                onClick = { },
-                text = stringResource(id = R.string.product_selector_filter_button_title),
-                allCaps = false,
-                modifier = Modifier.align(Alignment.CenterEnd)
-            )
         }
         LazyColumn(
             state = listState,
@@ -152,20 +135,20 @@ private fun ProductList(
                 .weight(1f)
                 .fillMaxHeight()
         ) {
-            itemsIndexed(state.products) { _, product ->
+            itemsIndexed(state.variations) { _, variation ->
                 SelectorListItem(
-                    title = product.title,
-                    imageUrl = product.imageUrl,
-                    infoLine1 = product.stockAndPrice,
-                    infoLine2 = product.sku?.let {
-                        stringResource(R.string.product_selector_sku_value, product.sku)
+                    title = variation.title,
+                    imageUrl = variation.imageUrl,
+                    infoLine1 = variation.stockAndPrice,
+                    infoLine2 = variation.sku?.let {
+                        stringResource(R.string.product_selector_sku_value, variation.sku)
                     },
-                    selectionState = product.selectionState,
-                    isArrowVisible = product.type == VARIABLE && product.numVariations > 0,
-                    onClickLabel = stringResource(id = string.product_selector_select_product_label, product.title),
+                    selectionState = variation.selectionState,
+                    isArrowVisible = false,
+                    onClickLabel = stringResource(id = string.product_selector_select_variation_label, variation.title),
                     imageContentDescription = stringResource(string.product_image_content_description)
                 ) {
-                    onProductClick(product)
+                    onVariationClick(variation)
                 }
                 Divider(
                     modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100)),
@@ -188,30 +171,12 @@ private fun ProductList(
         InfiniteListHandler(listState = listState, buffer = 3) {
             onLoadMore()
         }
-
-        Divider(
-            color = colorResource(id = R.color.divider_color),
-            thickness = dimensionResource(id = R.dimen.minor_10)
-        )
-
-        WCColoredButton(
-            onClick = onDoneButtonClick,
-            text = StringUtils.getQuantityString(
-                quantity = state.selectedItemsCount,
-                default = R.string.product_selector_select_button_title_default,
-                one = R.string.product_selector_select_button_title_one,
-                zero = R.string.done
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(dimensionResource(id = R.dimen.major_100))
-        )
     }
 }
 
 @Composable
 @Suppress("MagicNumber")
-private fun ProductListSkeleton() {
+private fun VariationListSkeleton() {
     val numberOfInboxSkeletonRows = 10
     LazyColumn(Modifier.background(color = MaterialTheme.colors.surface)) {
         repeat(numberOfInboxSkeletonRows) {
@@ -252,62 +217,54 @@ private fun ProductListSkeleton() {
 @Preview
 @Composable
 @Suppress("MagicNumber")
-fun ProductListPreview() {
-    val products = listOf(
-        ProductListItem(
+fun VariationListPreview() {
+    val variations = listOf(
+        VariationListItem(
             id = 1,
-            title = "Product 1",
-            type = SIMPLE,
+            title = "Variation 1",
             imageUrl = null,
-            numVariations = 0,
             stockAndPrice = "Not in stock • $25.00",
             sku = "1234",
             selectionState = SELECTED
         ),
 
-        ProductListItem(
+        VariationListItem(
             id = 2,
-            title = "Product 2",
-            type = VARIABLE,
+            title = "Variation 2",
             imageUrl = null,
-            numVariations = 3,
-            stockAndPrice = "In stock • $5.00 • 3 variations",
+            stockAndPrice = "In stock • $5.00",
             sku = "33333",
-            selectionState = PARTIALLY_SELECTED
+            selectionState = SELECTED
         ),
 
-        ProductListItem(
+        VariationListItem(
             id = 3,
-            title = "Product 3",
-            type = GROUPED,
+            title = "Variation 3",
             imageUrl = "",
-            numVariations = 0,
             stockAndPrice = "Out of stock",
             sku = null
         ),
 
-        ProductListItem(
+        VariationListItem(
             id = 4,
-            title = "Product 4",
-            type = GROUPED,
+            title = "Variation 4",
             imageUrl = null,
-            numVariations = 0,
             stockAndPrice = null,
             sku = null
         )
     )
 
-    ProductList(state = ViewState(products = products, selectedItemsCount = 3), {}, {}, {}, {})
+    VariationList(state = ViewState(variations = variations, selectedItemsCount = 3), {}, {}, {})
 }
 
 @Preview
 @Composable
-fun ProductListEmptyPreview() {
-    EmptyProductList()
+fun VariationListEmptyPreview() {
+    EmptyVariationList()
 }
 
 @Preview
 @Composable
-fun ProductListSkeletonPreview() {
-    ProductListSkeleton()
+fun VariationListSkeletonPreview() {
+    VariationListSkeleton()
 }
