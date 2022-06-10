@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
@@ -131,24 +132,25 @@ private fun LinkText(
 @Composable
 fun InstallWcsOnboardingBullets(onboardingBullets: List<InstallWcShippingOnboardingBulletUi>) {
     onboardingBullets.forEach {
-        InstallWcsOnboardingBullet(bullet = it)
+        InstallWcsOnboardingBullet(bullet = it, modifier = Modifier.fillMaxWidth())
         Spacer(Modifier.size(dimensionResource(id = R.dimen.major_100)))
     }
 }
 
 @Composable
 fun InstallWcsOnboardingBullet(
-    modifier: Modifier = Modifier,
-    bullet: InstallWcShippingOnboardingBulletUi
+    bullet: InstallWcShippingOnboardingBulletUi,
+    modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))
+        horizontalArrangement = Arrangement.Start
     ) {
         Image(
             painter = painterResource(id = bullet.icon),
             contentDescription = null,
         )
+        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
         Column {
             Text(
                 style = MaterialTheme.typography.subtitle1,
