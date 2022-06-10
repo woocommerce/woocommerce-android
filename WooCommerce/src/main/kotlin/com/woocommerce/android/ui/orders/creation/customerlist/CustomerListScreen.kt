@@ -20,10 +20,8 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,27 +41,21 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 
-var customerList = mutableStateListOf<WCCustomerModel>()
-
 @Composable
 fun CustomerListScreen(
-    viewModel: CustomerListViewModel,
-    onCustomerClick: ((WCCustomerModel) -> Unit?)? = null
+    viewModel: CustomerListViewModel
 ) {
-    val state = viewModel.customerList.observeAsState()
-    customerList = viewModel.customerList.value?.toMutableStateList() ?: SnapshotStateList()
-    when {
-        customerList.isNotEmpty() -> CustomerList(customerList, onCustomerClick)
-        else -> EmptyCustomerList()
-    }
+    val state = viewModel.customerList.observeAsState(emptyList())
+    CustomerList(state, viewModel::onCustomerClick)
 }
 
 @Composable
 private fun CustomerList(
-    customers: List<WCCustomerModel>,
+    state: State<List<WCCustomerModel>>,
     onCustomerClick: ((WCCustomerModel) -> Unit?)? = null
 ) {
     val listState = rememberLazyListState()
+    val customers = state.value
     LazyColumn(
         state = listState,
         modifier = Modifier.background(color = MaterialTheme.colors.surface)
@@ -89,32 +81,6 @@ private fun CustomerList(
                 )
             }
         }*/
-    }
-}
-
-@Composable
-private fun EmptyCustomerList() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = dimensionResource(id = R.dimen.major_200)),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = stringResource(id = R.string.order_creation_customer_search_empty),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.h6,
-            modifier = Modifier.padding(
-                start = dimensionResource(id = R.dimen.major_150),
-                end = dimensionResource(id = R.dimen.major_150)
-            )
-        )
-        Spacer(Modifier.size(dimensionResource(id = R.dimen.major_325)))
-        Image(
-            painter = painterResource(id = R.drawable.img_empty_search),
-            contentDescription = null,
-        )
     }
 }
 
@@ -163,6 +129,32 @@ private fun CustomerListItem(
                 color = MaterialTheme.colors.onSurface,
             )
         }
+    }
+}
+
+@Composable
+private fun EmptyCustomerList() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = dimensionResource(id = R.dimen.major_200)),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = stringResource(id = R.string.order_creation_customer_search_empty),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.h6,
+            modifier = Modifier.padding(
+                start = dimensionResource(id = R.dimen.major_150),
+                end = dimensionResource(id = R.dimen.major_150)
+            )
+        )
+        Spacer(Modifier.size(dimensionResource(id = R.dimen.major_325)))
+        Image(
+            painter = painterResource(id = R.drawable.img_empty_search),
+            contentDescription = null,
+        )
     }
 }
 

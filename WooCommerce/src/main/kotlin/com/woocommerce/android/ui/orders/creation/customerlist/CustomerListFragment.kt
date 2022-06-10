@@ -42,10 +42,7 @@ class CustomerListFragment :
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    CustomerListScreen(
-                        viewModel,
-                        onCustomerClick = viewModel::onCustomerClick
-                    )
+                    CustomerListScreen(viewModel)
                 }
             }
         }
