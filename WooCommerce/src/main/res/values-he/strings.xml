@@ -1,11 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-05-19 15:54:03+0000
+Translation-Revision-Date: 2022-06-02 17:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">אנחנו לא תומכים בהרחבה WooCommerce Stripe בתוך ⁦%1$s⁩</string>
+    <string name="product_selector_filter_button_title">מסנן</string>
+    <string name="product_selector_clear_button_title">ניקוי בחירה</string>
+    <string name="product_selector_select_button_title_one">יש לבחור מוצר %d</string>
+    <string name="product_selector_select_button_title_default">יש לבחור %d מוצרים</string>
+    <string name="product_selector_sku_value">SKU: %s</string>
+    <string name="product_selector_select_product_label">יש לבחור מוצר %s</string>
+    <string name="coupon_conditions_products_edit_products_title">לערוך מוצרים (%d)</string>
+    <string name="coupon_conditions_products_all_products_title">כל המוצרים</string>
+    <string name="coupon_conditions_products_select_products_title">יש לבחור מוצרים</string>
+    <string name="coupon_restrictions_exclude_sale_items_hint">יש להפעיל את האפשרות הזאת אם הקופון לא חל על פריטים במבצע. קופונים לפי פריטים יעבדו רק כאשר הפריט אינו במבצע. קופונים לפי עגלות יעבדו רק כאשר הפריטים שבעגלה לא במבצע.</string>
+    <string name="coupon_restrictions_exclude_sale_items">לא לכלול פריטים במבצע</string>
+    <string name="coupon_restrictions_individual_use_hint">יש להפעיל את האפשרות הזאת אם לא ניתן להשתמש בקופון לצד קופונים אחרים.</string>
+    <string name="coupon_restrictions_individual_use">שימוש אישי בלבד</string>
+    <string name="coupon_restrictions_limit_per_user_hint">מגבלת שימוש למשתמש</string>
+    <string name="coupon_restrictions_amount_limit_hint">הגבלת השימוש ל-X פריטים</string>
+    <string name="coupon_restrictions_limit_per_coupon_hint">מגבלת שימוש לקופון</string>
+    <string name="coupon_restrictions_maximum_spend_hint">קנייה מקסימלית (⁦%1$s⁩)</string>
+    <string name="coupon_restrictions_minimum_spend_hint">קנייה מינימלית (⁦%1$s⁩)</string>
+    <string name="coupon_edit_saving_dialog_subtitle">רק רגע…</string>
+    <string name="coupon_edit_saving_dialog_title">שומר את הקופון</string>
+    <string name="coupon_edit_coupon_update_failed">עדכון הקופון נכשל</string>
+    <string name="coupon_edit_coupon_updated">הקופון עודכן</string>
+    <string name="coupon_edit_usage_restrictions">הגבלות השימוש</string>
+    <string name="coupon_edit_usage_section">פרטי השימוש</string>
+    <string name="coupon_edit_free_shipping">האם להוסיף משלוח חינם?</string>
+    <string name="coupon_edit_expiry_clear_expiry_date">לנקות</string>
+    <string name="coupon_edit_expiry_date_none">ללא</string>
+    <string name="coupon_edit_conditions_section">להחיל את הקופון על</string>
+    <string name="coupon_list_search_failed">חיפוש הקופונים נכשל</string>
+    <string name="coupon_list_loading_failed">הבאת הקופונים נכשלה</string>
+    <string name="site_picker_error">שגיאה בעת הבאת החנויות</string>
+    <string name="site_picker_label">יש לבחור חנות שאליה ברצונך להתחבר</string>
+    <string name="product_stock_status_instock_quantified">%s במלאי</string>
     <string name="coupon_edit_add_description_hint">להוסיף את התיאור לקופון.</string>
     <string name="coupon_edit_description_editor_title">תיאור קופון</string>
     <string name="coupon_edit_edit_description">לערוך את התיאור</string>
@@ -137,8 +171,7 @@ Language: he_IL
     <string name="login_error_xml_rpc_services_disabled">שירותי XML-RPC באתר זה מנותקים.</string>
     <string name="a8c_email_message">יש להשתמש באימייל שאינו של Automattic כדי לשלוח כרטיס לתמיכה</string>
     <string name="card_reader_onboarding_stripe_account_in_unsupported_country">אנחנו לא תומכים בחשבונות של Stripe שרשומים בתוך ⁦%1$s⁩</string>
-    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">אנחנו לא תומכים ב-WooCommerce Payments בתוך ⁦%1$s⁩</string>
-    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">אנחנו לא תומכים ב-Stripe בתוך ⁦%1$s⁩</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">אנחנו לא תומכים בהרחבה WooCommerce Payments בתוך ⁦%1$s⁩</string>
     <string name="card_reader_connect_scanning_hint">יש ללחוץ על כפתור ההפעלה של הקורא שלך</string>
     <string name="card_reader_payment_reader_receipt_sent">הקבלה נשלחה אל &lt;strong&gt;%s&lt;/strong&gt;</string>
     <string name="order_creation_fee_percentage_hint">אחוזים (%)</string>
@@ -171,7 +204,6 @@ Language: he_IL
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">אפשרות התשלומים באופן אישי תעבוד רק כשאחד מהתוספים הבאים מופעל. יש ליצור קשר עם מנהל האתר כדי לכבות את אחד מהתוספים האלו על מנת להמשיך:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">אפשרות התשלומים באופן אישי תעבוד רק כשאחד מהתוספים הבאים מופעל. יש לכבות את אחד מהתוספים האלו כדי להמשיך:</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">תוספי תשלומים מתנגשים זוהו</string>
-    <string name="card_reader_wisepad_3_manual_card_reader">מדריך לקורא הכרטיסים של WisePad 3</string>
     <string name="order_creation_price_calculation_failed">לא ניתן לעדכן את המחירים</string>
     <string name="order_creation_payment_tax">מיסים</string>
     <string name="exclusive_or">או</string>
@@ -342,8 +374,6 @@ Language: he_IL
     <string name="card_reader_connect_missing_address_button">יש להזין כתובת</string>
     <string name="card_reader_connect_missing_address">עליך לספק את הכתובת של החנות שלך כדי להמשיך</string>
     <string name="card_reader_payment_check_mobile_device_prompt">יש לבדוק את המכשיר הנייד שלך</string>
-    <string name="card_reader_m2_manual_card_reader">מדריך לקורא הכרטיסים של Stripe M2</string>
-    <string name="card_reader_bbpos_manual_card_reader">מדריך לקורא הכרטיסים של BBPOS Chipper</string>
     <string name="order_error_update_empty_mail">אין אפשרות לעדכן את הכתובת עם שדה ריק לכתובת האימייל. עליך לוודא שמותקנת באתר שלך הגרסה האחרונה של WooCommerce.</string>
     <string name="orderfilters_date_range_filter_last_30_days">30 הימים האחרונים</string>
     <string name="orderfilters_date_range_filter_last_7_days">שבעת הימים האחרונים</string>
@@ -1334,6 +1364,7 @@ Language: he_IL
     <string name="login_jetpack_installed_sign_in">כבר יש לך חשבון ב-Jetpack? %1$s</string>
     <string name="login_refresh_app_progress_jetpack">מנסה להתחבר אל Jetpack…</string>
     <string name="login_refresh_app_continue">יש לרענן את האפליקציה כדי להמשיך</string>
+    <string name="login_not_connected_jetpack">כדי להשתמש באפליקציה להפעלה של ⁦%1$s⁩ עליך להגדיר את התוסף של Jetpack ולהתחבר לחשבון. \n\nלאחר ההתקנה, יש לרענן את האפליקציה</string>
     <string name="login_try_another_store">יש לנסות חנות אחרת</string>
     <string name="database_downgraded">בסיס הנתונים עודכן לגרסה פחות מתקדמת, אנחנו יוצרים את הטבלאות מחדש וטוענים את החנויות</string>
     <string name="loading_stores">מעדכן את החנויות</string>
@@ -1629,6 +1660,7 @@ Language: he_IL
     <string name="login_jetpack_what_is_description">Jetpack הוא תוסף חינמי ב-WordPress שמתחבר לחנות שלך עם כלים שיאפשרו לך ליהנות מהחוויה הטובה ביותר בנייד, כולל הודעות דחיפה ונתונים סטטיסטיים</string>
     <string name="login_jetpack_what_is">מה זה Jetpack?</string>
     <string name="login_view_connected_stores">להצגת החנויות המחוברות</string>
+    <string name="login_not_woo_store">נראה שהאתר ⁦%1$s⁩ אינו אתר של WooCommerce. יש להתקין את התוסף של WooCommerce באתר שלך ולאחר מכן לרענן את האפליקציה.</string>
     <string name="login_not_connected_to_account">נראה ששם המשתמש %1$s מחובר לחשבון אחר ב-WordPress.com.</string>
     <string name="keep_editing">המשך עריכה</string>
     <string name="notification_wpcom_username_needed">עליך להיכנס באמצעות שם המשתמש והסיסמה שלך.</string>
@@ -1690,7 +1722,7 @@ Language: he_IL
     <string name="promo_btn_try_it">כדאי לנסות עכשיו</string>
     <string name="promo_btn_got_it">הבנתי</string>
     <string name="tooltip_site_switcher">להקיש להחלפה בין חנויות</string>
-    <string name="site_picker_title">בחירת חנות</string>
+    <string name="site_picker_title">יש לבחור חנות</string>
     <string name="settings_signout">התנתקות</string>
     <string name="orderstatus_select_status">שינוי מצב ההזמנה</string>
     <string name="orderdetail_change_order_status">ללחוץ לשנוי מצב ההזמנה</string>

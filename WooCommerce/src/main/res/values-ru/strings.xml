@@ -1,11 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-05-20 09:54:03+0000
+Translation-Revision-Date: 2022-06-01 16:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Расширение WooCommerce Stripe не поддерживается в %1$s</string>
+    <string name="product_selector_filter_button_title">Фильтр</string>
+    <string name="product_selector_clear_button_title">Очистить выбор</string>
+    <string name="product_selector_select_button_title_one">Выбрать %d товар</string>
+    <string name="product_selector_select_button_title_default">Выбрать товары (%d)</string>
+    <string name="product_selector_sku_value">Артикул: %s</string>
+    <string name="product_selector_select_product_label">Выбрать товар %s</string>
+    <string name="coupon_conditions_products_edit_products_title">Изменить товары (%d)</string>
+    <string name="coupon_conditions_products_all_products_title">Все товары</string>
+    <string name="coupon_conditions_products_select_products_title">Выбрать товары</string>
+    <string name="coupon_restrictions_exclude_sale_items_hint">Включите это, если купон не следует применять к товарам на распродаже. Купоны на один товар применяются только в том случае, если товар не на распродаже. Купоны на одну покупку применяются только в том случае, если в корзине есть товары не по распродаже.</string>
+    <string name="coupon_restrictions_exclude_sale_items">Исключить товары со скидками</string>
+    <string name="coupon_restrictions_individual_use_hint">Включите это, если купон нельзя применять вместе с другими купонами.</string>
+    <string name="coupon_restrictions_individual_use">Только для индивидуального использования</string>
+    <string name="coupon_restrictions_limit_per_user_hint">Лимит пользователя</string>
+    <string name="coupon_restrictions_amount_limit_hint">Ограничить использование (до X элем.)</string>
+    <string name="coupon_restrictions_limit_per_coupon_hint">Общий лимит купона</string>
+    <string name="coupon_restrictions_maximum_spend_hint">Максимальная сумма (%1$s)</string>
+    <string name="coupon_restrictions_minimum_spend_hint">Минимальная сумма (%1$s)</string>
+    <string name="coupon_edit_saving_dialog_subtitle">Пожалуйста, подождите…</string>
+    <string name="coupon_edit_saving_dialog_title">Сохранение купона</string>
+    <string name="coupon_edit_coupon_update_failed">Не удалось обновить купон</string>
+    <string name="coupon_edit_coupon_updated">Купон обновлён</string>
+    <string name="coupon_edit_usage_restrictions">Ограничения использования</string>
+    <string name="coupon_edit_usage_section">Сведения об использовании</string>
+    <string name="coupon_edit_free_shipping">Добавить бесплатную доставку?</string>
+    <string name="coupon_edit_expiry_clear_expiry_date">Очистить</string>
+    <string name="coupon_edit_expiry_date_none">Нет</string>
+    <string name="coupon_edit_conditions_section">Применить этот купон к</string>
+    <string name="coupon_list_search_failed">Не удалось найти купоны</string>
+    <string name="coupon_list_loading_failed">Не удалось получить купоны</string>
+    <string name="site_picker_error">Ошибка получения магазинов</string>
+    <string name="site_picker_label">Выберите магазин для подключения</string>
+    <string name="product_stock_status_instock_quantified">%s в наличии</string>
     <string name="coupon_edit_add_description_hint">Добавьте описание купона.</string>
     <string name="coupon_edit_description_editor_title">Описание купона</string>
     <string name="coupon_edit_edit_description">Редактировать описание</string>
@@ -138,8 +172,7 @@ Language: ru
     <string name="login_error_xml_rpc_services_disabled">Сервисы XML-RPC на этом сайте отключены.</string>
     <string name="a8c_email_message">Чтобы отправить запрос в службу поддержки, не используйте почту Automattic</string>
     <string name="card_reader_onboarding_stripe_account_in_unsupported_country">Мы не поддерживаем счета Stripe, зарегистрированные в %1$s</string>
-    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">Мы не поддерживаем WooCommerce Payments в %1$s</string>
-    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Мы не поддерживаем Stripe в %1$s</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">Расширение WooCommerce Payments не поддерживается в %1$s</string>
     <string name="card_reader_connect_scanning_hint">Нажмите кнопку питания на устройстве чтения</string>
     <string name="card_reader_payment_reader_receipt_sent">Чек отправлен получателю: &lt;strong&gt;%s&lt;/strong&gt;</string>
     <string name="order_creation_fee_percentage_hint">Процент (%)</string>
@@ -172,7 +205,6 @@ Language: ru
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">Очные платежи будут работать только с одним из следующих активированных плагинов. Для продолжения обратитесь к администратору сайта, чтобы деактивировать один из следующих плагинов:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">Очные платежи будут работать только с одним из следующих активированных плагинов. Для продолжения деактивируйте один из следующих плагинов:</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">Обнаружены конфликтующие плагины оплаты</string>
-    <string name="card_reader_wisepad_3_manual_card_reader">Руководство по работе с платёжным терминалом WisePad 3</string>
     <string name="order_creation_price_calculation_failed">Не удалось обновить цены</string>
     <string name="order_creation_payment_tax">Налоги</string>
     <string name="exclusive_or">или</string>
@@ -343,8 +375,6 @@ Language: ru
     <string name="card_reader_connect_missing_address_button">Введите адрес</string>
     <string name="card_reader_connect_missing_address">Чтобы продолжить, укажите адрес магазина</string>
     <string name="card_reader_payment_check_mobile_device_prompt">Проверьте мобильное устройство</string>
-    <string name="card_reader_m2_manual_card_reader">Руководство по работе с платёжным терминалом Stripe Reader M2</string>
-    <string name="card_reader_bbpos_manual_card_reader">Руководство по работе с платёжным терминалом BBPOS Chipper</string>
     <string name="order_error_update_empty_mail">Невозможно обновить адрес, если не указана эл. почта. Убедитесь, что используете последнюю версию WooCommerce.</string>
     <string name="orderfilters_date_range_filter_last_30_days">Последние 30 дней</string>
     <string name="orderfilters_date_range_filter_last_7_days">Последние 7 дней</string>
@@ -1335,6 +1365,7 @@ Language: ru
     <string name="login_jetpack_installed_sign_in">Уже есть Jetpack? %1$s</string>
     <string name="login_refresh_app_progress_jetpack">Попытка входа через Jetpack…</string>
     <string name="login_refresh_app_continue">обновите приложение, чтобы продолжить</string>
+    <string name="login_not_connected_jetpack">Чтобы использовать это приложение для %1$s, настройте плагин Jetpack и подключите его к этой учетной записи. \n\nПосле настройки перезагрузите приложение</string>
     <string name="login_try_another_store">Попробуйте другой магазин</string>
     <string name="database_downgraded">База данных переведена на более раннюю версию, идет повторное создание таблиц и загрузка магазинов</string>
     <string name="loading_stores">Загрузка магазинов</string>
@@ -1630,6 +1661,7 @@ Language: ru
     <string name="login_jetpack_what_is_description">Jetpack — это бесплатный плагин WordPress с дополнительными инструментами, которые обеспечивают удобное управление магазином с мобильных устройств и доступ к расширенным возможностям, например push-уведомлениям и статистике.</string>
     <string name="login_jetpack_what_is">Что такое Jetpack?</string>
     <string name="login_view_connected_stores">Открыть список подключенных магазинов</string>
+    <string name="login_not_woo_store">Похоже, %1$s не является сайтом WooCommerce. Установите плагин WooCommerce на свой сайт и перезагрузите приложение.</string>
     <string name="login_not_connected_to_account">Похоже, что %1$s подключен к другой учетной записи WordPress.com.</string>
     <string name="keep_editing">Продолжить редактирование</string>
     <string name="notification_wpcom_username_needed">Please log in with your username and password.</string>
