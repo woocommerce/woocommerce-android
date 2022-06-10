@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.orders.details.editing.address.AddressViewMode
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.ShowStateSelector
 import com.woocommerce.android.ui.orders.details.editing.address.LocationCode
 import com.woocommerce.android.ui.searchfilter.SearchFilterItem
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -262,14 +263,16 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
         super.onCreateOptionsMenu(menu, inflater)
         menu.clear()
 
-        menu.add(
-            Menu.NONE,
-            SEARCH_ID,
-            Menu.NONE,
-            android.R.string.search_go
-        ).also {
-            it.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
-            it.setIcon(R.drawable.ic_search_24dp)
+        if (FeatureFlag.ORDER_CREATION_CUSTOMER_SEARCH.isEnabled()) {
+            menu.add(
+                Menu.NONE,
+                SEARCH_ID,
+                Menu.NONE,
+                android.R.string.search_go
+            ).also {
+                it.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
+                it.setIcon(R.drawable.ic_search_24dp)
+            }
         }
 
         inflater.inflate(R.menu.menu_done, menu)

@@ -53,13 +53,14 @@ fun CustomerListScreen(
     val state = viewModel.customerList.observeAsState()
     customerList = viewModel.customerList.value?.toMutableStateList() ?: SnapshotStateList()
     when {
-        customerList.isNotEmpty() -> CustomerList(onCustomerClick)
+        customerList.isNotEmpty() -> CustomerList(customerList, onCustomerClick)
         else -> EmptyCustomerList()
     }
 }
 
 @Composable
 private fun CustomerList(
+    customers: List<WCCustomerModel>,
     onCustomerClick: ((WCCustomerModel) -> Unit?)? = null
 ) {
     val listState = rememberLazyListState()
@@ -68,7 +69,7 @@ private fun CustomerList(
         modifier = Modifier.background(color = MaterialTheme.colors.surface)
     ) {
         itemsIndexed(
-            items = customerList,
+            items = customers,
             key = { _, customer -> customer.id }
         ) { _, customer ->
             CustomerListItem(customer, onCustomerClick)
