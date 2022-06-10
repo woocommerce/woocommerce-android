@@ -11,18 +11,21 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldColors
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -30,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -204,7 +208,7 @@ fun WCSearchView(
 
                 Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.minor_100)))
 
-                Box {
+                Box(Modifier.weight(1f)) {
                     if (value.isEmpty()) {
                         Text(
                             text = hint,
@@ -214,6 +218,18 @@ fun WCSearchView(
                     }
 
                     innerTextField()
+                }
+                if (value.isNotEmpty()) {
+                    IconButton(
+                        onClick = { onValueChange("") },
+                        modifier = Modifier.size(dimensionResource(id = R.dimen.major_250))
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Clear,
+                            contentDescription = stringResource(id = R.string.clear),
+                            tint = colorResource(id = R.color.color_on_surface_medium)
+                        )
+                    }
                 }
             }
         }
@@ -238,7 +254,7 @@ private fun WCOutlinedTextFieldPreview() {
                 isError = true
             )
             WCSearchView(
-                value = "",
+                value = "test",
                 onValueChange = {},
                 hint = "Search",
                 modifier = Modifier
