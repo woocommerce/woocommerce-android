@@ -41,7 +41,7 @@ import javax.inject.Inject
 @HiltViewModel
 class VariationSelectorViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    repository: VariationSelectorRepository,
+    private val repository: VariationSelectorRepository,
     private val currencyFormatter: CurrencyFormatter,
     private val wooCommerceStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
@@ -57,7 +57,6 @@ class VariationSelectorViewModel @Inject constructor(
     }
 
     private val navArgs: VariationSelectorFragmentArgs by savedState.navArgs()
-    private val product = repository.getProduct(navArgs.productId)
 
     private val loadingState = MutableStateFlow(IDLE)
     private val selectedVariationIds = savedState.getStateFlow(viewModelScope, navArgs.variationIds.toSet())
@@ -76,7 +75,7 @@ class VariationSelectorViewModel @Inject constructor(
     ) { variations, loadingState, selectedIds ->
         ViewState(
             loadingState = loadingState,
-            productName = product?.name ?: "",
+            productName =  getProduct()?.name ?: "",
             variations = variations.map { it.toUiModel(selectedIds) },
             selectedItemsCount = selectedIds.size
         )
@@ -90,7 +89,9 @@ class VariationSelectorViewModel @Inject constructor(
         }
     }
 
-    private fun ProductVariation.toUiModel(selectedIds: Set<Long>): VariationListItem {
+    private suspend fun getProduct() = repository.getProduct(navArgs.productId)
+
+    private suspend fun ProductVariation.toUiModel(selectedIds: Set<Long>): VariationListItem {
         val stockStatus = when (stockStatus) {
             InStock -> {
                 val quantity = if (stockQuantity.isInteger()) stockQuantity.toInt() else stockQuantity
@@ -106,7 +107,7 @@ class VariationSelectorViewModel @Inject constructor(
 
         return VariationListItem(
             id = remoteVariationId,
-            title = getName(product),
+            title = getName(getProduct()),
             imageUrl = image?.source,
             sku = sku.takeIf { it.isNotBlank() },
             stockAndPrice = stockAndPrice,

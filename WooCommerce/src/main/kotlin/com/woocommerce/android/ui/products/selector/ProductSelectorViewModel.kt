@@ -167,8 +167,10 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     fun onSelectedVariationsUpdated(result: VariationSelectionResult) {
-        val oldIds = variationSelectorRepository.getProduct(result.productId)?.variationIds ?: emptyList()
-        selectedProductIds.value = selectedProductIds.value - oldIds.toSet() + result.selectedVariationIds
+        viewModelScope.launch {
+            val oldIds = variationSelectorRepository.getProduct(result.productId)?.variationIds ?: emptyList()
+            selectedProductIds.value = selectedProductIds.value - oldIds.toSet() + result.selectedVariationIds
+        }
     }
 
     data class ViewState(
