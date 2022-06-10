@@ -37,7 +37,7 @@ class ProductCategorySelectorRepository @Inject constructor(
             .let { result ->
                 if (result.isError) {
                     WooLog.w(
-                        WooLog.T.COUPONS,
+                        WooLog.T.PRODUCTS,
                         "Fetching categories failed, error: ${result.error.type}: ${result.error.message}"
                     )
                     Result.failure(WooException(result.error))
@@ -46,4 +46,39 @@ class ProductCategorySelectorRepository @Inject constructor(
                 }
             }
     }
+
+    suspend fun searchCategories(
+        searchQuery: String,
+        offset: Int,
+        pageSize: Int
+    ): Result<SearchResult> {
+        return store.searchProductCategories(
+            selectedSite.get(),
+            searchString = searchQuery,
+            offset = offset,
+            pageSize = pageSize
+        ).let { result ->
+            if (result.isError) {
+                WooLog.w(
+                    WooLog.T.PRODUCTS,
+                    "Searching product categories failed, error: ${result.error.type}: ${result.error.message}"
+                )
+                Result.failure(WooException(result.error))
+            } else {
+                val searchResult = result.model!!
+                Result.success(
+                    SearchResult(
+                        productCategories = searchResult.categories
+                            .map { categoryDataModel -> categoryDataModel.toProductCategory() },
+                        canLoadMore = searchResult.canLoadMore
+                    )
+                )
+            }
+        }
+    }
+
+    data class SearchResult(
+        val productCategories: List<ProductCategory>,
+        val canLoadMore: Boolean
+    )
 }
