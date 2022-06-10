@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.refunds
+package com.woocommerce.android.ui.payments.refunds
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -18,10 +18,10 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
-import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundType
-import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundType.AMOUNT
-import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundType.ITEMS
+import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
+import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.RefundType
+import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.RefundType.AMOUNT
+import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.RefundType.ITEMS
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 

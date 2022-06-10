@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.refunds
+package com.woocommerce.android.ui.payments.refunds
 
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
@@ -16,7 +16,7 @@ import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.addons.AddonRepository
-import com.woocommerce.android.ui.refunds.RefundProductListAdapter.ProductRefundListItem
+import com.woocommerce.android.ui.payments.refunds.RefundProductListAdapter.ProductRefundListItem
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.LiveDataDelegate

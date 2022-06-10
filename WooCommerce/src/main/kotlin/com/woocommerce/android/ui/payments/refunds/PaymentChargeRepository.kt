@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.refunds
+package com.woocommerce.android.ui.payments.refunds
 
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.tools.SelectedSite

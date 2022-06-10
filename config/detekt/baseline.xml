@@ -402,7 +402,7 @@
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.variations.VariationDetailViewModel.kt:37</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.variations.VariationDetailViewModelTest.kt:24</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.variations.VariationListAdapter.kt:22</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.refunds.IssueRefundViewModel.kt:74</ID>
+    <ID>NoWildcardImports:com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.kt:74</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.reviews.ReviewDetailFragment.kt:32</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.reviews.ReviewDetailFragment.kt:41</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.reviews.ReviewDetailRepository.kt:6</ID>

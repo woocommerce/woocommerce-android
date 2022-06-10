@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.refunds
+package com.woocommerce.android.ui.payments.refunds
 
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import com.woocommerce.android.R
