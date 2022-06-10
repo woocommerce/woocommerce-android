@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -169,7 +170,7 @@ class ProductSelectorViewModel @Inject constructor(
     fun onSelectedVariationsUpdated(result: VariationSelectionResult) {
         viewModelScope.launch {
             val oldIds = variationSelectorRepository.getProduct(result.productId)?.variationIds ?: emptyList()
-            selectedProductIds.value = selectedProductIds.value - oldIds.toSet() + result.selectedVariationIds
+            selectedProductIds.update { selectedProductIds.value - oldIds.toSet() + result.selectedVariationIds }
         }
     }
 
