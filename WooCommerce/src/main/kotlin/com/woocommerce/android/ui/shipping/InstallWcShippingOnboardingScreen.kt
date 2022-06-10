@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -53,10 +52,12 @@ fun InstallWcShippingOnboardingScreen(onboardingFlowUiState: InstallWcShippingOn
                 start = dimensionResource(id = R.dimen.major_200),
                 end = dimensionResource(id = R.dimen.major_200)
             )
-            .verticalScroll(rememberScrollState())
     ) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
         ) {
             Text(
                 modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_350)),
@@ -88,8 +89,6 @@ fun InstallWcShippingOnboardingScreen(onboardingFlowUiState: InstallWcShippingOn
                     top = dimensionResource(id = R.dimen.major_200),
                     bottom = dimensionResource(id = R.dimen.major_200),
                 )
-                .fillMaxHeight(),
-            verticalArrangement = Arrangement.Bottom
         ) {
             WCColoredButton(
                 modifier = Modifier.fillMaxWidth(),
