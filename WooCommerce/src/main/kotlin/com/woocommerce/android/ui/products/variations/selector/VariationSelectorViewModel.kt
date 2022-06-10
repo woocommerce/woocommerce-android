@@ -6,6 +6,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.isInteger
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductStockStatus.Custom
@@ -25,7 +26,9 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -60,6 +63,9 @@ class VariationSelectorViewModel @Inject constructor(
 
     private val loadingState = MutableStateFlow(IDLE)
     private val selectedVariationIds = savedState.getStateFlow(viewModelScope, navArgs.variationIds.toSet())
+    private val product: Deferred<Product?> = async {
+        repository.getProduct(navArgs.productId)
+    }
 
     val viewSate = combine(
         variationListHandler.getVariationsFlow(navArgs.productId),
@@ -75,7 +81,7 @@ class VariationSelectorViewModel @Inject constructor(
     ) { variations, loadingState, selectedIds ->
         ViewState(
             loadingState = loadingState,
-            productName =  getProduct()?.name ?: "",
+            productName = product.await()?.name ?: "",
             variations = variations.map { it.toUiModel(selectedIds) },
             selectedItemsCount = selectedIds.size
         )
@@ -88,8 +94,6 @@ class VariationSelectorViewModel @Inject constructor(
             loadingState.value = IDLE
         }
     }
-
-    private suspend fun getProduct() = repository.getProduct(navArgs.productId)
 
     private suspend fun ProductVariation.toUiModel(selectedIds: Set<Long>): VariationListItem {
         val stockStatus = when (stockStatus) {
@@ -107,7 +111,7 @@ class VariationSelectorViewModel @Inject constructor(
 
         return VariationListItem(
             id = remoteVariationId,
-            title = getName(getProduct()),
+            title = getName(product.await()),
             imageUrl = image?.source,
             sku = sku.takeIf { it.isNotBlank() },
             stockAndPrice = stockAndPrice,
