@@ -468,6 +468,7 @@ final class OrderDetailViewModel @Inject constructor(
                                         prepareTracksEventsDetails(result.event)
                                     )
                                 } else {
+                                    reloadOrderDetails()
                                     trackerWrapper.track(ORDER_STATUS_CHANGE_SUCCESS)
                                 }
                             }
