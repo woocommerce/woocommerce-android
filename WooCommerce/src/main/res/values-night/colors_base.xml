@@ -139,4 +139,7 @@
     <color name="log_text_info">@color/white</color>
     <color name="log_text_warning">@color/white</color>
     <color name="log_text_error">@color/white</color>
+
+    <!-- Text colors -->
+    <color name="link_text">@color/woo_blue_30</color>
 </resources>

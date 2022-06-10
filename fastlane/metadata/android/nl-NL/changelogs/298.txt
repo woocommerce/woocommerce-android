@@ -1,4 +1,0 @@
-9.1:
-We hebben hard gewerkt aan een nieuwe functie om je te helpen je coupons te beheren. Hij is nog niet helemaal klaar maar je kunt alvast een kijkje nemen door de bèta-functie in te schakelen bij Instellingen op het tabblad Meer. We horen graag je feedback!
-
-We hebben ook wat bugs opgelost waarbij prijzen van variabele producten per ongeluk gewist werden als het voorraadniveau werd aangepast.

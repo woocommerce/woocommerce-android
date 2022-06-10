@@ -5,6 +5,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.EditIncludedProductCategories
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.EditIncludedProducts
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenCouponRestrictions
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenDescriptionEditor
@@ -35,6 +36,13 @@ object EditCouponNavigator {
                         target.restrictions,
                         target.currencyCode,
                         target.showLimitUsageToXItems
+                    )
+                )
+            }
+            is EditIncludedProductCategories -> {
+                navController.navigateSafely(
+                    EditCouponFragmentDirections.actionEditCouponFragmentToProductCategorySelectorFragment(
+                        categoryIds = target.categoryIds.toLongArray()
                     )
                 )
             }

@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-05-05 09:54:04+0000
+Translation-Revision-Date: 2022-05-20 09:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="coupon_edit_add_description_hint">Добавьте описание купона.</string>
+    <string name="coupon_edit_description_editor_title">Описание купона</string>
+    <string name="coupon_edit_edit_description">Редактировать описание</string>
+    <string name="coupon_edit_add_description">Добавить описание (необязательно)</string>
+    <string name="coupon_edit_expiry_date">Дата окончания срока действия купона</string>
+    <string name="coupon_edit_save_button">Сохранить</string>
+    <string name="coupon_edit_regenerate_coupon">Создать код купона повторно</string>
+    <string name="coupon_edit_code_helper">Клиентам необходимо ввести этот код, чтобы использовать купон.</string>
+    <string name="coupon_edit_code_hint">Код купона</string>
+    <string name="coupon_edit_amount_rate_helper">Задайте сумму скидки, которую вы хотите предложить.</string>
+    <string name="coupon_edit_amount_percentage_helper">Задайте процент скидки, которую вы хотите предложить.</string>
+    <string name="coupon_edit_amount_hint">Сумма (%1$s)</string>
+    <string name="coupon_edit_details_section">Сведения о купоне</string>
+    <string name="coupon_edit_screen_title">Изменить %1$s</string>
+    <string name="coupon_details_menu_edit">Изменить купон</string>
+    <string name="product_detail_save_product_error">Не удаётся обновить продукт</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund_failed">Произошла ошибка при применении возврата</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund">Применение возврата к заказу</string>
+    <string name="card_reader_icon_content_description">Изображение платёжного терминала</string>
+    <string name="order_creation_fee_percentage_calculated_amount">Вычисленная сумма: %s</string>
+    <string name="order_creation_fee_percentage_toggle_text">Вычислить в процентном соотношении</string>
+    <string name="copied_to_clipboard">Скопировано в буфер обмена</string>
     <string name="coupon_details_restricted_emails">Только для клиентов с почтовыми адресами: %1$s</string>
     <string name="coupon_details_excludes_sale_items">Исключает товары со скидками</string>
     <string name="coupon_details_allows_free_shipping">Разрешает бесплатную доставку</string>
@@ -120,7 +142,6 @@ Language: ru
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Мы не поддерживаем Stripe в %1$s</string>
     <string name="card_reader_connect_scanning_hint">Нажмите кнопку питания на устройстве чтения</string>
     <string name="card_reader_payment_reader_receipt_sent">Чек отправлен получателю: &lt;strong&gt;%s&lt;/strong&gt;</string>
-    <string name="order_creation_fee_percentage_toggle_text">Процент комиссии</string>
     <string name="order_creation_fee_percentage_hint">Процент (%)</string>
     <string name="order_creation_add_fee_removal_hint">Убрать комиссию из заказа</string>
     <string name="order_creation_remove_shipping">Убрать доставку из заказа</string>
@@ -154,7 +175,6 @@ Language: ru
     <string name="card_reader_wisepad_3_manual_card_reader">Руководство по работе с платёжным терминалом WisePad 3</string>
     <string name="order_creation_price_calculation_failed">Не удалось обновить цены</string>
     <string name="order_creation_payment_tax">Налоги</string>
-    <string name="order_creation_payment_tax_hint">Налоги будут рассчитаны автоматически на основе настроек магазина.</string>
     <string name="exclusive_or">или</string>
     <string name="settings_install_jetpack">Установить Jetpack</string>
     <string name="card_reader_onboarding_account_rejected_header">В настоящее время очные платежи недоступны</string>
@@ -572,7 +592,7 @@ Language: ru
     <string name="card_reader_refetching_order_failed">Ошибка при загрузке заказа. Состояние заказа в приложении могло устареть.</string>
     <string name="card_reader_payment_email_client_not_found">Не удалось определить ваш почтовый клиент</string>
     <string name="card_reader_payment_receipt_email_subject">Ваша квитанция от %s</string>
-    <string name="card_reader_payment_description">Веб-платёж за заказ %s на %s</string>
+    <string name="card_reader_payment_description">Оплата при получении, заказ %s для %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Обновление заказа</string>
     <string name="card_reader_payment_fetch_order_loading_header">Обновление состояния приложения</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Ваш клиент выбрал %1$s</string>

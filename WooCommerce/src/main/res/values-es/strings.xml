@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-05-05 13:54:18+0000
+Translation-Revision-Date: 2022-05-20 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="coupon_edit_add_description_hint">Añade la descripción del cupón.</string>
+    <string name="coupon_edit_description_editor_title">Descripción del cupón</string>
+    <string name="coupon_edit_edit_description">Editar descripción</string>
+    <string name="coupon_edit_add_description">Añadir descripción (opcional)</string>
+    <string name="coupon_edit_expiry_date">Fecha de caducidad del cupón</string>
+    <string name="coupon_edit_save_button">Guardar</string>
+    <string name="coupon_edit_regenerate_coupon">Generar código de nuevo</string>
+    <string name="coupon_edit_code_helper">Los clientes tienen que introducir este código para usar el cupón.</string>
+    <string name="coupon_edit_code_hint">Código de cupón</string>
+    <string name="coupon_edit_amount_rate_helper">Establece el importe del descuento que quieres ofrecer.</string>
+    <string name="coupon_edit_amount_percentage_helper">Establece el porcentaje de descuento que quieres ofrecer.</string>
+    <string name="coupon_edit_amount_hint">Importe (%1$s)</string>
+    <string name="coupon_edit_details_section">Datos del cupón</string>
+    <string name="coupon_edit_screen_title">Editar %1$s</string>
+    <string name="coupon_details_menu_edit">Editar cupón</string>
+    <string name="product_detail_save_product_error">No se puede actualizar el producto</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund_failed">Se ha producido un error al realizar el reembolso</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund">Realizando reembolso del pedido</string>
+    <string name="card_reader_icon_content_description">Imagen del lector de tarjetas</string>
+    <string name="order_creation_fee_percentage_calculated_amount">Importe calculado: %s</string>
+    <string name="order_creation_fee_percentage_toggle_text">Calcular como un porcentaje</string>
+    <string name="copied_to_clipboard">Copiado al portapapeles</string>
     <string name="coupon_details_restricted_emails">Restringido a clientes con correos electrónicos: %1$s</string>
     <string name="coupon_details_excludes_sale_items">Excluye los elementos rebajados</string>
     <string name="coupon_details_allows_free_shipping">Permite el envío gratuito</string>
@@ -120,7 +142,6 @@ Language: es
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">No admitimos Stripe en %1$s</string>
     <string name="card_reader_connect_scanning_hint">Pulsa el botón de encendido del lector.</string>
     <string name="card_reader_payment_reader_receipt_sent">Se ha enviado un recibo a &lt;strong&gt;%s&lt;/strong&gt;</string>
-    <string name="order_creation_fee_percentage_toggle_text">Tasa de porcentaje</string>
     <string name="order_creation_fee_percentage_hint">Porcentaje (%)</string>
     <string name="order_creation_add_fee_removal_hint">Eliminar la tasa del pedido</string>
     <string name="order_creation_remove_shipping">Eliminar el envío del pedido</string>
@@ -154,7 +175,6 @@ Language: es
     <string name="card_reader_wisepad_3_manual_card_reader">Manual del lector de tarjetas WisePad 3</string>
     <string name="order_creation_price_calculation_failed">No se ha podido actualizar el precio.</string>
     <string name="order_creation_payment_tax">Impuestos</string>
-    <string name="order_creation_payment_tax_hint">Los impuestos se calcularán automáticamente en función de los ajustes de tu tienda.</string>
     <string name="exclusive_or">o</string>
     <string name="settings_install_jetpack">Instalar Jetpack</string>
     <string name="card_reader_onboarding_account_rejected_header">Pagos en persona no está disponible en este momento</string>
@@ -572,7 +592,7 @@ Language: es
     <string name="card_reader_refetching_order_failed">Error al recuperar el pedido. El estado del pedido en la aplicación podría estar desactualizado.</string>
     <string name="card_reader_payment_email_client_not_found">No se pudo detectar una aplicación cliente de correo electrónico</string>
     <string name="card_reader_payment_receipt_email_subject">Tu recibo de %s</string>
-    <string name="card_reader_payment_description">Pago en línea del pedido %s para %s</string>
+    <string name="card_reader_payment_description">Pago en persona del pedido %s para %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Actualizando pedido</string>
     <string name="card_reader_payment_fetch_order_loading_header">Actualizando estado en la aplicación</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Tu cliente ha seleccionado %1$s</string>

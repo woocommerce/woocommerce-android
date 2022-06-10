@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-05-05 11:54:04+0000
+Translation-Revision-Date: 2022-05-20 11:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="coupon_edit_add_description_hint">添加此优惠券的描述。</string>
+    <string name="coupon_edit_description_editor_title">优惠券描述</string>
+    <string name="coupon_edit_edit_description">编辑描述</string>
+    <string name="coupon_edit_add_description">添加描述（可选）</string>
+    <string name="coupon_edit_expiry_date">优惠券过期日期</string>
+    <string name="coupon_edit_save_button">保存</string>
+    <string name="coupon_edit_regenerate_coupon">重新生成优惠券代码</string>
+    <string name="coupon_edit_code_helper">客户需要输入此代码，才能使用优惠券。</string>
+    <string name="coupon_edit_code_hint">优惠券代码</string>
+    <string name="coupon_edit_amount_rate_helper">设置您要提供的折扣金额。</string>
+    <string name="coupon_edit_amount_percentage_helper">设置您要提供的折扣百分比。</string>
+    <string name="coupon_edit_amount_hint">金额 (%1$s)</string>
+    <string name="coupon_edit_details_section">优惠券详细信息</string>
+    <string name="coupon_edit_screen_title">编辑%1$s</string>
+    <string name="coupon_details_menu_edit">编辑优惠券</string>
+    <string name="product_detail_save_product_error">无法更新商品</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund_failed">申请退款时出错</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund">申请订单退款</string>
+    <string name="card_reader_icon_content_description">读卡器图像</string>
+    <string name="order_creation_fee_percentage_calculated_amount">计算的金额：%s</string>
+    <string name="order_creation_fee_percentage_toggle_text">按百分比计算</string>
+    <string name="copied_to_clipboard">已复制到剪贴板</string>
     <string name="coupon_details_restricted_emails">仅限使用电子邮件的客户：%1$s</string>
     <string name="coupon_details_excludes_sale_items">不含促销商品</string>
     <string name="coupon_details_allows_free_shipping">允许免运费</string>
@@ -120,7 +142,6 @@ Language: zh_CN
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">我们在%1$s不支持 Stripe</string>
     <string name="card_reader_connect_scanning_hint">按下阅读器的电源按钮</string>
     <string name="card_reader_payment_reader_receipt_sent">已将收据发送至 &lt;strong&gt;%s&lt;/strong&gt;</string>
-    <string name="order_creation_fee_percentage_toggle_text">费用百分比</string>
     <string name="order_creation_fee_percentage_hint">百分比 (%)</string>
     <string name="order_creation_add_fee_removal_hint">从订单中去除费用</string>
     <string name="order_creation_remove_shipping">从订单中取消配送</string>
@@ -154,7 +175,6 @@ Language: zh_CN
     <string name="card_reader_wisepad_3_manual_card_reader">WisePad 3 读卡器手册</string>
     <string name="order_creation_price_calculation_failed">无法更新定价</string>
     <string name="order_creation_payment_tax">税费</string>
-    <string name="order_creation_payment_tax_hint">系统会根据您的商店设置自动计算税费。</string>
     <string name="exclusive_or">或</string>
     <string name="settings_install_jetpack">安装 Jetpack</string>
     <string name="card_reader_onboarding_account_rejected_header">当前不支持现场付款</string>
@@ -572,7 +592,7 @@ Language: zh_CN
     <string name="card_reader_refetching_order_failed">抓取订单时出错。 应用程序中的订单状态可能已过时。</string>
     <string name="card_reader_payment_email_client_not_found">未侦测到您的电子邮件客户端应用</string>
     <string name="card_reader_payment_receipt_email_subject">来自 %s 的收据</string>
-    <string name="card_reader_payment_description">%s 的订单 %s 的在线支付</string>
+    <string name="card_reader_payment_description">对 %s 的订单 %s 面对面付款</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">刷新订单</string>
     <string name="card_reader_payment_fetch_order_loading_header">更新应用程序状态</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">您选定的客户 %1$s</string>

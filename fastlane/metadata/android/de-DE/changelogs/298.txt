@@ -1,4 +1,0 @@
-9.1:
-Wir haben intensiv an einer neuen Funktion zum Verwalten von Gutscheinen gearbeitet. Sie ist noch nicht ganz fertig, du kannst aber in den Einstellungen unter dem Tab „More“ (Weitere Informationen) die Betafunktion aktivieren, um sie dir schon mal anzuschauen. Wir freuen uns auf dein Feedback!
-
-Zudem haben wir ein paar Fehler bei variablen Produkten behoben, durch die Preise beim Ändern des Lagerbestands versehentlich gelöscht wurden.

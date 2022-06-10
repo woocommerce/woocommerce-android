@@ -155,8 +155,4 @@ class AppSettingsActivity :
             .create()
             .show()
     }
-
-    override fun clearNotificationPreferences() {
-        prefs.removeFCMToken()
-    }
 }
