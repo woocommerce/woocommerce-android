@@ -111,11 +111,13 @@ private fun CategoriesList(
         modifier = Modifier
             .fillMaxHeight()
     ) {
-        WCTextButton(
-            onClick = onClearSelectionClick,
-            modifier = Modifier.padding(dimensionResource(id = R.dimen.minor_100))
-        ) {
-            Text(text = stringResource(id = R.string.product_category_selector_clear_selection))
+        if (viewState.selectedCategoriesCount > 0) {
+            WCTextButton(
+                onClick = onClearSelectionClick,
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.minor_100))
+            ) {
+                Text(text = stringResource(id = R.string.product_category_selector_clear_selection))
+            }
         }
         val lazyListState = rememberLazyListState()
         LazyColumn(
