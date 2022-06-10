@@ -697,4 +697,32 @@ class CreationFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest(
 
         assertThat(sut.orderDraft.value).isEqualToIgnoringGivenFields(Order.EMPTY, "dateCreated", "dateModified")
     }
+
+    @Test
+    fun `when isEditable is true on the create flow the order is editable`() {
+        // When the order is on Creation mode is always editable
+        createOrUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(defaultOrderValue.copy(isEditable = true)))
+        }
+        createSut()
+        var lastReceivedState: ViewState? = null
+        sut.viewStateData.liveData.observeForever {
+            lastReceivedState = it
+        }
+        assertThat(lastReceivedState?.isEditable).isEqualTo(true)
+    }
+
+    @Test
+    fun `when isEditable is false on the edit flow the order is editable`() {
+        // When the order is on Creation mode is always editable
+        createOrUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(defaultOrderValue.copy(isEditable = false)))
+        }
+        createSut()
+        var lastReceivedState: ViewState? = null
+        sut.viewStateData.liveData.observeForever {
+            lastReceivedState = it
+        }
+        assertThat(lastReceivedState?.isEditable).isEqualTo(true)
+    }
 }

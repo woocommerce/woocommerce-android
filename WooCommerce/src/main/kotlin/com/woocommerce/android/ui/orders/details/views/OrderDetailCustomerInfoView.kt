@@ -34,6 +34,17 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         isVirtualOrder: Boolean, // don't display shipping section for virtual products
         isReadOnly: Boolean
     ) {
+        val noBillingInfo = order.billingAddress.hasInfo().not() && order.formatBillingInformationForDisplay().isEmpty()
+        val noShippingInfo = order.formatShippingInformationForDisplay().isEmpty()
+        val noCustomerNoteInfo = order.customerNote.isEmpty()
+
+        // hide this entire view if there is no info to display
+        val hideCustomerInfo = isReadOnly && noBillingInfo && noShippingInfo && noCustomerNoteInfo
+        if (hideCustomerInfo) {
+            hide()
+            return
+        }
+
         showCustomerNote(order, isReadOnly)
         showShippingAddress(order, isVirtualOrder, isReadOnly)
         showBillingInfo(order, isReadOnly)
@@ -48,12 +59,6 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             if (order.billingAddress.hasInfo()) {
                 binding.customerInfoBillingAddr.setText(resources.getString(R.string.orderdetail_empty_address), 0)
             } else {
-                // hide this entire view if there are no extra details and the shipping address is also empty
-                if (shippingAddress.isEmpty()) {
-                    hide()
-                    return
-                }
-
                 // hide the entire billing section since billing address is empty
                 binding.customerInfoMorePanel.hide()
                 binding.customerInfoViewMore.hide()
