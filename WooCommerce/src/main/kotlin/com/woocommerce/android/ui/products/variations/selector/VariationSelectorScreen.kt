@@ -34,6 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.R.dimen
+import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.WCTextButton
@@ -144,6 +145,8 @@ private fun VariationList(
                     },
                     selectionState = variation.selectionState,
                     isArrowVisible = false,
+                    onClickLabel = stringResource(id = string.product_selector_select_variation_label, variation.title),
+                    imageContentDescription = stringResource(string.product_image_content_description)
                 ) {
                     onVariationClick(variation)
                 }

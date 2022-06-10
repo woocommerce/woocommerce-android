@@ -43,6 +43,8 @@ fun SelectorListItem(
     imageUrl: String?,
     infoLine1: String?,
     infoLine2: String?,
+    onClickLabel: String?,
+    imageContentDescription: String?,
     selectionState: SelectionState,
     isArrowVisible: Boolean,
     onItemClick: () -> Unit
@@ -55,7 +57,7 @@ fun SelectorListItem(
                 onClick = {
                     onItemClick()
                 },
-                onClickLabel = stringResource(id = string.product_selector_select_variation_label, title)
+                onClickLabel = onClickLabel
             )
             .padding(
                 start = dimensionResource(id = dimen.major_100),
@@ -77,7 +79,7 @@ fun SelectorListItem(
         ) { icon ->
             Image(
                 painter = painterResource(id = icon),
-                contentDescription = stringResource(id = string.product_variations)
+                contentDescription = imageContentDescription
             )
         }
 
@@ -118,7 +120,7 @@ fun SelectorListItem(
         if (isArrowVisible) {
             Image(
                 painter = painterResource(id = drawable.ic_arrow_right),
-                contentDescription = stringResource(id = string.product_variations),
+                contentDescription = stringResource(id = string.product_selector_arrow_content_description),
                 modifier = Modifier
                     .size(dimensionResource(id = dimen.major_200))
                     .align(Alignment.CenterVertically),
@@ -149,5 +151,7 @@ private fun SelectorListItemPreview() =
         infoLine2 = "Information 2",
         selectionState = SELECTED,
         isArrowVisible = true,
-        onItemClick = {}
+        onItemClick = {},
+        onClickLabel = null,
+        imageContentDescription = null
     )
