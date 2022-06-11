@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ConstraintSet android:id="@+id/start">
+        <Constraint
+            android:id="@+id/message"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/major_100"
+            android:layout_marginBottom="@dimen/major_85"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/title"
+            app:layout_constraintTop_toTopOf="parent" />
+        <Constraint
+            android:id="@+id/expand_icon"
+            android:layout_width="@dimen/image_minor_50"
+            android:layout_height="@dimen/image_minor_50"
+            android:layout_marginEnd="@dimen/major_100"
+            android:layout_marginBottom="@dimen/minor_00"
+            android:rotation="0"
+            app:layout_constraintBottom_toBottomOf="@id/title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/title" />
+    </ConstraintSet>
+
+    <ConstraintSet android:id="@+id/end">
+        <Constraint
+            android:id="@+id/message"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/major_100"
+            android:visibility="visible"
+            app:layout_constraintBottom_toTopOf="@+id/expand_icon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/title"
+            app:layout_constraintTop_toBottomOf="@+id/title" />
+        <Constraint
+            android:id="@+id/expand_icon"
+            android:layout_width="@dimen/image_minor_50"
+            android:layout_height="@dimen/image_minor_50"
+            android:layout_marginTop="@dimen/minor_100"
+            android:layout_marginEnd="@dimen/major_100"
+            android:layout_marginBottom="@dimen/minor_100"
+            android:rotation="180"
+            app:layout_constraintBottom_toBottomOf="@+id/message"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/message" />
+    </ConstraintSet>
+
+    <Transition
+        app:constraintSetEnd="@id/end"
+        app:constraintSetStart="@+id/start">
+        <KeyFrameSet>
+            <KeyPosition
+                app:framePosition="70"
+                app:motionTarget="@+id/message"
+                app:percentY="1" />
+            <KeyAttribute
+                android:alpha="0.0"
+                app:framePosition="50"
+                app:motionTarget="@+id/message" />
+        </KeyFrameSet>
+    </Transition>
+</MotionScene>
