@@ -16,7 +16,6 @@
             android:layout_height="wrap_content"
             app:icon="@drawable/ic_gridicons_notice"
             app:iconTint="@color/color_primary"
-            app:isExpanded="true"
             app:message="@string/order_editing_non_editable_message"
             app:title="@string/order_editing_non_editable_title" />
 
