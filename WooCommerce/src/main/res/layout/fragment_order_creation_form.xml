@@ -10,6 +10,16 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <com.woocommerce.android.ui.common.ExpandableMessageView
+            android:id="@+id/message_no_editable_fields"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_gridicons_notice"
+            app:iconTint="@color/color_primary"
+            app:isExpanded="true"
+            app:message="@string/order_editing_non_editable_message"
+            app:title="@string/order_editing_non_editable_title" />
+
         <com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
             android:id="@+id/order_status_view"
             style="@style/Woo.Card"
@@ -21,9 +31,9 @@
             style="@style/Woo.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:hasEditButton="false"
             app:header="@string/products"
-            app:keepAddButtons="true"
-            app:hasEditButton="false"/>
+            app:keepAddButtons="true" />
 
         <include
             android:id="@+id/payment_section"

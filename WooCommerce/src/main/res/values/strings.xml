@@ -386,6 +386,11 @@
     <string name="order_creation_fee_percentage_calculated_amount">Calculated amount: %s</string>
     <string name="order_creation_change_product_quantity">Change the product quantity from %d to %d</string>
     <!--
+        Order Editing
+    -->
+    <string name="order_editing_non_editable_title">Parts of this order are no longer editable</string>
+    <string name="order_editing_non_editable_message">To edit the rest of this order, change the status to <b>Pending Payment</b>.</string>
+    <!--
         Order Filters
     -->
     <string name="orderfilters_show_orders_button">Show Orders</string>
