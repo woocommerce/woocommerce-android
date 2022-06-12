@@ -38,11 +38,13 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCSearchView
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.APPENDING
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.IDLE
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.LOADING
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductListItem
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ViewState
@@ -53,15 +55,17 @@ import com.woocommerce.android.util.StringUtils
 
 @Composable
 fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
-    val viewState by viewModel.viewSate.observeAsState(ViewState())
-
-    ProductSelectorScreen(
-        state = viewState,
-        onDoneButtonClick = viewModel::onDoneButtonClick,
-        onClearButtonClick = viewModel::onClearButtonClick,
-        onProductClick = viewModel::onProductClick,
-        onLoadMore = viewModel::onLoadMore
-    )
+    val viewState by viewModel.viewSate.observeAsState()
+    viewState?.let {
+        ProductSelectorScreen(
+            state = it,
+            onDoneButtonClick = viewModel::onDoneButtonClick,
+            onClearButtonClick = viewModel::onClearButtonClick,
+            onProductClick = viewModel::onProductClick,
+            onLoadMore = viewModel::onLoadMore,
+            onSearchQueryChanged = viewModel::onSearchQueryChanged
+        )
+    }
 }
 
 @Composable
@@ -70,18 +74,36 @@ fun ProductSelectorScreen(
     onDoneButtonClick: () -> Unit,
     onClearButtonClick: () -> Unit,
     onProductClick: (ProductListItem) -> Unit,
-    onLoadMore: () -> Unit
+    onLoadMore: () -> Unit,
+    onSearchQueryChanged: (String) -> Unit
 ) {
-    when {
-        state.products.isNotEmpty() -> ProductList(
-            state = state,
-            onDoneButtonClick = onDoneButtonClick,
-            onClearButtonClick = onClearButtonClick,
-            onProductClick = onProductClick,
-            onLoadMore = onLoadMore
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colors.surface)
+    ) {
+        WCSearchView(
+            value = state.searchQuery,
+            onValueChange = onSearchQueryChanged,
+            hint = stringResource(id = string.product_selector_search_hint),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = dimensionResource(id = dimen.major_100),
+                    vertical = dimensionResource(id = dimen.minor_100)
+                )
         )
-        state.products.isEmpty() && state.loadingState == LOADING -> ProductListSkeleton()
-        else -> EmptyProductList()
+        when {
+            state.products.isNotEmpty() -> ProductList(
+                state = state,
+                onDoneButtonClick = onDoneButtonClick,
+                onClearButtonClick = onClearButtonClick,
+                onProductClick = onProductClick,
+                onLoadMore = onLoadMore
+            )
+            state.products.isEmpty() && state.loadingState == LOADING -> ProductListSkeleton()
+            else -> EmptyProductList()
+        }
     }
 }
 
@@ -297,7 +319,18 @@ fun ProductListPreview() {
         )
     )
 
-    ProductList(state = ViewState(products = products, selectedItemsCount = 3), {}, {}, {}, {})
+    ProductList(
+        state = ViewState(
+            products = products,
+            selectedItemsCount = 3,
+            loadingState = IDLE,
+            searchQuery = ""
+        ),
+        {},
+        {},
+        {},
+        {}
+    )
 }
 
 @Preview
