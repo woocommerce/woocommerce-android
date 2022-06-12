@@ -38,7 +38,7 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.component.WCSearchView
+import com.woocommerce.android.ui.compose.component.WCSearchField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
@@ -82,7 +82,7 @@ fun ProductSelectorScreen(
             .fillMaxSize()
             .background(MaterialTheme.colors.surface)
     ) {
-        WCSearchView(
+        WCSearchField(
             value = state.searchQuery,
             onValueChange = onSearchQueryChanged,
             hint = stringResource(id = string.product_selector_search_hint),
