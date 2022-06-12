@@ -10,18 +10,18 @@ import javax.inject.Inject
 
 class ProductListHandler @Inject constructor(private val repository: ProductSelectorRepository) {
     companion object {
-        private const val PAGE_SIZE = 10
+        private const val PAGE_SIZE = 25
     }
 
     private val mutex = Mutex()
     private var offset = 0
     private var canLoadMore = true
 
-    private val searchQuery = MutableStateFlow<String?>(null)
+    private val searchQuery = MutableStateFlow<String>("")
     private val searchResults = MutableStateFlow(emptyList<Product>())
 
-    val productsFlow = searchQuery.flatMapLatest {
-        if (it == null) {
+    val productsFlow = searchQuery.flatMapLatest { query ->
+        if (query.isEmpty()) {
             repository.observeProducts()
         } else {
             searchResults
@@ -29,7 +29,7 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
     }
 
     suspend fun fetchProducts(
-        searchQuery: String? = null,
+        searchQuery: String = "",
         forceRefresh: Boolean = false
     ): Result<Unit> = mutex.withLock {
         // Reset the offset
@@ -37,7 +37,7 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
         canLoadMore = true
 
         this.searchQuery.value = searchQuery
-        return if (searchQuery == null) {
+        return if (searchQuery.isEmpty()) {
             if (forceRefresh) {
                 loadProducts()
             } else {
@@ -45,19 +45,13 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
             }
         } else {
             searchResults.value = emptyList()
-            if (searchQuery.isEmpty()) {
-                // If the query is empty, clear search results directly
-                canLoadMore = false
-                Result.success(Unit)
-            } else {
-                searchProducts()
-            }
+            searchProducts()
         }
     }
 
     suspend fun loadMore(): Result<Unit> = mutex.withLock {
         if (!canLoadMore) return@withLock Result.success(Unit)
-        return if (searchQuery.value == null) {
+        return if (searchQuery.value.isEmpty()) {
             loadProducts()
         } else {
             searchProducts()
@@ -75,7 +69,7 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
         return repository.searchProducts(
             offset = offset,
             pageSize = PAGE_SIZE,
-            searchQuery = searchQuery.value!!,
+            searchQuery = searchQuery.value,
         ).onSuccess { result ->
             canLoadMore = result.canLoadMore
             offset += PAGE_SIZE
