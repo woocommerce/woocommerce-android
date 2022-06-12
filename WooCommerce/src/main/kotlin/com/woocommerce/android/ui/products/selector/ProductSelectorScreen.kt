@@ -102,13 +102,13 @@ fun ProductSelectorScreen(
                 onLoadMore = onLoadMore
             )
             state.products.isEmpty() && state.loadingState == LOADING -> ProductListSkeleton()
-            else -> EmptyProductList()
+            else -> EmptyProductList(state.searchQuery)
         }
     }
 }
 
 @Composable
-private fun EmptyProductList() {
+private fun EmptyProductList(searchQuery: String) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -116,8 +116,13 @@ private fun EmptyProductList() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        val message = if (searchQuery.isEmpty()) {
+            stringResource(id = R.string.product_selector_empty_state)
+        } else {
+            stringResource(id = R.string.empty_message_with_search, searchQuery)
+        }
         Text(
-            text = stringResource(id = R.string.product_list_empty),
+            text = message,
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.h6,
             modifier = Modifier.padding(
@@ -336,7 +341,7 @@ fun ProductListPreview() {
 @Preview
 @Composable
 fun ProductListEmptyPreview() {
-    EmptyProductList()
+    EmptyProductList("")
 }
 
 @Preview
