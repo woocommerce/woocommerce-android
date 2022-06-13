@@ -12,7 +12,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialContainerTransform
@@ -24,14 +23,27 @@ import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_DETAIL_PRODUCT_TAP
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.FragmentOrderDetailBinding
-import com.woocommerce.android.extensions.*
-import com.woocommerce.android.model.*
+import com.woocommerce.android.extensions.handleDialogNotice
+import com.woocommerce.android.extensions.handleDialogResult
+import com.woocommerce.android.extensions.handleNotice
+import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.show
+import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.extensions.whenNotNullNorEmpty
+import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.SHIPPING_LABEL_M4
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.UNANSWERED
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
+import com.woocommerce.android.model.OrderNote
+import com.woocommerce.android.model.OrderShipmentTracking
+import com.woocommerce.android.model.Refund
+import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -52,6 +64,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragm
 import com.woocommerce.android.ui.orders.simplepayments.TakePaymentViewModel
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment
 import com.woocommerce.android.ui.refunds.RefundSummaryFragment
+import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
@@ -82,7 +95,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
 
     private val skeletonView = SkeletonView()
     private var undoSnackbar: Snackbar? = null
-    private var mnuSharePaymentLink: MenuItem? = null
+    private var menuSharePaymentLink: MenuItem? = null
 
     private var screenTitle = ""
         set(value) {
@@ -151,17 +164,27 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.menu_order_detail, menu)
-        mnuSharePaymentLink = menu.findItem(R.id.menu_share_payment_link)
+        menuSharePaymentLink = menu.findItem(R.id.menu_share_payment_link)
+        val menuEditOrder = menu.findItem(R.id.menu_edit_order)
+        menuEditOrder.isVisible = FeatureFlag.UNIFIED_ORDER_EDITING.isEnabled()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return if (item.itemId == R.id.menu_share_payment_link) {
-            viewModel.onSharePaymentUrlClicked()
-            true
-        } else {
-            super.onOptionsItemSelected(item)
+        return when (item.itemId) {
+            R.id.menu_share_payment_link -> {
+                viewModel.onSharePaymentUrlClicked()
+                true
+            }
+            R.id.menu_edit_order -> {
+                viewModel.onEditClicked()
+                true
+            }
+            else -> {
+                super.onOptionsItemSelected(item)
+            }
         }
     }
+
     override fun openOrderProductDetail(remoteProductId: Long) {
         AnalyticsTracker.track(ORDER_DETAIL_PRODUCT_TAPPED)
         (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId)
@@ -194,7 +217,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                 binding.orderDetailProductList.isVisible = it
             }
             new.isSharePaymentLinkVisible?.takeIfNotEqualTo(old?.isSharePaymentLinkVisible) {
-                mnuSharePaymentLink?.isVisible = new.isSharePaymentLinkVisible
+                menuSharePaymentLink?.isVisible = new.isSharePaymentLinkVisible
             }
             new.toolbarTitle?.takeIfNotEqualTo(old?.toolbarTitle) { screenTitle = it }
             new.isOrderDetailSkeletonShown?.takeIfNotEqualTo(old?.isOrderDetailSkeletonShown) { showSkeleton(it) }
@@ -205,62 +228,63 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                 binding.orderRefreshLayout.isRefreshing = it
             }
             new.refreshedProductId?.takeIfNotEqualTo(old?.refreshedProductId) { refreshProduct(it) }
+            new.wcShippingBannerVisible?.takeIfNotEqualTo(old?.wcShippingBannerVisible) {
+                showInstallWcShippingBanner(it)
+            }
         }
 
-        viewModel.orderNotes.observe(
-            viewLifecycleOwner,
-            Observer {
-                showOrderNotes(it)
-            }
-        )
-        viewModel.orderRefunds.observe(
-            viewLifecycleOwner,
-            Observer {
-                showOrderRefunds(it, viewModel.order)
-            }
-        )
-        viewModel.productList.observe(
-            viewLifecycleOwner,
-            Observer {
-                showOrderProducts(it, viewModel.order.currency)
-            }
-        )
-        viewModel.shipmentTrackings.observe(
-            viewLifecycleOwner,
-            Observer {
-                showShipmentTrackings(it)
-            }
-        )
-        viewModel.shippingLabels.observe(
-            viewLifecycleOwner,
-            Observer {
-                showShippingLabels(it, viewModel.order.currency)
-            }
-        )
+        viewModel.orderNotes.observe(viewLifecycleOwner) {
+            showOrderNotes(it)
+        }
+        viewModel.orderRefunds.observe(viewLifecycleOwner) {
+            showOrderRefunds(it, viewModel.order)
+        }
+        viewModel.productList.observe(viewLifecycleOwner) {
+            showOrderProducts(it, viewModel.order.currency)
+        }
+        viewModel.shipmentTrackings.observe(viewLifecycleOwner) {
+            showShipmentTrackings(it)
+        }
+        viewModel.shippingLabels.observe(viewLifecycleOwner) {
+            showShippingLabels(it, viewModel.order.currency)
+        }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> {
-                        if (event.args.isNotEmpty()) {
-                            uiMessageResolver.getSnack(event.message, *event.args).show()
-                        } else {
-                            uiMessageResolver.showSnack(event.message)
-                        }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowSnackbar -> {
+                    if (event.args.isNotEmpty()) {
+                        uiMessageResolver.getSnack(event.message, *event.args).show()
+                    } else {
+                        uiMessageResolver.showSnack(event.message)
                     }
-                    is ShowUndoSnackbar -> {
-                        displayUndoSnackbar(event.message, event.undoAction, event.dismissAction)
-                    }
-                    is OrderNavigationTarget -> navigator.navigate(this, event)
-                    is TakePaymentViewModel.SharePaymentUrl -> {
-                        sharePaymentUrl(event.storeName, event.paymentUrl)
-                    }
-                    else -> event.isHandled = false
                 }
+                is ShowUndoSnackbar -> {
+                    displayUndoSnackbar(event.message, event.undoAction, event.dismissAction)
+                }
+                is OrderNavigationTarget -> navigator.navigate(this, event)
+                is TakePaymentViewModel.SharePaymentUrl -> {
+                    sharePaymentUrl(event.storeName, event.paymentUrl)
+                }
+                is InstallWcShippingFlowViewModel.InstallWcShipping -> navigateToInstallWcShippingFlow()
+                else -> event.isHandled = false
             }
-        )
+        }
         viewModel.start()
+    }
+
+    private fun navigateToInstallWcShippingFlow() {
+        findNavController().navigateSafely(
+            OrderDetailFragmentDirections.actionOrderDetailFragmentToInstallWcShippingFlow()
+        )
+    }
+
+    private fun showInstallWcShippingBanner(isVisible: Boolean) {
+        val banner = binding.orderDetailInstallWcShippingBanner
+        banner.isVisible = isVisible && FeatureFlag.WC_SHIPPING_BANNER.isEnabled()
+        banner.setClickListeners(
+            onInstallWcShipping = { viewModel.onGetWcShippingClicked() },
+            onDismiss = { viewModel.onWcShippingBannerDismissed() }
+        )
     }
 
     private fun setupOrderEditingObservers(orderEditingViewModel: OrderEditingViewModel) {
@@ -298,9 +322,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             key = CardReaderPaymentDialogFragment.KEY_CARD_PAYMENT_RESULT,
             entryId = R.id.orderDetailFragment
         ) {
-            if (FeatureFlag.CARD_READER.isEnabled()) {
-                viewModel.onCardReaderPaymentCompleted()
-            }
+            viewModel.onCardReaderPaymentCompleted()
         }
         handleNotice(RefundSummaryFragment.REFUND_ORDER_NOTICE_KEY) {
             viewModel.onOrderItemRefunded()
@@ -320,7 +342,8 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         binding.orderDetailCustomerInfo.updateCustomerInfo(
             order = order,
             isVirtualOrder = viewModel.hasVirtualProductsOnly(),
-            isReadOnly = false
+            // Customer Info is read-only in UOE
+            isReadOnly = FeatureFlag.UNIFIED_ORDER_EDITING.isEnabled()
         )
         binding.orderDetailPaymentInfo.updatePaymentInfo(
             order = order,
@@ -329,21 +352,15 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
             onIssueRefundClickListener = { viewModel.onIssueOrderRefundClicked() },
             onSeeReceiptClickListener = {
-                if (FeatureFlag.CARD_READER.isEnabled()) {
-                    viewModel.onSeeReceiptClicked()
-                }
+                viewModel.onSeeReceiptClicked()
             },
             onCollectCardPresentPaymentClickListener = {
-                if (FeatureFlag.CARD_READER.isEnabled()) {
-                    cardReaderManager.let {
-                        viewModel.onAcceptCardPresentPaymentClicked()
-                    }
+                cardReaderManager.let {
+                    viewModel.onAcceptCardPresentPaymentClicked()
                 }
             },
             onPrintingInstructionsClickListener = {
-                if (FeatureFlag.CARD_READER.isEnabled()) {
-                    viewModel.onPrintingInstructionsClicked()
-                }
+                viewModel.onPrintingInstructionsClicked()
             }
         )
     }
@@ -401,7 +418,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
 
     private fun showOrderRefunds(refunds: List<Refund>, order: Order) {
         // display the refunds count in the refunds section
-        val refundsCount = refunds.sumBy { refund -> refund.items.sumBy { it.quantity } }
+        val refundsCount = refunds.sumOf { refund -> refund.items.sumOf { it.quantity } }
         if (refundsCount > 0) {
             binding.orderDetailRefundsInfo.show()
             binding.orderDetailRefundsInfo.updateRefundCount(refundsCount) {

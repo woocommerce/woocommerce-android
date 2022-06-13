@@ -25,8 +25,6 @@ class CardReaderStatusCheckerDialogFragment : DialogFragment(R.layout.card_reade
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         initObservers()
     }
 

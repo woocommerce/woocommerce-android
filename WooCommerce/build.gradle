@@ -69,9 +69,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "9.1-rc-1"
+            versionName "9.3-rc-1"
         }
-        versionCode 297
+        versionCode 303
 
         minSdkVersion 21
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
@@ -107,6 +107,9 @@ android {
 
     kotlinOptions {
         jvmTarget = "1.8"
+        freeCompilerArgs += [
+                "-Xopt-in=kotlin.RequiresOptIn"
+        ]
     }
 
     composeOptions {
@@ -186,7 +189,7 @@ dependencies {
         exclude group: "com.google.guava", module: "guava"
     }
 
-    implementation 'com.google.firebase:firebase-messaging-ktx:23.0.3'
+    implementation 'com.google.firebase:firebase-messaging-ktx:23.0.5'
     implementation 'com.google.android.gms:play-services-auth:20.2.0'
 
     // Support library
@@ -287,7 +290,7 @@ dependencies {
 
     // Dependencies for Espresso UI tests
     androidTestImplementation "androidx.test.ext:junit:$jUnitExtVersion"
-    androidTestImplementation "androidx.test:rules:1.4.0"
+    androidTestImplementation "androidx.test:rules:$androidxTestCoreVersion"
     androidTestImplementation "org.assertj:assertj-core:$assertjVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
     androidTestImplementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
@@ -352,6 +355,7 @@ dependencies {
     implementation "com.google.android.material:compose-theme-adapter:$composeThemeAdapterVersion"
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$composeVersion"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$composeVersion"
+    implementation "io.coil-kt:coil-compose:$coilVersion"
 
     implementation("androidx.profileinstaller:profileinstaller:1.2.0-beta01")
 }

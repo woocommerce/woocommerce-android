@@ -79,9 +79,9 @@ dependencies {
     implementation "androidx.test.uiautomator:uiautomator:2.2.0"
     implementation "junit:junit:$jUnitVersion"
     implementation "androidx.test.ext:junit:$jUnitExtVersion"
-    implementation "androidx.test:runner:1.4.0"
-    implementation "androidx.test:rules:1.4.0"
-    implementation "androidx.test:core:1.4.0"
+    implementation "androidx.test:runner:$androidxTestCoreVersion"
+    implementation "androidx.test:rules:$androidxTestCoreVersion"
+    implementation "androidx.test:core:$androidxTestCoreVersion"
 
     implementation project(path: ':sharedtest')
 }

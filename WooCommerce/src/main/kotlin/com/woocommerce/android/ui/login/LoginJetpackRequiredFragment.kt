@@ -46,8 +46,6 @@ class LoginJetpackRequiredFragment : Fragment(R.layout.fragment_login_jetpack_re
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         val binding = FragmentLoginJetpackRequiredBinding.bind(view)
         val btnBinding = binding.epilogueButtonBar
 

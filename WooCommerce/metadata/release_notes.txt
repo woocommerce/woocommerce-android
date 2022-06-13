@@ -1,3 +1,3 @@
-We’ve been working hard on a new feature to help you manage your coupons. It’s a work in progress, but you can get an early look by turning the beta feature on in Settings under the More tab. We welcome your early feedback!
+Canada, say hello to in-person payments! We are thrilled to announce that in-person payments are now available to Canadian merchants currently using WooCommerce Payments.
 
-We also fixed a few bugs with variable products with prices accidentally cleared when changing inventory levels.
+This release also contains a few minor improvements. Thank you all again for your amazing feedback. Keep it coming!

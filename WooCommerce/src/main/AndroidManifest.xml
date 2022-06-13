@@ -46,10 +46,6 @@
                   android:windowSoftInputMode="adjustResize">
         </activity>
 
-        <activity
-            android:name=".ui.sitepicker.SitePickerActivity"
-            android:theme="@style/LoginTheme"/>
-
         <activity android:name=".ui.login.MagicLinkInterceptActivity"
             android:exported="true">
             <intent-filter>
@@ -102,11 +98,6 @@
 
         <!-- Services -->
         <service
-            android:name=".push.FCMRegistrationIntentService"
-            android:permission="android.permission.BIND_JOB_SERVICE"
-            android:exported="false" />
-
-        <service
             android:name=".push.FCMMessageService"
             android:exported="false">
             <intent-filter>
@@ -142,12 +133,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths"/>
         </provider>
-
-        <receiver android:name=".AppUpdateReceiver" android:exported="false">
-            <intent-filter>
-                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
-            </intent-filter>
-        </receiver>
 
         <!-- enable profiling by macrobenchmark -->
         <profileable

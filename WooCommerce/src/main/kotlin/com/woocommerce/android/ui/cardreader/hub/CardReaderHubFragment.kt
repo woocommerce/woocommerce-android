@@ -16,6 +16,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
+    override fun getFragmentTitle() = resources.getString(R.string.card_reader_onboarding_title)
     val viewModel: CardReaderHubViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -49,9 +50,6 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
                     )
                 }
                 is CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow -> {
-                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
-                }
-                is CardReaderHubViewModel.CardReaderHubEvents.NavigateToManualCardReaderFlow -> {
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 }
                 is CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderManualsScreen -> {

@@ -118,11 +118,21 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun setFCMToken(token: String) = AppPrefs.setFCMToken(token)
 
-    fun removeFCMToken() = AppPrefs.removeFCMToken()
-
     fun getProductSortingChoice(siteId: Int) = AppPrefs.getProductSortingChoice(siteId)
 
     fun setProductSortingChoice(siteId: Int, value: String) = AppPrefs.setProductSortingChoice(siteId, value)
+
+    fun getUnifiedLoginLastSource() = AppPrefs.getUnifiedLoginLastSource()
+
+    fun removeLoginSiteAddress() = AppPrefs.removeLoginSiteAddress()
+
+    fun getLoginSiteAddress() = AppPrefs.getLoginSiteAddress().takeIf { it.isNotEmpty() }
+
+    fun setWcShippingBannerDismissed(dismissed: Boolean, currentSiteId: Int) {
+        AppPrefs.setWcShippingBannerDismissed(dismissed, currentSiteId)
+    }
+
+    fun getWcShippingBannerDismissed(currentSiteId: Int) = AppPrefs.getWcShippingBannerDismissed(currentSiteId)
 
     /**
      * Observes changes to the preferences

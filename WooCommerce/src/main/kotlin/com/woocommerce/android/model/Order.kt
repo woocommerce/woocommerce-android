@@ -47,6 +47,7 @@ data class Order(
     val chargeId: String?,
     val shippingPhone: String,
     val paymentUrl: String,
+    val isEditable: Boolean
 ) : Parcelable {
     @IgnoredOnParcel
     val isOrderPaid = datePaid != null
@@ -232,8 +233,16 @@ data class Order(
 
     fun getProductIds() = items.map { it.productId }
 
+    fun isEmpty() = this.copy(
+        currency = "",
+        dateCreated = DEFAULT_EMPTY_ORDER.dateCreated,
+        dateModified = DEFAULT_EMPTY_ORDER.dateModified
+    ) == DEFAULT_EMPTY_ORDER
+
     sealed class Status(val value: String) : Parcelable {
         companion object {
+            const val AUTO_DRAFT = "auto-draft"
+
             fun fromValue(value: String): Status {
                 return fromDataModel(CoreOrderStatus.fromValue(value)) ?: Custom(value)
             }
@@ -282,7 +291,7 @@ data class Order(
     }
 
     companion object {
-        val EMPTY by lazy {
+        private val DEFAULT_EMPTY_ORDER by lazy {
             Order(
                 id = 0,
                 number = "",
@@ -315,9 +324,13 @@ data class Order(
                 feesLines = emptyList(),
                 taxLines = emptyList(),
                 shippingPhone = "",
-                paymentUrl = ""
+                paymentUrl = "",
+                isEditable = true
             )
         }
+
+        val EMPTY
+            get() = DEFAULT_EMPTY_ORDER.copy(dateCreated = Date(), dateModified = Date())
     }
 }
 

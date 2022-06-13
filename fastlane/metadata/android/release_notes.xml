@@ -1,68 +1,102 @@
 <ar>
-9.0:
-تُعد التواريخ بالغة الأهمية عندما تدير نشاطًا تجاريًا! أصلحنا خللاً عند تعيين "تاريخ البيع" على أحد المنتجات – في بعض الأحيان، لم يكن ذلك التاريخ في نهاية المطاف هو ما حدَّدته. ملاحظات المجتمع لنكون الأفضل!
+9.2:
+تُعد الكثير من المعلومات الخاصة بطلب ما من عميل مهمة! لقد سمعنا أنك ترغب في نسخ بعض هذه التفاصيل ولصقها خارج التطبيق. يمكنك الآن الضغط مطولاً على معظم الحقول لنسخها إلى الحافظة. انسخها بعيدًا في رسالة نصية أو رسالة بريد إلكتروني أو ملحوظة!
+
+لقد عالجنا كذلك أخطاء عديدة بشأن المدفوعات الشخصية وإنشاء الطلب. نشكرك على ملاحظاتك!
 </ar>
 <de-DE>
-9.0:
-Daten sind für Unternehmer enorm wichtig! Wir haben eine Störung beim Festlegen eines „Verkaufsdatums“ bei Produkten behoben – manchmal entsprach das Datum am Ende nicht dem zuvor ausgewählten Datum. Danke für das Feedback der Community!
+9.2:
+Viele der Informationen auf einer Bestellung eines Kunden sind wichtig! Wir haben gehört, dass du einige dieser Details gerne außerhalb der App kopieren würdest. Ab sofort kannst du die meisten Felder durch längeres Drücken in die Zwischenablage kopieren. Also worauf wartest du noch – versuche es mit Textnachrichten, E-Mails oder Notizen!
+
+Außerdem haben wir mehrere Fehler in Bezug auf persönliche Zahlungen und die Erstellung von Bestellungen behoben. Vielen Dank für dein Feedback!
 </de-DE>
 <es-ES>
-9.0:
-Las fechas son fundamentales cuando diriges un negocio Hemos solucionado un problema que se producía al establecer la "fecha de venta" en un producto. A veces, la fecha no era la que se había seleccionado. ¡Comentarios de la comunidad para ir a por la victoria!
+9.2:
+Gran parte de la información del pedido de un cliente es importante. Sabemos que te sería útil copiar y pegar algunos de esos datos fuera de la aplicación. Por eso, ahora si mantienes pulsados la mayoría de los campos se copian en el portapapeles. Pega esta información en un mensaje de texto, correo electrónico o nota.
+
+También hemos solucionado varios errores relacionados con los pagos en persona y la creación de pedidos. ¡Gracias por tus comentarios!
 </es-ES>
 <fr-FR>
-9.0 €
-Dates are crucial when you’re running a business! We fixed a glitch when setting a “sale date” on a product – sometimes, that date didn’t end up being what you selected. Community feedback for the win!
+9.2:
+La plupart des informations figurant sur la commande d’un client sont importantes ! Nous savons que vous aimeriez pouvoir copier et coller certains de ces renseignements en dehors de l’application. C’est désormais possible en appuyant longtemps sur la plupart des champs pour les copier dans le presse-papiers. Collez-les dans un SMS, un e-mail ou une note !
+
+Nous avons également corrigé plusieurs bogues concernant les paiements en personne et la création de commandes. Merci pour votre commentaire !
 </fr-FR>
 <iw-IL>
-9.0:
-כשיש לך עסק, תאריכים זה דבר חשוב! תיקנו בעיה בהגדרה של 'תאריך המבצע' במוצר – לפעמים התאריך שם לא הופיע בהתאם לבחירה שלך. משוב מהקהילה הוא כלי מנצח!
+9.2:
+רוב המידע שמתקבל בהזמנה מלקוח חשוב ביותר! הבנו שצריך לפעמים להעתיק כמה מהפרטים האלה ולהדבקים אותם מחוץ לאפליקציה. כעת, אפשר ללחוץ לחיצה ארוכה על רוב השדות כדי להעתיק אותם ללוח. ואז להדביק את המידע בהודעת טקסט, באימייל או בפתק!
+
+גם טיפלנו בכמה באגים ב'תשלומים באופן אישי' וביצירת ההזמנה. תודה על את המשוב!
 </iw-IL>
 <id>
-9.0:
-Dalam menjalankan usaha, urusan waktu sangatlah penting! Kami sudah memperbaiki gangguan dalam penentuan "tanggal obral" produk. Terkadang, tanggalnya tidak sesuai dengan yang dipilih. Untung ada masukan dari anggota komunitas!
+9.2:
+Sebagian besar informasi tentang pesanan dari pelanggan sangatlah penting! Kami dengar Anda sering menyalin-tempel beberapa detail tersebut di luar aplikasi. Sekarang Anda dapat menekan lama sebagian besar kolom untuk menyalinnya ke clipboard. Silakan menempelnya ke dalam pesan teks, email, atau catatan!
+
+Kami juga mengatasi beberapa bug terkait pembayaran langsung di tempat dan pembuatan pesanan. Terima kasih atas masukan Anda!
 </id>
 <it-IT>
-9.0:
-Le date sono cruciali quando stai gestendo un'attività. Abbiamo risolto uno errore tecnico durante l'impostazione di una "data di vendita" su un prodotto: a volte, quella data non è stata quella selezionata. Il feedback della community per vincere.
+9.2:
+Molte delle informazioni su un ordine di un cliente sono importanti. Abbiamo sentito che vorresti copiare e incollare alcuni di questi dettagli al di fuori dell'app. Ora puoi premere in modo prolungato sulla maggior parte dei campi per copiarli negli appunti. Incolla in un messaggio di testo, e-mail o nota.
+
+Abbiamo anche risolto diversi bug relativi ai pagamenti di persona e alla creazione degli ordini. Grazie per il feedback!
 </it-IT>
 <ja-JP>
-9.0:
-ビジネスを営む上で日付はとても重要です。 商品の「販売日」を設定する際に、選択した日付にならないことがある不具合を修正しました。 コミュニティの声はビジネスの成功につながります。
+9.2:
+お客様からの注文情報の多くには重要な情報が含まれます。 そのような詳細情報をコピーして、アプリ外に貼り付けたいという声に応え、ほとんどのフィールドは長押しすれば、クリップボードにコピーできるようにしました。 テキストメッセージ、メール、メモに貼り付けられます。
+
+また、オフラインでの支払いと注文の作成に関するいくつかのバグにも対応しました。 フィードバックをいただきありがとうございます。
 </ja-JP>
 <ko-KR>
-$9.0
-비즈니스를 운영할 때 날짜는 매우 중요합니다. 제품의 “세일 날짜”를 설정할 때 문제가 해결되었습니다. 선택한 날짜와 다를 수 있습니다. 성공을 위한 커뮤니티 피드백!
+9.2:
+고객의 주문에 대한 정보는 많을수록 좋습니다! 해당 상세 정보를 복사하여 앱 외부에 붙여 넣으면 좋겠다는 의견을 들었습니다. 이제 대부분 필드는 길게 눌러 클립보드로 복사하실 수 있습니다. 문자 메시지, 이메일 또는 메모에 붙여 넣으세요!
+
+직접 결제 및 주문 생성과 관련한 여러 가지 버그도 해결했습니다. 피드백을 보내주셔서 감사합니다!
 </ko-KR>
 <nl-NL>
-9.0:
-Datums zijn enorm belangrijk voor het runnen van een bedrijf. We hebben een fout verholpen waarbij bij het instellen van een 'verkoopdatum' op een product soms die datum afweek van de datum die je had gekozen. Bedankt voor jullie feedback!
+9.2:
+Veel van de informatie over een order van een klant is belangrijk! We hebben gehoord dat jullie deze details ook buiten de app willen kunnen kopiëren en plakken. Nu kun je de meeste velden kopiëren naar het klembord door erop te klikken en ingedrukt te houden. Plak dit in een tekstbericht, e-mail of bestandje.
+
+We hebben ook verschillende bugs voor fysieke betalingen en het aanmaken van bestellingen opgelost. Bedankt voor je feedback!
 </nl-NL>
 <pt-BR>
-9.0:
-Datas são essenciais ao gerenciar uma empresa. Por isso, corrigimos uma falha na seleção da data da venda de um produto que fazia com que, às vezes, a data exibida não fosse a selecionada. Ponto para o feedback da comunidade!
+9.2:
+Muitas das informações de um cliente no pedido são importantes. Ficamos sabendo que vocês gostam de copiar alguns desses dados para colar fora do aplicativo. Agora basta tocar e manter pressionado na maioria dos campos para copiá-los para a área de transferência. Copie e cole uma mensagem de texto, e-mail ou anotação!
+
+Também corrigimos vários bugs de pagamentos presenciais e criação de pedidos. Obrigado pelo feedback!
 </pt-BR>
 <ru-RU>
-9.0:
-При ведении бизнеса важно придерживаться определённых дат. Мы исправили сбой, в результате которого иногда при задании даты продажи товара выбиралась другая дата. Отзывы участников сообщества решают всё!
+9.2:
+Большая часть сведений по заказу, полученных от клиента, очень важны! Мы узнали, что вы бы хотели копировать и вставлять некоторые из этих данных вне приложения. Теперь их можно копировать в буфер обмена долгим нажатием на большинстве полей. Вставляйте данные в текстовые сообщения, письма электронной почты или примечания.
+
+Кроме того, мы устранили некоторые ошибки, возникавшие при совершении очных платежей и создании заказов. Спасибо за ваш отзыв!
 </ru-RU>
 <sv-SE>
-9.0:
-Datum är viktiga när du driver ett företag. Vi har åtgärdat ett fel som uppstod vid inställningen av ett "säljdatum" för en produkt – ibland stämde datumet som användes inte överens med datumet som valdes. Feedback från vår community är guld värd.
+9.2
+En kundbeställning innehåller en mängd viktig information. Vi har förstått att ni vill kunna kopiera och klistra in vissa av dessa detaljer utanför appen. De flesta fält går därför nu att kopiera till urklipp med hjälp av en lång tryckning. Informationen kan klistras in i textmeddelanden, e-postmeddelanden och anteckningar.
+
+Vi har också åtgärdat en rad olika fel som rörde personliga betalningar och beställningsskapande. Tack för din feedback!
 </sv-SE>
 <tr-TR>
-9.0 dolar
-Ticaret yapıyorsanız tarihler çok önemlidir! Bir üründe "indirim tarihi" ayarlarken oluşan bir hatayı düzelttik (bazen seçtiğiniz tarihten başka bir tarih görüntüleniyordu). Kazanmak için topluluk geri bildirimi!
+9.2:
+Bir müşteriden gelen siparişle ilgili bilgilerin çoğu önemlidir! Bu ayrıntılardan bazılarını uygulamanın dışına kopyalayıp yapıştırmak istediğinizi duyduk. Artık çoğu alan uzun basarak panoya kopyalayabilirsiniz. Bir metin mesajına, e-postaya veya nota yapıştırın!
+
+Ayrıca şahsen ödemeler ve sipariş oluşturma ile ilgili birkaç hatayı da düzelttik. Geri bildiriminiz için teşekkürler!
 </tr-TR>
 <zh-CN>
-9.0：
-对于公司经营来说，数据至关重要！ 我们修复了设置产品的“销售日期”时出现的一个小问题：该日期有时并不是您所选择的日期。 社区反馈助力我们取得胜利！
+9.2:
+客户订单中的大多数信息都很重要！ 我们听说您想在应用程序外复制并粘贴一些详细信息。现在您可以长按多数字段将其复制到剪贴板。 在文本信息、电子邮件或通知中粘贴！
+
+我们也解决了现场付款和订单创建中的几处问题。 感谢您的反馈！
 </zh-CN>
 <zh-TW>
-9.0：
-營運時，日期是十分關鍵的資訊！ 我們修正了設定產品「銷售日期」時，系統有時最後不會顯示你所選日期的錯誤。 社群意見回饋太有幫助了！
+9.2：
+顧客訂單上的許多資訊都很重要！ 我們瞭解你想要複製一些詳細資料並貼到應用程式以外的地方。現在你可以在大多數欄位上長按，即可將資料複製到剪貼簿。 你可以貼到簡訊、電子郵件或是筆記中！
+
+我們也修正了幾個有關親自收款和建立訂單的錯誤。 感謝你的意見回饋！
 </zh-TW>
 <en-US>
-9.0:
-Dates are crucial when you’re running a business! We fixed a glitch when setting a “sale date” on a product – sometimes, that date didn’t end up being what you selected. Community feedback for the win!
+9.2:
+Much of the information on an order from a customer is important! We’ve heard you’d like to copy and paste some of those details outside the app. Now you can long-press on most fields to copy them to the clipboard. Paste away in a text message, e-mail, or note!
+
+We’ve also addressed several bugs around in-person payments and order creation. Thank you for your feedback!
 </en-US>

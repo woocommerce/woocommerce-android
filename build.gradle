@@ -82,27 +82,21 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = 'trunk-dd3e6b438d25ed8bbb95959d3edad971caa051e6'
-    glideVersion = '4.12.0'
-    testRunnerVersion = '1.0.1'
-    espressoVersion = '3.4.0'
-    mockitoKotlinVersion = '4.0.0'
-    mockitoVersion = '4.5.1'
+    fluxCVersion = 'trunk-53349731a8c7ef646cdebdfdaa2d679438b97560'
+    glideVersion = '4.13.2'
+    coilVersion = '2.1.0'
     constraintLayoutVersion = '1.2.0'
     libaddressinputVersion = '0.0.2'
     eventBusVersion = '3.3.1'
     googlePlayCoreVersion = '1.10.3'
     coroutinesVersion = '1.6.1'
     lifecycleVersion = '2.4.1'
-    assertjVersion = '3.11.1'
     aztecVersion = 'v1.3.45'
     flipperVersion = '0.143.0'
     stateMachineVersion = '0.2.0'
     coreKtxVersion = '1.7.0'
     appCompatVersion = '1.4.1'
     materialVersion = '1.5.0'
-    jUnitVersion = '4.13.2'
-    jUnitExtVersion = '1.1.3'
     hiltJetpackVersion = '1.0.0'
     wordPressUtilsVersion = "2.3.0"
     mediapickerVersion = 'trunk-d0db2634cf27511bec3ef9b837f9cfe27c5ab601'
@@ -114,6 +108,15 @@ ext {
     composeAccompanistVersion = "0.23.1"
     lifecycleViewmodelComposeVersion = "2.4.1"
     composeThemeAdapterVersion = "1.1.8"
+
+    // Testing
+    jUnitVersion = '4.13.2'
+    jUnitExtVersion = '1.1.3'
+    androidxTestCoreVersion = '1.4.0'
+    assertjVersion = '3.11.1'
+    espressoVersion = '3.4.0'
+    mockitoKotlinVersion = '4.0.0'
+    mockitoVersion = '4.5.1'
 }
 
 // Onboarding and dev env setup tasks

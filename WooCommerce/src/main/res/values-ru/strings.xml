@@ -1,11 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-04-26 09:54:03+0000
+Translation-Revision-Date: 2022-05-20 09:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="coupon_edit_add_description_hint">Добавьте описание купона.</string>
+    <string name="coupon_edit_description_editor_title">Описание купона</string>
+    <string name="coupon_edit_edit_description">Редактировать описание</string>
+    <string name="coupon_edit_add_description">Добавить описание (необязательно)</string>
+    <string name="coupon_edit_expiry_date">Дата окончания срока действия купона</string>
+    <string name="coupon_edit_save_button">Сохранить</string>
+    <string name="coupon_edit_regenerate_coupon">Создать код купона повторно</string>
+    <string name="coupon_edit_code_helper">Клиентам необходимо ввести этот код, чтобы использовать купон.</string>
+    <string name="coupon_edit_code_hint">Код купона</string>
+    <string name="coupon_edit_amount_rate_helper">Задайте сумму скидки, которую вы хотите предложить.</string>
+    <string name="coupon_edit_amount_percentage_helper">Задайте процент скидки, которую вы хотите предложить.</string>
+    <string name="coupon_edit_amount_hint">Сумма (%1$s)</string>
+    <string name="coupon_edit_details_section">Сведения о купоне</string>
+    <string name="coupon_edit_screen_title">Изменить %1$s</string>
+    <string name="coupon_details_menu_edit">Изменить купон</string>
+    <string name="product_detail_save_product_error">Не удаётся обновить продукт</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund_failed">Произошла ошибка при применении возврата</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund">Применение возврата к заказу</string>
+    <string name="card_reader_icon_content_description">Изображение платёжного терминала</string>
+    <string name="order_creation_fee_percentage_calculated_amount">Вычисленная сумма: %s</string>
+    <string name="order_creation_fee_percentage_toggle_text">Вычислить в процентном соотношении</string>
+    <string name="copied_to_clipboard">Скопировано в буфер обмена</string>
+    <string name="coupon_details_restricted_emails">Только для клиентов с почтовыми адресами: %1$s</string>
+    <string name="coupon_details_excludes_sale_items">Исключает товары со скидками</string>
+    <string name="coupon_details_allows_free_shipping">Разрешает бесплатную доставку</string>
+    <string name="coupon_details_individual_use_only">Только для индивидуального использования</string>
+    <string name="coupon_details_usage_limit_per_items_single">Максимальное количество позиций в корзине: %1$d</string>
+    <string name="coupon_details_usage_limit_per_items_multiple">Максимальное количество позиций в корзине: %1$d</string>
+    <string name="coupon_details_usage_limit_per_coupon_single">Допустимое количество применений: %1$d</string>
+    <string name="coupon_details_usage_limit_per_coupon_multiple">Допустимое количество применений: %1$d</string>
+    <string name="coupon_details_usage_limit_per_user_single">%1$d применение на пользователя</string>
+    <string name="coupon_details_usage_limit_per_user_multiple">%1$d применений на пользователя</string>
+    <string name="coupon_details_delete_successful">Купон удалён</string>
+    <string name="coupon_details_delete_failure">Не удалось удалить купон</string>
+    <string name="coupon_details_delete_confirmation">Действительно удалить этот купон?</string>
+    <string name="coupon_details_delete">Удалить купон</string>
+    <string name="inbox_screen_sync_error">Ошибка синхронизации \"Входящих\"</string>
+    <string name="inbox_note_dismiss_all_notes">Закрыть все</string>
+    <string name="inbox_screen_title">Входящие</string>
+    <string name="settings_card_reader_manuals">Руководства по работе с платёжными терминалами</string>
+    <string name="card_reader_interac_refund_refund_payment_hint">Приложите или вставьте, чтобы вернуть средства</string>
+    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">Сумма заказа уже возвращена</string>
+    <string name="card_reader_interac_refund_refund_failed_cancelled">Возврат отменён</string>
+    <string name="card_reader_interac_refund_refund_failed_ok">ОК</string>
+    <string name="card_reader_interac_refund_refund_failed_test_card">Нельзя вернуть средства на карты для тестирования системы</string>
+    <string name="card_reader_interac_refund_refund_failed_invalid_amount">Нельзя указать такую сумму возврата для этой карты</string>
+    <string name="card_reader_interac_refund_refund_failed_insufficient_funds">Возврат отклонён из-за нехватки средств</string>
+    <string name="card_reader_interac_refund_refund_failed_duplicate_transaction">Недавно уже был запрошен такой же возврат</string>
+    <string name="card_reader_interac_refund_refund_failed_card_not_supported">Карта не поддерживает этот тип возврата</string>
+    <string name="card_reader_interac_refund_refund_failed_generic">Возврат отклонён по неопределённой причине</string>
+    <string name="card_reader_interac_refund_refund_failed_fraud">Попробуйте другое средство возврата</string>
+    <string name="card_reader_interac_refund_refund_failed_unknown">Возврат отклонён по неизвестной причине</string>
+    <string name="card_reader_interac_refund_refund_failed_unexpected_error_state">Не удалось обработать этот возврат</string>
+    <string name="card_reader_interac_refund_refund_completed_header">Возврат выполнен</string>
+    <string name="card_reader_interac_refund_refund_processing_state">Обработка возврата</string>
+    <string name="card_reader_interac_refund_refund_payment">Возместить платёж</string>
+    <string name="card_reader_interac_refund_refund_failed_header">Возврат не выполнен</string>
+    <string name="card_reader_interac_refund_refund_loading_header">Подготовка к возврату платежа</string>
+    <string name="copy">Копировать</string>
     <string name="coupons_list_search_hint">Поиск купонов</string>
     <string name="coupon_details_share_formatting_failure">Не удалось создать сообщение для отправки кода купона</string>
     <string name="coupon_details_share_coupon_error">Ошибка при отправке кода купона.</string>
@@ -83,7 +142,6 @@ Language: ru
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Мы не поддерживаем Stripe в %1$s</string>
     <string name="card_reader_connect_scanning_hint">Нажмите кнопку питания на устройстве чтения</string>
     <string name="card_reader_payment_reader_receipt_sent">Чек отправлен получателю: &lt;strong&gt;%s&lt;/strong&gt;</string>
-    <string name="order_creation_fee_percentage_toggle_text">Процент комиссии</string>
     <string name="order_creation_fee_percentage_hint">Процент (%)</string>
     <string name="order_creation_add_fee_removal_hint">Убрать комиссию из заказа</string>
     <string name="order_creation_remove_shipping">Убрать доставку из заказа</string>
@@ -117,7 +175,6 @@ Language: ru
     <string name="card_reader_wisepad_3_manual_card_reader">Руководство по работе с платёжным терминалом WisePad 3</string>
     <string name="order_creation_price_calculation_failed">Не удалось обновить цены</string>
     <string name="order_creation_payment_tax">Налоги</string>
-    <string name="order_creation_payment_tax_hint">Налоги будут рассчитаны автоматически на основе настроек магазина.</string>
     <string name="exclusive_or">или</string>
     <string name="settings_install_jetpack">Установить Jetpack</string>
     <string name="card_reader_onboarding_account_rejected_header">В настоящее время очные платежи недоступны</string>
@@ -351,7 +408,7 @@ Language: ru
     <string name="support_system_status_report">Данные о состоянии системы</string>
     <string name="card_reader_welcome_dialog_text">Теперь вы можете получать платежи с банковских карт через WooCommerce Payments!</string>
     <string name="card_reader_welcome_dialog_header">Принимайте платежи с помощью устройств чтения карт</string>
-    <string name="card_reader_payment_failed_amount_too_small">Должно быть не менее 0,5 доллара США</string>
+    <string name="card_reader_payment_failed_amount_too_small">Минимальная сумма — 0,50 долл. США</string>
     <string name="card_reader_payment_payment_failed_ok">ОК</string>
     <string name="settings_whats_new_icon_description">Новое изображение значка функции</string>
     <string name="settings_switch_store">Переключиться на другой магазин</string>
@@ -535,7 +592,7 @@ Language: ru
     <string name="card_reader_refetching_order_failed">Ошибка при загрузке заказа. Состояние заказа в приложении могло устареть.</string>
     <string name="card_reader_payment_email_client_not_found">Не удалось определить ваш почтовый клиент</string>
     <string name="card_reader_payment_receipt_email_subject">Ваша квитанция от %s</string>
-    <string name="card_reader_payment_description">Веб-платёж за заказ %s на %s</string>
+    <string name="card_reader_payment_description">Оплата при получении, заказ %s для %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Обновление заказа</string>
     <string name="card_reader_payment_fetch_order_loading_header">Обновление состояния приложения</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Ваш клиент выбрал %1$s</string>
@@ -1278,7 +1335,6 @@ Language: ru
     <string name="login_jetpack_installed_sign_in">Уже есть Jetpack? %1$s</string>
     <string name="login_refresh_app_progress_jetpack">Попытка входа через Jetpack…</string>
     <string name="login_refresh_app_continue">обновите приложение, чтобы продолжить</string>
-    <string name="login_not_connected_jetpack">Чтобы использовать это приложение для %1$s, нужно настроить плагин Jetpack и подключить его к этой учетной записи. \n\nПосле настройки %2$s</string>
     <string name="login_try_another_store">Попробуйте другой магазин</string>
     <string name="database_downgraded">База данных переведена на более раннюю версию, идет повторное создание таблиц и загрузка магазинов</string>
     <string name="loading_stores">Загрузка магазинов</string>
@@ -1294,7 +1350,6 @@ Language: ru
     <string name="orderdetail_copy_tracking_number">Копировать номер отслеживания</string>
     <string name="login_refresh_app_progress">Поиск WooCommerce…</string>
     <string name="login_refresh_app">обновите приложение</string>
-    <string name="login_not_woo_store">Похоже, %1$s не является сайтом WooCommerce. Установите плагин WooCommerce на свой сайт, а затем %2$s.</string>
     <string name="orderdetail_empty_address">Адрес не указан</string>
     <string name="login_need_help_finding_connected_email">Не можете вспомнить адрес эл. почты, указанный при регистрации?</string>
     <string name="enter_wordpress_site">Расположенный по этому адресу веб-сайт не имеет отношения к платформе WordPress. Чтобы подключиться к нему, необходимо установить WordPress.</string>

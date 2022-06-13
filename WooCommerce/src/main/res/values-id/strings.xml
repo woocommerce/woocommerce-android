@@ -1,11 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-04-26 09:54:03+0000
+Translation-Revision-Date: 2022-05-19 12:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="coupon_edit_add_description_hint">Tambahkan deskripsi kupon.</string>
+    <string name="coupon_edit_description_editor_title">Deskripsi Kupon</string>
+    <string name="coupon_edit_edit_description">Sunting Deskripsi</string>
+    <string name="coupon_edit_add_description">Tambahkan Deskripsi (Opsional)</string>
+    <string name="coupon_edit_expiry_date">Tanggal Kedaluwarsa Kupon</string>
+    <string name="coupon_edit_save_button">Simpan</string>
+    <string name="coupon_edit_regenerate_coupon">Buat Ulang Kode Kupon</string>
+    <string name="coupon_edit_code_helper">Pelanggan perlu memasukkan kode ini untuk menggunakan kupon.</string>
+    <string name="coupon_edit_code_hint">Kode Kupon</string>
+    <string name="coupon_edit_amount_rate_helper">Tentukan jumlah diskon yang ingin Anda tawarkan.</string>
+    <string name="coupon_edit_amount_percentage_helper">Tentukan persentase diskon yang ingin Anda tawarkan.</string>
+    <string name="coupon_edit_amount_hint">Jumlah (%1$s)</string>
+    <string name="coupon_edit_details_section">Detail Kupon</string>
+    <string name="coupon_edit_screen_title">Sunting %1$s</string>
+    <string name="coupon_details_menu_edit">Sunting Kupon</string>
+    <string name="product_detail_save_product_error">Tidak dapat memperbarui Produk</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund_failed">Ada masalah saat menerapkan pengembalian dananya.</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund">Menerapkan pengembalian dana untuk pesanan</string>
+    <string name="card_reader_icon_content_description">Gambar Pembaca Kartu</string>
+    <string name="order_creation_fee_percentage_calculated_amount">Jumlah terhitung: %s</string>
+    <string name="order_creation_fee_percentage_toggle_text">Hitung dalam persentase</string>
+    <string name="copied_to_clipboard">Disalin ke clipboard</string>
+    <string name="coupon_details_restricted_emails">Hanya untuk pelanggan dengan email: %1$s</string>
+    <string name="coupon_details_excludes_sale_items">Mengecualikan barang obral</string>
+    <string name="coupon_details_allows_free_shipping">Menerima pengiriman gratis</string>
+    <string name="coupon_details_individual_use_only">Hanya untuk penggunaan individu</string>
+    <string name="coupon_details_usage_limit_per_items_single">Dibatasi hingga %1$d item di keranjang</string>
+    <string name="coupon_details_usage_limit_per_items_multiple">Dibatasi hingga %1$d item di keranjang</string>
+    <string name="coupon_details_usage_limit_per_coupon_single">Dapat digunakan %1$d kali</string>
+    <string name="coupon_details_usage_limit_per_coupon_multiple">Dapat digunakan %1$d kali</string>
+    <string name="coupon_details_usage_limit_per_user_single">%1$d kali penggunaan per pengguna</string>
+    <string name="coupon_details_usage_limit_per_user_multiple">%1$d kali penggunaan per pengguna</string>
+    <string name="coupon_details_delete_successful">Kupon Telah Dihapus</string>
+    <string name="coupon_details_delete_failure">Gagal menghapus kupon</string>
+    <string name="coupon_details_delete_confirmation">Anda yakin hendak menghapus kupon ini?</string>
+    <string name="coupon_details_delete">Hapus kupon</string>
+    <string name="inbox_screen_sync_error">Terjadi error saat menyinkronkan inbox</string>
+    <string name="inbox_note_dismiss_all_notes">Tutup semua</string>
+    <string name="inbox_screen_title">Kotak Masuk</string>
+    <string name="settings_card_reader_manuals">Panduan Pembaca Kartu</string>
+    <string name="card_reader_interac_refund_refund_payment_hint">Ketuk atau masukkan untuk mengembalikan dana</string>
+    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">Pengembalian dana untuk pesanan ini sudah dilakukan </string>
+    <string name="card_reader_interac_refund_refund_failed_cancelled">Pengembalian dana dibatalkan</string>
+    <string name="card_reader_interac_refund_refund_failed_ok">Oke</string>
+    <string name="card_reader_interac_refund_refund_failed_test_card">Kartu pengujian sistem tidak boleh digunakan untuk pengembalian dana</string>
+    <string name="card_reader_interac_refund_refund_failed_invalid_amount">Nilai pengembalian dana melewati batas untuk kartu yang dimasukkan</string>
+    <string name="card_reader_interac_refund_refund_failed_insufficient_funds">Pengembalian dana ditolak karena dana tidak cukup</string>
+    <string name="card_reader_interac_refund_refund_failed_duplicate_transaction">Transaksi serupa dilakukan baru-baru ini</string>
+    <string name="card_reader_interac_refund_refund_failed_card_not_supported">Kartu tidak mendukung jenis pengembalian dana ini</string>
+    <string name="card_reader_interac_refund_refund_failed_generic">Pengembalian dana ditolak untuk alasan yang tidak diketahui</string>
+    <string name="card_reader_interac_refund_refund_failed_fraud">Coba metode pengembalian dana lainnya</string>
+    <string name="card_reader_interac_refund_refund_failed_unknown">Pengembalian dana ditolak untuk alasan yang tidak diketahui</string>
+    <string name="card_reader_interac_refund_refund_failed_unexpected_error_state">Maaf, pengembalian dana ini tidak dapat diproses.</string>
+    <string name="card_reader_interac_refund_refund_completed_header">Pengembalian dana berhasil</string>
+    <string name="card_reader_interac_refund_refund_processing_state">Memproses pengembalian dana</string>
+    <string name="card_reader_interac_refund_refund_payment">Pembayaran pengembalian dana</string>
+    <string name="card_reader_interac_refund_refund_failed_header">Pengembalian dana gagal</string>
+    <string name="card_reader_interac_refund_refund_loading_header">Mempersiapkan pengembalian dana pembayaran</string>
+    <string name="copy">Salin</string>
     <string name="coupons_list_search_hint">Cari Kupon</string>
     <string name="coupon_details_share_formatting_failure">Tidak dapat membuat pesan berbagi kode kupon</string>
     <string name="coupon_details_share_coupon_error">Error saat membagikan kode kupon.</string>
@@ -82,7 +141,6 @@ Language: id
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Kami tidak mendukung Stripe di %1$s</string>
     <string name="card_reader_connect_scanning_hint">Tekan tombol daya di pembaca Anda</string>
     <string name="card_reader_payment_reader_receipt_sent">Tanda terima dikirimkan ke &lt;strong&gt;%s&lt;/strong&gt;</string>
-    <string name="order_creation_fee_percentage_toggle_text">Biaya persentase</string>
     <string name="order_creation_fee_percentage_hint">Persentase (%)</string>
     <string name="order_creation_add_fee_removal_hint">Hapus biaya dari pesanan</string>
     <string name="order_creation_remove_shipping">Hapus pengiriman dari pesanan</string>
@@ -116,7 +174,6 @@ Language: id
     <string name="card_reader_wisepad_3_manual_card_reader">Panduan Pembaca Kartu WisePad 3</string>
     <string name="order_creation_price_calculation_failed">Tidak dapat memperbarui harga</string>
     <string name="order_creation_payment_tax">Pajak</string>
-    <string name="order_creation_payment_tax_hint">Pajak akan dihitung otomatis berdasarkan pengaturan toko Anda.</string>
     <string name="exclusive_or">atau</string>
     <string name="settings_install_jetpack">Menginstal Jetpack</string>
     <string name="card_reader_onboarding_account_rejected_header">Pembayaran Langsung saat ini tidak tersedia</string>
@@ -350,7 +407,7 @@ Language: id
     <string name="support_system_status_report">Laporan status sistem</string>
     <string name="card_reader_welcome_dialog_text">Selamat, Anda sekarang dapat menerima pembayaran kartu debit dan kredit menggunakan WooCommerce Payments!</string>
     <string name="card_reader_welcome_dialog_header">Kumpulkan pembayaran dengan pembaca kartu</string>
-    <string name="card_reader_payment_failed_amount_too_small">Jumlah minimal $0,50 dolar AS</string>
+    <string name="card_reader_payment_failed_amount_too_small">Jumlah minimal $0,50</string>
     <string name="card_reader_payment_payment_failed_ok">Oke</string>
     <string name="settings_whats_new_icon_description">Gambar ikon fitur baru</string>
     <string name="settings_switch_store">Beralih toko</string>
@@ -534,7 +591,7 @@ Language: id
     <string name="card_reader_refetching_order_failed">Terjadi error saat mengambil pesanan. Status pesanan pada aplikasi mungkin telah usang.</string>
     <string name="card_reader_payment_email_client_not_found">Tidak dapat mendeteksi aplikasi klien email Anda</string>
     <string name="card_reader_payment_receipt_email_subject">Tanda terima Anda dari %s</string>
-    <string name="card_reader_payment_description">Pembayaran online untuk pesanan %s untuk %s</string>
+    <string name="card_reader_payment_description">Pembayaran Langsung di Tempat untuk Pesanan %s senilai %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Menyegarkan pesanan</string>
     <string name="card_reader_payment_fetch_order_loading_header">Memperbarui status aplikasi</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Pelanggan Anda memilih %1$s</string>
@@ -1277,7 +1334,6 @@ Language: id
     <string name="login_jetpack_installed_sign_in">Sudah punya Jetpack? %1$s</string>
     <string name="login_refresh_app_progress_jetpack">Mencoba login dengan Jetpack…</string>
     <string name="login_refresh_app_continue">segarkan aplikasi untuk melanjutkan</string>
-    <string name="login_not_connected_jetpack">Untuk menggunakan aplikasi ini untuk %1$s Anda perlu melakukan penyiapan plugin Jetpack dan terhubung ke akun ini. \n\nSekali penyiapan, %2$s</string>
     <string name="login_try_another_store">Coba toko lain</string>
     <string name="database_downgraded">Database di-downgrade, membuat ulang tabel dan memuat toko</string>
     <string name="loading_stores">Memuat toko</string>
@@ -1293,7 +1349,6 @@ Language: id
     <string name="orderdetail_copy_tracking_number">Salin nomor pelacakan</string>
     <string name="login_refresh_app_progress">Memeriksa WooCommerce…</string>
     <string name="login_refresh_app">segarkan aplikasi</string>
-    <string name="login_not_woo_store">Tampaknya %1$s bukan situs WooCommerce. Instal plugin WooCommerce di situs Anda, lalu %2$s</string>
     <string name="orderdetail_empty_address">Tidak ada alamat yang dicantumkan</string>
     <string name="login_need_help_finding_connected_email">Perlu bantuan untuk menemukan email yang terhubung dengan Anda?</string>
     <string name="enter_wordpress_site">Situs web di alamat ini bukan situs WordPress. Agar kami dapat terhubung ke situs tersebut, situs harus menggunakan WordPress.</string>

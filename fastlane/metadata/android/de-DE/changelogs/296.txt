@@ -1,2 +1,0 @@
-9.0:
-Daten sind für Unternehmer enorm wichtig! Wir haben eine Störung beim Festlegen eines „Verkaufsdatums“ bei Produkten behoben – manchmal entsprach das Datum am Ende nicht dem zuvor ausgewählten Datum. Danke für das Feedback der Community!

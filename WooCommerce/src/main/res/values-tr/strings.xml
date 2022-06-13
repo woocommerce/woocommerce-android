@@ -1,11 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-04-26 13:54:03+0000
+Translation-Revision-Date: 2022-05-20 11:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="coupon_edit_add_description_hint">Kuponun açıklamasını ekleyin.</string>
+    <string name="coupon_edit_description_editor_title">Kupon Açıklaması</string>
+    <string name="coupon_edit_edit_description">Açıklamayı düzenle</string>
+    <string name="coupon_edit_add_description">Açıklama Ekle (İsteğe bağlı)</string>
+    <string name="coupon_edit_expiry_date">Kupon Son Kullanma Tarihi</string>
+    <string name="coupon_edit_save_button">Kaydet</string>
+    <string name="coupon_edit_regenerate_coupon">Kupon Kodunu Yeniden Oluştur</string>
+    <string name="coupon_edit_code_helper">Kuponu kullanabilmek için müşterilerin bu kodu girmeleri gerekir.</string>
+    <string name="coupon_edit_code_hint">Kupon kodu</string>
+    <string name="coupon_edit_amount_rate_helper">Sunmak istediğiniz indirimin tutarını belirleyin.</string>
+    <string name="coupon_edit_amount_percentage_helper">Sunmak istediğiniz indirimin yüzdesini ayarlayın.</string>
+    <string name="coupon_edit_amount_hint">Tutar (%1$s)</string>
+    <string name="coupon_edit_details_section">Kupon Ayrıntıları</string>
+    <string name="coupon_edit_screen_title">Düzenle: %1$s</string>
+    <string name="coupon_details_menu_edit">Kuponu Düzenle</string>
+    <string name="product_detail_save_product_error">Ürün güncellenemiyor</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund_failed">Geri ödeme uygulanırken bir hata oldu</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund">Siparişe geri ödeme uygulanıyor</string>
+    <string name="card_reader_icon_content_description">Kart Okuyucu Görüntüsü</string>
+    <string name="order_creation_fee_percentage_calculated_amount">Hesaplanan miktar: %s</string>
+    <string name="order_creation_fee_percentage_toggle_text">Yüzde olarak hesapla</string>
+    <string name="copied_to_clipboard">Panoya kopyalandı</string>
+    <string name="coupon_details_restricted_emails">E-postaları olan müşterilerle sınırlıdır: %1$s</string>
+    <string name="coupon_details_excludes_sale_items">Satılan ürünleri hariç tutar</string>
+    <string name="coupon_details_allows_free_shipping">Ücretsiz gönderime izin verir</string>
+    <string name="coupon_details_individual_use_only">Sadece bireysel kullanım</string>
+    <string name="coupon_details_usage_limit_per_items_single">Sepette %1$d ürünle sınırlıdır</string>
+    <string name="coupon_details_usage_limit_per_items_multiple">Sepette %1$d ürünle sınırlıdır</string>
+    <string name="coupon_details_usage_limit_per_coupon_single">%1$d kez kullanılabilir</string>
+    <string name="coupon_details_usage_limit_per_coupon_multiple">%1$d kez kullanılabilir</string>
+    <string name="coupon_details_usage_limit_per_user_single">Kullanıcı başına %1$d kullanım</string>
+    <string name="coupon_details_usage_limit_per_user_multiple">Kullanıcı başına %1$d kullanım</string>
+    <string name="coupon_details_delete_successful">Kupon silindi</string>
+    <string name="coupon_details_delete_failure">Kupon silinemedi</string>
+    <string name="coupon_details_delete_confirmation">Bu kuponu silmek istediğinizden emin misiniz?</string>
+    <string name="coupon_details_delete">Kuponu Sil</string>
+    <string name="inbox_screen_sync_error">Gelen kutusu eşitlenirken hata oluştu</string>
+    <string name="inbox_note_dismiss_all_notes">Tümünü kapat</string>
+    <string name="inbox_screen_title">Gelen kutusu</string>
+    <string name="settings_card_reader_manuals">Kart Okuyucu Kılavuzları</string>
+    <string name="card_reader_interac_refund_refund_payment_hint">Geri ödeme yapmak için dokunun veya ekleyin</string>
+    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">Siparişin geri ödemesi zaten yapıldı</string>
+    <string name="card_reader_interac_refund_refund_failed_cancelled">Geri ödeme iptal edildi</string>
+    <string name="card_reader_interac_refund_refund_failed_ok">Tamam</string>
+    <string name="card_reader_interac_refund_refund_failed_test_card">Geri ödeme için sistem test kartlarının kullanılmasına izin verilmez</string>
+    <string name="card_reader_interac_refund_refund_failed_invalid_amount">Belirtilen kart için tutarın geri ödenmesine izin verilmiyor</string>
+    <string name="card_reader_interac_refund_refund_failed_insufficient_funds">Yetersiz bakiye nedeniyle geri ödeme reddedildi</string>
+    <string name="card_reader_interac_refund_refund_failed_duplicate_transaction">Yakın zamanda aynı tutarda geri ödeme yapıldı</string>
+    <string name="card_reader_interac_refund_refund_failed_card_not_supported">Kart bu tür bir geri ödemeyi desteklemiyor</string>
+    <string name="card_reader_interac_refund_refund_failed_generic">Geri ödeme belirtilmeyen bir nedenle reddedildi</string>
+    <string name="card_reader_interac_refund_refund_failed_fraud">Başka bir geri ödeme yöntemi deneyin</string>
+    <string name="card_reader_interac_refund_refund_failed_unknown">Geri ödeme bilinmeyen bir nedenle reddedildi</string>
+    <string name="card_reader_interac_refund_refund_failed_unexpected_error_state">Maalesef bu geri ödeme işlenemedi</string>
+    <string name="card_reader_interac_refund_refund_completed_header">Geri ödeme başarılı</string>
+    <string name="card_reader_interac_refund_refund_processing_state">Geri ödeme başarısız oldu</string>
+    <string name="card_reader_interac_refund_refund_payment">Geri ödeme yap</string>
+    <string name="card_reader_interac_refund_refund_failed_header">Para iadesi yapılamadı</string>
+    <string name="card_reader_interac_refund_refund_loading_header">Ödeme için geri ödeme hazırlanıyor</string>
+    <string name="copy">Kopyala</string>
     <string name="coupons_list_search_hint">Kuponları ara</string>
     <string name="coupon_details_share_formatting_failure">Kupon kodu paylaşım mesajı oluşturulamıyor</string>
     <string name="coupon_details_share_coupon_error">Kupon kodu paylaşılırken hata oluştu.</string>
@@ -83,7 +142,6 @@ Language: tr
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">%1$s için Stripe\'ı desteklemiyoruz</string>
     <string name="card_reader_connect_scanning_hint">Okuyucunuzun güç düğmesine basın</string>
     <string name="card_reader_payment_reader_receipt_sent">&lt;strong&gt;%s&lt;/strong&gt; adresine bir makbuz gönderildi</string>
-    <string name="order_creation_fee_percentage_toggle_text">Yüzde ücreti</string>
     <string name="order_creation_fee_percentage_hint">Yüzde (%)</string>
     <string name="order_creation_add_fee_removal_hint">Ücreti siparişten kaldır</string>
     <string name="order_creation_remove_shipping">Gönderiyi siparişten kaldır </string>
@@ -117,7 +175,6 @@ Language: tr
     <string name="card_reader_wisepad_3_manual_card_reader">WisePad 3 Kart Okuyucu Kılavuzu</string>
     <string name="order_creation_price_calculation_failed">Fiyatlandırma güncellenemedi</string>
     <string name="order_creation_payment_tax">Vergiler</string>
-    <string name="order_creation_payment_tax_hint">Vergiler mağaza ayarlarınıza göre otomatik olarak hesaplanır.</string>
     <string name="exclusive_or">veya</string>
     <string name="settings_install_jetpack">Jetpack\'i Kur</string>
     <string name="card_reader_onboarding_account_rejected_header">Şahsen Ödemeler şu anda kullanılamıyor</string>
@@ -535,7 +592,7 @@ Language: tr
     <string name="card_reader_refetching_order_failed">Sipariş alınırken hata oluştu Uygulamadaki sipariş durumu eski olabilir.</string>
     <string name="card_reader_payment_email_client_not_found">E-posta istemcisi uygulamanızı tespit edemiyoruz</string>
     <string name="card_reader_payment_receipt_email_subject">%s makbuzunuz</string>
-    <string name="card_reader_payment_description">%s (%s) siparişi için çevrimiçi ödeme</string>
+    <string name="card_reader_payment_description">%s siparişi (%s) için Şahsen Ödeme</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Sipariş yenileniyor</string>
     <string name="card_reader_payment_fetch_order_loading_header">Uygulama durumu güncelleniyor</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Müşteriniz seçildi %1$s</string>
@@ -1278,7 +1335,6 @@ Language: tr
     <string name="login_jetpack_installed_sign_in">Zaten Jetpack’iniz var mı? %1$s</string>
     <string name="login_refresh_app_progress_jetpack">Jetpack ile oturum açılmaya çalışılıyor…</string>
     <string name="login_refresh_app_continue">devam etmek için uygulamayı yenileyin</string>
-    <string name="login_not_connected_jetpack">Bu uygulamayı %1$s için kullanmak istiyorsanız kurulu ve bu hesaba bağlı Jetpack eklentiniz olmalıdır. \n\nKurulumdan sonra, %2$s</string>
     <string name="login_try_another_store">Başka bir mağaza deneyin</string>
     <string name="database_downgraded">Veri tabanının sürümü düşürüldü, tablolar yeniden oluşturuluyor ve mağazalar yükleniyor</string>
     <string name="loading_stores">Mağazalar yükleniyor</string>
@@ -1294,7 +1350,6 @@ Language: tr
     <string name="orderdetail_copy_tracking_number">Takip numarasını kopyala</string>
     <string name="login_refresh_app_progress">WooCommerce kontrol ediliyor…</string>
     <string name="login_refresh_app">uygulamayı yenile</string>
-    <string name="login_not_woo_store">Görünüşe göre %1$s bir WooCommerce sitesi değil. Sitenize WooCommerce eklentisini yükleyin ve daha sonra %2$s</string>
     <string name="orderdetail_empty_address">Adres belirtilmedi</string>
     <string name="login_need_help_finding_connected_email">Bağlanırken kullandığınız e-postayı bulmak için yardıma mı ihtiyacınız var?</string>
     <string name="enter_wordpress_site">Bu adresteki web sitesi bir WordPress sitesi değil. Siteyle bağlantı kurabilmemiz için sitede WordPress yüklü olmalıdır.</string>

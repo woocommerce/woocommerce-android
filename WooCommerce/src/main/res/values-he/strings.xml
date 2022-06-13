@@ -1,11 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-04-27 09:54:04+0000
+Translation-Revision-Date: 2022-05-19 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="coupon_edit_add_description_hint">להוסיף את התיאור לקופון.</string>
+    <string name="coupon_edit_description_editor_title">תיאור קופון</string>
+    <string name="coupon_edit_edit_description">לערוך את התיאור</string>
+    <string name="coupon_edit_add_description">להוסיף תיאור (אופציונלי)</string>
+    <string name="coupon_edit_expiry_date">תאריך תפוגת הקופון</string>
+    <string name="coupon_edit_save_button">לשמור</string>
+    <string name="coupon_edit_regenerate_coupon">ליצור מחדש את קוד הקופון</string>
+    <string name="coupon_edit_code_helper">הלקוחות צריכים להזין את הקוד הזה כדי להשתמש בקופון.</string>
+    <string name="coupon_edit_code_hint">קוד קופון</string>
+    <string name="coupon_edit_amount_rate_helper">יש להגדיר את הסכום להנחה שברצונך להציע.</string>
+    <string name="coupon_edit_amount_percentage_helper">יש להגדיר את אחוז ההנחה שברצונך להציע.</string>
+    <string name="coupon_edit_amount_hint">סכום (⁦%1$s⁩)</string>
+    <string name="coupon_edit_details_section">פרטי הקופון</string>
+    <string name="coupon_edit_screen_title">לערוך את ⁦%1$s⁩</string>
+    <string name="coupon_details_menu_edit">לערוך קופון</string>
+    <string name="product_detail_save_product_error">אין אפשרות לעדכן את המוצר</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund_failed">משהו השתבש במהלך ההחלה של ההחזר הכספי</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund">החלת החזר כספי על ההזמנה</string>
+    <string name="card_reader_icon_content_description">תמונה של קורא הכרטיסים</string>
+    <string name="order_creation_fee_percentage_calculated_amount">סכום מחושב: %s</string>
+    <string name="order_creation_fee_percentage_toggle_text">מחושב כאחוז</string>
+    <string name="copied_to_clipboard">הועתק ללוח</string>
+    <string name="coupon_details_restricted_emails">מוגבל ללקוחות עם אימיילים: ⁦%1$s⁩</string>
+    <string name="coupon_details_excludes_sale_items">לא לכלול פריטים במבצע</string>
+    <string name="coupon_details_allows_free_shipping">לאפשר משלוח חינם</string>
+    <string name="coupon_details_individual_use_only">לשימוש אישי בלבד</string>
+    <string name="coupon_details_usage_limit_per_items_single">מוגבל לפריט ⁦%1$d⁩ בעגלת הקניות</string>
+    <string name="coupon_details_usage_limit_per_items_multiple">מוגבל ל-⁦%1$d⁩ פריטים בעגלת הקניות</string>
+    <string name="coupon_details_usage_limit_per_coupon_single">אפשר להשתמש פעם ⁦%1$d⁩</string>
+    <string name="coupon_details_usage_limit_per_coupon_multiple">אפשר להשתמש ⁦%1$d⁩ פעמים</string>
+    <string name="coupon_details_usage_limit_per_user_single">שימוש ⁦%1$d⁩ למשתמש</string>
+    <string name="coupon_details_usage_limit_per_user_multiple">⁦%1$d⁩ שימושים למשתמש</string>
+    <string name="coupon_details_delete_successful">הקופון נמחק</string>
+    <string name="coupon_details_delete_failure">מחיקת הקופון נכשלה</string>
+    <string name="coupon_details_delete_confirmation">האם ברצונך למחוק את הקופון הזה?</string>
+    <string name="coupon_details_delete">למחוק קופון</string>
+    <string name="inbox_screen_sync_error">שגיאה בסנכרון של תיבת הדואר הנכנס</string>
+    <string name="inbox_note_dismiss_all_notes">להתעלם מהכול</string>
+    <string name="inbox_screen_title">תיבת דואר נכנס</string>
+    <string name="settings_card_reader_manuals">מדריכים לקורא הכרטיסים</string>
+    <string name="card_reader_interac_refund_refund_payment_hint">יש להקיש או להכניס כדי להנפיק החזר כספי</string>
+    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">כבר הונפק החזר כספי עבור ההזמנה</string>
+    <string name="card_reader_interac_refund_refund_failed_cancelled">ההחזר הכספי בוטל</string>
+    <string name="card_reader_interac_refund_refund_failed_ok">אישור</string>
+    <string name="card_reader_interac_refund_refund_failed_test_card">כרטיסי בדיקה של המערכת לא מותרים לשימוש לצורך החזר כספי</string>
+    <string name="card_reader_interac_refund_refund_failed_invalid_amount">הסכום להחזר הכספי לא מורשה עבור הכרטיס שהוצג</string>
+    <string name="card_reader_interac_refund_refund_failed_insufficient_funds">ההחזר הכספי נדחה עקב יתרה לא מספיקה</string>
+    <string name="card_reader_interac_refund_refund_failed_duplicate_transaction">לאחרונה נרשם החזר כספי זהה</string>
+    <string name="card_reader_interac_refund_refund_failed_card_not_supported">הכרטיס הזה לא תומך בסוג ההחזר הכספי שנבחר</string>
+    <string name="card_reader_interac_refund_refund_failed_generic">ההחזר הכספי נדחה מסיבה שלא צוינה</string>
+    <string name="card_reader_interac_refund_refund_failed_fraud">יש לנסות אמצעי אחר לביצוע ההחזר הכספי</string>
+    <string name="card_reader_interac_refund_refund_failed_unknown">ההחזר הכספי נדחה מסיבה לא ידועה</string>
+    <string name="card_reader_interac_refund_refund_failed_unexpected_error_state">מצטערים, לא ניתן היה לעבד את ההחזר הכספי הזה</string>
+    <string name="card_reader_interac_refund_refund_completed_header">ההחזר הכספי הונפק בהצלחה</string>
+    <string name="card_reader_interac_refund_refund_processing_state">מעבד את ההחזר הכספי</string>
+    <string name="card_reader_interac_refund_refund_payment">להנפיק החזר כספי על תשלום</string>
+    <string name="card_reader_interac_refund_refund_failed_header">ההחזר הכספי נכשל</string>
+    <string name="card_reader_interac_refund_refund_loading_header">מתכונן לביצוע החזר כספי עבור התשלום</string>
+    <string name="copy">להעתיק</string>
     <string name="coupons_list_search_hint">לחפש קופונים</string>
     <string name="coupon_details_share_formatting_failure">לא ניתן ליצור הודעה לשיתוף של קוד הקופון</string>
     <string name="coupon_details_share_coupon_error">שגיאה בשיתוף קוד הקופון.</string>
@@ -82,7 +141,6 @@ Language: he_IL
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">אנחנו לא תומכים ב-Stripe בתוך ⁦%1$s⁩</string>
     <string name="card_reader_connect_scanning_hint">יש ללחוץ על כפתור ההפעלה של הקורא שלך</string>
     <string name="card_reader_payment_reader_receipt_sent">הקבלה נשלחה אל &lt;strong&gt;%s&lt;/strong&gt;</string>
-    <string name="order_creation_fee_percentage_toggle_text">עמלת אחוזים</string>
     <string name="order_creation_fee_percentage_hint">אחוזים (%)</string>
     <string name="order_creation_add_fee_removal_hint">להסיר את העמלה מההזמנה</string>
     <string name="order_creation_remove_shipping">להסיר את המשלוח מההזמנה</string>
@@ -116,7 +174,6 @@ Language: he_IL
     <string name="card_reader_wisepad_3_manual_card_reader">מדריך לקורא הכרטיסים של WisePad 3</string>
     <string name="order_creation_price_calculation_failed">לא ניתן לעדכן את המחירים</string>
     <string name="order_creation_payment_tax">מיסים</string>
-    <string name="order_creation_payment_tax_hint">המיסים יחושבו באופן אוטומטי בהתאם להגדרות החנות שלך.</string>
     <string name="exclusive_or">או</string>
     <string name="settings_install_jetpack">להתקין את Jetpack</string>
     <string name="card_reader_onboarding_account_rejected_header">תשלומים באופן אישי אינם זמינים כרגע</string>
@@ -534,7 +591,7 @@ Language: he_IL
     <string name="card_reader_refetching_order_failed">שגיאה בהבאת ההזמנה. ייתכן שמצב ההזמנה באפליקציה לא מעודכן.</string>
     <string name="card_reader_payment_email_client_not_found">לא ניתן לאתר את האפליקציה של שירות האימייל שלך</string>
     <string name="card_reader_payment_receipt_email_subject">הקבלה שלך מאת %s</string>
-    <string name="card_reader_payment_description">תשלום מקוון להזמנה %s עבור %s</string>
+    <string name="card_reader_payment_description">תשלום באופן אישי על ההזמנה %s עבור %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">מרענן את ההזמנה</string>
     <string name="card_reader_payment_fetch_order_loading_header">מעדכן את מצב האפליקציה</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">הלקוח בחר את ⁦%1$s⁩</string>
@@ -1277,7 +1334,6 @@ Language: he_IL
     <string name="login_jetpack_installed_sign_in">כבר יש לך חשבון ב-Jetpack? %1$s</string>
     <string name="login_refresh_app_progress_jetpack">מנסה להתחבר אל Jetpack…</string>
     <string name="login_refresh_app_continue">יש לרענן את האפליקציה כדי להמשיך</string>
-    <string name="login_not_connected_jetpack">כדי להשתמש באפליקציה להפעלה של %1$s עליך להגדיר את התוסף של Jetpack ולהתחבר לחשבון. \n\nלאחר שההגדרה בוצעה, %2$s</string>
     <string name="login_try_another_store">יש לנסות חנות אחרת</string>
     <string name="database_downgraded">בסיס הנתונים עודכן לגרסה פחות מתקדמת, אנחנו יוצרים את הטבלאות מחדש וטוענים את החנויות</string>
     <string name="loading_stores">מעדכן את החנויות</string>
@@ -1293,7 +1349,6 @@ Language: he_IL
     <string name="orderdetail_copy_tracking_number">להעתקת מספר המעקב</string>
     <string name="login_refresh_app_progress">מנסה לאתר את WooCommerce…</string>
     <string name="login_refresh_app">יש לרענן את האפליקציה</string>
-    <string name="login_not_woo_store">נראה שהאתר %1$s אינו אתר של WooCommerce. יש להתקין את התוסף של Woocommerce באתר שלך ולאחר מכן %2$s</string>
     <string name="orderdetail_empty_address">לא צוינה כתובת</string>
     <string name="login_need_help_finding_connected_email">נדרשת לך עזרה במציאת האימייל שבעזרתו התחברת?</string>
     <string name="enter_wordpress_site">האתר בכתובת זו אינו אתר של WordPress. כדי שנוכל להתחבר לאתר, השירות של WordPress חייב להיות מותקן באתר.</string>

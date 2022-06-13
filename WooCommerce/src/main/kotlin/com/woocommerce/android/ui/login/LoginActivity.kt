@@ -151,10 +151,10 @@ class LoginActivity :
     private fun slideInFragment(fragment: Fragment, shouldAddToBackStack: Boolean, tag: String) {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.setCustomAnimations(
-            R.anim.activity_slide_in_from_right,
-            R.anim.activity_slide_out_to_left,
-            R.anim.activity_slide_in_from_left,
-            R.anim.activity_slide_out_to_right
+            R.anim.default_enter_anim,
+            R.anim.default_exit_anim,
+            R.anim.default_pop_enter_anim,
+            R.anim.default_pop_exit_anim
         )
         fragmentTransaction.replace(R.id.fragment_container, fragment, tag)
         if (shouldAddToBackStack) {

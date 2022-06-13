@@ -16,7 +16,6 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailRefundsAdapter
-import com.woocommerce.android.util.FeatureFlag
 import java.math.BigDecimal
 
 class OrderDetailPaymentInfoView @JvmOverloads constructor(
@@ -132,7 +131,7 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
         isPaymentCollectableWithCardReader: Boolean,
         onCollectCardPresentPaymentClickListener: (view: View) -> Unit
     ) {
-        if (FeatureFlag.CARD_READER.isEnabled() && isPaymentCollectableWithCardReader) {
+        if (isPaymentCollectableWithCardReader) {
             binding.paymentInfoCollectCardPresentPaymentButton.visibility = VISIBLE
             binding.paymentInfoCollectCardPresentPaymentButton.setOnClickListener(
                 onCollectCardPresentPaymentClickListener
@@ -146,7 +145,7 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
         isReceiptAvailable: Boolean,
         onSeeReceiptClickListener: (view: View) -> Unit
     ) {
-        if (FeatureFlag.CARD_READER.isEnabled() && isReceiptAvailable) {
+        if (isReceiptAvailable) {
             binding.paymentInfoSeeReceiptButton.visibility = VISIBLE
             binding.paymentInfoSeeReceiptButton.setOnClickListener(
                 onSeeReceiptClickListener
@@ -160,7 +159,7 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
         isPaymentCollectableWithCardReader: Boolean,
         onPrintingInstructionsClickListener: (view: View) -> Unit
     ) {
-        if (FeatureFlag.CARD_READER.isEnabled() && isPaymentCollectableWithCardReader) {
+        if (isPaymentCollectableWithCardReader) {
             binding.paymentInfoPrintingInstructions.setOnClickListener(
                 onPrintingInstructionsClickListener
             )

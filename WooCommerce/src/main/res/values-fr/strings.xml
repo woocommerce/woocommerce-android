@@ -1,11 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-04-26 13:54:04+0000
+Translation-Revision-Date: 2022-05-20 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="coupon_edit_add_description_hint">Ajoutez la description au code promo.</string>
+    <string name="coupon_edit_description_editor_title">Description du code promo</string>
+    <string name="coupon_edit_edit_description">Modifier la description</string>
+    <string name="coupon_edit_add_description">Ajouter une description (facultatif)</string>
+    <string name="coupon_edit_expiry_date">Date d’expiration du code promo</string>
+    <string name="coupon_edit_save_button">Enregistrer</string>
+    <string name="coupon_edit_regenerate_coupon">Générer un nouveau code promo</string>
+    <string name="coupon_edit_code_helper">Les clients doivent saisir ce code pour bénéficier de cette promo.</string>
+    <string name="coupon_edit_code_hint">Code promo</string>
+    <string name="coupon_edit_amount_rate_helper">Définissez le montant de la remise que vous souhaitez offrir.</string>
+    <string name="coupon_edit_amount_percentage_helper">Définissez le pourcentage de la remise que vous souhaitez offrir.</string>
+    <string name="coupon_edit_amount_hint">Montant (%1$s)</string>
+    <string name="coupon_edit_details_section">Détails du code promo</string>
+    <string name="coupon_edit_screen_title">Modifier %1$s</string>
+    <string name="coupon_details_menu_edit">Modifier le code promo</string>
+    <string name="product_detail_save_product_error">Impossible de mettre le produit à jour</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund_failed">Un problème est survenu lors du processus de remboursement </string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund">Remboursement de la commande</string>
+    <string name="card_reader_icon_content_description">Image de lecteur de carte</string>
+    <string name="order_creation_fee_percentage_calculated_amount">Montant calculé : %s</string>
+    <string name="order_creation_fee_percentage_toggle_text">Calculer en pourcentage</string>
+    <string name="copied_to_clipboard">Copié dans le presse-papier</string>
+    <string name="coupon_details_restricted_emails">Réservé aux clients avec e-mails : %1$s</string>
+    <string name="coupon_details_excludes_sale_items">Exclut les articles en promo</string>
+    <string name="coupon_details_allows_free_shipping">Autorise l’expédition gratuite</string>
+    <string name="coupon_details_individual_use_only">Utilisation individuelle uniquement</string>
+    <string name="coupon_details_usage_limit_per_items_single">Limité à %1$d article dans le panier</string>
+    <string name="coupon_details_usage_limit_per_items_multiple">Limité à %1$d articles dans le panier</string>
+    <string name="coupon_details_usage_limit_per_coupon_single">Peut être utilisé %1$d fois</string>
+    <string name="coupon_details_usage_limit_per_coupon_multiple">Peut être utilisé %1$d fois</string>
+    <string name="coupon_details_usage_limit_per_user_single">%1$d utilisation par utilisateur</string>
+    <string name="coupon_details_usage_limit_per_user_multiple">%1$d utilisations par utilisateur</string>
+    <string name="coupon_details_delete_successful">Code promo supprimé</string>
+    <string name="coupon_details_delete_failure">La suppression du code promo a échoué</string>
+    <string name="coupon_details_delete_confirmation">Voulez-vous vraiment supprimer ce code promo ?</string>
+    <string name="coupon_details_delete">Supprimer le code promo</string>
+    <string name="inbox_screen_sync_error">Erreur de synchronisation de la boîte de réception</string>
+    <string name="inbox_note_dismiss_all_notes">Ignorer tout</string>
+    <string name="inbox_screen_title">Boîte de réception</string>
+    <string name="settings_card_reader_manuals">Manuels des lecteurs de carte</string>
+    <string name="card_reader_interac_refund_refund_payment_hint">Appuyez sur le montant à rembourser ou insérez-le</string>
+    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">Votre commande a déjà été remboursée</string>
+    <string name="card_reader_interac_refund_refund_failed_cancelled">Remboursement annulé</string>
+    <string name="card_reader_interac_refund_refund_failed_ok">OK</string>
+    <string name="card_reader_interac_refund_refund_failed_test_card">Les cartes de test système ne sont pas autorisées pour le remboursement</string>
+    <string name="card_reader_interac_refund_refund_failed_invalid_amount">Le montant du remboursement n’est pas autorisé pour la carte présentée</string>
+    <string name="card_reader_interac_refund_refund_failed_insufficient_funds">Le remboursement a été refusé en raison de fonds insuffisants</string>
+    <string name="card_reader_interac_refund_refund_failed_duplicate_transaction">Un remboursement identique a été soumis récemment</string>
+    <string name="card_reader_interac_refund_refund_failed_card_not_supported">La carte ne permet pas ce type de remboursement</string>
+    <string name="card_reader_interac_refund_refund_failed_generic">Le remboursement a été refusé pour une raison non spécifiée</string>
+    <string name="card_reader_interac_refund_refund_failed_fraud">Essayez un autre moyen de remboursement</string>
+    <string name="card_reader_interac_refund_refund_failed_unknown">Le remboursement a été refusé pour une raison inconnue</string>
+    <string name="card_reader_interac_refund_refund_failed_unexpected_error_state">Désolé, impossible de traiter ce remboursement</string>
+    <string name="card_reader_interac_refund_refund_completed_header">Remboursement effectué avec succès</string>
+    <string name="card_reader_interac_refund_refund_processing_state">Traitement du remboursement en cours</string>
+    <string name="card_reader_interac_refund_refund_payment">Rembourser le paiement</string>
+    <string name="card_reader_interac_refund_refund_failed_header">Remboursement échoué</string>
+    <string name="card_reader_interac_refund_refund_loading_header">Prêt à rembourser le paiement</string>
+    <string name="copy">Copier</string>
     <string name="coupons_list_search_hint">Recherche codes promo</string>
     <string name="coupon_details_share_formatting_failure">Impossible de générer le message de partage du code promo</string>
     <string name="coupon_details_share_coupon_error">Erreur lors du partage du code promo.</string>
@@ -83,7 +142,6 @@ Language: fr
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Nous ne prenons pas en charge les comptes Stripe enregistrés en %1$s</string>
     <string name="card_reader_connect_scanning_hint">Appuyer sur le bouton de mise en marche du lecteur</string>
     <string name="card_reader_payment_reader_receipt_sent">Un reçu a été envoyé à &lt;strong&gt;%s&lt;/strong&gt;</string>
-    <string name="order_creation_fee_percentage_toggle_text">Frais en pourcentage</string>
     <string name="order_creation_fee_percentage_hint">Pourcentage (%)</string>
     <string name="order_creation_add_fee_removal_hint">Supprimer les frais de la commande</string>
     <string name="order_creation_remove_shipping">Supprimer l’expédition de la commande</string>
@@ -117,7 +175,6 @@ Language: fr
     <string name="card_reader_wisepad_3_manual_card_reader">Manuel du lecteur de carte WisePad 3</string>
     <string name="order_creation_price_calculation_failed">Impossible de changer le prix</string>
     <string name="order_creation_payment_tax">Taxes</string>
-    <string name="order_creation_payment_tax_hint">Les taxes seront calculées automatiquement en fonction des réglages de votre boutique.</string>
     <string name="exclusive_or">ou</string>
     <string name="settings_install_jetpack">Configurer Jetpack</string>
     <string name="card_reader_onboarding_account_rejected_header">Les paiements en personne ne sont actuellement pas disponibles.</string>
@@ -351,7 +408,7 @@ Language: fr
     <string name="support_system_status_report">Rapport sur l’état du système</string>
     <string name="card_reader_welcome_dialog_text">Félicitations, vous pouvez désormais accepter les paiements par carte de débit et de crédit avec WooCommerce Payments.</string>
     <string name="card_reader_welcome_dialog_header">Percevez des paiements à l’aide d’un lecteur de carte</string>
-    <string name="card_reader_payment_failed_amount_too_small">Le montant doit s’élever à au moins 0,50 USD.</string>
+    <string name="card_reader_payment_failed_amount_too_small">Le montant doit s’élever à au moins 0,50 $.</string>
     <string name="card_reader_payment_payment_failed_ok">OK</string>
     <string name="settings_whats_new_icon_description">Image de l’icône Nouvelle fonctionnalité</string>
     <string name="settings_switch_store">Changer de boutique</string>
@@ -535,7 +592,7 @@ Language: fr
     <string name="card_reader_refetching_order_failed">Erreur lors de l’extraction de la commande. L’état de la commande dans l’application est peut-être obsolète.</string>
     <string name="card_reader_payment_email_client_not_found">Aucune application de messagerie détectée</string>
     <string name="card_reader_payment_receipt_email_subject">Votre reçu de %s</string>
-    <string name="card_reader_payment_description">Paiement en ligne de la commande %s pour %s</string>
+    <string name="card_reader_payment_description">Paiement en personne de la commande %s pour %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Actualisation de la commande</string>
     <string name="card_reader_payment_fetch_order_loading_header">Mise à jour de l’état de l’application</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Votre client a sélectionné %1$s</string>
@@ -1278,7 +1335,6 @@ Language: fr
     <string name="login_jetpack_installed_sign_in">Vous avez déjà Jetpack ? %1$s</string>
     <string name="login_refresh_app_progress_jetpack">Tentative de connexion avec Jetpack…</string>
     <string name="login_refresh_app_continue">actualiser l\'application pour continuer</string>
-    <string name="login_not_connected_jetpack">Pour utiliser cette application pour %1$s, vous devez installer et connecter l\'extension Jetpack à ce compte. \n\nUne fois l\'installation effectuée, %2$s</string>
     <string name="login_try_another_store">Essayer une autre boutique</string>
     <string name="database_downgraded">Retour à une base de données inférieure, recréation des tables et chargement des boutiques</string>
     <string name="loading_stores">Chargement des boutiques</string>
@@ -1294,7 +1350,6 @@ Language: fr
     <string name="orderdetail_copy_tracking_number">Copier le numéro de suivi</string>
     <string name="login_refresh_app_progress">Vérification de WooCommerce…</string>
     <string name="login_refresh_app">actualiser l’application</string>
-    <string name="login_not_woo_store">Il semblerait que %1$s ne soit pas un site WooCommerce. Installez l’extension WooCommerce sur votre site, puis %2$s</string>
     <string name="orderdetail_empty_address">Aucune adresse spécifiée</string>
     <string name="login_need_help_finding_connected_email">Besoin d\'aide pour trouver l\'adresse e-mail avec laquelle vous vous êtes connecté ?</string>
     <string name="enter_wordpress_site">Le site Web à cette adresse n\'est pas un site WordPress. WordPress doit être installé sur le site pour que nous puissions nous y connecter.</string>

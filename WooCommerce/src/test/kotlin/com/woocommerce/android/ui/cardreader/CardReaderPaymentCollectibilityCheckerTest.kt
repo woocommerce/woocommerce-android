@@ -179,7 +179,7 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
     @Test
     fun `when order has non code payment method, then it is not collectable`() =
         testBlocking {
-            val order = getOrder(paymentMethod = "stripe")
+            val order = getOrder(paymentMethod = "non_code")
 
             val isCollectable = checker.isCollectable(order)
 
@@ -210,6 +210,16 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
     fun `when order has pending status, then is collectable`() =
         testBlocking {
             val order = getOrder(paymentStatus = Order.Status.Pending)
+
+            val isCollectable = checker.isCollectable(order)
+
+            assertThat(isCollectable).isTrue()
+        }
+
+    @Test
+    fun `when order has custom status with auto-draft, then is collectable`() =
+        testBlocking {
+            val order = getOrder(paymentStatus = Order.Status.Custom(Order.Status.AUTO_DRAFT))
 
             val isCollectable = checker.isCollectable(order)
 
@@ -294,6 +304,19 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             val order = getOrder(paymentMethod = "wc-booking-gateway")
+
+            // WHEN
+            val isCollectable = checker.isCollectable(order)
+
+            // THEN
+            assertThat(isCollectable).isTrue()
+        }
+
+    @Test
+    fun `given "stripe" payment method, when check order is collectable, then returns true`() =
+        testBlocking {
+            // GIVEN
+            val order = getOrder(paymentMethod = "stripe")
 
             // WHEN
             val isCollectable = checker.isCollectable(order)

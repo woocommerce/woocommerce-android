@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.base
 
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.CallSuper
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.ui.dialog.WooDialog
@@ -19,25 +20,26 @@ open class BaseFragment : Fragment, BaseFragmentView {
 
     open val activityAppBarStatus: AppBarStatus = AppBarStatus.Visible()
 
+    @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         savedInstanceState?.let {
             activity?.title = it.getString(KEY_TITLE)
         }
     }
 
+    @CallSuper
     override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
         outState.putString(KEY_TITLE, getFragmentTitle())
     }
 
+    @CallSuper
     override fun onHiddenChanged(hidden: Boolean) {
-        super.onHiddenChanged(hidden)
         if (!hidden) {
             updateActivityTitle()
         }
     }
 
+    @CallSuper
     override fun onResume() {
         super.onResume()
         updateActivityTitle()

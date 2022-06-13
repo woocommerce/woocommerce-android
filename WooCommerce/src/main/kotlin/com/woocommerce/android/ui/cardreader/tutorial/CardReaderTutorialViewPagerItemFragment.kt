@@ -15,8 +15,6 @@ import org.wordpress.android.util.DisplayUtils
  */
 class CardReaderTutorialViewPagerItemFragment : Fragment(R.layout.fragment_card_reader_tutorial_viewpager_item) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         arguments?.let { args ->
             val binding = FragmentCardReaderTutorialViewpagerItemBinding.bind(view)
             binding.labelTextView.setText(args.getInt(ARG_LABEL_ID))

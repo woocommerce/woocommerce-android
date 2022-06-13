@@ -14,7 +14,8 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.network.ConnectionChangeReceiver
-import com.woocommerce.android.push.FCMRegistrationIntentService
+import com.woocommerce.android.push.RegisterDevice
+import com.woocommerce.android.push.RegisterDevice.Mode.IF_NEEDED
 import com.woocommerce.android.push.WooNotificationBuilder
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.tools.NetworkStatus
@@ -23,23 +24,30 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.SendTelemetry
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.main.MainActivity
-import com.woocommerce.android.util.*
+import com.woocommerce.android.util.AppThemeUtils
+import com.woocommerce.android.util.ApplicationLifecycleMonitor
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
+import com.woocommerce.android.util.PackageUtils
+import com.woocommerce.android.util.REGEX_API_JETPACK_TUNNEL_METHOD
+import com.woocommerce.android.util.REGEX_API_NUMERIC_PARAM
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.DASHBOARD
 import com.woocommerce.android.util.WooLog.T.UTILS
+import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.util.crashlogging.UploadEncryptedLogs
 import com.woocommerce.android.util.encryptedlogging.ObserveEncryptedLogsUploadResult
 import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.DispatchingAndroidInjector
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
+import org.wordpress.android.fluxc.logging.FluxCCrashLogger
+import org.wordpress.android.fluxc.logging.FluxCCrashLoggerProvider
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.OnJetpackTimeoutError
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
@@ -56,6 +64,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     }
 
     @Inject lateinit var crashLogging: CrashLogging
+    @Inject lateinit var fluxCCrashLogger: FluxCCrashLogger
     @Inject lateinit var androidInjector: DispatchingAndroidInjector<Any>
 
     @Inject lateinit var dispatcher: Dispatcher
@@ -73,6 +82,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var sendTelemetry: SendTelemetry
     @Inject lateinit var siteObserver: SiteObserver
     @Inject lateinit var wooLog: WooLogWrapper
+    @Inject lateinit var registerDevice: RegisterDevice
 
     // Listens for changes in device connectivity
     @Inject lateinit var connectionReceiver: ConnectionChangeReceiver
@@ -110,6 +120,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         AppThemeUtils.setAppTheme()
 
         dispatcher.register(this)
+
+        FluxCCrashLoggerProvider.initLogger(fluxCCrashLogger)
 
         AppRatingDialog.init(application)
 
@@ -152,13 +164,12 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             application.registerReceiver(connectionReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
         }
 
-        if (isGooglePlayServicesAvailable(application)) {
-            // Register for Cloud messaging
-            FCMRegistrationIntentService.enqueueWork(application)
-        }
-
         if (networkStatus.isConnected()) {
             updateSelectedSite.runIfNotLimited()
+
+            appCoroutineScope.launch {
+                registerDevice(IF_NEEDED)
+            }
         }
     }
 
@@ -170,7 +181,13 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             dispatcher.dispatch(AccountActionBuilder.newFetchSettingsAction())
             appCoroutineScope.launch {
                 wooCommerceStore.fetchWooCommerceSites()
-                if (!selectedSite.exists() && ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(STARTED)) {
+
+                // Added to fix this crash
+                // https://github.com/woocommerce/woocommerce-android/issues/4842
+                if (selectedSite.getSelectedSiteId() != -1 &&
+                    !selectedSite.exists() &&
+                    ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(STARTED)
+                ) {
                     // The previously selected site is not connected anymore, take the user to the site picker
                     WooLog.i(DASHBOARD, "Selected site no longer exists, showing site picker")
                     val intent = Intent(application, MainActivity::class.java)
@@ -275,6 +292,13 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             val hasUserOptedOut = !AnalyticsTracker.sendUsageStats
             if (hasUserOptedOut != accountStore.account.tracksOptOut) {
                 AnalyticsTracker.sendUsageStats = !accountStore.account.tracksOptOut
+            }
+        }
+
+        val userAccountFetched = !isLoggedOut && event.causeOfChange == AccountAction.FETCH_ACCOUNT
+        if (userAccountFetched) {
+            appCoroutineScope.launch {
+                registerDevice(IF_NEEDED)
             }
         }
     }

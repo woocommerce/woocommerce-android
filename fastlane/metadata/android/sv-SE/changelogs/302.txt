@@ -1,0 +1,4 @@
+9.2
+En kundbeställning innehåller en mängd viktig information. Vi har förstått att ni vill kunna kopiera och klistra in vissa av dessa detaljer utanför appen. De flesta fält går därför nu att kopiera till urklipp med hjälp av en lång tryckning. Informationen kan klistras in i textmeddelanden, e-postmeddelanden och anteckningar.
+
+Vi har också åtgärdat en rad olika fel som rörde personliga betalningar och beställningsskapande. Tack för din feedback!

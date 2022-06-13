@@ -1,11 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-04-28 09:54:04+0000
+Translation-Revision-Date: 2022-05-20 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="coupon_edit_add_description_hint">クーポンの詳細を追加します。</string>
+    <string name="coupon_edit_description_editor_title">クーポン詳細</string>
+    <string name="coupon_edit_edit_description">説明を編集</string>
+    <string name="coupon_edit_add_description">詳細を追加 (任意)</string>
+    <string name="coupon_edit_expiry_date">クーポンの有効期限</string>
+    <string name="coupon_edit_save_button">保存</string>
+    <string name="coupon_edit_regenerate_coupon">クーポンコードを再生成</string>
+    <string name="coupon_edit_code_helper">お客様がクーポンを使う際は、このコードの入力が必要です。</string>
+    <string name="coupon_edit_code_hint">クーポンコード</string>
+    <string name="coupon_edit_amount_rate_helper">任意の割引額を設定します。</string>
+    <string name="coupon_edit_amount_percentage_helper">任意の割引率を設定します。</string>
+    <string name="coupon_edit_amount_hint">合計 (%1$s)</string>
+    <string name="coupon_edit_details_section">クーポンの詳細</string>
+    <string name="coupon_edit_screen_title">%1$s を編集</string>
+    <string name="coupon_details_menu_edit">クーポンを編集</string>
+    <string name="product_detail_save_product_error">商品を更新できません</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund_failed">返金の適用中にエラーが発生しました</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund">注文に返金を適用しています</string>
+    <string name="card_reader_icon_content_description">カードリーダー画像</string>
+    <string name="order_creation_fee_percentage_calculated_amount">算出額: %s</string>
+    <string name="order_creation_fee_percentage_toggle_text">パーセントで計算する</string>
+    <string name="copied_to_clipboard">クリップボードにコピーしました</string>
+    <string name="coupon_details_restricted_emails">次のメールアドレスを持つ顧客に限定: %1$s</string>
+    <string name="coupon_details_excludes_sale_items">セール品を除外</string>
+    <string name="coupon_details_allows_free_shipping">無料配送を許可</string>
+    <string name="coupon_details_individual_use_only">併用不可</string>
+    <string name="coupon_details_usage_limit_per_items_single">お買い物カゴ内のアイテムを%1$d点に制限</string>
+    <string name="coupon_details_usage_limit_per_items_multiple">お買い物カゴ内のアイテムを%1$d点に制限</string>
+    <string name="coupon_details_usage_limit_per_coupon_single">%1$d回使用可能</string>
+    <string name="coupon_details_usage_limit_per_coupon_multiple">%1$d回使用可能</string>
+    <string name="coupon_details_usage_limit_per_user_single">1ユーザーにつき%1$d回使用</string>
+    <string name="coupon_details_usage_limit_per_user_multiple">1ユーザーにつき%1$d回使用</string>
+    <string name="coupon_details_delete_successful">クーポン削除</string>
+    <string name="coupon_details_delete_failure">クーポンの削除に失敗</string>
+    <string name="coupon_details_delete_confirmation">このクーポンを削除してもよろしいですか ?</string>
+    <string name="coupon_details_delete">クーポンを削除</string>
+    <string name="inbox_screen_sync_error">受信箱の同期に失敗</string>
+    <string name="inbox_note_dismiss_all_notes">すべて無視する</string>
+    <string name="inbox_screen_title">受信箱</string>
+    <string name="settings_card_reader_manuals">カードリーダーマニュアル</string>
+    <string name="card_reader_interac_refund_refund_payment_hint">タップまたは挿入して返金</string>
+    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">注文はすでに返金されています</string>
+    <string name="card_reader_interac_refund_refund_failed_cancelled">返金を中止しました</string>
+    <string name="card_reader_interac_refund_refund_failed_ok">OK</string>
+    <string name="card_reader_interac_refund_refund_failed_test_card">システムテストカードは返金を許可されていません。</string>
+    <string name="card_reader_interac_refund_refund_failed_invalid_amount">この返金額は提示されたカードで許可されていません</string>
+    <string name="card_reader_interac_refund_refund_failed_insufficient_funds">資金が不足しているため返金が拒否されました</string>
+    <string name="card_reader_interac_refund_refund_failed_duplicate_transaction">同一の返金が最近送信されています</string>
+    <string name="card_reader_interac_refund_refund_failed_card_not_supported">カードはこの種類の返金をサポートしていません</string>
+    <string name="card_reader_interac_refund_refund_failed_generic">不明な理由により返金が拒否されました</string>
+    <string name="card_reader_interac_refund_refund_failed_fraud">別の返金方法をお試しください</string>
+    <string name="card_reader_interac_refund_refund_failed_unknown">不明な理由により返金が拒否されました</string>
+    <string name="card_reader_interac_refund_refund_failed_unexpected_error_state">返金を処理できませんでした</string>
+    <string name="card_reader_interac_refund_refund_completed_header">正常に返金されました</string>
+    <string name="card_reader_interac_refund_refund_processing_state">返金を処理しています</string>
+    <string name="card_reader_interac_refund_refund_payment">支払いを返金</string>
+    <string name="card_reader_interac_refund_refund_failed_header">返金に失敗しました</string>
+    <string name="card_reader_interac_refund_refund_loading_header">支払いを返金する準備をしています</string>
+    <string name="copy">コピー</string>
     <string name="coupons_list_search_hint">クーポンを検索</string>
     <string name="coupon_details_share_formatting_failure">クーポンコードの共有メッセージを生成できません</string>
     <string name="coupon_details_share_coupon_error">クーポンコードを共有する際にエラーが発生しました。</string>
@@ -82,7 +141,6 @@ Language: ja_JP
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">%1$s では Stripe はサポートされていません</string>
     <string name="card_reader_connect_scanning_hint">リーダーの電源ボタンを押してください</string>
     <string name="card_reader_payment_reader_receipt_sent">領収書を &lt;strong&gt;%s&lt;/strong&gt; に送信しました</string>
-    <string name="order_creation_fee_percentage_toggle_text">パーセンテージ手数料</string>
     <string name="order_creation_fee_percentage_hint">パーセンテージ (%)</string>
     <string name="order_creation_add_fee_removal_hint">注文から手数料を削除</string>
     <string name="order_creation_remove_shipping">注文から配送料を削除</string>
@@ -116,7 +174,6 @@ Language: ja_JP
     <string name="card_reader_wisepad_3_manual_card_reader">WisePad 3カードリーダーマニュアル</string>
     <string name="order_creation_price_calculation_failed">価格を更新できませんでした</string>
     <string name="order_creation_payment_tax">税金</string>
-    <string name="order_creation_payment_tax_hint">税金は店舗の設定に基づいて自動的に計算されます。</string>
     <string name="exclusive_or">または</string>
     <string name="settings_install_jetpack">Jetpack をインストール</string>
     <string name="card_reader_onboarding_account_rejected_header">オフラインでの支払いは現在利用できません</string>
@@ -534,7 +591,7 @@ Language: ja_JP
     <string name="card_reader_refetching_order_failed">注文を取得する際にエラーが発生しました。 アプリの注文状態が古い可能性があります。</string>
     <string name="card_reader_payment_email_client_not_found">メールクライアントアプリを検出できません</string>
     <string name="card_reader_payment_receipt_email_subject">%s のレシート</string>
-    <string name="card_reader_payment_description">%s の %s のオンライン支払い</string>
+    <string name="card_reader_payment_description">%s への %s の注文のオフラインでの支払い</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">注文を更新する</string>
     <string name="card_reader_payment_fetch_order_loading_header">アプリの状態を更新する</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">お客様が %1$s を選択しました</string>
@@ -1277,7 +1334,6 @@ Language: ja_JP
     <string name="login_jetpack_installed_sign_in">Jetpack はインストール済みですか ?%1$s</string>
     <string name="login_refresh_app_progress_jetpack">Jetpack でログインを試行しています…</string>
     <string name="login_refresh_app_continue">続行するにはアプリを再読み込みします</string>
-    <string name="login_not_connected_jetpack">%1$s にこのアプリを使用するには、Jetpack プラグインを設定し、このアカウントと連携する必要があります。\n\n設定が完了したら、%2$s</string>
     <string name="login_try_another_store">ほかのストアでお試しください</string>
     <string name="database_downgraded">データベースのダウングレードに伴い、テーブルを再作成し、ストアを読み込んでいます</string>
     <string name="loading_stores">ストアを読み込んでいます</string>
@@ -1293,7 +1349,6 @@ Language: ja_JP
     <string name="orderdetail_copy_tracking_number">追跡番号をコピー</string>
     <string name="login_refresh_app_progress">WooCommerce をチェックしています…</string>
     <string name="login_refresh_app">アプリを再読み込み</string>
-    <string name="login_not_woo_store">%1$s は WooCommerce サイトではないようです。サイトに WooCommerce プラグインをインストールして%2$s</string>
     <string name="orderdetail_empty_address">住所が指定されていません</string>
     <string name="login_need_help_finding_connected_email">関連付けられているメールアドレスをお忘れですか ?</string>
     <string name="enter_wordpress_site">このアドレスのサイトは WordPress のサイトではありません。接続するには、接続先のサイトに WordPress がインストールされている必要があります。</string>

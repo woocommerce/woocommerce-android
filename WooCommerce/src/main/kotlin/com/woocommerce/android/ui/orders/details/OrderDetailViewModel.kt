@@ -19,12 +19,13 @@ import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_TRACKING_ADD
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_TRACKING_DELETE_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_TRACKING_DELETE_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_ADDONS_ORDER_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_VIEW_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.SHIPPING_LABEL_ORDER_IS_ELIGIBLE
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.extensions.isNotEqualTo
-import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
@@ -41,6 +42,7 @@ import com.woocommerce.android.tools.ProductImageMap.OnProductFetchedListener
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.cardreader.payment.CardReaderPaymentCollectibilityChecker
+import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
@@ -58,8 +60,8 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstr
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.ui.orders.simplepayments.TakePaymentViewModel
 import com.woocommerce.android.ui.products.addons.AddonRepository
+import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -94,12 +96,9 @@ final class OrderDetailViewModel @Inject constructor(
     private val productImageMap: ProductImageMap,
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
     private val cardReaderTracker: CardReaderTracker,
+    private val trackerWrapper: AnalyticsTrackerWrapper,
+    private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository,
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
-    companion object {
-        // The required version to support shipping label creation
-        const val SUPPORTED_WCS_VERSION = "1.25.11"
-    }
-
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
     final var order: Order
@@ -135,12 +134,6 @@ final class OrderDetailViewModel @Inject constructor(
 
     private val _shippingLabels = MutableLiveData<List<ShippingLabel>>()
     val shippingLabels: LiveData<List<ShippingLabel>> = _shippingLabels
-
-    private val isShippingPluginReady: Boolean by lazy {
-        val pluginInfo = orderDetailRepository.getWooServicesPluginInfo()
-        pluginInfo.isInstalled && pluginInfo.isActive &&
-            (pluginInfo.version ?: "0.0.0").semverCompareTo(SUPPORTED_WCS_VERSION) >= 0
-    }
 
     override fun onCleared() {
         super.onCleared()
@@ -214,7 +207,7 @@ final class OrderDetailViewModel @Inject constructor(
     }
 
     fun onRefreshRequested() {
-        AnalyticsTracker.track(ORDER_DETAIL_PULLED_TO_REFRESH)
+        trackerWrapper.track(ORDER_DETAIL_PULLED_TO_REFRESH)
         viewState = viewState.copy(isRefreshing = true)
         launch { fetchOrder(false) }
     }
@@ -242,8 +235,12 @@ final class OrderDetailViewModel @Inject constructor(
     }
 
     fun onSharePaymentUrlClicked() {
-        AnalyticsTracker.track(AnalyticsEvent.ORDER_DETAIL_PAYMENT_LINK_SHARED)
+        trackerWrapper.track(AnalyticsEvent.ORDER_DETAIL_PAYMENT_LINK_SHARED)
         triggerEvent(TakePaymentViewModel.SharePaymentUrl(selectedSite.get().name, order.paymentUrl))
+    }
+
+    fun onEditClicked() {
+        triggerEvent(OrderNavigationTarget.EditOrder(order.id))
     }
 
     fun onAcceptCardPresentPaymentClicked() {
@@ -252,6 +249,13 @@ final class OrderDetailViewModel @Inject constructor(
     }
 
     fun onSeeReceiptClicked() {
+        trackerWrapper.track(
+            RECEIPT_VIEW_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_ORDER_ID to order.id,
+                AnalyticsTracker.KEY_STATUS to order.status
+            )
+        )
         loadReceiptUrl()?.let {
             triggerEvent(PreviewReceipt(order.billingAddress.email, it, order.id))
         } ?: WooLog.e(T.ORDERS, "ReceiptUrl is null, but SeeReceipt button is visible")
@@ -259,6 +263,10 @@ final class OrderDetailViewModel @Inject constructor(
 
     fun onPrintingInstructionsClicked() {
         triggerEvent(ViewPrintingInstructions)
+    }
+
+    fun onGetWcShippingClicked() {
+        triggerEvent(InstallWcShippingFlowViewModel.InstallWcShipping)
     }
 
     /**
@@ -315,7 +323,7 @@ final class OrderDetailViewModel @Inject constructor(
     }
 
     fun onNewShipmentTrackingAdded(shipmentTracking: OrderShipmentTracking) {
-        AnalyticsTracker.track(
+        trackerWrapper.track(
             ORDER_TRACKING_ADD,
             mapOf(
                 AnalyticsTracker.KEY_ID to order.id,
@@ -353,7 +361,7 @@ final class OrderDetailViewModel @Inject constructor(
     }
 
     fun onOrderStatusChanged(updateSource: OrderStatusUpdateSource) {
-        AnalyticsTracker.track(
+        trackerWrapper.track(
             ORDER_STATUS_CHANGE,
             mapOf(
                 AnalyticsTracker.KEY_ID to order.id,
@@ -431,10 +439,10 @@ final class OrderDetailViewModel @Inject constructor(
                 navArgs.orderId, shipmentTracking.toDataModel()
             )
             if (!onOrderChanged.isError) {
-                AnalyticsTracker.track(ORDER_TRACKING_DELETE_SUCCESS)
+                trackerWrapper.track(ORDER_TRACKING_DELETE_SUCCESS)
                 triggerEvent(ShowSnackbar(string.order_shipment_tracking_delete_success))
             } else {
-                AnalyticsTracker.track(
+                trackerWrapper.track(
                     ORDER_TRACKING_DELETE_FAILED,
                     prepareTracksEventsDetails(onOrderChanged)
                 )
@@ -455,12 +463,12 @@ final class OrderDetailViewModel @Inject constructor(
                                 if (result.event.isError) {
                                     reloadOrderDetails()
                                     triggerEvent(ShowSnackbar(string.order_error_update_general))
-                                    AnalyticsTracker.track(
+                                    trackerWrapper.track(
                                         ORDER_STATUS_CHANGE_FAILED,
                                         prepareTracksEventsDetails(result.event)
                                     )
                                 } else {
-                                    AnalyticsTracker.track(ORDER_STATUS_CHANGE_SUCCESS)
+                                    trackerWrapper.track(ORDER_STATUS_CHANGE_SUCCESS)
                                 }
                             }
                         }
@@ -476,17 +484,17 @@ final class OrderDetailViewModel @Inject constructor(
     }
 
     fun onCreateShippingLabelButtonTapped() {
-        AnalyticsTracker.track(ORDER_DETAIL_CREATE_SHIPPING_LABEL_BUTTON_TAPPED)
+        trackerWrapper.track(ORDER_DETAIL_CREATE_SHIPPING_LABEL_BUTTON_TAPPED)
         triggerEvent(StartShippingLabelCreationFlow(order.id))
     }
 
     fun onMarkOrderCompleteButtonTapped() {
-        AnalyticsTracker.track(ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED)
+        trackerWrapper.track(ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED)
         triggerEvent(ViewOrderFulfillInfo(order.id))
     }
 
     fun onViewOrderedAddonButtonTapped(orderItem: Order.Item) {
-        AnalyticsTracker.track(PRODUCT_ADDONS_ORDER_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED)
+        trackerWrapper.track(PRODUCT_ADDONS_ORDER_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED)
         triggerEvent(
             ViewOrderedAddons(
                 navArgs.orderId,
@@ -503,8 +511,7 @@ final class OrderDetailViewModel @Inject constructor(
             orderInfo = OrderInfo(
                 order = order,
                 isPaymentCollectableWithCardReader = isPaymentCollectable,
-                isReceiptButtonsVisible = FeatureFlag.CARD_READER.isEnabled() &&
-                    !loadReceiptUrl().isNullOrEmpty()
+                isReceiptButtonsVisible = !loadReceiptUrl().isNullOrEmpty()
             ),
             orderStatus = orderStatus,
             toolbarTitle = resourceProvider.getString(
@@ -560,7 +567,7 @@ final class OrderDetailViewModel @Inject constructor(
     }
 
     private fun fetchSLCreationEligibilityAsync() = async {
-        if (isShippingPluginReady) {
+        if (shippingLabelOnboardingRepository.isShippingPluginReady) {
             orderDetailRepository.fetchSLCreationEligibility(order.id)
         }
     }
@@ -628,10 +635,9 @@ final class OrderDetailViewModel @Inject constructor(
             _shipmentTrackings.value = shipmentTracking.list
         }
 
-        val orderEligibleForInPersonPayments = viewState.orderInfo?.isPaymentCollectableWithCardReader == true &&
-            FeatureFlag.CARD_READER.isEnabled()
+        val orderEligibleForInPersonPayments = viewState.orderInfo?.isPaymentCollectableWithCardReader == true
 
-        val isOrderEligibleForSLCreation = isShippingPluginReady &&
+        val isOrderEligibleForSLCreation = shippingLabelOnboardingRepository.isShippingPluginReady &&
             orderDetailRepository.isOrderEligibleForSLCreation(order.id) &&
             !orderEligibleForInPersonPayments
 
@@ -641,7 +647,7 @@ final class OrderDetailViewModel @Inject constructor(
         ) {
             // we check against the viewstate to avoid sending the event multiple times
             // if the eligibility was cached, and we had the same value after re-fetching it
-            AnalyticsTracker.track(
+            trackerWrapper.track(
                 stat = SHIPPING_LABEL_ORDER_IS_ELIGIBLE,
                 properties = mapOf(
                     "order_status" to order.status.value
@@ -654,7 +660,11 @@ final class OrderDetailViewModel @Inject constructor(
             isProductListMenuVisible = isOrderEligibleForSLCreation && shippingLabels.isVisible,
             isShipmentTrackingAvailable = shipmentTracking.isVisible,
             isProductListVisible = orderProducts.isVisible,
-            areShippingLabelsVisible = shippingLabels.isVisible
+            areShippingLabelsVisible = shippingLabels.isVisible,
+            wcShippingBannerVisible = shippingLabelOnboardingRepository.shouldShowWcShippingBanner(
+                order,
+                orderEligibleForInPersonPayments
+            )
         )
     }
 
@@ -681,6 +691,10 @@ final class OrderDetailViewModel @Inject constructor(
         }
     }
 
+    fun onWcShippingBannerDismissed() {
+        shippingLabelOnboardingRepository.markWcShippingBannerAsDismissed()
+    }
+
     @Parcelize
     data class ViewState(
         val orderInfo: OrderInfo? = null,
@@ -694,7 +708,8 @@ final class OrderDetailViewModel @Inject constructor(
         val isProductListVisible: Boolean? = null,
         val areShippingLabelsVisible: Boolean? = null,
         val isProductListMenuVisible: Boolean? = null,
-        val isSharePaymentLinkVisible: Boolean? = null
+        val isSharePaymentLinkVisible: Boolean? = null,
+        val wcShippingBannerVisible: Boolean? = null
     ) : Parcelable {
         val isMarkOrderCompleteButtonVisible: Boolean?
             get() = if (orderStatus != null) orderStatus.statusKey == CoreOrderStatus.PROCESSING.value else null
