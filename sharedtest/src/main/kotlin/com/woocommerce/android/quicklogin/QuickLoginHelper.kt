@@ -112,13 +112,13 @@ class QuickLoginHelper(private val packageName: String) {
         }
         continueButton.click()
 
-        device.wait(Until.findObject(By.res(packageName, "site_list_container")), LONG_TIMEOUT)
+        device.wait(Until.findObject(By.res(packageName, "sites_recycler")), LONG_TIMEOUT)
     }
 
     private fun selectSiteIfProvided(webSite: String) {
         if (webSite.isBlank().not()) {
             val siteList = device
-                .wait(Until.findObject(By.res(packageName, "site_list_container")), TIMEOUT)
+                .wait(Until.findObject(By.res(packageName, "sites_recycler")), TIMEOUT)
                 ?: return
 
             val selectedSite = findSelectedSite(siteList, webSite) ?: return

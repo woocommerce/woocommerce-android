@@ -31,9 +31,9 @@ class CleanStartupBenchmark {
 
     private fun startup(compilationMode: CompilationMode) {
         benchmarkRule.measureRepeated(
-            packageName = "com.woocommerce.android",
+            packageName = PACKAGE_NAME,
             metrics = listOf(StartupTimingMetric()),
-            iterations = 5,
+            iterations = 10,
             startupMode = StartupMode.COLD,
             compilationMode = compilationMode,
         ) {

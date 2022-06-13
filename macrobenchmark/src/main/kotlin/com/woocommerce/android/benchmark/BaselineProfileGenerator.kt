@@ -8,12 +8,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-private const val PACKAGE_NAME = "com.woocommerce.android"
-
-private const val EMAIL = ""
-private const val PASSWORD = ""
-private const val WEB_SITE = ""
-
 @ExperimentalBaselineProfilesApi
 @RunWith(AndroidJUnit4::class)
 class BaselineProfileGenerator {
@@ -23,14 +17,22 @@ class BaselineProfileGenerator {
     private val helper = QuickLoginHelper(PACKAGE_NAME)
 
     @Test
-    fun startup() =
-        baselineProfileRule.collectBaselineProfile(packageName = PACKAGE_NAME) {
-            helper.loginWithWordpress(
-                email = EMAIL,
-                password = PASSWORD,
-                webSite = WEB_SITE,
-            )
-            pressHome()
-            startActivityAndWait()
-        }
+    fun cleanStartup() = baselineProfileRule.collectBaselineProfile(packageName = PACKAGE_NAME) {}
+
+    @Test
+    fun loggedInStartup() =
+        baselineProfileRule.collectBaselineProfile(
+            packageName = PACKAGE_NAME,
+            profileBlock = {
+                if (!helper.isLoggedIn()) {
+                    helper.loginWithWordpress(
+                        email = BuildConfig.QUICK_LOGIN_WP_EMAIL,
+                        password = BuildConfig.QUICK_LOGIN_WP_PASSWORD,
+                        webSite = BuildConfig.QUICK_LOGIN_WP_SITE,
+                    )
+                }
+                pressHome()
+                startActivityAndWait()
+            }
+        )
 }
