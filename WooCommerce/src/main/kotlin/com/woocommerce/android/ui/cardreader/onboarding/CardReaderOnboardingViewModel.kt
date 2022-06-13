@@ -317,7 +317,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
             val onRefreshAfterUpdatingClicked: (() -> Unit),
             val openWPAdminActionClicked: (() -> Unit)? = null
         ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_both_plugins_activated) {
-            val headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_choose_payment_provider)
+            val headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_both_plugins_activated_header)
 
             val hintPluginOneLabel =
                 UiString.UiStringRes(R.string.card_reader_onboarding_both_plugins_activated_hint_plugin_one)
