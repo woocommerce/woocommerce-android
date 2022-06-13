@@ -76,6 +76,7 @@ workflows:
       - Connected Tests:
           name: UI Tests (Pixel 2 | API 28)
           post-to-slack: true
+          no_output_timeout: 20m
           # Always run connected tests on develop and release branches
           filters:
             branches:
