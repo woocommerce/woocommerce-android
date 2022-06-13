@@ -1,11 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-05-20 09:54:03+0000
+Translation-Revision-Date: 2022-06-03 09:54:19+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Die WooCommerce Stripe-Erweiterung wird in %1$s nicht unterstützt</string>
+    <string name="product_selector_filter_button_title">Filtern</string>
+    <string name="product_selector_clear_button_title">Auswahl löschen</string>
+    <string name="product_selector_select_button_title_one">%d Produkt auswählen</string>
+    <string name="product_selector_select_button_title_default">%d Produkte auswählen</string>
+    <string name="product_selector_sku_value">SKU: %s</string>
+    <string name="product_selector_select_product_label">Produkt %s auswählen</string>
+    <string name="coupon_conditions_products_edit_products_title">Produkte bearbeiten (%d)</string>
+    <string name="coupon_conditions_products_all_products_title">Alle Produkte</string>
+    <string name="coupon_conditions_products_select_products_title">Produkte auswählen</string>
+    <string name="coupon_restrictions_exclude_sale_items_hint">Aktiviere diese Option, wenn der Gutschein nicht für Produkte gelten soll, die im Angebot sind. Gutscheine pro Produkt/Artikel sind nur einlösbar, wenn das Produkt nicht im Angebot ist. Gutscheine, die Pro-Gesamt-Warenkorb verwendet werden, sind nur einlösbar, wenn der Warenkorb Produkte enthält, die nicht im Angebot sind.</string>
+    <string name="coupon_restrictions_exclude_sale_items">Produkte, die im Angebot sind, ausschließen</string>
+    <string name="coupon_restrictions_individual_use_hint">Aktiviere diese Option, wenn der Gutschein nicht zusammen mit anderen Gutscheinen verwendet werden darf.</string>
+    <string name="coupon_restrictions_individual_use">Nur einzeln anwendbar</string>
+    <string name="coupon_restrictions_limit_per_user_hint">Nutzungslimit pro Benutzer</string>
+    <string name="coupon_restrictions_amount_limit_hint">Nutzung auf X Produkte limitieren</string>
+    <string name="coupon_restrictions_limit_per_coupon_hint">Nutzungslimit pro Gutschein</string>
+    <string name="coupon_restrictions_maximum_spend_hint">Höchstbestellwert (%1$s)</string>
+    <string name="coupon_restrictions_minimum_spend_hint">Mindestbestellwert (%1$s)</string>
+    <string name="coupon_edit_saving_dialog_subtitle">Bitte warten …</string>
+    <string name="coupon_edit_saving_dialog_title">Gutschein wird gespeichert</string>
+    <string name="coupon_edit_coupon_update_failed">Aktualisieren des Gutscheins fehlgeschlagen</string>
+    <string name="coupon_edit_coupon_updated">Gutschein aktualisiert</string>
+    <string name="coupon_edit_usage_restrictions">Nutzungseinschränkungen</string>
+    <string name="coupon_edit_usage_section">Nutzungsdetails</string>
+    <string name="coupon_edit_free_shipping">Kostenlosen Versand einschließen?</string>
+    <string name="coupon_edit_expiry_clear_expiry_date">Löschen</string>
+    <string name="coupon_edit_expiry_date_none">Keine</string>
+    <string name="coupon_edit_conditions_section">Diesen Gutschein anwenden auf</string>
+    <string name="coupon_list_search_failed">Suche nach Gutscheinen fehlgeschlagen</string>
+    <string name="coupon_list_loading_failed">Abrufen von Gutscheinen fehlgeschlagen</string>
+    <string name="site_picker_error">Fehler beim Abrufen von Shops</string>
+    <string name="site_picker_label">Shop zum Verbinden auswählen</string>
+    <string name="product_stock_status_instock_quantified">%s vorrätig</string>
     <string name="coupon_edit_add_description_hint">Füge die Beschreibung des Gutscheins hinzu.</string>
     <string name="coupon_edit_description_editor_title">Beschreibung des Gutscheins</string>
     <string name="coupon_edit_edit_description">Beschreibung bearbeiten</string>
@@ -138,8 +172,7 @@ Language: de
     <string name="login_error_xml_rpc_services_disabled">Der XML-RPC-Service wurde auf dieser Website deaktiviert.</string>
     <string name="a8c_email_message">Bitte verwende eine E-Mail-Adresse, die nicht von Automattic ist, um ein Support-Ticket einzureichen</string>
     <string name="card_reader_onboarding_stripe_account_in_unsupported_country">Stripe-Konten, die in %1$s registriert sind, werden nicht unterstützt</string>
-    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">WooCommerce Payments wird in %1$s nicht unterstützt</string>
-    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Stripe wird in %1$s nicht unterstützt</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">Die WooCommerce Payments-Erweiterung wird in %1$s nicht unterstützt</string>
     <string name="card_reader_connect_scanning_hint">Drücke den Einschalt-Button deines Kartenlesegeräts</string>
     <string name="card_reader_payment_reader_receipt_sent">Es wurde ein Beleg an &lt;strong&gt;%s&lt;/strong&gt; gesendet</string>
     <string name="order_creation_fee_percentage_hint">Prozentsatz (%)</string>
@@ -172,7 +205,6 @@ Language: de
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">Persönliche Zahlungen funktionieren nur, wenn eines der folgenden Plugins aktiviert ist. Bitte setze dich mit einem Website-Administrator in Verbindung, um eines dieser Plugins zu deaktivieren und fortzufahren:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">Persönliche Zahlungen funktionieren nur, wenn eines der folgenden Plugins aktiviert ist. Deaktiviere eines der folgenden Plugins, um fortzufahren:</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">In Konflikt stehende Zahlungsplugins entdeckt</string>
-    <string name="card_reader_wisepad_3_manual_card_reader">Handbuch für Kartenlesegerät WisePad 3</string>
     <string name="order_creation_price_calculation_failed">Aktualisierung des Preises nicht möglich</string>
     <string name="order_creation_payment_tax">Steuern</string>
     <string name="exclusive_or">oder</string>
@@ -343,8 +375,6 @@ Language: de
     <string name="card_reader_connect_missing_address_button">Adresse eingeben</string>
     <string name="card_reader_connect_missing_address">Bitte gib die Adresse deines Stores an, um fortzufahren</string>
     <string name="card_reader_payment_check_mobile_device_prompt">Überprüfe dein Mobilgerät</string>
-    <string name="card_reader_m2_manual_card_reader">Stripe M2 – Handbuch für Kartenlesegerät</string>
-    <string name="card_reader_bbpos_manual_card_reader">BBPOS Chipper – Handbuch für Kartenlesegerät</string>
     <string name="order_error_update_empty_mail">Die Adresse kann nicht mit einer leeren E-Mail aktualisiert werden. Stelle sicher, dass du die neueste Version von WooCommerce ausführst.</string>
     <string name="orderfilters_date_range_filter_last_30_days">Letzte 30 Tage</string>
     <string name="orderfilters_date_range_filter_last_7_days">Letzte 7 Tage</string>
@@ -1335,6 +1365,7 @@ Language: de
     <string name="login_jetpack_installed_sign_in">Du hast Jetpack bereits? %1$s</string>
     <string name="login_refresh_app_progress_jetpack">Es wird versucht, dich mit Jetpack anzumelden …</string>
     <string name="login_refresh_app_continue">Zum Fortfahren die App aktualisieren</string>
+    <string name="login_not_connected_jetpack">Um diese App für %1$s zu verwenden, muss das Jetpack-Plugin eingerichtet und mit diesem Konto verbunden sein. \n\nAktualisiere nach dem Einrichten die App</string>
     <string name="login_try_another_store">Es mit einem anderen Shop versuchen</string>
     <string name="database_downgraded">Datenbank herabgestuft, Tabellen werden neu erstellt und Shops werden geladen</string>
     <string name="loading_stores">Shops werden geladen</string>
@@ -1630,6 +1661,7 @@ Language: de
     <string name="login_jetpack_what_is_description">Jetpack ist ein kostenloses WordPress-Plugin, das deinen Shop mit den Tools verbindet, die du für ein bestmögliches mobiles Erlebnis benötigst, einschließlich Push-Benachrichtigungen und Statistiken.</string>
     <string name="login_jetpack_what_is">Was ist Jetpack?</string>
     <string name="login_view_connected_stores">Verbundene Shops anzeigen</string>
+    <string name="login_not_woo_store">%1$s ist offenbar keine WooCommerce-Website. Installiere das WooCommerce-Plugin auf deiner Website und aktualisiere diese App, um fortzufahren.</string>
     <string name="login_not_connected_to_account">%1$s ist offenbar mit einem anderen WordPress.com-Konto verbunden.</string>
     <string name="keep_editing">Weiter bearbeiten</string>
     <string name="notification_wpcom_username_needed">Bitte melde dich mit deinem Benutzernamen und deinem Passwort an.</string>

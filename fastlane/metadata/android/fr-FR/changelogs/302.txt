@@ -1,4 +1,0 @@
-9.2:
-La plupart des informations figurant sur la commande d’un client sont importantes ! Nous savons que vous aimeriez pouvoir copier et coller certains de ces renseignements en dehors de l’application. C’est désormais possible en appuyant longtemps sur la plupart des champs pour les copier dans le presse-papiers. Collez-les dans un SMS, un e-mail ou une note !
-
-Nous avons également corrigé plusieurs bogues concernant les paiements en personne et la création de commandes. Merci pour votre commentaire !
