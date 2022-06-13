@@ -64,6 +64,7 @@
         android:layout_height="@dimen/image_major_72"
         android:layout_margin="@dimen/major_100"
         android:paddingStart="@dimen/image_major_64"
+        android:paddingEnd="@dimen/image_major_64"
         android:text="@string/card_reader_onboarding_choose_wcpayment_button"
         android:textAlignment="viewStart"
         android:textColor="@color/color_on_surface"
@@ -149,7 +150,7 @@
         app:srcCompat="@drawable/ic_checkmark_purple" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/openPluginStore"
+        android:id="@+id/confirmPaymentMethod"
         style="@style/Woo.Button.Colored"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
