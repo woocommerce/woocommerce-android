@@ -560,7 +560,7 @@ class IssueRefundViewModel @Inject constructor(
             triggerEvent(ShowNumberPicker(it))
         }
 
-        AnalyticsTracker.track(
+        analyticsTrackerWrapper.track(
             CREATE_ORDER_REFUND_ITEM_QUANTITY_DIALOG_OPENED,
             mapOf(AnalyticsTracker.KEY_ORDER_ID to order.id)
         )
