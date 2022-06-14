@@ -63,8 +63,8 @@ LOG_SEPERATOR="
 # 1. Checking Ruby Version
 # ---------------------------------------------------------------------------------
 
-PROJECT_RUBY_VERSION=`cat $PROJECT_ROOT/.ruby-version`
-LOCAL_RUBY_VERSION=`ruby -e 'puts RUBY_VERSION'`
+PROJECT_RUBY_VERSION=$(cat $PROJECT_ROOT/.ruby-version)
+LOCAL_RUBY_VERSION=$(ruby -e 'puts RUBY_VERSION')
 
 if [ "$LOCAL_RUBY_VERSION" != "$PROJECT_RUBY_VERSION" ]; then
     echo "Local Ruby Version: $LOCAL_RUBY_VERSION"
