@@ -1,11 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-05-20 11:54:03+0000
+Translation-Revision-Date: 2022-06-02 23:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Vi stöder inte WooCommerce Stripe-utökningen i %1$s</string>
+    <string name="product_selector_filter_button_title">Filtrera</string>
+    <string name="product_selector_clear_button_title">Rensa val</string>
+    <string name="product_selector_select_button_title_one">Välj %d produkt</string>
+    <string name="product_selector_select_button_title_default">Välj %d produkter</string>
+    <string name="product_selector_sku_value">Artikelnummer: %s</string>
+    <string name="product_selector_select_product_label">Välj produkt %s</string>
+    <string name="coupon_conditions_products_edit_products_title">Redigera produkter (%d)</string>
+    <string name="coupon_conditions_products_all_products_title">Alla produkter</string>
+    <string name="coupon_conditions_products_select_products_title">Välj produkter</string>
+    <string name="coupon_restrictions_exclude_sale_items_hint">Aktivera det här alternativet om rabattkoden inte ska gå att tillämpa på reavaror. Per-artikel-rabattkoder fungerar bara om varan inte är en reavara. Per-varukorg-rabattkoder fungerar bara om varorna i varukorgen inte är reavaror.</string>
+    <string name="coupon_restrictions_exclude_sale_items">Exkludera artiklar på rea</string>
+    <string name="coupon_restrictions_individual_use_hint">Aktivera det här alternativet om rabattkoden inte ska kunna användas tillsammans med andra rabattkoder.</string>
+    <string name="coupon_restrictions_individual_use">Kan inte kombineras</string>
+    <string name="coupon_restrictions_limit_per_user_hint">Användningsbegränsning per kund</string>
+    <string name="coupon_restrictions_amount_limit_hint">Begränsa användningen till X artiklar</string>
+    <string name="coupon_restrictions_limit_per_coupon_hint">Användningsbegränsning per rabattkod</string>
+    <string name="coupon_restrictions_maximum_spend_hint">Maximalt beställningsbelopp (%1$s)</string>
+    <string name="coupon_restrictions_minimum_spend_hint">Minsta beställningsbelopp (%1$s)</string>
+    <string name="coupon_edit_saving_dialog_subtitle">Vänta …</string>
+    <string name="coupon_edit_saving_dialog_title">Sparar rabattkod</string>
+    <string name="coupon_edit_coupon_update_failed">Det gick inte att uppdatera rabattkoden</string>
+    <string name="coupon_edit_coupon_updated">Rabattkod uppdaterad</string>
+    <string name="coupon_edit_usage_restrictions">Användningsbegränsningar</string>
+    <string name="coupon_edit_usage_section">Användningsinformation</string>
+    <string name="coupon_edit_free_shipping">Inkludera gratis frakt?</string>
+    <string name="coupon_edit_expiry_clear_expiry_date">Rensa</string>
+    <string name="coupon_edit_expiry_date_none">Ingen</string>
+    <string name="coupon_edit_conditions_section">Tillämpa denna rabattkod på</string>
+    <string name="coupon_list_search_failed">Det gick inte att söka efter rabattkoder</string>
+    <string name="coupon_list_loading_failed">Det gick inte att hämta rabattkoder</string>
+    <string name="site_picker_error">Det gick inte att hämta butiker</string>
+    <string name="site_picker_label">Välj butik att ansluta</string>
+    <string name="product_stock_status_instock_quantified">%s i lager</string>
     <string name="coupon_edit_add_description_hint">Lägg till beskrivningen för rabattkoden.</string>
     <string name="coupon_edit_description_editor_title">Rabattkodsbeskrivning</string>
     <string name="coupon_edit_edit_description">Redigera beskrivning</string>
@@ -138,8 +172,7 @@ Language: sv_SE
     <string name="login_error_xml_rpc_services_disabled">Tjänsten för XML-RPC är inaktiverad på denna webbplats.</string>
     <string name="a8c_email_message">Använd en e-postadress som inte är kopplad till Automattic för att skicka in ett supportärende</string>
     <string name="card_reader_onboarding_stripe_account_in_unsupported_country">Vi stöder inte Stripe-konton som är registrerade i %1$s</string>
-    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">Vi stöder inte WooCommerce Payments i %1$s</string>
-    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Vi stöder inte Stripe i %1$s</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">Vi stöder inte WooCommerce Payments-utökning i %1$s</string>
     <string name="card_reader_connect_scanning_hint">Tryck på strömknappen på din läsare</string>
     <string name="card_reader_payment_reader_receipt_sent">Ett kvitto har skickats till &lt;strong&gt;%s&lt;/strong&gt;</string>
     <string name="order_creation_fee_percentage_hint">Procent (%)</string>
@@ -172,7 +205,6 @@ Language: sv_SE
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">Personliga betalningar fungerar endast med ett av följande tillägg aktiverat. Kontakta en webbplatsadministratör för att inaktivera ett av dessa tillägg och fortsätta:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">Personliga betalningar fungerar endast med ett av följande tillägg aktiverat. Inaktivera ett av dessa tillägg för att fortsätta.</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">Konflikt mellan betalningstillägg upptäckt</string>
-    <string name="card_reader_wisepad_3_manual_card_reader">WisePad 3-kortläsarmanual</string>
     <string name="order_creation_price_calculation_failed">Kunde inte uppdatera priser</string>
     <string name="order_creation_payment_tax">Momsen</string>
     <string name="exclusive_or">eller</string>
@@ -343,8 +375,6 @@ Language: sv_SE
     <string name="card_reader_connect_missing_address_button">Ange adress</string>
     <string name="card_reader_connect_missing_address">Ange din butiksadress för att fortsätta</string>
     <string name="card_reader_payment_check_mobile_device_prompt">Kontrollera din mobila enhet</string>
-    <string name="card_reader_m2_manual_card_reader">Stripe M2-kortläsarmanual</string>
-    <string name="card_reader_bbpos_manual_card_reader">BBPOS Chipper-kortläsarmanual</string>
     <string name="order_error_update_empty_mail">Adressen kan inte uppdateras med en tom e-postadress. Kontrollera att du kör den senaste versionen av WooCommerce.</string>
     <string name="orderfilters_date_range_filter_last_30_days">Senaste 30 dagarna</string>
     <string name="orderfilters_date_range_filter_last_7_days">Senaste 7 dagarna</string>
@@ -1335,6 +1365,7 @@ Language: sv_SE
     <string name="login_jetpack_installed_sign_in">Har du redan Jetpack? %1$s</string>
     <string name="login_refresh_app_progress_jetpack">Försöker logga in med Jetpack …</string>
     <string name="login_refresh_app_continue">uppdatera appen för att fortsätta</string>
+    <string name="login_not_connected_jetpack">För att använda den här appen för %1$s behöver du installera Jetpack-tillägget och ansluta det till det här kontot. \n\nNär detta är klart, starta om appen.</string>
     <string name="login_try_another_store">Försök med en annan butik</string>
     <string name="database_downgraded">Databasen har nedgraderats, återskapar tabeller och läser in butiker</string>
     <string name="loading_stores">Läser in butiker</string>
@@ -1630,6 +1661,7 @@ Language: sv_SE
     <string name="login_jetpack_what_is_description">Jetpack är ett kostnadsfritt tillägg i WordPress som ansluter din butik till de verktyg som behövs för att ge den bästa möjliga mobilupplevelsen, inklusive pushmeddelanden och statistik</string>
     <string name="login_jetpack_what_is">Vad är Jetpack?</string>
     <string name="login_view_connected_stores">Visa anslutna butiker</string>
+    <string name="login_not_woo_store">Det ser ut som att %1$s inte är en WooCommerce-webbplats. Installera WooCommerce-tillägget på din webbplats och starta sedan om appen.</string>
     <string name="login_not_connected_to_account">Det ser ut som att %1$s är ansluten till ett annat WordPress.com-konto.</string>
     <string name="keep_editing">Fortsätt redigera</string>
     <string name="notification_wpcom_username_needed">Logga in med ditt användarnamn och lösenord.</string>
@@ -1691,7 +1723,7 @@ Language: sv_SE
     <string name="promo_btn_try_it">Prova nu</string>
     <string name="promo_btn_got_it">Klart</string>
     <string name="tooltip_site_switcher">Peka för att byta butiker</string>
-    <string name="site_picker_title">Välj affär</string>
+    <string name="site_picker_title">Välj butik</string>
     <string name="settings_signout">Logga ut</string>
     <string name="orderstatus_select_status">Ändra orderstatus</string>
     <string name="orderdetail_change_order_status">Klicka för att ändra orderstatus</string>

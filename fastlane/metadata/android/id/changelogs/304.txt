@@ -1,0 +1,4 @@
+9.3:
+Untuk penduduk Kanada, selamat menggunakan pembayaran langsung! Dengan gembira kami umumkan bahwa pembayaran langsung kini tersedia bagi para penjual di Kanada yang menggunakan WooCommerce Payments.
+
+Rilis ini juga memberikan sejumlah perbaikan kecil. Sekali lagi kami ucapkan terima kasih atas feedback Anda yang luar biasa. Terus kirimkan feedback Anda!
