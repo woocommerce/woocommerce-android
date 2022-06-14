@@ -665,7 +665,7 @@ class IssueRefundViewModel @Inject constructor(
         commonState = commonState.copy(refundType = type)
         updateRefundTotal(refundAmount)
 
-        AnalyticsTracker.track(
+        analyticsTrackerWrapper.track(
             CREATE_ORDER_REFUND_TAB_CHANGED,
             mapOf(
                 AnalyticsTracker.KEY_ORDER_ID to order.id,
