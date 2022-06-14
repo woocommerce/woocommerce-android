@@ -1,0 +1,128 @@
+#!/bin/bash
+
+# ---------------------------------------------------------------------------------
+# 0a. Configuration
+# ---------------------------------------------------------------------------------
+
+PROJECT_ROOT="."
+PROJECT_ENV_FILE="$HOME/.wcandroid-env.default"
+
+P_ENV_GITHUB_TOKEN="GITHUB_TOKEN"
+P_ENV_SENTRY_AUTH_TOKEN="SENTRY_AUTH_TOKEN"
+P_ENV_SENTRY_ORG_SLUG="SENTRY_ORG_SLUG"
+P_ENV_SENTRY_PROJECT_SLUG="SENTRY_PROJECT_SLUG"
+P_ENV_BUILDKITE_TOKEN="BUILDKITE_TOKEN"
+
+P_ENV_SENTRY_ORG_SLUG_VALUE="a8c"
+P_ENV_SENTRY_PROJECT_SLUG_VALUE="woocommerce-android"
+
+# ---------------------------------------------------------------------------------
+# 0b. Warning & Error Messages
+# ---------------------------------------------------------------------------------
+echoerr() { printf "\e[31;1m%s\e[0m\n" "$*" >&2; }
+error_incorrect_ruby_version() {
+    echoerr \
+"Your local ruby version does not match the required ruby version.
+Please make sure \`ruby --version\` returns the same version as the version in \`.ruby-version\` file.
+We suggest using rbenv for managing your Ruby environment: https://github.com/rbenv/rbenv"
+}
+
+error_project_env_file_missing() {
+    echoerr "$PROJECT_ENV_FILE is missing!"
+}
+error_project_env_field_missing() {
+    echoerr "'$1' is missing in $PROJECT_ENV_FILE!"
+}
+warning_project_env_file_contents() {
+    echo \
+"
+Please make sure you have the following information in '$PROJECT_ENV_FILE':
+
+> $P_ENV_GITHUB_TOKEN={$P_ENV_GITHUB_TOKEN}
+>
+> $P_ENV_SENTRY_AUTH_TOKEN={$P_ENV_SENTRY_AUTH_TOKEN}
+> $P_ENV_SENTRY_ORG_SLUG=$P_ENV_SENTRY_ORG_SLUG_VALUE
+> $P_ENV_SENTRY_PROJECT_SLUG=$P_ENV_SENTRY_PROJECT_SLUG_VALUE
+>
+> $P_ENV_BUILDKITE_TOKEN={$P_ENV_BUILDKITE_TOKEN}
+"
+}
+
+# ---------------------------------------------------------------------------------
+# 0c. Helpers
+# ---------------------------------------------------------------------------------
+
+HAS_WARNINGS=false
+LOG_SEPERATOR="
+------------------------------------------------------------------------
+"
+
+# ---------------------------------------------------------------------------------
+# 1. Checking Ruby Version
+# ---------------------------------------------------------------------------------
+
+PROJECT_RUBY_VERSION=`cat $PROJECT_ROOT/.ruby-version`
+LOCAL_RUBY_VERSION=`ruby -e 'puts RUBY_VERSION'`
+
+if [ "$LOCAL_RUBY_VERSION" != "$PROJECT_RUBY_VERSION" ]; then
+    echo "Local Ruby Version: $LOCAL_RUBY_VERSION"
+    echo "Project Ruby Version: $PROJECT_RUBY_VERSION"
+    error_incorrect_ruby_version
+    echo "$LOG_SEPERATOR"
+
+    HAS_WARNINGS=true
+fi
+
+# ---------------------------------------------------------------------------------
+# 2. Checking Environment File
+# ---------------------------------------------------------------------------------
+
+HAS_PROJECT_ENV_FILE_WARNINGS=false
+
+if [ ! -f "$PROJECT_ENV_FILE" ]; then
+    error_project_env_file_missing
+    HAS_PROJECT_ENV_FILE_WARNINGS=true
+else
+    check_project_env() {
+        local token=$1
+        local expected_value=$2
+
+        if [[ ! -z "$expected_value" ]]; then
+            local token_regex="$token=$expected_value"
+        else
+            local token_regex="$token=\w*"
+        fi
+
+        if  ! grep -oq "$token_regex" "$PROJECT_ENV_FILE"; then
+            if [[ ! -z "$expected_value" ]]; then
+                error_project_env_field_missing "$token=$expected_value"
+            else
+                error_project_env_field_missing "$token"
+            fi
+            HAS_PROJECT_ENV_FILE_WARNINGS=true
+        fi
+    }
+    check_project_env "$P_ENV_GITHUB_TOKEN"
+    check_project_env "$P_ENV_SENTRY_AUTH_TOKEN"
+    check_project_env "$P_ENV_SENTRY_ORG_SLUG" "$P_ENV_SENTRY_ORG_SLUG_VALUE"
+    check_project_env "$P_ENV_SENTRY_PROJECT_SLUG" "$P_ENV_SENTRY_PROJECT_SLUG_VALUE"
+    check_project_env "$P_ENV_BUILDKITE_TOKEN"
+fi
+
+if [ "$HAS_PROJECT_ENV_FILE_WARNINGS" == true ]; then
+    warning_project_env_file_contents
+    echo "$LOG_SEPERATOR"
+
+    HAS_WARNINGS=true
+fi
+
+# ---------------------------------------------------------------------------------
+# 3. Wrapping Up
+# ---------------------------------------------------------------------------------
+
+if [ "$HAS_WARNINGS" == true ]; then
+    echo "Please address the warnings and re-run this check before continuing with the release.
+If you need help, please contact @owl-team in #platform9 Slack channel."
+else
+    echo "Everything looks good, good luck with the release!"
+fi
