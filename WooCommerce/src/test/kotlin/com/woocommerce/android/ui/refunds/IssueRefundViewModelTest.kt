@@ -40,7 +40,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
-import java.util.*
+import java.util.Date
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -757,6 +757,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
                 .thenReturn("Credit/Debit card")
 
             initViewModel()
+            val commonState = viewModel.commonStateLiveData.liveData.value as IssueRefundViewModel.CommonViewState
             viewModel.onRefundConfirmed(true)
 
             verify(analyticsTrackerWrapper).track(
@@ -764,10 +765,10 @@ class IssueRefundViewModelTest : BaseUnitTest() {
                 mapOf(
                     AnalyticsTracker.KEY_ORDER_ID to ORDER_ID,
                     AnalyticsTracker.KEY_REFUND_IS_FULL to
-                        ((viewModel.commonStateLiveData.liveData.value as IssueRefundViewModel.CommonViewState).refundTotal isEqualTo BigDecimal.TEN).toString(),
-                    AnalyticsTracker.KEY_REFUND_TYPE to (viewModel.commonStateLiveData.liveData.value as IssueRefundViewModel.CommonViewState).refundType.name,
+                        ((commonState).refundTotal isEqualTo BigDecimal.TEN).toString(),
+                    AnalyticsTracker.KEY_REFUND_TYPE to (commonState).refundType.name,
                     AnalyticsTracker.KEY_REFUND_METHOD to "manual",
-                    AnalyticsTracker.KEY_AMOUNT to (viewModel.commonStateLiveData.liveData.value as IssueRefundViewModel.CommonViewState).refundTotal.toString()
+                    AnalyticsTracker.KEY_AMOUNT to (commonState).refundTotal.toString()
                 )
             )
         }
