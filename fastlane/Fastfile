@@ -129,7 +129,7 @@ platform :android do
     android_completecodefreeze_prechecks(options)
 
     localize_libraries
-    send_strings_for_translation()
+    update_frozen_strings_for_translation
 
     ensure_git_status_clean
     push_to_git_remote
@@ -731,7 +731,7 @@ platform :android do
     )
   end
 
-  private_lane :send_strings_for_translation do
+  private_lane :update_frozen_strings_for_translation do
     # When you run commands from the `Fastfile`, they run relative to the `./fastfile` folder.
     # The `*_DIR_PATH` paths, however, are relative to the repo root, so we need to `cd` there.
     Dir.chdir('..') do
