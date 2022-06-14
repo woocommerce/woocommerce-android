@@ -159,6 +159,20 @@ class OrderListViewModel @Inject constructor(
     }
 
     /**
+     * Removes the `#` from the start of the search keyword, if present.
+     *
+     *  This allows searching for an order with `#123` and getting the results for order `123`.
+     *  See https://github.com/woocommerce/woocommerce-android/issues/2621
+     *
+     */
+    private fun sanitizeSearchQuery(searchQuery: String): String {
+        if (searchQuery.startsWith("#")) {
+            return searchQuery.drop(1)
+        }
+        return searchQuery
+    }
+
+    /**
      * Refresh the active order list with fresh data from the API as well as refresh order status
      * options and payment gateways if the network is available.
      */
