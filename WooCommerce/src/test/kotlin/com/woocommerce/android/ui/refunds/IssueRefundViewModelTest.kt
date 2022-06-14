@@ -26,6 +26,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
@@ -732,7 +733,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given there is network connection, when refund is confirmed, then proper tracks event is tracked`() {
+    fun `given there is network connection, when refund is confirmed, then proper tracks event is triggered`() {
         testBlocking {
             val chargeId = "charge_id"
             val cardBrand = "visa"
@@ -767,6 +768,35 @@ class IssueRefundViewModelTest : BaseUnitTest() {
                     AnalyticsTracker.KEY_AMOUNT to (viewModel.commonStateLiveData.liveData.value as IssueRefundViewModel.CommonViewState).refundTotal.toString()
                 )
             )
+        }
+    }
+
+    @Test
+    fun `given there is no network connection, when refund is confirmed, then tracks event is not triggered`() {
+        testBlocking {
+            val chargeId = "charge_id"
+            val cardBrand = "visa"
+            val cardLast4 = "1234"
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+            )
+            whenever(networkStatus.isConnected()).thenReturn(false)
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
+                    cardBrand = cardBrand,
+                    cardLast4 = cardLast4,
+                    paymentMethodType = "interac_present"
+                )
+            )
+            whenever(resourceProvider.getString(R.string.order_refunds_manual_refund))
+                .thenReturn("Credit/Debit card")
+
+            initViewModel()
+            viewModel.onRefundConfirmed(true)
+
+            verify(analyticsTrackerWrapper, never()).track(any(), any())
         }
     }
 }
