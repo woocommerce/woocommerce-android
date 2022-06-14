@@ -532,7 +532,7 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     fun onRefundIssued(reason: String) {
-        AnalyticsTracker.track(
+        analyticsTrackerWrapper.track(
             CREATE_ORDER_REFUND_SUMMARY_REFUND_BUTTON_TAPPED,
             mapOf(
                 AnalyticsTracker.KEY_ORDER_ID to order.id

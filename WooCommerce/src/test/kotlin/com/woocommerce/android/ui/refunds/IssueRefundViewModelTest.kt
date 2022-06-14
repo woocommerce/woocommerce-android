@@ -913,4 +913,26 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             )
         }
     }
+
+    @Test
+    fun `when refund is issued, then proper track event is triggered`() {
+        testBlocking {
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[]"
+            )
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(resourceProvider.getString(any())).thenReturn("")
+
+            initViewModel()
+            viewModel.onRefundIssued("")
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.CREATE_ORDER_REFUND_SUMMARY_REFUND_BUTTON_TAPPED,
+                mapOf(
+                    AnalyticsTracker.KEY_ORDER_ID to ORDER_ID
+                )
+            )
+        }
+    }
 }
