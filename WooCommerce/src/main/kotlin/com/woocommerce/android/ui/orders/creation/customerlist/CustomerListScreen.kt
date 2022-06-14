@@ -188,7 +188,12 @@ private fun CustomerListSkeleton() {
             item {
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .padding(
+                            horizontal = dimensionResource(id = R.dimen.major_100),
+                            vertical = dimensionResource(id = R.dimen.minor_100)
+                        )
                 ) {
                     SkeletonView(
                         modifier = Modifier
@@ -217,19 +222,21 @@ private fun CustomerListSkeleton() {
     }
 }
 
-/*@Preview
+@Preview
 @Composable
 private fun CustomerListPreview() {
     val customers = listOf(
-        WCCustomerModel(
-            id = 1,
+        CustomerListItem(
+            remoteId = 1,
             firstName = "George",
-            lastName = "Carlin"
+            lastName = "Carlin",
+            email = "me@example.com",
+            avatarUrl = ""
         )
     )
 
     CustomerList(customers)
-}*/
+}
 
 @Preview
 @Composable
