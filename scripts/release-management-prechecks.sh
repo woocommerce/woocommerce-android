@@ -13,6 +13,8 @@ P_ENV_SENTRY_ORG_SLUG="SENTRY_ORG_SLUG"
 P_ENV_SENTRY_PROJECT_SLUG="SENTRY_PROJECT_SLUG"
 P_ENV_BUILDKITE_TOKEN="BUILDKITE_TOKEN"
 
+# TODO: Can we drop these values from the 'PROJECT_ENV_FILE' and add it to the repo?
+# We can simplify and improve this script if we can do that.
 P_ENV_SENTRY_ORG_SLUG_VALUE="a8c"
 P_ENV_SENTRY_PROJECT_SLUG_VALUE="woocommerce-android"
 
@@ -84,29 +86,28 @@ if [ ! -f "$PROJECT_ENV_FILE" ]; then
     HAS_PROJECT_ENV_FILE_WARNINGS=true
 else
     check_project_env() {
-        local token=$1
-        local expected_value=$2
+        local arg_token=$1
+        local arg_expected_value=$2
 
-        if [[ ! -z "$expected_value" ]]; then
-            local token_regex="$token=$expected_value"
-        else
-            local token_regex="$token=\w*"
-        fi
+        # '^' matches the start of line so that if a value is commented out, it'll result in error
+        local regex="^$arg_token=$arg_expected_value"
 
-        if  ! grep -oq "$token_regex" "$PROJECT_ENV_FILE"; then
-            if [[ ! -z "$expected_value" ]]; then
-                error_project_env_field_missing "$token=$expected_value"
-            else
-                error_project_env_field_missing "$token"
-            fi
+        if  ! grep -oq "$regex" "$PROJECT_ENV_FILE"; then
+            error_project_env_field_missing "$arg_token"
             HAS_PROJECT_ENV_FILE_WARNINGS=true
         fi
     }
-    check_project_env "$P_ENV_GITHUB_TOKEN"
-    check_project_env "$P_ENV_SENTRY_AUTH_TOKEN"
+
+    match_any_word="\w*"
+
+    # These tokens can be any string
+    check_project_env "$P_ENV_GITHUB_TOKEN" "$match_any_word"
+    check_project_env "$P_ENV_SENTRY_AUTH_TOKEN" "$match_any_word"
+    check_project_env "$P_ENV_BUILDKITE_TOKEN" "$match_any_word"
+
+    # These values are set per project in configuration section
     check_project_env "$P_ENV_SENTRY_ORG_SLUG" "$P_ENV_SENTRY_ORG_SLUG_VALUE"
     check_project_env "$P_ENV_SENTRY_PROJECT_SLUG" "$P_ENV_SENTRY_PROJECT_SLUG_VALUE"
-    check_project_env "$P_ENV_BUILDKITE_TOKEN"
 fi
 
 if [ "$HAS_PROJECT_ENV_FILE_WARNINGS" == true ]; then
