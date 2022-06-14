@@ -24,8 +24,7 @@ import javax.inject.Inject
 class CustomerListFragment :
     BaseFragment(R.layout.fragment_customer_list),
     MenuItem.OnActionExpandListener,
-    SearchView.OnQueryTextListener
-{
+    SearchView.OnQueryTextListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel by viewModels<CustomerListViewModel>()
@@ -56,7 +55,7 @@ class CustomerListFragment :
 
     private fun setupObservers() {
         viewModel.customerList.observe(viewLifecycleOwner) {
-
+            // TODO
         }
         viewModel.event.observe(
             viewLifecycleOwner
