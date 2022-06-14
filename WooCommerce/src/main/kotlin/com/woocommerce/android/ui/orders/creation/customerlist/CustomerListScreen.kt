@@ -124,7 +124,7 @@ private fun CustomerListItem(
         }
         Row {
             Text(
-                text = "${customer.lastName}, $(customer.firstName)",
+                text = "${customer.lastName}, ${customer.firstName}",
                 style = MaterialTheme.typography.subtitle1,
                 color = MaterialTheme.colors.onSurface,
             )
