@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.refunds
 
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
@@ -22,6 +25,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest
@@ -38,6 +42,10 @@ import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 class IssueRefundViewModelTest : BaseUnitTest() {
+    companion object {
+        private const val ORDER_ID = 1L
+    }
+
     private val orderStore: WCOrderStore = mock()
     private val wooStore: WooCommerceStore = mock()
     private val selectedSite: SelectedSite = mock()
@@ -47,6 +55,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     private val refundStore: WCRefundStore = mock()
     private val currencyFormatter: CurrencyFormatter = mock()
     private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag = mock()
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val resourceProvider: ResourceProvider = mock {
         on(it.getString(R.string.multiple_shipping)).thenAnswer { "Multiple shipping lines" }
         on(it.getString(R.string.and)).thenAnswer { "and" }
@@ -62,7 +71,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
     private val paymentChargeRepository: PaymentChargeRepository = mock()
 
-    private val savedState = IssueRefundFragmentArgs(0).initSavedStateHandle()
+    private val savedState = IssueRefundFragmentArgs(ORDER_ID).initSavedStateHandle()
 
     private lateinit var viewModel: IssueRefundViewModel
 
@@ -90,6 +99,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             paymentChargeRepository,
             orderMapper,
             inPersonPaymentsCanadaFeatureFlag,
+            analyticsTrackerWrapper,
         )
     }
 
@@ -669,6 +679,30 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             viewModel.refundSummaryStateLiveData.observeForever { _, new -> viewState = new }
 
             assertThat(viewState!!.refundMethod).isEqualTo("Credit/Debit card")
+        }
+    }
+
+    @Test
+    fun `when next button is tapped from items, then verify proper tracks event is triggered `() {
+        testBlocking {
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[]"
+            )
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(resourceProvider.getString(R.string.order_refunds_manual_refund))
+                .thenReturn("Credit/Debit card")
+
+            initViewModel()
+            viewModel.onNextButtonTappedFromItems()
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
+                mapOf(
+                    AnalyticsTracker.KEY_REFUND_TYPE to IssueRefundViewModel.RefundType.ITEMS.name,
+                    AnalyticsTracker.KEY_ORDER_ID to ORDER_ID
+                )
+            )
         }
     }
 }

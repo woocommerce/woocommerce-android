@@ -18,6 +18,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.REFUND_CREATE
 import com.woocommerce.android.analytics.AnalyticsEvent.REFUND_CREATE_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.REFUND_CREATE_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.calculateTotals
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.isCashPayment
@@ -98,6 +99,7 @@ class IssueRefundViewModel @Inject constructor(
     private val paymentChargeRepository: PaymentChargeRepository,
     private val orderMapper: OrderMapper,
     private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DEFAULT_DECIMAL_PRECISION = 2
@@ -308,7 +310,7 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     fun onNextButtonTappedFromItems() {
-        AnalyticsTracker.track(
+        analyticsTrackerWrapper.track(
             CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
             mapOf(
                 AnalyticsTracker.KEY_REFUND_TYPE to ITEMS.name,
