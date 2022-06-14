@@ -85,7 +85,7 @@ private fun CustomerList(
             items = customers,
             key = { _, customer -> customer.remoteId }
         ) { _, customer ->
-            CustomerListItem(customer, onCustomerClick)
+            CustomerListViewItem(customer, onCustomerClick)
             Divider(
                 modifier = Modifier.offset(x = dimensionResource(id = R.dimen.major_100)),
                 color = colorResource(id = R.color.divider_color),
@@ -96,7 +96,7 @@ private fun CustomerList(
 }
 
 @Composable
-private fun CustomerListItem(
+private fun CustomerListViewItem(
     customer: CustomerListItem,
     onCustomerClick: ((CustomerListItem) -> Unit?)? = null
 ) {
