@@ -1,0 +1,4 @@
+9,3:
+Canadá, da la bienvenida a los pagos en persona. Estamos encantados de anunciar que los pagos en persona se encuentran ahora disponibles para los vendedores de Canadá que usan actualmente WooCommerce Payments.
+
+Esta versión también incluye varias pequeñas mejoras. Gracias de nuevo por tus increíbles comentarios. ¡Sigue así!

@@ -1,4 +1,0 @@
-9.2:
-Viele der Informationen auf einer Bestellung eines Kunden sind wichtig! Wir haben gehört, dass du einige dieser Details gerne außerhalb der App kopieren würdest. Ab sofort kannst du die meisten Felder durch längeres Drücken in die Zwischenablage kopieren. Also worauf wartest du noch – versuche es mit Textnachrichten, E-Mails oder Notizen!
-
-Außerdem haben wir mehrere Fehler in Bezug auf persönliche Zahlungen und die Erstellung von Bestellungen behoben. Vielen Dank für dein Feedback!

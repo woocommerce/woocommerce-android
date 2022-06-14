@@ -1,11 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-05-19 22:54:03+0000
+Translation-Revision-Date: 2022-06-01 14:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Não aceitamos a extensão WooCommerce Stripe em %1$s</string>
+    <string name="product_selector_filter_button_title">Filtrar</string>
+    <string name="product_selector_clear_button_title">Limpar seleção</string>
+    <string name="product_selector_select_button_title_one">Selecionar %d produto</string>
+    <string name="product_selector_select_button_title_default">Selecionar %d produtos</string>
+    <string name="product_selector_sku_value">SKU: %s</string>
+    <string name="product_selector_select_product_label">Selecionar produto %s</string>
+    <string name="coupon_conditions_products_edit_products_title">Editar produtos (%d)</string>
+    <string name="coupon_conditions_products_all_products_title">Todos os produtos</string>
+    <string name="coupon_conditions_products_select_products_title">Selecionar produtos</string>
+    <string name="coupon_restrictions_exclude_sale_items_hint">Ative para não aplicar o cupom a itens em promoção. Cupons por item só funcionarão se o item não estiver em promoção. Já cupons por carrinho só funcionarão se houver itens que não estejam em promoção no carrinho.</string>
+    <string name="coupon_restrictions_exclude_sale_items">Excluir itens em promoção</string>
+    <string name="coupon_restrictions_individual_use_hint">Ative para o cupom não poder ser usado com outros cupons.</string>
+    <string name="coupon_restrictions_individual_use">Somente para uso individual</string>
+    <string name="coupon_restrictions_limit_per_user_hint">Limite de uso por usuário</string>
+    <string name="coupon_restrictions_amount_limit_hint">Limitar uso a X itens</string>
+    <string name="coupon_restrictions_limit_per_coupon_hint">Limite de uso por cupom</string>
+    <string name="coupon_restrictions_maximum_spend_hint">Gasto máximo (%1$s)</string>
+    <string name="coupon_restrictions_minimum_spend_hint">Gasto mínimo (%1$s)</string>
+    <string name="coupon_edit_saving_dialog_subtitle">Aguarde…</string>
+    <string name="coupon_edit_saving_dialog_title">Salvando cupom</string>
+    <string name="coupon_edit_coupon_update_failed">Falha ao atualizar o cupom</string>
+    <string name="coupon_edit_coupon_updated">Cupom atualizado</string>
+    <string name="coupon_edit_usage_restrictions">Restrições de uso</string>
+    <string name="coupon_edit_usage_section">Detalhes de uso</string>
+    <string name="coupon_edit_free_shipping">Incluir envio gratuito?</string>
+    <string name="coupon_edit_expiry_clear_expiry_date">Limpar</string>
+    <string name="coupon_edit_expiry_date_none">Nada</string>
+    <string name="coupon_edit_conditions_section">Aplicar este cupom a</string>
+    <string name="coupon_list_search_failed">Falha ao pesquisar cupons</string>
+    <string name="coupon_list_loading_failed">Falha ao buscar cupons</string>
+    <string name="site_picker_error">Ocorreu um erro ao buscar lojas</string>
+    <string name="site_picker_label">Selecione uma loja para conectar</string>
+    <string name="product_stock_status_instock_quantified">%s em estoque</string>
     <string name="coupon_edit_add_description_hint">Adicione a descrição ao cupom.</string>
     <string name="coupon_edit_description_editor_title">Descrição do cupom</string>
     <string name="coupon_edit_edit_description">Editar descrição</string>
@@ -137,8 +171,7 @@ Language: pt_BR
     <string name="login_error_xml_rpc_services_disabled">Os serviços XML-RPC estão desativados neste site.</string>
     <string name="a8c_email_message">Use um e-mail que não seja do Automattic para enviar um ticket para o suporte.</string>
     <string name="card_reader_onboarding_stripe_account_in_unsupported_country">Não oferecemos suporte a contas Stripe registradas em %1$s</string>
-    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">Não oferecemos suporte a contas WooCommerce Payments em %1$s</string>
-    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Não oferecemos suporte à Stripe em %1$s</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">Não aceitamos a extensão WooCommerce Payments em %1$s</string>
     <string name="card_reader_connect_scanning_hint">Pressione o botão de ligar/desligar do seu leitor</string>
     <string name="card_reader_payment_reader_receipt_sent">Um recibo foi enviado para &lt;strong&gt;%s&lt;/strong&gt;</string>
     <string name="order_creation_fee_percentage_hint">Porcentagem (%)</string>
@@ -171,7 +204,6 @@ Language: pt_BR
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">Os pagamentos presenciais só vão funcionar com um dos seguintes plugins ativados. Entre em contato com um administrador do site para desativar um destes plugins para continuar:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">Os pagamentos presenciais só vão funcionar com um dos seguintes plugins ativados. Desative um destes plugins para continuar:</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">Conflito de plugins de pagamento detectado</string>
-    <string name="card_reader_wisepad_3_manual_card_reader">Manual do leitor de cartão WisePad 3</string>
     <string name="order_creation_price_calculation_failed">Não foi possível atualizar o preço</string>
     <string name="order_creation_payment_tax">Impostos</string>
     <string name="exclusive_or">ou</string>
@@ -342,8 +374,6 @@ Language: pt_BR
     <string name="card_reader_connect_missing_address_button">Informar endereço</string>
     <string name="card_reader_connect_missing_address">Informe o endereço da sua loja para continuar</string>
     <string name="card_reader_payment_check_mobile_device_prompt">Verifique seu dispositivo móvel</string>
-    <string name="card_reader_m2_manual_card_reader">Manual do leitor de cartão M2 da Stripe</string>
-    <string name="card_reader_bbpos_manual_card_reader">Manual do leitor de cartão BBPOS Chipper</string>
     <string name="order_error_update_empty_mail">Não é possível atualizar um endereço com o e-mail em branco. Confirme se você está usando a versão mais recente do WooCommerce.</string>
     <string name="orderfilters_date_range_filter_last_30_days">Últimos 30 dias</string>
     <string name="orderfilters_date_range_filter_last_7_days">Últimos 7 dias</string>
@@ -1333,6 +1363,7 @@ Language: pt_BR
     <string name="login_jetpack_installed_sign_in">Já tem o Jetpack? %1$s</string>
     <string name="login_refresh_app_progress_jetpack">Tentando fazer login com o Jetpack…</string>
     <string name="login_refresh_app_continue">atualize o aplicativo para continuar</string>
+    <string name="login_not_connected_jetpack">Para usar esse aplicativo para %1$s, é necessário ter o plugin do Jetpack configurado e conectado a esta conta. \n\nApós configurá-lo, atualize o aplicativo</string>
     <string name="login_try_another_store">Tentar outra loja</string>
     <string name="database_downgraded">Downgrade do banco de dados. Recriando tabelas e carregando lojas</string>
     <string name="loading_stores">Carregando lojas</string>
@@ -1628,6 +1659,7 @@ Language: pt_BR
     <string name="login_jetpack_what_is_description">O Jetpack é um plugin gratuito do WordPress que conecta sua loja às ferramentas necessárias para proporcionar a você a melhor experiência em dispositivos móveis, incluindo notificações push e estatísticas</string>
     <string name="login_jetpack_what_is">O que é o Jetpack?</string>
     <string name="login_view_connected_stores">Visualizar lojas conectadas</string>
+    <string name="login_not_woo_store">Parece que %1$s não é um site do WooCommerce. Instale o plugin do WooCommerce no seu site e atualize o aplicativo.</string>
     <string name="login_not_connected_to_account">Parece que %1$s está conectado(a) a uma conta diferente do WordPress.com.</string>
     <string name="keep_editing">Continuar editando</string>
     <string name="notification_wpcom_username_needed">Faça login com seu nome de usuário e senha.</string>
@@ -1689,7 +1721,7 @@ Language: pt_BR
     <string name="promo_btn_try_it">Experimente já</string>
     <string name="promo_btn_got_it">Entendi</string>
     <string name="tooltip_site_switcher">Toque para trocar de loja</string>
-    <string name="site_picker_title">Escolher loja</string>
+    <string name="site_picker_title">Selecionar loja</string>
     <string name="settings_signout">Fazer logout</string>
     <string name="orderstatus_select_status">Alterar status do pedido</string>
     <string name="orderdetail_change_order_status">Clique para alterar o status do pedido</string>
