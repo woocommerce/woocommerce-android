@@ -25,7 +25,6 @@ pluginManagement {
         id 'org.jetbrains.kotlin.plugin.allopen' version gradle.ext.kotlinVersion
         id 'org.jetbrains.kotlin.plugin.parcelize' version gradle.ext.kotlinVersion
         id 'se.bjurr.violations.violation-comments-to-github-gradle-plugin' version '1.69.0'
-        id 'com.android.test' version '7.1.1'
     }
 
     resolutionStrategy {
@@ -73,7 +72,7 @@ gradleEnterprise {
 
 rootProject.name = 'WCAndroid'
 
-include ':macrobenchmark'
+include ':baselineprofile'
 include ':quicklogin'
 include ':sharedtest'
 include ':libs:cardreader'

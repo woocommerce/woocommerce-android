@@ -1,4 +1,4 @@
-package com.woocommerce.android.benchmark
+package com.woocommerce.android.baselineprofile
 
 import androidx.benchmark.macro.ExperimentalBaselineProfilesApi
 import androidx.benchmark.macro.junit4.BaselineProfileRule
@@ -15,9 +15,6 @@ class BaselineProfileGenerator {
     val baselineProfileRule = BaselineProfileRule()
 
     private val helper = QuickLoginHelper(PACKAGE_NAME)
-
-    @Test
-    fun cleanStartup() = baselineProfileRule.collectBaselineProfile(packageName = PACKAGE_NAME) {}
 
     @Test
     fun loggedInStartup() =

@@ -154,7 +154,7 @@ android {
             pseudoLocalesEnabled true
             isDefault true
         }
-        benchmark {
+        baselineProfile {
             initWith buildTypes.release
             signingConfig signingConfigs.debug
             debuggable false
