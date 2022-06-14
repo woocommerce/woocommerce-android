@@ -187,7 +187,7 @@ private fun CustomerListSkeleton() {
     ) {
         repeat(numberOfSkeletonRows) {
             item {
-                Row (
+                Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
@@ -195,7 +195,7 @@ private fun CustomerListSkeleton() {
                             horizontal = dimensionResource(id = R.dimen.major_100),
                             vertical = dimensionResource(id = R.dimen.minor_100)
                         )
-                ){
+                ) {
                     SkeletonView(
                         modifier = Modifier
                             .size(dimensionResource(R.dimen.major_300))
