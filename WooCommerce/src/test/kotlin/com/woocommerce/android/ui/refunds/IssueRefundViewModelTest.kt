@@ -30,6 +30,7 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
@@ -39,6 +40,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
+import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -850,6 +852,63 @@ class IssueRefundViewModelTest : BaseUnitTest() {
                     AnalyticsTracker.KEY_ERROR_CONTEXT to "IssueRefundViewModel",
                     AnalyticsTracker.KEY_ERROR_TYPE to "GENERIC_ERROR",
                     AnalyticsTracker.KEY_ERROR_DESC to null
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `when refund success, then proper tracks event is triggered`() {
+        testBlocking {
+            val chargeId = "charge_id"
+            val cardBrand = "visa"
+            val cardLast4 = "1234"
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+            )
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
+                    cardBrand = cardBrand,
+                    cardLast4 = cardLast4,
+                    paymentMethodType = "interac_present"
+                )
+            )
+            whenever(resourceProvider.getString(R.string.order_refunds_manual_refund))
+                .thenReturn("Credit/Debit card")
+            whenever(
+                refundStore.createItemsRefund(
+                    site = any(),
+                    orderId = any(),
+                    reason = any(),
+                    restockItems = any(),
+                    autoRefund = any(),
+                    items = any()
+                )
+            ).thenReturn(
+                WooResult(
+                    model = WCRefundModel(
+                        id = 1L,
+                        dateCreated = Date(),
+                        amount = BigDecimal.ZERO,
+                        reason = "",
+                        automaticGatewayRefund = false,
+                        items = listOf(),
+                        shippingLineItems = listOf(),
+                        feeLineItems = listOf()
+                    )
+                )
+            )
+
+            initViewModel()
+            viewModel.refund()
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.REFUND_CREATE_SUCCESS,
+                mapOf(
+                    AnalyticsTracker.KEY_ORDER_ID to ORDER_ID,
+                    AnalyticsTracker.KEY_ID to 1L
                 )
             )
         }
