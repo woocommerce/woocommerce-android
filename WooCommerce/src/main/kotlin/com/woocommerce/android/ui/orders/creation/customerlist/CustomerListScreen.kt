@@ -121,13 +121,17 @@ private fun CustomerListItem(
                     .size(dimensionResource(R.dimen.major_300))
                     .clip(RoundedCornerShape(3.dp))
             )
-        }
-        Row {
-            Text(
-                text = "${customer.lastName}, ${customer.firstName}",
-                style = MaterialTheme.typography.subtitle1,
-                color = MaterialTheme.colors.onSurface,
-            )
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                    .align(Alignment.CenterVertically)
+            ) {
+                Text(
+                    text = "${customer.firstName} ${customer.lastName}",
+                    style = MaterialTheme.typography.subtitle1,
+                    color = MaterialTheme.colors.onSurface
+                )
+            }
         }
     }
 }
