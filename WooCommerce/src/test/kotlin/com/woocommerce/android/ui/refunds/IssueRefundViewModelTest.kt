@@ -705,4 +705,27 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             )
         }
     }
+
+    @Test
+    fun `when next button is tapped from amounts, then verify proper tracks event is triggered `() {
+        testBlocking {
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[]"
+            )
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(resourceProvider.getString(any())).thenReturn("")
+
+            initViewModel()
+            viewModel.onNextButtonTappedFromAmounts()
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
+                mapOf(
+                    AnalyticsTracker.KEY_REFUND_TYPE to IssueRefundViewModel.RefundType.AMOUNT.name,
+                    AnalyticsTracker.KEY_ORDER_ID to ORDER_ID
+                )
+            )
+        }
+    }
 }

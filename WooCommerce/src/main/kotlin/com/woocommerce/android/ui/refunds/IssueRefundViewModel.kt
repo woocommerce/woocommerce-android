@@ -322,7 +322,7 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     fun onNextButtonTappedFromAmounts() {
-        AnalyticsTracker.track(
+        analyticsTrackerWrapper.track(
             CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
             mapOf(
                 AnalyticsTracker.KEY_REFUND_TYPE to AMOUNT.name,
