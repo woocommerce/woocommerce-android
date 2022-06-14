@@ -520,10 +520,10 @@ class IssueRefundViewModel @Inject constructor(
         val note = OrderNote(note = reason, isCustomerNote = false)
         orderDetailRepository.addOrderNote(order.id, note).fold(
             onSuccess = {
-                AnalyticsTracker.track(ORDER_NOTE_ADD_SUCCESS)
+                analyticsTrackerWrapper.track(ORDER_NOTE_ADD_SUCCESS)
             },
             onFailure = {
-                AnalyticsTracker.track(
+                analyticsTrackerWrapper.track(
                     ORDER_NOTE_ADD_FAILED,
                     prepareTracksEventsDetails(it as WooException)
                 )
@@ -584,7 +584,7 @@ class IssueRefundViewModel @Inject constructor(
             )
         )
 
-        AnalyticsTracker.track(
+        analyticsTrackerWrapper.track(
             CREATE_ORDER_REFUND_PRODUCT_AMOUNT_DIALOG_OPENED,
             mapOf(AnalyticsTracker.KEY_ORDER_ID to order.id)
         )
