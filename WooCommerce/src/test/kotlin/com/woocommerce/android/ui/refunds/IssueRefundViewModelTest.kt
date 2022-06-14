@@ -4,6 +4,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
@@ -36,6 +37,7 @@ import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.math.BigDecimal
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -724,6 +726,45 @@ class IssueRefundViewModelTest : BaseUnitTest() {
                 mapOf(
                     AnalyticsTracker.KEY_REFUND_TYPE to IssueRefundViewModel.RefundType.AMOUNT.name,
                     AnalyticsTracker.KEY_ORDER_ID to ORDER_ID
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given there is network connection, when refund is confirmed, then proper tracks event is tracked`() {
+        testBlocking {
+            val chargeId = "charge_id"
+            val cardBrand = "visa"
+            val cardLast4 = "1234"
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+            )
+            whenever(networkStatus.isConnected()).thenReturn(true)
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
+                    cardBrand = cardBrand,
+                    cardLast4 = cardLast4,
+                    paymentMethodType = "interac_present"
+                )
+            )
+            whenever(resourceProvider.getString(R.string.order_refunds_manual_refund))
+                .thenReturn("Credit/Debit card")
+
+            initViewModel()
+            viewModel.onRefundConfirmed(true)
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.REFUND_CREATE,
+                mapOf(
+                    AnalyticsTracker.KEY_ORDER_ID to ORDER_ID,
+                    AnalyticsTracker.KEY_REFUND_IS_FULL to
+                        ((viewModel.commonStateLiveData.liveData.value as IssueRefundViewModel.CommonViewState).refundTotal isEqualTo BigDecimal.TEN).toString(),
+                    AnalyticsTracker.KEY_REFUND_TYPE to (viewModel.commonStateLiveData.liveData.value as IssueRefundViewModel.CommonViewState).refundType.name,
+                    AnalyticsTracker.KEY_REFUND_METHOD to "manual",
+                    AnalyticsTracker.KEY_AMOUNT to (viewModel.commonStateLiveData.liveData.value as IssueRefundViewModel.CommonViewState).refundTotal.toString()
                 )
             )
         }

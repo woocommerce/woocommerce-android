@@ -377,7 +377,7 @@ class IssueRefundViewModel @Inject constructor(
                         refund()
                     }
 
-                    AnalyticsTracker.track(
+                    analyticsTrackerWrapper.track(
                         REFUND_CREATE,
                         mapOf(
                             AnalyticsTracker.KEY_ORDER_ID to order.id,
