@@ -9,9 +9,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -61,7 +63,7 @@ fun CustomerListScreen(
     if (state.isSkeletonShown == true) {
         CustomerListSkeleton()
     } else if (state.searchQuery.isEmpty()) {
-        // TODO
+        // show nothing
     } else if (state.customers.isEmpty()) {
         EmptyCustomerList()
     } else {
@@ -174,29 +176,36 @@ private fun EmptyCustomerList() {
 @Composable
 private fun CustomerListSkeleton() {
     val numberOfSkeletonRows = 10
-    LazyColumn(Modifier.background(color = MaterialTheme.colors.surface)) {
+    LazyColumn(
+        Modifier
+            .background(color = MaterialTheme.colors.surface)
+            .padding(
+                horizontal = dimensionResource(id = R.dimen.major_100),
+                vertical = dimensionResource(id = R.dimen.minor_100)
+            )
+    ) {
         repeat(numberOfSkeletonRows) {
             item {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_50)),
-                    modifier = Modifier.padding(
-                        horizontal = dimensionResource(id = R.dimen.major_100),
-                        vertical = dimensionResource(id = R.dimen.minor_100)
-                    )
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     SkeletonView(
-                        dimensionResource(id = R.dimen.skeleton_text_medium_width),
-                        dimensionResource(id = R.dimen.major_125)
+                        modifier = Modifier
+                            .size(dimensionResource(R.dimen.major_300))
+                            .clip(RoundedCornerShape(3.dp))
+                            .padding(
+                                horizontal = dimensionResource(id = R.dimen.major_100),
+                                vertical = dimensionResource(id = R.dimen.minor_100)
+                            )
                     )
                     SkeletonView(
-                        dimensionResource(id = R.dimen.skeleton_text_large_width),
-                        dimensionResource(id = R.dimen.major_100)
-                    )
-                    SkeletonView(
-                        dimensionResource(id = R.dimen.skeleton_text_small_width),
-                        dimensionResource(id = R.dimen.major_125)
+                        modifier = Modifier
+                            .width(dimensionResource(id = R.dimen.skeleton_text_medium_width))
+                            .height(dimensionResource(id = R.dimen.skeleton_list_item_body_text_height_100))
                     )
                 }
+
                 Divider(
                     modifier = Modifier
                         .offset(x = dimensionResource(id = R.dimen.major_100)),
