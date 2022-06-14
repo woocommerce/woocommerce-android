@@ -20,7 +20,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,34 +39,49 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
-import org.wordpress.android.fluxc.model.customer.WCCustomerModel
+import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListViewModel.CustomerListItem
+import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListViewModel.CustomerListViewState
 
 @Composable
 fun CustomerListScreen(
     viewModel: CustomerListViewModel
 ) {
-    val state = viewModel.customerList.observeAsState(emptyList())
-    if (state.value.isEmpty()) {
+    val state by viewModel.viewState.observeAsState(CustomerListViewState())
+    CustomerListScreen(
+        state,
+        viewModel::onCustomerClick
+    )
+}
+
+@Composable
+fun CustomerListScreen(
+    state: CustomerListViewState,
+    onCustomerClick: ((CustomerListItem) -> Unit?)? = null
+) {
+    if (state.isSkeletonShown == true) {
+        CustomerListSkeleton()
+    } else if (state.searchQuery.isEmpty()) {
+        // TODO
+    } else if (state.customers.isEmpty()) {
         EmptyCustomerList()
     } else {
-        CustomerList(state, viewModel::onCustomerClick)
+        CustomerList(state.customers, onCustomerClick)
     }
 }
 
 @Composable
 private fun CustomerList(
-    state: State<List<WCCustomerModel>>,
-    onCustomerClick: ((WCCustomerModel) -> Unit?)? = null
+    customers: List<CustomerListItem>,
+    onCustomerClick: ((CustomerListItem) -> Unit?)? = null
 ) {
     val listState = rememberLazyListState()
-    val customers = state.value
     LazyColumn(
         state = listState,
         modifier = Modifier.background(color = MaterialTheme.colors.surface)
     ) {
         itemsIndexed(
             items = customers,
-            key = { _, customer -> customer.id }
+            key = { _, customer -> customer.remoteId }
         ) { _, customer ->
             CustomerListItem(customer, onCustomerClick)
             Divider(
@@ -75,23 +90,13 @@ private fun CustomerList(
                 thickness = dimensionResource(id = R.dimen.minor_10)
             )
         }
-        /*if (loadingState == LoadingState.Appending) {
-            item {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentWidth()
-                        .padding(vertical = dimensionResource(id = R.dimen.minor_100))
-                )
-            }
-        }*/
     }
 }
 
 @Composable
 private fun CustomerListItem(
-    customer: WCCustomerModel,
-    onCustomerClick: ((WCCustomerModel) -> Unit?)? = null
+    customer: CustomerListItem,
+    onCustomerClick: ((CustomerListItem) -> Unit?)? = null
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_50)),

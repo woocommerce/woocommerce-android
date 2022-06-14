@@ -7,7 +7,6 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,15 +24,17 @@ class CustomerListViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val customerListRepository: CustomerListRepository
 ) : ScopedViewModel(savedState) {
-    private val _customerList = MutableLiveData<List<WCCustomerModel>>()
-    val customerList: LiveData<List<WCCustomerModel>> = _customerList
-
-    val viewStateLiveData = LiveDataDelegate(savedState, CustomerListViewState())
-    private var viewState by viewStateLiveData
+    private val _viewState = MutableLiveData<CustomerListViewState>()
+    val viewState: LiveData<CustomerListViewState> = _viewState
 
     private var searchJob: Job? = null
 
-    fun onCustomerClick(customer: WCCustomerModel) {
+    init {
+        _viewState.value = CustomerListViewState()
+    }
+
+    @Suppress("UnusedPrivateMember")
+    fun onCustomerClick(customer: CustomerListItem) {
         // TODO nbradbury
     }
 
@@ -49,22 +50,27 @@ class CustomerListViewModel @Inject constructor(
         } else {
             launch {
                 searchJob?.cancelAndJoin()
-                _customerList.value = emptyList()
-                viewState = viewState.copy(isEmptyViewVisible = false)
+                _viewState.value = _viewState.value?.copy(
+                    customers = emptyList(),
+                    searchQuery = "",
+                )
             }
         }
     }
 
     private suspend fun searchCustomerList(query: String) {
         if (networkStatus.isConnected()) {
-            viewState = viewState.copy(
+            _viewState.value = _viewState.value?.copy(
                 isSkeletonShown = true,
-                isEmptyViewVisible = false
+                searchQuery = query
             )
-            _customerList.value = customerListRepository.searchCustomerList(query)
-            viewState = viewState.copy(
+            val customers = ArrayList<CustomerListItem>()
+            customerListRepository.searchCustomerList(query)?.forEach {
+                customers.add(it.toUiModel())
+            }
+            _viewState.value = _viewState.value?.copy(
                 isSkeletonShown = false,
-                isEmptyViewVisible = _customerList.value?.isEmpty() == true
+                customers = customers
             )
         } else {
             triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
@@ -72,8 +78,27 @@ class CustomerListViewModel @Inject constructor(
     }
 
     @Parcelize
+    data class CustomerListItem(
+        val remoteId: Long,
+        val firstName: String,
+        val lastName: String,
+        val email: String,
+        val avatarUrl: String
+    ) : Parcelable
+
+    @Parcelize
     data class CustomerListViewState(
-        val isSkeletonShown: Boolean? = null,
-        val isEmptyViewVisible: Boolean? = null
+        val customers: List<CustomerListItem> = emptyList(),
+        val isSkeletonShown: Boolean = false,
+        val searchQuery: String = ""
     ) : Parcelable
 }
+
+private fun WCCustomerModel.toUiModel() =
+    CustomerListViewModel.CustomerListItem(
+        remoteId = remoteCustomerId,
+        firstName = firstName,
+        lastName = lastName,
+        email = email,
+        avatarUrl = avatarUrl
+    )
