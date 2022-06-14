@@ -128,7 +128,7 @@ platform :android do
   lane :complete_code_freeze do | options |
     android_completecodefreeze_prechecks(options)
 
-    localize_libs()
+    localize_libraries
     send_strings_for_translation()
 
     ensure_git_status_clean
@@ -441,18 +441,18 @@ platform :android do
   end
 
   #####################################################################################
-  # localize_libs
+  # localize_libraries
   # -----------------------------------------------------------------------------------
   # This lane gets the data from the dependencies and updates the main strings.xml file
   # -----------------------------------------------------------------------------------
   # Usage:
-  # fastlane localize_libs
+  # fastlane localize_libraries
   #
   # Example:
-  # fastlane localize_libs
+  # fastlane localize_libraries
   #####################################################################################
   desc "Merge libraries strings files into the main app one"
-  lane :localize_libs do
+  lane :localize_libraries do
     REMOTE_LIBRARIES_STRINGS_PATHS.each do |lib|
       download_path = android_download_file_by_version(
         library_name: lib[:name],
