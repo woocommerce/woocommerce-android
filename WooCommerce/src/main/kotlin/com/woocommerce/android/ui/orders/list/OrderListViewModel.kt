@@ -153,7 +153,10 @@ class OrderListViewModel @Inject constructor(
      * processing list will always use the same [processingPagedListWrapper].
      */
     fun submitSearchOrFilter(searchQuery: String) {
-        val listDescriptor = WCOrderListDescriptor(selectedSite.get(), searchQuery = searchQuery)
+        val listDescriptor = WCOrderListDescriptor(
+            selectedSite.get(),
+            searchQuery = sanitizeSearchQuery(searchQuery)
+        )
         val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
         activatePagedListWrapper(pagedListWrapper, isFirstInit = true)
     }
