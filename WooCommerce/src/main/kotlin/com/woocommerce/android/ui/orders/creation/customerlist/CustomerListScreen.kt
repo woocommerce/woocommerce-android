@@ -179,10 +179,6 @@ private fun CustomerListSkeleton() {
     LazyColumn(
         Modifier
             .background(color = MaterialTheme.colors.surface)
-            .padding(
-                horizontal = dimensionResource(id = R.dimen.minor_100),
-                vertical = dimensionResource(id = R.dimen.minor_100)
-            )
     ) {
         repeat(numberOfSkeletonRows) {
             item {
