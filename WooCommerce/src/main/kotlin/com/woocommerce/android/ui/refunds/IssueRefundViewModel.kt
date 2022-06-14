@@ -475,7 +475,7 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     private fun trackRefundError(result: WooResult<WCRefundModel>) {
-        AnalyticsTracker.track(
+        analyticsTrackerWrapper.track(
             REFUND_CREATE_FAILED,
             mapOf(
                 AnalyticsTracker.KEY_ORDER_ID to order.id,
@@ -499,7 +499,7 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     private fun trackRefundSuccess(result: WooResult<WCRefundModel>) {
-        AnalyticsTracker.track(
+        analyticsTrackerWrapper.track(
             REFUND_CREATE_SUCCESS,
             mapOf(
                 AnalyticsTracker.KEY_ORDER_ID to order.id,

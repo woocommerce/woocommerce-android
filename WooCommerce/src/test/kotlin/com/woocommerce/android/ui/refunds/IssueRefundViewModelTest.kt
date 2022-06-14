@@ -799,4 +799,59 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             verify(analyticsTrackerWrapper, never()).track(any(), any())
         }
     }
+
+    @Test
+    fun `when refund error, then proper tracks event is triggered`() {
+        testBlocking {
+            val chargeId = "charge_id"
+            val cardBrand = "visa"
+            val cardLast4 = "1234"
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+            )
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
+                    cardBrand = cardBrand,
+                    cardLast4 = cardLast4,
+                    paymentMethodType = "interac_present"
+                )
+            )
+            whenever(resourceProvider.getString(R.string.order_refunds_manual_refund))
+                .thenReturn("Credit/Debit card")
+            whenever(
+                refundStore.createItemsRefund(
+                    site = any(),
+                    orderId = any(),
+                    reason = any(),
+                    restockItems = any(),
+                    autoRefund = any(),
+                    items = any()
+                )
+            ).thenReturn(
+                WooResult(
+                    error = WooError(
+                        type = WooErrorType.GENERIC_ERROR,
+                        original = BaseRequest.GenericErrorType.NETWORK_ERROR
+                    )
+                )
+            )
+
+            initViewModel()
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+            viewModel.refund()
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.REFUND_CREATE_FAILED,
+                mapOf(
+                    AnalyticsTracker.KEY_ORDER_ID to ORDER_ID,
+                    AnalyticsTracker.KEY_ERROR_CONTEXT to "IssueRefundViewModel",
+                    AnalyticsTracker.KEY_ERROR_TYPE to "GENERIC_ERROR",
+                    AnalyticsTracker.KEY_ERROR_DESC to null
+                )
+            )
+        }
+    }
 }
