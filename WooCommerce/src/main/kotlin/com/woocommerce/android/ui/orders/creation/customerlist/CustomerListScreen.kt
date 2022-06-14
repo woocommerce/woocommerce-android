@@ -46,7 +46,11 @@ fun CustomerListScreen(
     viewModel: CustomerListViewModel
 ) {
     val state = viewModel.customerList.observeAsState(emptyList())
-    CustomerList(state, viewModel::onCustomerClick)
+    if (state.value.isEmpty()) {
+        EmptyCustomerList()
+    } else {
+        CustomerList(state, viewModel::onCustomerClick)
+    }
 }
 
 @Composable
