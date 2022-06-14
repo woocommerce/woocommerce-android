@@ -180,7 +180,7 @@ private fun CustomerListSkeleton() {
         Modifier
             .background(color = MaterialTheme.colors.surface)
             .padding(
-                horizontal = dimensionResource(id = R.dimen.major_100),
+                horizontal = dimensionResource(id = R.dimen.minor_100),
                 vertical = dimensionResource(id = R.dimen.minor_100)
             )
     ) {
@@ -198,15 +198,11 @@ private fun CustomerListSkeleton() {
                     SkeletonView(
                         modifier = Modifier
                             .size(dimensionResource(R.dimen.major_300))
-                            .clip(RoundedCornerShape(3.dp))
-                            .padding(
-                                horizontal = dimensionResource(id = R.dimen.major_100),
-                                vertical = dimensionResource(id = R.dimen.minor_100)
-                            )
                     )
                     SkeletonView(
                         modifier = Modifier
-                            .width(dimensionResource(id = R.dimen.skeleton_text_medium_width))
+                            .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                            .width(dimensionResource(id = R.dimen.skeleton_text_large_width))
                             .height(dimensionResource(id = R.dimen.skeleton_list_item_body_text_height_100))
                     )
                 }
