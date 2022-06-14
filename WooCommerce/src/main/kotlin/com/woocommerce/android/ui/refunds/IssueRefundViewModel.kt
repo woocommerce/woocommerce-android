@@ -649,7 +649,7 @@ class IssueRefundViewModel @Inject constructor(
             }
         }
 
-        AnalyticsTracker.track(
+        analyticsTrackerWrapper.track(
             CREATE_ORDER_REFUND_SELECT_ALL_ITEMS_BUTTON_TAPPED,
             mapOf(AnalyticsTracker.KEY_ORDER_ID to order.id)
         )
