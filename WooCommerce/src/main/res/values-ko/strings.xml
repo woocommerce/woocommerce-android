@@ -1,11 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-05-20 16:54:14+0000
+Translation-Revision-Date: 2022-06-02 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">%1$s에서 WooCommerce Stripe 확장 기능은 지원되지 않습니다.</string>
+    <string name="product_selector_filter_button_title">필터</string>
+    <string name="product_selector_clear_button_title">선택 지우기</string>
+    <string name="product_selector_select_button_title_one">%d개의 제품 선택</string>
+    <string name="product_selector_select_button_title_default">%d개의 상품 선택</string>
+    <string name="product_selector_sku_value">SKU: %s</string>
+    <string name="product_selector_select_product_label">제품 %s 선택</string>
+    <string name="coupon_conditions_products_edit_products_title">상품 편집(%d개)</string>
+    <string name="coupon_conditions_products_all_products_title">모든 상품</string>
+    <string name="coupon_conditions_products_select_products_title">제품 선택</string>
+    <string name="coupon_restrictions_exclude_sale_items_hint">쿠폰을 세일 아이템에 적용하지 않으려면 이 기능을 사용하세요. 아이템별 쿠폰은 세일 중이 아닌 아이템에만 사용할 수 있습니다. 장바구니별 쿠폰은 장바구니에서 세일 중이 아닌 아이템에만 사용할 수 있습니다.</string>
+    <string name="coupon_restrictions_exclude_sale_items">세일 아이템 제외</string>
+    <string name="coupon_restrictions_individual_use_hint">쿠폰을 다른 쿠폰과 함께 사용할 수 있는 경우 이 기능을 사용하세요.</string>
+    <string name="coupon_restrictions_individual_use">개별 사용만</string>
+    <string name="coupon_restrictions_limit_per_user_hint">사용자별 사용 한도</string>
+    <string name="coupon_restrictions_amount_limit_hint">X개의 아이템으로 사용 제한</string>
+    <string name="coupon_restrictions_limit_per_coupon_hint">쿠폰당 사용 한도</string>
+    <string name="coupon_restrictions_maximum_spend_hint">최대 소비(%1$s)</string>
+    <string name="coupon_restrictions_minimum_spend_hint">최소 금액(%1$s)</string>
+    <string name="coupon_edit_saving_dialog_subtitle">기다려주세요.</string>
+    <string name="coupon_edit_saving_dialog_title">쿠폰 저장 중</string>
+    <string name="coupon_edit_coupon_update_failed">쿠폰 업데이트 실패</string>
+    <string name="coupon_edit_coupon_updated">쿠폰 수정됨</string>
+    <string name="coupon_edit_usage_restrictions">사용 제한</string>
+    <string name="coupon_edit_usage_section">사용 상세 정보</string>
+    <string name="coupon_edit_free_shipping">무료 배송 포함 여부</string>
+    <string name="coupon_edit_expiry_clear_expiry_date">지우기</string>
+    <string name="coupon_edit_expiry_date_none">없음</string>
+    <string name="coupon_edit_conditions_section">다음에 이 쿠폰 적용</string>
+    <string name="coupon_list_search_failed">실패한 쿠폰 검색 중</string>
+    <string name="coupon_list_loading_failed">실패한 쿠폰 가져오는 중</string>
+    <string name="site_picker_error">스토어를 가져오기 오류</string>
+    <string name="site_picker_label">연결할 스토어 선택</string>
+    <string name="product_stock_status_instock_quantified">%s 재고 있음</string>
     <string name="coupon_edit_add_description_hint">쿠폰 설명을 추가하세요.</string>
     <string name="coupon_edit_description_editor_title">쿠폰 설명</string>
     <string name="coupon_edit_edit_description">설명 편집</string>
@@ -138,8 +172,7 @@ Language: ko_KR
     <string name="login_error_xml_rpc_services_disabled">XML-RPC 서비스가 이 사이트에서 비활성화되었습니다.</string>
     <string name="a8c_email_message">Automattic 외 이메일을 사용하여 지원 티켓을 제출해 주세요.</string>
     <string name="card_reader_onboarding_stripe_account_in_unsupported_country">%1$s에 등록된 Stripe 계정은 지원되지 않습니다.</string>
-    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">%1$s에서 우커머스 결제는 지원되지 않습니다.</string>
-    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">%1$s에서 Stripe는 지원되지 않습니다.</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">%1$s에서 WooCommerce Payments 확장 기능은 지원되지 않습니다.</string>
     <string name="card_reader_connect_scanning_hint">리더의 전원 버튼을 누르세요.</string>
     <string name="card_reader_payment_reader_receipt_sent">영수증이 &lt;strong&gt;%s&lt;/strong&gt;(으)로 발송되었습니다.</string>
     <string name="order_creation_fee_percentage_hint">퍼센트(%)</string>
@@ -172,7 +205,6 @@ Language: ko_KR
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">활성화된 다음 플러그인 중 하나만 직접 결제와 연동합니다. 계속하려면 사이트 관리자에게 문의하여 다음과 같은 플러그인 중 하나를 비활성화하세요.</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">활성화된 다음 플러그인 중 하나만 직접 결제와 연동합니다. 계속하려면 다음과 같은 플러그인 중 하나를 비활성화하세요.</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">충돌하는 결제 플러그인 감지됨</string>
-    <string name="card_reader_wisepad_3_manual_card_reader">WisePad 3 카드 리더 사용설명서</string>
     <string name="order_creation_price_calculation_failed">가격을 업데이트할 수 없음</string>
     <string name="order_creation_payment_tax">세금</string>
     <string name="exclusive_or">또는</string>
@@ -343,8 +375,6 @@ Language: ko_KR
     <string name="card_reader_connect_missing_address_button">주소 입력</string>
     <string name="card_reader_connect_missing_address">진행하려면 스토어 주소를 입력하세요.</string>
     <string name="card_reader_payment_check_mobile_device_prompt">모바일 장치 확인</string>
-    <string name="card_reader_m2_manual_card_reader">Stripe M2 카드 리더 사용설명서</string>
-    <string name="card_reader_bbpos_manual_card_reader">BBPOS Chipper 카드 리더 사용설명서</string>
     <string name="order_error_update_empty_mail">빈 이메일로 주소를 업데이트할 수 없습니다. 실행하는 우커머스가 최신 버전인지 확인하세요.</string>
     <string name="orderfilters_date_range_filter_last_30_days">최근 30일</string>
     <string name="orderfilters_date_range_filter_last_7_days">최근 7일</string>
@@ -1335,6 +1365,7 @@ Language: ko_KR
     <string name="login_jetpack_installed_sign_in">이미 젯팩이 있나요? %1$s</string>
     <string name="login_refresh_app_progress_jetpack">젯팩으로 로그인 시도 중…</string>
     <string name="login_refresh_app_continue">앱을 새로 고친 후 계속</string>
+    <string name="login_not_connected_jetpack">%1$s에서 이 앱을 사용하려면 젯팩 플러그인을 설정하고 이 계정에 연결되어 있어야 합니다. \n\n설정을 마쳤으면 앱을 새로 고침하세요.</string>
     <string name="login_try_another_store">다른 스토어 시도</string>
     <string name="database_downgraded">데이터베이스 다운그레이드됨, 테이블 다시 생성 및 스토어 로드 중</string>
     <string name="loading_stores">스토어 로드 중</string>
@@ -1630,6 +1661,7 @@ Language: ko_KR
     <string name="login_jetpack_what_is_description">Jetpack은 스토어를 최고의 모바일 환경을 제공하는 데 필요한 푸시 알림, 통계 등의 도구와 연결하는 무료 워드프레스 플러그인입니다.</string>
     <string name="login_jetpack_what_is">Jetpack이란 무엇인가요?</string>
     <string name="login_view_connected_stores">연결된 스토어 보기</string>
+    <string name="login_not_woo_store">%1$s은(는) WooCommerce 사이트가 아닌 것 같습니다. 사이트에 WooCommerce 플러그인을 설치한 다음 이 앱을 새로 고치세요.</string>
     <string name="login_not_connected_to_account">%1$s이(가) 다른 워드프레스닷컴 계정에 연결되어 있는 것 같습니다.</string>
     <string name="keep_editing">계속 편집하기</string>
     <string name="notification_wpcom_username_needed">사용자 이름과 비밀번호를 사용하여 로그인하세요.</string>

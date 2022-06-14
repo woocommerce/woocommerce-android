@@ -1,11 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-05-20 11:54:03+0000
+Translation-Revision-Date: 2022-06-02 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">我们在 %1$s 中不支持 WooCommerce Stripe 扩展</string>
+    <string name="product_selector_filter_button_title">过滤器</string>
+    <string name="product_selector_clear_button_title">清除选择</string>
+    <string name="product_selector_select_button_title_one">选择 %d 个商品</string>
+    <string name="product_selector_select_button_title_default">选择 %d 个商品</string>
+    <string name="product_selector_sku_value">SKU：%s</string>
+    <string name="product_selector_select_product_label">选择商品 %s</string>
+    <string name="coupon_conditions_products_edit_products_title">编辑商品（%d）</string>
+    <string name="coupon_conditions_products_all_products_title">全部商品</string>
+    <string name="coupon_conditions_products_select_products_title">选择商品</string>
+    <string name="coupon_restrictions_exclude_sale_items_hint">如果优惠券不适用于促销商品，请开启此选项。 基于商品应用的优惠券仅在该商品不促销时可用。 基于购物车应用的优惠券仅在购物车内无促销商品时可用。</string>
+    <string name="coupon_restrictions_exclude_sale_items">不含促销商品</string>
+    <string name="coupon_restrictions_individual_use_hint">如果优惠券不能与其他优惠券叠加使用，请开启此选项。</string>
+    <string name="coupon_restrictions_individual_use">仅限单独使用</string>
+    <string name="coupon_restrictions_limit_per_user_hint">每个用户的使用次数限制</string>
+    <string name="coupon_restrictions_amount_limit_hint">限制 X 个商品使用</string>
+    <string name="coupon_restrictions_limit_per_coupon_hint">每个优惠券的使用次数限制</string>
+    <string name="coupon_restrictions_maximum_spend_hint">最高花费金额 (%1$s)</string>
+    <string name="coupon_restrictions_minimum_spend_hint">最低花费金额 (%1$s)</string>
+    <string name="coupon_edit_saving_dialog_subtitle">请稍候…</string>
+    <string name="coupon_edit_saving_dialog_title">正在保存优惠券</string>
+    <string name="coupon_edit_coupon_update_failed">更新优惠券失败</string>
+    <string name="coupon_edit_coupon_updated">优惠券已更新</string>
+    <string name="coupon_edit_usage_restrictions">使用限制</string>
+    <string name="coupon_edit_usage_section">使用详情</string>
+    <string name="coupon_edit_free_shipping">包括免费送货？</string>
+    <string name="coupon_edit_expiry_clear_expiry_date">清除</string>
+    <string name="coupon_edit_expiry_date_none">无</string>
+    <string name="coupon_edit_conditions_section">将此优惠券应用到</string>
+    <string name="coupon_list_search_failed">搜索优惠券失败</string>
+    <string name="coupon_list_loading_failed">获取优惠券失败</string>
+    <string name="site_picker_error">获取商店时出错</string>
+    <string name="site_picker_label">选择要连接的商店</string>
+    <string name="product_stock_status_instock_quantified">%s 有货</string>
     <string name="coupon_edit_add_description_hint">添加此优惠券的描述。</string>
     <string name="coupon_edit_description_editor_title">优惠券描述</string>
     <string name="coupon_edit_edit_description">编辑描述</string>
@@ -138,8 +172,7 @@ Language: zh_CN
     <string name="login_error_xml_rpc_services_disabled">本站点禁用 XML-RPC 服务。</string>
     <string name="a8c_email_message">请使用非 Automattic 电子邮件来提交支持申请单</string>
     <string name="card_reader_onboarding_stripe_account_in_unsupported_country">我们不支持在%1$s注册的 Stripe 账户</string>
-    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">我们在%1$s不支持 WooCommerce Payments</string>
-    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">我们在%1$s不支持 Stripe</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">我们在 %1$s 中不支持 WooCommerce Payments 扩展</string>
     <string name="card_reader_connect_scanning_hint">按下阅读器的电源按钮</string>
     <string name="card_reader_payment_reader_receipt_sent">已将收据发送至 &lt;strong&gt;%s&lt;/strong&gt;</string>
     <string name="order_creation_fee_percentage_hint">百分比 (%)</string>
@@ -172,7 +205,6 @@ Language: zh_CN
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">必须启用下面其中一个插件，才能进行现场付款。 请联系站点管理员，禁用下面其中一个插件，然后再继续：</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">必须启用下面其中一个插件，才能进行现场付款。 请禁用下面其中一个插件，然后再继续：</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">检测到存在冲突的付款插件</string>
-    <string name="card_reader_wisepad_3_manual_card_reader">WisePad 3 读卡器手册</string>
     <string name="order_creation_price_calculation_failed">无法更新定价</string>
     <string name="order_creation_payment_tax">税费</string>
     <string name="exclusive_or">或</string>
@@ -343,8 +375,6 @@ Language: zh_CN
     <string name="card_reader_connect_missing_address_button">请输入地址</string>
     <string name="card_reader_connect_missing_address">请提供您的商店地址以便继续</string>
     <string name="card_reader_payment_check_mobile_device_prompt">请检查您的移动设备</string>
-    <string name="card_reader_m2_manual_card_reader">Stripe M2 读卡器手册</string>
-    <string name="card_reader_bbpos_manual_card_reader">BBPOS Chipper 读卡器手册</string>
     <string name="order_error_update_empty_mail">无法使用空电子邮件更新地址。 确保您运行的是最新版本的 WooCommerce。</string>
     <string name="orderfilters_date_range_filter_last_30_days">过去 30 天</string>
     <string name="orderfilters_date_range_filter_last_7_days">过去 7 天</string>
@@ -1335,6 +1365,7 @@ Language: zh_CN
     <string name="login_jetpack_installed_sign_in">已有 Jetpack 帐户？%1$s</string>
     <string name="login_refresh_app_progress_jetpack">正在尝试使用 Jetpack 帐户登录…</string>
     <string name="login_refresh_app_continue">刷新应用程序以继续操作</string>
+    <string name="login_not_connected_jetpack">要以 %1$s 的价格使用此应用程序，您需要设置 Jetpack 插件并连接至此账户。 \n\n设置完成后，请刷新应用程序</string>
     <string name="login_try_another_store">尝试其他商店</string>
     <string name="database_downgraded">数据库降级、正在重新创建表格及正在加载商店</string>
     <string name="loading_stores">正在加载商店</string>
@@ -1630,6 +1661,7 @@ Language: zh_CN
     <string name="login_jetpack_what_is_description">Jetpack 是一款免费的 WordPress 插件，可以将您的商店与所需的工具连接起来，为您提供最佳的移动体验，包括推送通知和统计数据</string>
     <string name="login_jetpack_what_is">Jetpack 是什么？</string>
     <string name="login_view_connected_stores">查看连接的商店</string>
+    <string name="login_not_woo_store">%1$s 似乎不是 WooCommerce 站点。 在您的站点上安装 WooCommerce 插件，然后刷新此应用程序。</string>
     <string name="login_not_connected_to_account">%1$s 似乎连接了其他 WordPress.com 帐户。</string>
     <string name="keep_editing">继续编辑</string>
     <string name="notification_wpcom_username_needed">请使用您的用户名和密码登录。</string>
