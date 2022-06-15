@@ -237,6 +237,29 @@ class AddressViewModel @Inject constructor(
         )
     }
 
+    fun onAddressesChanged(billingAddress: Address, shippingAddress: Address) {
+        fun stateSpinnerStatus(countryCode: String): StateSpinnerStatus {
+            return when {
+                countryCode.isBlank() -> DISABLED
+                statesFor(countryCode).isNotEmpty() -> HAVING_LOCATIONS
+                else -> RAW_VALUE
+            }
+        }
+
+        viewState = viewState.copy(
+            addressSelectionStates = mapOf(
+                AddressType.BILLING to AddressSelectionState(
+                    billingAddress,
+                    stateSpinnerStatus(billingAddress.country.code)
+                ),
+                AddressType.SHIPPING to AddressSelectionState(
+                    shippingAddress,
+                    stateSpinnerStatus(shippingAddress.country.code)
+                )
+            )
+        )
+    }
+
     @Parcelize
     data class ViewState(
         val addressSelectionStates: Map<AddressType, AddressSelectionState> = emptyMap(),

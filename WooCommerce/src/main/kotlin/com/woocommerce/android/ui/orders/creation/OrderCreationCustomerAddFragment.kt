@@ -205,7 +205,7 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
             addressViewModel.onCountrySelected(addressType, countryCode)
         }
         handleNotice(CustomerListFragment.CUSTOMER_SELECTED) {
-            // TODO nbradbury reloadAddresses
+            // TODO nbradbury reload
         }
     }
 
