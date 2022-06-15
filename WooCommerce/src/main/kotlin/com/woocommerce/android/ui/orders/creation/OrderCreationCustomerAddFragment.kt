@@ -125,6 +125,12 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
                     findNavController().navigateUp()
                 }
                 is AddressViewModel.SearchCustomers -> showCustomerSearchScreen()
+                is AddressViewModel.CustomerSelected -> {
+                    sharedViewModel.onCustomerAddressEdited(
+                        billingAddress = event.billingAddress,
+                        shippingAddress = event.shippingAddress
+                    )
+                }
             }
         }
     }

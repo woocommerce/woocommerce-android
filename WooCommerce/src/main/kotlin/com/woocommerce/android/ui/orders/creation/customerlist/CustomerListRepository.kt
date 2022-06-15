@@ -25,4 +25,7 @@ class CustomerListRepository @Inject constructor(
             result.model
         }
     }
+
+    suspend fun getCustomer(remoteId: Long): WCCustomerModel? =
+        customerStore.getCustomerByRemoteId(selectedSite.get(), remoteId)
 }

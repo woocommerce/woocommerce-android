@@ -17,6 +17,8 @@ import com.woocommerce.android.viewmodel.combineWith
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.customer.WCCustomerModel
+import org.wordpress.android.fluxc.model.order.OrderAddress
 import org.wordpress.android.fluxc.store.WCDataStore
 import javax.inject.Inject
 
@@ -270,4 +272,9 @@ class AddressViewModel @Inject constructor(
     }
 
     object SearchCustomers : MultiLiveEvent.Event()
+
+    data class CustomerSelected(
+        val billingAddress: Address,
+        val shippingAddress: Address
+    ) : MultiLiveEvent.Event()
 }

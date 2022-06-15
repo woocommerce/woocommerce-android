@@ -6,7 +6,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
+import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.AmbiguousLocation
+import com.woocommerce.android.model.Location
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,6 +20,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
+import org.wordpress.android.fluxc.model.order.OrderAddress
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,9 +38,65 @@ class CustomerListViewModel @Inject constructor(
         _viewState.value = CustomerListViewState()
     }
 
-    @Suppress("UnusedPrivateMember")
     fun onCustomerClick(customer: CustomerListItem) {
-        // TODO nbradbury
+        triggerEvent(MultiLiveEvent.Event.Exit)
+
+        launch {
+            customerListRepository.getCustomer(customer.remoteId)?.let { wcCustomer ->
+                val shippingAddress = OrderAddress.Shipping(
+                    company = wcCustomer.shippingCompany,
+                    address1 = wcCustomer.shippingAddress1,
+                    address2 = wcCustomer.shippingAddress2,
+                    city = wcCustomer.shippingCity,
+                    firstName = wcCustomer.shippingFirstName,
+                    lastName = wcCustomer.shippingLastName,
+                    country = wcCustomer.shippingCountry,
+                    state = wcCustomer.shippingState,
+                    postcode = wcCustomer.shippingPostcode,
+                    phone = ""
+                )
+                val billingAddress = OrderAddress.Billing(
+                    company = wcCustomer.billingCompany,
+                    address1 = wcCustomer.billingAddress1,
+                    address2 = wcCustomer.billingAddress2,
+                    city = wcCustomer.billingCity,
+                    firstName = wcCustomer.billingFirstName,
+                    lastName = wcCustomer.billingLastName,
+                    country = wcCustomer.billingCountry,
+                    state = wcCustomer.billingState,
+                    postcode = wcCustomer.billingPostcode,
+                    phone = wcCustomer.billingPhone,
+                    email = wcCustomer.billingEmail
+                )
+
+                triggerEvent(
+                    AddressViewModel.CustomerSelected(
+                        shippingAddress = shippingAddress.toAddressModel(),
+                        billingAddress = billingAddress.toAddressModel()
+                    )
+                )
+            }
+        }
+    }
+
+    private fun OrderAddress.toAddressModel(): Address {
+        return Address(
+            company = company,
+            lastName = lastName,
+            firstName = firstName,
+            address1 = address1,
+            address2 = address2,
+            email = if (this is OrderAddress.Billing) {
+                this.email
+            } else {
+                ""
+            },
+            postcode = postcode,
+            phone = phone,
+            country = Location.EMPTY, // TODO nbradbury
+            state = AmbiguousLocation.Raw(state),
+            city = city
+        )
     }
 
     fun onSearchQueryChanged(query: String?) {
