@@ -99,7 +99,9 @@ class AddressViewModel @Inject constructor(
                 addressSelectionStates = initialState.mapValues { initialSingleAddressState ->
                     AddressSelectionState(
                         address = initialSingleAddressState.value,
-                        stateSpinnerStatus = getStateSpinnerStatus(initialSingleAddressState.value.country.code)
+                        stateSpinnerStatus = getStateSpinnerStatus(
+                            initialSingleAddressState.value.country.code
+                        )
                     )
                 }
             )
@@ -142,11 +144,7 @@ class AddressViewModel @Inject constructor(
                             country = selectedCountry,
                             state = AmbiguousLocation.EMPTY
                         ),
-                        stateSpinnerStatus = if (statesFor(countryCode).isEmpty()) {
-                            RAW_VALUE
-                        } else {
-                            HAVING_LOCATIONS
-                        }
+                        stateSpinnerStatus = getStateSpinnerStatus(countryCode)
                     )
                 } else {
                     entry.value
