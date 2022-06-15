@@ -11,11 +11,13 @@ import androidx.appcompat.widget.SearchView
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -28,6 +30,7 @@ class CustomerListFragment :
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel by viewModels<CustomerListViewModel>()
+    private val sharedViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,6 +58,12 @@ class CustomerListFragment :
             when (event) {
                 is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
+                is CustomerListViewModel.CustomerSelected -> {
+                    sharedViewModel.onCustomerAddressEdited(
+                        billingAddress = event.billingAddress,
+                        shippingAddress = event.shippingAddress
+                    )
+                }
             }
         }
     }

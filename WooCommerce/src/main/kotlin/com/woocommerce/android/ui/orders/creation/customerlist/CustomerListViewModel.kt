@@ -10,7 +10,6 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -70,7 +69,7 @@ class CustomerListViewModel @Inject constructor(
                 )
 
                 triggerEvent(
-                    AddressViewModel.CustomerSelected(
+                    CustomerSelected(
                         shippingAddress = shippingAddress.toAddressModel(),
                         billingAddress = billingAddress.toAddressModel()
                     )
@@ -153,6 +152,11 @@ class CustomerListViewModel @Inject constructor(
         val isSkeletonShown: Boolean = false,
         val searchQuery: String = ""
     ) : Parcelable
+
+    data class CustomerSelected(
+        val billingAddress: Address,
+        val shippingAddress: Address
+    ) : MultiLiveEvent.Event()
 }
 
 private fun WCCustomerModel.toUiModel() =

@@ -6,9 +6,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.map
 import com.woocommerce.android.R
-import com.woocommerce.android.model.*
+import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.AmbiguousLocation
+import com.woocommerce.android.model.GetLocations
+import com.woocommerce.android.model.Location
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.StateSpinnerStatus.*
+import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.StateSpinnerStatus.DISABLED
+import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.StateSpinnerStatus.HAVING_LOCATIONS
+import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.StateSpinnerStatus.RAW_VALUE
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -17,8 +23,6 @@ import com.woocommerce.android.viewmodel.combineWith
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.customer.WCCustomerModel
-import org.wordpress.android.fluxc.model.order.OrderAddress
 import org.wordpress.android.fluxc.store.WCDataStore
 import javax.inject.Inject
 
@@ -272,9 +276,4 @@ class AddressViewModel @Inject constructor(
     }
 
     object SearchCustomers : MultiLiveEvent.Event()
-
-    data class CustomerSelected(
-        val billingAddress: Address,
-        val shippingAddress: Address
-    ) : MultiLiveEvent.Event()
 }
