@@ -19,7 +19,7 @@ class CustomerListRepository @Inject constructor(
      * Ensure country/state data has been fetched
      */
     suspend fun loadCountries() {
-        countries = dataStore.getCountries().map { it.toAppModel()}
+        countries = dataStore.getCountries().map { it.toAppModel() }
         if (countries.isEmpty()) {
             dataStore.fetchCountriesAndStates(selectedSite.get()).model?.let {
                 countries = it.map { it.toAppModel() }
@@ -27,9 +27,9 @@ class CustomerListRepository @Inject constructor(
         }
     }
 
-    fun getCountryByName(countryName: String): Location {
+    fun getCountry(countryCode: String): Location {
         countries.forEach() {
-            if (it.name == countryName) {
+            if (it.code == countryCode) {
                 return it
             }
         }

@@ -71,8 +71,8 @@ class CustomerListViewModel @Inject constructor(
                     email = wcCustomer.billingEmail
                 )
 
-                val shippingCountry = customerListRepository.getCountryByName(shippingAddress.country)
-                val billingCountry = customerListRepository.getCountryByName(billingAddress.country)
+                val shippingCountry = customerListRepository.getCountry(shippingAddress.country)
+                val billingCountry = customerListRepository.getCountry(billingAddress.country)
 
                 triggerEvent(
                     CustomerSelected(
