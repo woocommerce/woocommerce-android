@@ -25,6 +25,7 @@ import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
@@ -109,6 +110,7 @@ class CouponsListViewModelTests : BaseUnitTest() {
         assertThat(state.isSearchOpen).isTrue()
     }
 
+
     @Test
     fun `when search is opened, then proper track event is triggered`() = testBlocking {
         setup()
@@ -116,6 +118,15 @@ class CouponsListViewModelTests : BaseUnitTest() {
         viewModel.onSearchStateChanged(true)
 
         verify(analyticsTrackerWrapper).track(AnalyticsEvent.COUPONS_LIST_SEARCH_TAPPED)
+    }
+
+    @Test
+    fun `when search is NOT opened, then track event is NOT triggered`() = testBlocking {
+        setup()
+
+        viewModel.onSearchStateChanged(false)
+
+        verify(analyticsTrackerWrapper, never()).track(AnalyticsEvent.COUPONS_LIST_SEARCH_TAPPED)
     }
 
     @Test
