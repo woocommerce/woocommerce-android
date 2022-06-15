@@ -12,6 +12,7 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_TRACKING_ADD
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.Item
@@ -42,7 +43,8 @@ class OrderFulfillViewModel @Inject constructor(
     private val appPrefs: AppPrefs,
     private val networkStatus: NetworkStatus,
     private val resourceProvider: ResourceProvider,
-    private val repository: OrderDetailRepository
+    private val repository: OrderDetailRepository,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
     companion object {
         const val KEY_ORDER_FULFILL_RESULT = "key_order_fulfill_result"
@@ -141,7 +143,7 @@ class OrderFulfillViewModel @Inject constructor(
     }
 
     fun onNewShipmentTrackingAdded(shipmentTracking: OrderShipmentTracking) {
-        AnalyticsTracker.track(
+        analyticsTrackerWrapper.track(
             ORDER_TRACKING_ADD,
             mapOf(
                 AnalyticsTracker.KEY_ID to order.id,
