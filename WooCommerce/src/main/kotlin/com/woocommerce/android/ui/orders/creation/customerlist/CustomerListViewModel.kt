@@ -35,13 +35,16 @@ class CustomerListViewModel @Inject constructor(
 
     init {
         _viewState.value = CustomerListViewState()
+        launch {
+            customerListRepository.loadCountries()
+        }
     }
 
     fun onCustomerClick(customerRemoteId: Long) {
         triggerEvent(MultiLiveEvent.Event.Exit)
 
         launch {
-            customerListRepository.getCustomer(customerRemoteId)?.let { wcCustomer ->
+            customerListRepository.getCustomerByRemoteId(customerRemoteId)?.let { wcCustomer ->
                 val shippingAddress = OrderAddress.Shipping(
                     company = wcCustomer.shippingCompany,
                     address1 = wcCustomer.shippingAddress1,
@@ -68,17 +71,20 @@ class CustomerListViewModel @Inject constructor(
                     email = wcCustomer.billingEmail
                 )
 
+                val shippingCountry = customerListRepository.getCountryByName(shippingAddress.country)
+                val billingCountry = customerListRepository.getCountryByName(billingAddress.country)
+
                 triggerEvent(
                     CustomerSelected(
-                        shippingAddress = shippingAddress.toAddressModel(),
-                        billingAddress = billingAddress.toAddressModel()
+                        shippingAddress = shippingAddress.toAddressModel(shippingCountry),
+                        billingAddress = billingAddress.toAddressModel(billingCountry)
                     )
                 )
             }
         }
     }
 
-    private fun OrderAddress.toAddressModel(): Address {
+    private fun OrderAddress.toAddressModel(country: Location): Address {
         return Address(
             company = company,
             lastName = lastName,
@@ -92,7 +98,7 @@ class CustomerListViewModel @Inject constructor(
             },
             postcode = postcode,
             phone = phone,
-            country = Location.EMPTY, // TODO nbradbury
+            country = country,
             state = AmbiguousLocation.Raw(state),
             city = city
         )
