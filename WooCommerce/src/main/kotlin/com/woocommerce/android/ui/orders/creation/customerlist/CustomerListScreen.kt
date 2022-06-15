@@ -214,33 +214,13 @@ private fun CustomerListSkeleton() {
                         SkeletonView(
                             modifier = Modifier
                                 .padding(
-                                    vertical = dimensionResource(id = R.dimen.minor_50)
+                                    top = dimensionResource(id = R.dimen.minor_50)
                                 )
                                 .width(dimensionResource(id = R.dimen.skeleton_text_extra_large_width))
                                 .height(dimensionResource(id = R.dimen.skeleton_text_height_75))
                         )
                     }
                 }
-                /*Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .padding(
-                            horizontal = dimensionResource(id = R.dimen.major_100),
-                            vertical = dimensionResource(id = R.dimen.minor_100)
-                        )
-                ) {
-                    SkeletonView(
-                        modifier = Modifier
-                            .size(dimensionResource(R.dimen.major_300))
-                    )
-                    SkeletonView(
-                        modifier = Modifier
-                            .padding(horizontal = dimensionResource(id = R.dimen.major_100))
-                            .width(dimensionResource(id = R.dimen.skeleton_text_large_width))
-                            .height(dimensionResource(id = R.dimen.skeleton_list_item_body_text_height_100))
-                    )
-                }*/
 
                 Divider(
                     modifier = Modifier
