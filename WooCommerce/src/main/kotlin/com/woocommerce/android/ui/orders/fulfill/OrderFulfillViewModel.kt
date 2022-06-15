@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.fulfill
 
 import android.os.Parcelable
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -194,17 +195,18 @@ class OrderFulfillViewModel @Inject constructor(
         _shipmentTrackings.value = shipmentTrackings
     }
 
-    private fun deleteOrderShipmentTracking(shipmentTracking: OrderShipmentTracking) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun deleteOrderShipmentTracking(shipmentTracking: OrderShipmentTracking) {
         launch {
             val onOrderChanged = repository.deleteOrderShipmentTracking(
                 navArgs.orderId, shipmentTracking.toDataModel()
             )
             if (!onOrderChanged.isError) {
-                AnalyticsTracker.track(AnalyticsEvent.ORDER_TRACKING_DELETE_SUCCESS)
+                analyticsTrackerWrapper.track(AnalyticsEvent.ORDER_TRACKING_DELETE_SUCCESS)
                 viewState = viewState.copy(shouldRefreshShipmentTracking = true)
                 triggerEvent(ShowSnackbar(string.order_shipment_tracking_delete_success))
             } else {
-                AnalyticsTracker.track(
+                analyticsTrackerWrapper.track(
                     AnalyticsEvent.ORDER_TRACKING_DELETE_FAILED,
                     prepareTracksEventsDetails(onOrderChanged)
                 )
