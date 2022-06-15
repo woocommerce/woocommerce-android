@@ -244,6 +244,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_STATE_ON = "on"
         const val VALUE_STATE_OFF = "off"
 
+        const val VALUE_SIMPLE_PAYMENTS_FLOW = "simple_payment"
         const val VALUE_SIMPLE_PAYMENTS_FEEDBACK = "simple_payments"
         const val VALUE_SIMPLE_PAYMENTS_COLLECT_CARD = "card"
         const val VALUE_SIMPLE_PAYMENTS_COLLECT_CASH = "cash"
@@ -251,6 +252,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_SIMPLE_PAYMENTS_SOURCE_AMOUNT = "amount"
         const val VALUE_SIMPLE_PAYMENTS_SOURCE_SUMMARY = "summary"
         const val VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD = "payment_method"
+
+        const val VALUE_ORDER_PAYMENTS_FLOW = "order_payment"
 
         // -- Downloadable Files
         const val KEY_DOWNLOADABLE_FILE_ACTION = "action"
