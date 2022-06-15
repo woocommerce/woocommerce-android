@@ -18,6 +18,8 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.coupons.edit.CouponRestrictionsViewModel.OpenAllowedEmailsEditor
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.products.categories.selector.ProductCategorySelectorFragment
+import com.woocommerce.android.ui.products.selector.ProductSelectorFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
@@ -56,6 +58,7 @@ class CouponRestrictionsFragment : BaseFragment(), BackPressListener {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
+                is EditCouponNavigationTarget -> EditCouponNavigator.navigate(this, event)
                 is OpenAllowedEmailsEditor -> {
                     findNavController().navigateSafely(
                         CouponRestrictionsFragmentDirections.actionCouponRestrictionsFragmentToEmailRestrictionFragment(
@@ -74,6 +77,12 @@ class CouponRestrictionsFragment : BaseFragment(), BackPressListener {
     private fun handleResults() {
         handleResult<List<String>>(EmailRestrictionFragment.ALLOWED_EMAILS) {
             viewModel.onAllowedEmailsUpdated(it)
+        }
+        handleResult<Set<Long>>(ProductSelectorFragment.PRODUCT_SELECTOR_RESULT) {
+            viewModel.onExcludedProductChanged(it)
+        }
+        handleResult<Set<Long>>(ProductCategorySelectorFragment.PRODUCT_CATEGORY_SELECTOR_RESULT) {
+            viewModel.onExcludedProductCategoriesChanged(it)
         }
     }
 

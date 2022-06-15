@@ -1,11 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-05-20 09:54:03+0000
+Translation-Revision-Date: 2022-06-02 11:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">%1$s では WooCommerce Stripe 拡張機能がサポートされていません</string>
+    <string name="product_selector_filter_button_title">フィルター</string>
+    <string name="product_selector_clear_button_title">選択を解除</string>
+    <string name="product_selector_select_button_title_one">%d件の商品を選択</string>
+    <string name="product_selector_select_button_title_default">%d件の商品を選択</string>
+    <string name="product_selector_sku_value">商品コード: %s</string>
+    <string name="product_selector_select_product_label">商品を選択 %s</string>
+    <string name="coupon_conditions_products_edit_products_title">商品を編集 (%d件)</string>
+    <string name="coupon_conditions_products_all_products_title">すべての商品</string>
+    <string name="coupon_conditions_products_select_products_title">商品を選択</string>
+    <string name="coupon_restrictions_exclude_sale_items_hint">セール価格商品にクーポンを適用しない場合は、この機能をオンにします。 商品単位で適用されるクーポンは、その商品がセール価格商品でない場合にのみ有効になります。 お買い物カゴ単位で適用されるクーポンは、お買い物カゴにセール価格商品ではない商品が含まれる場合にのみ有効になります。</string>
+    <string name="coupon_restrictions_exclude_sale_items">セール品を除外</string>
+    <string name="coupon_restrictions_individual_use_hint">他のクーポンと併用できないクーポンの場合は、この機能をオンにします。</string>
+    <string name="coupon_restrictions_individual_use">併用不可</string>
+    <string name="coupon_restrictions_limit_per_user_hint">ユーザー毎の利用数制限</string>
+    <string name="coupon_restrictions_amount_limit_hint">X件の商品に利用を制限</string>
+    <string name="coupon_restrictions_limit_per_coupon_hint">クーポン毎の利用数制限</string>
+    <string name="coupon_restrictions_maximum_spend_hint">最大購入金額 (%1$s)</string>
+    <string name="coupon_restrictions_minimum_spend_hint">最低購入金額 (%1$s)</string>
+    <string name="coupon_edit_saving_dialog_subtitle">しばらくお待ちください…</string>
+    <string name="coupon_edit_saving_dialog_title">クーポンを保存中</string>
+    <string name="coupon_edit_coupon_update_failed">クーポンの更新に失敗しました</string>
+    <string name="coupon_edit_coupon_updated">クーポンを更新しました</string>
+    <string name="coupon_edit_usage_restrictions">利用制限</string>
+    <string name="coupon_edit_usage_section">利用状況の詳細</string>
+    <string name="coupon_edit_free_shipping">無料配送を含めますか ?</string>
+    <string name="coupon_edit_expiry_clear_expiry_date">クリア</string>
+    <string name="coupon_edit_expiry_date_none">なし</string>
+    <string name="coupon_edit_conditions_section">このクーポンを次に適用:</string>
+    <string name="coupon_list_search_failed">クーポンの検索に失敗しました</string>
+    <string name="coupon_list_loading_failed">クーポンの取得に失敗しました</string>
+    <string name="site_picker_error">ストアを取得する際にエラーが発生しました</string>
+    <string name="site_picker_label">連携するストアを選択</string>
+    <string name="product_stock_status_instock_quantified">在庫%s件</string>
     <string name="coupon_edit_add_description_hint">クーポンの詳細を追加します。</string>
     <string name="coupon_edit_description_editor_title">クーポン詳細</string>
     <string name="coupon_edit_edit_description">説明を編集</string>
@@ -137,8 +171,7 @@ Language: ja_JP
     <string name="login_error_xml_rpc_services_disabled">このサイトでは XML-RPC サービスが無効になっています。</string>
     <string name="a8c_email_message">Automattic 以外のメールを使用してサポートチケットを送信してください</string>
     <string name="card_reader_onboarding_stripe_account_in_unsupported_country">%1$s で登録された Stripe アカウントはサポートされていません</string>
-    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">%1$s では WooCommerce Payments はサポートされていません</string>
-    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">%1$s では Stripe はサポートされていません</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">%1$s では WooCommerce Payments がサポートされていません</string>
     <string name="card_reader_connect_scanning_hint">リーダーの電源ボタンを押してください</string>
     <string name="card_reader_payment_reader_receipt_sent">領収書を &lt;strong&gt;%s&lt;/strong&gt; に送信しました</string>
     <string name="order_creation_fee_percentage_hint">パーセンテージ (%)</string>
@@ -171,7 +204,6 @@ Language: ja_JP
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">「オフラインでの支払い」は、次のプラグインのいずれかが有効化済みの場合にのみ機能します。 続行するには、サイト管理者に連絡して、次のプラグインのいずれかを無効化してください。</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">「オフラインでの支払い」は、次のプラグインのいずれかが有効化済みの場合にのみ機能します。 続行するには、次のプラグインのいずれかを無効化してください。</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">支払いプラグインが複数検出されました</string>
-    <string name="card_reader_wisepad_3_manual_card_reader">WisePad 3カードリーダーマニュアル</string>
     <string name="order_creation_price_calculation_failed">価格を更新できませんでした</string>
     <string name="order_creation_payment_tax">税金</string>
     <string name="exclusive_or">または</string>
@@ -342,8 +374,6 @@ Language: ja_JP
     <string name="card_reader_connect_missing_address_button">住所を入力</string>
     <string name="card_reader_connect_missing_address">続行するにはストアの住所を入力してください</string>
     <string name="card_reader_payment_check_mobile_device_prompt">モバイル端末を確認</string>
-    <string name="card_reader_m2_manual_card_reader">Stripe M2カードリーダーマニュアル</string>
-    <string name="card_reader_bbpos_manual_card_reader">BBPOS Chipper カードリーダーマニュアル</string>
     <string name="order_error_update_empty_mail">空のメールでアドレスを更新できません。 最新バージョンの WooCommerce を実行していることを確認してください。</string>
     <string name="orderfilters_date_range_filter_last_30_days">過去30日間</string>
     <string name="orderfilters_date_range_filter_last_7_days">過去1週間</string>
@@ -1334,6 +1364,7 @@ Language: ja_JP
     <string name="login_jetpack_installed_sign_in">Jetpack はインストール済みですか ?%1$s</string>
     <string name="login_refresh_app_progress_jetpack">Jetpack でログインを試行しています…</string>
     <string name="login_refresh_app_continue">続行するにはアプリを再読み込みします</string>
+    <string name="login_not_connected_jetpack">%1$s にこのアプリを使用するには、Jetpack プラグインを設定し、このアカウントと連携する必要があります。 \n\n設定したら、アプリを再読み込みします</string>
     <string name="login_try_another_store">ほかのストアでお試しください</string>
     <string name="database_downgraded">データベースのダウングレードに伴い、テーブルを再作成し、ストアを読み込んでいます</string>
     <string name="loading_stores">ストアを読み込んでいます</string>
@@ -1629,6 +1660,7 @@ Language: ja_JP
     <string name="login_jetpack_what_is_description">Jetpack は WordPress の無料のプラグインであり、ストアをモバイルでの最適な操作に必要なツール (プッシュ通知および統計を含む) と接続します。</string>
     <string name="login_jetpack_what_is">Jetpack とは ?</string>
     <string name="login_view_connected_stores">連携ストアを表示</string>
+    <string name="login_not_woo_store">%1$s は WooCommerce サイトではないようです。 サイトに WooCommerce プラグインをインストールし、アプリを再読み込みしてください。</string>
     <string name="login_not_connected_to_account">%1$s は別の WordPress.com アカウントと関連付けられているようです。</string>
     <string name="keep_editing">編集を続行</string>
     <string name="notification_wpcom_username_needed">ユーザー名とパスワードでログインしてください。</string>

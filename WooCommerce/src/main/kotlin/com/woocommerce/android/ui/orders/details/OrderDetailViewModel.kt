@@ -457,11 +457,13 @@ final class OrderDetailViewModel @Inject constructor(
             launch {
                 orderDetailRepository.updateOrderStatus(order.id, newStatus)
                     .collect { result ->
+                        reloadOrderDetails()
                         when (result) {
-                            is OptimisticUpdateResult -> reloadOrderDetails()
+                            is OptimisticUpdateResult -> {
+                                // no-op. We reload order details in any case
+                            }
                             is RemoteUpdateResult -> {
                                 if (result.event.isError) {
-                                    reloadOrderDetails()
                                     triggerEvent(ShowSnackbar(string.order_error_update_general))
                                     trackerWrapper.track(
                                         ORDER_STATUS_CHANGE_FAILED,

@@ -50,6 +50,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVa
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
 import com.woocommerce.android.ui.products.categories.ProductCategoriesFragmentDirections
 import com.woocommerce.android.ui.products.downloads.ProductDownloadsFragmentDirections
+import com.woocommerce.android.ui.products.selector.ProductSelectorFragmentDirections
 import com.woocommerce.android.ui.products.settings.ProductSettingsFragmentDirections
 import com.woocommerce.android.ui.products.variations.attributes.AddAttributeTermsFragmentDirections
 import com.woocommerce.android.ui.products.variations.attributes.AttributeListFragmentDirections
@@ -343,7 +344,12 @@ class ProductNavigator @Inject constructor() {
             }
 
             is NavigateToVariationSelector -> {
-                // TODO
+                fragment.findNavController().navigateSafely(
+                    ProductSelectorFragmentDirections.actionProductSelectorFragmentToVariationSelectorFragment(
+                        target.productId,
+                        target.selectedVariationIds.toLongArray()
+                    )
+                )
             }
 
             is ExitProduct -> fragment.findNavController().navigateUp()

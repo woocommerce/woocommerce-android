@@ -7,11 +7,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
@@ -53,10 +53,12 @@ fun InstallWcShippingOnboardingScreen(onboardingFlowUiState: InstallWcShippingOn
                 start = dimensionResource(id = R.dimen.major_200),
                 end = dimensionResource(id = R.dimen.major_200)
             )
-            .verticalScroll(rememberScrollState())
     ) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
         ) {
             Text(
                 modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_350)),
@@ -88,8 +90,6 @@ fun InstallWcShippingOnboardingScreen(onboardingFlowUiState: InstallWcShippingOn
                     top = dimensionResource(id = R.dimen.major_200),
                     bottom = dimensionResource(id = R.dimen.major_200),
                 )
-                .fillMaxHeight(),
-            verticalArrangement = Arrangement.Bottom
         ) {
             WCColoredButton(
                 modifier = Modifier.fillMaxWidth(),
@@ -130,26 +130,27 @@ private fun LinkText(
 }
 
 @Composable
-fun InstallWcsOnboardingBullets(onboardingBullets: List<InstallWcShippingOnboardingBulletUi>) {
+private fun InstallWcsOnboardingBullets(onboardingBullets: List<InstallWcShippingOnboardingBulletUi>) {
     onboardingBullets.forEach {
-        InstallWcsOnboardingBullet(bullet = it)
+        InstallWcsOnboardingBullet(bullet = it, modifier = Modifier.fillMaxWidth())
         Spacer(Modifier.size(dimensionResource(id = R.dimen.major_100)))
     }
 }
 
 @Composable
-fun InstallWcsOnboardingBullet(
-    modifier: Modifier = Modifier,
-    bullet: InstallWcShippingOnboardingBulletUi
+private fun InstallWcsOnboardingBullet(
+    bullet: InstallWcShippingOnboardingBulletUi,
+    modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))
+        horizontalArrangement = Arrangement.Start
     ) {
         Image(
             painter = painterResource(id = bullet.icon),
             contentDescription = null,
         )
+        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
         Column {
             Text(
                 style = MaterialTheme.typography.subtitle1,

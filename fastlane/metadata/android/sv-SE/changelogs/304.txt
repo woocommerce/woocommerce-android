@@ -1,0 +1,4 @@
+9.3:
+Kanada, säg hej till personliga betalningar. Vi är glada att kunna meddela att personliga betalningar nu är tillgängliga för kanadensiska handlare som använder WooCommerce Payments.
+
+Den här versionen innehåller även ett antal mindre förbättringar. Tack ännu en gång för all fantastisk feedback. Fortsätt så.

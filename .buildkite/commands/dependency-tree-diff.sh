@@ -7,16 +7,19 @@ DIFF_DEPENDENCIES_FILE="$DIFF_DEPENDENCIES_FOLDER/diff_dependencies.txt"
 CONFIGURATION="vanillaReleaseRuntimeClasspath"
 DEPENDENCY_TREE_VERSION="1.2.0"
 
+REPO_HANDLE="woocommerce/woocommerce-android"
+
+COMMIT_HASH=$BUILDKITE_COMMIT
+PR_NUMBER=$BUILDKITE_PULL_REQUEST
+PR_URL="https://api.github.com/repos/$REPO_HANDLE/pulls/$PR_NUMBER"
+
 echo "--> Starting the check"
 
-git config --global user.email '$( git log --format='%ae' $CIRCLE_SHA1^! )'
-git config --global user.name '$( git log --format='%an' $CIRCLE_SHA1^! )'
+git config --global user.email '$( git log --format='%ae' $COMMIT_HASH^! )'
+git config --global user.name '$( git log --format='%an' $COMMIT_HASH^! )'
 
-prNumber="${CIRCLE_PULL_REQUEST##*/}"
-githubUrl="https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/pulls/$prNumber"
-
-echo "--> Fetching the target branch from $githubUrl"
-githubResponse="$(curl "$githubUrl" -H "Authorization: token $GITHUB_API_TOKEN")"
+echo "--> Fetching the target branch from $PR_URL"
+githubResponse="$(curl "$PR_URL" -H "Authorization: token $GITHUB_TOKEN")"
 targetBranch=$(echo "$githubResponse" | tr '\r\n' ' ' | jq '.base.ref' | tr -d '"')
 echo "--> Target branch is $targetBranch"
 
@@ -26,7 +29,7 @@ if [[ $(git diff --name-status "origin/$targetBranch" | grep ".gradle") ]]; then
     echo ".gradle files have been changed. Looking for caused dependency changes"
   else
     echo ".gradle files haven't been changed. There is no need to run the diff"
-    ./gradlew dependencyTreeDiffCommentToGitHub -DGITHUB_PULLREQUESTID="${CIRCLE_PULL_REQUEST##*/}" -DGITHUB_OAUTH2TOKEN="$GITHUB_API_TOKEN"
+    ./gradlew dependencyTreeDiffCommentToGitHub -DGITHUB_PULLREQUESTID="${PR_NUMBER}" -DGITHUB_OAUTH2TOKEN="$GITHUB_TOKEN"
     exit 0
 fi
 
@@ -62,4 +65,4 @@ else
 fi
 
 echo "--> Commenting result to GitHub"
-./gradlew dependencyTreeDiffCommentToGitHub -DGITHUB_PULLREQUESTID="${CIRCLE_PULL_REQUEST##*/}" -DGITHUB_OAUTH2TOKEN="$GITHUB_API_TOKEN" --info
+./gradlew dependencyTreeDiffCommentToGitHub -DGITHUB_PULLREQUESTID="${PR_NUMBER##*/}" -DGITHUB_OAUTH2TOKEN="$GITHUB_TOKEN" --info
