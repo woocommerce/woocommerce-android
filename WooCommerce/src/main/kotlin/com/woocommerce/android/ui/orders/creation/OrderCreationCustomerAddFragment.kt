@@ -14,14 +14,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCreationEditCustomerAddressBinding
 import com.woocommerce.android.databinding.LayoutAddressFormBinding
 import com.woocommerce.android.databinding.LayoutAddressSwitchBinding
-import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListFragment
 import com.woocommerce.android.ui.orders.creation.views.bindEditFields
 import com.woocommerce.android.ui.orders.creation.views.update
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
@@ -130,6 +128,7 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
             }
         }
     }
+
     private fun inflateLayout(view: View) {
         billingBinding = LayoutAddressFormBinding.inflate(layoutInflater).apply {
             setAccessibilityHeaders(R.string.details, R.string.order_detail_billing_address_section)
@@ -203,9 +202,6 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
             }
         ) { countryCode ->
             addressViewModel.onCountrySelected(addressType, countryCode)
-        }
-        handleNotice(CustomerListFragment.CUSTOMER_SELECTED) {
-            // TODO nbradbury reload
         }
     }
 

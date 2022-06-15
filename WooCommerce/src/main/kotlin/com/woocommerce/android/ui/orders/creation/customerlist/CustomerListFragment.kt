@@ -64,7 +64,7 @@ class CustomerListFragment :
                         billingAddress = event.billingAddress,
                         shippingAddress = event.shippingAddress
                     )
-                    navigateBackWithNotice(CUSTOMER_SELECTED)
+                    findNavController().navigateUp()
                 }
             }
         }
@@ -105,9 +105,5 @@ class CustomerListFragment :
     override fun onQueryTextChange(query: String?): Boolean {
         viewModel.onSearchQueryChanged(query)
         return true
-    }
-
-    companion object {
-        const val CUSTOMER_SELECTED = "key_customer_selected"
     }
 }

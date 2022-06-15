@@ -237,7 +237,10 @@ class AddressViewModel @Inject constructor(
         )
     }
 
-    fun onAddressesChanged(billingAddress: Address, shippingAddress: Address) {
+    fun onAddressesChanged(
+        billingAddress: Address,
+        shippingAddress: Address
+    ) {
         fun stateSpinnerStatus(countryCode: String): StateSpinnerStatus {
             return when {
                 countryCode.isBlank() -> DISABLED
