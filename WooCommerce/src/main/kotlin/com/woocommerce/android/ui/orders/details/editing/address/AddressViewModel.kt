@@ -226,14 +226,6 @@ class AddressViewModel @Inject constructor(
             Field.Zip -> currentAddress.copy(postcode = value)
             Field.Email -> currentAddress.copy(email = value.trim())
         }
-
-        onAddressEdited(addressType, newAddress)
-    }
-
-    fun onAddressEdited(
-        addressType: AddressType,
-        newAddress: Address
-    ) {
         viewState = viewState.copy(
             addressSelectionStates = viewState.addressSelectionStates.mapValues { entry ->
                 if (entry.key == addressType) {

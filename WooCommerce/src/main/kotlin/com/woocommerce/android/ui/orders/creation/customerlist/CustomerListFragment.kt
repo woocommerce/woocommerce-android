@@ -14,7 +14,6 @@ import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -58,12 +57,12 @@ class CustomerListFragment :
         ) { event ->
             when (event) {
                 is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
                 is CustomerListViewModel.CustomerSelected -> {
                     sharedViewModel.onCustomerAddressEdited(
                         billingAddress = event.billingAddress,
                         shippingAddress = event.shippingAddress
                     )
-                    navigateBackWithNotice(CUSTOMER_SELECTED)
                 }
             }
         }
@@ -104,9 +103,5 @@ class CustomerListFragment :
     override fun onQueryTextChange(query: String?): Boolean {
         viewModel.onSearchQueryChanged(query)
         return true
-    }
-
-    companion object {
-        const val CUSTOMER_SELECTED = "key_customer_selected"
     }
 }

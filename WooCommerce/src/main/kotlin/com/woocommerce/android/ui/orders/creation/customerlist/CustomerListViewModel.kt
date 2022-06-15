@@ -41,6 +41,8 @@ class CustomerListViewModel @Inject constructor(
     }
 
     fun onCustomerClick(customerRemoteId: Long) {
+        triggerEvent(MultiLiveEvent.Event.Exit)
+
         launch {
             customerListRepository.getCustomerByRemoteId(customerRemoteId)?.let { wcCustomer ->
                 val shippingAddress = OrderAddress.Shipping(
