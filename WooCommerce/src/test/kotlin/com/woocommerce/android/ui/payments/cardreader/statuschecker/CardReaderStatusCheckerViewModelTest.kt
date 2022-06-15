@@ -6,6 +6,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
@@ -49,7 +50,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
     fun `given payment flow and connected reader, when vm init, then navigates to payment`() = testBlocking {
         // GIVEN
         val orderId = 1L
-        val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId)
+        val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId, paymentType = ORDER)
         whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connected(mock())))
 
         // WHEN
@@ -65,7 +66,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             val orderId = 1L
-            val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId)
+            val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId, paymentType = ORDER)
             whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
             val onboardingError = CardReaderOnboardingState.GenericError
             whenever(cardReaderChecker.getOnboardingState()).thenReturn(onboardingError)
@@ -87,7 +88,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             val orderId = 1L
-            val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId)
+            val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId, paymentType = ORDER)
             whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
             whenever(cardReaderChecker.getOnboardingState()).thenReturn(
                 CardReaderOnboardingState.OnboardingCompleted(
@@ -110,7 +111,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             val orderId = 1L
-            val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId)
+            val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId, paymentType = ORDER)
             whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
             val onboardingState = CardReaderOnboardingState.OnboardingCompleted(
                 PluginType.WOOCOMMERCE_PAYMENTS,
@@ -132,7 +133,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             val orderId = 1L
-            val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId)
+            val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId, paymentType = ORDER)
             whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
             val onboardingState = CardReaderOnboardingState.OnboardingCompleted(
                 PluginType.WOOCOMMERCE_PAYMENTS,
