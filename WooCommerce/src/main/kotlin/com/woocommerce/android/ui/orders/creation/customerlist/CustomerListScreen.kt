@@ -58,7 +58,7 @@ fun CustomerListScreen(
 @Composable
 fun CustomerListScreen(
     state: CustomerListViewState,
-    onCustomerClick: ((CustomerListItem) -> Unit?)? = null
+    onCustomerClick: ((Long) -> Unit?)? = null
 ) {
     if (state.isSkeletonShown) {
         CustomerListSkeleton()
@@ -74,7 +74,7 @@ fun CustomerListScreen(
 @Composable
 private fun CustomerList(
     customers: List<CustomerListItem>,
-    onCustomerClick: ((CustomerListItem) -> Unit?)? = null
+    onCustomerClick: ((Long) -> Unit?)? = null
 ) {
     val listState = rememberLazyListState()
     LazyColumn(
@@ -98,7 +98,7 @@ private fun CustomerList(
 @Composable
 private fun CustomerListViewItem(
     customer: CustomerListItem,
-    onCustomerClick: ((CustomerListItem) -> Unit?)? = null
+    onCustomerClick: ((Long) -> Unit?)? = null
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_50)),
@@ -109,7 +109,7 @@ private fun CustomerListViewItem(
                 role = Role.Button,
                 onClick = {
                     onCustomerClick?.let {
-                        it(customer)
+                        it(customer.remoteId)
                     }
                 }
             )

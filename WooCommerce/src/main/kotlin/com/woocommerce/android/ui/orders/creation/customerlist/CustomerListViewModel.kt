@@ -38,11 +38,11 @@ class CustomerListViewModel @Inject constructor(
         _viewState.value = CustomerListViewState()
     }
 
-    fun onCustomerClick(customer: CustomerListItem) {
+    fun onCustomerClick(customerRemoteId: Long) {
         triggerEvent(MultiLiveEvent.Event.Exit)
 
         launch {
-            customerListRepository.getCustomer(customer.remoteId)?.let { wcCustomer ->
+            customerListRepository.getCustomer(customerRemoteId)?.let { wcCustomer ->
                 val shippingAddress = OrderAddress.Shipping(
                     company = wcCustomer.shippingCompany,
                     address1 = wcCustomer.shippingAddress1,

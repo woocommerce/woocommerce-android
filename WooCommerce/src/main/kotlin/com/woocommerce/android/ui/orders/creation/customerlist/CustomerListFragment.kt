@@ -54,9 +54,7 @@ class CustomerListFragment :
         ) { event ->
             when (event) {
                 is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is MultiLiveEvent.Event.Exit -> {
-                    findNavController().navigateUp()
-                }
+                is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
             }
         }
     }
