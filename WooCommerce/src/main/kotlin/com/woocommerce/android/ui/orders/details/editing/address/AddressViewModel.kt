@@ -99,11 +99,7 @@ class AddressViewModel @Inject constructor(
                 addressSelectionStates = initialState.mapValues { initialSingleAddressState ->
                     AddressSelectionState(
                         address = initialSingleAddressState.value,
-                        stateSpinnerStatus = when {
-                            initialSingleAddressState.value.country.code.isBlank() -> DISABLED
-                            statesFor(initialSingleAddressState.value.country.code).isNotEmpty() -> HAVING_LOCATIONS
-                            else -> RAW_VALUE
-                        }
+                        stateSpinnerStatus = getStateSpinnerStatus(initialSingleAddressState.value.country.code)
                     )
                 }
             )
@@ -124,6 +120,14 @@ class AddressViewModel @Inject constructor(
     fun onScreenDetached() {
         hasStarted = false
         viewState = ViewState()
+    }
+
+    private fun getStateSpinnerStatus(countryCode: String): StateSpinnerStatus {
+        return when {
+            countryCode.isBlank() -> DISABLED
+            statesFor(countryCode).isNotEmpty() -> HAVING_LOCATIONS
+            else -> RAW_VALUE
+        }
     }
 
     fun onCountrySelected(type: AddressType, countryCode: LocationCode) {
@@ -241,23 +245,15 @@ class AddressViewModel @Inject constructor(
         billingAddress: Address,
         shippingAddress: Address
     ) {
-        fun stateSpinnerStatus(countryCode: String): StateSpinnerStatus {
-            return when {
-                countryCode.isBlank() -> DISABLED
-                statesFor(countryCode).isNotEmpty() -> HAVING_LOCATIONS
-                else -> RAW_VALUE
-            }
-        }
-
         viewState = viewState.copy(
             addressSelectionStates = mapOf(
                 AddressType.BILLING to AddressSelectionState(
                     billingAddress,
-                    stateSpinnerStatus(billingAddress.country.code)
+                    getStateSpinnerStatus(billingAddress.country.code)
                 ),
                 AddressType.SHIPPING to AddressSelectionState(
                     shippingAddress,
-                    stateSpinnerStatus(shippingAddress.country.code)
+                    getStateSpinnerStatus(shippingAddress.country.code)
                 )
             )
         )
