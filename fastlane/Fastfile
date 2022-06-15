@@ -448,37 +448,37 @@ platform :android do
   #####################################################################################
   desc "Merge libraries strings files into the main app one"
   lane :localize_libs do | options |
-  REMOTE_LIBRARIES_STRINGS_PATHS.each do  | lib |
-    download_path = android_download_file_by_version(
-      library_name: lib[:name],
-      import_key: lib[:import_key],
-      repository: lib[:repository],
-      file_path: lib[:strings_file_path]
-    )
+    REMOTE_LIBRARIES_STRINGS_PATHS.each do  | lib |
+      download_path = android_download_file_by_version(
+        library_name: lib[:name],
+        import_key: lib[:import_key],
+        repository: lib[:repository],
+        file_path: lib[:strings_file_path]
+      )
 
-  if download_path.nil?
-    error_message = <<~ERROR
-      Can't download strings file for #{lib[:name]}.
-      Strings for this library won't get translated.
-      Do you want to continue anyway?
-    ERROR
-    UI.user_error! "Abort." unless UI.confirm(error_message)
-  else
-    UI.message("Strings.xml file for #{lib[:name]} downloaded to #{download_path}.")
-    lib_to_merge = [{
-      library: lib[:name],
-      strings_path: download_path,
-      exclusions: lib[:exclusions]
-    }]
-    an_localize_libs(app_strings_path: MAIN_STRINGS_PATH, libs_strings_path: lib_to_merge)
-    File.delete(download_path) if File.exist?(download_path)
-  end
-  end
+      if download_path.nil?
+        error_message = <<~ERROR
+          Can't download strings file for #{lib[:name]}.
+          Strings for this library won't get translated.
+          Do you want to continue anyway?
+        ERROR
+        UI.user_error! "Abort." unless UI.confirm(error_message)
+      else
+        UI.message("Strings.xml file for #{lib[:name]} downloaded to #{download_path}.")
+        lib_to_merge = [{
+          library: lib[:name],
+          strings_path: download_path,
+          exclusions: lib[:exclusions]
+        }]
+        an_localize_libs(app_strings_path: MAIN_STRINGS_PATH, libs_strings_path: lib_to_merge)
+        File.delete(download_path) if File.exist?(download_path)
+      end
+    end
 
-  is_repo_clean = ("git status --porcelain").empty?
-  unless is_repo_clean then
-    commit_strings(options)
-  end
+    is_repo_clean = ("git status --porcelain").empty?
+    unless is_repo_clean then
+      commit_strings(options)
+    end
   end
 
   #####################################################################################
