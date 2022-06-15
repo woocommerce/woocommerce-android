@@ -23,6 +23,7 @@ import com.woocommerce.android.viewmodel.combineWith
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.store.WCDataStore
 import javax.inject.Inject
 
@@ -226,6 +227,18 @@ class AddressViewModel @Inject constructor(
             Field.Zip -> currentAddress.copy(postcode = value)
             Field.Email -> currentAddress.copy(email = value.trim())
         }
+        viewState = viewState.copy(
+            addressSelectionStates = viewState.addressSelectionStates.mapValues { entry ->
+                if (entry.key == addressType) {
+                    entry.value.copy(address = newAddress)
+                } else {
+                    entry.value
+                }
+            }
+        )
+    }
+
+    fun onCustomerAddressChanged(addressType: AddressType, newAddress: Address) {
         viewState = viewState.copy(
             addressSelectionStates = viewState.addressSelectionStates.mapValues { entry ->
                 if (entry.key == addressType) {

@@ -14,10 +14,12 @@ import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
+import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -30,6 +32,7 @@ class CustomerListFragment :
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel by viewModels<CustomerListViewModel>()
+    private val addressViewModel: AddressViewModel by viewModels()
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
 
     override fun onCreateView(
@@ -57,12 +60,16 @@ class CustomerListFragment :
         ) { event ->
             when (event) {
                 is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
                 is CustomerListViewModel.CustomerSelected -> {
-                    sharedViewModel.onCustomerAddressEdited(
-                        billingAddress = event.billingAddress,
-                        shippingAddress = event.shippingAddress
+                    addressViewModel.onCustomerAddressChanged(
+                        AddressViewModel.AddressType.BILLING,
+                        event.billingAddress,
                     )
+                    addressViewModel.onCustomerAddressChanged(
+                        AddressViewModel.AddressType.SHIPPING,
+                        event.shippingAddress,
+                    )
+                    navigateBackWithNotice(CUSTOMER_SELECTED)
                 }
             }
         }
@@ -103,5 +110,9 @@ class CustomerListFragment :
     override fun onQueryTextChange(query: String?): Boolean {
         viewModel.onSearchQueryChanged(query)
         return true
+    }
+
+    companion object {
+        const val CUSTOMER_SELECTED = "key_customer_selected"
     }
 }
