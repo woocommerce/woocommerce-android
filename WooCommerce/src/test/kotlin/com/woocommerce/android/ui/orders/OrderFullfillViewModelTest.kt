@@ -303,7 +303,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given onOrderChanged error, when order tracking is deleted, then proper event is triggered`() = testBlocking {
+    fun `given onOrderChanged error, when order tracking is deleted, then track event is triggered`() = testBlocking {
         val shipmentTracking = OrderShipmentTracking(
             trackingProvider = "testProvider",
             trackingNumber = "123456",
@@ -336,7 +336,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given onOrderChanged success, when tracking is deleted, then proper event is triggered`() = testBlocking {
+    fun `given onOrderChanged success, when tracking is deleted, then track is triggered`() = testBlocking {
         val shipmentTracking = OrderShipmentTracking(
             trackingProvider = "testProvider",
             trackingNumber = "123456",
