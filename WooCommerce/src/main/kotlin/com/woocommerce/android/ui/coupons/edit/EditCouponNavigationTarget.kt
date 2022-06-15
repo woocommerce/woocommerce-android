@@ -11,4 +11,7 @@ sealed class EditCouponNavigationTarget : Event() {
         val showLimitUsageToXItems: Boolean
     ) : EditCouponNavigationTarget()
     data class EditIncludedProducts(val selectedProductIds: List<Long>) : EditCouponNavigationTarget()
+    data class EditIncludedProductCategories(val categoryIds: List<Long>) : EditCouponNavigationTarget()
+    data class EditExcludedProducts(val excludedProductIds: List<Long>) : EditCouponNavigationTarget()
+    data class EditExcludedProductCategories(val excludedCategoryIds: List<Long>) : EditCouponNavigationTarget()
 }
