@@ -110,7 +110,6 @@ class CouponsListViewModelTests : BaseUnitTest() {
         assertThat(state.isSearchOpen).isTrue()
     }
 
-
     @Test
     fun `when search is opened, then proper track event is triggered`() = testBlocking {
         setup()

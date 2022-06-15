@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.tools.SelectedSite
