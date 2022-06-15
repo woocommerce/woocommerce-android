@@ -303,7 +303,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when shipment order tracking is deleted, then proper track event is triggered`() = testBlocking {
+    fun `given onOrderChanged error, when order tracking is deleted, then proper event is triggered`() = testBlocking {
         val shipmentTracking = OrderShipmentTracking(
             trackingProvider = "testProvider",
             trackingNumber = "123456",
@@ -333,6 +333,29 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
                 AnalyticsTracker.KEY_ERROR_DESC to "generic error"
             )
         )
+    }
+
+    @Test
+    fun `given onOrderChanged success, when tracking is deleted, then proper event is triggered`() = testBlocking {
+        val shipmentTracking = OrderShipmentTracking(
+            trackingProvider = "testProvider",
+            trackingNumber = "123456",
+            dateShipped = DateUtils.getCurrentDateString()
+        )
+        val onOrderChanged = WCOrderStore.OnOrderChanged(
+            statusFilter = "",
+            canLoadMore = false,
+            causeOfChange = null,
+            orderError = null
+        )
+        doReturn(onOrderChanged).whenever(repository).deleteOrderShipmentTracking(any(), any())
+        val addedShipmentTrackings = testOrderShipmentTrackings.toMutableList()
+        addedShipmentTrackings.add(shipmentTracking)
+
+        viewModel.start()
+        viewModel.deleteOrderShipmentTracking(shipmentTracking)
+
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.ORDER_TRACKING_DELETE_SUCCESS)
     }
 
     @Test
