@@ -67,7 +67,7 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
             } else {
                 binding.paymentInfoPaid.text = formatCurrencyForDisplay(order.total)
 
-                val dateStr = order.datePaid?.getMediumDate(context)
+                val dateStr = order.datePaid.getMediumDate(context)
                 binding.paymentInfoPaymentMsg.text = if (order.paymentMethodTitle.isNotEmpty()) {
                     context.getString(
                         R.string.orderdetail_payment_summary_completed,
@@ -192,7 +192,7 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
         binding.paymentInfoRefunds.show()
         binding.paymentInfoRefundTotalSection.hide()
 
-        var availableRefundQuantity = order.availableRefundQuantity
+        var availableRefundQuantity = order.quantityOfItemsWhichPossibleToRefund
         refunds.flatMap { it.items }.groupBy { it.orderItemId }.forEach { productRefunds ->
             val refundedCount = productRefunds.value.sumOf { it.quantity }
             availableRefundQuantity -= refundedCount
