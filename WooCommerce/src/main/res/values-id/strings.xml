@@ -1,11 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-05-19 12:54:03+0000
+Translation-Revision-Date: 2022-06-02 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Kami tidak mendukung ekstensi WooCommerce Stripe di %1$s</string>
+    <string name="product_selector_filter_button_title">Penyaring</string>
+    <string name="product_selector_clear_button_title">Hapus Pilihan</string>
+    <string name="product_selector_select_button_title_one">Pilih %d Produk</string>
+    <string name="product_selector_select_button_title_default">Pilih %d Produk</string>
+    <string name="product_selector_sku_value">SKU: %s</string>
+    <string name="product_selector_select_product_label">Pilih produk %s</string>
+    <string name="coupon_conditions_products_edit_products_title">Sunting Produk (%d)</string>
+    <string name="coupon_conditions_products_all_products_title">Semua Produk</string>
+    <string name="coupon_conditions_products_select_products_title">Pilih Produk</string>
+    <string name="coupon_restrictions_exclude_sale_items_hint">Aktifkan ini jika kupon tidak berlaku untuk barang obral. Kupon per item hanya dapat digunakan jika barang tidak diobral. Kupon per keranjang hanya dapat digunakan jika ada barang di keranjang yang tidak diobral.</string>
+    <string name="coupon_restrictions_exclude_sale_items">Kecualikan Barang Obral</string>
+    <string name="coupon_restrictions_individual_use_hint">Aktifkan ini jika kupon tidak dapat digunakan bersamaan dengan kupon lainnya.</string>
+    <string name="coupon_restrictions_individual_use">Hanya untuk penggunaan individu</string>
+    <string name="coupon_restrictions_limit_per_user_hint">Batas Penggunaan Per Pengguna</string>
+    <string name="coupon_restrictions_amount_limit_hint">Batasi Penggunaan Hingga X Item</string>
+    <string name="coupon_restrictions_limit_per_coupon_hint">Batas Penggunaan Per Kupon</string>
+    <string name="coupon_restrictions_maximum_spend_hint">Belanja Maksimum (%1$s)</string>
+    <string name="coupon_restrictions_minimum_spend_hint">Belanja Minimum (%1$s)</string>
+    <string name="coupon_edit_saving_dialog_subtitle">Harap tunggu…</string>
+    <string name="coupon_edit_saving_dialog_title">Menyimpan kupon</string>
+    <string name="coupon_edit_coupon_update_failed">Gagal memperbarui kupon</string>
+    <string name="coupon_edit_coupon_updated">Kupon diperbarui</string>
+    <string name="coupon_edit_usage_restrictions">Batasan Penggunaan</string>
+    <string name="coupon_edit_usage_section">Detail Penggunaan</string>
+    <string name="coupon_edit_free_shipping">Termasuk Pengiriman Gratis?</string>
+    <string name="coupon_edit_expiry_clear_expiry_date">Hapus</string>
+    <string name="coupon_edit_expiry_date_none">Tidak ada</string>
+    <string name="coupon_edit_conditions_section">Gunakan kupon ini pada</string>
+    <string name="coupon_list_search_failed">Gagal mencari kupon</string>
+    <string name="coupon_list_loading_failed">Gagal mengambil kupon</string>
+    <string name="site_picker_error">Terjadi error saat mengambil toko</string>
+    <string name="site_picker_label">Pilih toko untuk menghubungkan</string>
+    <string name="product_stock_status_instock_quantified">%s tersedia</string>
     <string name="coupon_edit_add_description_hint">Tambahkan deskripsi kupon.</string>
     <string name="coupon_edit_description_editor_title">Deskripsi Kupon</string>
     <string name="coupon_edit_edit_description">Sunting Deskripsi</string>
@@ -137,8 +171,7 @@ Language: id
     <string name="login_error_xml_rpc_services_disabled">Layanan XML-RPC tidak tersedia di situs ini.</string>
     <string name="a8c_email_message">Harap gunakan email non-Automattic untuk mengirimkan tiket dukungan</string>
     <string name="card_reader_onboarding_stripe_account_in_unsupported_country">Kami tidak mendukung akun Stripe yang terdaftar di %1$s</string>
-    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">Kami tidak mendukung WooCommerce Payments di %1$s</string>
-    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Kami tidak mendukung Stripe di %1$s</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">Kami tidak mendukung ekstensi WooCommerce Payments di %1$s</string>
     <string name="card_reader_connect_scanning_hint">Tekan tombol daya di pembaca Anda</string>
     <string name="card_reader_payment_reader_receipt_sent">Tanda terima dikirimkan ke &lt;strong&gt;%s&lt;/strong&gt;</string>
     <string name="order_creation_fee_percentage_hint">Persentase (%)</string>
@@ -171,7 +204,6 @@ Language: id
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">Pembayaran Langsung hanya akan berfungsi jika salah satu plugin berikut diaktifkan. Hubungi administrator situs untuk menonaktifkan salah satu plugin berikut untuk melanjutkan:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">Pembayaran Langsung hanya akan berfungsi jika salah satu plugin berikut diaktifkan. Harap nonaktifkan salah satu plugin berikut untuk melanjutkan:</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">Konflik plugin pembayaran terdeteksi</string>
-    <string name="card_reader_wisepad_3_manual_card_reader">Panduan Pembaca Kartu WisePad 3</string>
     <string name="order_creation_price_calculation_failed">Tidak dapat memperbarui harga</string>
     <string name="order_creation_payment_tax">Pajak</string>
     <string name="exclusive_or">atau</string>
@@ -342,8 +374,6 @@ Language: id
     <string name="card_reader_connect_missing_address_button">Masukan alamat:</string>
     <string name="card_reader_connect_missing_address">Cantumkan alamat toko Anda untuk melanjutkan</string>
     <string name="card_reader_payment_check_mobile_device_prompt">Periksa perangkat seluler Anda</string>
-    <string name="card_reader_m2_manual_card_reader">Panduan Pembaca Kartu Stripe M2</string>
-    <string name="card_reader_bbpos_manual_card_reader">Panduan Pembaca Kartu BBPOS Chipper</string>
     <string name="order_error_update_empty_mail">Tidak dapat memperbarui alamat dengan alamat email kosong. Pastikan Anda menggunakan WooCommerce versi terbaru.</string>
     <string name="orderfilters_date_range_filter_last_30_days">30 hari terakhir</string>
     <string name="orderfilters_date_range_filter_last_7_days">7 hari terakhir</string>
@@ -1334,6 +1364,7 @@ Language: id
     <string name="login_jetpack_installed_sign_in">Sudah punya Jetpack? %1$s</string>
     <string name="login_refresh_app_progress_jetpack">Mencoba login dengan Jetpack…</string>
     <string name="login_refresh_app_continue">segarkan aplikasi untuk melanjutkan</string>
+    <string name="login_not_connected_jetpack">Untuk menggunakan aplikasi ini untuk %1$s Anda perlu melakukan penyiapan plugin Jetpack dan terhubung ke akun ini. \n\nSetelah disiapkan, segarkan aplikasi</string>
     <string name="login_try_another_store">Coba toko lain</string>
     <string name="database_downgraded">Database di-downgrade, membuat ulang tabel dan memuat toko</string>
     <string name="loading_stores">Memuat toko</string>
@@ -1629,6 +1660,7 @@ Language: id
     <string name="login_jetpack_what_is_description">Jetpack merupakan plugin WordPress gratis yang menghubungkan toko Anda dengan peralatan yang diperlukan agar dapat memberikan pengalaman seluler terbaik, mencakup pemberitahuan push dan statistik</string>
     <string name="login_jetpack_what_is">Apa itu Jetpack?</string>
     <string name="login_view_connected_stores">Lihat toko terhubung</string>
+    <string name="login_not_woo_store">Tampaknya %1$s bukan situs WooCommerce. Instal plugin WooCommerce di situs Anda, lalu segarkan aplikasi.</string>
     <string name="login_not_connected_to_account">Sepertinya %1$s tidak terhubung ke akun WordPress.com lainnya.</string>
     <string name="keep_editing">Lanjutkan menyunting</string>
     <string name="notification_wpcom_username_needed">Silakan login dengan nama pengguna dan kata sandi Anda.</string>

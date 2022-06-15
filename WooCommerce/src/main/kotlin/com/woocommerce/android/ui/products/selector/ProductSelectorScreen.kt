@@ -34,6 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.R.dimen
+import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -161,6 +162,8 @@ private fun ProductList(
                     },
                     selectionState = product.selectionState,
                     isArrowVisible = product.type == VARIABLE && product.numVariations > 0,
+                    onClickLabel = stringResource(id = string.product_selector_select_product_label, product.title),
+                    imageContentDescription = stringResource(string.product_image_content_description)
                 ) {
                     onProductClick(product)
                 }
@@ -182,7 +185,7 @@ private fun ProductList(
             }
         }
 
-        InfiniteListHandler(listState = listState) {
+        InfiniteListHandler(listState = listState, buffer = 3) {
             onLoadMore()
         }
 

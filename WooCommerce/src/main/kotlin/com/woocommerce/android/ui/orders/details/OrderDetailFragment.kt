@@ -342,7 +342,8 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         binding.orderDetailCustomerInfo.updateCustomerInfo(
             order = order,
             isVirtualOrder = viewModel.hasVirtualProductsOnly(),
-            isReadOnly = false
+            // Customer Info is read-only in UOE
+            isReadOnly = FeatureFlag.UNIFIED_ORDER_EDITING.isEnabled()
         )
         binding.orderDetailPaymentInfo.updatePaymentInfo(
             order = order,

@@ -211,14 +211,22 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             }
             new.isIdle.takeIfNotEqualTo(old?.isIdle) { enabled ->
                 binding.paymentSection.loadingProgress.isVisible = !enabled
-                binding.paymentSection.feeButton.isEnabled = enabled
-                binding.productsSection.isEachAddButtonEnabled = enabled
+                if (new.isEditable) {
+                    binding.paymentSection.shippingButton.isEnabled = enabled
+                    binding.paymentSection.feeButton.isEnabled = enabled
+                    binding.productsSection.isEachAddButtonEnabled = enabled
+                }
             }
             new.isUpdatingOrderDraft.takeIfNotEqualTo(old?.isUpdatingOrderDraft) { show ->
-                binding.productsSection.content.productsAdapter?.isQuantityButtonsEnabled = show.not()
+                if (new.isEditable) {
+                    binding.productsSection.content.productsAdapter?.areProductsEditable = show.not()
+                }
             }
             new.showOrderUpdateSnackbar.takeIfNotEqualTo(old?.showOrderUpdateSnackbar) { show ->
                 showOrHideErrorSnackBar(show)
+            }
+            new.isEditable.takeIfNotEqualTo(old?.isEditable) { isEditable ->
+                if (isEditable) showEditableControls(binding) else hideEditableControls(binding)
             }
         }
 
@@ -406,5 +414,27 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     override fun onRequestAllowBackPress(): Boolean {
         viewModel.onBackButtonClicked()
         return false
+    }
+
+    private fun showEditableControls(binding: FragmentOrderCreationFormBinding) {
+        binding.productsSection.apply {
+            isEachAddButtonEnabled = true
+            content.productsAdapter?.areProductsEditable = true
+        }
+        binding.paymentSection.apply {
+            feeButton.isEnabled = true
+            shippingButton.isEnabled = true
+        }
+    }
+
+    private fun hideEditableControls(binding: FragmentOrderCreationFormBinding) {
+        binding.productsSection.apply {
+            isEachAddButtonEnabled = false
+            content.productsAdapter?.areProductsEditable = false
+        }
+        binding.paymentSection.apply {
+            feeButton.isEnabled = false
+            shippingButton.isEnabled = false
+        }
     }
 }
