@@ -32,7 +32,6 @@ class CustomerListFragment :
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel by viewModels<CustomerListViewModel>()
-    private val addressViewModel: AddressViewModel by viewModels()
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
 
     override fun onCreateView(
@@ -61,13 +60,9 @@ class CustomerListFragment :
             when (event) {
                 is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is CustomerListViewModel.CustomerSelected -> {
-                    addressViewModel.onCustomerAddressChanged(
-                        AddressViewModel.AddressType.BILLING,
-                        event.billingAddress,
-                    )
-                    addressViewModel.onCustomerAddressChanged(
-                        AddressViewModel.AddressType.SHIPPING,
-                        event.shippingAddress,
+                    sharedViewModel.onCustomerAddressEdited(
+                        billingAddress = event.billingAddress,
+                        shippingAddress = event.shippingAddress
                     )
                     navigateBackWithNotice(CUSTOMER_SELECTED)
                 }
