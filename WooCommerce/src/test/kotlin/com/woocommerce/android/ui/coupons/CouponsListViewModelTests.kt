@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.coupons
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.util.CurrencyFormatter
@@ -45,6 +47,7 @@ class CouponsListViewModelTests : BaseUnitTest() {
         on { getString(any()) } doAnswer { it.arguments[0].toString() }
         on { getString(any(), anyVararg()) } doAnswer { it.arguments[0].toString() }
     }
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val couponUtils = CouponUtils(
         currencyFormatter = currencyFormatter,
         resourceProvider = resourceProvider
@@ -59,7 +62,8 @@ class CouponsListViewModelTests : BaseUnitTest() {
             couponUtils = couponUtils,
             selectedSite = mock {
                 on { get() } doReturn SiteModel()
-            }
+            },
+            analyticsTrackerWrapper = analyticsTrackerWrapper,
         )
     }
 
@@ -103,6 +107,15 @@ class CouponsListViewModelTests : BaseUnitTest() {
 
         val state = viewModel.couponsState.captureValues().last()
         assertThat(state.isSearchOpen).isTrue()
+    }
+
+    @Test
+    fun `when search is opened, then proper track event is triggered`() = testBlocking {
+        setup()
+
+        viewModel.onSearchStateChanged(true)
+
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.COUPONS_LIST_SEARCH_TAPPED)
     }
 
     @Test
