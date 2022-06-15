@@ -359,6 +359,32 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given onOrderChanged error, when order tracking is deleted, then proper event is triggered`() = testBlocking {
+        val shipmentTracking = OrderShipmentTracking(
+            trackingProvider = "testProvider",
+            trackingNumber = "123456",
+            dateShipped = DateUtils.getCurrentDateString()
+        )
+        val onOrderChanged = WCOrderStore.OnOrderChanged(
+            statusFilter = "",
+            canLoadMore = false,
+            causeOfChange = null,
+            orderError = WCOrderStore.OrderError(
+                type = WCOrderStore.OrderErrorType.GENERIC_ERROR,
+                message = "generic error"
+            )
+        )
+        doReturn(onOrderChanged).whenever(repository).deleteOrderShipmentTracking(any(), any())
+        val addedShipmentTrackings = testOrderShipmentTrackings.toMutableList()
+        addedShipmentTrackings.add(shipmentTracking)
+
+        viewModel.start()
+        viewModel.deleteOrderShipmentTracking(shipmentTracking)
+
+        assertThat(viewModel.event.value).isInstanceOf(ShowSnackbar::class.java)
+    }
+
+    @Test
     fun `handle onBackButtonClicked when new shipment tracking is added`() = testBlocking {
         val shipmentTracking = OrderShipmentTracking(
             trackingProvider = "testProvider",
