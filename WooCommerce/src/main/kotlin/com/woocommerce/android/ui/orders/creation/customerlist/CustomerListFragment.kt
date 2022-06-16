@@ -11,6 +11,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
@@ -29,7 +30,7 @@ class CustomerListFragment :
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel by viewModels<CustomerListViewModel>()
-    private val addressViewModel: AddressViewModel by viewModels()
+    private val addressViewModel by hiltNavGraphViewModels<AddressViewModel>(R.id.nav_graph_order_creations)
 
     override fun onCreateView(
         inflater: LayoutInflater,
