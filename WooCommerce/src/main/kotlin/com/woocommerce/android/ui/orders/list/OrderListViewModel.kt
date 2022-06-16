@@ -153,9 +153,26 @@ class OrderListViewModel @Inject constructor(
      * processing list will always use the same [processingPagedListWrapper].
      */
     fun submitSearchOrFilter(searchQuery: String) {
-        val listDescriptor = WCOrderListDescriptor(selectedSite.get(), searchQuery = searchQuery)
+        val listDescriptor = WCOrderListDescriptor(
+            selectedSite.get(),
+            searchQuery = sanitizeSearchQuery(searchQuery)
+        )
         val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
         activatePagedListWrapper(pagedListWrapper, isFirstInit = true)
+    }
+
+    /**
+     * Removes the `#` from the start of the search keyword, if present.
+     *
+     *  This allows searching for an order with `#123` and getting the results for order `123`.
+     *  See https://github.com/woocommerce/woocommerce-android/issues/2621
+     *
+     */
+    private fun sanitizeSearchQuery(searchQuery: String): String {
+        if (searchQuery.startsWith("#")) {
+            return searchQuery.drop(1)
+        }
+        return searchQuery
     }
 
     /**
