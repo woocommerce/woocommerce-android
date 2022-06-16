@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.orders.details.views
 
 import android.content.Context
+import android.os.Bundle
+import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.PopupMenu
@@ -27,7 +29,30 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
+
+    private companion object {
+        const val KEY_SUPER_STATE = "ORDER-DETAIL-CUSTOMER-INFO-VIEW-SUPER-STATE"
+        const val KEY_IS_CUSTOMER_INFO_VIEW_EXPANDED = "ORDER-DETAIL-CUSTOMER-INFO-VIEW-IS_CUSTOMER_INFO_VIEW_EXPANDED"
+    }
+
     private val binding = OrderDetailCustomerInfoBinding.inflate(LayoutInflater.from(ctx), this)
+    private var isCustomerInfoViewExpanded = false
+
+    override fun onSaveInstanceState(): Parcelable {
+        val bundle = Bundle()
+        bundle.putBoolean(KEY_IS_CUSTOMER_INFO_VIEW_EXPANDED, isCustomerInfoViewExpanded)
+        bundle.putParcelable(KEY_SUPER_STATE, super.onSaveInstanceState())
+        return bundle
+    }
+
+    override fun onRestoreInstanceState(state: Parcelable?) {
+        var viewState = state
+        if (state is Bundle) {
+            isCustomerInfoViewExpanded = state.getBoolean(KEY_IS_CUSTOMER_INFO_VIEW_EXPANDED)
+            viewState = state.getParcelable(KEY_SUPER_STATE)
+        }
+        super.onRestoreInstanceState(viewState)
+    }
 
     fun updateCustomerInfo(
         order: Order,
@@ -48,6 +73,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         showCustomerNote(order, isReadOnly)
         showShippingAddress(order, isVirtualOrder, isReadOnly)
         showBillingInfo(order, isReadOnly)
+        restoreCustomerInfoViewExpandedOrCollapsedState()
     }
 
     private fun showBillingInfo(order: Order, isReadOnly: Boolean) {
@@ -115,14 +141,24 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
 
     private fun expandCustomerInfoView() {
         binding.customerInfoMorePanel.expand()
+        isCustomerInfoViewExpanded = true
         binding.customerInfoViewMoreButtonImage.animate().rotation(180F).setDuration(200).start()
         binding.customerInfoViewMoreButtonTitle.text = context.getString(R.string.orderdetail_hide_billing)
     }
 
     private fun collapseCustomerInfoView() {
         binding.customerInfoMorePanel.collapse()
+        isCustomerInfoViewExpanded = false
         binding.customerInfoViewMoreButtonImage.animate().rotation(0F).setDuration(200).start()
         binding.customerInfoViewMoreButtonTitle.text = context.getString(R.string.orderdetail_show_billing)
+    }
+
+    private fun restoreCustomerInfoViewExpandedOrCollapsedState() {
+        if (isCustomerInfoViewExpanded) {
+            expandCustomerInfoView()
+        } else {
+            collapseCustomerInfoView()
+        }
     }
 
     private fun showBillingAddressEmailInfo(order: Order) {
