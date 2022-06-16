@@ -36,6 +36,15 @@ class CustomerListRepository @Inject constructor(
         return Location.EMPTY
     }
 
+    fun getState(countryCode: String, stateCode: String): Location {
+        dataStore.getStates(countryCode).forEach {
+            if (it.code == stateCode) {
+                return it.toAppModel()
+            }
+        }
+        return Location.EMPTY
+    }
+
     /**
      * Submits a fetch request to get the first page of customers matching the passed query
      */

@@ -70,19 +70,25 @@ class CustomerListViewModel @Inject constructor(
                 )
 
                 val shippingCountry = customerListRepository.getCountry(shippingAddress.country)
+                val shippingState = customerListRepository.getState(shippingAddress.country, shippingAddress.state)
+
                 val billingCountry = customerListRepository.getCountry(billingAddress.country)
+                val billingState = customerListRepository.getState(billingAddress.country, billingAddress.state)
 
                 triggerEvent(
                     CustomerSelected(
-                        shippingAddress = shippingAddress.toAddressModel(shippingCountry),
-                        billingAddress = billingAddress.toAddressModel(billingCountry)
+                        shippingAddress = shippingAddress.toAddressModel(shippingCountry, shippingState),
+                        billingAddress = billingAddress.toAddressModel(billingCountry, billingState)
                     )
                 )
             }
         }
     }
 
-    private fun OrderAddress.toAddressModel(country: Location): Address {
+    private fun OrderAddress.toAddressModel(
+        country: Location,
+        state: Location
+    ): Address {
         return Address(
             company = company,
             lastName = lastName,
@@ -97,7 +103,7 @@ class CustomerListViewModel @Inject constructor(
             postcode = postcode,
             phone = phone,
             country = country,
-            state = AmbiguousLocation.Raw(state),
+            state = AmbiguousLocation.Defined(state),
             city = city
         )
     }
