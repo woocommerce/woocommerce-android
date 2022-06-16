@@ -1951,7 +1951,7 @@
     <string name="coupon_list_item_label_included_and_excluded">%1s excl. %2s</string>
     <string name="coupon_list_empty_heading">No coupons found</string>
     <string name="coupon_list_wip_title">View and edit coupons</string>
-    <string name="coupon_list_wip_message_enabled">We’ve been working on making it possible to view and edit coupons from your device!</string>
+    <string name="coupon_list_wip_message_enabled">We’ve been working on making it possible to view coupons on your device!</string>
     <string name="coupon_list_view_coupon">View coupon summary</string>
     <string name="coupon_list_loading_failed">Fetching coupons failed</string>
     <string name="coupon_list_search_failed">Searching coupons failed</string>
