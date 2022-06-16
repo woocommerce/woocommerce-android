@@ -10,7 +10,7 @@ enum class SurveyType(private val untaggedUrl: String, private val milestone: In
     SIMPLE_PAYMENTS(AppUrls.SIMPLE_PAYMENTS_SURVEY, 1),
     ORDER_CREATION(AppUrls.ORDER_CREATION_SURVEY, 1),
     MAIN(AppUrls.CROWDSIGNAL_MAIN_SURVEY),
-    COUPONS(AppUrls.COUPONS_SURVEY_DEBUG);
+    COUPONS(AppUrls.COUPONS_SURVEY);
 
     val url
         get() = "$untaggedUrl?$platformTag$appVersionTag$milestoneTag"
