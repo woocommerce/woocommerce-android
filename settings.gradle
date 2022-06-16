@@ -85,6 +85,12 @@ gradle.ext.mediaPickerSourceDeviceBinaryPath = "org.wordpress.mediapicker:source
 gradle.ext.mediaPickerSourceGifBinaryPath = "org.wordpress.mediapicker:source-gif"
 gradle.ext.mediaPickerSourceWordPressBinaryPath = "org.wordpress.mediapicker:source-wordpress"
 
+gradle.ext {
+    compileSdkVersion = 33
+    targetSdkVersion = 31
+    minSdkVersion = 21
+}
+
 def localBuilds = new File('local-builds.gradle')
 if (localBuilds.exists()) {
     apply from: localBuilds

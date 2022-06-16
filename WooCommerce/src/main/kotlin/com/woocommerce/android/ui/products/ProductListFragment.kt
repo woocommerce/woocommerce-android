@@ -56,7 +56,7 @@ class ProductListFragment :
     OnActionExpandListener {
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
-        val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"
+        const val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"
     }
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
@@ -241,13 +241,13 @@ class ProductListFragment :
         return true
     }
 
-    override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+    override fun onMenuItemActionExpand(item: MenuItem): Boolean {
         viewModel.onSearchOpened()
         onSearchViewActiveChanged(isActive = true)
         return true
     }
 
-    override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+    override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
         viewModel.onSearchClosed()
         closeSearchView()
         onSearchViewActiveChanged(isActive = false)

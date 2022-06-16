@@ -133,7 +133,7 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
             }
         }
         searchMenuItem.setOnActionExpandListener(object : OnActionExpandListener {
-            override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+            override fun onMenuItemActionExpand(item: MenuItem): Boolean {
                 if (isAdded) {
                     viewModel.onSearchStateChanged(open = true)
                     searchView.setOnQueryTextListener(textQueryListener)
@@ -141,7 +141,7 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
                 return true
             }
 
-            override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+            override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
                 if (isAdded) {
                     searchView.setOnQueryTextListener(null)
                     viewModel.onSearchStateChanged(open = false)
