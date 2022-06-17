@@ -49,8 +49,6 @@ class CustomerListFragment :
         }
     }
 
-    override fun getFragmentTitle() = getString(R.string.order_creation_customer_search_title)
-
     private fun setupObservers() {
         viewModel.event.observe(
             viewLifecycleOwner
