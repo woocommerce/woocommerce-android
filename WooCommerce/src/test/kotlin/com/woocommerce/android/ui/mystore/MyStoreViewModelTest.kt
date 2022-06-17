@@ -341,6 +341,21 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `Given top performers load success, When stats granularity changes, Then analytics is tracked`() =
+        testBlocking {
+            whenViewModelIsCreated()
+            givenNetworkConnectivity(connected = true)
+            givenToPerformersResult(GetTopPerformers.TopPerformersResult.TopPerformersSuccess(emptyList()))
+
+            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.DASHBOARD_TOP_PERFORMERS_LOADED,
+                mapOf(AnalyticsTracker.KEY_RANGE to "weeks")
+            )
+        }
+
+    @Test
     fun `Given top performers error, When stats granularity changes, Then UI is updated with top performers error`() =
         testBlocking {
             whenViewModelIsCreated()
