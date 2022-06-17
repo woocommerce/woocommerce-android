@@ -322,8 +322,8 @@ class MyStoreViewModelTest : BaseUnitTest() {
                 on(it.currency).thenReturn("USD")
                 on(it.product).thenReturn(WCProductModel())
             }
-            whenever(currencyFormatter.formatCurrency(BigDecimal("0.0"), "USD")).thenReturn("1.00")
-            whenever(resourceProvider.getString(any(), any())).thenReturn("")
+            givenCurrencyFormatter(BigDecimal("0.0"), "USD")
+            givenResourceProvider()
             whenViewModelIsCreated()
             givenNetworkConnectivity(connected = true)
             givenToPerformersResult(
@@ -335,7 +335,8 @@ class MyStoreViewModelTest : BaseUnitTest() {
             )
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
-            (sut.topPerformersState.value as MyStoreViewModel.TopPerformersViewState.Content).topPerformers[0].onClick.invoke(1L)
+            (sut.topPerformersState.value as MyStoreViewModel.TopPerformersViewState.Content)
+                .topPerformers[0].onClick.invoke(1L)
 
             verify(analyticsTrackerWrapper).track(AnalyticsEvent.TOP_EARNER_PRODUCT_TAPPED)
         }
@@ -396,6 +397,14 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
     private suspend fun givenToPerformersResult(result: GetTopPerformers.TopPerformersResult) {
         whenever(getTopPerformers.invoke(any(), any(), any())).thenReturn(flow { emit(result) })
+    }
+
+    private fun givenCurrencyFormatter(amount: BigDecimal, currency: String) {
+        whenever(currencyFormatter.formatCurrency(amount, currency)).thenReturn("1.00")
+    }
+
+    private fun givenResourceProvider() {
+        whenever(resourceProvider.getString(any(), any())).thenReturn("")
     }
 
     private fun givenStatsForGranularityCached(granularity: StatsGranularity) {
