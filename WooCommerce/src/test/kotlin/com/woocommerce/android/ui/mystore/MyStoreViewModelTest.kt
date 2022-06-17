@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.mystore
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -183,6 +184,22 @@ class MyStoreViewModelTest : BaseUnitTest() {
                 )
             )
         }
+
+    @Test
+    fun `Given success loading revenue, When stats granularity changes, Then analytics is tracked`() =
+        testBlocking {
+            whenViewModelIsCreated()
+            givenNetworkConnectivity(connected = true)
+            givenStatsLoadingResult(GetStats.LoadStatsResult.RevenueStatsSuccess(null))
+
+            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.DASHBOARD_MAIN_STATS_LOADED,
+                mapOf(AnalyticsTracker.KEY_RANGE to "weeks")
+            )
+        }
+
 
     @Test
     fun `Given error loading revenue, When stats granularity changes, Then UI is updated with error`() =
