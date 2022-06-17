@@ -14,7 +14,7 @@ msgstr ""
 msgctxt "release_note_094"
 msgid ""
 "9.4:\n"
-"Even though this release doesn’t have any new features, we still put a lot of love into it! In product details, some third-party extensions were causing the app to crash when viewing variable products. We’ve fixed this crash and a handful of minor improvements to make your experience smoother.\n"
+"Even though this release doesn’t have any new features, we still put a lot of love into it! In product details, some third-party extensions were causing the app to crash when viewing variable products. We’ve fixed this crash and made a handful of minor improvements to make your experience smoother.\n"
 msgstr ""
 
 msgctxt "release_note_093"
