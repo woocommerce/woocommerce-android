@@ -24,8 +24,11 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.WCProductModel
+import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.math.BigDecimal
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
@@ -310,6 +313,31 @@ class MyStoreViewModelTest : BaseUnitTest() {
             assertThat(sut.topPerformersState.value).isEqualTo(
                 MyStoreViewModel.TopPerformersViewState.Content(emptyList(), ANY_SELECTED_STATS_GRANULARITY)
             )
+        }
+
+    @Test
+    fun `Given top performers load success, When clicked, Then analytics is tracked`() =
+        testBlocking {
+            val topPerformerModel = mock<WCTopPerformerProductModel> {
+                on(it.currency).thenReturn("USD")
+                on(it.product).thenReturn(WCProductModel())
+            }
+            whenever(currencyFormatter.formatCurrency(BigDecimal("0.0"), "USD")).thenReturn("1.00")
+            whenever(resourceProvider.getString(any(), any())).thenReturn("")
+            whenViewModelIsCreated()
+            givenNetworkConnectivity(connected = true)
+            givenToPerformersResult(
+                GetTopPerformers.TopPerformersResult.TopPerformersSuccess(
+                    listOf(
+                        topPerformerModel
+                    )
+                )
+            )
+
+            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            (sut.topPerformersState.value as MyStoreViewModel.TopPerformersViewState.Content).topPerformers[0].onClick.invoke(1L)
+
+            verify(analyticsTrackerWrapper).track(AnalyticsEvent.TOP_EARNER_PRODUCT_TAPPED)
         }
 
     @Test
