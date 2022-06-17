@@ -203,7 +203,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
             )
         }
 
-
     @Test
     fun `Given error loading revenue, When stats granularity changes, Then UI is updated with error`() =
         testBlocking {
