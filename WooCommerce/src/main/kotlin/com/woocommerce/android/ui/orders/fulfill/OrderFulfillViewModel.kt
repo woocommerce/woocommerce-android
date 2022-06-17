@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.fulfill
 
 import android.os.Parcelable
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -12,6 +13,7 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_TRACKING_ADD
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.Item
@@ -42,7 +44,8 @@ class OrderFulfillViewModel @Inject constructor(
     private val appPrefs: AppPrefs,
     private val networkStatus: NetworkStatus,
     private val resourceProvider: ResourceProvider,
-    private val repository: OrderDetailRepository
+    private val repository: OrderDetailRepository,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
     companion object {
         const val KEY_ORDER_FULFILL_RESULT = "key_order_fulfill_result"
@@ -141,7 +144,7 @@ class OrderFulfillViewModel @Inject constructor(
     }
 
     fun onNewShipmentTrackingAdded(shipmentTracking: OrderShipmentTracking) {
-        AnalyticsTracker.track(
+        analyticsTrackerWrapper.track(
             ORDER_TRACKING_ADD,
             mapOf(
                 AnalyticsTracker.KEY_ID to order.id,
@@ -192,17 +195,18 @@ class OrderFulfillViewModel @Inject constructor(
         _shipmentTrackings.value = shipmentTrackings
     }
 
-    private fun deleteOrderShipmentTracking(shipmentTracking: OrderShipmentTracking) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun deleteOrderShipmentTracking(shipmentTracking: OrderShipmentTracking) {
         launch {
             val onOrderChanged = repository.deleteOrderShipmentTracking(
                 navArgs.orderId, shipmentTracking.toDataModel()
             )
             if (!onOrderChanged.isError) {
-                AnalyticsTracker.track(AnalyticsEvent.ORDER_TRACKING_DELETE_SUCCESS)
+                analyticsTrackerWrapper.track(AnalyticsEvent.ORDER_TRACKING_DELETE_SUCCESS)
                 viewState = viewState.copy(shouldRefreshShipmentTracking = true)
                 triggerEvent(ShowSnackbar(string.order_shipment_tracking_delete_success))
             } else {
-                AnalyticsTracker.track(
+                analyticsTrackerWrapper.track(
                     AnalyticsEvent.ORDER_TRACKING_DELETE_FAILED,
                     prepareTracksEventsDetails(onOrderChanged)
                 )
