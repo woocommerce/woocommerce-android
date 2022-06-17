@@ -12,6 +12,7 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -25,6 +26,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 
 @Composable
@@ -48,48 +50,54 @@ fun SSRScreen(
     onCopyButtonClick: () -> Unit,
     onShareButtonClick: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                backgroundColor = MaterialTheme.colors.surface,
+                title = { Text(stringResource(id = R.string.support_system_status_report)) },
+                navigationIcon = {
+                    IconButton(onClick = onBackPressed) {
+                        Icon(
+                            Icons.Filled.ArrowBack,
+                            contentDescription = stringResource(id = R.string.back)
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = onCopyButtonClick, enabled = !isLoading) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_copy_white_24dp),
+                            contentDescription = stringResource(id = R.string.support_system_status_report_copy_label),
+                            tint = colorResource(id = R.color.color_icon_menu),
+                        )
+                    }
+                    IconButton(onClick = onShareButtonClick, enabled = !isLoading) {
+                        Icon(
+                            imageVector = Icons.Filled.Share,
+                            contentDescription = stringResource(id = R.string.support_system_status_report_share_label),
+                            tint = colorResource(id = R.color.color_icon_menu)
+                        )
+                    }
+                }
+            )
+        }
     ) {
         val scrollState = rememberScrollState()
 
-        TopAppBar(
-            backgroundColor = MaterialTheme.colors.surface,
-            title = { Text(stringResource(id = R.string.support_system_status_report)) },
-            navigationIcon = {
-                IconButton(onClick = onBackPressed) {
-                    Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
-                }
-            },
-            actions = {
-                IconButton(onClick = onCopyButtonClick, enabled = !isLoading) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_copy_white_24dp),
-                        contentDescription = stringResource(id = R.string.support_system_status_report_copy_label),
-                        tint = colorResource(id = R.color.action_menu_fg_selector),
-                    )
-                }
-                IconButton(onClick = onShareButtonClick, enabled = !isLoading) {
-                    Icon(
-                        imageVector = Icons.Filled.Share,
-                        contentDescription = stringResource(id = R.string.support_system_status_report_share_label),
-                        tint = colorResource(id = R.color.action_menu_fg_selector)
-                    )
-                }
-            }
-        )
-
-        SSRContent(
-            isLoading = isLoading,
-            formattedSSR = formattedSSR,
-            modifier = Modifier
-                .background(color = MaterialTheme.colors.surface)
-                .verticalScroll(scrollState)
-                .padding(vertical = dimensionResource(id = R.dimen.major_100))
-                .fillMaxSize()
-                .weight(1.0f)
-        )
+        // Column is used here despite just having one child component, so that SSRContent can use `weight` Modifier.
+        // This allows `CircularProgressIndicator` in the loading state to be centered vertically and horizontally.
+        Column {
+            SSRContent(
+                isLoading = isLoading,
+                formattedSSR = formattedSSR,
+                modifier = Modifier
+                    .background(color = MaterialTheme.colors.surface)
+                    .verticalScroll(scrollState)
+                    .padding(vertical = dimensionResource(id = R.dimen.major_100))
+                    .fillMaxSize()
+                    .weight(1.0f)
+            )
+        }
     }
 }
 
@@ -113,3 +121,4 @@ fun SSRContent(isLoading: Boolean, formattedSSR: String, modifier: Modifier) {
         }
     }
 }
+
