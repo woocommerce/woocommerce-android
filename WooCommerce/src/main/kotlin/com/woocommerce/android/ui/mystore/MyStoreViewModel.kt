@@ -10,6 +10,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
@@ -52,7 +53,8 @@ class MyStoreViewModel @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
-    private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter
+    private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
     private companion object {
         const val NUM_TOP_PERFORMERS = 5
@@ -123,7 +125,7 @@ class MyStoreViewModel @Inject constructor(
 
     fun onSwipeToRefresh() {
         usageTracksEventEmitter.interacted()
-        AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_PULLED_TO_REFRESH)
+        analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_PULLED_TO_REFRESH)
         resetForceRefresh()
         refreshTrigger.tryEmit(Unit)
     }
@@ -172,7 +174,7 @@ class MyStoreViewModel @Inject constructor(
             it.stats?.toStoreStatsUiModel(),
             selectedGranularity
         )
-        AnalyticsTracker.track(
+        analyticsTrackerWrapper.track(
             AnalyticsEvent.DASHBOARD_MAIN_STATS_LOADED,
             mapOf(AnalyticsTracker.KEY_RANGE to selectedGranularity.name.lowercase())
         )
@@ -234,7 +236,7 @@ class MyStoreViewModel @Inject constructor(
                                 it.topPerformers.toTopPerformersUiList(),
                                 granularity
                             )
-                        AnalyticsTracker.track(
+                        analyticsTrackerWrapper.track(
                             AnalyticsEvent.DASHBOARD_TOP_PERFORMERS_LOADED,
                             mapOf(AnalyticsTracker.KEY_RANGE to granularity.name.lowercase())
                         )
@@ -255,7 +257,7 @@ class MyStoreViewModel @Inject constructor(
 
     private fun onTopPerformerSelected(productId: Long) {
         triggerEvent(MyStoreEvent.OpenTopPerformer(productId))
-        AnalyticsTracker.track(AnalyticsEvent.TOP_EARNER_PRODUCT_TAPPED)
+        analyticsTrackerWrapper.track(AnalyticsEvent.TOP_EARNER_PRODUCT_TAPPED)
         usageTracksEventEmitter.interacted()
     }
 

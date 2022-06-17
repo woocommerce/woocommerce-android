@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.mystore
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.domain.GetStats
@@ -15,7 +17,11 @@ import kotlinx.coroutines.flow.flow
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -33,6 +39,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter = mock()
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     private lateinit var sut: MyStoreViewModel
 
@@ -147,6 +154,17 @@ class MyStoreViewModelTest : BaseUnitTest() {
                 DEFAULT_STATS_GRANULARITY,
                 ANY_TOP_PERFORMERS_COUNT
             )
+        }
+
+    @Test
+    fun `Given network connection, When on swipe to refresh, Then analytics is tracked`() =
+        testBlocking {
+            whenViewModelIsCreated()
+            givenNetworkConnectivity(connected = true)
+
+            sut.onSwipeToRefresh()
+
+            verify(analyticsTrackerWrapper).track(AnalyticsEvent.DASHBOARD_PULLED_TO_REFRESH)
         }
 
     @Test
@@ -341,7 +359,8 @@ class MyStoreViewModelTest : BaseUnitTest() {
             currencyFormatter,
             selectedSite,
             appPrefsWrapper,
-            usageTracksEventEmitter
+            usageTracksEventEmitter,
+            analyticsTrackerWrapper,
         )
     }
 
