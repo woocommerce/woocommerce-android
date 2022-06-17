@@ -122,3 +122,14 @@ fun SSRContent(isLoading: Boolean, formattedSSR: String, modifier: Modifier) {
     }
 }
 
+@Preview
+@Composable
+fun SSRScreenPreview() {
+    SSRScreen(
+        isLoading = false,
+        formattedSSR = "This is the example SSR content.",
+        onBackPressed = {},
+        onCopyButtonClick = {},
+        onShareButtonClick = {},
+    )
+}
