@@ -1,10 +1,13 @@
 package com.woocommerce.android.ui.products.addons.order
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -14,10 +17,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
+import com.woocommerce.android.databinding.FragmentComposeOrderedAddonBinding
 import com.woocommerce.android.databinding.FragmentOrderedAddonBinding
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.products.addons.AddonListAdapter
 import com.woocommerce.android.ui.products.addons.order.OrderedAddonViewModel.ShowSurveyView
@@ -30,7 +34,7 @@ import org.wordpress.android.fluxc.domain.Addon
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
+class OrderedAddonFragment : BaseFragment(R.layout.fragment_compose_ordered_addon) {
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     private val viewModel: OrderedAddonViewModel by viewModels()
@@ -58,11 +62,29 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _binding = FragmentOrderedAddonBinding.bind(view)
+//
+//        setupViewModel()
+//        setupViews()
+//        loadViewData()
+    }
 
-        setupViewModel()
-        setupViews()
-        loadViewData()
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?): View? {
+        _binding = FragmentOrderedAddonBinding.inflate(inflater)
+        FragmentComposeOrderedAddonBinding.inflate(inflater, container, false)
+            .addonsComposeView.apply {
+                setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)
+                setContent {
+                    WooThemeWithBackground {
+                        OrderedAddonScreen(viewModel)
+                    }
+                }
+            }
+
+
+        return super.onCreateView(inflater, container, savedInstanceState)
     }
 
     override fun onResume() {
@@ -80,14 +102,14 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
 
     private fun setupViewModel() {
         viewModel.orderedAddonsData.observe(viewLifecycleOwner, Observer(::onOrderedAddonsReceived))
-        viewModel.viewStateLiveData.observe(viewLifecycleOwner, ::handleViewStateChanges)
+        viewModel.viewStateData.observe(viewLifecycleOwner, ::handleViewStateChanges)
         viewModel.event.observe(viewLifecycleOwner, ::handleViewModelEvents)
     }
 
-    private fun handleViewStateChanges(old: ViewState?, new: ViewState?) {
-        new?.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { isLoadingSkeletonVisible = it }
-        new?.isLoadingFailure?.takeIfNotEqualTo(old?.isLoadingFailure) { if (it) onOrderedAddonsFailed() }
-        new?.shouldDisplayFeedbackCard?.takeIfNotEqualTo(old?.shouldDisplayFeedbackCard, ::showWIPNoticeCard)
+    private fun handleViewStateChanges(viewState: ViewState?) {
+        viewState?.isSkeletonShown?.let { isLoadingSkeletonVisible = it }
+        viewState?.isLoadingFailure?.let { if (it) onOrderedAddonsFailed() }
+        viewState?.shouldDisplayFeedbackCard?.let(::showWIPNoticeCard)
     }
 
     private fun handleViewModelEvents(event: MultiLiveEvent.Event) {

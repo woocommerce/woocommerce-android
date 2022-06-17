@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.products.addons.order
 
 import android.os.Parcelable
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -15,10 +15,12 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
@@ -39,11 +41,13 @@ class OrderedAddonViewModel @Inject constructor(
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
     }
 
-    val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
-    private var viewState by viewStateLiveData
+    private val _viewState: MutableStateFlow<ViewState> =
+        savedState.getStateFlow(viewModelScope, ViewState())
+    val viewStateData = _viewState.asLiveData()
 
-    private val _orderedAddons = MutableLiveData<List<Addon>>()
-    val orderedAddonsData: LiveData<List<Addon>> = _orderedAddons
+    private val _orderedAddons: MutableStateFlow<List<Addon>> =
+        savedState.getStateFlow(viewModelScope, emptyList())
+    val orderedAddonsData = _orderedAddons.asLiveData()
 
     private val currentFeedbackSettings
         get() = FeedbackPrefs.getFeatureFeedbackSettings(PRODUCT_ADDONS)
@@ -63,7 +67,7 @@ class OrderedAddonViewModel @Inject constructor(
         orderID: Long,
         orderItemID: Long,
         productID: Long
-    ) = viewState.copy(isSkeletonShown = true).let { viewState = it }.also {
+    ) = _viewState.update { it.copy(isSkeletonShown = true) }.also {
         launch(dispatchers.computation) {
             addonsRepository.updateGlobalAddonsSuccessfully()
             loadOrderAddonsData(orderID, orderItemID, productID)
@@ -92,7 +96,7 @@ class OrderedAddonViewModel @Inject constructor(
             DISMISSED
         ).registerItself()
 
-        viewState = viewState.copy(shouldDisplayFeedbackCard = false)
+        _viewState.update { it.copy(shouldDisplayFeedbackCard = false) }
     }
 
     private suspend fun loadOrderAddonsData(
@@ -178,11 +182,13 @@ class OrderedAddonViewModel @Inject constructor(
 
     private suspend fun dispatchResult(result: List<Addon>) {
         withContext(dispatchers.main) {
-            viewState = viewState.copy(
-                isSkeletonShown = false,
-                isLoadingFailure = false,
-                shouldDisplayFeedbackCard = currentFeedbackSettings.feedbackState != DISMISSED
-            )
+            _viewState.update {
+                it.copy(
+                    isSkeletonShown = false,
+                    isLoadingFailure = false,
+                    shouldDisplayFeedbackCard = currentFeedbackSettings.feedbackState != DISMISSED
+                )
+            }
             track(result)
             _orderedAddons.value = result
         }
@@ -190,11 +196,13 @@ class OrderedAddonViewModel @Inject constructor(
 
     private suspend fun handleFailure() {
         withContext(dispatchers.main) {
-            viewState = viewState.copy(
-                isSkeletonShown = false,
-                isLoadingFailure = true,
-                shouldDisplayFeedbackCard = false
-            )
+            _viewState.update {
+                it.copy(
+                    isSkeletonShown = false,
+                    isLoadingFailure = true,
+                    shouldDisplayFeedbackCard = false
+                )
+            }
         }
     }
 
@@ -226,6 +234,12 @@ class OrderedAddonViewModel @Inject constructor(
         val isLoadingFailure: Boolean = false,
         val shouldDisplayFeedbackCard: Boolean = false
     ) : Parcelable
+
+    data class OrderedAddonsState(
+        val isSkeletonShown: Boolean? = null,
+        val isLoadingFailure: Boolean = false,
+        val shouldDisplayFeedbackCard: Boolean = false
+    )
 
     object ShowSurveyView : Event()
 }
