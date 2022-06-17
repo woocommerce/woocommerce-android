@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.simplepayments
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -10,7 +9,6 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import javax.inject.Inject
 
-@OpenClassOnDebug
 @HiltViewModel
 class SimplePaymentsSharedViewModel @Inject constructor(
     savedState: SavedStateHandle,

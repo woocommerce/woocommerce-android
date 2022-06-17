@@ -4,7 +4,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_LOADED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_UPDATE_ERROR
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_UPDATE_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
@@ -16,7 +15,6 @@ import org.wordpress.android.fluxc.store.WCProductStore.OnVariationChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnVariationUpdated
 import javax.inject.Inject
 
-@OpenClassOnDebug
 class VariationDetailRepository @Inject constructor(
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite,

@@ -14,7 +14,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_TRACKING_ADD
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.Item
 import com.woocommerce.android.model.OrderShipmentTracking
@@ -37,7 +36,6 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import javax.inject.Inject
 
-@OpenClassOnDebug
 @HiltViewModel
 class OrderFulfillViewModel @Inject constructor(
     savedState: SavedStateHandle,

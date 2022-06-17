@@ -8,7 +8,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STATE_OFF
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STATE_ON
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.creation.OrderCreationRepository
@@ -30,7 +29,6 @@ import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.Optimist
 import java.math.BigDecimal
 import javax.inject.Inject
 
-@OpenClassOnDebug
 @HiltViewModel
 class SimplePaymentsFragmentViewModel @Inject constructor(
     savedState: SavedStateHandle,
