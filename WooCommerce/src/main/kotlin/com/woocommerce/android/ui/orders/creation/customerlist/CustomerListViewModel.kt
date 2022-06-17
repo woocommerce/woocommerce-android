@@ -134,10 +134,11 @@ class CustomerListViewModel @Inject constructor(
                 isSkeletonShown = true,
                 searchQuery = query
             )
-            val customers = ArrayList<CustomerListItem>()
-            customerListRepository.searchCustomerList(query)?.forEach {
-                customers.add(it.toUiModel())
-            }
+
+            val customers = customerListRepository.searchCustomerList(query)?.map {
+                it.toUiModel()
+            } ?: emptyList()
+
             _viewState.value = _viewState.value?.copy(
                 isSkeletonShown = false,
                 customers = customers
