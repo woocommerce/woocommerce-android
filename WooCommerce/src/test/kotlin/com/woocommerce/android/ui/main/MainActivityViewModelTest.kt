@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.main
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.FeatureAnnouncementItem
 import com.woocommerce.android.push.*
@@ -39,6 +42,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: MainActivityViewModel
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
     private val selectedSite: SelectedSite = mock()
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     private val siteStore: SiteStore = mock()
     private val siteModel: SiteModel = SiteModel().apply {
@@ -120,6 +124,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
                 featureAnnouncementRepository,
                 buildConfigWrapper,
                 prefs,
+                analyticsTrackerWrapper,
                 unseenReviewsCountHandler
             )
         )
@@ -325,5 +330,23 @@ class MainActivityViewModelTest : BaseUnitTest() {
 
             viewModel.showFeatureAnnouncementIfNeeded()
             assertThat(viewModel.event.value).isEqualTo(ShowFeatureAnnouncement(testAnnouncement))
+        }
+
+    @Test
+    fun `given existing announcement cache, when app is upgraded and announcement is valid, track event is tracked`() =
+        testBlocking {
+            doReturn(testAnnouncement).whenever(featureAnnouncementRepository).getLatestFeatureAnnouncement(true)
+            doReturn("14.0").whenever(prefs).getLastVersionWithAnnouncement()
+            doReturn("14.2").whenever(buildConfigWrapper).versionName
+
+            viewModel.showFeatureAnnouncementIfNeeded()
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.FEATURE_ANNOUNCEMENT_SHOWN,
+                mapOf(
+                    AnalyticsTracker.KEY_ANNOUNCEMENT_VIEW_SOURCE to
+                        AnalyticsTracker.VALUE_ANNOUNCEMENT_SOURCE_UPGRADE
+                )
+            )
         }
 }
