@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.products.categories
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.toProductCategory
@@ -24,7 +23,6 @@ import org.wordpress.android.fluxc.store.WCProductStore.OnProductCategoryChanged
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType.TERM_EXISTS
 import javax.inject.Inject
 
-@OpenClassOnDebug
 class ProductCategoriesRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
