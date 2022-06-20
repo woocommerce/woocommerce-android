@@ -69,8 +69,7 @@ fun InstallWcShippingOnboarding(viewState: ViewState.Onboarding) {
             LinkText(
                 modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_200)),
                 text = stringResource(R.string.install_wc_shipping_flow_onboarding_screen_link),
-                url = viewState.linkUrl,
-                onClick = viewState.onLinkClicked
+                onClick = viewState.onInfoLinkClicked
             )
         }
         Column(
@@ -107,11 +106,10 @@ fun InstallWcShippingOnboarding(viewState: ViewState.Onboarding) {
 private fun LinkText(
     modifier: Modifier,
     text: String,
-    url: String,
-    onClick: (String) -> Unit
+    onClick: () -> Unit
 ) {
     Text(
-        modifier = modifier.clickable { onClick(url) },
+        modifier = modifier.clickable(onClick = onClick),
         style = MaterialTheme.typography.subtitle1,
         color = colorResource(id = R.color.link_text),
         text = text,

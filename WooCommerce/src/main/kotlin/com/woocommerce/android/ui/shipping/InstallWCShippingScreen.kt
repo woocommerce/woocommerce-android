@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel.ViewState
+import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel.ViewState.InstallationState
 
 @Composable
 fun InstallWCShippingScreen(viewModel: InstallWCShippingViewModel) {
@@ -17,5 +18,6 @@ fun InstallWCShippingScreen(viewModel: InstallWCShippingViewModel) {
 fun InstallWCShippingScreen(viewState: ViewState) {
     when (viewState) {
         is ViewState.Onboarding -> InstallWcShippingOnboarding(viewState = viewState)
+        is InstallationState -> InstallWCShippingFlow(viewState = viewState)
     }
 }

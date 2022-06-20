@@ -6,6 +6,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -17,10 +18,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class InstallWCShippingViewModel @Inject constructor(
-    savedState: SavedStateHandle
+    savedState: SavedStateHandle,
+    private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedState) {
     private companion object {
-        const val WC_SHIPPING_INFO_URL = "https://woocommerce.com/woocommerce-shipping/"
+        private const val WC_SHIPPING_INFO_URL = "https://woocommerce.com/woocommerce-shipping/"
     }
 
     private val step = savedState.getStateFlow<Step>(this, Step.Onboarding)
@@ -36,11 +38,17 @@ class InstallWCShippingViewModel @Inject constructor(
                 subtitle = R.string.install_wc_shipping_flow_onboarding_screen_subtitle,
                 bullets = getBulletPointsForInstallingWcShippingFlow(),
                 linkUrl = WC_SHIPPING_INFO_URL,
-                onLinkClicked = ::onLinkClicked,
+                onInfoLinkClicked = { onLinkClicked(WC_SHIPPING_INFO_URL) },
                 onInstallClicked = ::onInstallWcShippingClicked,
                 onDismissFlowClicked = ::onDismissWcShippingFlowClicked
             )
-            Step.PreInstallation -> TODO()
+            Step.PreInstallation -> ViewState.InstallationState.PreInstallation(
+                extensionsName = R.string.install_wc_shipping_extension_name,
+                siteName = selectedSite.get().let { site -> site.displayName.takeIf { it.isNotBlank() } ?: site.name },
+                onCancelClick = ::onDismissWcShippingFlowClicked,
+                onProceedClick = { TODO() },
+                onWarningClick = { TODO() }
+            )
             Step.Installation -> TODO()
             Step.PostInstallationSuccess -> TODO()
             is Step.PostInstallationFailure -> TODO()
@@ -103,8 +111,20 @@ class InstallWCShippingViewModel @Inject constructor(
             val linkUrl: String,
             val onInstallClicked: () -> Unit = {},
             val onDismissFlowClicked: () -> Unit = {},
-            val onLinkClicked: (String) -> Unit = {}
+            val onInfoLinkClicked: () -> Unit = {}
         ) : ViewState
+
+        sealed class InstallationState : ViewState {
+            abstract val extensionsName: Int
+
+            data class PreInstallation(
+                @StringRes override val extensionsName: Int,
+                val siteName: String,
+                val onCancelClick: () -> Unit,
+                val onProceedClick: () -> Unit,
+                val onWarningClick: () -> Unit
+            ) : InstallationState()
+        }
     }
 
     data class InstallWCShippingOnboardingBulletUi(
