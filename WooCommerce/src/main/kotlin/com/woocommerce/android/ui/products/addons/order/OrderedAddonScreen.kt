@@ -62,13 +62,30 @@ private fun OrderedAddonList(
                         vertical = dimensionResource(id = R.dimen.minor_100)
                     )
             ) {
-                Text(
-                    text = addon.name,
-                    style = MaterialTheme.typography.subtitle1,
-                    color = MaterialTheme.colors.onSurface,
-                    modifier = Modifier.fillMaxWidth()
-                )
+                OrderedAddonItem(orderedAddon = addon)
             }
+        }
+    }
+}
+
+@Composable
+private fun OrderedAddonItem(
+    orderedAddon: Addon
+) {
+    Column {
+        Text(
+            text = orderedAddon.name,
+            style = MaterialTheme.typography.h1,
+            color = MaterialTheme.colors.onSurface,
+            modifier = Modifier.fillMaxWidth()
+        )
+        orderedAddon.description?.let {
+            Text(
+                text = it,
+                style = MaterialTheme.typography.body1,
+                color = MaterialTheme.colors.onSurface,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }
