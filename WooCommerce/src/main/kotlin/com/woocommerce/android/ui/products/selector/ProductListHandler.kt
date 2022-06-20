@@ -17,7 +17,7 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
     private var offset = 0
     private var canLoadMore = true
 
-    private val searchQuery = MutableStateFlow<String>("")
+    private val searchQuery = MutableStateFlow("")
     private val searchResults = MutableStateFlow(emptyList<Product>())
 
     val productsFlow = searchQuery.flatMapLatest { query ->

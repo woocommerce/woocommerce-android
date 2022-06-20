@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
-import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.isInteger
 import com.woocommerce.android.model.Product
@@ -72,7 +71,7 @@ class ProductSelectorViewModel @Inject constructor(
     private val loadingState = MutableStateFlow(IDLE)
     private val selectedProductIds = savedState.getStateFlow(viewModelScope, navArgs.productIds.toSet())
 
-    val viewSate = combine(
+    val viewState = combine(
         flow = listHandler.productsFlow,
         flow2 = loadingState.withIndex()
             .debounce {
@@ -207,8 +206,8 @@ class ProductSelectorViewModel @Inject constructor(
                     try {
                         listHandler.fetchProducts(searchQuery = query)
                             .onFailure {
-                                val message = if (query.isEmpty()) R.string.product_selector_loading_failed
-                                else R.string.product_selector_search_failed
+                                val message = if (query.isEmpty()) string.product_selector_loading_failed
+                                else string.product_selector_search_failed
                                 triggerEvent(ShowSnackbar(message))
                             }
                     } finally {

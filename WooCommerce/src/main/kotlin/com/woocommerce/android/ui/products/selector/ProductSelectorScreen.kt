@@ -55,7 +55,7 @@ import com.woocommerce.android.util.StringUtils
 
 @Composable
 fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
-    val viewState by viewModel.viewSate.observeAsState()
+    val viewState by viewModel.viewState.observeAsState()
     viewState?.let {
         ProductSelectorScreen(
             state = it,
@@ -112,25 +112,25 @@ private fun EmptyProductList(searchQuery: String) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = dimensionResource(id = R.dimen.major_200)),
+            .padding(horizontal = dimensionResource(id = dimen.major_200)),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         val message = if (searchQuery.isEmpty()) {
-            stringResource(id = R.string.product_selector_empty_state)
+            stringResource(id = string.product_selector_empty_state)
         } else {
-            stringResource(id = R.string.empty_message_with_search, searchQuery)
+            stringResource(id = string.empty_message_with_search, searchQuery)
         }
         Text(
             text = message,
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.h6,
             modifier = Modifier.padding(
-                start = dimensionResource(id = R.dimen.major_150),
-                end = dimensionResource(id = R.dimen.major_150)
+                start = dimensionResource(id = dimen.major_150),
+                end = dimensionResource(id = dimen.major_150)
             )
         )
-        Spacer(Modifier.size(dimensionResource(id = R.dimen.major_325)))
+        Spacer(Modifier.size(dimensionResource(id = dimen.major_325)))
         Image(
             painter = painterResource(id = R.drawable.img_empty_products),
             contentDescription = null,
@@ -160,7 +160,7 @@ private fun ProductList(
             if (state.selectedItemsCount > 0) {
                 WCTextButton(
                     onClick = onClearButtonClick,
-                    text = stringResource(id = R.string.product_selector_clear_button_title),
+                    text = stringResource(id = string.product_selector_clear_button_title),
                     allCaps = false,
                     modifier = Modifier.align(Alignment.CenterStart)
                 )
@@ -168,7 +168,7 @@ private fun ProductList(
 
             WCTextButton(
                 onClick = { },
-                text = stringResource(id = R.string.product_selector_filter_button_title),
+                text = stringResource(id = string.product_selector_filter_button_title),
                 allCaps = false,
                 modifier = Modifier.align(Alignment.CenterEnd)
             )
@@ -185,7 +185,7 @@ private fun ProductList(
                     imageUrl = product.imageUrl,
                     infoLine1 = product.stockAndPrice,
                     infoLine2 = product.sku?.let {
-                        stringResource(R.string.product_selector_sku_value, product.sku)
+                        stringResource(string.product_selector_sku_value, product.sku)
                     },
                     selectionState = product.selectionState,
                     isArrowVisible = product.type == VARIABLE && product.numVariations > 0,
@@ -195,9 +195,9 @@ private fun ProductList(
                     onProductClick(product)
                 }
                 Divider(
-                    modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100)),
+                    modifier = Modifier.padding(start = dimensionResource(id = dimen.major_100)),
                     color = colorResource(id = R.color.divider_color),
-                    thickness = dimensionResource(id = R.dimen.minor_10)
+                    thickness = dimensionResource(id = dimen.minor_10)
                 )
             }
             if (state.loadingState == APPENDING) {
@@ -218,20 +218,20 @@ private fun ProductList(
 
         Divider(
             color = colorResource(id = R.color.divider_color),
-            thickness = dimensionResource(id = R.dimen.minor_10)
+            thickness = dimensionResource(id = dimen.minor_10)
         )
 
         WCColoredButton(
             onClick = onDoneButtonClick,
             text = StringUtils.getQuantityString(
                 quantity = state.selectedItemsCount,
-                default = R.string.product_selector_select_button_title_default,
-                one = R.string.product_selector_select_button_title_one,
-                zero = R.string.done
+                default = string.product_selector_select_button_title_default,
+                one = string.product_selector_select_button_title_one,
+                zero = string.done
             ),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(dimensionResource(id = R.dimen.major_100))
+                .padding(dimensionResource(id = dimen.major_100))
         )
     }
 }
@@ -244,32 +244,32 @@ private fun ProductListSkeleton() {
         repeat(numberOfInboxSkeletonRows) {
             item {
                 Row(
-                    modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)),
-                    horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_85))
+                    modifier = Modifier.padding(dimensionResource(id = dimen.major_100)),
+                    horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.major_85))
                 ) {
                     SkeletonView(
-                        dimensionResource(id = R.dimen.skeleton_image_dimension),
-                        dimensionResource(id = R.dimen.skeleton_image_dimension)
+                        dimensionResource(id = dimen.skeleton_image_dimension),
+                        dimensionResource(id = dimen.skeleton_image_dimension)
                     )
 
                     Column(
-                        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))
+                        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.minor_100))
                     ) {
                         SkeletonView(
-                            dimensionResource(id = R.dimen.skeleton_text_large_width),
-                            dimensionResource(id = R.dimen.major_200)
+                            dimensionResource(id = dimen.skeleton_text_large_width),
+                            dimensionResource(id = dimen.major_200)
                         )
                         SkeletonView(
-                            dimensionResource(id = R.dimen.skeleton_text_extra_large_width),
-                            dimensionResource(id = R.dimen.major_150)
+                            dimensionResource(id = dimen.skeleton_text_extra_large_width),
+                            dimensionResource(id = dimen.major_150)
                         )
                     }
                 }
                 Divider(
                     modifier = Modifier
-                        .offset(x = dimensionResource(id = R.dimen.major_100)),
+                        .offset(x = dimensionResource(id = dimen.major_100)),
                     color = colorResource(id = R.color.divider_color),
-                    thickness = dimensionResource(id = R.dimen.minor_10)
+                    thickness = dimensionResource(id = dimen.minor_10)
                 )
             }
         }
