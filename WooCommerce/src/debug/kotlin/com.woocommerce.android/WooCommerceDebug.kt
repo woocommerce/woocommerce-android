@@ -21,7 +21,7 @@ import dagger.hilt.android.HiltAndroidApp
 class WooCommerceDebug : WooCommerce() {
     override fun onCreate() {
         if (FlipperUtils.shouldEnableFlipper(this) &&
-            Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP
+            Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1
         ) {
             SoLoader.init(this, false)
             AndroidFlipperClient.getInstance(this).apply {
