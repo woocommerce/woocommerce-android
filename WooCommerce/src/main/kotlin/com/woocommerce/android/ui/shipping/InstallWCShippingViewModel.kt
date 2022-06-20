@@ -6,14 +6,8 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
-import com.woocommerce.android.R.string
-import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel.InstallWcShippingFlowEvent.ExitInstallFlowEvent
-import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel.Step.Installation
-import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel.Step.Onboarding
-import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel.Step.PostInstallationFailure
-import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel.Step.PostInstallationSuccess
-import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel.Step.PreInstallation
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +16,7 @@ import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 @HiltViewModel
-class InstallWcShippingFlowViewModel @Inject constructor(
+class InstallWCShippingViewModel @Inject constructor(
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private companion object {
@@ -37,35 +31,35 @@ class InstallWcShippingFlowViewModel @Inject constructor(
 
     private fun prepareStep(step: Step): ViewState {
         return when (step) {
-            Onboarding -> ViewState.Onboarding(
-                title = string.install_wc_shipping_flow_onboarding_screen_title,
-                subtitle = string.install_wc_shipping_flow_onboarding_screen_subtitle,
+            Step.Onboarding -> ViewState.Onboarding(
+                title = R.string.install_wc_shipping_flow_onboarding_screen_title,
+                subtitle = R.string.install_wc_shipping_flow_onboarding_screen_subtitle,
                 bullets = getBulletPointsForInstallingWcShippingFlow(),
                 linkUrl = WC_SHIPPING_INFO_URL,
                 onLinkClicked = ::onLinkClicked,
                 onInstallClicked = ::onInstallWcShippingClicked,
                 onDismissFlowClicked = ::onDismissWcShippingFlowClicked
             )
-            PreInstallation -> TODO()
-            Installation -> TODO()
-            PostInstallationSuccess -> TODO()
-            is PostInstallationFailure -> TODO()
+            Step.PreInstallation -> TODO()
+            Step.Installation -> TODO()
+            Step.PostInstallationSuccess -> TODO()
+            is Step.PostInstallationFailure -> TODO()
         }
     }
 
     private fun getBulletPointsForInstallingWcShippingFlow() =
         listOf(
-            InstallWcShippingOnboardingBulletUi(
+            InstallWCShippingOnboardingBulletUi(
                 title = R.string.install_wc_shipping_flow_onboarding_screen_postage_bullet_title,
                 description = R.string.install_wc_shipping_flow_onboarding_screen_postage_bullet_desc,
                 icon = R.drawable.ic_install_wcs_onboarding_bullet_buy
             ),
-            InstallWcShippingOnboardingBulletUi(
+            InstallWCShippingOnboardingBulletUi(
                 title = R.string.install_wc_shipping_flow_onboarding_screen_print_bullet_title,
                 description = R.string.install_wc_shipping_flow_onboarding_screen_print_bullet_desc,
                 icon = R.drawable.ic_install_wcs_onboarding_bullet_print
             ),
-            InstallWcShippingOnboardingBulletUi(
+            InstallWCShippingOnboardingBulletUi(
                 title = R.string.install_wc_shipping_flow_onboarding_screen_discounts_bullet_title,
                 description = R.string.install_wc_shipping_flow_onboarding_screen_discounts_bullet_desc,
                 icon = R.drawable.ic_install_wcs_onboarding_bullet_disccounts
@@ -77,18 +71,11 @@ class InstallWcShippingFlowViewModel @Inject constructor(
     }
 
     private fun onDismissWcShippingFlowClicked() {
-        triggerEvent(ExitInstallFlowEvent)
+        triggerEvent(Exit)
     }
 
     private fun onLinkClicked(url: String) {
-        triggerEvent(InstallWcShippingFlowEvent.OpenLinkEvent(url))
-    }
-
-    sealed class InstallWcShippingFlowEvent : MultiLiveEvent.Event() {
-        object ExitInstallFlowEvent : InstallWcShippingFlowEvent()
-        data class OpenLinkEvent(
-            val url: String,
-        ) : InstallWcShippingFlowEvent()
+        triggerEvent(OpenLinkEvent(url))
     }
 
     private sealed interface Step : Parcelable {
@@ -112,7 +99,7 @@ class InstallWcShippingFlowViewModel @Inject constructor(
         data class Onboarding(
             @StringRes val title: Int,
             @StringRes val subtitle: Int,
-            val bullets: List<InstallWcShippingOnboardingBulletUi>,
+            val bullets: List<InstallWCShippingOnboardingBulletUi>,
             val linkUrl: String,
             val onInstallClicked: () -> Unit = {},
             val onDismissFlowClicked: () -> Unit = {},
@@ -120,11 +107,15 @@ class InstallWcShippingFlowViewModel @Inject constructor(
         ) : ViewState
     }
 
-    data class InstallWcShippingOnboardingBulletUi(
+    data class InstallWCShippingOnboardingBulletUi(
         @StringRes val title: Int,
         @StringRes val description: Int,
         @DrawableRes val icon: Int
     )
 
     object InstallWcShipping : MultiLiveEvent.Event()
+    data class OpenLinkEvent(
+        val url: String,
+    ) : MultiLiveEvent.Event()
+
 }

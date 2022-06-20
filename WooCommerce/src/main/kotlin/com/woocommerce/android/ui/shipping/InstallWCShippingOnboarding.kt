@@ -29,8 +29,8 @@ import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
-import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel.InstallWcShippingOnboardingBulletUi
-import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel.ViewState
+import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel.InstallWCShippingOnboardingBulletUi
+import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel.ViewState
 
 @Composable
 fun InstallWcShippingOnboarding(viewState: ViewState.Onboarding) {
@@ -119,7 +119,7 @@ private fun LinkText(
 }
 
 @Composable
-private fun InstallWcsOnboardingBullets(onboardingBullets: List<InstallWcShippingOnboardingBulletUi>) {
+private fun InstallWcsOnboardingBullets(onboardingBullets: List<InstallWCShippingOnboardingBulletUi>) {
     onboardingBullets.forEach {
         InstallWcsOnboardingBullet(bullet = it, modifier = Modifier.fillMaxWidth())
         Spacer(Modifier.size(dimensionResource(id = R.dimen.major_100)))
@@ -128,7 +128,7 @@ private fun InstallWcsOnboardingBullets(onboardingBullets: List<InstallWcShippin
 
 @Composable
 private fun InstallWcsOnboardingBullet(
-    bullet: InstallWcShippingOnboardingBulletUi,
+    bullet: InstallWCShippingOnboardingBulletUi,
     modifier: Modifier = Modifier
 ) {
     Row(

@@ -3,18 +3,18 @@ package com.woocommerce.android.ui.shipping
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel.ViewState
+import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel.ViewState
 
 @Composable
-fun InstallWcShippingFlowScreen(viewModel: InstallWcShippingFlowViewModel) {
+fun InstallWCShippingScreen(viewModel: InstallWCShippingViewModel) {
     val installWcShippingFlowState by viewModel.viewState.observeAsState()
     installWcShippingFlowState?.let {
-        InstallWcShippingFlowScreen(it)
+        InstallWCShippingScreen(it)
     }
 }
 
 @Composable
-fun InstallWcShippingFlowScreen(viewState: ViewState) {
+fun InstallWCShippingScreen(viewState: ViewState) {
     when (viewState) {
         is ViewState.Onboarding -> InstallWcShippingOnboarding(viewState = viewState)
     }
