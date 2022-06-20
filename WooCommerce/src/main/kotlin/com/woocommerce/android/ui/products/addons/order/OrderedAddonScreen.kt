@@ -97,27 +97,28 @@ private fun OrderedAddonItem(
 private fun OrderedAddonOptions(
     addon: Addon.HasOptions
 ) {
-    val listState = rememberLazyListState()
-    LazyColumn(
-        state = listState,
-        modifier = Modifier
-            .background(color = MaterialTheme.colors.surface)
-    ) {
-        itemsIndexed(addon.options) { _, options ->
-            Row {
-                Text(
-                    text = options.label.orEmpty(),
-                    style = MaterialTheme.typography.h1,
-                    color = MaterialTheme.colors.onSurface,
-                    modifier = Modifier.fillMaxWidth()
+    addon.options.forEach { options ->
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_50)),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = dimensionResource(id = R.dimen.major_100),
+                    vertical = dimensionResource(id = R.dimen.minor_100)
                 )
-                Text(
-                    text = options.price.value,
-                    style = MaterialTheme.typography.h1,
-                    color = MaterialTheme.colors.onSurface,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+        ){
+            Text(
+                text = options.label.orEmpty(),
+                style = MaterialTheme.typography.h1,
+                color = MaterialTheme.colors.onSurface,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Text(
+                text = options.price.value,
+                style = MaterialTheme.typography.h1,
+                color = MaterialTheme.colors.onSurface,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }
