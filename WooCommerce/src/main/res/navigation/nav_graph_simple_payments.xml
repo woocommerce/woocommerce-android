@@ -65,9 +65,8 @@
         </action>
         <action
             android:id="@+id/action_takePaymentFragment_to_orderList"
-            app:destination="@+id/orders"
-            app:popUpTo="@+id/simplePaymentsFragment"
-            app:popUpToInclusive="true" />
+            app:popUpTo="@+id/orders"
+            app:popUpToInclusive="false" />
     </fragment>
     <include app:graph="@navigation/nav_graph_card_reader_flow" />
 </navigation>
