@@ -75,14 +75,14 @@ private fun OrderedAddonItem(
     Column {
         Text(
             text = orderedAddon.name,
-            style = MaterialTheme.typography.h1,
+            style = MaterialTheme.typography.subtitle1,
             color = MaterialTheme.colors.onSurface,
             modifier = Modifier.fillMaxWidth()
         )
         orderedAddon.description?.let {
             Text(
                 text = it,
-                style = MaterialTheme.typography.body1,
+                style = MaterialTheme.typography.subtitle1,
                 color = MaterialTheme.colors.onSurface,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -109,13 +109,13 @@ private fun OrderedAddonOptions(
         ){
             Text(
                 text = options.label.orEmpty(),
-                style = MaterialTheme.typography.h1,
+                style = MaterialTheme.typography.subtitle2,
                 color = MaterialTheme.colors.onSurface,
                 modifier = Modifier.fillMaxWidth()
             )
             Text(
                 text = options.price.value,
-                style = MaterialTheme.typography.h1,
+                style = MaterialTheme.typography.subtitle2,
                 color = MaterialTheme.colors.onSurface,
                 modifier = Modifier.fillMaxWidth()
             )
