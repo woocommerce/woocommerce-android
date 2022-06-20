@@ -1,5 +1,6 @@
 package com.woocommerce.android
 
+import android.os.Build
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.os.StrictMode.VmPolicy
@@ -19,7 +20,9 @@ import dagger.hilt.android.HiltAndroidApp
 @HiltAndroidApp
 class WooCommerceDebug : WooCommerce() {
     override fun onCreate() {
-        if (FlipperUtils.shouldEnableFlipper(this)) {
+        if (FlipperUtils.shouldEnableFlipper(this) &&
+            Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP
+        ) {
             SoLoader.init(this, false)
             AndroidFlipperClient.getInstance(this).apply {
                 addPlugin(InspectorFlipperPlugin(applicationContext, DescriptorMapping.withDefaults()))
