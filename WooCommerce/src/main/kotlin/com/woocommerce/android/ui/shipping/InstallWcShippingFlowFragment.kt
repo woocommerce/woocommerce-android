@@ -34,7 +34,7 @@ class InstallWcShippingFlowFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    InstallWcShippingOnboardingScreen(viewModel)
+                    InstallWcShippingFlowScreen(viewModel)
                 }
             }
         }

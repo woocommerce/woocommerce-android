@@ -17,8 +17,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -32,19 +30,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel.InstallWcShippingOnboardingBulletUi
-import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel.InstallWcShippingOnboardingUi
-import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel.InstallWcShippingState
+import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel.ViewState
 
 @Composable
-fun InstallWcShippingOnboardingScreen(viewmodel: InstallWcShippingFlowViewModel) {
-    val installWcShippingFlowState by viewmodel.installWcShippingFlowState.observeAsState(InstallWcShippingState())
-    installWcShippingFlowState.installWcShippingOnboardingUi?.let {
-        InstallWcShippingOnboardingScreen(it)
-    }
-}
-
-@Composable
-fun InstallWcShippingOnboardingScreen(onboardingFlowUiState: InstallWcShippingOnboardingUi) {
+fun InstallWcShippingOnboarding(viewState: ViewState.Onboarding) {
     Column(
         modifier = Modifier
             .background(color = MaterialTheme.colors.surface)
@@ -63,7 +52,7 @@ fun InstallWcShippingOnboardingScreen(onboardingFlowUiState: InstallWcShippingOn
             Text(
                 modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_350)),
                 style = MaterialTheme.typography.h5,
-                text = stringResource(onboardingFlowUiState.title),
+                text = stringResource(viewState.title),
                 textAlign = TextAlign.Center,
                 fontSize = 28.sp,
                 lineHeight = 34.sp
@@ -72,16 +61,16 @@ fun InstallWcShippingOnboardingScreen(onboardingFlowUiState: InstallWcShippingOn
                 modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)),
                 style = MaterialTheme.typography.h5,
                 fontWeight = FontWeight.Bold,
-                text = stringResource(onboardingFlowUiState.subtitle),
+                text = stringResource(viewState.subtitle),
                 textAlign = TextAlign.Center,
             )
             Spacer(Modifier.size(dimensionResource(id = R.dimen.major_325)))
-            InstallWcsOnboardingBullets(onboardingBullets = onboardingFlowUiState.bullets)
+            InstallWcsOnboardingBullets(onboardingBullets = viewState.bullets)
             LinkText(
                 modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_200)),
                 text = stringResource(R.string.install_wc_shipping_flow_onboarding_screen_link),
-                url = onboardingFlowUiState.linkUrl,
-                onClick = onboardingFlowUiState.onLinkClicked
+                url = viewState.linkUrl,
+                onClick = viewState.onLinkClicked
             )
         }
         Column(
@@ -93,7 +82,7 @@ fun InstallWcShippingOnboardingScreen(onboardingFlowUiState: InstallWcShippingOn
         ) {
             WCColoredButton(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = { onboardingFlowUiState.onInstallClicked() },
+                onClick = { viewState.onInstallClicked() },
             ) {
                 Text(
                     text = stringResource(R.string.install_wc_shipping_flow_onboarding_screen_add_extension_button),
@@ -102,7 +91,7 @@ fun InstallWcShippingOnboardingScreen(onboardingFlowUiState: InstallWcShippingOn
             Spacer(Modifier.size(dimensionResource(id = R.dimen.major_100)))
             WCOutlinedButton(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = { onboardingFlowUiState.onDismissFlowClicked() },
+                onClick = { viewState.onDismissFlowClicked() },
             ) {
                 Text(
                     text = stringResource(R.string.install_wc_shipping_flow_onboarding_screen_not_now_button),
