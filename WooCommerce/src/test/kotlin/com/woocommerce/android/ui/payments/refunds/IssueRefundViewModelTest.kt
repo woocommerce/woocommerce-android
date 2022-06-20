@@ -1,6 +1,10 @@
 package com.woocommerce.android.ui.payments.refunds
 
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
@@ -22,8 +26,11 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
@@ -32,12 +39,18 @@ import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.math.BigDecimal
+import java.util.Date
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 class IssueRefundViewModelTest : BaseUnitTest() {
+    companion object {
+        private const val ORDER_ID = 1L
+    }
+
     private val orderStore: WCOrderStore = mock()
     private val wooStore: WooCommerceStore = mock()
     private val selectedSite: SelectedSite = mock()
@@ -47,6 +60,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     private val refundStore: WCRefundStore = mock()
     private val currencyFormatter: CurrencyFormatter = mock()
     private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag = mock()
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val resourceProvider: ResourceProvider = mock {
         on(it.getString(R.string.multiple_shipping)).thenAnswer { "Multiple shipping lines" }
         on(it.getString(R.string.and)).thenAnswer { "and" }
@@ -62,7 +76,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
     private val paymentChargeRepository: PaymentChargeRepository = mock()
 
-    private val savedState = IssueRefundFragmentArgs(0).initSavedStateHandle()
+    private val savedState = IssueRefundFragmentArgs(ORDER_ID).initSavedStateHandle()
 
     private lateinit var viewModel: IssueRefundViewModel
 
@@ -90,6 +104,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             paymentChargeRepository,
             orderMapper,
             inPersonPaymentsCanadaFeatureFlag,
+            analyticsTrackerWrapper,
         )
     }
 
@@ -669,6 +684,338 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             viewModel.refundSummaryStateLiveData.observeForever { _, new -> viewState = new }
 
             assertThat(viewState!!.refundMethod).isEqualTo("Credit/Debit card")
+        }
+    }
+
+    @Test
+    fun `when next button is tapped from items, then verify proper tracks event is triggered `() {
+        testBlocking {
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[]"
+            )
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(resourceProvider.getString(R.string.order_refunds_manual_refund))
+                .thenReturn("Credit/Debit card")
+
+            initViewModel()
+            viewModel.onNextButtonTappedFromItems()
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
+                mapOf(
+                    AnalyticsTracker.KEY_REFUND_TYPE to IssueRefundViewModel.RefundType.ITEMS.name,
+                    AnalyticsTracker.KEY_ORDER_ID to ORDER_ID
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `when next button is tapped from amounts, then verify proper tracks event is triggered `() {
+        testBlocking {
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[]"
+            )
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(resourceProvider.getString(any())).thenReturn("")
+
+            initViewModel()
+            viewModel.onNextButtonTappedFromAmounts()
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
+                mapOf(
+                    AnalyticsTracker.KEY_REFUND_TYPE to IssueRefundViewModel.RefundType.AMOUNT.name,
+                    AnalyticsTracker.KEY_ORDER_ID to ORDER_ID
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given there is network connection, when refund is confirmed, then proper tracks event is triggered`() {
+        testBlocking {
+            val chargeId = "charge_id"
+            val cardBrand = "visa"
+            val cardLast4 = "1234"
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+            )
+            whenever(networkStatus.isConnected()).thenReturn(true)
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
+                    cardBrand = cardBrand,
+                    cardLast4 = cardLast4,
+                    paymentMethodType = "interac_present"
+                )
+            )
+            whenever(resourceProvider.getString(R.string.order_refunds_manual_refund))
+                .thenReturn("Credit/Debit card")
+
+            initViewModel()
+            val commonState = viewModel.commonStateLiveData.liveData.value as IssueRefundViewModel.CommonViewState
+            viewModel.onRefundConfirmed(true)
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.REFUND_CREATE,
+                mapOf(
+                    AnalyticsTracker.KEY_ORDER_ID to ORDER_ID,
+                    AnalyticsTracker.KEY_REFUND_IS_FULL to
+                        ((commonState).refundTotal isEqualTo BigDecimal.TEN).toString(),
+                    AnalyticsTracker.KEY_REFUND_TYPE to (commonState).refundType.name,
+                    AnalyticsTracker.KEY_REFUND_METHOD to "manual",
+                    AnalyticsTracker.KEY_AMOUNT to (commonState).refundTotal.toString()
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given there is no network connection, when refund is confirmed, then tracks event is not triggered`() {
+        testBlocking {
+            val chargeId = "charge_id"
+            val cardBrand = "visa"
+            val cardLast4 = "1234"
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+            )
+            whenever(networkStatus.isConnected()).thenReturn(false)
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
+                    cardBrand = cardBrand,
+                    cardLast4 = cardLast4,
+                    paymentMethodType = "interac_present"
+                )
+            )
+            whenever(resourceProvider.getString(R.string.order_refunds_manual_refund))
+                .thenReturn("Credit/Debit card")
+
+            initViewModel()
+            viewModel.onRefundConfirmed(true)
+
+            verify(analyticsTrackerWrapper, never()).track(any(), any())
+        }
+    }
+
+    @Test
+    fun `when refund error, then proper tracks event is triggered`() {
+        testBlocking {
+            val chargeId = "charge_id"
+            val cardBrand = "visa"
+            val cardLast4 = "1234"
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+            )
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
+                    cardBrand = cardBrand,
+                    cardLast4 = cardLast4,
+                    paymentMethodType = "interac_present"
+                )
+            )
+            whenever(resourceProvider.getString(R.string.order_refunds_manual_refund))
+                .thenReturn("Credit/Debit card")
+            whenever(
+                refundStore.createItemsRefund(
+                    site = any(),
+                    orderId = any(),
+                    reason = any(),
+                    restockItems = any(),
+                    autoRefund = any(),
+                    items = any()
+                )
+            ).thenReturn(
+                WooResult(
+                    error = WooError(
+                        type = WooErrorType.GENERIC_ERROR,
+                        original = BaseRequest.GenericErrorType.NETWORK_ERROR
+                    )
+                )
+            )
+
+            initViewModel()
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+            viewModel.refund()
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.REFUND_CREATE_FAILED,
+                mapOf(
+                    AnalyticsTracker.KEY_ORDER_ID to ORDER_ID,
+                    AnalyticsTracker.KEY_ERROR_CONTEXT to "IssueRefundViewModel",
+                    AnalyticsTracker.KEY_ERROR_TYPE to "GENERIC_ERROR",
+                    AnalyticsTracker.KEY_ERROR_DESC to null
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `when refund success, then proper tracks event is triggered`() {
+        testBlocking {
+            val chargeId = "charge_id"
+            val cardBrand = "visa"
+            val cardLast4 = "1234"
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+            )
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
+                    cardBrand = cardBrand,
+                    cardLast4 = cardLast4,
+                    paymentMethodType = "interac_present"
+                )
+            )
+            whenever(resourceProvider.getString(R.string.order_refunds_manual_refund))
+                .thenReturn("Credit/Debit card")
+            whenever(
+                refundStore.createItemsRefund(
+                    site = any(),
+                    orderId = any(),
+                    reason = any(),
+                    restockItems = any(),
+                    autoRefund = any(),
+                    items = any()
+                )
+            ).thenReturn(
+                WooResult(
+                    model = WCRefundModel(
+                        id = 1L,
+                        dateCreated = Date(),
+                        amount = BigDecimal.ZERO,
+                        reason = "",
+                        automaticGatewayRefund = false,
+                        items = listOf(),
+                        shippingLineItems = listOf(),
+                        feeLineItems = listOf()
+                    )
+                )
+            )
+
+            initViewModel()
+            viewModel.refund()
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.REFUND_CREATE_SUCCESS,
+                mapOf(
+                    AnalyticsTracker.KEY_ORDER_ID to ORDER_ID,
+                    AnalyticsTracker.KEY_ID to 1L
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `when refund is issued, then proper track event is triggered`() {
+        testBlocking {
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[]"
+            )
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+            whenever(resourceProvider.getString(any())).thenReturn("")
+
+            initViewModel()
+            viewModel.onRefundIssued("")
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.CREATE_ORDER_REFUND_SUMMARY_REFUND_BUTTON_TAPPED,
+                mapOf(
+                    AnalyticsTracker.KEY_ORDER_ID to ORDER_ID
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `when refund quantity is tapped, then proper track event is triggered`() {
+        testBlocking {
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[]"
+            )
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+
+            initViewModel()
+            viewModel.onRefundQuantityTapped(1L)
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.CREATE_ORDER_REFUND_ITEM_QUANTITY_DIALOG_OPENED,
+                mapOf(AnalyticsTracker.KEY_ORDER_ID to ORDER_ID)
+            )
+        }
+    }
+
+    @Test
+    fun `when select button is tapped, then proper track event is triggered`() {
+        testBlocking {
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[]"
+            )
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+
+            initViewModel()
+            viewModel.onSelectButtonTapped()
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.CREATE_ORDER_REFUND_SELECT_ALL_ITEMS_BUTTON_TAPPED,
+                mapOf(AnalyticsTracker.KEY_ORDER_ID to ORDER_ID)
+            )
+        }
+    }
+
+    @Test
+    fun `when refund tab is changed to refund type amount, then proper track event is triggered`() {
+        testBlocking {
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[]"
+            )
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+
+            initViewModel()
+            viewModel.onRefundTabChanged(IssueRefundViewModel.RefundType.AMOUNT)
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.CREATE_ORDER_REFUND_TAB_CHANGED,
+                mapOf(
+                    AnalyticsTracker.KEY_ORDER_ID to ORDER_ID,
+                    AnalyticsTracker.KEY_TYPE to "AMOUNT"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `when refund tab is changed to refund type items, then proper track event is triggered`() {
+        testBlocking {
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[]"
+            )
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+
+            initViewModel()
+            viewModel.onRefundTabChanged(IssueRefundViewModel.RefundType.ITEMS)
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.CREATE_ORDER_REFUND_TAB_CHANGED,
+                mapOf(
+                    AnalyticsTracker.KEY_ORDER_ID to ORDER_ID,
+                    AnalyticsTracker.KEY_TYPE to "ITEMS"
+                )
+            )
         }
     }
 }

@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.payments.simplepayments
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.creation.OrderCreationRepository
@@ -18,14 +17,13 @@ import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 import javax.inject.Inject
 
-@OpenClassOnDebug
 @HiltViewModel
 class SimplePaymentsDialogViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val networkStatus: NetworkStatus,
     private val orderCreationRepository: OrderCreationRepository
 ) : ScopedViewModel(savedState) {
-    final val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
+    val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     internal var viewState by viewStateLiveData
 
     var currentPrice: BigDecimal

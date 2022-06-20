@@ -11,20 +11,18 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_094"
+msgid ""
+"9.4:\n"
+"Even though this release doesn’t have any new features, we still put a lot of love into it! In product details, some third-party extensions were causing the app to crash when viewing variable products. We’ve fixed this crash and made a handful of minor improvements to make your experience smoother.\n"
+msgstr ""
+
 msgctxt "release_note_093"
 msgid ""
 "9.3:\n"
 "Canada, say hello to in-person payments! We are thrilled to announce that in-person payments are now available to Canadian merchants currently using WooCommerce Payments.\n"
 "\n"
 "This release also contains a few minor improvements. Thank you all again for your amazing feedback. Keep it coming!\n"
-msgstr ""
-
-msgctxt "release_note_092"
-msgid ""
-"9.2:\n"
-"Much of the information on an order from a customer is important! We’ve heard you’d like to copy and paste some of those details outside the app. Now you can long-press on most fields to copy them to the clipboard. Paste away in a text message, e-mail, or note!\n"
-"\n"
-"We’ve also addressed several bugs around in-person payments and order creation. Thank you for your feedback!\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

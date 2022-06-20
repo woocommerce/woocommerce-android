@@ -1,14 +1,12 @@
 package com.woocommerce.android.ui.payments.simplepayments
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
-@OpenClassOnDebug
 @HiltViewModel
 class SimplePaymentsSharedViewModel @Inject constructor(
     savedState: SavedStateHandle,

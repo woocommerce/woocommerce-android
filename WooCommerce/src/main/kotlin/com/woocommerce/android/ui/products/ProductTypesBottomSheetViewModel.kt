@@ -10,7 +10,6 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAdd
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -21,7 +20,6 @@ import kotlinx.parcelize.Parcelize
 import java.util.Locale.ROOT
 import javax.inject.Inject
 
-@OpenClassOnDebug
 @HiltViewModel
 class ProductTypesBottomSheetViewModel @Inject constructor(
     savedState: SavedStateHandle,
