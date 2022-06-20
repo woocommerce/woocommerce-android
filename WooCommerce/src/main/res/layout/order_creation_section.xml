@@ -28,6 +28,18 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
 
+    <ImageView
+        android:id="@+id/lock_icon"
+        android:layout_width="@dimen/image_minor_40"
+        android:layout_height="@dimen/image_minor_40"
+        android:layout_marginEnd="@dimen/major_100"
+        android:src="@drawable/ic_lock"
+        android:contentDescription="@string/order_editing_locked_content_description"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/header_label"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/header_label" />
+
     <FrameLayout
         android:id="@+id/content_layout"
         android:layout_width="0dp"
