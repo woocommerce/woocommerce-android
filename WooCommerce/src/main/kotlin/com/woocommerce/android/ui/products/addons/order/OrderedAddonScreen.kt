@@ -87,6 +87,38 @@ private fun OrderedAddonItem(
                 modifier = Modifier.fillMaxWidth()
             )
         }
+        orderedAddon
+            .run { this as? Addon.HasOptions }
+            ?.let { OrderedAddonOptions(addon = it) }
+    }
+}
+
+@Composable
+private fun OrderedAddonOptions(
+    addon: Addon.HasOptions
+) {
+    val listState = rememberLazyListState()
+    LazyColumn(
+        state = listState,
+        modifier = Modifier
+            .background(color = MaterialTheme.colors.surface)
+    ) {
+        itemsIndexed(addon.options) { _, options ->
+            Row {
+                Text(
+                    text = options.label.orEmpty(),
+                    style = MaterialTheme.typography.h1,
+                    color = MaterialTheme.colors.onSurface,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Text(
+                    text = options.price.value,
+                    style = MaterialTheme.typography.h1,
+                    color = MaterialTheme.colors.onSurface,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
     }
 }
 
