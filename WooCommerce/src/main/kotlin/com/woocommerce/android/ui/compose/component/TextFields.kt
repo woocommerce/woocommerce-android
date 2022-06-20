@@ -177,7 +177,7 @@ private fun WCOutlinedTextFieldLayout(
 }
 
 @Composable
-fun WCSearchView(
+fun WCSearchField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -253,7 +253,7 @@ private fun WCOutlinedTextFieldPreview() {
                 helperText = "Helper Text",
                 isError = true
             )
-            WCSearchView(
+            WCSearchField(
                 value = "test",
                 onValueChange = {},
                 hint = "Search",
