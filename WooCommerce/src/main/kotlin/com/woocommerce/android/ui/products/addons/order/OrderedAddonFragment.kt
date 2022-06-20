@@ -65,16 +65,16 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_compose_ordered_addo
 //
 //        setupViewModel()
 //        setupViews()
-//        loadViewData()
+        loadViewData()
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?): View? {
+        savedInstanceState: Bundle?): View {
         _binding = FragmentOrderedAddonBinding.inflate(inflater)
-        FragmentComposeOrderedAddonBinding.inflate(inflater, container, false)
-            .addonsComposeView.apply {
+        val composableView = FragmentComposeOrderedAddonBinding.inflate(inflater, container, false)
+        composableView.addonsComposeView.apply {
                 setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)
                 setContent {
                     WooThemeWithBackground {
@@ -83,8 +83,7 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_compose_ordered_addo
                 }
             }
 
-
-        return super.onCreateView(inflater, container, savedInstanceState)
+        return composableView.root
     }
 
     override fun onResume() {
