@@ -6,7 +6,7 @@
     app:startDestination="@id/issueRefundFragment" >
     <fragment
         android:id="@+id/refundSummaryFragment"
-        android:name="com.woocommerce.android.ui.refunds.RefundSummaryFragment"
+        android:name="com.woocommerce.android.ui.payments.refunds.RefundSummaryFragment"
         tools:layout="@layout/fragment_refund_summary">
         <action
             android:id="@+id/action_refundSummaryFragment_to_refundConfirmationDialog"
@@ -14,7 +14,7 @@
     </fragment>
     <fragment
         android:id="@+id/issueRefundFragment"
-        android:name="com.woocommerce.android.ui.refunds.IssueRefundFragment"
+        android:name="com.woocommerce.android.ui.payments.refunds.IssueRefundFragment"
         tools:layout="@layout/fragment_issue_refund">
         <action
             android:id="@+id/action_issueRefundFragment_to_refundSummaryFragment"
@@ -32,7 +32,7 @@
     </fragment>
     <dialog
         android:id="@+id/refundItemsPickerDialog"
-        android:name="com.woocommerce.android.ui.refunds.RefundItemsPickerDialog"
+        android:name="com.woocommerce.android.ui.payments.refunds.RefundItemsPickerDialog"
         tools:layout="@layout/number_picker_dialog"
         android:label="RefundItemsPickerDialog" >
         <argument
@@ -49,7 +49,7 @@
     </dialog>
     <dialog
         android:id="@+id/refundAmountDialog"
-        android:name="com.woocommerce.android.ui.refunds.RefundAmountDialog"
+        android:name="com.woocommerce.android.ui.payments.refunds.RefundAmountDialog"
         tools:layout="@layout/currency_amount_dialog"
         android:label="RefundAmountDialog" >
         <argument
@@ -69,7 +69,7 @@
     </dialog>
     <dialog
         android:id="@+id/refundConfirmationDialog"
-        android:name="com.woocommerce.android.ui.refunds.RefundConfirmationDialog"
+        android:name="com.woocommerce.android.ui.payments.refunds.RefundConfirmationDialog"
         android:label="RefundConfirmationDialog" >
         <action
             android:id="@+id/action_refundConfirmationDialog_to_cardReaderFlow"

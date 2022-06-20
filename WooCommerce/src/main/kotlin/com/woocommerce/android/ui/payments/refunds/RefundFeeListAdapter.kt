@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.refunds
+package com.woocommerce.android.ui.payments.refunds
 
 import android.os.Parcelable
 import android.view.LayoutInflater
@@ -14,20 +14,20 @@ import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundItem
 import java.math.BigDecimal
 
-class RefundShippingListAdapter(
-    private val checkedChangeListener: OnCheckedChangeListener,
+class RefundFeeListAdapter(
+    private val checkedChangeListener: OnFeeLineCheckedChangeListener,
     private val formatCurrency: (BigDecimal) -> String
-) : RecyclerView.Adapter<RefundShippingListAdapter.ViewHolder>() {
-    interface OnCheckedChangeListener {
-        fun onShippingLineSwitchChanged(isChecked: Boolean, itemId: Long)
+) : RecyclerView.Adapter<RefundFeeListAdapter.ViewHolder>() {
+    interface OnFeeLineCheckedChangeListener {
+        fun onFeeLineSwitchChanged(isChecked: Boolean, itemId: Long)
     }
 
-    private var items = mutableListOf<ShippingRefundListItem>()
+    private var items = mutableListOf<FeeRefundListItem>()
     private var selectedItemIds = mutableListOf<Long>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.refund_shipping_list_item, parent, false)
+            .inflate(R.layout.refund_fee_list_item, parent, false)
 
         return ViewHolder(view)
     }
@@ -37,10 +37,10 @@ class RefundShippingListAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.price.text = formatCurrency(items[position].shippingLine.total)
-        holder.name.text = items[position].shippingLine.methodTitle
+        holder.price.text = formatCurrency(items[position].feeLine.total)
+        holder.name.text = items[position].feeLine.name
 
-        holder.switch.isChecked = selectedItemIds.contains(items[position].shippingLine.itemId)
+        holder.switch.isChecked = selectedItemIds.contains(items[position].feeLine.id)
 
         // Only show individual toggle if items size is more than 1.
         // Otherwise the main toggle is enough.
@@ -49,7 +49,7 @@ class RefundShippingListAdapter(
         }
 
         holder.switch.setOnCheckedChangeListener { _, isChecked: Boolean ->
-            checkedChangeListener.onShippingLineSwitchChanged(isChecked, items[position].shippingLine.itemId)
+            checkedChangeListener.onFeeLineSwitchChanged(isChecked, items[position].feeLine.id)
         }
 
         if (position == items.size - 1) {
@@ -57,31 +57,31 @@ class RefundShippingListAdapter(
         }
     }
 
-    fun update(newItems: List<ShippingRefundListItem>) {
+    fun update(newItems: List<FeeRefundListItem>) {
         items = newItems.toMutableList()
     }
 
-    fun updateToggleStates(shippingLineIds: List<Long>) {
-        selectedItemIds = shippingLineIds.toMutableList()
+    fun updateToggleStates(feeLineIds: List<Long>) {
+        selectedItemIds = feeLineIds.toMutableList()
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val price: TextView = view.findViewById(R.id.issueRefund_shippingPrice)
-        val name: TextView = view.findViewById(R.id.issueRefund_shippingName)
-        val switch: SwitchMaterial = view.findViewById(R.id.issueRefund_shippingLineSwitch)
-        val divider: View = view.findViewById(R.id.issueRefund_shippingDivider)
+        val price: TextView = view.findViewById(R.id.issueRefund_feesPrice)
+        val name: TextView = view.findViewById(R.id.issueRefund_feesName)
+        val switch: SwitchMaterial = view.findViewById(R.id.issueRefund_feeLineSwitch)
+        val divider: View = view.findViewById(R.id.issueRefund_feesDivider)
     }
 
     @Parcelize
-    data class ShippingRefundListItem(
-        val shippingLine: Order.ShippingLine
+    data class FeeRefundListItem(
+        val feeLine: Order.FeeLine
     ) : Parcelable {
         fun toDataModel(): WCRefundItem {
             return WCRefundItem(
-                shippingLine.itemId,
-                quantity = 1, /* Hardcoded because a shipping line always has a quantity of 1 */
-                subtotal = shippingLine.total,
-                totalTax = shippingLine.totalTax
+                feeLine.id,
+                quantity = 1, /* Hardcoded because a fee line always has a quantity of 1 */
+                subtotal = feeLine.total,
+                totalTax = feeLine.totalTax
             )
         }
     }

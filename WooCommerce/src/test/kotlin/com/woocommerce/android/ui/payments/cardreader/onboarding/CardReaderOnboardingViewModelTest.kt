@@ -9,6 +9,7 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.PluginIsNotSupportedInTheCountry
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingEvent
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState
@@ -85,7 +86,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             val viewModel = createVM(
                 CardReaderOnboardingFragmentArgs(
                     cardReaderOnboardingParam = CardReaderOnboardingParams.Check(
-                        CardReaderFlowParam.PaymentOrRefund.Payment(1L)
+                        CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER)
                     )
                 ).initSavedStateHandle()
             )
@@ -903,7 +904,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             val viewModel = createVM(
                 CardReaderOnboardingFragmentArgs(
                     cardReaderOnboardingParam = CardReaderOnboardingParams.Check(
-                        CardReaderFlowParam.PaymentOrRefund.Payment(1L)
+                        CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER)
                     )
                 ).initSavedStateHandle()
             )
@@ -921,7 +922,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             val viewModel = createVM(
                 CardReaderOnboardingFragmentArgs(
                     cardReaderOnboardingParam = CardReaderOnboardingParams.Failed(
-                        CardReaderFlowParam.PaymentOrRefund.Payment(1L),
+                        CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER),
                         onboardingState = CardReaderOnboardingState.StripeAccountPendingRequirement(
                             0L,
                             WOOCOMMERCE_PAYMENTS,

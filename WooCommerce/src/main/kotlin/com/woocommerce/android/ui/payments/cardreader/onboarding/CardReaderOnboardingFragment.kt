@@ -281,7 +281,14 @@ sealed class CardReaderFlowParam : Parcelable {
         abstract val orderId: Long
 
         @Parcelize
-        data class Payment(override val orderId: Long) : PaymentOrRefund()
+        data class Payment(
+            override val orderId: Long,
+            val paymentType: PaymentType
+        ) : PaymentOrRefund() {
+            enum class PaymentType {
+                SIMPLE, ORDER
+            }
+        }
 
         @Parcelize
         data class Refund(override val orderId: Long, val refundAmount: BigDecimal) : PaymentOrRefund()

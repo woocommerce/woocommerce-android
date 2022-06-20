@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.refunds
+package com.woocommerce.android.ui.payments.refunds
 
 import com.woocommerce.android.R
 import com.woocommerce.android.initSavedStateHandle
@@ -10,7 +10,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.cardreader.InPersonPaymentsCanadaFeatureFlag
-import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundByItemsViewState
+import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.RefundByItemsViewState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent

@@ -39,6 +39,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderInteracRefundErrorMapper
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderInteracRefundableChecker
@@ -136,7 +137,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     )
 
     private val savedState: SavedStateHandle = CardReaderPaymentDialogFragmentArgs(
-        CardReaderFlowParam.PaymentOrRefund.Payment(ORDER_ID)
+        CardReaderFlowParam.PaymentOrRefund.Payment(ORDER_ID, ORDER)
     ).initSavedStateHandle()
 
     private val interacRefundSavedState: SavedStateHandle = CardReaderPaymentDialogFragmentArgs(

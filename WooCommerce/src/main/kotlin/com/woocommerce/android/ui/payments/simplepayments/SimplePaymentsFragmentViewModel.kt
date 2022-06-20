@@ -109,7 +109,10 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
 
     fun onDoneButtonClicked() {
         if (!networkStatus.isConnected()) {
-            AnalyticsTracker.track(AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_FAILED)
+            AnalyticsTracker.track(
+                AnalyticsEvent.PAYMENTS_FLOW_FAILED,
+                mapOf(AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW),
+            )
             triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
             return
         }
@@ -139,8 +142,11 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
                 is OptimisticUpdateResult -> {
                     if (result.event.isError) {
                         AnalyticsTracker.track(
-                            AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_FAILED,
-                            mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_SUMMARY)
+                            AnalyticsEvent.PAYMENTS_FLOW_FAILED,
+                            mapOf(
+                                AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_SUMMARY,
+                                AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW,
+                            )
                         )
                         result.event.error?.let {
                             WooLog.e(WooLog.T.ORDERS, "Simple payment optimistic update failed with ${it.message}")
@@ -154,8 +160,11 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
                 is UpdateOrderResult.RemoteUpdateResult -> {
                     if (result.event.isError) {
                         AnalyticsTracker.track(
-                            AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_FAILED,
-                            mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_AMOUNT)
+                            AnalyticsEvent.PAYMENTS_FLOW_FAILED,
+                            mapOf(
+                                AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_AMOUNT,
+                                AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW,
+                            )
                         )
                         result.event.error?.let {
                             WooLog.e(WooLog.T.ORDERS, "Simple payment remote update failed with ${it.message}")

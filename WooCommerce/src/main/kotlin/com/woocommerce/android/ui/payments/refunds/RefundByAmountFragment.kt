@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.refunds
+package com.woocommerce.android.ui.payments.refunds
 
 import android.os.Bundle
 import android.view.View
@@ -10,8 +10,8 @@ import com.woocommerce.android.databinding.FragmentRefundByAmountBinding
 import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.HideValidationError
-import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowValidationError
+import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.HideValidationError
+import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowValidationError
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject

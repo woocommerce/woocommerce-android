@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
 import com.woocommerce.android.ui.orders.taxes.OrderTaxesAdapter
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.SIMPLE
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -174,7 +175,8 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments), 
     private fun showTakePaymentScreen() {
         SimplePaymentsFragmentDirections.actionSimplePaymentsFragmentToPaymentFlow(
             CardReaderFlowParam.PaymentOrRefund.Payment(
-                viewModel.orderDraft.id
+                viewModel.orderDraft.id,
+                SIMPLE
             )
         )
             .let { findNavController().navigateSafely(it) }

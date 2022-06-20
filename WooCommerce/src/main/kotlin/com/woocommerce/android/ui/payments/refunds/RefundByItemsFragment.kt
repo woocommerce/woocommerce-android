@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.refunds
+package com.woocommerce.android.ui.payments.refunds
 
 import android.os.Bundle
 import android.text.Spannable
@@ -23,11 +23,11 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.OpenUrl
-import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
-import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundAmountDialog
-import com.woocommerce.android.ui.refunds.RefundFeeListAdapter.OnFeeLineCheckedChangeListener
-import com.woocommerce.android.ui.refunds.RefundShippingListAdapter.OnCheckedChangeListener
+import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.OpenUrl
+import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
+import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundAmountDialog
+import com.woocommerce.android.ui.payments.refunds.RefundFeeListAdapter.OnFeeLineCheckedChangeListener
+import com.woocommerce.android.ui.payments.refunds.RefundShippingListAdapter.OnCheckedChangeListener
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.widgets.WooClickableSpan

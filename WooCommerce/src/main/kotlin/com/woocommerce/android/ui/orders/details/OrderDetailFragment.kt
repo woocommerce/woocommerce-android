@@ -63,7 +63,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragm
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragment
-import com.woocommerce.android.ui.refunds.RefundSummaryFragment
+import com.woocommerce.android.ui.payments.refunds.RefundSummaryFragment
 import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
