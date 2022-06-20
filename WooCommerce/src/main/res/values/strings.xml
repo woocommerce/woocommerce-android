@@ -1149,6 +1149,12 @@
     <string name="card_reader_onboarding_both_plugins_activated_open_store_admin_label">Manage Plugins</string>
     <string name="card_reader_onboarding_both_plugins_activated_refresh_button">Refresh after updating</string>
 
+    <string name="card_reader_onboarding_choose_payment_provider">Choose your Payment Provider</string>
+    <string name="card_reader_onboarding_choose_plugin_hint">In-Person Payments can be processed through either of these payment providers. Which provider would you like to use?</string>
+    <string name="card_reader_onboarding_choose_wcpayment_button">WooCommerce Payments</string>
+    <string name="card_reader_onboarding_choose_stripe_button">Stripe</string>
+    <string name="card_reader_onboarding_confirm_payment_method_button">Confirm Payment Method</string>
+
 
     <string name="card_reader_onboarding_learn_more">&lt;a href=\'\'&gt;Learn more&lt;/a&gt; about accepting payments with your mobile device and ordering card readers</string>
     <string name="card_reader_onboarding_contact_support">Need some help? &lt;a href=\'\'&gt;Contact support&lt;/a&gt;</string>
