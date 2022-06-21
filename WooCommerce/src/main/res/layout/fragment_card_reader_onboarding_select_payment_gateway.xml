@@ -94,7 +94,7 @@
         app:layout_constraintHorizontal_bias="1"
         app:layout_constraintStart_toStartOf="@id/selectWcPayButton"
         app:layout_constraintTop_toTopOf="@+id/selectWcPayButton"
-        app:srcCompat="@drawable/ic_checkmark_purple" />
+        app:srcCompat="@drawable/ic_menu_action_mode_check" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/selectStripeButton"
@@ -140,7 +140,7 @@
         app:layout_constraintHorizontal_bias="1"
         app:layout_constraintStart_toStartOf="@id/selectStripeButton"
         app:layout_constraintTop_toTopOf="@id/selectStripeButton"
-        app:srcCompat="@drawable/ic_checkmark_purple" />
+        app:srcCompat="@drawable/ic_menu_action_mode_check" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/confirmPaymentMethod"
