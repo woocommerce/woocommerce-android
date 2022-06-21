@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.shipping
 
+import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.animateInt
 import androidx.compose.animation.core.tween
@@ -53,7 +54,14 @@ fun InstallWCShippingFlow(viewState: InstallationState, transition: Transition<B
 @Composable
 private fun PreInstallationContent(viewState: PreInstallation, transition: Transition<Boolean>? = null) {
     val offset by transition?.animateInt(
-        transitionSpec = { tween(durationMillis = 500, delayMillis = 500) },
+        transitionSpec = {
+            tween(
+                durationMillis = 500,
+                delayMillis = 500,
+                // Ensure a bit of elasticity at the end of the animation
+                easing = CubicBezierEasing(0.7f, 0.6f, 0.74f, 1.3f)
+            )
+        },
         label = "offset"
     ) {
         if (it) 0 else 120

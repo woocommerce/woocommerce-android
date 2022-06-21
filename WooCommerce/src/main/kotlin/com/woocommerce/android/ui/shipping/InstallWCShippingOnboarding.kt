@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.shipping
 
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.animateInt
 import androidx.compose.animation.core.tween
@@ -51,7 +52,7 @@ fun InstallWcShippingOnboarding(
             )
     ) {
         val offset by transition.animateInt(
-            transitionSpec = { tween(durationMillis = 500) },
+            transitionSpec = { tween(durationMillis = 500, easing = LinearOutSlowInEasing) },
             label = "offset"
         ) {
             if (it) 0 else 120

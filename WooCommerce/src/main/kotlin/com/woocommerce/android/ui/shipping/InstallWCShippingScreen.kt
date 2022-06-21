@@ -5,6 +5,7 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.ExperimentalTransitionApi
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.createChildTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
@@ -40,7 +41,7 @@ fun InstallWCShippingScreen(viewState: ViewState) {
                     // Apply a fade-in/fade-out globally,
                     // then each child will animate the individual components separately
                     fadeIn(tween(500, delayMillis = 500))
-                        .with(fadeOut(tween(500)))
+                        .with(fadeOut(tween(500, easing = LinearOutSlowInEasing)))
                 } else {
                     // TODO
                     EnterTransition.None.with(ExitTransition.None)
