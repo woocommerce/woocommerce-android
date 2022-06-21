@@ -52,8 +52,14 @@ fun InstallWCShippingScreen(viewState: ViewState) {
                     viewState = targetState,
                     transition = transition.createChildTransition(label = "OnboardingTransition") {
                         it is ViewState.Onboarding
-                    })
-                is InstallationState -> InstallWCShippingFlow(viewState = targetState)
+                    }
+                )
+                is InstallationState -> InstallWCShippingFlow(
+                    viewState = targetState,
+                    transition = transition.createChildTransition(label = "InstallationTransition") {
+                        it is InstallationState
+                    }
+                )
             }
         }
     }

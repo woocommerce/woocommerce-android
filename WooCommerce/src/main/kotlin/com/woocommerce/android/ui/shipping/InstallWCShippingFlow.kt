@@ -1,5 +1,8 @@
 package com.woocommerce.android.ui.shipping
 
+import androidx.compose.animation.core.Transition
+import androidx.compose.animation.core.animateInt
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -10,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -19,6 +23,9 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,6 +35,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
@@ -36,14 +44,21 @@ import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel.ViewState.
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel.ViewState.InstallationState.PreInstallation
 
 @Composable
-fun InstallWCShippingFlow(viewState: InstallationState) {
+fun InstallWCShippingFlow(viewState: InstallationState, transition: Transition<Boolean>? = null) {
     when (viewState) {
-        is PreInstallation -> PreInstallationContent(viewState)
+        is PreInstallation -> PreInstallationContent(viewState, transition)
     }
 }
 
 @Composable
-private fun PreInstallationContent(viewState: PreInstallation) {
+private fun PreInstallationContent(viewState: PreInstallation, transition: Transition<Boolean>? = null) {
+    val offset by transition?.animateInt(
+        transitionSpec = { tween(durationMillis = 500, delayMillis = 500) },
+        label = "offset"
+    ) {
+        if (it) 0 else 120
+    } ?: remember { mutableStateOf(0) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -52,13 +67,15 @@ private fun PreInstallationContent(viewState: PreInstallation) {
                 vertical = dimensionResource(id = R.dimen.major_150)
             )
     ) {
-        WCTextButton(onClick = viewState.onCancelClick) {
-            Text(text = stringResource(id = R.string.cancel))
-        }
         Column(
             verticalArrangement = Arrangement.Center,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier
+                .weight(1f)
+                .offset(y = -offset.dp)
         ) {
+            WCTextButton(onClick = viewState.onCancelClick) {
+                Text(text = stringResource(id = R.string.cancel))
+            }
             Spacer(modifier = Modifier.weight(1f))
             Box(
                 modifier = Modifier
@@ -117,7 +134,9 @@ private fun PreInstallationContent(viewState: PreInstallation) {
         }
         WCColoredButton(
             onClick = viewState.onProceedClick,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .offset(y = offset.dp)
         ) {
             Text(text = stringResource(id = R.string.install_wc_shipping_proceed_button))
         }
