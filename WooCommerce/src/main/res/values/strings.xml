@@ -2482,4 +2482,7 @@
     <string name="about_automattic_back_icon_description">Back icon</string>
     <string name="about_automattic_app_icon_description">App icon</string>
     <string name="error_generic">An error occurred</string>
+    <string name="install_wc_shipping_preinstall_title">Install extension</string>
+    <string name="install_wc_shipping_installation_info">Things to know before installing</string>
+    <string name="install_wc_shipping_proceed_button">Proceed With Installation</string>
 </resources>
