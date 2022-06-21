@@ -83,7 +83,7 @@ class OrderCreationRepository @Inject constructor(
         return when {
             result.isError -> {
                 WooLog.e(WooLog.T.ORDERS, "${result.error.type.name}: ${result.error.message}")
-                AnalyticsTracker.track(
+                analyticsTrackerWrapper.track(
                     AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_FAILED,
                     mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_AMOUNT)
                 )
