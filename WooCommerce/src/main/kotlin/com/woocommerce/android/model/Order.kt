@@ -52,12 +52,15 @@ data class Order(
     @IgnoredOnParcel
     val isOrderPaid = datePaid != null
 
+    @IgnoredOnParcel
+    val isOrderFullyRefunded = refundTotal >= total
+
     // Allow refunding only integer quantities
     @IgnoredOnParcel
-    val availableRefundQuantity = items.sumByFloat { it.quantity }.toInt() + feesLines.count()
+    val quantityOfItemsWhichPossibleToRefund = items.sumByFloat { it.quantity }.toInt() + feesLines.count()
 
     @IgnoredOnParcel
-    val isRefundAvailable = refundTotal < total && availableRefundQuantity > 0
+    val isRefundAvailable = !isOrderFullyRefunded && quantityOfItemsWhichPossibleToRefund > 0 && isOrderPaid
 
     @Parcelize
     data class ShippingMethod(

@@ -39,8 +39,6 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.ProductImageMap.OnProductFetchedListener
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.cardreader.CardReaderTracker
-import com.woocommerce.android.ui.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
@@ -48,7 +46,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderPaymentFlow
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartPaymentFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabelCreationFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderFulfillInfo
@@ -57,7 +55,9 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderedAddons
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintCustomsForm
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstructions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
-import com.woocommerce.android.ui.orders.simplepayments.TakePaymentViewModel
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel
+import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -234,7 +234,7 @@ final class OrderDetailViewModel @Inject constructor(
 
     fun onSharePaymentUrlClicked() {
         trackerWrapper.track(AnalyticsEvent.ORDER_DETAIL_PAYMENT_LINK_SHARED)
-        triggerEvent(TakePaymentViewModel.SharePaymentUrl(selectedSite.get().name, order.paymentUrl))
+        triggerEvent(SelectPaymentMethodViewModel.SharePaymentUrl(selectedSite.get().name, order.paymentUrl))
     }
 
     fun onEditClicked() {
@@ -243,7 +243,7 @@ final class OrderDetailViewModel @Inject constructor(
 
     fun onAcceptCardPresentPaymentClicked() {
         cardReaderTracker.trackCollectPaymentTapped()
-        triggerEvent(StartCardReaderPaymentFlow(orderId = order.id))
+        triggerEvent(StartPaymentFlow(orderId = order.id))
     }
 
     fun onSeeReceiptClicked() {
@@ -455,11 +455,13 @@ final class OrderDetailViewModel @Inject constructor(
             launch {
                 orderDetailRepository.updateOrderStatus(order.id, newStatus)
                     .collect { result ->
+                        reloadOrderDetails()
                         when (result) {
-                            is OptimisticUpdateResult -> reloadOrderDetails()
+                            is OptimisticUpdateResult -> {
+                                // no-op. We reload order details in any case
+                            }
                             is RemoteUpdateResult -> {
                                 if (result.event.isError) {
-                                    reloadOrderDetails()
                                     triggerEvent(ShowSnackbar(string.order_error_update_general))
                                     trackerWrapper.track(
                                         ORDER_STATUS_CHANGE_FAILED,

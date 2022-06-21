@@ -47,7 +47,6 @@ import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.cardreader.payment.CardReaderPaymentDialogFragment
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
@@ -61,9 +60,10 @@ import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragment
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment
-import com.woocommerce.android.ui.orders.simplepayments.TakePaymentViewModel
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment
-import com.woocommerce.android.ui.refunds.RefundSummaryFragment
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel
+import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragment
+import com.woocommerce.android.ui.payments.refunds.RefundSummaryFragment
 import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -262,7 +262,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                     displayUndoSnackbar(event.message, event.undoAction, event.dismissAction)
                 }
                 is OrderNavigationTarget -> navigator.navigate(this, event)
-                is TakePaymentViewModel.SharePaymentUrl -> {
+                is SelectPaymentMethodViewModel.SharePaymentUrl -> {
                     sharePaymentUrl(event.storeName, event.paymentUrl)
                 }
                 is InstallWcShippingFlowViewModel.InstallWcShipping -> navigateToInstallWcShippingFlow()

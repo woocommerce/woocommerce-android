@@ -5,7 +5,7 @@
     android:id="@+id/nav_graph_orders"
     app:startDestination="@id/orderDetailFragment">
 
-    <include app:graph="@navigation/nav_graph_card_reader_flow" />
+    <include app:graph="@navigation/nav_graph_payment_flow" />
     <include app:graph="@navigation/nav_graph_refunds" />
 
     <dialog
@@ -143,7 +143,7 @@
     </dialog>
     <fragment
         android:id="@+id/refundDetailFragment"
-        android:name="com.woocommerce.android.ui.refunds.RefundDetailFragment"
+        android:name="com.woocommerce.android.ui.payments.refunds.RefundDetailFragment"
         android:label="RefundDetailFragment">
         <argument
             android:name="orderId"
@@ -226,10 +226,10 @@
 
         <action
             android:id="@+id/action_orderDetailFragment_to_cardReaderFlow"
-            app:destination="@id/cardReaderFlow">
+            app:destination="@id/paymentFlow">
             <argument
                 android:name="cardReaderFlowParam"
-                app:argType="com.woocommerce.android.ui.cardreader.onboarding.CardReaderFlowParam"
+                app:argType="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam"
                 app:nullable="false" />
         </action>
 
@@ -438,7 +438,7 @@
     </fragment>
     <fragment
         android:id="@+id/receiptPreviewFragment"
-        android:name="com.woocommerce.android.ui.cardreader.receipt.ReceiptPreviewFragment"
+        android:name="com.woocommerce.android.ui.payments.cardreader.receipt.ReceiptPreviewFragment"
         android:label="ReceiptPreviewFragment"
         tools:layout="@layout/fragment_receipt_preview">
         <argument
