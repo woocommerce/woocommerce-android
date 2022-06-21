@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.payments.simplepayments
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
@@ -53,7 +54,6 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
             viewModel.onDoneButtonClicked()
         }
         binding.imageClose.setOnClickListener {
-            AnalyticsTracker.track(AnalyticsEvent.PAYMENTS_FLOW_CANCELED)
             findNavController().navigateUp()
         }
 
@@ -106,6 +106,14 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        AnalyticsTracker.track(
+            AnalyticsEvent.PAYMENTS_FLOW_CANCELED,
+            mapOf(AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW)
+        )
+        super.onDismiss(dialog)
     }
 
     companion object {

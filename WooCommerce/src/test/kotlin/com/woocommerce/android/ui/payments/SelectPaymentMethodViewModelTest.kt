@@ -30,6 +30,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.OrderEntity
@@ -506,6 +507,37 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 mapOf(
                     AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW,
+                )
+            )
+        }
+
+    @Test
+    fun `given simple payment flow, when on back pressed, then nothing is tracked`() =
+        testBlocking {
+            // GIVEN
+            val viewModel = initViewModel(Payment(1L, SIMPLE))
+
+            // WHEN
+            viewModel.onBackPressed()
+
+            // THEN
+            verify(analyticsTrackerWrapper, never()).track(any(), any())
+        }
+
+    @Test
+    fun `given order payment flow, when on back pressed, then flow cancelation is tracked`() =
+        testBlocking {
+            // GIVEN
+            val viewModel = initViewModel(Payment(1L, ORDER))
+
+            // WHEN
+            viewModel.onBackPressed()
+
+            // THEN
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.PAYMENTS_FLOW_CANCELED,
+                mapOf(
+                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW,
                 )
             )
         }
