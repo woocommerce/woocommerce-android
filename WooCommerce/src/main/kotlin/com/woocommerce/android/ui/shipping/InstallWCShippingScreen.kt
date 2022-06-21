@@ -1,5 +1,16 @@
 package com.woocommerce.android.ui.shipping
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.ExperimentalTransitionApi
+import androidx.compose.animation.core.createChildTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.with
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.MaterialTheme
@@ -18,12 +29,32 @@ fun InstallWCShippingScreen(viewModel: InstallWCShippingViewModel) {
     }
 }
 
+@OptIn(ExperimentalTransitionApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun InstallWCShippingScreen(viewState: ViewState) {
+    val transition = updateTransition(viewState, label = "MainTransition")
     Box(modifier = Modifier.background(color = MaterialTheme.colors.surface)) {
-        when (viewState) {
-            is ViewState.Onboarding -> InstallWcShippingOnboarding(viewState = viewState)
-            is InstallationState -> InstallWCShippingFlow(viewState = viewState)
+        transition.AnimatedContent(
+            transitionSpec = {
+                if (initialState is ViewState.Onboarding && targetState is InstallationState) {
+                    // Apply a fade-in/fade-out globally,
+                    // then each child will animate the individual components separately
+                    fadeIn(tween(500, delayMillis = 500))
+                        .with(fadeOut(tween(500)))
+                } else {
+                    // TODO
+                    EnterTransition.None.with(ExitTransition.None)
+                }
+            }
+        ) { targetState ->
+            when (targetState) {
+                is ViewState.Onboarding -> InstallWcShippingOnboarding(
+                    viewState = targetState,
+                    transition = transition.createChildTransition(label = "OnboardingTransition") {
+                        it is ViewState.Onboarding
+                    })
+                is InstallationState -> InstallWCShippingFlow(viewState = targetState)
+            }
         }
     }
 }
