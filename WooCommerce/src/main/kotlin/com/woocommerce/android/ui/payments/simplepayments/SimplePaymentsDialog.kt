@@ -53,7 +53,7 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
             viewModel.onDoneButtonClicked()
         }
         binding.imageClose.setOnClickListener {
-            AnalyticsTracker.track(AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_CANCELED)
+            AnalyticsTracker.track(AnalyticsEvent.PAYMENTS_FLOW_CANCELED)
             findNavController().navigateUp()
         }
 
