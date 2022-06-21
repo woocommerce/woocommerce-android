@@ -121,7 +121,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         isProductListVisible = true,
         areShippingLabelsVisible = false,
         isProductListMenuVisible = false,
-        isSharePaymentLinkVisible = false,
         wcShippingBannerVisible = false
     )
 
@@ -1129,23 +1128,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             // Then
             verify(analyticsTraWrapper).track(AnalyticsEvent.ORDER_DETAIL_PULLED_TO_REFRESH)
-        }
-
-    @Test
-    fun `when user clicks on share payment url, then event tracked`() =
-        testBlocking {
-            // Given
-            doReturn(order).whenever(orderDetailRepository).getOrderById(any())
-            doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
-            doReturn(false).whenever(orderDetailRepository).fetchOrderNotes(any())
-            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
-            viewModel.start()
-
-            // When
-            viewModel.onSharePaymentUrlClicked()
-
-            // Then
-            verify(analyticsTraWrapper).track(AnalyticsEvent.ORDER_DETAIL_PAYMENT_LINK_SHARED)
         }
 
     @Test

@@ -8,7 +8,6 @@ import androidx.lifecycle.SavedStateHandle
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
-import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_DETAIL_CREATE_SHIPPING_LABEL_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_DETAIL_PULLED_TO_REFRESH
@@ -55,7 +54,6 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderedAddons
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintCustomsForm
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstructions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.products.addons.AddonRepository
@@ -230,11 +228,6 @@ final class OrderDetailViewModel @Inject constructor(
 
     fun onIssueOrderRefundClicked() {
         triggerEvent(IssueOrderRefund(remoteOrderId = order.id))
-    }
-
-    fun onSharePaymentUrlClicked() {
-        trackerWrapper.track(AnalyticsEvent.ORDER_DETAIL_PAYMENT_LINK_SHARED)
-        triggerEvent(SelectPaymentMethodViewModel.SharePaymentUrl(selectedSite.get().name, order.paymentUrl))
     }
 
     fun onEditClicked() {
@@ -517,7 +510,6 @@ final class OrderDetailViewModel @Inject constructor(
             toolbarTitle = resourceProvider.getString(
                 string.orderdetail_orderstatus_ordernum, order.number
             ),
-            isSharePaymentLinkVisible = order.paymentUrl.isNotEmpty() && order.status == Order.Status.Pending
         )
     }
 
@@ -708,7 +700,6 @@ final class OrderDetailViewModel @Inject constructor(
         val isProductListVisible: Boolean? = null,
         val areShippingLabelsVisible: Boolean? = null,
         val isProductListMenuVisible: Boolean? = null,
-        val isSharePaymentLinkVisible: Boolean? = null,
         val wcShippingBannerVisible: Boolean? = null
     ) : Parcelable {
         val isMarkOrderCompleteButtonVisible: Boolean?
