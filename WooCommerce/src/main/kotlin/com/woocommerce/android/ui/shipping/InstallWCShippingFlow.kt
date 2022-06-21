@@ -28,7 +28,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
@@ -64,7 +63,11 @@ private fun PreInstallationContent(viewState: PreInstallation) {
             Box(
                 modifier = Modifier
                     .clip(CircleShape)
-                    .border(width = 8.dp, color = colorResource(id = R.color.woo_purple_20), shape = CircleShape)
+                    .border(
+                        width = dimensionResource(id = R.dimen.major_75),
+                        color = colorResource(id = R.color.woo_purple_20),
+                        shape = CircleShape
+                    )
                     .size(dimensionResource(id = R.dimen.image_major_120))
             ) {
                 Icon(
@@ -97,7 +100,7 @@ private fun PreInstallationContent(viewState: PreInstallation) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100)),
                 modifier = Modifier
-                    .clickable(onClick = viewState.onCancelClick)
+                    .clickable(onClick = viewState.onInfoClick)
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Info,
@@ -131,7 +134,7 @@ private fun PreInstallationPreview() {
                 siteName = "Site",
                 onCancelClick = {},
                 onProceedClick = {},
-                onWarningClick = {}
+                onInfoClick = {}
             )
         )
     }

@@ -49,7 +49,7 @@ class InstallWCShippingViewModel @Inject constructor(
                 },
                 onCancelClick = ::onDismissWcShippingFlowClicked,
                 onProceedClick = { TODO() },
-                onWarningClick = { TODO() }
+                onInfoClick = { TODO() }
             )
             Step.Installation -> TODO()
             Step.PostInstallationSuccess -> TODO()
@@ -124,7 +124,7 @@ class InstallWCShippingViewModel @Inject constructor(
                 val siteName: String,
                 val onCancelClick: () -> Unit,
                 val onProceedClick: () -> Unit,
-                val onWarningClick: () -> Unit
+                val onInfoClick: () -> Unit
             ) : InstallationState()
         }
     }
