@@ -44,7 +44,9 @@ class InstallWCShippingViewModel @Inject constructor(
             )
             Step.PreInstallation -> ViewState.InstallationState.PreInstallation(
                 extensionsName = R.string.install_wc_shipping_extension_name,
-                siteName = selectedSite.get().let { site -> site.displayName.takeIf { it.isNotBlank() } ?: site.name },
+                siteName = selectedSite.get().let { site ->
+                    site.displayName?.takeIf { it.isNotBlank() } ?: site.name.orEmpty()
+                },
                 onCancelClick = ::onDismissWcShippingFlowClicked,
                 onProceedClick = { TODO() },
                 onWarningClick = { TODO() }
