@@ -21,6 +21,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyLong
 import org.mockito.kotlin.any
@@ -1131,6 +1132,26 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             captor.capture(),
         )
         assertThat(captor.firstValue).isFalse()
+    }
+
+    @Test
+    fun `when onboarding has pending requirements, then do not clear pluginExplicitlySelected flag`() = testBlocking {
+        whenever(wcInPersonPaymentsStore.loadAccount(any(), any())).thenReturn(
+            buildPaymentAccountResult(
+                WCPaymentAccountResult.WCPaymentAccountStatus.RESTRICTED,
+                hasPendingRequirements = true,
+                hadOverdueRequirements = false
+            )
+        )
+
+        checker.getOnboardingState()
+
+        verify(appPrefsWrapper, never()).setIsCardReaderPluginExplicitlySelectedFlag(
+            anyInt(),
+            anyLong(),
+            anyLong(),
+            anyBoolean(),
+        )
     }
 
     private fun buildPaymentAccountResult(
