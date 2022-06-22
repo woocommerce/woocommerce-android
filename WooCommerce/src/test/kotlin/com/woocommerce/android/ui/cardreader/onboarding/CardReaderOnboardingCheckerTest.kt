@@ -1115,6 +1115,24 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         assertThat((result as PreferredPluginResult.Success).type).isEqualTo(PluginType.WOOCOMMERCE_PAYMENTS)
     }
 
+    //region - Multiple Plugins detected tests
+
+    @Test
+    fun `when onboarding not completed, then clear pluginExplicitlySelected flag`() = testBlocking {
+        whenever(wooStore.getStoreCountryCode(site)).thenReturn("unsupported country abc")
+
+        checker.getOnboardingState()
+
+        val captor = argumentCaptor<Boolean>()
+        verify(appPrefsWrapper).setIsCardReaderPluginExplicitlySelectedFlag(
+            anyInt(),
+            anyLong(),
+            anyLong(),
+            captor.capture(),
+        )
+        assertThat(captor.firstValue).isFalse()
+    }
+
     private fun buildPaymentAccountResult(
         status: WCPaymentAccountResult.WCPaymentAccountStatus = WCPaymentAccountResult.WCPaymentAccountStatus.COMPLETE,
         hasPendingRequirements: Boolean = false,

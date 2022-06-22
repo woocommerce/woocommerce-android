@@ -82,7 +82,10 @@ class CardReaderOnboardingChecker @Inject constructor(
                 val (status, version) = when (it) {
                     is OnboardingCompleted -> CARD_READER_ONBOARDING_COMPLETED to it.version
                     is StripeAccountPendingRequirement -> CARD_READER_ONBOARDING_PENDING to it.version
-                    else -> CARD_READER_ONBOARDING_NOT_COMPLETED to null
+                    else -> {
+                        updatePluginExplicitlySelectedFlag(false)
+                        CARD_READER_ONBOARDING_NOT_COMPLETED to null
+                    }
                 }
                 updateSharedPreferences(
                     status,
@@ -281,6 +284,16 @@ class CardReaderOnboardingChecker @Inject constructor(
             remoteSiteId = site.siteId,
             selfHostedSiteId = site.selfHostedSiteId,
             PersistentOnboardingData(status, preferredPlugin, version),
+        )
+    }
+
+    private fun updatePluginExplicitlySelectedFlag(isPluginExplicitlySelected: Boolean) {
+        val site = selectedSite.get()
+        appPrefsWrapper.setIsCardReaderPluginExplicitlySelectedFlag(
+            localSiteId = site.id,
+            remoteSiteId = site.siteId,
+            selfHostedSiteId = site.selfHostedSiteId,
+            isPluginExplicitlySelected = isPluginExplicitlySelected
         )
     }
 }
