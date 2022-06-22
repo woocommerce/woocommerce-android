@@ -14,6 +14,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.cardreader.CardReaderTrackingInfoKeeper
+import com.woocommerce.android.ui.cardreader.IppSelectPaymentGateway
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.PluginIsNotSupportedInTheCountry
 import com.woocommerce.android.ui.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -55,6 +56,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
     private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider = mock()
+    private val ippSelectPaymentGateway: IppSelectPaymentGateway = mock()
 
     private val site = SiteModel()
 
@@ -74,6 +76,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             networkStatus,
             cardReaderTrackingInfoKeeper,
             cardReaderCountryConfigProvider,
+            ippSelectPaymentGateway,
         )
         whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(selectedSite.get()).thenReturn(site)
@@ -91,6 +94,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             .thenReturn(CardReaderConfigForUSA)
         whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("CA"))
             .thenReturn(CardReaderConfigForCanada)
+        whenever(ippSelectPaymentGateway.isEnabled()).thenReturn(false)
     }
 
     @Test
@@ -1120,6 +1124,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
     @Test
     fun `when onboarding not completed, then clear pluginExplicitlySelected flag`() = testBlocking {
+        whenever(ippSelectPaymentGateway.isEnabled()).thenReturn(true)
         whenever(wooStore.getStoreCountryCode(site)).thenReturn("unsupported country abc")
 
         checker.getOnboardingState()
@@ -1132,6 +1137,21 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             captor.capture(),
         )
         assertThat(captor.firstValue).isFalse()
+    }
+
+    @Test
+    fun `given feature flag is disabled, when onboarding not completed, then do not clear flag`() = testBlocking {
+        whenever(ippSelectPaymentGateway.isEnabled()).thenReturn(false)
+        whenever(wooStore.getStoreCountryCode(site)).thenReturn("unsupported country abc")
+
+        checker.getOnboardingState()
+
+        verify(appPrefsWrapper, never()).setIsCardReaderPluginExplicitlySelectedFlag(
+            anyInt(),
+            anyLong(),
+            anyLong(),
+            anyBoolean(),
+        )
     }
 
     @Test

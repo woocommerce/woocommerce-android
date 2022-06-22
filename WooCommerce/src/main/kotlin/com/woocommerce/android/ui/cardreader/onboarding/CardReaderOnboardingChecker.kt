@@ -15,6 +15,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.cardreader.CardReaderTrackingInfoKeeper
+import com.woocommerce.android.ui.cardreader.IppSelectPaymentGateway
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.GenericError
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.NoConnectionError
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.OnboardingCompleted
@@ -73,6 +74,7 @@ class CardReaderOnboardingChecker @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
     private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider,
+    private val ippSelectPaymentGateway: IppSelectPaymentGateway,
 ) {
     suspend fun getOnboardingState(): CardReaderOnboardingState {
         if (!networkStatus.isConnected()) return NoConnectionError
@@ -83,7 +85,9 @@ class CardReaderOnboardingChecker @Inject constructor(
                     is OnboardingCompleted -> CARD_READER_ONBOARDING_COMPLETED to it.version
                     is StripeAccountPendingRequirement -> CARD_READER_ONBOARDING_PENDING to it.version
                     else -> {
-                        updatePluginExplicitlySelectedFlag(false)
+                        if (ippSelectPaymentGateway.isEnabled()) {
+                            updatePluginExplicitlySelectedFlag(false)
+                        }
                         CARD_READER_ONBOARDING_NOT_COMPLETED to null
                     }
                 }
