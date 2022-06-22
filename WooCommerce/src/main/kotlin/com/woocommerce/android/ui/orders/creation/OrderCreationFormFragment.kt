@@ -25,6 +25,7 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget
@@ -36,7 +37,9 @@ import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Compa
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.WCReadMoreTextView
 import dagger.hilt.android.AndroidEntryPoint
@@ -59,6 +62,14 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             currencyCode = viewModel.currentDraft.currency
         )
     }
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Visible(
+            navigationIcon = when (viewModel.mode) {
+                OrderCreationViewModel.Mode.Creation -> R.drawable.ic_back_24dp
+                is OrderCreationViewModel.Mode.Edit -> null
+            }
+        )
 
     private val View?.productsAdapter
         get() = (this as? RecyclerView)

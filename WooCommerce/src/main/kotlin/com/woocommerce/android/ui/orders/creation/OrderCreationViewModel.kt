@@ -81,7 +81,7 @@ class OrderCreationViewModel @Inject constructor(
     private var viewState by viewStateData
 
     private val args: OrderCreationFormFragmentArgs by savedState.navArgs()
-    private val mode: Mode = args.mode
+    val mode: Mode = args.mode
 
     private val _orderDraft = savedState.getStateFlow(viewModelScope, Order.EMPTY)
     val orderDraft = _orderDraft
