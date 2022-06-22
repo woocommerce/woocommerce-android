@@ -136,7 +136,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             it
         }
         doReturn(site).whenever(selectedSite).getIfExists()
-        doReturn(site).whenever(selectedSite).get()
         testBlocking {
             doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any())
         }
