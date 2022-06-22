@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.payments.simplepayments
 
-import android.content.DialogInterface
+import android.app.Dialog
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
@@ -8,7 +8,6 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.DialogSimplePaymentsBinding
 import com.woocommerce.android.extensions.filterNotNull
@@ -34,6 +33,14 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
         setStyle(STYLE_NO_TITLE, R.style.Theme_Woo_Dialog)
     }
 
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return object : Dialog(requireContext(), theme) {
+            override fun onBackPressed() {
+                cancelDialog()
+            }
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -54,7 +61,7 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
             viewModel.onDoneButtonClicked()
         }
         binding.imageClose.setOnClickListener {
-            findNavController().navigateUp()
+            cancelDialog()
         }
 
         if (!isLandscape && binding.editPrice.editText.requestFocus()) {
@@ -69,13 +76,17 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
         setupObservers(binding)
     }
 
+    private fun cancelDialog() {
+        viewModel.onCancelDialogClicked()
+        findNavController().navigateUp()
+    }
+
     private fun setupObservers(binding: DialogSimplePaymentsBinding) {
         binding.editPrice.value.filterNotNull().observe(
-            this,
-            {
-                viewModel.currentPrice = it
-            }
-        )
+            this
+        ) {
+            viewModel.currentPrice = it
+        }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
@@ -106,14 +117,6 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-    }
-
-    override fun onDismiss(dialog: DialogInterface) {
-        AnalyticsTracker.track(
-            AnalyticsEvent.PAYMENTS_FLOW_CANCELED,
-            mapOf(AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW)
-        )
-        super.onDismiss(dialog)
     }
 
     companion object {
