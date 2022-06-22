@@ -1207,6 +1207,8 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             assertThat(result).isEqualTo(CardReaderOnboardingState.ChoosePaymentProvider)
         }
 
+    //endregion
+
     private fun buildPaymentAccountResult(
         status: WCPaymentAccountResult.WCPaymentAccountStatus = WCPaymentAccountResult.WCPaymentAccountStatus.COMPLETE,
         hasPendingRequirements: Boolean = false,
