@@ -140,6 +140,8 @@ class CardReaderTracker @Inject constructor(
             is CardReaderOnboardingState.GenericError -> "generic_error"
             is CardReaderOnboardingState.NoConnectionError -> "no_connection_error"
             is CardReaderOnboardingState.WcpayAndStripeActivated -> "wcpay_and_stripe_installed_and_activated"
+            CardReaderOnboardingState.ChoosePaymentProvider ->
+                "wcpay_and_stripe_installed_and_activated_choose_payment_provider"
         }
 
     private fun getPluginNameReasonPrefix(pluginType: PluginType): String {

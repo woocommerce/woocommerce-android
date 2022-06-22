@@ -1192,6 +1192,21 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `given feature flag is enabled, when wcpay and stripe activated, then ChoosePaymentProvider returned`() =
+        testBlocking {
+            whenever(ippSelectPaymentGateway.isEnabled()).thenReturn(true)
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+                .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+                .thenReturn(buildWCPayPluginInfo(isActive = true))
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isEqualTo(CardReaderOnboardingState.ChoosePaymentProvider)
+        }
+
     private fun buildPaymentAccountResult(
         status: WCPaymentAccountResult.WCPaymentAccountStatus = WCPaymentAccountResult.WCPaymentAccountStatus.COMPLETE,
         hasPendingRequirements: Boolean = false,

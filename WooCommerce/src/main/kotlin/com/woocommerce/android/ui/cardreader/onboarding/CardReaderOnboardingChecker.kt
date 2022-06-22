@@ -16,6 +16,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.cardreader.IppSelectPaymentGateway
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentProvider
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.GenericError
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.NoConnectionError
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.OnboardingCompleted
@@ -127,6 +128,10 @@ class CardReaderOnboardingChecker @Inject constructor(
                 if (!isPluginSupportedInCountry(pluginType, cardReaderConfig)) {
                     return PluginIsNotSupportedInTheCountry(pluginType, countryCode!!)
                 }
+            }
+            val isPluginExplicitlySelected = isPluginExplicitlySelected()
+            if (ippSelectPaymentGateway.isEnabled() && !isPluginExplicitlySelected) {
+                return ChoosePaymentProvider
             }
             return WcpayAndStripeActivated
         }
@@ -300,6 +305,15 @@ class CardReaderOnboardingChecker @Inject constructor(
             isPluginExplicitlySelected = isPluginExplicitlySelected
         )
     }
+
+    private fun isPluginExplicitlySelected(): Boolean {
+        val site = selectedSite.get()
+        return appPrefsWrapper.isCardReaderPluginExplicitlySelected(
+            localSiteId = site.id,
+            remoteSiteId = site.siteId,
+            selfHostedSiteId = site.selfHostedSiteId,
+        )
+    }
 }
 
 data class PersistentOnboardingData(
@@ -384,6 +398,13 @@ sealed class CardReaderOnboardingState(
      */
     @Parcelize
     object WcpayAndStripeActivated : CardReaderOnboardingState()
+
+    /**
+     * Both plugins are installed and activated on the site. Merchant needs to choose their preferred payment
+     * provider in this state.
+     */
+    @Parcelize
+    object ChoosePaymentProvider : CardReaderOnboardingState()
 
     /**
      * This is a bit special case: WCPay is set to "dev mode" but the connected Stripe account is in live mode.

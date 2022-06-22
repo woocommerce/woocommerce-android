@@ -15,6 +15,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingParams.Check
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingParams.Failed
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentProvider
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.GenericError
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.NoConnectionError
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.OnboardingCompleted
@@ -199,6 +200,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     ::onLearnMoreClicked
                 )
             WcpayAndStripeActivated -> updateUiWithWcPayAndStripeActivated()
+            ChoosePaymentProvider -> TODO()
         }.exhaustive
     }
 
