@@ -1204,7 +1204,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             val result = checker.getOnboardingState()
 
-            assertThat(result).isEqualTo(CardReaderOnboardingState.ChoosePaymentProvider)
+            assertThat(result).isEqualTo(CardReaderOnboardingState.ChoosePaymentGatewayProvider)
         }
 
     //endregion

@@ -16,7 +16,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.cardreader.IppSelectPaymentGateway
-import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentProvider
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.GenericError
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.NoConnectionError
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.OnboardingCompleted
@@ -130,7 +130,7 @@ class CardReaderOnboardingChecker @Inject constructor(
                 }
             }
             if (ippSelectPaymentGateway.isEnabled() && !isPluginExplicitlySelected()) {
-                return ChoosePaymentProvider
+                return ChoosePaymentGatewayProvider
             }
             return WcpayAndStripeActivated
         }
@@ -403,7 +403,7 @@ sealed class CardReaderOnboardingState(
      * provider in this state.
      */
     @Parcelize
-    object ChoosePaymentProvider : CardReaderOnboardingState()
+    object ChoosePaymentGatewayProvider : CardReaderOnboardingState()
 
     /**
      * This is a bit special case: WCPay is set to "dev mode" but the connected Stripe account is in live mode.
