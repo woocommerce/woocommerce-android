@@ -558,6 +558,6 @@
     </fragment>
     <fragment
         android:id="@+id/installWcShippingFlowFragment"
-        android:name="com.woocommerce.android.ui.shipping.InstallWcShippingFlowFragment"
+        android:name="com.woocommerce.android.ui.shipping.InstallWCShippingFragment"
         android:label="InstallWcShippingFlowFragment" />
 </navigation>
