@@ -53,29 +53,28 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
             setHasFixedSize(true)
         }
 
-        if (order.paymentMethodTitle.isEmpty() && order.datePaid == null) {
-            binding.paymentInfoPaymentMsg.hide()
-            binding.paymentInfoPaidSection.hide()
-        } else {
-            binding.paymentInfoPaymentMsg.show()
-
-            if (order.status == Order.Status.Pending || order.status == Order.Status.OnHold || order.datePaid == null) {
-                binding.paymentInfoPaid.text = formatCurrencyForDisplay(BigDecimal.ZERO)
-                binding.paymentInfoPaymentMsg.text = context.getString(
-                    R.string.orderdetail_payment_summary_onhold, order.paymentMethodTitle
+        if (order.datePaid == null) {
+            binding.paymentInfoAmountPaidSection.hide()
+            binding.paymentInfoPaymentMsg.text = if (order.paymentMethodTitle.isNotEmpty()) {
+                context.getString(
+                    R.string.orderdetail_payment_summary_onhold_via,
+                    order.paymentMethodTitle
                 )
             } else {
-                binding.paymentInfoPaid.text = formatCurrencyForDisplay(order.total)
-
-                val dateStr = order.datePaid.getMediumDate(context)
-                binding.paymentInfoPaymentMsg.text = if (order.paymentMethodTitle.isNotEmpty()) {
-                    context.getString(
-                        R.string.orderdetail_payment_summary_completed,
-                        dateStr,
-                        order.paymentMethodTitle
-                    )
-                } else dateStr
+                context.getString(R.string.orderdetail_payment_summary_onhold)
             }
+        } else {
+            binding.paymentInfoAmountPaidSection.show()
+            binding.paymentInfoPaid.text = formatCurrencyForDisplay(order.total)
+
+            val dateStr = order.datePaid.getMediumDate(context)
+            binding.paymentInfoPaymentMsg.text = if (order.paymentMethodTitle.isNotEmpty()) {
+                context.getString(
+                    R.string.orderdetail_payment_summary_completed,
+                    dateStr,
+                    order.paymentMethodTitle
+                )
+            } else dateStr
         }
 
         updateDiscountsSection(order, formatCurrencyForDisplay)
