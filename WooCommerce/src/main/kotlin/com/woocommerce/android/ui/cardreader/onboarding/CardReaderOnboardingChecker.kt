@@ -129,8 +129,7 @@ class CardReaderOnboardingChecker @Inject constructor(
                     return PluginIsNotSupportedInTheCountry(pluginType, countryCode!!)
                 }
             }
-            val isPluginExplicitlySelected = isPluginExplicitlySelected()
-            if (ippSelectPaymentGateway.isEnabled() && !isPluginExplicitlySelected) {
+            if (ippSelectPaymentGateway.isEnabled() && !isPluginExplicitlySelected()) {
                 return ChoosePaymentProvider
             }
             return WcpayAndStripeActivated
