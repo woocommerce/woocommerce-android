@@ -9,9 +9,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -39,6 +39,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -88,7 +89,7 @@ private fun PreInstallationContent(viewState: PreInstallation, transition: Trans
             WCTextButton(onClick = viewState.onCancelClick) {
                 Text(text = stringResource(id = R.string.cancel))
             }
-            Spacer(modifier = Modifier.weight(1f))
+            SpacerWithMinHeight(1f, dimensionResource(id = R.dimen.major_100))
             Box(
                 modifier = Modifier
                     .clip(CircleShape)
@@ -125,7 +126,7 @@ private fun PreInstallationContent(viewState: PreInstallation, transition: Trans
                 text = viewState.siteName,
                 style = MaterialTheme.typography.h4
             )
-            Spacer(modifier = Modifier.weight(0.75f))
+            SpacerWithMinHeight(0.75f, dimensionResource(id = R.dimen.major_100))
             Row(
                 horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100)),
                 modifier = Modifier
@@ -142,7 +143,7 @@ private fun PreInstallationContent(viewState: PreInstallation, transition: Trans
                     text = stringResource(id = R.string.install_wc_shipping_installation_info),
                 )
             }
-            Spacer(modifier = Modifier.weight(0.75f))
+            SpacerWithMinHeight(0.75f, dimensionResource(id = R.dimen.major_100))
         }
         WCColoredButton(
             onClick = viewState.onProceedClick,
@@ -153,6 +154,12 @@ private fun PreInstallationContent(viewState: PreInstallation, transition: Trans
             Text(text = stringResource(id = R.string.install_wc_shipping_proceed_button))
         }
     }
+}
+
+@Composable
+private fun ColumnScope.SpacerWithMinHeight(weight: Float, minHeight: Dp) {
+    Spacer(modifier = Modifier.height(minHeight))
+    Spacer(modifier = Modifier.weight(weight))
 }
 
 @Preview
