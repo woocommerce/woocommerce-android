@@ -41,7 +41,7 @@ class EditFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest() {
     }
 
     @Test
-    fun `when hitting the back button with no changes, then trigger Exit with no dialog`() {
+    fun `when hitting the back button, then close the screen`() {
         orderDetailRepository.stub {
             onBlocking { getOrderById(defaultOrderValue.id) }.doReturn(defaultOrderValue)
         }
@@ -54,29 +54,6 @@ class EditFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest() {
         sut.onBackButtonClicked()
 
         assertThat(lastReceivedEvent).isEqualTo(Exit)
-    }
-
-    @Test
-    fun `when hitting the back button with changes done, then trigger discard warning dialog`() {
-        var lastReceivedEvent: Event? = null
-        sut.event.observeForever {
-            lastReceivedEvent = it
-        }
-
-        var addedProductItem: Order.Item? = null
-        sut.orderDraft.observeForever { order ->
-            addedProductItem = order.items.find { it.productId == 123L }
-        }
-
-        sut.onProductSelected(123)
-
-        assertThat(addedProductItem).isNotNull
-        val addedProductItemId = addedProductItem!!.itemId
-
-        sut.onIncreaseProductsQuantity(addedProductItemId)
-        sut.onBackButtonClicked()
-
-        assertThat(lastReceivedEvent).isInstanceOf(Event.ShowDialog::class.java)
     }
 
     @Test
