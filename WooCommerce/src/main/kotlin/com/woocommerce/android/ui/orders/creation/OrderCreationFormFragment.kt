@@ -90,6 +90,12 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         inflater.inflate(R.menu.menu_order_creation, menu)
 
         createOrderMenuItem = menu.findItem(R.id.menu_create).apply {
+            title = resources.getString(
+                when (viewModel.mode) {
+                    OrderCreationViewModel.Mode.Creation -> R.string.create
+                    is OrderCreationViewModel.Mode.Edit -> R.string.done
+                }
+            )
             isEnabled = viewModel.viewStateData.liveData.value?.canCreateOrder ?: false
         }
     }
