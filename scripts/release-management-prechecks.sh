@@ -33,7 +33,7 @@ error_project_env_file_missing() {
     echoerr "$PROJECT_ENV_FILE is missing!"
 }
 error_project_env_field_missing() {
-    echoerr "'$1' is missing in $PROJECT_ENV_FILE!"
+    echoerr "'$1' is missing or incorrect in $PROJECT_ENV_FILE!"
 }
 warning_project_env_file_contents() {
     echo \
@@ -47,6 +47,12 @@ Please make sure you have the following information in '$PROJECT_ENV_FILE':
 > $P_ENV_SENTRY_PROJECT_SLUG=$P_ENV_SENTRY_PROJECT_SLUG_VALUE
 >
 > $P_ENV_BUILDKITE_TOKEN={$P_ENV_BUILDKITE_TOKEN}
+
+Here is how to retrieve these values:
+
+$P_ENV_GITHUB_TOKEN: https://github.com/settings/tokens (requires 'repo')
+$P_ENV_SENTRY_AUTH_TOKEN: https://sentry.io/settings/account/api/auth-tokens/ (requires 'event:read, member:read, org:read, project:read, project:releases, team:read, event:admin')
+$P_ENV_BUILDKITE_TOKEN: https://buildkite.com/user/api-access-tokens (requires 'read_builds, write_builds')
 "
 }
 
@@ -100,12 +106,12 @@ else
 
     match_any_word="\w*"
 
-    # These tokens can be any string
+    # These tokens can match to any string
     check_project_env "$P_ENV_GITHUB_TOKEN" "$match_any_word"
     check_project_env "$P_ENV_SENTRY_AUTH_TOKEN" "$match_any_word"
     check_project_env "$P_ENV_BUILDKITE_TOKEN" "$match_any_word"
 
-    # These values are set per project in configuration section
+    # These values are set per project in configuration section and the value is not a secret
     check_project_env "$P_ENV_SENTRY_ORG_SLUG" "$P_ENV_SENTRY_ORG_SLUG_VALUE"
     check_project_env "$P_ENV_SENTRY_PROJECT_SLUG" "$P_ENV_SENTRY_PROJECT_SLUG_VALUE"
 fi
