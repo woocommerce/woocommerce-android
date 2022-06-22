@@ -1352,7 +1352,6 @@ Language: zh_TW
     <string name="orderdetail_refund_detail">%1$s，付款方式：%2$s</string>
     <string name="settings_enable_v4_stats_title">改善的統計資料</string>
     <string name="beta_features">Beta 功能</string>
-    <string name="orderdetail_payment_summary_onhold">等待透過 %s 支付的款項</string>
     <string name="orderdetail_payment_summary_completed">%1$s，付款方式：%2$s</string>
     <string name="dashboard_state_no_data">此期間沒有收益</string>
     <string name="no_thanks">不用了，謝謝</string>
@@ -2034,7 +2033,7 @@ Language: zh_TW
     <string name="logging_in">正在登入</string>
     <string name="all">全部</string>
     <string name="notification_channel_general_title">一般</string>
-    <string name="app_name">WooCommerce</string>
+    <string name="app_name">orderdetail_payment_summary_onhold</string>
     <string-array name="date_range_selectors">
         <item>\@string/date_timeframe_today</item>
         <item>\@string/date_timeframe_yesterday</item>

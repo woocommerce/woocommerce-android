@@ -1352,7 +1352,6 @@ Language: ja_JP
     <string name="orderdetail_refund_detail">%2$s により %1$s</string>
     <string name="settings_enable_v4_stats_title">強化された統計</string>
     <string name="beta_features">ベータ版の機能</string>
-    <string name="orderdetail_payment_summary_onhold">%s による決済待ち</string>
     <string name="orderdetail_payment_summary_completed">%2$s により %1$s</string>
     <string name="dashboard_state_no_data">この期間には収益がありません</string>
     <string name="no_thanks">結構です</string>

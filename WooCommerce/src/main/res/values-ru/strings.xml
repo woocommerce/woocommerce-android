@@ -1353,7 +1353,6 @@ Language: ru
     <string name="orderdetail_refund_detail">%1$s с помощью %2$s</string>
     <string name="settings_enable_v4_stats_title">Улучшенная статистика</string>
     <string name="beta_features">Функции в бета-режиме</string>
-    <string name="orderdetail_payment_summary_onhold">Ожидание оплаты через %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s через %2$s</string>
     <string name="dashboard_state_no_data">Нет доходов за указанный период</string>
     <string name="no_thanks">Нет, спасибо</string>
