@@ -5,7 +5,6 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'org.jetbrains.kotlin.kapt'
-    id 'org.jetbrains.kotlin.plugin.allopen'
     id 'org.jetbrains.kotlin.plugin.parcelize'
     id 'dagger.hilt.android.plugin'
     id 'se.bjurr.violations.violation-comments-to-github-gradle-plugin'
@@ -54,10 +53,6 @@ repositories {
             includeModule("com.github.PhilJay", "MPAndroidChart")
         }
     }
-}
-
-allOpen {
-    annotation("com.woocommerce.android.annotations.OpenClass")
 }
 
 android {

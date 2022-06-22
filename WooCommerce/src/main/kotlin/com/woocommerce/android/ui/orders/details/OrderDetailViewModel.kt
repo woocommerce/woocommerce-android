@@ -24,7 +24,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent.SHIPPING_LABEL_ORDER_IS_
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.Order
@@ -82,7 +81,6 @@ import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUp
 import org.wordpress.android.fluxc.utils.sumBy
 import javax.inject.Inject
 
-@OpenClassOnDebug
 @HiltViewModel
 final class OrderDetailViewModel @Inject constructor(
     private val coroutineDispatchers: CoroutineDispatchers,
