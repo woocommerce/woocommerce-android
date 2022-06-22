@@ -48,8 +48,8 @@ class InstallWCShippingViewModel @Inject constructor(
                     site.displayName?.takeIf { it.isNotBlank() } ?: site.name.orEmpty()
                 },
                 onCancelClick = ::onDismissWcShippingFlowClicked,
-                onProceedClick = { TODO() },
-                onInfoClick = { TODO() }
+                onProceedClick = { /*TODO*/ },
+                onInfoClick = { onLinkClicked("https://url") } // TODO
             )
             Step.Installation -> TODO()
             Step.PostInstallationSuccess -> TODO()
@@ -139,5 +139,4 @@ class InstallWCShippingViewModel @Inject constructor(
     data class OpenLinkEvent(
         val url: String,
     ) : MultiLiveEvent.Event()
-
 }
