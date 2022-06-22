@@ -296,7 +296,7 @@ class CardReaderTracker @Inject constructor(
     }
 
     fun trackCollectPaymentTapped() {
-        track(PAYMENTS_FLOW_ORDER_COLLECT_PAYMENT_TAPPED)
+        trackerWrapper.track(PAYMENTS_FLOW_ORDER_COLLECT_PAYMENT_TAPPED)
     }
 
     fun trackDisconnectTapped() {
