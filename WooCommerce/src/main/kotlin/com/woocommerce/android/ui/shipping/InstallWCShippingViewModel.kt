@@ -7,12 +7,16 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel.Step.Installation
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
@@ -30,6 +34,16 @@ class InstallWCShippingViewModel @Inject constructor(
     val viewState = step
         .map { prepareStep(it) }
         .asLiveData()
+
+    init {
+        launch {
+            // Wait for installation step
+            step.filter { it == Installation }
+                .first()
+
+            // TODO launch plugin installation
+        }
+    }
 
     private fun prepareStep(step: Step): ViewState {
         return when (step) {
