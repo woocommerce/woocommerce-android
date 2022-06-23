@@ -208,6 +208,16 @@ class SelectPaymentMethodViewModel @Inject constructor(
         }
     }
 
+    fun onBackPressed() {
+        // Simple payments flow is not canceled if we going back from this fragment
+        if (cardReaderPaymentFlowParam.paymentType == ORDER) {
+            analyticsTrackerWrapper.track(
+                AnalyticsEvent.PAYMENTS_FLOW_CANCELED,
+                mapOf(AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW)
+            )
+        }
+    }
+
     private suspend fun updateOrderStatus(statusKey: String) {
         val statusModel = withContext(dispatchers.io) {
             orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), statusKey)

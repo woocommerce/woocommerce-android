@@ -18,6 +18,7 @@ import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.dialog.WooDialog
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderHubFlow
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderPaymentFlow
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderRefundFlow
@@ -32,7 +33,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment) {
+class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment), BackPressListener {
     private val viewModel: SelectPaymentMethodViewModel by viewModels()
     private val sharePaymentUrlLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -179,5 +180,10 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
     override fun onStop() {
         super.onStop()
         WooDialog.onCleared()
+    }
+
+    override fun onRequestAllowBackPress(): Boolean {
+        viewModel.onBackPressed()
+        return true
     }
 }

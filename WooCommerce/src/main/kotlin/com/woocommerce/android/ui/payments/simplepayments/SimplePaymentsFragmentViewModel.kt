@@ -35,8 +35,8 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val orderCreationRepository: OrderCreationRepository
 ) : ScopedViewModel(savedState) {
-    final val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
-    internal final var viewState by viewStateLiveData
+    val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
+    internal var viewState by viewStateLiveData
 
     private val navArgs: SimplePaymentsFragmentArgs by savedState.navArgs()
 
@@ -183,6 +183,10 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
     }
 
     fun onBackButtonClicked() {
+        AnalyticsTracker.track(
+            AnalyticsEvent.PAYMENTS_FLOW_CANCELED,
+            mapOf(AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW)
+        )
         triggerEvent(CancelSimplePayment)
     }
 
