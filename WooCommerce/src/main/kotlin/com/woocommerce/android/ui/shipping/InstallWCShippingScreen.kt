@@ -5,7 +5,6 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.ExperimentalTransitionApi
 import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.createChildTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
@@ -60,6 +59,64 @@ fun InstallWCShippingScreen(viewState: ViewState) {
                 is ViewState.Onboarding -> InstallWcShippingOnboarding(viewState = targetState)
                 is InstallationState -> InstallWCShippingFlow(viewState = targetState)
             }
+        }
+    }
+}
+
+@SuppressLint("RememberReturnType")
+@Preview
+@Composable
+private fun PreviewInstallWCShippingScreen() {
+    val states = remember {
+        mutableListOf<ViewState>()
+    }
+
+    var state by remember {
+        mutableStateOf(states.getOrNull(0))
+    }
+
+    remember {
+        states.add(
+            ViewState.Onboarding(
+                title = R.string.install_wc_shipping_flow_onboarding_screen_title,
+                subtitle = R.string.install_wc_shipping_flow_onboarding_screen_subtitle,
+                bullets = emptyList(),
+                onInstallClicked = { state = states[1] }
+            )
+        )
+
+        states.add(
+            InstallationState.PreInstallation(
+                extensionsName = R.string.install_wc_shipping_extension_name,
+                siteName = "Site",
+                siteUrl = "URL",
+                onCancelClick = {},
+                onProceedClick = { state = states[2] },
+                onInfoClick = {}
+            )
+        )
+
+        states.add(
+            InstallationState.InstallationOngoing(
+                extensionsName = R.string.install_wc_shipping_extension_name,
+                siteName = "Site",
+                siteUrl = "URL"
+            )
+        )
+
+        state = states[0]
+    }
+
+    LaunchedEffect(state) {
+        if (state is InstallationState.InstallationOngoing) {
+            delay(5000)
+            state = states[0]
+        }
+    }
+
+    WooThemeWithBackground {
+        state?.let {
+            InstallWCShippingScreen(viewState = it)
         }
     }
 }
