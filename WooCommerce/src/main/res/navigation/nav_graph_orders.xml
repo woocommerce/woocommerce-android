@@ -223,7 +223,6 @@
         <action
             android:id="@+id/action_orderDetailFragment_to_billingAddressEditingFragment"
             app:destination="@id/billingAddressEditingFragment" />
-
         <action
             android:id="@+id/action_orderDetailFragment_to_cardReaderFlow"
             app:destination="@id/cardReaderFlow">
