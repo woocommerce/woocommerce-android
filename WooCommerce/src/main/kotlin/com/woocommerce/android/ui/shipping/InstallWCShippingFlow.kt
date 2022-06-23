@@ -22,9 +22,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -43,7 +45,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel.ViewState.InstallationState
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel.ViewState.InstallationState.PreInstallation
@@ -79,6 +80,12 @@ private fun PreInstallationContent(viewState: PreInstallation, transition: Trans
                 vertical = dimensionResource(id = R.dimen.major_150)
             )
     ) {
+        IconButton(onClick = viewState.onCancelClick) {
+            Icon(
+                imageVector = Icons.Default.Clear,
+                contentDescription = stringResource(id = R.string.cancel)
+            )
+        }
         Column(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier
@@ -86,9 +93,6 @@ private fun PreInstallationContent(viewState: PreInstallation, transition: Trans
                 .verticalScroll(rememberScrollState())
                 .offset(y = -offset.dp)
         ) {
-            WCTextButton(onClick = viewState.onCancelClick) {
-                Text(text = stringResource(id = R.string.cancel))
-            }
             SpacerWithMinHeight(1f, dimensionResource(id = R.dimen.major_100))
             Box(
                 modifier = Modifier
