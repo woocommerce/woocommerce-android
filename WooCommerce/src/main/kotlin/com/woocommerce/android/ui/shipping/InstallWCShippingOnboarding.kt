@@ -1,9 +1,12 @@
+@file:OptIn(ExperimentalAnimationApi::class)
+
 package com.woocommerce.android.ui.shipping
 
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.Transition
-import androidx.compose.animation.core.animateInt
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,7 +15,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -21,9 +23,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -39,10 +41,9 @@ import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel.InstallWCS
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel.ViewState.Onboarding
 
 @Composable
-fun InstallWcShippingOnboarding(
-    viewState: Onboarding,
-    transition: Transition<Boolean>
-) {
+fun AnimatedVisibilityScope.InstallWcShippingOnboarding(viewState: Onboarding) {
+    val targetExitOffset = with(LocalDensity.current) { 120.dp.roundToPx() }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -51,18 +52,19 @@ fun InstallWcShippingOnboarding(
                 end = dimensionResource(id = R.dimen.major_200)
             )
     ) {
-        val offset by transition.animateInt(
-            transitionSpec = { tween(durationMillis = 500, easing = LinearOutSlowInEasing) },
-            label = "offset"
-        ) {
-            if (it) 0 else 120
-        }
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
-                .offset(y = -offset.dp)
+                .animateEnterExit(
+                    enter = EnterTransition.None,
+                    exit = slideOutVertically(
+                        animationSpec =
+                        tween(durationMillis = 500),
+                        targetOffsetY = { -targetExitOffset }
+                    )
+                )
         ) {
             Text(
                 modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_350)),
@@ -93,7 +95,14 @@ fun InstallWcShippingOnboarding(
                     top = dimensionResource(id = R.dimen.major_200),
                     bottom = dimensionResource(id = R.dimen.major_200),
                 )
-                .offset(y = offset.dp)
+                .animateEnterExit(
+                    enter = EnterTransition.None,
+                    exit = slideOutVertically(
+                        animationSpec =
+                        tween(durationMillis = 500),
+                        targetOffsetY = { targetExitOffset }
+                    )
+                )
         ) {
             WCColoredButton(
                 modifier = Modifier.fillMaxWidth(),

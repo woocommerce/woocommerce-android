@@ -1,9 +1,24 @@
+@file:OptIn(ExperimentalAnimationApi::class)
+
 package com.woocommerce.android.ui.shipping
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.EnterTransition.Companion
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.ExperimentalTransitionApi
 import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.animateInt
+import androidx.compose.animation.core.createChildTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,6 +50,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -44,34 +60,26 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel.ViewState
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel.ViewState.InstallationState
+import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel.ViewState.InstallationState.InstallationOngoing
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel.ViewState.InstallationState.PreInstallation
 
+@OptIn(ExperimentalTransitionApi::class)
 @Composable
-fun InstallWCShippingFlow(viewState: InstallationState, transition: Transition<Boolean>? = null) {
+fun AnimatedVisibilityScope.InstallWCShippingFlow(viewState: InstallationState) {
     when (viewState) {
-        is PreInstallation -> PreInstallationContent(viewState, transition)
+        is PreInstallation -> PreInstallationContent(viewState)
+        is InstallationOngoing -> TODO()
     }
 }
 
 @Composable
-private fun PreInstallationContent(viewState: PreInstallation, transition: Transition<Boolean>? = null) {
-    val offset by transition?.animateInt(
-        transitionSpec = {
-            tween(
-                durationMillis = 500,
-                delayMillis = 500,
-                // Ensure a bit of elasticity at the end of the animation
-                easing = CubicBezierEasing(0.7f, 0.6f, 0.74f, 1.3f)
-            )
-        },
-        label = "offset"
-    ) {
-        if (it) 0 else 120
-    } ?: remember { mutableStateOf(0) }
-
+private fun AnimatedVisibilityScope.PreInstallationContent(viewState: InstallationState.PreInstallation) {
+    val initialOffset = with(LocalDensity.current) { 120.dp.roundToPx() }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -80,18 +88,32 @@ private fun PreInstallationContent(viewState: PreInstallation, transition: Trans
                 vertical = dimensionResource(id = R.dimen.major_150)
             )
     ) {
-        IconButton(onClick = viewState.onCancelClick) {
-            Icon(
-                imageVector = Icons.Default.Clear,
-                contentDescription = stringResource(id = R.string.cancel)
-            )
+        (viewState as? PreInstallation)?.let {
+            IconButton(onClick = viewState.onCancelClick) {
+                Icon(
+                    imageVector = Icons.Default.Clear,
+                    contentDescription = stringResource(id = R.string.cancel)
+                )
+            }
         }
         Column(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
-                .offset(y = -offset.dp)
+                .animateEnterExit(
+                    enter = slideInVertically(
+                        animationSpec =
+                        tween(
+                            durationMillis = 500,
+                            delayMillis = 500,
+                            // Ensure a bit of elasticity at the end of the animation
+                            easing = CubicBezierEasing(0.7f, 0.6f, 0.74f, 1.3f)
+                        ),
+                        initialOffsetY = { -initialOffset }
+                    ),
+                    exit = ExitTransition.None
+                )
         ) {
             SpacerWithMinHeight(1f, dimensionResource(id = R.dimen.major_100))
             Box(
@@ -114,49 +136,89 @@ private fun PreInstallationContent(viewState: PreInstallation, transition: Trans
                 )
             }
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_150)))
-            Text(
-                text = stringResource(id = R.string.install_wc_shipping_preinstall_title),
-                style = MaterialTheme.typography.h4,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = stringResource(id = viewState.extensionsName),
-                style = MaterialTheme.typography.h4,
-                fontWeight = FontWeight.Bold,
-                color = colorResource(id = R.color.woo_purple_50)
-            )
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_150)))
-            Text(
-                text = viewState.siteName,
-                style = MaterialTheme.typography.h4
-            )
+            MainContent(viewState)
             SpacerWithMinHeight(0.75f, dimensionResource(id = R.dimen.major_100))
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100)),
-                modifier = Modifier
-                    .clickable(onClick = viewState.onInfoClick)
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Info,
-                    contentDescription = null,
-                    tint = colorResource(id = R.color.link_text)
-                )
-                Text(
-                    style = MaterialTheme.typography.subtitle1,
-                    color = colorResource(id = R.color.link_text),
-                    text = stringResource(id = R.string.install_wc_shipping_installation_info),
-                )
+            AnimatedVisibility(visible = viewState is PreInstallation) {
+                InstallationInfoLink { (viewState as? PreInstallation)?.onInfoClick?.invoke() }
             }
             SpacerWithMinHeight(0.75f, dimensionResource(id = R.dimen.major_100))
         }
-        WCColoredButton(
-            onClick = viewState.onProceedClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .offset(y = offset.dp)
-        ) {
-            Text(text = stringResource(id = R.string.install_wc_shipping_proceed_button))
+        (viewState as? PreInstallation)?.let {
+            WCColoredButton(
+                onClick = viewState.onProceedClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .animateEnterExit(
+                        enter = slideInVertically(
+                            animationSpec =
+                            tween(
+                                durationMillis = 500,
+                                delayMillis = 500,
+                                // Ensure a bit of elasticity at the end of the animation
+                                easing = CubicBezierEasing(0.7f, 0.6f, 0.74f, 1.3f)
+                            ),
+                            initialOffsetY = { initialOffset }
+                        ),
+                        exit = ExitTransition.None
+                    )
+            ) {
+                Text(text = stringResource(id = R.string.install_wc_shipping_proceed_button))
+            }
         }
+    }
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+private fun AnimatedVisibilityScope.MainContent(viewState: InstallationState) {
+    Column {
+        val text = when (viewState) {
+            is PreInstallation -> stringResource(id = string.install_wc_shipping_preinstall_title)
+            is InstallationOngoing -> "Installing"
+        }
+        Text(
+            text = text,
+            style = MaterialTheme.typography.h4,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.animateEnterExit(
+                enter = if (viewState is InstallationOngoing) {
+                    fadeIn(tween(500, delayMillis = 100))
+                } else EnterTransition.None,
+                exit = ExitTransition.None
+            )
+        )
+
+        Text(
+            text = stringResource(id = viewState.extensionsName),
+            style = MaterialTheme.typography.h4,
+            fontWeight = FontWeight.Bold,
+            color = colorResource(id = R.color.woo_purple_50)
+        )
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_150)))
+        Text(
+            text = viewState.siteName,
+            style = MaterialTheme.typography.h4
+        )
+    }
+}
+
+@Composable
+private fun InstallationInfoLink(onClick: () -> Unit) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100)),
+        modifier = Modifier
+            .clickable(onClick = onClick)
+    ) {
+        Icon(
+            imageVector = Icons.Outlined.Info,
+            contentDescription = null,
+            tint = colorResource(id = R.color.link_text)
+        )
+        Text(
+            style = MaterialTheme.typography.subtitle1,
+            color = colorResource(id = R.color.link_text),
+            text = stringResource(id = R.string.install_wc_shipping_installation_info),
+        )
     }
 }
 
@@ -170,14 +232,17 @@ private fun ColumnScope.SpacerWithMinHeight(weight: Float, minHeight: Dp) {
 @Composable
 private fun PreInstallationPreview() {
     WooThemeWithBackground {
-        PreInstallationContent(
-            viewState = PreInstallation(
-                extensionsName = R.string.install_wc_shipping_extension_name,
-                siteName = "Site",
-                onCancelClick = {},
-                onProceedClick = {},
-                onInfoClick = {}
+        AnimatedContent(targetState = Unit) {
+            InstallWCShippingFlow(
+                viewState = PreInstallation(
+                    extensionsName = R.string.install_wc_shipping_extension_name,
+                    siteName = "Site",
+                    siteUrl = "URL",
+                    onCancelClick = {},
+                    onProceedClick = {},
+                    onInfoClick = {}
+                )
             )
-        )
+        }
     }
 }
