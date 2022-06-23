@@ -76,6 +76,7 @@ class CardReaderOnboardingChecker @Inject constructor(
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
     private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider,
     private val ippSelectPaymentGateway: IppSelectPaymentGateway,
+    private val userSelectedPlugin: PluginType? = null,
 ) {
     suspend fun getOnboardingState(): CardReaderOnboardingState {
         if (!networkStatus.isConnected()) return NoConnectionError
@@ -129,13 +130,18 @@ class CardReaderOnboardingChecker @Inject constructor(
                     return PluginIsNotSupportedInTheCountry(pluginType, countryCode!!)
                 }
             }
-            if (ippSelectPaymentGateway.isEnabled() && !isPluginExplicitlySelected()) {
-                return ChoosePaymentGatewayProvider
+            if (ippSelectPaymentGateway.isEnabled()) {
+                if (hasUserAlreadySelectedThePlugin()) {
+                    updatePluginExplicitlySelectedFlag(true)
+                } else {
+                    return getMultipleGatewayProviderState()
+                }
+            } else {
+                return WcpayAndStripeActivated
             }
-            return WcpayAndStripeActivated
         }
 
-        val preferredPlugin = getPreferredPlugin(stripePluginInfo, wcPayPluginInfo)
+        val preferredPlugin = getUserSelectedPluginOrActivatedPlugin(wcPayPluginInfo, stripePluginInfo)
 
         if (!isPluginInstalled(preferredPlugin)) when (preferredPlugin.type) {
             WOOCOMMERCE_PAYMENTS -> return WcpayNotInstalled
@@ -192,6 +198,44 @@ class CardReaderOnboardingChecker @Inject constructor(
             preferredPlugin.info?.version,
             requireNotNull(countryCode)
         )
+    }
+
+    private fun hasUserAlreadySelectedThePlugin(): Boolean {
+        if (userSelectedPlugin != null) {
+            return true
+        }
+        return false
+    }
+
+    private fun getMultipleGatewayProviderState(): CardReaderOnboardingState {
+        return when {
+            !isPluginExplicitlySelected() &&
+                    !hasUserAlreadySelectedThePlugin() -> ChoosePaymentGatewayProvider
+            else -> throw IllegalStateException(
+                "Developer error: plugin selected flag is true even when the user hasn't selected the plugin"
+            )
+        }
+    }
+
+    private fun getUserSelectedPluginOrActivatedPlugin(
+        wcPayPluginInfo: SitePluginModel?,
+        stripePluginInfo: SitePluginModel?,
+    ): PluginWrapper {
+        return when {
+            hasUserAlreadySelectedThePlugin() -> {
+                getUserSelectedPluginWrapper(wcPayPluginInfo, stripePluginInfo)
+            }
+            else -> {
+                getPreferredPlugin(stripePluginInfo, wcPayPluginInfo)
+            }
+        }
+    }
+
+    private fun getUserSelectedPluginWrapper(
+        wcPayPluginInfo: SitePluginModel?,
+        stripePluginInfo: SitePluginModel?,
+    ): PluginWrapper {
+        return PluginWrapper(userSelectedPlugin!!, userSelectedPlugin.getPluginInfo(wcPayPluginInfo, stripePluginInfo))
     }
 
     private fun isPluginSupportedInCountry(
@@ -335,6 +379,12 @@ enum class PluginType {
     WOOCOMMERCE_PAYMENTS,
     STRIPE_EXTENSION_GATEWAY
 }
+
+fun PluginType.getPluginInfo(wcPayPluginInfo: SitePluginModel?, stripePluginInfo: SitePluginModel?) =
+    when (this) {
+        WOOCOMMERCE_PAYMENTS -> wcPayPluginInfo
+        STRIPE_EXTENSION_GATEWAY -> stripePluginInfo
+    }
 
 private fun PluginType.toSupportedExtensionType() =
     when (this) {

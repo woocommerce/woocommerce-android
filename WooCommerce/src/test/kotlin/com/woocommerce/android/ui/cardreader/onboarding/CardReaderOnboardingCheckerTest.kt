@@ -67,17 +67,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
     @Before
     fun setUp() = testBlocking {
-        checker = CardReaderOnboardingChecker(
-            selectedSite,
-            appPrefsWrapper,
-            wooStore,
-            wcInPersonPaymentsStore,
-            coroutinesTestRule.testDispatchers,
-            networkStatus,
-            cardReaderTrackingInfoKeeper,
-            cardReaderCountryConfigProvider,
-            ippSelectPaymentGateway,
-        )
+        checker = initOnboardingChecker()
         whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(selectedSite.get()).thenReturn(site)
         whenever(wooStore.getStoreCountryCode(site)).thenReturn(countryCode)
@@ -95,6 +85,21 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("CA"))
             .thenReturn(CardReaderConfigForCanada)
         whenever(ippSelectPaymentGateway.isEnabled()).thenReturn(false)
+    }
+
+    private fun initOnboardingChecker(pluginType: PluginType? = null): CardReaderOnboardingChecker {
+        return CardReaderOnboardingChecker(
+            selectedSite,
+            appPrefsWrapper,
+            wooStore,
+            wcInPersonPaymentsStore,
+            coroutinesTestRule.testDispatchers,
+            networkStatus,
+            cardReaderTrackingInfoKeeper,
+            cardReaderCountryConfigProvider,
+            ippSelectPaymentGateway,
+            pluginType
+        )
     }
 
     @Test
@@ -483,7 +488,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             val result = checker.getOnboardingState()
 
             assertThat((result as PluginIsNotSupportedInTheCountry).preferredPlugin).isEqualTo(
-                PluginType.STRIPE_EXTENSION_GATEWAY
+                STRIPE_EXTENSION_GATEWAY
             )
         }
 
@@ -1205,6 +1210,86 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             val result = checker.getOnboardingState()
 
             assertThat(result).isEqualTo(CardReaderOnboardingState.ChoosePaymentGatewayProvider)
+        }
+
+    @Test
+    fun `given no plugin selected & selected flag false,when multiple plugins, then ChoosePaymentProvider returned `() =
+        testBlocking {
+            whenever(ippSelectPaymentGateway.isEnabled()).thenReturn(true)
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+                .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+                .thenReturn(buildWCPayPluginInfo(isActive = true))
+            whenever(
+                appPrefsWrapper.isCardReaderPluginExplicitlySelected(
+                    anyInt(),
+                    anyLong(),
+                    anyLong(),
+                )
+            ).thenReturn(false)
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isEqualTo(CardReaderOnboardingState.ChoosePaymentGatewayProvider)
+        }
+
+    @Test(expected = IllegalStateException::class)
+    fun `given no plugin selected and selected flag true, when multiple plugins, then throw exception`() =
+        testBlocking {
+            whenever(ippSelectPaymentGateway.isEnabled()).thenReturn(true)
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+                .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+                .thenReturn(buildWCPayPluginInfo(isActive = true))
+            whenever(
+                appPrefsWrapper.isCardReaderPluginExplicitlySelected(
+                    anyInt(),
+                    anyLong(),
+                    anyLong(),
+                )
+            ).thenReturn(true)
+
+            checker.getOnboardingState()
+        }
+
+    @Test
+    fun `given plugin selected, when multiple plugins, then set plugin flag`() =
+        testBlocking {
+            val checker = initOnboardingChecker(PluginType.WOOCOMMERCE_PAYMENTS)
+            whenever(ippSelectPaymentGateway.isEnabled()).thenReturn(true)
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+                .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+                .thenReturn(buildWCPayPluginInfo(isActive = true))
+
+            checker.getOnboardingState()
+
+            verify(appPrefsWrapper).setIsCardReaderPluginExplicitlySelectedFlag(
+                anyInt(),
+                anyLong(),
+                anyLong(),
+                eq(true)
+            )
+        }
+
+    @Test
+    fun `when onboarding fails, then clear isPluginExplicitlySelected flag`() =
+        testBlocking {
+            val checker = initOnboardingChecker(PluginType.WOOCOMMERCE_PAYMENTS)
+            whenever(ippSelectPaymentGateway.isEnabled()).thenReturn(true)
+            whenever(wooStore.getStoreCountryCode(site)).thenReturn("unsupported country abc")
+
+            checker.getOnboardingState()
+
+            verify(appPrefsWrapper).setIsCardReaderPluginExplicitlySelectedFlag(
+                anyInt(),
+                anyLong(),
+                anyLong(),
+                eq(false)
+            )
         }
 
     //endregion
