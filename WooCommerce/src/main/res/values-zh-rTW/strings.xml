@@ -2033,7 +2033,7 @@ Language: zh_TW
     <string name="logging_in">正在登入</string>
     <string name="all">全部</string>
     <string name="notification_channel_general_title">一般</string>
-    <string name="app_name">orderdetail_payment_summary_onhold</string>
+    <string name="app_name">WooCommerce</string>
     <string-array name="date_range_selectors">
         <item>\@string/date_timeframe_today</item>
         <item>\@string/date_timeframe_yesterday</item>
