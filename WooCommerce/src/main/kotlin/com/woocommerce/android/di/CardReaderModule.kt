@@ -8,6 +8,7 @@ import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.cardreader.onboarding.toInPersonPaymentsPluginType
 import com.woocommerce.android.util.CapturePaymentResponseMapper
 import com.woocommerce.android.util.WooLog
@@ -84,4 +85,7 @@ class CardReaderModule {
     @Provides
     @Reusable
     fun provideCardReaderConfigFactory() = CardReaderConfigFactory()
+
+    @Provides
+    fun providePluginType() = PluginType.valueOf("")
 }
