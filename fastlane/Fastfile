@@ -126,7 +126,7 @@ platform :android do
   #####################################################################################
   desc "Creates a new release branch from the current trunk"
   lane :complete_code_freeze do | options |
-    android_completecodefreeze_prechecks(options)
+    # android_completecodefreeze_prechecks(options)
 
     localize_libraries
     update_frozen_strings_for_translation
@@ -134,8 +134,8 @@ platform :android do
     ensure_git_status_clean
     push_to_git_remote
 
-    new_version = android_get_app_version()
-    trigger_release_build(branch_to_build: "release/#{new_version}")
+    # new_version = android_get_app_version()
+    # trigger_release_build(branch_to_build: "release/#{new_version}")
   end
 
   #####################################################################################
