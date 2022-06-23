@@ -27,23 +27,14 @@ class CustomerListRepository @Inject constructor(
         }
     }
 
-    fun getCountry(countryCode: String): Location {
-        countries.forEach() {
-            if (it.code == countryCode) {
-                return it
-            }
-        }
-        return Location.EMPTY
-    }
+    fun getCountry(countryCode: String) =
+        countries.find { it.code == countryCode }
+            ?: Location.EMPTY
 
-    fun getState(countryCode: String, stateCode: String): Location {
-        dataStore.getStates(countryCode).forEach {
-            if (it.code == stateCode) {
-                return it.toAppModel()
-            }
-        }
-        return Location.EMPTY
-    }
+    fun getState(countryCode: String, stateCode: String) =
+        dataStore.getStates(countryCode)
+            .find { it.code == stateCode }?.toAppModel()
+            ?: Location.EMPTY
 
     /**
      * Submits a fetch request to get the first page of customers matching the passed query
