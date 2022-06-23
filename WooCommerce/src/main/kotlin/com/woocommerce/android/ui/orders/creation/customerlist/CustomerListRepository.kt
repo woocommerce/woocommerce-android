@@ -41,17 +41,11 @@ class CustomerListRepository @Inject constructor(
      */
     suspend fun searchCustomerList(
         searchQuery: String,
-    ): List<WCCustomerModel>? {
-        val result = customerStore.fetchCustomers(
+    ): List<WCCustomerModel>? =
+        customerStore.fetchCustomers(
             site = selectedSite.get(),
             searchQuery = searchQuery
-        )
-        return if (result.isError) {
-            null
-        } else {
-            result.model
-        }
-    }
+        ).takeUnless { it.isError }?.model
 
     fun getCustomerByRemoteId(remoteId: Long): WCCustomerModel? =
         customerStore.getCustomerByRemoteId(selectedSite.get(), remoteId)
