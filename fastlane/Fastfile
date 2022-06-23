@@ -737,12 +737,15 @@ platform :android do
     Dir.chdir('..') do
       FileUtils.mkdir_p(FROZEN_STRINGS_DIR_PATH)
       FileUtils.cp(MAIN_STRINGS_PATH, FROZEN_STRINGS_DIR_PATH)
-      git_commit(
-        path: File.join(FROZEN_STRINGS_DIR_PATH, 'strings.xml'),
-        message: 'Freeze strings for translation',
-        allow_nothing_to_commit: true
-      )
     end
+
+    # The commit has to run outside of the `chdir` block.
+    # That's because it's done via the Fastlane action, which properly handles the path.
+    git_commit(
+      path: File.join(FROZEN_STRINGS_DIR_PATH, 'strings.xml'),
+      message: 'Freeze strings for translation',
+      allow_nothing_to_commit: true
+    )
   end
 
   #####################################################################################
