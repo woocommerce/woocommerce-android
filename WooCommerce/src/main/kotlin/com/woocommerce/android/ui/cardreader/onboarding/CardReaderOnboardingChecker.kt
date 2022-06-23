@@ -209,8 +209,7 @@ class CardReaderOnboardingChecker @Inject constructor(
 
     private fun getMultipleGatewayProviderState(): CardReaderOnboardingState {
         return when {
-            !isPluginExplicitlySelected() &&
-                    !hasUserAlreadySelectedThePlugin() -> ChoosePaymentGatewayProvider
+            !isPluginExplicitlySelected() && !hasUserAlreadySelectedThePlugin() -> ChoosePaymentGatewayProvider
             else -> throw IllegalStateException(
                 "Developer error: plugin selected flag is true even when the user hasn't selected the plugin"
             )
