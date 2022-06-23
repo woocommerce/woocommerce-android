@@ -73,7 +73,8 @@ class TakePaymentFragment : BaseFragment(R.layout.fragment_take_payment) {
                     uiMessageResolver.showSnack(event.message)
                 }
                 is MultiLiveEvent.Event.Exit -> {
-                    findNavController().navigateSafely(R.id.orders)
+                    val action = TakePaymentFragmentDirections.actionTakePaymentFragmentToOrderList()
+                    findNavController().navigateSafely(action)
                 }
                 is OrderNavigationTarget.StartCardReaderPaymentFlow -> {
                     val action = TakePaymentFragmentDirections.actionTakePaymentFragmentToCardReaderFlow(
