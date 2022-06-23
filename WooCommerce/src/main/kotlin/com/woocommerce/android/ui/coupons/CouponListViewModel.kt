@@ -48,6 +48,7 @@ class CouponListViewModel @Inject constructor(
 
     private val searchQuery = savedState.getNullableStateFlow(this, null, clazz = String::class.java)
     private val loadingState = MutableStateFlow(LoadingState.Idle)
+    private val enabledState = MutableStateFlow(EnabledState.Checking)
 
     val couponsState = combine(
         flow = couponListHandler.couponsFlow
@@ -60,12 +61,14 @@ class CouponListViewModel @Inject constructor(
                 } else 0L
             }
             .map { it.value },
-        flow3 = searchQuery
-    ) { coupons, loadingState, searchQuery ->
+        flow3 = searchQuery,
+        flow4 = enabledState
+    ) { coupons, loadingState, searchQuery, enabledState ->
         CouponListState(
             loadingState = loadingState,
             coupons = coupons,
-            searchQuery = searchQuery
+            searchQuery = searchQuery,
+            isEnabled = enabledState
         )
     }.asLiveData()
 
@@ -164,6 +167,7 @@ class CouponListViewModel @Inject constructor(
     }
 
     data class CouponListState(
+        val isEnabled: EnabledState = EnabledState.Checking,
         val loadingState: LoadingState = LoadingState.Idle,
         val searchQuery: String? = null,
         val coupons: List<CouponListItem> = emptyList()
@@ -180,6 +184,10 @@ class CouponListViewModel @Inject constructor(
 
     enum class LoadingState {
         Idle, Loading, Refreshing, Appending
+    }
+
+    enum class EnabledState {
+        Checking, Enabled, Disabled
     }
 
     data class NavigateToCouponDetailsEvent(val couponId: Long) : MultiLiveEvent.Event()
