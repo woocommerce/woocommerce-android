@@ -193,9 +193,6 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                 showOrderDetail(it.order!!, it.isPaymentCollectableWithCardReader, it.isReceiptButtonsVisible)
             }
             new.orderStatus?.takeIfNotEqualTo(old?.orderStatus) { showOrderStatus(it) }
-            new.isMarkOrderCompleteButtonVisible?.takeIfNotEqualTo(old?.isMarkOrderCompleteButtonVisible) {
-                showMarkOrderCompleteButton(it)
-            }
             new.isCreateShippingLabelButtonVisible?.takeIfNotEqualTo(old?.isCreateShippingLabelButtonVisible) {
                 showShippingLabelButton(it)
             }
@@ -353,13 +350,6 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
 
     private fun showOrderStatus(orderStatus: OrderStatus) {
         binding.orderDetailOrderStatus.updateStatus(orderStatus)
-    }
-
-    private fun showMarkOrderCompleteButton(isVisible: Boolean) {
-        binding.orderDetailProductList.showMarkOrderCompleteButton(
-            isVisible,
-            viewModel::onMarkOrderCompleteButtonTapped
-        )
     }
 
     private fun showShippingLabelButton(isVisible: Boolean) {

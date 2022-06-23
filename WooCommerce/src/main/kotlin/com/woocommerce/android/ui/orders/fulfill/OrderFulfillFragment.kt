@@ -157,7 +157,6 @@ class OrderFulfillFragment :
         products.whenNotNullNorEmpty {
             with(binding.orderDetailProductList) {
                 showProductListMenuButton(false)
-                showMarkOrderCompleteButton(false) { }
                 updateProductList(
                     orderItems = products,
                     productImageMap = productImageMap,

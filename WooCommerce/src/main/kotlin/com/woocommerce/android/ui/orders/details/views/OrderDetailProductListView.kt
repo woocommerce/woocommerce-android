@@ -90,14 +90,6 @@ class OrderDetailProductListView @JvmOverloads constructor(
         }
     }
 
-    fun showMarkOrderCompleteButton(
-        isVisible: Boolean,
-        onMarkOrderCompleteButtonTapped: () -> Unit
-    ) {
-        binding.productListBtnMarkOrderComplete.isVisible = isVisible
-        binding.productListBtnMarkOrderComplete.setOnClickListener { onMarkOrderCompleteButtonTapped() }
-    }
-
     fun showCreateShippingLabelButton(
         isVisible: Boolean,
         onCreateShippingLabelButtonTapped: () -> Unit,
