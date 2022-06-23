@@ -68,15 +68,25 @@ class CouponListViewModel @Inject constructor(
             loadingState = loadingState,
             coupons = coupons,
             searchQuery = searchQuery,
-            isEnabled = enabledState
+            enabledState = enabledState
         )
     }.asLiveData()
 
     init {
-        if (searchQuery.value == null) {
-            fetchCoupons()
+        launch {
+            val settings = wooCommerceStore.fetchSiteGeneralSettings(selectedSite.get())
+            settings.model?.let {
+                if (it.couponsEnabled == "yes") {
+                    enabledState.value = EnabledState.Enabled
+                    if (searchQuery.value == null) {
+                        fetchCoupons()
+                    }
+                    monitorSearchQuery()
+                } else {
+                    enabledState.value = EnabledState.Disabled
+                }
+            }
         }
-        monitorSearchQuery()
     }
 
     private fun Coupon.toUiModel(): CouponListItem {
@@ -167,7 +177,7 @@ class CouponListViewModel @Inject constructor(
     }
 
     data class CouponListState(
-        val isEnabled: EnabledState = EnabledState.Checking,
+        val enabledState: EnabledState = EnabledState.Checking,
         val loadingState: LoadingState = LoadingState.Idle,
         val searchQuery: String? = null,
         val coupons: List<CouponListItem> = emptyList()
