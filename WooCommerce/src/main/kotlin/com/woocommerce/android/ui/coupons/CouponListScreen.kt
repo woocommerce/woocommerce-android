@@ -40,6 +40,7 @@ import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListItem
 import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListState
 import com.woocommerce.android.ui.coupons.CouponListViewModel.LoadingState
+import com.woocommerce.android.ui.coupons.CouponListViewModel.EnabledState
 import com.woocommerce.android.ui.coupons.components.CouponExpirationLabel
 
 @Composable
@@ -62,6 +63,8 @@ fun CouponListScreen(
     onLoadMore: () -> Unit
 ) {
     when {
+        state.enabledState == EnabledState.Checking -> CouponListSkeleton()
+        state.enabledState == EnabledState.Disabled -> CouponDisabledNotice()
         state.coupons.isNotEmpty() -> CouponList(
             coupons = state.coupons,
             loadingState = state.loadingState,
@@ -72,6 +75,13 @@ fun CouponListScreen(
         state.loadingState == LoadingState.Loading -> CouponListSkeleton()
         state.isSearchOpen -> SearchEmptyList(searchQuery = state.searchQuery.orEmpty())
         else -> EmptyCouponList()
+    }
+}
+
+@Composable
+private fun CouponDisabledNotice() {
+    Column {
+        /* TODO */
     }
 }
 
