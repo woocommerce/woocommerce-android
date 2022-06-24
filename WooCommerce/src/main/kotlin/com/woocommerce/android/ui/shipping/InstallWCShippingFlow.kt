@@ -9,6 +9,7 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.ExperimentalTransitionApi
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -227,7 +228,7 @@ private fun AnimatedVisibilityScope.MainContent(viewState: InstallationState) {
             // Animate the step title when starting the installation
             modifier = Modifier.animateEnterExit(
                 enter = if (viewState is InstallationOngoing) {
-                    fadeIn(tween(600, delayMillis = 400))
+                    fadeIn(tween(400, delayMillis = 600, easing = LinearEasing))
                 } else EnterTransition.None,
                 exit = ExitTransition.None
             )
@@ -236,7 +237,7 @@ private fun AnimatedVisibilityScope.MainContent(viewState: InstallationState) {
         // Animate the extension and site names when starting the installation
         val extensionAndNameModifier = Modifier.animateEnterExit(
             enter = if (viewState is InstallationOngoing) {
-                fadeIn(tween(400, delayMillis = 600), initialAlpha = 0.5f)
+                fadeIn(tween(200, delayMillis = 800, easing = LinearEasing), initialAlpha = 0.5f)
             } else EnterTransition.None,
             exit = ExitTransition.None
         )
