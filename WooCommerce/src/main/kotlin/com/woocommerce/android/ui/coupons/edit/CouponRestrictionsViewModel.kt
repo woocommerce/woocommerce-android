@@ -4,6 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.Coupon.CouponRestrictions
+import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.EditExcludedProductCategories
+import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.EditExcludedProducts
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -100,6 +102,26 @@ class CouponRestrictionsViewModel @Inject constructor(
         }
         restrictionsDraft.update {
             it.copy(restrictedEmails = emails)
+        }
+    }
+
+    fun onExcludeProductsButtonClick() {
+        triggerEvent(EditExcludedProducts(restrictionsDraft.value.excludedProductIds))
+    }
+
+    fun onExcludeCategoriesButtonClick() {
+        triggerEvent(EditExcludedProductCategories(restrictionsDraft.value.excludedCategoryIds))
+    }
+
+    fun onExcludedProductChanged(excludedProductIds: Set<Long>) {
+        restrictionsDraft.update {
+            it.copy(excludedProductIds = excludedProductIds.toList())
+        }
+    }
+
+    fun onExcludedProductCategoriesChanged(excludedCategoryIds: Set<Long>) {
+        restrictionsDraft.update {
+            it.copy(excludedCategoryIds = excludedCategoryIds.toList())
         }
     }
 

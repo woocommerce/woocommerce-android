@@ -16,3 +16,12 @@ fun List<ProductCategory>.convertToTree(parentId: Long = 0): List<ProductCategor
             )
         }
 }
+
+fun List<ProductCategory>.convertToFlatTree(): List<ProductCategoryTreeItem> {
+    return map {
+        ProductCategoryTreeItem(
+            productCategory = it,
+            children = emptyList()
+        )
+    }
+}

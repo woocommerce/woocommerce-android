@@ -163,9 +163,9 @@ class EditCouponViewModel @Inject constructor(
         }
     }
 
-    fun onIncludedCategoriesChanged(includedCategoryIds: List<Long>) {
+    fun onIncludedCategoriesChanged(includedCategoryIds: Set<Long>) {
         couponDraft.update {
-            it?.copy(categoryIds = includedCategoryIds)
+            it?.copy(categoryIds = includedCategoryIds.toList())
         }
     }
 

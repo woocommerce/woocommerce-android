@@ -55,7 +55,8 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
             taxLines = databaseEntity.getTaxLineList().mapTaxLines(),
             chargeId = metaDataList.getOrNull(CHARGE_ID_KEY),
             shippingPhone = metaDataList.getOrEmpty(SHIPPING_PHONE_KEY),
-            paymentUrl = databaseEntity.paymentUrl
+            paymentUrl = databaseEntity.paymentUrl,
+            isEditable = databaseEntity.isEditable
         )
     }
 

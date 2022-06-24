@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products.selector
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.isInteger
 import com.woocommerce.android.model.Product
@@ -19,9 +20,12 @@ import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.Loa
 import com.woocommerce.android.ui.products.selector.SelectionState.PARTIALLY_SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.UNSELECTED
+import com.woocommerce.android.ui.products.variations.selector.VariationSelectorRepository
+import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.VariationSelectionResult
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -30,9 +34,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -45,7 +53,8 @@ class ProductSelectorViewModel @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val wooCommerceStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
-    private val productListHandler: ProductListHandler,
+    private val listHandler: ProductListHandler,
+    private val variationSelectorRepository: VariationSelectorRepository,
     private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -58,12 +67,13 @@ class ProductSelectorViewModel @Inject constructor(
 
     private val navArgs: ProductSelectorFragmentArgs by savedState.navArgs()
 
+    private val searchQuery = savedState.getStateFlow(this, "")
     private val loadingState = MutableStateFlow(IDLE)
     private val selectedProductIds = savedState.getStateFlow(viewModelScope, navArgs.productIds.toSet())
 
-    val viewSate = combine(
-        productListHandler.productsFlow,
-        loadingState.withIndex()
+    val viewState = combine(
+        flow = listHandler.productsFlow,
+        flow2 = loadingState.withIndex()
             .debounce {
                 if (it.index != 0 && it.value == IDLE) {
                     // When resetting to IDLE, wait a bit to make sure the list has been fetched from DB
@@ -71,19 +81,22 @@ class ProductSelectorViewModel @Inject constructor(
                 } else 0L
             }
             .map { it.value },
-        selectedProductIds
-    ) { products, loadingState, selectedIds ->
+        flow3 = selectedProductIds,
+        flow4 = searchQuery
+    ) { products, loadingState, selectedIds, searchQuery ->
         ViewState(
             loadingState = loadingState,
             products = products.map { it.toUiModel(selectedIds) },
-            selectedItemsCount = selectedIds.size
+            selectedItemsCount = selectedIds.size,
+            searchQuery = searchQuery
         )
     }.asLiveData()
 
     init {
+        monitorSearchQuery()
         viewModelScope.launch {
             loadingState.value = LOADING
-            productListHandler.fetchProducts(forceRefresh = true)
+            listHandler.fetchProducts(forceRefresh = true)
             loadingState.value = IDLE
         }
     }
@@ -155,18 +168,60 @@ class ProductSelectorViewModel @Inject constructor(
         triggerEvent(ExitWithResult(selectedProductIds.value))
     }
 
+    fun onSearchQueryChanged(query: String) {
+        searchQuery.value = query
+    }
+
     fun onLoadMore() {
         viewModelScope.launch {
             loadingState.value = APPENDING
-            productListHandler.loadMore()
+            listHandler.loadMore()
             loadingState.value = IDLE
         }
     }
 
+    fun onSelectedVariationsUpdated(result: VariationSelectionResult) {
+        viewModelScope.launch {
+            val oldIds = variationSelectorRepository.getProduct(result.productId)?.variationIds ?: emptyList()
+            selectedProductIds.update { selectedProductIds.value - oldIds.toSet() + result.selectedVariationIds }
+        }
+    }
+
+    private fun monitorSearchQuery() {
+        viewModelScope.launch {
+            searchQuery
+                .withIndex()
+                .filterNot {
+                    // Skip initial value to avoid double fetching product categories
+                    it.index == 0 && it.value.isEmpty()
+                }
+                .map { it.value }
+                .onEach {
+                    loadingState.value = LOADING
+                }
+                .debounce {
+                    if (it.isEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS
+                }
+                .collectLatest { query ->
+                    try {
+                        listHandler.fetchProducts(searchQuery = query)
+                            .onFailure {
+                                val message = if (query.isEmpty()) string.product_selector_loading_failed
+                                else string.product_selector_search_failed
+                                triggerEvent(ShowSnackbar(message))
+                            }
+                    } finally {
+                        loadingState.value = IDLE
+                    }
+                }
+        }
+    }
+
     data class ViewState(
-        val loadingState: LoadingState = IDLE,
-        val products: List<ProductListItem> = emptyList(),
-        val selectedItemsCount: Int = 0
+        val loadingState: LoadingState,
+        val products: List<ProductListItem>,
+        val selectedItemsCount: Int,
+        val searchQuery: String
     )
 
     data class ProductListItem(

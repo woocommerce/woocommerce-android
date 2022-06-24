@@ -1,4 +1,0 @@
-9.2:
-Sebagian besar informasi tentang pesanan dari pelanggan sangatlah penting! Kami dengar Anda sering menyalin-tempel beberapa detail tersebut di luar aplikasi. Sekarang Anda dapat menekan lama sebagian besar kolom untuk menyalinnya ke clipboard. Silakan menempelnya ke dalam pesan teks, email, atau catatan!
-
-Kami juga mengatasi beberapa bug terkait pembayaran langsung di tempat dan pembuatan pesanan. Terima kasih atas masukan Anda!

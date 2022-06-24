@@ -1,7 +1,15 @@
 package com.woocommerce.android.ui.orders.shippinglabels
 
-import com.woocommerce.android.annotations.OpenClassOnDebug
-import com.woocommerce.android.model.*
+import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.CustomsPackage
+import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.ShippingAccountSettings
+import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.ShippingLabelMapper
+import com.woocommerce.android.model.ShippingLabelPackage
+import com.woocommerce.android.model.ShippingPackage
+import com.woocommerce.android.model.ShippingRate
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -19,7 +27,6 @@ import org.wordpress.android.fluxc.store.WCShippingLabelStore
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@OpenClassOnDebug
 @Singleton
 class ShippingLabelRepository @Inject constructor(
     private val shippingLabelStore: WCShippingLabelStore,

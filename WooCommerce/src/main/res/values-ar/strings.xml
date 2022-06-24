@@ -1,11 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-05-19 15:54:03+0000
+Translation-Revision-Date: 2022-06-02 13:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">لا ندعم إضافة WooCommerce Stripe في ⁦%1$s⁩</string>
+    <string name="product_selector_filter_button_title">عامل تصفية</string>
+    <string name="product_selector_clear_button_title">مسح التحديد</string>
+    <string name="product_selector_select_button_title_one">تحديد %d منتج</string>
+    <string name="product_selector_select_button_title_default">تحديد %d من المنتجات</string>
+    <string name="product_selector_sku_value">وحدة SKU: %s</string>
+    <string name="product_selector_select_product_label">تحديد منتج %s</string>
+    <string name="coupon_conditions_products_edit_products_title">تحرير المنتجات (%d)</string>
+    <string name="coupon_conditions_products_all_products_title">جميع المنتجات</string>
+    <string name="coupon_conditions_products_select_products_title">تحديد المنتجات</string>
+    <string name="coupon_restrictions_exclude_sale_items_hint">قم بتشغيل هذا الخيار إذا كان ينبغي ألا تنطبق القسيمة على العناصر المعروضة للبيع بسعر مخفَّض. لن تعمل القسائم لكل عنصر إلا في حالة أن العنصر ليس معروضًا للبيع بسعر مُخفَّض. لن تعمل القسائم لكل عربة تسوق إلا في حالة وجود عناصر في عربة التسوق ليست معروضة للبيع بسعر مُخفَّض.</string>
+    <string name="coupon_restrictions_exclude_sale_items">استبعاد العناصر المعروضة للبيع بسعر مخفَّض</string>
+    <string name="coupon_restrictions_individual_use_hint">قم بتشغيل هذا الخيار إذا كان يتعذر استخدام القسيمة مع قسائم أخرى.</string>
+    <string name="coupon_restrictions_individual_use">الاستخدام الفردي فقط</string>
+    <string name="coupon_restrictions_limit_per_user_hint">حد الإستخدام لكل مستخدم</string>
+    <string name="coupon_restrictions_amount_limit_hint">تقييد الاستخدام لـ X عناصر</string>
+    <string name="coupon_restrictions_limit_per_coupon_hint">حد الإستخدام لكل قسيمة</string>
+    <string name="coupon_restrictions_maximum_spend_hint">الحد الأقصى للإنفاق (⁦%1$s⁩)</string>
+    <string name="coupon_restrictions_minimum_spend_hint">الحد الأدنى للإنفاق (⁦%1$s⁩) </string>
+    <string name="coupon_edit_saving_dialog_subtitle">يُرجى الانتظار…</string>
+    <string name="coupon_edit_saving_dialog_title">حفظ القسيمة</string>
+    <string name="coupon_edit_coupon_update_failed">فشل تحديث القسيمة</string>
+    <string name="coupon_edit_coupon_updated">تحديث قسيمة شرائية</string>
+    <string name="coupon_edit_usage_restrictions">قيود الاستخدام</string>
+    <string name="coupon_edit_usage_section">تفاصيل الاستخدام</string>
+    <string name="coupon_edit_free_shipping">هل تتضمن شحنًا مجانيًا؟</string>
+    <string name="coupon_edit_expiry_clear_expiry_date">مسح</string>
+    <string name="coupon_edit_expiry_date_none">لا شيء</string>
+    <string name="coupon_edit_conditions_section">تطبيق هذه القسيمة على</string>
+    <string name="coupon_list_search_failed">فشل البحث عن قسائم</string>
+    <string name="coupon_list_loading_failed">فشل إحضار القسائم</string>
+    <string name="site_picker_error">خطأ في أثناء إحضار المتاجر</string>
+    <string name="site_picker_label">تحديد متجر للاتصال به</string>
+    <string name="product_stock_status_instock_quantified">%s متوفر في المخزون</string>
     <string name="coupon_edit_add_description_hint">أضف وصف القسيمة.</string>
     <string name="coupon_edit_description_editor_title">وصف القسيمة</string>
     <string name="coupon_edit_edit_description">تحرير الوصف</string>
@@ -139,7 +173,6 @@ Language: ar
     <string name="a8c_email_message">يرجى استخدام بريد إلكتروني غير تلقائي لإرسال تذكرة دعم</string>
     <string name="card_reader_onboarding_stripe_account_in_unsupported_country">لا ندعم حسابات Stripe المُسجلة في ⁦%1$s⁩</string>
     <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">لا ندعم WooCommerce Payments في ⁦%1$s⁩</string>
-    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">لا ندعم Stripe في ⁦%1$s⁩</string>
     <string name="card_reader_connect_scanning_hint">اضغط على زر الطاقة للقارئ الخاص بك</string>
     <string name="card_reader_payment_reader_receipt_sent">تم إرسال إيصال إلى &lt;strong&gt;%s&lt;/strong&gt;</string>
     <string name="order_creation_fee_percentage_hint">النسبة المئوية (%)</string>
@@ -172,7 +205,6 @@ Language: ar
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">لن تعمل المدفوعات الشخصية سوى مع تفعيل إحدى الإضافات الآتية. يرجى الاتصال بمسؤول الموقع لتعطيل إحدى هذه الإضافات للمتابعة:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">لن تعمل المدفوعات الشخصية سوى مع تفعيل إحدى الإضافات الآتية. يرجى تعطيل إحدى هذه الإضافات للمتابعة:</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">تم اكتشاف إضافات دفع متعارضة</string>
-    <string name="card_reader_wisepad_3_manual_card_reader">دليل قارئ بطاقة WisePad 3</string>
     <string name="order_creation_price_calculation_failed">يتعذر تحديث الأسعار</string>
     <string name="order_creation_payment_tax">الضرائب</string>
     <string name="exclusive_or">أو</string>
@@ -343,8 +375,6 @@ Language: ar
     <string name="card_reader_connect_missing_address_button">إدخال العنوان</string>
     <string name="card_reader_connect_missing_address">يرجى تقديم عنوان مخزنك للمتابعة</string>
     <string name="card_reader_payment_check_mobile_device_prompt">التحقُّق من جهازك المحمول</string>
-    <string name="card_reader_m2_manual_card_reader">دليل قارئ بطاقة Stripe M2</string>
-    <string name="card_reader_bbpos_manual_card_reader">دليل قارئ بطاقة BBPOS Chipper</string>
     <string name="order_error_update_empty_mail">يتعذر تحديث العنوان باستخدام بريد إلكتروني فارغ. تأكَّد من أنك تستخدك أحدث إصدار من WooCommerce.</string>
     <string name="orderfilters_date_range_filter_last_30_days">آخر 30 يومًا</string>
     <string name="orderfilters_date_range_filter_last_7_days">آخر 7 أيام</string>
@@ -1335,6 +1365,7 @@ Language: ar
     <string name="login_jetpack_installed_sign_in">هل لديك Jetpack بالفعل؟ %1$s</string>
     <string name="login_refresh_app_progress_jetpack">جارٍ محاولة تسجيل الدخول باستخدام Jetpack…</string>
     <string name="login_refresh_app_continue">تحديث التطبيق للاستمرار</string>
+    <string name="login_not_connected_jetpack">لاستخدام هذا التطبيق مقابل ⁦%1$s⁩، سيتعيَّن عليك إعداد إضافة Jetpack وربطها بهذا الحساب. \n\nبمجرد الإعداد، قم بحديث التطبيق</string>
     <string name="login_try_another_store">تجربة متجر آخر</string>
     <string name="database_downgraded">تم تخفيض قاعدة البيانات إلى المستوى الأدنى وإنشاء الجداول مجددًا وتحميل المتاجر</string>
     <string name="loading_stores">تحميل المتاجر</string>
@@ -1630,6 +1661,7 @@ Language: ar
     <string name="login_jetpack_what_is_description">Jetpack هو إضافة مجانية على وردبرس تربط متجرك بالأدوات اللازمة لمنحك أفضل تجربة على الهاتف المحمول، بما في ذلك تنبيهات الدفع والإحصاءات.</string>
     <string name="login_jetpack_what_is">ما المقصود بـ Jetpack؟</string>
     <string name="login_view_connected_stores">عرض المتاجر المتصلة</string>
+    <string name="login_not_woo_store">يبدو أنَّ ⁦%1$s⁩ ليس موقع WooCommerce. قم بتثبيت إضافة WooCommerce على موقعك ثم قم بتحديث التطبيق.</string>
     <string name="login_not_connected_to_account">يبدو أنَّ %1$s متصل بحساب وردبرس.كوم مختلف.</string>
     <string name="keep_editing">متابعة التحرير</string>
     <string name="notification_wpcom_username_needed">يرجى تسجيل الدخول باستخدام اسم المستخدم الخاص بك وكلمة مرورك.</string>
@@ -1691,7 +1723,7 @@ Language: ar
     <string name="promo_btn_try_it">جرّبه الآن</string>
     <string name="promo_btn_got_it">فهمت</string>
     <string name="tooltip_site_switcher">انقر للتبديل بين المتاجر</string>
-    <string name="site_picker_title">اختيار متجر</string>
+    <string name="site_picker_title">تحديد متجر</string>
     <string name="settings_signout">تسجيل الخروج</string>
     <string name="orderstatus_select_status">تغير حالة الطلب</string>
     <string name="orderdetail_change_order_status">انقر لتغيير حالة الطلب</string>

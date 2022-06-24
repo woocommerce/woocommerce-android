@@ -1,3 +1,1 @@
-Canada, say hello to in-person payments! We are thrilled to announce that in-person payments are now available to Canadian merchants currently using WooCommerce Payments.
-
-This release also contains a few minor improvements. Thank you all again for your amazing feedback. Keep it coming!
+Even though this release doesn’t have any new features, we still put a lot of love into it! In product details, some third-party extensions were causing the app to crash when viewing variable products. We’ve fixed this crash and made a handful of minor improvements to make your experience smoother.

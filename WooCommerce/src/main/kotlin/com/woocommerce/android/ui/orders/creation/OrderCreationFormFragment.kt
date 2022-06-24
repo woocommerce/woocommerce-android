@@ -36,7 +36,9 @@ import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Compa
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.WCReadMoreTextView
 import dagger.hilt.android.AndroidEntryPoint
@@ -211,14 +213,22 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             }
             new.isIdle.takeIfNotEqualTo(old?.isIdle) { enabled ->
                 binding.paymentSection.loadingProgress.isVisible = !enabled
-                binding.paymentSection.feeButton.isEnabled = enabled
-                binding.productsSection.isEachAddButtonEnabled = enabled
+                if (new.isEditable) {
+                    binding.paymentSection.shippingButton.isEnabled = enabled
+                    binding.paymentSection.feeButton.isEnabled = enabled
+                    binding.productsSection.isEachAddButtonEnabled = enabled
+                }
             }
             new.isUpdatingOrderDraft.takeIfNotEqualTo(old?.isUpdatingOrderDraft) { show ->
-                binding.productsSection.content.productsAdapter?.isQuantityButtonsEnabled = show.not()
+                if (new.isEditable) {
+                    binding.productsSection.content.productsAdapter?.areProductsEditable = show.not()
+                }
             }
             new.showOrderUpdateSnackbar.takeIfNotEqualTo(old?.showOrderUpdateSnackbar) { show ->
                 showOrHideErrorSnackBar(show)
+            }
+            new.isEditable.takeIfNotEqualTo(old?.isEditable) { isEditable ->
+                if (isEditable) showEditableControls(binding) else hideEditableControls(binding)
             }
         }
 
@@ -406,5 +416,33 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     override fun onRequestAllowBackPress(): Boolean {
         viewModel.onBackButtonClicked()
         return false
+    }
+
+    private fun showEditableControls(binding: FragmentOrderCreationFormBinding) {
+        binding.messageNoEditableFields.visibility = View.GONE
+        binding.productsSection.apply {
+            isLocked = false
+            isEachAddButtonEnabled = true
+            content.productsAdapter?.areProductsEditable = true
+        }
+        binding.paymentSection.apply {
+            feeButton.isEnabled = true
+            shippingButton.isEnabled = true
+            lockIcon.isVisible = false
+        }
+    }
+
+    private fun hideEditableControls(binding: FragmentOrderCreationFormBinding) {
+        binding.messageNoEditableFields.visibility = View.VISIBLE
+        binding.productsSection.apply {
+            isLocked = true
+            isEachAddButtonEnabled = false
+            content.productsAdapter?.areProductsEditable = false
+        }
+        binding.paymentSection.apply {
+            feeButton.isEnabled = false
+            shippingButton.isEnabled = false
+            lockIcon.isVisible = true
+        }
     }
 }

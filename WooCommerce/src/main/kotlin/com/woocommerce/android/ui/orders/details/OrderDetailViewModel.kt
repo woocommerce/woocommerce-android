@@ -24,7 +24,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent.SHIPPING_LABEL_ORDER_IS_
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.Order
@@ -60,7 +59,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstr
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.ui.orders.simplepayments.TakePaymentViewModel
 import com.woocommerce.android.ui.products.addons.AddonRepository
-import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel
+import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -82,7 +81,6 @@ import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUp
 import org.wordpress.android.fluxc.utils.sumBy
 import javax.inject.Inject
 
-@OpenClassOnDebug
 @HiltViewModel
 final class OrderDetailViewModel @Inject constructor(
     private val coroutineDispatchers: CoroutineDispatchers,
@@ -266,7 +264,7 @@ final class OrderDetailViewModel @Inject constructor(
     }
 
     fun onGetWcShippingClicked() {
-        triggerEvent(InstallWcShippingFlowViewModel.InstallWcShipping)
+        triggerEvent(InstallWCShippingViewModel.InstallWcShipping)
     }
 
     /**
