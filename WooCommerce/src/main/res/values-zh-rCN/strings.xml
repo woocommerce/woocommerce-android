@@ -7,7 +7,7 @@ Language: zh_CN
 -->
 <resources>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">我们在 %1$s 中不支持 WooCommerce Stripe 扩展</string>
-    <string name="product_selector_filter_button_title">过滤器</string>
+    <string name="product_selector_filter_button_title_zero">过滤器</string>
     <string name="product_selector_clear_button_title">清除选择</string>
     <string name="product_selector_select_button_title_one">选择 %d 个商品</string>
     <string name="product_selector_select_button_title_default">选择 %d 个商品</string>

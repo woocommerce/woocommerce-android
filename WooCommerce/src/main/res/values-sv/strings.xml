@@ -7,7 +7,7 @@ Language: sv_SE
 -->
 <resources>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Vi stöder inte WooCommerce Stripe-utökningen i %1$s</string>
-    <string name="product_selector_filter_button_title">Filtrera</string>
+    <string name="product_selector_filter_button_title_zero">Filtrera</string>
     <string name="product_selector_clear_button_title">Rensa val</string>
     <string name="product_selector_select_button_title_one">Välj %d produkt</string>
     <string name="product_selector_select_button_title_default">Välj %d produkter</string>

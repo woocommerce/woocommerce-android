@@ -7,7 +7,7 @@ Language: ar
 -->
 <resources>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">لا ندعم إضافة WooCommerce Stripe في ⁦%1$s⁩</string>
-    <string name="product_selector_filter_button_title">عامل تصفية</string>
+    <string name="product_selector_filter_button_title_zero">عامل تصفية</string>
     <string name="product_selector_clear_button_title">مسح التحديد</string>
     <string name="product_selector_select_button_title_one">تحديد %d منتج</string>
     <string name="product_selector_select_button_title_default">تحديد %d من المنتجات</string>

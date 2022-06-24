@@ -7,7 +7,7 @@ Language: id
 -->
 <resources>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Kami tidak mendukung ekstensi WooCommerce Stripe di %1$s</string>
-    <string name="product_selector_filter_button_title">Penyaring</string>
+    <string name="product_selector_filter_button_title_zero">Penyaring</string>
     <string name="product_selector_clear_button_title">Hapus Pilihan</string>
     <string name="product_selector_select_button_title_one">Pilih %d Produk</string>
     <string name="product_selector_select_button_title_default">Pilih %d Produk</string>
