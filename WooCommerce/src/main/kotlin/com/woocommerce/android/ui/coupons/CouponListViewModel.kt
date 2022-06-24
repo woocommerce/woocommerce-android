@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.settings.UpdateSettingRequest
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.Date
 import javax.inject.Inject
@@ -40,6 +41,9 @@ class CouponListViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val LOADING_STATE_DELAY = 100L
+        private const val REQUEST_VALUE = "yes"
+        private const val SETTINGS_GROUP = "general"
+        private const val SETTINGS_ENABLE_COUPONS_OPTION = "woocommerce_enable_coupons"
     }
 
     private val currencyCode by lazy {
@@ -173,6 +177,24 @@ class CouponListViewModel @Inject constructor(
                         loadingState.value = LoadingState.Idle
                     }
                 }
+        }
+    }
+
+    fun onEnableCouponsButtonClick() {
+        launch {
+            val request = UpdateSettingRequest(value = REQUEST_VALUE)
+            val result = wooCommerceStore.updateSiteSettingOption(
+                site = selectedSite.get(),
+                request = request,
+                groupId = SETTINGS_GROUP,
+                optionId = SETTINGS_ENABLE_COUPONS_OPTION
+            )
+            if(result.isError) {
+                /* TODO Show error snackbar */
+            } else {
+                val settings = wooCommerceStore.getSiteSettings(selectedSite.get())
+                if (settings?.couponsEnabled == REQUEST_VALUE) enabledState.value = EnabledState.Enabled
+            }
         }
     }
 
