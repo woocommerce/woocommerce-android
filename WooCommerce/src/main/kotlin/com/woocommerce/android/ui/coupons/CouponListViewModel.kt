@@ -191,7 +191,7 @@ class CouponListViewModel @Inject constructor(
                 groupId = SETTINGS_GROUP,
                 optionId = SETTINGS_ENABLE_COUPONS_OPTION
             )
-            if(result.isError) {
+            if (result.isError) {
                 WooLog.e(
                     WooLog.T.COUPONS,
                     "Unable to enable Coupons: $result.error.message"

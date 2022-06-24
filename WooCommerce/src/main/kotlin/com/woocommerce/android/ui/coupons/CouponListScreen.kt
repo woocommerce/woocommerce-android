@@ -40,8 +40,8 @@ import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListItem
 import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListState
-import com.woocommerce.android.ui.coupons.CouponListViewModel.LoadingState
 import com.woocommerce.android.ui.coupons.CouponListViewModel.EnabledState
+import com.woocommerce.android.ui.coupons.CouponListViewModel.LoadingState
 import com.woocommerce.android.ui.coupons.components.CouponExpirationLabel
 
 @Composable
