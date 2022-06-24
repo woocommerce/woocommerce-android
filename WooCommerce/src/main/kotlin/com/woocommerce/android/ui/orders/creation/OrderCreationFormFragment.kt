@@ -429,7 +429,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     override fun getFragmentTitle() = when (viewModel.mode) {
         OrderCreationViewModel.Mode.Creation -> getString(R.string.order_creation_fragment_title)
         is OrderCreationViewModel.Mode.Edit -> {
-            val orderId = (viewModel.mode as OrderCreationViewModel.Mode.Edit).orderId
+            val orderId = (viewModel.mode as OrderCreationViewModel.Mode.Edit).orderId.toString()
             getString(R.string.orderdetail_orderstatus_ordernum, orderId)
         }
     }
