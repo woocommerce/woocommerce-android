@@ -83,47 +83,45 @@ fun CouponListScreen(
 
 @Composable
 private fun CouponDisabledNotice(onEnableCouponsButtonClick: () -> Unit) {
-    Column {
-        Column(
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = dimensionResource(id = R.dimen.major_200)),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = stringResource(id = R.string.coupon_list_coupon_disabled_heading),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.h6,
+            modifier = Modifier.padding(
+                start = dimensionResource(id = R.dimen.major_150),
+                end = dimensionResource(id = R.dimen.major_150)
+            )
+        )
+        Spacer(Modifier.size(dimensionResource(id = R.dimen.major_325)))
+        Image(
+            painter = painterResource(id = R.drawable.img_empty_coupon_list),
+            contentDescription = null,
+        )
+        Text(
+            text = stringResource(id = R.string.coupon_list_coupon_disabled_message),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.body1,
+            modifier = Modifier.padding(
+                start = dimensionResource(id = R.dimen.major_150),
+                end = dimensionResource(id = R.dimen.major_150)
+            )
+        )
+        Spacer(Modifier.size(dimensionResource(id = R.dimen.major_325)))
+        WCColoredButton(
+            onClick = onEnableCouponsButtonClick,
+            text = stringResource(id = R.string.coupon_list_coupon_enable_button),
             modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = dimensionResource(id = R.dimen.major_200)),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = stringResource(id = R.string.coupon_list_coupon_disabled_heading),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.h6,
-                modifier = Modifier.padding(
-                    start = dimensionResource(id = R.dimen.major_150),
-                    end = dimensionResource(id = R.dimen.major_150)
-                )
-            )
-            Spacer(Modifier.size(dimensionResource(id = R.dimen.major_325)))
-            Image(
-                painter = painterResource(id = R.drawable.img_empty_coupon_list),
-                contentDescription = null,
-            )
-            Text(
-                text = stringResource(id = R.string.coupon_list_coupon_disabled_message),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.body1,
-                modifier = Modifier.padding(
-                    start = dimensionResource(id = R.dimen.major_150),
-                    end = dimensionResource(id = R.dimen.major_150)
-                )
-            )
-            Spacer(Modifier.size(dimensionResource(id = R.dimen.major_325)))
-            WCColoredButton(
-                onClick = onEnableCouponsButtonClick,
-                text = stringResource(id = R.string.coupon_list_coupon_enable_button),
-                modifier = Modifier
-                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
-                    .fillMaxWidth(),
-                enabled = true
-            )
-        }
+                .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                .fillMaxWidth(),
+            enabled = true
+        )
     }
 }
 
