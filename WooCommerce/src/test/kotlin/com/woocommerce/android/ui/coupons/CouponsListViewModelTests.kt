@@ -30,6 +30,10 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCSettingsModel
+import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.SiteSettingOptionResponse
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
@@ -56,21 +60,22 @@ class CouponsListViewModelTests : BaseUnitTest() {
         resourceProvider = resourceProvider
     )
 
+    private fun generateSettingsModel(couponsEnabled: Boolean = true) =
+        WCSettingsModel(
+            localSiteId = 1,
+            currencyCode = "$",
+            currencyPosition = WCSettingsModel.CurrencyPosition.LEFT,
+            currencyThousandSeparator = ".",
+            currencyDecimalSeparator = ",",
+            currencyDecimalNumber = 2,
+            couponsEnabled = if (couponsEnabled) "yes" else "no"
+        )
+
     suspend fun setup(couponsEnabled: Boolean = true, prepareMocks: suspend () -> Unit = {}) {
         prepareMocks()
 
         whenever(wooCommerceStore.fetchSiteGeneralSettings(any())).doReturn(
-            WooResult(
-                WCSettingsModel(
-                    localSiteId = 1,
-                    currencyCode = "$",
-                    currencyPosition = WCSettingsModel.CurrencyPosition.LEFT,
-                    currencyThousandSeparator = ".",
-                    currencyDecimalSeparator = ",",
-                    currencyDecimalNumber = 2,
-                    couponsEnabled = if (couponsEnabled) "yes" else "no"
-                )
-            )
+            WooResult(generateSettingsModel(couponsEnabled))
         )
 
         viewModel = CouponListViewModel(
@@ -236,5 +241,43 @@ class CouponsListViewModelTests : BaseUnitTest() {
         val event = viewModel.event.captureValues().filterIsInstance<MultiLiveEvent.Event.ShowSnackbar>().last()
 
         assertThat(event.message).isEqualTo(R.string.coupon_list_loading_failed)
+    }
+
+    @Test
+    fun `when enabling coupon succeeds, then display coupons list`() = testBlocking {
+        setup {
+            whenever(wooCommerceStore.updateSiteSettingOption(any(), any(), any(), any())).thenReturn(
+                WooResult(SiteSettingOptionResponse())
+            )
+
+            whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(
+                generateSettingsModel(couponsEnabled = true)
+            )
+        }
+
+        viewModel.onEnableCouponsButtonClick()
+        advanceUntilIdle()
+
+        val enabledState = viewModel.couponsState.captureValues().last().enabledState
+
+        assertThat(enabledState).isEqualTo(CouponListViewModel.EnabledState.Enabled)
+    }
+
+    @Test
+    fun `when enabling coupon fails, then handle failure`() = testBlocking {
+        setup {
+            whenever(wooCommerceStore.updateSiteSettingOption(any(), any(), any(), any())).thenReturn(
+                WooResult(WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.UNKNOWN))
+            )
+        }
+
+        viewModel.onEnableCouponsButtonClick()
+        advanceUntilIdle()
+
+        val enabledState = viewModel.couponsState.captureValues().last().enabledState
+        val event = viewModel.event.captureValues().filterIsInstance<MultiLiveEvent.Event.ShowSnackbar>().last()
+
+        assertThat(enabledState).isEqualTo(CouponListViewModel.EnabledState.Disabled)
+        assertThat(event.message).isEqualTo(R.string.coupon_list_coupon_enable_button_failure)
     }
 }
