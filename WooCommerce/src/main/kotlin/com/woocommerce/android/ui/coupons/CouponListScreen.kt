@@ -52,7 +52,8 @@ fun CouponListScreen(viewModel: CouponListViewModel) {
         state = couponListState,
         onCouponClick = viewModel::onCouponClick,
         onRefresh = viewModel::onRefresh,
-        onLoadMore = viewModel::onLoadMore
+        onLoadMore = viewModel::onLoadMore,
+        onEnableCouponsButtonClick = viewModel::onEnableCouponsButtonClick
     )
 }
 
@@ -61,11 +62,12 @@ fun CouponListScreen(
     state: CouponListState,
     onCouponClick: (Long) -> Unit,
     onRefresh: () -> Unit,
-    onLoadMore: () -> Unit
+    onLoadMore: () -> Unit,
+    onEnableCouponsButtonClick: () -> Unit
 ) {
     when {
         state.enabledState == EnabledState.Checking -> CouponListSkeleton()
-        state.enabledState == EnabledState.Disabled -> CouponDisabledNotice()
+        state.enabledState == EnabledState.Disabled -> CouponDisabledNotice(onEnableCouponsButtonClick)
         state.coupons.isNotEmpty() -> CouponList(
             coupons = state.coupons,
             loadingState = state.loadingState,
@@ -80,7 +82,7 @@ fun CouponListScreen(
 }
 
 @Composable
-private fun CouponDisabledNotice() {
+private fun CouponDisabledNotice(onEnableCouponsButtonClick: () -> Unit) {
     Column {
         Column(
             modifier = Modifier
@@ -114,7 +116,7 @@ private fun CouponDisabledNotice() {
             )
             Spacer(Modifier.size(dimensionResource(id = R.dimen.major_325)))
             WCColoredButton(
-                onClick = { },
+                onClick = onEnableCouponsButtonClick,
                 text = stringResource(id = R.string.coupon_list_coupon_enable_button),
                 modifier = Modifier
                     .padding(horizontal = dimensionResource(id = R.dimen.major_100))
