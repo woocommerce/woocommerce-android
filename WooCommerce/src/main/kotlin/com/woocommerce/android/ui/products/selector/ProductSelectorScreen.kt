@@ -43,6 +43,7 @@ import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.FilterState
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.APPENDING
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.IDLE
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.LOADING
@@ -61,6 +62,7 @@ fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
             state = it,
             onDoneButtonClick = viewModel::onDoneButtonClick,
             onClearButtonClick = viewModel::onClearButtonClick,
+            onFilterButtonClick = viewModel::onFilterButtonClick,
             onProductClick = viewModel::onProductClick,
             onLoadMore = viewModel::onLoadMore,
             onSearchQueryChanged = viewModel::onSearchQueryChanged
@@ -73,6 +75,7 @@ fun ProductSelectorScreen(
     state: ViewState,
     onDoneButtonClick: () -> Unit,
     onClearButtonClick: () -> Unit,
+    onFilterButtonClick: () -> Unit,
     onProductClick: (ProductListItem) -> Unit,
     onLoadMore: () -> Unit,
     onSearchQueryChanged: (String) -> Unit
@@ -98,6 +101,7 @@ fun ProductSelectorScreen(
                 state = state,
                 onDoneButtonClick = onDoneButtonClick,
                 onClearButtonClick = onClearButtonClick,
+                onFilterButtonClick = onFilterButtonClick,
                 onProductClick = onProductClick,
                 onLoadMore = onLoadMore
             )
@@ -143,6 +147,7 @@ private fun ProductList(
     state: ViewState,
     onDoneButtonClick: () -> Unit,
     onClearButtonClick: () -> Unit,
+    onFilterButtonClick: () -> Unit,
     onProductClick: (ProductListItem) -> Unit,
     onLoadMore: () -> Unit,
 ) {
@@ -167,8 +172,12 @@ private fun ProductList(
             }
 
             WCTextButton(
-                onClick = { },
-                text = stringResource(id = string.product_selector_filter_button_title),
+                onClick = onFilterButtonClick,
+                text =  StringUtils.getQuantityString(
+                    quantity = state.filterState.filterOptions.size,
+                    default = string.product_selector_filter_button_title_default,
+                    zero = string.product_selector_filter_button_title_zero
+                ),
                 allCaps = false,
                 modifier = Modifier.align(Alignment.CenterEnd)
             )
@@ -329,8 +338,10 @@ fun ProductListPreview() {
             products = products,
             selectedItemsCount = 3,
             loadingState = IDLE,
+            filterState = FilterState(),
             searchQuery = ""
         ),
+        {},
         {},
         {},
         {},

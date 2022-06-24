@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.selector
 
+import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -8,6 +9,7 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.isInteger
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToProductFilter
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToVariationSelector
 import com.woocommerce.android.ui.products.ProductStockStatus.Custom
 import com.woocommerce.android.ui.products.ProductStockStatus.InStock
@@ -43,6 +45,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
@@ -70,6 +74,7 @@ class ProductSelectorViewModel @Inject constructor(
     private val searchQuery = savedState.getStateFlow(this, "")
     private val loadingState = MutableStateFlow(IDLE)
     private val selectedProductIds = savedState.getStateFlow(viewModelScope, navArgs.productIds.toSet())
+    private val filterState = savedState.getStateFlow(viewModelScope, FilterState())
 
     val viewState = combine(
         flow = listHandler.productsFlow,
@@ -82,12 +87,14 @@ class ProductSelectorViewModel @Inject constructor(
             }
             .map { it.value },
         flow3 = selectedProductIds,
-        flow4 = searchQuery
-    ) { products, loadingState, selectedIds, searchQuery ->
+        flow4 = filterState,
+        flow5 = searchQuery
+    ) { products, loadingState, selectedIds, filterState, searchQuery ->
         ViewState(
             loadingState = loadingState,
             products = products.map { it.toUiModel(selectedIds) },
             selectedItemsCount = selectedIds.size,
+            filterState = filterState,
             searchQuery = searchQuery
         )
     }.asLiveData()
@@ -152,6 +159,18 @@ class ProductSelectorViewModel @Inject constructor(
         }
     }
 
+    fun onFilterButtonClick() {
+        triggerEvent(
+            NavigateToProductFilter(
+                filterState.value.filterOptions[ProductFilterOption.STOCK_STATUS],
+                filterState.value.filterOptions[ProductFilterOption.TYPE],
+                filterState.value.filterOptions[ProductFilterOption.STATUS],
+                filterState.value.filterOptions[ProductFilterOption.CATEGORY],
+                filterState.value.productCategoryName
+            )
+        )
+    }
+
     fun onProductClick(item: ProductListItem) {
         if (item.type == VARIABLE && item.numVariations > 0) {
             triggerEvent(NavigateToVariationSelector(item.id, item.selectedVariationIds))
@@ -170,6 +189,22 @@ class ProductSelectorViewModel @Inject constructor(
 
     fun onSearchQueryChanged(query: String) {
         searchQuery.value = query
+    }
+
+    fun onFiltersChanged(
+        stockStatus: String?,
+        productStatus: String?,
+        productType: String?,
+        productCategory: String?,
+        productCategoryName: String?
+    ) {
+        val filterOptions = mutableMapOf<ProductFilterOption, String>().apply {
+            stockStatus?.let { this[ProductFilterOption.STOCK_STATUS] = it }
+            productStatus?.let { this[ProductFilterOption.STATUS] = it }
+            productType?.let { this[ProductFilterOption.TYPE] = it }
+            productCategory?.let { this[ProductFilterOption.CATEGORY] = it }
+        }
+        filterState.value = FilterState(filterOptions, productCategoryName)
     }
 
     fun onLoadMore() {
@@ -221,6 +256,7 @@ class ProductSelectorViewModel @Inject constructor(
         val loadingState: LoadingState,
         val products: List<ProductListItem>,
         val selectedItemsCount: Int,
+        val filterState: FilterState,
         val searchQuery: String
     )
 
@@ -235,6 +271,12 @@ class ProductSelectorViewModel @Inject constructor(
         val selectedVariationIds: Set<Long> = emptySet(),
         val selectionState: SelectionState = UNSELECTED
     )
+
+    @Parcelize
+    data class FilterState(
+        val filterOptions: Map<ProductFilterOption, String> = emptyMap(),
+        val productCategoryName: String? = null
+    ) : Parcelable
 
     enum class LoadingState {
         IDLE, LOADING, APPENDING
