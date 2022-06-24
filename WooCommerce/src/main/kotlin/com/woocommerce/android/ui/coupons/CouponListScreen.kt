@@ -68,6 +68,7 @@ fun CouponListScreen(
     when {
         state.enabledState == EnabledState.Checking -> CouponListSkeleton()
         state.enabledState == EnabledState.Disabled -> CouponDisabledNotice(onEnableCouponsButtonClick)
+        state.enabledState == EnabledState.Enabling -> CouponDisabledNotice(onEnableCouponsButtonClick, true)
         state.coupons.isNotEmpty() -> CouponList(
             coupons = state.coupons,
             loadingState = state.loadingState,
@@ -82,7 +83,10 @@ fun CouponListScreen(
 }
 
 @Composable
-private fun CouponDisabledNotice(onEnableCouponsButtonClick: () -> Unit) {
+private fun CouponDisabledNotice(
+    onEnableCouponsButtonClick: () -> Unit,
+    isEnabling: Boolean = false
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -120,7 +124,7 @@ private fun CouponDisabledNotice(onEnableCouponsButtonClick: () -> Unit) {
             modifier = Modifier
                 .padding(horizontal = dimensionResource(id = R.dimen.major_100))
                 .fillMaxWidth(),
-            enabled = true
+            enabled = !isEnabling
         )
     }
 }

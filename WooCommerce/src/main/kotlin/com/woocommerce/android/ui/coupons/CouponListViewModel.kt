@@ -184,6 +184,7 @@ class CouponListViewModel @Inject constructor(
 
     fun onEnableCouponsButtonClick() {
         launch {
+            enabledState.value = EnabledState.Enabling
             val request = UpdateSettingRequest(value = REQUEST_VALUE)
             val result = wooCommerceStore.updateSiteSettingOption(
                 site = selectedSite.get(),
@@ -192,6 +193,7 @@ class CouponListViewModel @Inject constructor(
                 optionId = SETTINGS_ENABLE_COUPONS_OPTION
             )
             if (result.isError) {
+                enabledState.value = EnabledState.Disabled
                 WooLog.e(
                     WooLog.T.COUPONS,
                     "Unable to enable Coupons: $result.error.message"
@@ -225,7 +227,7 @@ class CouponListViewModel @Inject constructor(
     }
 
     enum class EnabledState {
-        Checking, Enabled, Disabled
+        Checking, Enabling, Enabled, Disabled
     }
 
     data class NavigateToCouponDetailsEvent(val couponId: Long) : MultiLiveEvent.Event()
