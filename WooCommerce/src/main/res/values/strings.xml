@@ -1556,6 +1556,7 @@
     <string name="orders_empty_message_for_filtered_orders">We\'re sorry, we couldn\'t find any orders</string>
     <string name="empty_message_with_search">We\'re sorry, we couldn\'t find results for \"%s\"</string>
     <string name="reviews_empty_message">No reviews yet!</string>
+    <string name="empty_message_with_filters">We\'re sorry, no products match the selected filters"</string>
     <!--
         Settings
     -->
@@ -2066,6 +2067,7 @@
     <string name="product_selector_loading_failed">Loading products failed</string>
     <string name="product_selector_search_failed">Searching products failed</string>
     <string name="product_selector_empty_state">No products found</string>
+    <string name="product_selector_clear_filters_button_title">Clear Filters</string>
 
     <!-- WC Shipping installation flow -->
     <string name="install_wc_shipping_flow_onboarding_screen_title">Fulfill your orders with WooCommerce Shipping</string>
