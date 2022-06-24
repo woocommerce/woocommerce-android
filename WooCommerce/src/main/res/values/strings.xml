@@ -1964,6 +1964,7 @@
     <string name="coupon_list_coupon_disabled_heading">Everyone loves a deal</string>
     <string name="coupon_list_coupon_disabled_message">You currently have Coupons disabled for this store. Enable Coupons to get started.</string>
     <string name="coupon_list_coupon_enable_button">Enable Coupons</string>
+    <string name="coupon_list_coupon_enable_button_failure">Failed to enable Coupons. Please try again or enable in wp-admin.</string>
     <string name="coupon_details_heading">Coupon Summary</string>
     <string name="coupon_details_minimum_spend">Minimum spend of %s</string>
     <string name="coupon_details_maximum_spend">Maximum spend of %s</string>

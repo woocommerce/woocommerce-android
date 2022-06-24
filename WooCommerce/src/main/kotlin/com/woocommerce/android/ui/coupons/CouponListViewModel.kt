@@ -10,7 +10,9 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CouponUtils
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -110,7 +112,7 @@ class CouponListViewModel @Inject constructor(
         viewModelScope.launch {
             loadingState.value = LoadingState.Appending
             couponListHandler.loadMore().onFailure {
-                triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.coupon_list_loading_failed))
+                triggerEvent(ShowSnackbar(R.string.coupon_list_loading_failed))
             }
             loadingState.value = LoadingState.Idle
         }
@@ -133,7 +135,7 @@ class CouponListViewModel @Inject constructor(
         loadingState.value = LoadingState.Refreshing
         couponListHandler.fetchCoupons(forceRefresh = true)
             .onFailure {
-                triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.coupon_list_loading_failed))
+                triggerEvent(ShowSnackbar(R.string.coupon_list_loading_failed))
             }
         loadingState.value = LoadingState.Idle
     }
@@ -142,7 +144,7 @@ class CouponListViewModel @Inject constructor(
         loadingState.value = LoadingState.Loading
         couponListHandler.fetchCoupons(forceRefresh = true)
             .onFailure {
-                triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.coupon_list_loading_failed))
+                triggerEvent(ShowSnackbar(R.string.coupon_list_loading_failed))
             }
         loadingState.value = LoadingState.Idle
     }
@@ -167,7 +169,7 @@ class CouponListViewModel @Inject constructor(
                         couponListHandler.fetchCoupons(searchQuery = query)
                             .onFailure {
                                 triggerEvent(
-                                    MultiLiveEvent.Event.ShowSnackbar(
+                                    ShowSnackbar(
                                         if (query == null) R.string.coupon_list_loading_failed
                                         else R.string.coupon_list_search_failed
                                     )
@@ -190,7 +192,11 @@ class CouponListViewModel @Inject constructor(
                 optionId = SETTINGS_ENABLE_COUPONS_OPTION
             )
             if(result.isError) {
-                /* TODO Show error snackbar */
+                WooLog.e(
+                    WooLog.T.COUPONS,
+                    "Unable to enable Coupons: $result.error.message"
+                )
+                triggerEvent(ShowSnackbar(R.string.coupon_list_coupon_enable_button_failure))
             } else {
                 val settings = wooCommerceStore.getSiteSettings(selectedSite.get())
                 if (settings?.couponsEnabled == REQUEST_VALUE) enabledState.value = EnabledState.Enabled
