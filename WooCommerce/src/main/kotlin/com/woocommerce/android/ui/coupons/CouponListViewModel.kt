@@ -54,7 +54,7 @@ class CouponListViewModel @Inject constructor(
 
     private val searchQuery = savedState.getNullableStateFlow(this, null, clazz = String::class.java)
     private val loadingState = MutableStateFlow(LoadingState.Idle)
-    private val enabledState = MutableStateFlow(EnabledState.Checking)
+    private val enabledState = MutableStateFlow(EnabledState.Unknown)
 
     val couponsState = combine(
         flow = couponListHandler.couponsFlow
@@ -80,6 +80,7 @@ class CouponListViewModel @Inject constructor(
 
     init {
         launch {
+            enabledState.value = EnabledState.Checking
             val settings = wooCommerceStore.fetchSiteGeneralSettings(selectedSite.get())
             settings.model?.let {
                 if (it.couponsEnabled == "yes") {
@@ -207,7 +208,7 @@ class CouponListViewModel @Inject constructor(
     }
 
     data class CouponListState(
-        val enabledState: EnabledState = EnabledState.Checking,
+        val enabledState: EnabledState = EnabledState.Unknown,
         val loadingState: LoadingState = LoadingState.Idle,
         val searchQuery: String? = null,
         val coupons: List<CouponListItem> = emptyList()
@@ -227,7 +228,7 @@ class CouponListViewModel @Inject constructor(
     }
 
     enum class EnabledState {
-        Checking, Enabling, Enabled, Disabled
+        Unknown, Checking, Enabling, Enabled, Disabled
     }
 
     data class NavigateToCouponDetailsEvent(val couponId: Long) : MultiLiveEvent.Event()

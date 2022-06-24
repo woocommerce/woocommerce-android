@@ -44,19 +44,7 @@ class CouponsListViewModelTests : BaseUnitTest() {
     private val couponListHandler: CouponListHandler = mock {
         on { couponsFlow } doReturn couponsStateFlow
     }
-    private val wooCommerceStore: WooCommerceStore = mock {
-        onBlocking { fetchSiteGeneralSettings(any()) } doReturn WooResult(
-            WCSettingsModel(
-                localSiteId = 1,
-                currencyCode = "$",
-                currencyPosition = WCSettingsModel.CurrencyPosition.LEFT,
-                currencyThousandSeparator = ".",
-                currencyDecimalSeparator = ",",
-                currencyDecimalNumber = 2,
-                couponsEnabled = "yes"
-            )
-        )
-    }
+    private val wooCommerceStore: WooCommerceStore = mock()
     private val currencyFormatter: CurrencyFormatter = mock()
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) } doAnswer { it.arguments[0].toString() }
@@ -68,8 +56,23 @@ class CouponsListViewModelTests : BaseUnitTest() {
         resourceProvider = resourceProvider
     )
 
-    suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
+    suspend fun setup(couponsEnabled: Boolean = true, prepareMocks: suspend () -> Unit = {}) {
         prepareMocks()
+
+        whenever(wooCommerceStore.fetchSiteGeneralSettings(any())).doReturn(
+            WooResult(
+                WCSettingsModel(
+                    localSiteId = 1,
+                    currencyCode = "$",
+                    currencyPosition = WCSettingsModel.CurrencyPosition.LEFT,
+                    currencyThousandSeparator = ".",
+                    currencyDecimalSeparator = ",",
+                    currencyDecimalNumber = 2,
+                    couponsEnabled = if (couponsEnabled) "yes" else "no"
+                )
+            )
+        )
+
         viewModel = CouponListViewModel(
             savedState = SavedStateHandle(),
             wooCommerceStore = wooCommerceStore,
@@ -83,7 +86,18 @@ class CouponsListViewModelTests : BaseUnitTest() {
     }
 
     @Test
-    fun `when screen is loaded, then fetch coupons`() = testBlocking {
+    fun `when screen is loaded, then check coupons feature's availability`() = testBlocking {
+        setup(couponsEnabled = true)
+        val enabledState = viewModel.couponsState.captureValues().last().enabledState
+        assertThat(enabledState).isEqualTo(CouponListViewModel.EnabledState.Enabled)
+
+        setup(couponsEnabled = false)
+        val disabledState = viewModel.couponsState.captureValues().last().enabledState
+        assertThat(disabledState).isEqualTo(CouponListViewModel.EnabledState.Disabled)
+    }
+
+    @Test
+    fun `given enabled coupons, when screen is loaded, then fetch coupons`() = testBlocking {
         setup {
             whenever(couponListHandler.fetchCoupons(null, true)).doSuspendableAnswer {
                 delay(1L)
@@ -102,7 +116,7 @@ class CouponsListViewModelTests : BaseUnitTest() {
     }
 
     @Test
-    fun `when screen is loaded, then load saved coupons`() = testBlocking {
+    fun `given enabled coupons, when screen is loaded, then load saved coupons`() = testBlocking {
         setup()
 
         val state = viewModel.couponsState.runAndCaptureValues {
