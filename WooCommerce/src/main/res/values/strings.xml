@@ -2051,6 +2051,8 @@
     <string name="coupon_restrictions_exclude_sale_items_hint">Turn this on if the coupon should not apply to items on sale. Per-item coupons will only work if the item is not on sale. Per-cart coupons will only work if there are items in the cart that are not on sale.</string>
     <string name="coupon_restrictions_allowed_emails">Allowed emails</string>
     <string name="coupon_restrictions_allowed_emails_placeholder">No restrictions</string>
+    <string name="coupon_restrictions_allowed_emails_hint">List of allowed billing emails to check against when an order is placed. Separate email addresses with commas. You can also use an asterisk (*) to match parts of an email. For example \"*@gmail.com\" would match all gmail addresses.</string>
+    <string name="coupon_restrictions_allowed_emails_invalid">Some email address are invalid. Please fix the entered email(s).</string>
     <string name="coupon_restrictions_exclusions_section_title">Apply this coupon to</string>
     <string name="coupon_restrictions_exclude_products">Exclude Products</string>
     <string name="coupon_restrictions_exclude_categories">Exclude Product Categories</string>
