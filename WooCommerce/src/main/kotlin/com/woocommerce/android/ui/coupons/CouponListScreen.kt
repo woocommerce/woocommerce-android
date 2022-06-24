@@ -37,6 +37,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
+import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListItem
 import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListState
 import com.woocommerce.android.ui.coupons.CouponListViewModel.LoadingState
@@ -110,6 +111,15 @@ private fun CouponDisabledNotice() {
                     start = dimensionResource(id = R.dimen.major_150),
                     end = dimensionResource(id = R.dimen.major_150)
                 )
+            )
+            Spacer(Modifier.size(dimensionResource(id = R.dimen.major_325)))
+            WCColoredButton(
+                onClick = { },
+                text = stringResource(id = R.string.coupon_list_coupon_enable_button),
+                modifier = Modifier
+                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                    .fillMaxWidth(),
+                enabled = true
             )
         }
     }
