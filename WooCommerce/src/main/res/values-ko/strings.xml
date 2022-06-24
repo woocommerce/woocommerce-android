@@ -1,11 +1,71 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-02 09:54:04+0000
+Translation-Revision-Date: 2022-06-16 15:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="install_wc_shipping_flow_onboarding_screen_not_now_button">나중에</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_add_extension_button">스토어에 확장 기능 추가</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_link">우커머스 배송이 무엇인가요?</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_discounts_bullet_desc">할인된 배송 요금을 이용하세요. 현재 DHL과 USPS에서 사용할 수 있고, 앞으로 추가될 예정입니다.</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_discounts_bullet_title">할인된 요금</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_print_bullet_desc">주문을 픽업한 다음에 결제하고 인쇄하고 포장하고 글을 작성하시면 됩니다.</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_print_bullet_title">스마트폰에서 인쇄</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_postage_bullet_desc">스탬프북의 향방은 걱정하지 않으셔도 됩니다.</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_postage_bullet_title">필요할 때 우편 요금 구매</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_subtitle">시간과 돈 절약</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_title">우커머스 배송으로 주문 처리</string>
+    <string name="product_selector_arrow_content_description">상세 정보 표시</string>
+    <string name="product_selector_select_variation_label">변형 %s 선택</string>
+    <string name="coupon_restrictions_exclude_categories">상품 카테고리 제외</string>
+    <string name="coupon_restrictions_exclude_products">상품 제외</string>
+    <string name="coupon_restrictions_exclusions_section_title">다음에 이 쿠폰 적용</string>
+    <string name="coupon_restrictions_allowed_emails_placeholder">제한 없음</string>
+    <string name="coupon_restrictions_allowed_emails">허용된 이메일</string>
+    <string name="coupon_restrictions_limit_per_user_placeholder">무제한</string>
+    <string name="coupon_restrictions_amount_limit_placeholder">모든 적격 항목</string>
+    <string name="coupon_restrictions_limit_per_coupon_placeholder">무제한</string>
+    <string name="coupon_restrictions_minimum_maximum_spend_placeholder">없음</string>
+    <string name="coupon_edit_edit_products_title">상품 카테고리 편집(%1$d개)</string>
+    <string name="coupon_edit_select_categories_title">상품 카테고리 선택</string>
+    <string name="variations_bulk_update_warning_message">현대 최대 100개 변형에 대한 대량 업데이트가 지원됩니다.</string>
+    <string name="variations_bulk_update_warning_title">대량 업데이트 한도 초과</string>
+    <string name="variations_bulk_update_regular_prices_dialog_title">정상 가격 업데이트하기</string>
+    <string name="variations_bulk_update_sale_prices_dialog_title">할인 가격 업데이트하기</string>
+    <string name="variations_bulk_update_sale_prices_success">업데이트한 할인 가격입니다.</string>
+    <string name="variations_bulk_update_regular_prices_success">업데이트한 정상 가격입니다.</string>
+    <string name="variations_bulk_update_error">문제가 발생했습니다. 다시 시도하세요.</string>
+    <string name="variations_bulk_update_current_prices_mixed">현재 가격이 뒤섞였습니다.</string>
+    <string name="variations_bulk_update_current_price">현재 가격은 %s입니다.</string>
+    <string name="variations_bulk_update_price_info">%d개 변형 가격이 업데이트됩니다.</string>
+    <string name="variations_bulk_update_dialog_price_mixed">혼합</string>
+    <string name="variations_bulk_update_dialog_price_none">없음</string>
+    <string name="variations_bulk_update_dialog_sale_price_label">할인 가격</string>
+    <string name="variations_bulk_update_dialog_regular_price_label">정상 가격</string>
+    <string name="variations_bulk_update_dialog_price_section_title">가격</string>
+    <string name="variations_bulk_update_dialog_subtitle">업데이트할 값 선택</string>
+    <string name="variations_bulk_update_dialog_title">대량 업데이트</string>
+    <string name="variations_bulk_limit_exceeded_button_ok">확인</string>
+    <string name="variation_list_menu_bulk_update">대량 업데이트…</string>
+    <string name="variation_loading_dialog_title">변형을 가져오는 중…</string>
+    <string name="product_category_selector_search_failed">상품 카테고리 검색 실패</string>
+    <string name="product_category_selector_loading_failed">상품 카테고리 로드 실패</string>
+    <string name="product_category_selector_search_hint">카테고리 검색</string>
+    <string name="product_category_selector_clear_selection">선택 지우기</string>
+    <string name="product_category_selector_check_content_description">클릭하여 선택 취소</string>
+    <string name="product_category_selector_select_button_title_one">1개 카테고리 선택</string>
+    <string name="product_category_selector_select_button_title_default">%1$d개 카테고리 선택</string>
+    <string name="product_category_selector_empty_state">상품 카테고리를 찾을 수 없음</string>
+    <string name="product_category_selector_title">카테고리 선택</string>
+    <string name="shipping_label_install_wc_shipping_banner_dismiss_button_description">WC 배송 설치 배너 무시</string>
+    <string name="shipping_label_install_wc_shipping_banner_button">우커머스 배송 가져오기</string>
+    <string name="shipping_label_install_wc_shipping_banner_description">우커머스 배송을 통해 스마트폰의 레이블을 인쇄하세요.</string>
+    <string name="shipping_label_install_wc_shipping_banner_title">배송 레이블이 필요하신가요?</string>
+    <string name="order_creation_change_product_quantity">%d에서 %d(으)로 상품 수량 변경</string>
+    <string name="variations_bulk_update_regular_price">정상 가격 업데이트</string>
+    <string name="variations_bulk_update_sale_price">할인 가격 업데이트</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">%1$s에서 WooCommerce Stripe 확장 기능은 지원되지 않습니다.</string>
     <string name="product_selector_filter_button_title">필터</string>
     <string name="product_selector_clear_button_title">선택 지우기</string>
@@ -162,8 +222,6 @@ Language: ko_KR
     <string name="orderstatus_contentDesc_withStatus">주문 상태: %s</string>
     <string name="no_sku">SKU 없음</string>
     <string name="count">개수: %s</string>
-    <string name="plus_one">하나 더하기</string>
-    <string name="minus_one">하나 빼기</string>
     <string name="more_menu_button_coupons">쿠폰</string>
     <string name="dismiss_inbox_note">무시</string>
     <string name="login_error_xml_rpc_auth_error_communicating">사이트와 통신하는 중 문제가 발생했습니다. HTTP 오류 코드 401이 반환되었습니다.</string>
@@ -1122,7 +1180,6 @@ Language: ko_KR
     <string name="orderdetail_product_multiple">제품</string>
     <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
     <string name="orderdetail_orderstatus_name">%1$s %2$s</string>
-    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
     <string name="product_type_external">외부</string>
     <string name="product_type_simple">심플</string>
     <string name="product_status_privately_published">비공개로 게시됨</string>
