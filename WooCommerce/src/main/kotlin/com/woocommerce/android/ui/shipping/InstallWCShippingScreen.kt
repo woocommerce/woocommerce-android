@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.shipping
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.ExitTransition.Companion
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.ExperimentalTransitionApi
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -49,9 +52,8 @@ fun InstallWCShippingScreen(viewState: ViewState) {
                     fadeIn(tween(500, delayMillis = 500))
                         .with(fadeOut(tween(500, easing = LinearOutSlowInEasing)))
                 } else {
-                    // No-op animation, just defining durations
-                    fadeIn(tween(500), initialAlpha = 1f)
-                        .with(fadeOut(tween(500), targetAlpha = 1f))
+                    // No-op animation, each screen will define animations for specific components separately
+                    EnterTransition.None.with(ExitTransition.None)
                 }
             }
         ) { targetState ->
