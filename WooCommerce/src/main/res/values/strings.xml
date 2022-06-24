@@ -1961,6 +1961,8 @@
     <string name="coupon_list_view_coupon">View coupon summary</string>
     <string name="coupon_list_loading_failed">Fetching coupons failed</string>
     <string name="coupon_list_search_failed">Searching coupons failed</string>
+    <string name="coupon_list_coupon_disabled_heading">Everyone loves a deal</string>
+    <string name="coupon_list_coupon_disabled_message">You currently have Coupons disabled for this store. Enable Coupons to get started.</string>
     <string name="coupon_details_heading">Coupon Summary</string>
     <string name="coupon_details_minimum_spend">Minimum spend of %s</string>
     <string name="coupon_details_maximum_spend">Maximum spend of %s</string>
