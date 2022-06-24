@@ -388,6 +388,12 @@
     <string name="order_creation_customer_search_hint">Search customers</string>
     <string name="order_creation_change_product_quantity">Change the product quantity from %d to %d</string>
     <!--
+        Order Editing
+    -->
+    <string name="order_editing_non_editable_title">Parts of this order are not currently editable</string>
+    <string name="order_editing_non_editable_message">To edit Products or Payment Details, change the status to Pending Payment.</string>
+    <string name="order_editing_locked_content_description">locked</string>
+    <!--
         Order Filters
     -->
     <string name="orderfilters_show_orders_button">Show Orders</string>

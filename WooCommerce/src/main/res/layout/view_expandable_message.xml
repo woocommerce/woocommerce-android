@@ -1,0 +1,61 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.motion.widget.MotionLayout
+        android:id="@+id/expandable_message_root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/major_75"
+        android:layout_marginTop="@dimen/major_75"
+        app:layoutDescription="@xml/view_expandable_message_scene">
+
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="@dimen/image_minor_40"
+            android:layout_height="@dimen/image_minor_40"
+            android:layout_marginStart="@dimen/major_100"
+            android:importantForAccessibility="no"
+            android:baselineAlignBottom="true"
+            app:layout_constraintBaseline_toBaselineOf="@+id/title"
+            android:translationY="@dimen/minor_25"
+            app:layout_constraintEnd_toStartOf="@+id/title"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/title"
+            style="@style/TextAppearance.Woo.Subtitle1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_75"
+            app:layout_constraintEnd_toStartOf="@+id/expand_icon"
+            app:layout_constraintStart_toEndOf="@+id/icon"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/message"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toStartOf="@+id/expand_icon"
+            app:layout_constraintStart_toStartOf="@+id/title"
+            app:layout_constraintTop_toBottomOf="@+id/title"
+            android:layout_marginTop="@dimen/minor_100"
+            android:layout_marginEnd="@dimen/major_100" />
+
+        <ImageView
+            android:id="@+id/expand_icon"
+            android:layout_width="@dimen/image_minor_50"
+            android:layout_height="@dimen/image_minor_50"
+            android:layout_marginEnd="@dimen/major_100"
+            android:src="@drawable/ic_arrow_down"
+            android:rotation="0"
+            android:baselineAlignBottom="true"
+            app:layout_constraintBaseline_toBaselineOf="@+id/title"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:importantForAccessibility="no"
+            android:layout_marginBottom="@dimen/major_85"
+            app:tint="@color/color_on_surface"/>
+
+    </androidx.constraintlayout.motion.widget.MotionLayout>
+</merge>

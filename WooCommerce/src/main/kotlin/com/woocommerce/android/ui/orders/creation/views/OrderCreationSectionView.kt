@@ -46,6 +46,12 @@ class OrderCreationSectionView @JvmOverloads constructor(
     var keepAddButtons: Boolean = false
     var hasEditButton: Boolean = true
 
+    var isLocked: Boolean = false
+        set(value) {
+            field = value
+            binding.lockIcon.isVisible = value
+        }
+
     init {
         attrs?.let {
             context.obtainStyledAttributes(attrs, R.styleable.OrderCreationSectionView, defStyleAttr, 0)
