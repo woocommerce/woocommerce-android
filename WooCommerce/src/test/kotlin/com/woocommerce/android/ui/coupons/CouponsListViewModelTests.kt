@@ -29,6 +29,8 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.WCSettingsModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
 class CouponsListViewModelTests : BaseUnitTest() {
@@ -42,7 +44,19 @@ class CouponsListViewModelTests : BaseUnitTest() {
     private val couponListHandler: CouponListHandler = mock {
         on { couponsFlow } doReturn couponsStateFlow
     }
-    private val wooCommerceStore: WooCommerceStore = mock()
+    private val wooCommerceStore: WooCommerceStore = mock {
+        onBlocking { fetchSiteGeneralSettings(any()) } doReturn WooResult(
+            WCSettingsModel(
+                localSiteId = 1,
+                currencyCode = "$",
+                currencyPosition = WCSettingsModel.CurrencyPosition.LEFT,
+                currencyThousandSeparator = ".",
+                currencyDecimalSeparator = ",",
+                currencyDecimalNumber = 2,
+                couponsEnabled = "yes"
+            )
+        )
+    }
     private val currencyFormatter: CurrencyFormatter = mock()
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) } doAnswer { it.arguments[0].toString() }
