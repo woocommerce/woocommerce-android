@@ -1,0 +1,2 @@
+9.4:
+Anche se questo rilascio non ha alcuna sorprendente nuova funzionalità, ci abbiamo messo comunque tanto amore. In product details, some third-party extensions were causing the app to crash when viewing variable products. We’ve fixed this crash and made a handful of minor improvements to make your experience smoother.
