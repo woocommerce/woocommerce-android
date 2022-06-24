@@ -101,6 +101,7 @@ class ProductSelectorViewModel @Inject constructor(
 
     init {
         monitorSearchQuery()
+        monitorProductFilters()
         viewModelScope.launch {
             loadingState.value = LOADING
             listHandler.fetchProducts(forceRefresh = true)
@@ -191,6 +192,10 @@ class ProductSelectorViewModel @Inject constructor(
         searchQuery.value = query
     }
 
+    fun onClearFiltersButtonClick() {
+        filterState.value = FilterState(emptyMap(), null)
+    }
+
     fun onFiltersChanged(
         stockStatus: String?,
         productStatus: String?,
@@ -227,7 +232,7 @@ class ProductSelectorViewModel @Inject constructor(
             searchQuery
                 .withIndex()
                 .filterNot {
-                    // Skip initial value to avoid double fetching product categories
+                    // Skip initial value to avoid double fetching products
                     it.index == 0 && it.value.isEmpty()
                 }
                 .map { it.value }
@@ -243,6 +248,32 @@ class ProductSelectorViewModel @Inject constructor(
                             .onFailure {
                                 val message = if (query.isEmpty()) string.product_selector_loading_failed
                                 else string.product_selector_search_failed
+                                triggerEvent(ShowSnackbar(message))
+                            }
+                    } finally {
+                        loadingState.value = IDLE
+                    }
+                }
+        }
+    }
+
+    private fun monitorProductFilters() {
+        viewModelScope.launch {
+            filterState
+                .withIndex()
+                .filterNot {
+                    // Skip initial value to avoid double fetching product categories
+                    it.index == 0 && it.value.filterOptions.isEmpty()
+                }
+                .map { it.value }
+                .onEach {
+                    loadingState.value = LOADING
+                }
+                .collectLatest { filters ->
+                    try {
+                        listHandler.fetchProducts(filters = filters.filterOptions)
+                            .onFailure {
+                                val message = string.product_selector_loading_failed
                                 triggerEvent(ShowSnackbar(message))
                             }
                     } finally {
