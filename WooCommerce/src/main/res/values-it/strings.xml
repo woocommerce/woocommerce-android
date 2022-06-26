@@ -162,8 +162,6 @@ Language: it
     <string name="orderstatus_contentDesc_withStatus">Stato ordine: %s</string>
     <string name="no_sku">Nessuno SKU</string>
     <string name="count">Conteggio: %s</string>
-    <string name="plus_one">Più uno</string>
-    <string name="minus_one">Meno uno</string>
     <string name="more_menu_button_coupons">Codici promozionali</string>
     <string name="dismiss_inbox_note">Ignora</string>
     <string name="login_error_xml_rpc_auth_error_communicating">Si è verificato un problema durante la comunicazione con il sito. È stato restituito un codice di errore HTTP .</string>
@@ -1122,7 +1120,6 @@ Language: it
     <string name="orderdetail_product_multiple">Prodotti</string>
     <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
     <string name="orderdetail_orderstatus_name">%1$s %2$s</string>
-    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 n. %2$s</string>
     <string name="product_type_external">Esterno</string>
     <string name="product_type_simple">Semplice</string>
     <string name="product_status_privately_published">Pubblicato privatamente</string>

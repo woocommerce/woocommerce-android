@@ -1,11 +1,71 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-02 11:54:04+0000
+Translation-Revision-Date: 2022-06-16 09:54:20+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="install_wc_shipping_flow_onboarding_screen_not_now_button">後で</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_add_extension_button">ストアに拡張機能を追加</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_link">WooCommerce Shipping とは</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_discounts_bullet_desc">配送料金を割引価格でご利用いただけます。 現在は DHL と USPS で適用されますが、今後さらに追加される予定です。</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_discounts_bullet_title">割引価格</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_print_bullet_desc">注文を選んだら、支払いし、印刷、梱包、そして投函するだけです。</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_print_bullet_title">スマートフォンから印刷</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_postage_bullet_desc">切手がどこにいったのか探す必要はありません。</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_postage_bullet_title">送料は必要なときに購入</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_subtitle">時間とお金を節約</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_title">WooCommerce Shipping で注文を処理</string>
+    <string name="product_selector_arrow_content_description">詳細を表示</string>
+    <string name="product_selector_select_variation_label">バリエーション %s を選択</string>
+    <string name="coupon_restrictions_exclude_categories">商品カテゴリーを除外</string>
+    <string name="coupon_restrictions_exclude_products">商品を除外</string>
+    <string name="coupon_restrictions_exclusions_section_title">このクーポンを次に適用:</string>
+    <string name="coupon_restrictions_allowed_emails_placeholder">制限なし</string>
+    <string name="coupon_restrictions_allowed_emails">許可されるメール</string>
+    <string name="coupon_restrictions_limit_per_user_placeholder">無制限</string>
+    <string name="coupon_restrictions_amount_limit_placeholder">すべてが対象</string>
+    <string name="coupon_restrictions_limit_per_coupon_placeholder">無制限</string>
+    <string name="coupon_restrictions_minimum_maximum_spend_placeholder">なし</string>
+    <string name="coupon_edit_edit_products_title">商品カテゴリー (%1$d件) を編集</string>
+    <string name="coupon_edit_select_categories_title">商品カテゴリーを選択</string>
+    <string name="variations_bulk_update_warning_message">現在、一括更新がサポートされているのは、最大100件のバリエーションです。</string>
+    <string name="variations_bulk_update_warning_title">一括更新の上限を超えました</string>
+    <string name="variations_bulk_update_regular_prices_dialog_title">通常価格を更新しています</string>
+    <string name="variations_bulk_update_sale_prices_dialog_title">販売価格を更新しています</string>
+    <string name="variations_bulk_update_sale_prices_success">販売価格を更新しました。</string>
+    <string name="variations_bulk_update_regular_prices_success">通常価格を更新しました。</string>
+    <string name="variations_bulk_update_error">エラーが発生しました。 もう一度お試しください。</string>
+    <string name="variations_bulk_update_current_prices_mixed">現在、さまざまな価格が混在しています</string>
+    <string name="variations_bulk_update_current_price">現在の価格は %sです。</string>
+    <string name="variations_bulk_update_price_info">%d件のバリエーションの価格が更新されます。</string>
+    <string name="variations_bulk_update_dialog_price_mixed">混合</string>
+    <string name="variations_bulk_update_dialog_price_none">なし</string>
+    <string name="variations_bulk_update_dialog_sale_price_label">セール価格</string>
+    <string name="variations_bulk_update_dialog_regular_price_label">標準価格</string>
+    <string name="variations_bulk_update_dialog_price_section_title">価格</string>
+    <string name="variations_bulk_update_dialog_subtitle">更新する値を選択</string>
+    <string name="variations_bulk_update_dialog_title">一括更新</string>
+    <string name="variations_bulk_limit_exceeded_button_ok">OK</string>
+    <string name="variation_list_menu_bulk_update">一括更新…</string>
+    <string name="variation_loading_dialog_title">バリエーションを取得しています…</string>
+    <string name="product_category_selector_search_failed">商品カテゴリーを検索できませんでした</string>
+    <string name="product_category_selector_loading_failed">商品カテゴリーを読み込めませんでした</string>
+    <string name="product_category_selector_search_hint">カテゴリーを検索</string>
+    <string name="product_category_selector_clear_selection">選択を解除</string>
+    <string name="product_category_selector_check_content_description">クリックしてチェックを外す</string>
+    <string name="product_category_selector_select_button_title_one">1件のカテゴリーを選択</string>
+    <string name="product_category_selector_select_button_title_default">%1$d件のカテゴリーを選択</string>
+    <string name="product_category_selector_empty_state">製品カテゴリーが見つかりませんでした</string>
+    <string name="product_category_selector_title">カテゴリーを選択</string>
+    <string name="shipping_label_install_wc_shipping_banner_dismiss_button_description">バナーを非表示にして WC Shipping をインストール</string>
+    <string name="shipping_label_install_wc_shipping_banner_button">WooCommerce Shipping を入手</string>
+    <string name="shipping_label_install_wc_shipping_banner_description">WooCommerce Shipping を使用してスマートフォンからラベルを印刷します。</string>
+    <string name="shipping_label_install_wc_shipping_banner_title">配送ラベルが必要な場合</string>
+    <string name="order_creation_change_product_quantity">商品数量を%dから%dに変更</string>
+    <string name="variations_bulk_update_regular_price">通常価格を更新</string>
+    <string name="variations_bulk_update_sale_price">販売価格を更新</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">%1$s では WooCommerce Stripe 拡張機能がサポートされていません</string>
     <string name="product_selector_filter_button_title">フィルター</string>
     <string name="product_selector_clear_button_title">選択を解除</string>
@@ -161,8 +221,6 @@ Language: ja_JP
     <string name="orderstatus_contentDesc_withStatus">注文ステータス: %s</string>
     <string name="no_sku">SKU なし</string>
     <string name="count">数量: %s</string>
-    <string name="plus_one">プラス1</string>
-    <string name="minus_one">マイナス1</string>
     <string name="more_menu_button_coupons">クーポン</string>
     <string name="dismiss_inbox_note">非表示</string>
     <string name="login_error_xml_rpc_auth_error_communicating">サイトとの通信中に問題が発生しました。 HTTP エラーコード401が返されました。</string>
@@ -1121,7 +1179,6 @@ Language: ja_JP
     <string name="orderdetail_product_multiple">商品</string>
     <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
     <string name="orderdetail_orderstatus_name">%1$s %2$s</string>
-    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
     <string name="product_type_external">外部</string>
     <string name="product_type_simple">シンプル</string>
     <string name="product_status_privately_published">非公開</string>
