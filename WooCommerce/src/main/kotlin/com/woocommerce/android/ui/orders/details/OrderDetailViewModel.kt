@@ -481,11 +481,6 @@ final class OrderDetailViewModel @Inject constructor(
         triggerEvent(StartShippingLabelCreationFlow(order.id))
     }
 
-    fun onMarkOrderCompleteButtonTapped() {
-        trackerWrapper.track(ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED)
-        triggerEvent(ViewOrderFulfillInfo(order.id))
-    }
-
     fun onViewOrderedAddonButtonTapped(orderItem: Order.Item) {
         trackerWrapper.track(PRODUCT_ADDONS_ORDER_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED)
         triggerEvent(
