@@ -132,6 +132,11 @@ class CardReaderOnboardingChecker @Inject constructor(
             if (ippSelectPaymentGateway.isEnabled()) {
                 when {
                     isUserComingFromChoosePaymentGatewayScreen(pluginType) -> {
+                        updateSharedPreferences(
+                            CARD_READER_ONBOARDING_NOT_COMPLETED,
+                            pluginType,
+                            null
+                        )
                         updatePluginExplicitlySelectedFlag(true)
                     }
                     !isPluginExplicitlySelected() -> {
