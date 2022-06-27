@@ -107,7 +107,7 @@ ext {
     composeVersion = "1.1.1"
     composeAccompanistVersion = "0.23.1"
     lifecycleViewmodelComposeVersion = "2.4.1"
-    composeThemeAdapterVersion = "1.1.8"
+    composeThemeAdapterVersion = "1.1.13"
 
     // Testing
     jUnitVersion = '4.13.2'
