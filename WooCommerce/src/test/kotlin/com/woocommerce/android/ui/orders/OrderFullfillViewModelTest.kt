@@ -74,7 +74,6 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-
         viewModel = spy(
             OrderFulfillViewModel(
                 savedState,
