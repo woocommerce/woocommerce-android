@@ -25,6 +25,7 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget
@@ -62,6 +63,14 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         )
     }
 
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Visible(
+            navigationIcon = when (viewModel.mode) {
+                OrderCreationViewModel.Mode.Creation -> R.drawable.ic_back_24dp
+                is OrderCreationViewModel.Mode.Edit -> null
+            }
+        )
+
     private val View?.productsAdapter
         get() = (this as? RecyclerView)
             ?.run { adapter as? OrderCreationProductsAdapter }
@@ -81,6 +90,12 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         inflater.inflate(R.menu.menu_order_creation, menu)
 
         createOrderMenuItem = menu.findItem(R.id.menu_create).apply {
+            title = resources.getString(
+                when (viewModel.mode) {
+                    OrderCreationViewModel.Mode.Creation -> R.string.create
+                    is OrderCreationViewModel.Mode.Edit -> R.string.done
+                }
+            )
             isEnabled = viewModel.viewStateData.liveData.value?.canCreateOrder ?: false
         }
     }
