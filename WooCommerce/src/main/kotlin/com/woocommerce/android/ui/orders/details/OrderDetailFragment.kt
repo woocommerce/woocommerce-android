@@ -64,7 +64,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragm
 import com.woocommerce.android.ui.orders.simplepayments.TakePaymentViewModel
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment
 import com.woocommerce.android.ui.refunds.RefundSummaryFragment
-import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel
+import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
@@ -265,7 +265,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                 is TakePaymentViewModel.SharePaymentUrl -> {
                     sharePaymentUrl(event.storeName, event.paymentUrl)
                 }
-                is InstallWcShippingFlowViewModel.InstallWcShipping -> navigateToInstallWcShippingFlow()
+                is InstallWCShippingViewModel.InstallWcShipping -> navigateToInstallWcShippingFlow()
                 else -> event.isHandled = false
             }
         }

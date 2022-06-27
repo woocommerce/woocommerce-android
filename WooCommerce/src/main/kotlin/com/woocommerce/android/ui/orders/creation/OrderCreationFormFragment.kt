@@ -434,24 +434,30 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     }
 
     private fun showEditableControls(binding: FragmentOrderCreationFormBinding) {
+        binding.messageNoEditableFields.visibility = View.GONE
         binding.productsSection.apply {
+            isLocked = false
             isEachAddButtonEnabled = true
             content.productsAdapter?.areProductsEditable = true
         }
         binding.paymentSection.apply {
             feeButton.isEnabled = true
             shippingButton.isEnabled = true
+            lockIcon.isVisible = false
         }
     }
 
     private fun hideEditableControls(binding: FragmentOrderCreationFormBinding) {
+        binding.messageNoEditableFields.visibility = View.VISIBLE
         binding.productsSection.apply {
+            isLocked = true
             isEachAddButtonEnabled = false
             content.productsAdapter?.areProductsEditable = false
         }
         binding.paymentSection.apply {
             feeButton.isEnabled = false
             shippingButton.isEnabled = false
+            lockIcon.isVisible = true
         }
     }
 }
