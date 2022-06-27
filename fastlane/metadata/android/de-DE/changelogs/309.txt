@@ -1,0 +1,2 @@
+9.4:
+Diese Version enthält zwar keine neuen Funktionen, wir haben uns aber trotzdem viel Mühe gegeben! In den Produktdetails haben einige Erweiterungen von Drittanbietern beim Anzeigen variabler Produkte App-Abstürze verursacht. Dieses Problem haben wir behoben und ein paar kleinere Verbesserungen am Gesamterlebnis vorgenommen.
