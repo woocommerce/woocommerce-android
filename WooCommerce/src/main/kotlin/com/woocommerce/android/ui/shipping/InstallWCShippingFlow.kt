@@ -4,6 +4,7 @@ package com.woocommerce.android.ui.shipping
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.EnterExitState.PreEnter
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -11,7 +12,6 @@ import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.ExperimentalTransitionApi
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -42,11 +42,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -190,29 +189,33 @@ private fun AnimatedVisibilityScope.InstallationContent(viewState: InstallationO
         SpacerWithMinHeight(1f, dimensionResource(id = R.dimen.major_100))
 
         Box(modifier = Modifier.size(dimensionResource(id = R.dimen.image_major_120))) {
-            var isCursorVisible by remember { mutableStateOf(true) }
-            var isShowingLoadingIndicator by remember { mutableStateOf(false) }
-
-            LaunchedEffect(Unit) {
-                isCursorVisible = false
+            val alpha by transition.animateFloat(
+                transitionSpec = { tween(1000, delayMillis = 1000) },
+                label = "arrowAlpha"
+            ) {
+                when (it) {
+                    PreEnter -> 1f
+                    else -> 0f
+                }
             }
-            val alpha by animateFloatAsState(
-                targetValue = if (isCursorVisible) 1f else 0f,
-                animationSpec = tween(1000, delayMillis = 1000),
-                finishedListener = {
-                    isShowingLoadingIndicator = true
+
+            val rotation by transition.animateFloat(
+                transitionSpec = {
+                    keyframes {
+                        durationMillis = 2000
+                        0f at 1000
+                        -20f at 1100
+                        180f at 2000
+                    }
+                },
+                label = "arrowAlpha"
+            ) {
+                when (it) {
+                    PreEnter -> 0f
+                    else -> 180f
                 }
-            )
-            val rotation by animateFloatAsState(
-                targetValue = if (isCursorVisible) 0f else 180f,
-                animationSpec = keyframes {
-                    if (isCursorVisible) return@keyframes
-                    durationMillis = 2000
-                    0f at 1000
-                    -20f at 1100
-                    180f at 2000
-                }
-            )
+            }
+            val isShowingLoadingIndicator by derivedStateOf { alpha == 0f }
 
             Box {
                 InstallationLoadingIndicator(
