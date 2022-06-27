@@ -85,7 +85,4 @@ class CardReaderModule {
     @Provides
     @Reusable
     fun provideCardReaderConfigFactory() = CardReaderConfigFactory()
-
-    @Provides
-    fun providePluginType() = PluginType.valueOf("")
 }
