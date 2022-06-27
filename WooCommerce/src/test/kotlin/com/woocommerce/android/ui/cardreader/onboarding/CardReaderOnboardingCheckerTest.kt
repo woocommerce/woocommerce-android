@@ -1285,8 +1285,9 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given single plugin, when onboarding checks, then clear plugin selected flag`() =
+    fun `given single plugin, when payment gateway feature is enabled, then clear plugin selected flag`() =
         testBlocking {
+            whenever(ippSelectPaymentGateway.isEnabled()).thenReturn(true)
             whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
             whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
                 .thenReturn(null)
@@ -1300,6 +1301,25 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
                 anyLong(),
                 anyLong(),
                 eq(false)
+            )
+        }
+
+    @Test
+    fun `given single plugin, when payment gateway feature is disabled, then don't clear plugin selected flag`() =
+        testBlocking {
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+                .thenReturn(null)
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+                .thenReturn(buildWCPayPluginInfo(isActive = true))
+
+            checker.getOnboardingState()
+
+            verify(appPrefsWrapper, never()).setIsCardReaderPluginExplicitlySelectedFlag(
+                anyInt(),
+                anyLong(),
+                anyLong(),
+                anyBoolean(),
             )
         }
 

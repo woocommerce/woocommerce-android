@@ -142,7 +142,9 @@ class CardReaderOnboardingChecker @Inject constructor(
                 return WcpayAndStripeActivated
             }
         } else {
-            updatePluginExplicitlySelectedFlag(false)
+            if (ippSelectPaymentGateway.isEnabled()) {
+                updatePluginExplicitlySelectedFlag(false)
+            }
         }
 
         val preferredPlugin = getUserSelectedPluginOrActivatedPlugin(wcPayPluginInfo, stripePluginInfo)
