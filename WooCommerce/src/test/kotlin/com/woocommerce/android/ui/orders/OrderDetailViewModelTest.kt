@@ -1199,8 +1199,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             verify(analyticsTraWrapper).track(AnalyticsEvent.ORDER_DETAIL_CREATE_SHIPPING_LABEL_BUTTON_TAPPED)
         }
 
-
-
     @Test
     fun `when user taps a view order addon button, then event tracked`() =
         testBlocking {
