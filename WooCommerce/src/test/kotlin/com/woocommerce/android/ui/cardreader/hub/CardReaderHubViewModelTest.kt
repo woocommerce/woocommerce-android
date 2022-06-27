@@ -19,6 +19,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
 class CardReaderHubViewModelTest : BaseUnitTest() {
@@ -35,6 +36,9 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     private val ippSelectPaymentGateway: IppSelectPaymentGateway = mock()
 
     private val countryCode = "US"
+    private val wcPayPluginVersion = "3.3.0"
+    private val stripePluginVersion = "6.6.0"
+
     private val savedState = CardReaderHubFragmentArgs(
         storeCountryCode = countryCode,
         cardReaderFlowParam = CardReaderFlowParam.CardReadersHub,
@@ -103,7 +107,6 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     @Test
     fun `given ipp canada disabled, when user clicks on purchase card reader, then app opens external webview`() {
         whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(false)
-        initViewModel()
 
         (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
             .find {
@@ -121,7 +124,6 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     @Test
     fun `given ipp canada enabled, when user clicks on purchase card reader, then app opens external webview`() {
         whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(true)
-        initViewModel()
 
         (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
             .find {
@@ -200,6 +202,22 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             )
     }
 
+    @Test
+    fun `given payment gateway flag enabled, when multiple plugins installed, then payment provider row is shown`() {
+        whenever(ippSelectPaymentGateway.isEnabled()).thenReturn(true)
+        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+            .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
+        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+            .thenReturn(buildWCPayPluginInfo(isActive = true))
+
+        initViewModel()
+
+        assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
+            .anyMatch {
+                it.label == UiString.UiStringRes(R.string.card_reader_manage_payment_provider)
+            }
+    }
+
     private fun initViewModel() {
         viewModel = CardReaderHubViewModel(
             savedState,
@@ -209,5 +227,21 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             wooStore,
             ippSelectPaymentGateway
         )
+    }
+
+    private fun buildWCPayPluginInfo(
+        isActive: Boolean = true,
+        version: String = wcPayPluginVersion
+    ) = SitePluginModel().apply {
+        this.version = version
+        this.setIsActive(isActive)
+    }
+
+    private fun buildStripeExtensionPluginInfo(
+        isActive: Boolean = true,
+        version: String = stripePluginVersion
+    ) = SitePluginModel().apply {
+        this.version = version
+        this.setIsActive(isActive)
     }
 }
