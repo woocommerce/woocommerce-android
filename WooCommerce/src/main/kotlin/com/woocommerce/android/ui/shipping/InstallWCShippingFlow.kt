@@ -46,6 +46,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -135,20 +136,18 @@ private fun AnimatedVisibilityScope.PreInstallationContent(viewState: Installati
             }
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_150)))
             MainContent(viewState)
-            Box(
-                modifier = Modifier.weight(1.5f),
-                contentAlignment = Alignment.Center
-            ) {
-                InstallationInfoLink(
-                    onClick = viewState.onInfoClick,
-                    modifier = Modifier
-                        .padding(vertical = dimensionResource(id = R.dimen.major_100))
-                        .animateEnterExit(
-                            enter = EnterTransition.None,
-                            exit = fadeOut(tween(500))
-                        )
-                )
-            }
+            SpacerWithMinHeight(0.75f, dimensionResource(id = R.dimen.major_100))
+
+            InstallationInfoLink(
+                onClick = viewState.onInfoClick,
+                modifier = Modifier
+                    .animateEnterExit(
+                        enter = EnterTransition.None,
+                        exit = fadeOut(tween(500))
+                    )
+            )
+
+            SpacerWithMinHeight(0.75f, dimensionResource(id = R.dimen.major_100))
         }
         (viewState as? PreInstallation)?.let {
             WCColoredButton(
@@ -181,6 +180,7 @@ private fun AnimatedVisibilityScope.InstallationContent(viewState: InstallationO
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(
                 horizontal = dimensionResource(id = R.dimen.major_100),
                 vertical = dimensionResource(id = R.dimen.major_150)
@@ -191,8 +191,8 @@ private fun AnimatedVisibilityScope.InstallationContent(viewState: InstallationO
         SpacerWithMinHeight(1f, dimensionResource(id = R.dimen.major_100))
 
         Box(modifier = Modifier.size(dimensionResource(id = R.dimen.image_major_120))) {
-            var isCursorVisible by remember { mutableStateOf(true) }
-            var isShowingLoadingIndicator by remember { mutableStateOf(false) }
+            var isCursorVisible by rememberSaveable { mutableStateOf(true) }
+            var isShowingLoadingIndicator by rememberSaveable { mutableStateOf(false) }
 
             LaunchedEffect(Unit) {
                 isCursorVisible = false
@@ -237,15 +237,14 @@ private fun AnimatedVisibilityScope.InstallationContent(viewState: InstallationO
 
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_150)))
         MainContent(viewState)
-        Box(modifier = Modifier.weight(1.5f)) {
-            Text(
-                text = viewState.siteUrl,
-                style = MaterialTheme.typography.body1,
-                modifier = Modifier
-                    .padding(vertical = dimensionResource(id = R.dimen.major_100))
-                    .animateEnterExit(enter = fadeIn(tween(400, delayMillis = 600), initialAlpha = 0.5f))
-            )
-        }
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_125)))
+        Text(
+            text = viewState.siteUrl,
+            style = MaterialTheme.typography.body1,
+            modifier = Modifier
+                .animateEnterExit(enter = fadeIn(tween(400, delayMillis = 600), initialAlpha = 0.5f))
+        )
+        SpacerWithMinHeight(1.5f, dimensionResource(id = R.dimen.major_100))
         // fill equivalent space as the proceed-button
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_300)))
     }
@@ -275,7 +274,15 @@ private fun AnimatedVisibilityScope.MainContent(viewState: InstallationState) {
         // Animate the extension and site names when starting the installation
         val extensionAndNameModifier = Modifier.animateEnterExit(
             enter = if (viewState is InstallationOngoing) {
-                fadeIn(tween(200, delayMillis = 800, easing = LinearEasing), initialAlpha = 0.5f)
+                fadeIn(
+                    keyframes {
+                        durationMillis = 1000
+                        1f at 0
+                        0.5f at 200
+                        0.5f at 800
+                        1f at 1000
+                    }
+                )
             } else EnterTransition.None,
             exit = ExitTransition.None
         )
