@@ -130,17 +130,20 @@ class CardReaderOnboardingChecker @Inject constructor(
                 }
             }
             if (ippSelectPaymentGateway.isEnabled()) {
-                if (hasUserAlreadySelectedThePlugin(pluginType)) {
-                    updatePluginExplicitlySelectedFlag(true)
-                } else {
-                    return getMultipleGatewayProviderState(pluginType)
+                when {
+                    isUserComingFromChoosePaymentGatewayScreen(pluginType) -> {
+                        updatePluginExplicitlySelectedFlag(true)
+                    }
+                    !isPluginExplicitlySelected() -> {
+                        return ChoosePaymentGatewayProvider
+                    }
                 }
             } else {
                 return WcpayAndStripeActivated
             }
         }
 
-        val preferredPlugin = getUserSelectedPluginOrActivatedPlugin(pluginType, wcPayPluginInfo, stripePluginInfo)
+        val preferredPlugin = getUserSelectedPluginOrActivatedPlugin(wcPayPluginInfo, stripePluginInfo)
 
         if (!isPluginInstalled(preferredPlugin)) when (preferredPlugin.type) {
             WOOCOMMERCE_PAYMENTS -> return WcpayNotInstalled
@@ -199,31 +202,32 @@ class CardReaderOnboardingChecker @Inject constructor(
         )
     }
 
-    private fun hasUserAlreadySelectedThePlugin(userSelectedPlugin: PluginType?): Boolean {
+    private fun isUserComingFromChoosePaymentGatewayScreen(userSelectedPlugin: PluginType?): Boolean {
         if (userSelectedPlugin != null) {
             return true
         }
         return false
     }
 
-    private fun getMultipleGatewayProviderState(pluginType: PluginType?): CardReaderOnboardingState {
-        return when {
-            !isPluginExplicitlySelected() && !hasUserAlreadySelectedThePlugin(pluginType) ->
-                ChoosePaymentGatewayProvider
-            else -> throw IllegalStateException(
-                "Developer error: plugin selected flag is true even when the user hasn't selected the plugin"
-            )
-        }
-    }
-
     private fun getUserSelectedPluginOrActivatedPlugin(
-        pluginType: PluginType?,
         wcPayPluginInfo: SitePluginModel?,
         stripePluginInfo: SitePluginModel?,
     ): PluginWrapper {
         return when {
-            hasUserAlreadySelectedThePlugin(pluginType) -> {
-                getUserSelectedPluginWrapper(pluginType, wcPayPluginInfo, stripePluginInfo)
+            isPluginExplicitlySelected() -> {
+                val site = selectedSite.get()
+                val pluginType = appPrefsWrapper.getCardReaderPreferredPlugin(
+                    localSiteId = site.id,
+                    remoteSiteId = site.siteId,
+                    selfHostedSiteId = site.selfHostedSiteId,
+                )
+                pluginType?.let {
+                    getUserSelectedPluginWrapper(it, wcPayPluginInfo, stripePluginInfo)
+                } ?: run {
+                    throw IllegalStateException(
+                        "Developer Error: Plugin type cannot be null when the plugin explicitly selected flag is true"
+                    )
+                }
             }
             else -> {
                 getPreferredPlugin(stripePluginInfo, wcPayPluginInfo)
@@ -232,11 +236,11 @@ class CardReaderOnboardingChecker @Inject constructor(
     }
 
     private fun getUserSelectedPluginWrapper(
-        userSelectedPlugin: PluginType?,
+        userSelectedPlugin: PluginType,
         wcPayPluginInfo: SitePluginModel?,
         stripePluginInfo: SitePluginModel?,
     ): PluginWrapper {
-        return PluginWrapper(userSelectedPlugin!!, userSelectedPlugin.getPluginInfo(wcPayPluginInfo, stripePluginInfo))
+        return PluginWrapper(userSelectedPlugin, userSelectedPlugin.getPluginInfo(wcPayPluginInfo, stripePluginInfo))
     }
 
     private fun isPluginSupportedInCountry(

@@ -1229,26 +1229,6 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             assertThat(result).isEqualTo(CardReaderOnboardingState.ChoosePaymentGatewayProvider)
         }
 
-    @Test(expected = IllegalStateException::class)
-    fun `given no plugin selected and selected flag true, when multiple plugins, then throw exception`() =
-        testBlocking {
-            whenever(ippSelectPaymentGateway.isEnabled()).thenReturn(true)
-            whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
-            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-                .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
-            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-                .thenReturn(buildWCPayPluginInfo(isActive = true))
-            whenever(
-                appPrefsWrapper.isCardReaderPluginExplicitlySelected(
-                    anyInt(),
-                    anyLong(),
-                    anyLong(),
-                )
-            ).thenReturn(true)
-
-            checker.getOnboardingState()
-        }
-
     @Test
     fun `given plugin selected, when multiple plugins, then set plugin flag`() =
         testBlocking {
@@ -1299,6 +1279,66 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
                 anyLong(),
                 anyBoolean()
             )
+        }
+
+    @Test
+    fun `given plugin selected, when navigating to onboarding, then select the plugin from shared preference`() =
+        testBlocking {
+            whenever(ippSelectPaymentGateway.isEnabled()).thenReturn(true)
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+                .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+                .thenReturn(buildWCPayPluginInfo(isActive = true))
+            whenever(
+                appPrefsWrapper.isCardReaderPluginExplicitlySelected(
+                    anyInt(),
+                    anyLong(),
+                    anyLong(),
+                )
+            ).thenReturn(true)
+            whenever(
+                appPrefsWrapper.getCardReaderPreferredPlugin(
+                    anyInt(),
+                    anyLong(),
+                    anyLong(),
+                )
+            ).thenReturn(STRIPE_EXTENSION_GATEWAY)
+
+            checker.getOnboardingState()
+
+            verify(appPrefsWrapper).getCardReaderPreferredPlugin(
+                anyInt(),
+                anyLong(),
+                anyLong(),
+            )
+        }
+
+    @Test(expected = IllegalStateException::class)
+    fun `given plugin selected flag is true, when no plugin found in shared preference , then throw exception`() =
+        testBlocking {
+            whenever(ippSelectPaymentGateway.isEnabled()).thenReturn(true)
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+                .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+                .thenReturn(buildWCPayPluginInfo(isActive = true))
+            whenever(
+                appPrefsWrapper.isCardReaderPluginExplicitlySelected(
+                    anyInt(),
+                    anyLong(),
+                    anyLong(),
+                )
+            ).thenReturn(true)
+            whenever(
+                appPrefsWrapper.getCardReaderPreferredPlugin(
+                    anyInt(),
+                    anyLong(),
+                    anyLong(),
+                )
+            ).thenReturn(null)
+
+            checker.getOnboardingState()
         }
 
     //endregion
