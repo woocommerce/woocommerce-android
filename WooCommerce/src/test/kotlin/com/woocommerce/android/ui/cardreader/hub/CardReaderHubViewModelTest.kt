@@ -234,6 +234,21 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             }
     }
 
+    @Test
+    fun `given payment gateway flag enabled, when single plugin installed, then payment provider row is not shown`() {
+        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+            .thenReturn(buildStripeExtensionPluginInfo(isActive = false))
+        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+            .thenReturn(buildWCPayPluginInfo(isActive = true))
+
+        initViewModel()
+
+        assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
+            .noneMatch {
+                it.label == UiString.UiStringRes(R.string.card_reader_manage_payment_provider)
+            }
+    }
+
     private fun initViewModel() {
         viewModel = CardReaderHubViewModel(
             savedState,
