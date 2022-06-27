@@ -1199,22 +1199,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             verify(analyticsTraWrapper).track(AnalyticsEvent.ORDER_DETAIL_CREATE_SHIPPING_LABEL_BUTTON_TAPPED)
         }
 
-    @Test
-    fun `when user taps a mark order complete button, then event tracked`() =
-        testBlocking {
-            // Given
-            doReturn(order).whenever(orderDetailRepository).getOrderById(any())
-            doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
-            doReturn(false).whenever(orderDetailRepository).fetchOrderNotes(any())
-            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
-            viewModel.start()
 
-            // When
-            viewModel.onMarkOrderCompleteButtonTapped()
-
-            // Then
-            verify(analyticsTraWrapper).track(AnalyticsEvent.ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED)
-        }
 
     @Test
     fun `when user taps a view order addon button, then event tracked`() =
