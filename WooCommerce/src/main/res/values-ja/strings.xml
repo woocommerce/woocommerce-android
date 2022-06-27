@@ -67,7 +67,7 @@ Language: ja_JP
     <string name="variations_bulk_update_regular_price">通常価格を更新</string>
     <string name="variations_bulk_update_sale_price">販売価格を更新</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">%1$s では WooCommerce Stripe 拡張機能がサポートされていません</string>
-    <string name="product_selector_filter_button_title">フィルター</string>
+    <string name="product_selector_filter_button_title_zero">フィルター</string>
     <string name="product_selector_clear_button_title">選択を解除</string>
     <string name="product_selector_select_button_title_one">%d件の商品を選択</string>
     <string name="product_selector_select_button_title_default">%d件の商品を選択</string>

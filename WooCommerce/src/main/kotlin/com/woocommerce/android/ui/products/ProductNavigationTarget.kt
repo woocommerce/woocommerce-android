@@ -112,4 +112,12 @@ sealed class ProductNavigationTarget : Event() {
         val productId: Long,
         val selectedVariationIds: Set<Long>
     ) : ProductNavigationTarget()
+
+    data class NavigateToProductFilter(
+        val stockStatus: String?,
+        val productType: String?,
+        val productStatus: String?,
+        val productCategory: String?,
+        val productCategoryName: String?
+    ) : ProductNavigationTarget()
 }

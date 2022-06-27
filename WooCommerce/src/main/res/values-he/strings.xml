@@ -67,7 +67,7 @@ Language: he_IL
     <string name="variations_bulk_update_regular_price">לעדכן את המחיר הרגיל</string>
     <string name="variations_bulk_update_sale_price">לעדכן את מחיר המבצע</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">אנחנו לא תומכים בהרחבה WooCommerce Stripe בתוך ⁦%1$s⁩</string>
-    <string name="product_selector_filter_button_title">מסנן</string>
+    <string name="product_selector_filter_button_title_zero">מסנן</string>
     <string name="product_selector_clear_button_title">ניקוי בחירה</string>
     <string name="product_selector_select_button_title_one">יש לבחור מוצר %d</string>
     <string name="product_selector_select_button_title_default">יש לבחור %d מוצרים</string>

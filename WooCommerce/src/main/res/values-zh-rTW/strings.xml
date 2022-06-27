@@ -67,7 +67,7 @@ Language: zh_TW
     <string name="variations_bulk_update_regular_price">更新原價</string>
     <string name="variations_bulk_update_sale_price">更新折扣價</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">我們未在 %1$s 支援 WooCommerce Stripe 擴充功能</string>
-    <string name="product_selector_filter_button_title">篩選</string>
+    <string name="product_selector_filter_button_title_zero">篩選</string>
     <string name="product_selector_clear_button_title">清除選取項目</string>
     <string name="product_selector_select_button_title_one">選擇 %d 個產品</string>
     <string name="product_selector_select_button_title_default">選擇 %d 個產品</string>

@@ -67,7 +67,7 @@ Language: es
     <string name="variations_bulk_update_regular_price">Actualizar precio normal</string>
     <string name="variations_bulk_update_sale_price">Actualizar precio rebajado</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">No admitimos la extensión WooCommerce Stripe en %1$s</string>
-    <string name="product_selector_filter_button_title">Filtro</string>
+    <string name="product_selector_filter_button_title_zero">Filtro</string>
     <string name="product_selector_clear_button_title">Limpiar selección</string>
     <string name="product_selector_select_button_title_one">Elegir %d producto</string>
     <string name="product_selector_select_button_title_default">Elegir %d productos</string>

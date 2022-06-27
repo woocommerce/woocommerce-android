@@ -67,7 +67,7 @@ Language: ru
     <string name="variations_bulk_update_regular_price">Обновить обычную цену</string>
     <string name="variations_bulk_update_sale_price">Обновить акционную цену</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Расширение WooCommerce Stripe не поддерживается в %1$s</string>
-    <string name="product_selector_filter_button_title">Фильтр</string>
+    <string name="product_selector_filter_button_title_zero">Фильтр</string>
     <string name="product_selector_clear_button_title">Очистить выбор</string>
     <string name="product_selector_select_button_title_one">Выбрать %d товар</string>
     <string name="product_selector_select_button_title_default">Выбрать товары (%d)</string>
