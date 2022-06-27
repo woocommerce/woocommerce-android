@@ -1,2 +1,0 @@
-9.4:
-Den här versionen kanske inte innehåller några nya funktioner, men vi har ändå lagt ner mycket jobb på den. I produktinformationen orsakade vissa tredjepartstillägg att appen kraschade när man tittade på variabla produkter. Vi har åtgärdat detta och gjort en handfull mindre förbättringar för att göra upplevelsen smidigare.
