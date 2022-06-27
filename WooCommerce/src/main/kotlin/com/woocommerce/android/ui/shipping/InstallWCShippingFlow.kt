@@ -46,7 +46,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -191,8 +190,8 @@ private fun AnimatedVisibilityScope.InstallationContent(viewState: InstallationO
         SpacerWithMinHeight(1f, dimensionResource(id = R.dimen.major_100))
 
         Box(modifier = Modifier.size(dimensionResource(id = R.dimen.image_major_120))) {
-            var isCursorVisible by rememberSaveable { mutableStateOf(true) }
-            var isShowingLoadingIndicator by rememberSaveable { mutableStateOf(false) }
+            var isCursorVisible by remember { mutableStateOf(true) }
+            var isShowingLoadingIndicator by remember { mutableStateOf(false) }
 
             LaunchedEffect(Unit) {
                 isCursorVisible = false
