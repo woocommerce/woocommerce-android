@@ -504,7 +504,10 @@ platform :android do
     }
 
     delete_old_changelogs(build: options[:build_number])
-    download_path = METADATA_DIR_PATH
+    # Notice that this is a different path from `METADATA_DIR_PATH`.
+    # This is the path for the Fastlane metadata, i.e. the ones for the Play Store, hence the `Dir.pwd`.
+    # `METADATA_DIR_PATH` is the path of the metadata the app uses at runtime.
+    download_path = File.join(Dir.pwd, 'metadata', 'android')
     gp_downloadmetadata(
       project_url: GLOTPRESS_PLAYSTORE_METADATA_PROJECT_URL,
       target_files: files,

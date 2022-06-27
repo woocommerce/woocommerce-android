@@ -1,102 +1,68 @@
 <ar>
-9.3:
-رحبي بالمدفوعات الشخصية يا كندا! يسعدنا أن نعلن أن المدفوعات الشخصية متاحة الآن للتجار الكنديين الذي يستخدمون WooCommerce Payments في الوقت الحالي.
-
-يحتوي كذلك هذا الإصدار على بعض التحسينات الصغيرة. شكرًا لكم جميعًا مرة أخرى على ملحوظاتكم الرائعة. استمروا!
+9.4:
+على الرغم من أن هذا الإصدار لا يحتوي على أي ميزات جديدة، إلا أننا ما زلنا نحبه كثيرًا! في تفاصيل المنتج، كانت تتسبب بعض الإضافات الخارجية في تعطل التطبيق عند عرض منتجات متغيرة. لقد أصلحنا هذا العطل وأجرينا مجموعة من التحسينات الطفيفة لجعل تجربتك أكثر سلاسة.
 </ar>
 <de-DE>
-9.3:
-Kanada, begrüße die persönlichen Zahlungen! Wir freuen uns sehr, bekanntgeben zu dürfen, dass persönliche Zahlungen ab sofort kanadischen Verkäufern zur Verfügung stehen, die derzeit WooCommerce Payments nutzen.
-
-Diese Version enthält auch einige kleinere Verbesserungen. Danke an alle für euer hervorragendes Feedback. Weiter so!
+9.4:
+Diese Version enthält zwar keine neuen Funktionen, wir haben uns aber trotzdem viel Mühe gegeben! In den Produktdetails haben einige Erweiterungen von Drittanbietern beim Anzeigen variabler Produkte App-Abstürze verursacht. Dieses Problem haben wir behoben und ein paar kleinere Verbesserungen am Gesamterlebnis vorgenommen.
 </de-DE>
 <es-ES>
-9,3:
-Canadá, da la bienvenida a los pagos en persona. Estamos encantados de anunciar que los pagos en persona se encuentran ahora disponibles para los vendedores de Canadá que usan actualmente WooCommerce Payments.
-
-Esta versión también incluye varias pequeñas mejoras. Gracias de nuevo por tus increíbles comentarios. ¡Sigue así!
+9.4:
+Aunque esta versión no tiene ninguna función nueva, hemos puesto mucho empeño en desarrollarla. En los detalles del producto, algunas extensiones de terceros provocaban que la aplicación se bloqueara al consultar productos variables. Hemos corregido este error y hemos hecho unas cuantas minimejoras para que la experiencia sea más fluida.
 </es-ES>
 <fr-FR>
-Version 9.3 :
-Les paiements en personne sont désormais disponibles au Canada ! Nous sommes ravis d’annoncer que les paiements en personne sont maintenant disponibles pour les marchands canadiens qui utilisent actuellement WooCommerce Payments.
-
-Cette version comprend également quelques améliorations mineures. Encore merci pour vos super retours. Continuez à nous les envoyer !
+9.4 :
+Cette version n’offre aucune nouvelle fonctionnalité, mais nous y avons mis tout notre cœur ! Dans les détails des produits, certaines extensions tierces provoquaient le plantage de l’application lors de l’affichage de différents produits. Nous avons corrigé ce problème et apporté quelques améliorations mineures qui rendent votre expérience plus fluide.
 </fr-FR>
 <iw-IL>
-9.3:
-נמצאים בקנדה? הכירו את 'תשלומים באופן אישי'! אנחנו שמחים להודיע שהאפשרות 'תשלומים באופן אישי' זמינה כעת לסוחרים קנדיים שמשתמשים עכשיו ב-WooCommerce Payments.
-
-הגרסה הזאת כוללת גם כמה שיפורים קטנים. אנחנו שוב רוצים להודות לכולם על המשוב החשוב. תמיד נשמח לשמוע מה דעתכם!
+9.4:
+אומנם אין הפעם אפשרויות חדשות אבל עדיין הקדשנו המון זמן ואהבה לגרסה הזאת! בפרטי המוצר, כמה הרחבות של צד שלישי גרמו לקריסת האפליקציה במהלך צפייה במוצרים עם סוגים. תיקנו את הקריסה הזאת והוספנו גם כמה שיפורים קטנים כדי לאפשר חוויית שימוש יעילה יותר.
 </iw-IL>
 <id>
-9.3:
-Untuk penduduk Kanada, selamat menggunakan pembayaran langsung! Dengan gembira kami umumkan bahwa pembayaran langsung kini tersedia bagi para penjual di Kanada yang menggunakan WooCommerce Payments.
-
-Rilis ini juga memberikan sejumlah perbaikan kecil. Sekali lagi kami ucapkan terima kasih atas feedback Anda yang luar biasa. Terus kirimkan feedback Anda!
+9.4:
+Meski tanpa fitur baru, rilis ini tetap sarat akan jerih payah kami. Dalam detail produk, beberapa ekstensi pihak ketiga menyebabkan crash pada aplikasi saat menampilkan produk yang bervariasi. Kami sudah mengatasi masalah crash ini sekaligus membuat beberapa perbaikan kecil untuk makin memperlancar pengalaman Anda dalam menggunakan aplikasi.
 </id>
 <it-IT>
-9.3:
-Canada, saluta i pagamenti di persona. Siamo eccitati nell'annunciare che i pagamenti di persona sono ora disponibili per i rivenditori canadesi che attualmente usano WooCommerce Payments.
-
-Questo rilascio contiene anche alcuni piccoli miglioramenti. Grazie a tutti ancora per il meraviglioso feedback. Continuate a inviarlo.
+9.4:
+Anche se questo rilascio non ha alcuna sorprendente nuova funzionalità, ci abbiamo messo comunque tanto amore. In product details, some third-party extensions were causing the app to crash when viewing variable products. We’ve fixed this crash and made a handful of minor improvements to make your experience smoother.
 </it-IT>
 <ja-JP>
-9.3:
-カナダでオフラインでの支払いが可能になりました この度、WooCommerce Payments を現在ご利用中のカナダのマーチャントが対面でのお支払いを選択できるようになりました。
-
-今回のリリースでは、いくつかの細かな改善も行っています。 皆さまからのフィードバックが改善の励みになります。 今後ともよろしくお願いいたします。
+9.4:
+今回のリリースには新機能はありませんが、いくつかの点を改善しました。 一部のサードパーティの拡張機能が原因で、商品情報でバリエーション商品を表示する際にアプリがクラッシュしていました。 このクラッシュを修正し、操作をスムーズにするためにいくつかの細かな改善を行いました。
 </ja-JP>
 <ko-KR>
-9.3:
-캐나다에서 대면 결제가 가능합니다! 이제는 현재 우커머스 결제를 이용하는 캐나다 판매자가 대면 결제를 이용할 수 있습니다.
-
-이 릴리스에는 몇 가지 사소한 개선 사항도 포함되어 있습니다. 놀라운 피드백을 제공해 주셔서 정말로 감사합니다. 계속 보내주세요!
+9.4:
+이 릴리스에는 새로운 기능이 없지만, 사랑은 듬뿍 담았습니다. 상품 상세 정보에서 변형 상품을 볼 때 일부 서드파티 확장 기능이 앱 충돌을 유발했습니다. 이 충돌을 해결했으며, 환경이 더 원활하게 작동하도록 몇 가지를 소소하게 개선했습니다.
 </ko-KR>
 <nl-NL>
-9.3:
-Canada, zeg hallo tegen fysieke betalingen! We zijn blij te kunnen vertellen dat fysieke betalingen nu beschikbaar zijn voor Canadese verkopers die nu WooCommerce Payments gebruiken.
-
-Deze release bevat ook een aantal kleine verbeteringen. Wederom bedankt voor jullie geweldige feedback. Blijf zo doorgaan!
+9.4:
+Deze release heeft misschien geen verrassende nieuwe functies, maar we hebben er wel ons uiterste best op gedaan! In productgegevens zorgden sommige extensies van derden er voor dat de app crashte tijdens het bekijken van variabele producten. Deze crash hebben we verholpen en er zijn tal van kleine verbeteringen doorgevoerd om je ervaring soepeler te laten verlopen.
 </nl-NL>
 <pt-BR>
-9.3:
-Canadá, diga "oi" aos pagamentos presenciais! Temos o prazer de anunciar que os pagamentos presenciais agora estão disponíveis para vendedores canadenses que usem o WooCommerce Payments.
-
-Esta versão também inclui algumas pequenas melhorias. Obrigado a todos pelos incríveis feedbacks. Continuem mandando!
+9.4:
+Ainda que esta versão não tenha nenhuma funcionalidade nova, nós a fizemos com muito amor. Nos detalhes do produto, algumas extensões de terceiros estavam causando o travamento do aplicativo ao visualizar produtos variáveis. Corrigimos essa falha e fizemos algumas pequenas melhorias para tornar sua experiência mais suave.
 </pt-BR>
 <ru-RU>
-9.3:
-Канада, приветствуй очные платежи! Мы счастливы объявить о том, что теперь очные платежи доступны продавцам из Канады, которые используют WooCommerce Payments.
-
-Мы также внесли в этот выпуск некоторые улучшения. Ещё раз спасибо за ваши ценные отзывы. Ждём их снова!
+9.4:
+В этом выпуске нет новых функций, но мы вложили в него душу. В описании продукта некоторые сторонние расширения приводили к аварийному завершению работы приложения при просмотре вариативных товаров. Мы исправили эту ошибку и внесли несколько небольших усовершенствований, повышающих удобство работы.
 </ru-RU>
 <sv-SE>
-9.3:
-Kanada, säg hej till personliga betalningar. Vi är glada att kunna meddela att personliga betalningar nu är tillgängliga för kanadensiska handlare som använder WooCommerce Payments.
-
-Den här versionen innehåller även ett antal mindre förbättringar. Tack ännu en gång för all fantastisk feedback. Fortsätt så.
+9.4:
+Den här versionen kanske inte innehåller några nya funktioner, men vi har ändå lagt ner mycket jobb på den. I produktinformationen orsakade vissa tredjepartstillägg att appen kraschade när man tittade på variabla produkter. Vi har åtgärdat detta och gjort en handfull mindre förbättringar för att göra upplevelsen smidigare.
 </sv-SE>
 <tr-TR>
-9.3:
-Kanadalılar, şahsen ödemelere merhaba deyin! Şu anda WooCommerce Payments'ı kullanan Kanadalı satıcıların artık şahsen ödemeleri de kabul edebileceğini duyurmaktan heyecan duyuyoruz.
-
-Bu sürümde ayrıca birkaç küçük iyileştirme de var. Harika geri bildirimleriniz için herkese tekrar teşekkür ederim. Devam edin!
+9.4:
+Bu sürümde yeni özellikler bulunmasa da, yine de işin içine çok fazla sevgi katıyoruz! Ürün ayrıntılarında, değişken ürünleri görüntülerken bazı üçüncü taraf uzantıları uygulamanın kilitlenmesine neden oluyordu. Bu kilitlenme durumunu düzelttik ve deneyiminizi daha sorunsuz hale getiren için birkaç küçük iyileştirme yaptık.
 </tr-TR>
 <zh-CN>
-9.3：
-我们在加拿大推出现场付款了！ 我们很高兴地宣布，目前使用 WooCommerce Payments 的加拿大商家现在可以使用现场付款了。
-
-此版本还包含一些小的改进。 再次感谢大家的宝贵的反馈。 请继续提供反馈！
+9.4：
+尽管此版本没有任何新功能，但我们仍费了不少心力！ 在产品详细信息中，一些第三方扩展程序会导致应用程序在查看可变产品时崩溃。 我们已修复了此崩溃并进行了一系列细微的改进，让您的体验更加流畅。
 </zh-CN>
 <zh-TW>
-9.3：
-好消息，親自收款功能上線了！ 我們很高興宣布，目前使用 WooCommerce Payments 的加拿大商家現在可以使用親自收款功能了。
-
-此版本也包含幾項微幅改善。 再次感謝各位寶貴的意見。 未來請繼續多多指教！
+9.4：
+儘管此版本沒有任何新功能，我們仍投注了許多心血。 在產品詳細資訊中，某些第三方擴充功能會導致應用程式在檢視產品款式時當機。 我們已修正此當機狀況並進行了一些微幅改善，讓你的使用體驗更加流暢。
 </zh-TW>
 <en-US>
-9.3:
-Canada, say hello to in-person payments! We are thrilled to announce that in-person payments are now available to Canadian merchants currently using WooCommerce Payments.
-
-This release also contains a few minor improvements. Thank you all again for your amazing feedback. Keep it coming!
+9.4:
+Even though this release doesn’t have any new features, we still put a lot of love into it! In product details, some third-party extensions were causing the app to crash when viewing variable products. We’ve fixed this crash and made a handful of minor improvements to make your experience smoother.
 </en-US>
