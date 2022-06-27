@@ -12,7 +12,6 @@ import com.woocommerce.android.model.Refund
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillFragmentArgs
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel.ViewState
@@ -75,7 +74,6 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        doReturn(true).whenever(networkStatus).isConnected()
 
         viewModel = spy(
             OrderFulfillViewModel(
@@ -204,48 +202,6 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
             viewModel.start()
             assertThat(orderData?.isShipmentTrackingAvailable).isFalse()
         }
-
-    @Test
-    fun `Update order status when network connected`() = testBlocking {
-        doReturn(order).whenever(repository).getOrderById(any())
-        doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
-
-        var snackBar: ShowSnackbar? = null
-        var exit: ExitWithResult<*>? = null
-        viewModel.event.observeForever {
-            if (it is ExitWithResult<*>) exit = it
-            else if (it is ShowSnackbar) snackBar = it
-        }
-
-        viewModel.start()
-        viewModel.onMarkOrderCompleteButtonClicked()
-
-        assertThat(exit).isEqualTo(
-            ExitWithResult(
-                OrderDetailViewModel.OrderStatusUpdateSource.FullFillScreen(order.status.value),
-                OrderFulfillViewModel.KEY_ORDER_FULFILL_RESULT
-            )
-        )
-        assertNull(snackBar)
-    }
-
-    @Test
-    fun `Do not update order status when not connected`() = testBlocking {
-        doReturn(false).whenever(networkStatus).isConnected()
-
-        var snackbar: ShowSnackbar? = null
-        var exit: ExitWithResult<*>? = null
-        viewModel.event.observeForever {
-            if (it is ExitWithResult<*>) exit = it
-            else if (it is ShowSnackbar) snackbar = it
-        }
-
-        viewModel.order = order
-        viewModel.onMarkOrderCompleteButtonClicked()
-
-        assertNull(exit)
-        assertThat(snackbar).isEqualTo(ShowSnackbar(string.offline_error))
-    }
 
     @Test
     fun `refresh shipping tracking items when an item is added`() = testBlocking {
