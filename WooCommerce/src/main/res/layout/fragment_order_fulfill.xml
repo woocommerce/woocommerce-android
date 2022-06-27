@@ -52,16 +52,5 @@
             android:layout_marginEnd="@dimen/major_100"
             android:layout_marginBottom="@dimen/major_100"
             android:text="@string/order_fulfill_email_info"/>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/button_mark_order_compete"
-            style="@style/Woo.Button.Colored"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/major_100"
-            android:layout_marginTop="@dimen/minor_100"
-            android:layout_marginEnd="@dimen/major_100"
-            android:layout_marginBottom="@dimen/major_100"
-            android:text="@string/order_mark_complete"/>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

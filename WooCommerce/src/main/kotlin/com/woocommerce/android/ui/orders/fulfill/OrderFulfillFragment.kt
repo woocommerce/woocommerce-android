@@ -144,9 +144,6 @@ class OrderFulfillFragment :
             isVirtualOrder = viewModel.hasVirtualProductsOnly(),
             isReadOnly = true
         )
-        binding.buttonMarkOrderCompete.setOnClickListener {
-            viewModel.onMarkOrderCompleteButtonClicked()
-        }
     }
 
     private fun showOrderProducts(
