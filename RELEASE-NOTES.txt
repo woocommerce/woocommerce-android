@@ -6,6 +6,7 @@
 
 9.5
 -----
+- [*] Coupon Management: Merchants can now edit the existing coupons just like on the web (must be enabled in Beta Features)
 
 
 9.4
