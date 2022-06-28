@@ -186,7 +186,6 @@ class EditCouponViewModel @Inject constructor(
 
         val oldCoupon = storedCoupon.await()
         val newCoupon = couponDraft.value!!
-        
         trackUpdateChanges(oldCoupon, newCoupon)
 
         couponRepository.updateCoupon(newCoupon)
@@ -224,7 +223,7 @@ class EditCouponViewModel @Inject constructor(
         val wasCouponAmountUpdated = oldCoupon.amount != newCoupon.amount
         val wasCouponDescriptionUpdated = oldCoupon.description != newCoupon.description
         val wereCouponProdsOrCatsUpdated = oldCoupon.productIds != newCoupon.productIds ||
-                oldCoupon.categoryIds != newCoupon.categoryIds
+            oldCoupon.categoryIds != newCoupon.categoryIds
         val wasCouponExpiryDateUpdated = oldCoupon.dateExpires != newCoupon.dateExpires
         val wereCouponUsageRestrictionsUpdated = oldCoupon.restrictions != newCoupon.restrictions
 
