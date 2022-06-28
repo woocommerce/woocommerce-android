@@ -1353,6 +1353,7 @@ Language: sv_SE
     <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="settings_enable_v4_stats_title">Förbättrad statistik</string>
     <string name="beta_features">Betafunktioner</string>
+    <string name="orderdetail_payment_summary_onhold">Väntar på betalning via %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s via %2$s</string>
     <string name="dashboard_state_no_data">Inga inkomster denna period</string>
     <string name="no_thanks">Nej tack</string>

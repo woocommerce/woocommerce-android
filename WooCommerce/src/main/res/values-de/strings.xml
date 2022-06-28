@@ -1353,6 +1353,7 @@ Language: de
     <string name="orderdetail_refund_detail">%1$s per %2$s</string>
     <string name="settings_enable_v4_stats_title">Verbesserte Statistiken</string>
     <string name="beta_features">Betafunktionen</string>
+    <string name="orderdetail_payment_summary_onhold">Warten auf Zahlung per %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s per %2$s</string>
     <string name="dashboard_state_no_data">Keine Einnahmen in diesem Zeitraum</string>
     <string name="no_thanks">Nein, danke</string>

@@ -1352,6 +1352,7 @@ Language: he_IL
     <string name="orderdetail_refund_detail">%1$s דרך %2$s</string>
     <string name="settings_enable_v4_stats_title">נתונים סטטיסטיים משופרים</string>
     <string name="beta_features">תכונות ביתא</string>
+    <string name="orderdetail_payment_summary_onhold">ממתין לתשלום דרך %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s דרך %2$s</string>
     <string name="dashboard_state_no_data">אין רווחים בתקופה זאת</string>
     <string name="no_thanks">לא תודה</string>

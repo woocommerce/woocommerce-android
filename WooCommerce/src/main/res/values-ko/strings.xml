@@ -1353,6 +1353,7 @@ Language: ko_KR
     <string name="orderdetail_refund_detail">%2$s을(를) 통한 %1$s</string>
     <string name="settings_enable_v4_stats_title">향상된 통계</string>
     <string name="beta_features">베타 기능</string>
+    <string name="orderdetail_payment_summary_onhold">%s을(를) 통한 결제 대기 중</string>
     <string name="orderdetail_payment_summary_completed">%2$s을(를) 통한 %1$s</string>
     <string name="dashboard_state_no_data">이 기간에 해당하는 수익이 없습니다.</string>
     <string name="no_thanks">괜찮습니다.</string>

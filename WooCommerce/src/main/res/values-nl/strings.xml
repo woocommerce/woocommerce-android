@@ -1353,6 +1353,7 @@ Language: nl
     <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="settings_enable_v4_stats_title">Verbeterde statistieken</string>
     <string name="beta_features">Bèta-functies</string>
+    <string name="orderdetail_payment_summary_onhold">Wachten op betaling via %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s via %2$s</string>
     <string name="dashboard_state_no_data">Geen omzet deze periode</string>
     <string name="no_thanks">Nee, liever niet</string>

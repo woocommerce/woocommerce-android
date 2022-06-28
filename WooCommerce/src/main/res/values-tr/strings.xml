@@ -1353,6 +1353,7 @@ Language: tr
     <string name="orderdetail_refund_detail">%2$s üzerinden %1$s</string>
     <string name="settings_enable_v4_stats_title">İyileştirilmiş istatistikler</string>
     <string name="beta_features">Beta özellikler</string>
+    <string name="orderdetail_payment_summary_onhold">%s üzerinden ödeme bekleniyor</string>
     <string name="orderdetail_payment_summary_completed">%2$s üzerinden %1$s</string>
     <string name="dashboard_state_no_data">Bu dönemde hiç gelir yok</string>
     <string name="no_thanks">Hayır, teşekkürler</string>

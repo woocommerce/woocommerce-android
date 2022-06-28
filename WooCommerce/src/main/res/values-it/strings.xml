@@ -1353,6 +1353,7 @@ Language: it
     <string name="orderdetail_refund_detail">%1$s tramite %2$s</string>
     <string name="settings_enable_v4_stats_title">Statistiche migliorate</string>
     <string name="beta_features">Funzionalità beta</string>
+    <string name="orderdetail_payment_summary_onhold">In attesa di pagamento tramite %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s tramite %2$s</string>
     <string name="dashboard_state_no_data">Nessuna entrata per questo periodo</string>
     <string name="no_thanks">No, grazie</string>
