@@ -328,6 +328,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_COUPON_ACTION_LOADED = "loaded"
         const val KEY_COUPON_ACTION_COPIED = "copied_code"
         const val KEY_COUPON_ACTION_SHARED = "shared_code"
+        const val KEY_COUPON_ACTION_EDITED = "tapped_edit"
         const val KEY_COUPON_ACTION_DELETED = "tapped_delete"
 
         var sendUsageStats: Boolean = true
