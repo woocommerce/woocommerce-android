@@ -201,6 +201,11 @@ class CouponDetailsViewModel @Inject constructor(
     }
 
     fun onEditButtonClick() {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.COUPON_DETAILS,
+            mapOf(AnalyticsTracker.KEY_COUPON_ACTION to AnalyticsTracker.KEY_COUPON_ACTION_EDITED)
+        )
+
         coupon.value?.id?.let {
             triggerEvent(ShowEditCoupon(it))
         }
