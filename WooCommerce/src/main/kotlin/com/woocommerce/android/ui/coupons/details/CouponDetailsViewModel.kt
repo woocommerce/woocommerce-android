@@ -139,35 +139,33 @@ class CouponDetailsViewModel @Inject constructor(
         }
     }
 
-    fun onDeleteButtonClick() {
-        viewModelScope.launch {
-            couponRepository.deleteCoupon(navArgs.couponId)
-                .onFailure {
-                    WooLog.e(
-                        tag = WooLog.T.COUPONS,
-                        message = "Coupon deletion failed: ${(it as WooException).error.message}"
-                    )
-                    triggerEvent(ShowSnackbar(R.string.coupon_details_delete_failure))
-
-                    analyticsTrackerWrapper.track(
-                        AnalyticsEvent.COUPON_DELETE_FAILED,
-                        errorContext = this@CouponDetailsViewModel.javaClass.simpleName,
-                        errorType = it.error.type.name,
-                        errorDescription = it.error.message
-                    )
-                }
-                .onSuccess {
-                    triggerEvent(ShowSnackbar(R.string.coupon_details_delete_successful))
-                    triggerEvent(Exit)
-
-                    analyticsTrackerWrapper.track(AnalyticsEvent.COUPON_DELETE_SUCCESS)
-                }
-        }
-
+    fun onDeleteButtonClick() = launch {
         analyticsTrackerWrapper.track(
             AnalyticsEvent.COUPON_DETAILS,
             mapOf(AnalyticsTracker.KEY_COUPON_ACTION to AnalyticsTracker.KEY_COUPON_ACTION_DELETED)
         )
+
+        couponRepository.deleteCoupon(navArgs.couponId)
+            .onFailure {
+                WooLog.e(
+                    tag = WooLog.T.COUPONS,
+                    message = "Coupon deletion failed: ${(it as WooException).error.message}"
+                )
+                triggerEvent(ShowSnackbar(R.string.coupon_details_delete_failure))
+
+                analyticsTrackerWrapper.track(
+                    AnalyticsEvent.COUPON_DELETE_FAILED,
+                    errorContext = this@CouponDetailsViewModel.javaClass.simpleName,
+                    errorType = it.error.type.name,
+                    errorDescription = it.error.message
+                )
+            }
+            .onSuccess {
+                triggerEvent(ShowSnackbar(R.string.coupon_details_delete_successful))
+                triggerEvent(Exit)
+
+                analyticsTrackerWrapper.track(AnalyticsEvent.COUPON_DELETE_SUCCESS)
+            }
     }
 
     fun onCopyButtonClick() {
