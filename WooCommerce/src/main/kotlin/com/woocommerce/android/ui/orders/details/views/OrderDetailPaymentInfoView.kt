@@ -57,11 +57,11 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
             binding.paymentInfoAmountPaidSection.hide()
             binding.paymentInfoPaymentMsg.text = if (order.paymentMethodTitle.isNotEmpty()) {
                 context.getString(
-                    R.string.orderdetail_payment_summary_onhold_via,
+                    R.string.orderdetail_payment_summary_onhold,
                     order.paymentMethodTitle
                 )
             } else {
-                context.getString(R.string.orderdetail_payment_summary_onhold)
+                context.getString(R.string.orderdetail_payment_summary_onhold_plain)
             }
         } else {
             binding.paymentInfoAmountPaidSection.show()
