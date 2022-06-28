@@ -13,6 +13,7 @@ import com.woocommerce.android.databinding.FragmentCardReaderOnboardingBothPlugi
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingGenericErrorBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingLoadingBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingNetworkErrorBinding
+import com.woocommerce.android.databinding.FragmentCardReaderOnboardingSelectPaymentGatewayBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingStripeBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingUnsupportedBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingWcpayBinding
@@ -106,7 +107,33 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                 showStripeExtensionErrorState(layout, state)
             is CardReaderOnboardingViewModel.OnboardingViewState.WcPayAndStripeInstalledState ->
                 showBothPluginsInstalledState(layout, state)
+            is CardReaderOnboardingViewModel.OnboardingViewState.SelectPaymentPluginState ->
+                showPaymentPluginSelectionState(layout,state)
         }.exhaustive
+    }
+
+    private fun showPaymentPluginSelectionState(
+        view: View,
+        state: CardReaderOnboardingViewModel.OnboardingViewState.SelectPaymentPluginState
+    ) {
+        val binding = FragmentCardReaderOnboardingSelectPaymentGatewayBinding.bind(view)
+        UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
+        UiHelpers.setTextOrHide(binding.hintLabel, state.hintLabel)
+        UiHelpers.setImageOrHideInLandscape(binding.cardIllustration, state.cardIllustration)
+        UiHelpers.setImageOrHideInLandscape(binding.icSelectWcPay, state.icWcPayLogo)
+        UiHelpers.setImageOrHideInLandscape(binding.icCheckmarkWcPay, state.icCheckmarkWcPay)
+        UiHelpers.setImageOrHideInLandscape(binding.icSelectStripe, state.icStripeLogo)
+        UiHelpers.setImageOrHideInLandscape(binding.icCheckmarkStripe, state.icCheckmarkStripe)
+
+        binding.selectWcPayButton.setOnClickListener {
+            state.onWcPayOptionClicked.invoke()
+        }
+        binding.selectStripeButton.setOnClickListener {
+            state.onStripeOptionClicked.invoke()
+        }
+        binding.confirmPaymentMethod.setOnClickListener {
+            state.onConfirmPaymentMethodClicked.invoke()
+        }
     }
 
     private fun showBothPluginsInstalledState(
