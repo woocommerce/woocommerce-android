@@ -1,13 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-02 09:54:04+0000
+Translation-Revision-Date: 2022-06-16 13:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="install_wc_shipping_flow_onboarding_screen_not_now_button">不用了</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_add_extension_button">将扩展添加到商店</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_link">什么是 WooCommerce Shipping？</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_discounts_bullet_desc">访问折扣运费。 目前可通过 DHL 和 USPS 运输，即将推出更多！</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_discounts_bullet_title">折扣率</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_print_bullet_desc">选择订单，然后只需付款，打印，包装和邮寄。</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_print_bullet_title">通过手机打印</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_postage_bullet_desc">不用管那本邮票放哪了。</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_postage_bullet_title">需要的时候再买邮票</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_subtitle">节省时间和金钱</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_title">使用 WooCommerce Shipping 履行您的订单</string>
+    <string name="product_selector_arrow_content_description">显示详情</string>
+    <string name="product_selector_select_variation_label">选择变体 %s</string>
+    <string name="coupon_restrictions_exclude_categories">不含以下分类</string>
+    <string name="coupon_restrictions_exclude_products">不含以下商品</string>
+    <string name="coupon_restrictions_exclusions_section_title">将此优惠券应用到</string>
+    <string name="coupon_restrictions_allowed_emails_placeholder">无限制</string>
+    <string name="coupon_restrictions_allowed_emails">获准的电子邮件</string>
+    <string name="coupon_restrictions_limit_per_user_placeholder">无限制</string>
+    <string name="coupon_restrictions_amount_limit_placeholder">均符合条件</string>
+    <string name="coupon_restrictions_limit_per_coupon_placeholder">无限制</string>
+    <string name="coupon_restrictions_minimum_maximum_spend_placeholder">无</string>
+    <string name="coupon_edit_edit_products_title">编辑商品分类 (%1$d)</string>
+    <string name="coupon_edit_select_categories_title">选择商品分类</string>
+    <string name="variations_bulk_update_warning_message">目前最多支持 100 个变体的批量更新。</string>
+    <string name="variations_bulk_update_warning_title">超出了批量更新限制</string>
+    <string name="variations_bulk_update_regular_prices_dialog_title">正在更新正常价格</string>
+    <string name="variations_bulk_update_sale_prices_dialog_title">正在更新促销价格</string>
+    <string name="variations_bulk_update_sale_prices_success">已更新促销价格。</string>
+    <string name="variations_bulk_update_regular_prices_success">已更新正常价格。</string>
+    <string name="variations_bulk_update_error">出现了问题。 请重试。</string>
+    <string name="variations_bulk_update_current_prices_mixed">当前价格为组合价格</string>
+    <string name="variations_bulk_update_current_price">当前价格为 %s</string>
+    <string name="variations_bulk_update_price_info">%d 个变体的价格将更新</string>
+    <string name="variations_bulk_update_dialog_price_mixed">组合</string>
+    <string name="variations_bulk_update_dialog_price_none">无</string>
+    <string name="variations_bulk_update_dialog_sale_price_label">促销价格</string>
+    <string name="variations_bulk_update_dialog_regular_price_label">正常价格</string>
+    <string name="variations_bulk_update_dialog_price_section_title">价格</string>
+    <string name="variations_bulk_update_dialog_subtitle">选择要更新的值</string>
+    <string name="variations_bulk_update_dialog_title">批量更新</string>
+    <string name="variations_bulk_limit_exceeded_button_ok">确定</string>
+    <string name="variation_list_menu_bulk_update">批量更新…</string>
+    <string name="variation_loading_dialog_title">正在获取变体…</string>
+    <string name="product_category_selector_search_failed">无法搜索产品分类</string>
+    <string name="product_category_selector_loading_failed">无法加载产品分类</string>
+    <string name="product_category_selector_search_hint">搜索分类</string>
+    <string name="product_category_selector_clear_selection">清除选择</string>
+    <string name="product_category_selector_check_content_description">点击以取消勾选</string>
+    <string name="product_category_selector_select_button_title_one">选择 1 个分类</string>
+    <string name="product_category_selector_select_button_title_default">选择 %1$d 个分类</string>
+    <string name="product_category_selector_empty_state">未找到商品分类</string>
+    <string name="product_category_selector_title">选择分类</string>
+    <string name="shipping_label_install_wc_shipping_banner_dismiss_button_description">关闭横幅以安装 WC Shipping</string>
+    <string name="shipping_label_install_wc_shipping_banner_button">获取 WooCommerce Shipping</string>
+    <string name="shipping_label_install_wc_shipping_banner_description">通过 WooCommerce Shipping 从手机打印标签。</string>
+    <string name="shipping_label_install_wc_shipping_banner_title">是否需要货运标签？</string>
+    <string name="order_creation_change_product_quantity">将产品数量从 %d 更改为 %d</string>
+    <string name="variations_bulk_update_regular_price">更新正常价格</string>
+    <string name="variations_bulk_update_sale_price">更新促销价格</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">我们在 %1$s 中不支持 WooCommerce Stripe 扩展</string>
-    <string name="product_selector_filter_button_title">过滤器</string>
+    <string name="product_selector_filter_button_title_zero">过滤器</string>
     <string name="product_selector_clear_button_title">清除选择</string>
     <string name="product_selector_select_button_title_one">选择 %d 个商品</string>
     <string name="product_selector_select_button_title_default">选择 %d 个商品</string>
@@ -162,8 +222,6 @@ Language: zh_CN
     <string name="orderstatus_contentDesc_withStatus">订单状态： %s</string>
     <string name="no_sku">无 SKU</string>
     <string name="count">计数：%s</string>
-    <string name="plus_one">添加一个</string>
-    <string name="minus_one">减少一个</string>
     <string name="more_menu_button_coupons">优惠券</string>
     <string name="dismiss_inbox_note">忽略</string>
     <string name="login_error_xml_rpc_auth_error_communicating">与站点通信时出现问题。 返回了 HTTP 错误代码 401。</string>
@@ -1122,7 +1180,6 @@ Language: zh_CN
     <string name="orderdetail_product_multiple">产品</string>
     <string name="orderdetail_product_lineitem_qty_and_price">%1$sx %2$s</string>
     <string name="orderdetail_orderstatus_name">%1$s%2$s</string>
-    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s\u2022 #%2$s</string>
     <string name="product_type_external">外部</string>
     <string name="product_type_simple">简单</string>
     <string name="product_status_privately_published">已私密发布</string>

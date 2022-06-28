@@ -11,12 +11,15 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class EmailRestrictionFragment : BaseFragment(), BackPressListener {
@@ -25,6 +28,8 @@ class EmailRestrictionFragment : BaseFragment(), BackPressListener {
     }
 
     private val viewModel: EmailRestrictionViewModel by viewModels()
+
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Visible(
@@ -53,8 +58,9 @@ class EmailRestrictionFragment : BaseFragment(), BackPressListener {
             when (event) {
                 is Exit -> findNavController().navigateUp()
                 is ExitWithResult<*> -> {
-                    navigateBackWithResult(ALLOWED_EMAILS, event.data as List<*>)
+                    navigateBackWithResult(ALLOWED_EMAILS, event.data)
                 }
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
             }
         }
     }

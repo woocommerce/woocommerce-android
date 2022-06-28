@@ -62,7 +62,7 @@ class CouponRestrictionsFragment : BaseFragment(), BackPressListener {
                 is OpenAllowedEmailsEditor -> {
                     findNavController().navigateSafely(
                         CouponRestrictionsFragmentDirections.actionCouponRestrictionsFragmentToEmailRestrictionFragment(
-                            event.allowedEmails.toTypedArray()
+                            event.allowedEmails
                         )
                     )
                 }
@@ -75,7 +75,7 @@ class CouponRestrictionsFragment : BaseFragment(), BackPressListener {
     }
 
     private fun handleResults() {
-        handleResult<List<String>>(EmailRestrictionFragment.ALLOWED_EMAILS) {
+        handleResult<String>(EmailRestrictionFragment.ALLOWED_EMAILS) {
             viewModel.onAllowedEmailsUpdated(it)
         }
         handleResult<Set<Long>>(ProductSelectorFragment.PRODUCT_SELECTOR_RESULT) {

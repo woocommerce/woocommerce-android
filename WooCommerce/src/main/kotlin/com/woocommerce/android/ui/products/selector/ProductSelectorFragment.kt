@@ -13,6 +13,8 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.products.ProductFilterResult
+import com.woocommerce.android.ui.products.ProductListFragment.Companion.PRODUCT_FILTER_RESULT_KEY
 import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductNavigator
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorFragment
@@ -71,6 +73,16 @@ class ProductSelectorFragment : BaseFragment() {
     private fun handleResults() {
         handleResult<VariationSelectionResult>(VariationSelectorFragment.VARIATION_SELECTOR_RESULT) {
             viewModel.onSelectedVariationsUpdated(it)
+        }
+
+        handleResult<ProductFilterResult>(PRODUCT_FILTER_RESULT_KEY) { result ->
+            viewModel.onFiltersChanged(
+                stockStatus = result.stockStatus,
+                productStatus = result.productStatus,
+                productType = result.productType,
+                productCategory = result.productCategory,
+                productCategoryName = result.productCategoryName
+            )
         }
     }
 

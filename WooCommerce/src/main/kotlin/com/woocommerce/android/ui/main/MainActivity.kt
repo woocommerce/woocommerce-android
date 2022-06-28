@@ -259,7 +259,7 @@ class MainActivity :
             return
         }
 
-        if (!presenter.isUserEligible()) {
+        if (selectedSite.exists() && !presenter.isUserEligible()) {
             showUserEligibilityErrorScreen()
             return
         }

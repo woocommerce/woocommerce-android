@@ -63,6 +63,10 @@
                 app:argType="com.woocommerce.android.ui.cardreader.onboarding.CardReaderFlowParam"
                 app:nullable="false" />
         </action>
+        <action
+            android:id="@+id/action_takePaymentFragment_to_orderList"
+            app:popUpTo="@+id/orders"
+            app:popUpToInclusive="false" />
     </fragment>
     <include app:graph="@navigation/nav_graph_card_reader_flow" />
 </navigation>

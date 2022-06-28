@@ -59,7 +59,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstr
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.ui.orders.simplepayments.TakePaymentViewModel
 import com.woocommerce.android.ui.products.addons.AddonRepository
-import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel
+import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -264,7 +264,7 @@ final class OrderDetailViewModel @Inject constructor(
     }
 
     fun onGetWcShippingClicked() {
-        triggerEvent(InstallWcShippingFlowViewModel.InstallWcShipping)
+        triggerEvent(InstallWCShippingViewModel.InstallWcShipping)
     }
 
     /**
