@@ -5,6 +5,10 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.COUPON_UPDATE_INITIATED
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.Coupon.CouponRestrictions
@@ -16,6 +20,7 @@ import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenCo
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenDescriptionEditor
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.util.CouponUtils
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
@@ -41,7 +46,8 @@ class EditCouponViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val couponRepository: CouponRepository,
     private val couponUtils: CouponUtils,
-    private val parameterRepository: ParameterRepository
+    private val parameterRepository: ParameterRepository,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val PARAMETERS_KEY = "parameters_key"
@@ -177,20 +183,63 @@ class EditCouponViewModel @Inject constructor(
 
     fun onSaveClick() = launch {
         isSaving.value = true
-        couponRepository.updateCoupon(couponDraft.value!!)
-            .fold(
-                onSuccess = {
-                    triggerEvent(ShowSnackbar(R.string.coupon_edit_coupon_updated))
-                    triggerEvent(Exit)
-                },
-                onFailure = { exception ->
-                    val message = (exception as? WooException)?.takeIf { it.error.type == WooErrorType.GENERIC_ERROR }
-                        ?.message?.let { UiString.UiStringText(it) }
-                        ?: UiString.UiStringRes(R.string.coupon_edit_coupon_update_failed)
-                    triggerEvent(ShowUiStringSnackbar(message))
-                }
-            )
+
+        val oldCoupon = storedCoupon.await()
+        val newCoupon = couponDraft.value!!
+        
+        trackUpdateChanges(oldCoupon, newCoupon)
+
+        couponRepository.updateCoupon(newCoupon)
+            .onSuccess {
+                triggerEvent(ShowSnackbar(R.string.coupon_edit_coupon_updated))
+                triggerEvent(Exit)
+
+                analyticsTrackerWrapper.track(AnalyticsEvent.COUPON_UPDATE_SUCCESS)
+            }
+            .onFailure { exception ->
+                WooLog.e(
+                    tag = WooLog.T.COUPONS,
+                    message = "Coupon update failed: ${(exception as WooException).error.message}"
+                )
+
+                analyticsTrackerWrapper.track(
+                    stat = AnalyticsEvent.COUPON_UPDATE_FAILED,
+                    errorContext = this@EditCouponViewModel.javaClass.simpleName,
+                    errorType = exception.error.type.name,
+                    errorDescription = exception.error.message
+                )
+
+                val message = exception.takeIf { exception.error.type == WooErrorType.GENERIC_ERROR }
+                    ?.message?.let { UiString.UiStringText(it) }
+                    ?: UiString.UiStringRes(R.string.coupon_edit_coupon_update_failed)
+                triggerEvent(ShowUiStringSnackbar(message))
+            }
+
         isSaving.value = false
+    }
+
+    private fun trackUpdateChanges(oldCoupon: Coupon, newCoupon: Coupon) {
+        val wasCouponTypeUpdated = oldCoupon.type != newCoupon.type
+        val wasCouponCodeUpdated = oldCoupon.code != newCoupon.code
+        val wasCouponAmountUpdated = oldCoupon.amount != newCoupon.amount
+        val wasCouponDescriptionUpdated = oldCoupon.description != newCoupon.description
+        val wereCouponProdsOrCatsUpdated = oldCoupon.productIds != newCoupon.productIds ||
+                oldCoupon.categoryIds != newCoupon.categoryIds
+        val wasCouponExpiryDateUpdated = oldCoupon.dateExpires != newCoupon.dateExpires
+        val wereCouponUsageRestrictionsUpdated = oldCoupon.restrictions != newCoupon.restrictions
+
+        analyticsTrackerWrapper.track(
+            COUPON_UPDATE_INITIATED,
+            mapOf(
+                Pair(AnalyticsTracker.KEY_COUPON_DISCOUNT_TYPE_UPDATED, wasCouponTypeUpdated),
+                Pair(AnalyticsTracker.KEY_COUPON_CODE_UPDATED, wasCouponCodeUpdated),
+                Pair(AnalyticsTracker.KEY_COUPON_AMOUNT_UPDATED, wasCouponAmountUpdated),
+                Pair(AnalyticsTracker.KEY_COUPON_DESCRIPTION_UPDATED, wasCouponDescriptionUpdated),
+                Pair(AnalyticsTracker.KEY_COUPON_ALLOWED_PRODUCTS_OR_CATEGORIES_UPDATED, wereCouponProdsOrCatsUpdated),
+                Pair(AnalyticsTracker.KEY_COUPON_EXPIRY_DATE_UPDATED, wasCouponExpiryDateUpdated),
+                Pair(AnalyticsTracker.KEY_COUPON_USAGE_RESTRICTIONS_UPDATED, wereCouponUsageRestrictionsUpdated)
+            )
+        )
     }
 
     data class ViewState(
