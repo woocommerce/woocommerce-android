@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.coupons.edit
 
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Coupon
@@ -29,6 +30,10 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
 import java.math.BigDecimal
 import java.util.Date
 import java.util.concurrent.TimeUnit.DAYS
@@ -246,7 +251,9 @@ class EditCouponViewModelTests : BaseUnitTest() {
     @Test
     fun `when coupon is fails, then show an error snackbar`() = testBlocking {
         setup {
-            whenever(couponRepository.updateCoupon(any())).thenReturn(Result.failure(Exception()))
+            whenever(couponRepository.updateCoupon(any())).thenReturn(
+                Result.failure(WooException(WooError(GENERIC_ERROR, UNKNOWN)))
+            )
         }
 
         viewModel.onSaveClick()
