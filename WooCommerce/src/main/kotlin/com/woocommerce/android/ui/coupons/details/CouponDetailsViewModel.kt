@@ -7,6 +7,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.coupons.CouponRepository
 import com.woocommerce.android.util.CouponUtils
@@ -35,7 +36,8 @@ class CouponDetailsViewModel @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
     private val couponRepository: CouponRepository,
-    private val couponUtils: CouponUtils
+    private val couponUtils: CouponUtils,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
     private val navArgs by savedState.navArgs<CouponDetailsFragmentArgs>()
     private val currencyCode by lazy {
@@ -64,7 +66,7 @@ class CouponDetailsViewModel @Inject constructor(
             }
         }
 
-        AnalyticsTracker.track(
+        analyticsTrackerWrapper.track(
             AnalyticsEvent.COUPON_DETAILS,
             mapOf(AnalyticsTracker.KEY_COUPON_ACTION to AnalyticsTracker.KEY_COUPON_ACTION_LOADED)
         )
@@ -146,14 +148,23 @@ class CouponDetailsViewModel @Inject constructor(
                         message = "Coupon deletion failed: ${(it as WooException).error.message}"
                     )
                     triggerEvent(ShowSnackbar(R.string.coupon_details_delete_failure))
+
+                    analyticsTrackerWrapper.track(
+                        AnalyticsEvent.COUPON_DELETE_FAILED,
+                        errorContext = this@CouponDetailsViewModel.javaClass.simpleName,
+                        errorType = it.error.type.name,
+                        errorDescription = it.error.message
+                    )
                 }
                 .onSuccess {
                     triggerEvent(ShowSnackbar(R.string.coupon_details_delete_successful))
                     triggerEvent(Exit)
+
+                    analyticsTrackerWrapper.track(AnalyticsEvent.COUPON_DELETE_SUCCESS)
                 }
         }
 
-        AnalyticsTracker.track(
+        analyticsTrackerWrapper.track(
             AnalyticsEvent.COUPON_DETAILS,
             mapOf(AnalyticsTracker.KEY_COUPON_ACTION to AnalyticsTracker.KEY_COUPON_ACTION_DELETED)
         )
@@ -164,7 +175,7 @@ class CouponDetailsViewModel @Inject constructor(
             triggerEvent(CopyCodeEvent(it))
         }
 
-        AnalyticsTracker.track(
+        analyticsTrackerWrapper.track(
             AnalyticsEvent.COUPON_DETAILS,
             mapOf(AnalyticsTracker.KEY_COUPON_ACTION to AnalyticsTracker.KEY_COUPON_ACTION_COPIED)
         )
@@ -185,7 +196,7 @@ class CouponDetailsViewModel @Inject constructor(
             triggerEvent(ShowSnackbar(R.string.coupon_details_share_formatting_failure))
         }
 
-        AnalyticsTracker.track(
+        analyticsTrackerWrapper.track(
             AnalyticsEvent.COUPON_DETAILS,
             mapOf(AnalyticsTracker.KEY_COUPON_ACTION to AnalyticsTracker.KEY_COUPON_ACTION_SHARED)
         )
