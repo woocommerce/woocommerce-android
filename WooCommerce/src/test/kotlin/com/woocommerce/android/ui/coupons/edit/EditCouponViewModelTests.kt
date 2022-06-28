@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.coupons.edit
 
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -66,6 +67,8 @@ class EditCouponViewModelTests : BaseUnitTest() {
         gmtOffset = 0f
     )
 
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+
     suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
         prepareMocks()
 
@@ -75,7 +78,8 @@ class EditCouponViewModelTests : BaseUnitTest() {
             couponUtils = couponUtils,
             parameterRepository = mock {
                 on { getParameters(any(), any()) } doReturn siteParams
-            }
+            },
+            analyticsTrackerWrapper = analyticsTrackerWrapper
         )
     }
 
