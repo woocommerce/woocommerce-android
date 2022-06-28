@@ -116,7 +116,7 @@ ext {
     assertjVersion = '3.11.1'
     espressoVersion = '3.4.0'
     mockitoKotlinVersion = '4.0.0'
-    mockitoVersion = '4.5.1'
+    mockitoVersion = '4.6.1'
 }
 
 // Onboarding and dev env setup tasks
