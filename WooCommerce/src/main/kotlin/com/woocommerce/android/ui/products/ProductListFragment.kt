@@ -248,7 +248,7 @@ class ProductListFragment :
     override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
         viewModel.onSearchOpened()
         onSearchViewActiveChanged(isActive = true)
-        binding.productsSearchTypeView.show(this)
+        binding.productsSearchTabView.show(this)
         return true
     }
 
@@ -256,7 +256,7 @@ class ProductListFragment :
         viewModel.onSearchClosed()
         closeSearchView()
         onSearchViewActiveChanged(isActive = false)
-        binding.productsSearchTypeView.hide()
+        binding.productsSearchTabView.hide()
         return true
     }
 
