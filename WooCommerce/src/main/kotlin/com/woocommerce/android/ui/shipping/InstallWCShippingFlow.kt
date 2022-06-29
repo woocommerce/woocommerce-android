@@ -309,7 +309,7 @@ private fun AnimatedVisibilityScope.MainContent(viewState: InstallationState) {
 private fun InstallationInfoLink(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100)),
-        modifier = Modifier
+        modifier = modifier
             .clickable(onClick = onClick)
     ) {
         Icon(
