@@ -229,7 +229,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             }
             new.isIdle.takeIfNotEqualTo(old?.isIdle) { enabled ->
                 TransitionManager.beginDelayedTransition(binding.root)
-                when(viewModel.mode){
+                when (viewModel.mode) {
                     OrderCreationViewModel.Mode.Creation -> {
                         binding.paymentSection.loadingProgress.isVisible = !enabled
                     }
