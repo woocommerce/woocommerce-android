@@ -14,7 +14,8 @@ enum class FeatureFlag {
     COUPONS_M2,
     IPP_SELECT_PAYMENT_GATEWAY,
     WC_SHIPPING_BANNER,
-    UNIFIED_ORDER_EDITING;
+    UNIFIED_ORDER_EDITING,
+    ORDER_CREATION_CUSTOMER_SEARCH;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -29,6 +30,10 @@ enum class FeatureFlag {
             WC_SHIPPING_BANNER,
             IPP_SELECT_PAYMENT_GATEWAY,
             UNIFIED_ORDER_EDITING -> PackageUtils.isDebugBuild()
+            // order creation customer search is awaiting backend changes before being enabled
+            ORDER_CREATION_CUSTOMER_SEARCH -> {
+                UNIFIED_ORDER_EDITING.isEnabled() && PackageUtils.isDebugBuild()
+            }
         }
     }
 }

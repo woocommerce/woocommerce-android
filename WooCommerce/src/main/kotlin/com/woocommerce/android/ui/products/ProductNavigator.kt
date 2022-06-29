@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAtt
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
+import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToProductFilter
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToVariationSelector
 import com.woocommerce.android.ui.products.ProductNavigationTarget.RenameProductAttribute
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
@@ -348,6 +349,18 @@ class ProductNavigator @Inject constructor() {
                     ProductSelectorFragmentDirections.actionProductSelectorFragmentToVariationSelectorFragment(
                         target.productId,
                         target.selectedVariationIds.toLongArray()
+                    )
+                )
+            }
+
+            is NavigateToProductFilter -> {
+                fragment.findNavController().navigateSafely(
+                    ProductSelectorFragmentDirections.actionProductSelectorFragmentToNavGraphProductFilters(
+                        target.stockStatus,
+                        target.productType,
+                        target.productStatus,
+                        target.productCategory,
+                        target.productCategoryName
                     )
                 )
             }

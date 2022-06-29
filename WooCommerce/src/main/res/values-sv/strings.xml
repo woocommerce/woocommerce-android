@@ -1,13 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-02 23:54:03+0000
+Translation-Revision-Date: 2022-06-15 14:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="install_wc_shipping_flow_onboarding_screen_not_now_button">Inte nu</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_add_extension_button">Lägg till utökningar till butik</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_link">Vad är WooCommerce Shipping?</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_discounts_bullet_desc">Kom åt rabatterade fraktavgifter. För närvarande endast tillgängligt med DHL och USPS, men fler alternativ kommer snart.</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_discounts_bullet_title">Rabatterade avgifter</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_print_bullet_desc">Hämta en beställning och sedan är det bara att betala, skriva ut, paketera och skicka.</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_print_bullet_title">Skriv ut från din telefon</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_postage_bullet_desc">Du behöver inte undra var den frimärkshäftet tog vägen.</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_postage_bullet_title">Köp porto när du behöver det</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_subtitle">Spara tid och pengar</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_title">Fullfölj dina beställningar med WooCommerce Shipping</string>
+    <string name="product_selector_arrow_content_description">Visa detaljer</string>
+    <string name="product_selector_select_variation_label">Välj variant %s</string>
+    <string name="coupon_restrictions_exclude_categories">Exkludera produktkategorier</string>
+    <string name="coupon_restrictions_exclude_products">Exkludera produkter</string>
+    <string name="coupon_restrictions_exclusions_section_title">Tillämpa denna rabattkod på</string>
+    <string name="coupon_restrictions_allowed_emails_placeholder">Inga begränsningar</string>
+    <string name="coupon_restrictions_allowed_emails">Tillåtna e-postadresser</string>
+    <string name="coupon_restrictions_limit_per_user_placeholder">Obegränsat</string>
+    <string name="coupon_restrictions_amount_limit_placeholder">Samtliga kvalificerande artiklar</string>
+    <string name="coupon_restrictions_limit_per_coupon_placeholder">Obegränsat</string>
+    <string name="coupon_restrictions_minimum_maximum_spend_placeholder">Ingen</string>
+    <string name="coupon_edit_edit_products_title">Redigera produktkategorier (%1$d)</string>
+    <string name="coupon_edit_select_categories_title">Välj produktkategorier</string>
+    <string name="variations_bulk_update_warning_message">För närvarande stöds massuppdatering för maximalt 100 varianter.</string>
+    <string name="variations_bulk_update_warning_title">Gräns för massuppdatering har överskridits</string>
+    <string name="variations_bulk_update_regular_prices_dialog_title">Uppdatera ordinarie priser</string>
+    <string name="variations_bulk_update_sale_prices_dialog_title">Uppdaterar reapriser</string>
+    <string name="variations_bulk_update_sale_prices_success">Uppdaterade reapriser.</string>
+    <string name="variations_bulk_update_regular_prices_success">Uppdaterade ordinarie priser.</string>
+    <string name="variations_bulk_update_error">Något gick fel. Försök igen.</string>
+    <string name="variations_bulk_update_current_prices_mixed">Nuvarande priser är blandade</string>
+    <string name="variations_bulk_update_current_price">Nuvarande pris är %s</string>
+    <string name="variations_bulk_update_price_info">Pris kommer att uppdateras för %d varianter</string>
+    <string name="variations_bulk_update_dialog_price_mixed">Blandat</string>
+    <string name="variations_bulk_update_dialog_price_none">Ingen</string>
+    <string name="variations_bulk_update_dialog_sale_price_label">Reapris</string>
+    <string name="variations_bulk_update_dialog_regular_price_label">Ordinarie pris</string>
+    <string name="variations_bulk_update_dialog_price_section_title">Pris</string>
+    <string name="variations_bulk_update_dialog_subtitle">Välj ett värde att uppdatera</string>
+    <string name="variations_bulk_update_dialog_title">Massuppdatera</string>
+    <string name="variations_bulk_limit_exceeded_button_ok">OK</string>
+    <string name="variation_list_menu_bulk_update">Massuppdatera …</string>
+    <string name="variation_loading_dialog_title">Hämtar varianter …</string>
+    <string name="product_category_selector_search_failed">Det gick inte att söka efter produktkategorier</string>
+    <string name="product_category_selector_loading_failed">Det gick inte att läsa in produktkategorier</string>
+    <string name="product_category_selector_search_hint">Sök kategorier</string>
+    <string name="product_category_selector_clear_selection">Rensa val</string>
+    <string name="product_category_selector_check_content_description">Klicka för att avmarkera</string>
+    <string name="product_category_selector_select_button_title_one">Välj 1 kategori</string>
+    <string name="product_category_selector_select_button_title_default">Välj %1$d kategorier</string>
+    <string name="product_category_selector_empty_state">Inga produktkategorier hittades</string>
+    <string name="product_category_selector_title">Välj kategorier</string>
+    <string name="shipping_label_install_wc_shipping_banner_dismiss_button_description">Avfärda banner för att installera WC Shipping</string>
+    <string name="shipping_label_install_wc_shipping_banner_button">Skaffa WooCommerce Shipping</string>
+    <string name="shipping_label_install_wc_shipping_banner_description">Skriv ut etiketter från din telefon, med WooCommerce Shipping.</string>
+    <string name="shipping_label_install_wc_shipping_banner_title">Behöver du en fraktetikett?</string>
+    <string name="order_creation_change_product_quantity">Ändra produktantalet från %d till %d</string>
+    <string name="variations_bulk_update_regular_price">Uppdatera ordinarie pris</string>
+    <string name="variations_bulk_update_sale_price">Uppdatera reapris</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Vi stöder inte WooCommerce Stripe-utökningen i %1$s</string>
-    <string name="product_selector_filter_button_title">Filtrera</string>
+    <string name="product_selector_filter_button_title_zero">Filtrera</string>
     <string name="product_selector_clear_button_title">Rensa val</string>
     <string name="product_selector_select_button_title_one">Välj %d produkt</string>
     <string name="product_selector_select_button_title_default">Välj %d produkter</string>
@@ -162,8 +222,6 @@ Language: sv_SE
     <string name="orderstatus_contentDesc_withStatus">Beställningsstatus: %s</string>
     <string name="no_sku">Inget artikelnummer</string>
     <string name="count">Antal: %s</string>
-    <string name="plus_one">Plus en</string>
-    <string name="minus_one">Minus en</string>
     <string name="more_menu_button_coupons">Rabattkoder</string>
     <string name="dismiss_inbox_note">Avfärda</string>
     <string name="login_error_xml_rpc_auth_error_communicating">Det uppstod ett problem med att kommunicera med webbplatsen. En HTTP-felkod 401 returnerades.</string>
@@ -1122,7 +1180,6 @@ Language: sv_SE
     <string name="orderdetail_product_multiple">Produkter</string>
     <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
     <string name="orderdetail_orderstatus_name">%1$s %2$s</string>
-    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
     <string name="product_type_external">Extern</string>
     <string name="product_type_simple">Enkel</string>
     <string name="product_status_privately_published">Publicerat privat</string>

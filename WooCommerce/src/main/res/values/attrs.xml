@@ -176,7 +176,7 @@
     <declare-styleable name="ShippingLabelCreationStepView">
         <attr name="caption" format="string" />
         <attr name="details" format="string" />
-        <attr name="icon" format="reference" />
+        <attr name="icon" />
         <attr name="continue_button_visible" format="boolean" />
         <attr name="edit_button_visible" format="boolean" />
         <attr name="divider_visible" format="boolean" />
@@ -184,9 +184,13 @@
         <attr name="android:enabled" />
     </declare-styleable>
 
+    <attr name="title" format="reference|string" />
+    <attr name="message" format="reference|string" />
+    <attr name="icon" format="reference" />
+
     <declare-styleable name="WCWarningBanner">
-        <attr name="title" format="string" />
-        <attr name="message" format="string" />
+        <attr name="title" />
+        <attr name="message" />
     </declare-styleable>
 
     <declare-styleable name="CircleProgressOverlayView">
@@ -216,6 +220,14 @@
             <enum name="fitBottom" value="8" />
             <enum name="matrix" value="9" />
         </attr>
+    </declare-styleable>
+
+    <declare-styleable name="ExpandableMessageView">
+        <attr name="title" />
+        <attr name="message" />
+        <attr name="icon" />
+        <attr name="iconTint" />
+        <attr name="isExpanded" format="boolean" />
     </declare-styleable>
 
 </resources>

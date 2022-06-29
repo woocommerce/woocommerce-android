@@ -7,7 +7,6 @@ import android.view.MenuItem
 import android.view.View
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
-import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
@@ -24,11 +23,15 @@ import com.woocommerce.android.ui.orders.creation.views.bindEditFields
 import com.woocommerce.android.ui.orders.creation.views.update
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel
-import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.*
+import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.AddressType
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.AddressType.BILLING
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.AddressType.SHIPPING
+import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.Exit
+import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.ShowCountrySelector
+import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.ShowStateSelector
 import com.woocommerce.android.ui.orders.details.editing.address.LocationCode
 import com.woocommerce.android.ui.searchfilter.SearchFilterItem
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -40,10 +43,11 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
         const val SELECT_BILLING_STATE_REQUEST = "select_billing_state_request"
         const val SELECT_SHIPPING_COUNTRY_REQUEST = "select_shipping_country_request"
         const val SELECT_SHIPPING_STATE_REQUEST = "select_shipping_state_request"
+        private const val SEARCH_ID = Int.MAX_VALUE
     }
 
-    private val addressViewModel: AddressViewModel by viewModels()
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
+    private val addressViewModel by hiltNavGraphViewModels<AddressViewModel>(R.id.nav_graph_order_creations)
 
     private var fragmentViewBinding: FragmentCreationEditCustomerAddressBinding? = null
     private var shippingBinding: LayoutAddressFormBinding? = null
@@ -119,9 +123,11 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
                     )
                     findNavController().navigateUp()
                 }
+                is AddressViewModel.SearchCustomers -> showCustomerSearchScreen()
             }
         }
     }
+
     private fun inflateLayout(view: View) {
         billingBinding = LayoutAddressFormBinding.inflate(layoutInflater).apply {
             setAccessibilityHeaders(R.string.details, R.string.order_detail_billing_address_section)
@@ -256,6 +262,19 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         menu.clear()
+
+        if (FeatureFlag.ORDER_CREATION_CUSTOMER_SEARCH.isEnabled()) {
+            menu.add(
+                Menu.NONE,
+                SEARCH_ID,
+                Menu.NONE,
+                android.R.string.search_go
+            ).also {
+                it.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
+                it.setIcon(R.drawable.ic_search_24dp)
+            }
+        }
+
         inflater.inflate(R.menu.menu_done, menu)
         doneMenuItem = menu.findItem(R.id.menu_done).apply {
             isEnabled = addressViewModel.shouldEnableDoneButton.value ?: false
@@ -270,6 +289,10 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
                 )
                 true
             }
+            SEARCH_ID -> {
+                addressViewModel.onCustomerSearchClicked()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -282,5 +305,11 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
         shippingBinding = null
         billingBinding = null
         showShippingAddressFormSwitch = null
+    }
+
+    private fun showCustomerSearchScreen() {
+        findNavController().navigateSafely(
+            OrderCreationCustomerAddFragmentDirections.actionGlobalCustomerListFragment()
+        )
     }
 }

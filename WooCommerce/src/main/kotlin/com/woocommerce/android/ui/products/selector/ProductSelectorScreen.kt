@@ -43,6 +43,7 @@ import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.FilterState
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.APPENDING
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.IDLE
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.LOADING
@@ -61,9 +62,11 @@ fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
             state = it,
             onDoneButtonClick = viewModel::onDoneButtonClick,
             onClearButtonClick = viewModel::onClearButtonClick,
+            onFilterButtonClick = viewModel::onFilterButtonClick,
             onProductClick = viewModel::onProductClick,
             onLoadMore = viewModel::onLoadMore,
-            onSearchQueryChanged = viewModel::onSearchQueryChanged
+            onSearchQueryChanged = viewModel::onSearchQueryChanged,
+            onClearFiltersButtonClick = viewModel::onClearFiltersButtonClick
         )
     }
 }
@@ -73,42 +76,51 @@ fun ProductSelectorScreen(
     state: ViewState,
     onDoneButtonClick: () -> Unit,
     onClearButtonClick: () -> Unit,
+    onFilterButtonClick: () -> Unit,
     onProductClick: (ProductListItem) -> Unit,
     onLoadMore: () -> Unit,
-    onSearchQueryChanged: (String) -> Unit
+    onSearchQueryChanged: (String) -> Unit,
+    onClearFiltersButtonClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colors.surface)
     ) {
-        WCSearchField(
-            value = state.searchQuery,
-            onValueChange = onSearchQueryChanged,
-            hint = stringResource(id = string.product_selector_search_hint),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    horizontal = dimensionResource(id = dimen.major_100),
-                    vertical = dimensionResource(id = dimen.minor_100)
-                )
-        )
+        if (state.filterState.filterOptions.isEmpty()) {
+            WCSearchField(
+                value = state.searchQuery,
+                onValueChange = onSearchQueryChanged,
+                hint = stringResource(id = string.product_selector_search_hint),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = dimensionResource(id = dimen.major_100),
+                        vertical = dimensionResource(id = dimen.minor_100)
+                    )
+            )
+        }
+
         when {
             state.products.isNotEmpty() -> ProductList(
                 state = state,
                 onDoneButtonClick = onDoneButtonClick,
                 onClearButtonClick = onClearButtonClick,
+                onFilterButtonClick = onFilterButtonClick,
                 onProductClick = onProductClick,
                 onLoadMore = onLoadMore
             )
             state.products.isEmpty() && state.loadingState == LOADING -> ProductListSkeleton()
-            else -> EmptyProductList(state.searchQuery)
+            else -> EmptyProductList(state, onClearFiltersButtonClick)
         }
     }
 }
 
 @Composable
-private fun EmptyProductList(searchQuery: String) {
+private fun EmptyProductList(
+    state: ViewState,
+    onClearFiltersButtonClick: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -116,10 +128,12 @@ private fun EmptyProductList(searchQuery: String) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val message = if (searchQuery.isEmpty()) {
-            stringResource(id = string.product_selector_empty_state)
+        val message = if (state.searchQuery.isNotEmpty()) {
+            stringResource(id = string.empty_message_with_search, state.searchQuery)
+        } else if (state.filterState.filterOptions.isNotEmpty()) {
+            stringResource(id = string.empty_message_with_filters)
         } else {
-            stringResource(id = string.empty_message_with_search, searchQuery)
+            stringResource(id = string.product_selector_empty_state)
         }
         Text(
             text = message,
@@ -135,6 +149,17 @@ private fun EmptyProductList(searchQuery: String) {
             painter = painterResource(id = R.drawable.img_empty_products),
             contentDescription = null,
         )
+
+        if (state.filterState.filterOptions.isNotEmpty()) {
+            Spacer(Modifier.size(dimensionResource(id = dimen.major_325)))
+            WCColoredButton(
+                onClick = onClearFiltersButtonClick,
+                text = stringResource(id = string.product_selector_clear_filters_button_title),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(dimensionResource(id = dimen.major_100)),
+            )
+        }
     }
 }
 
@@ -143,6 +168,7 @@ private fun ProductList(
     state: ViewState,
     onDoneButtonClick: () -> Unit,
     onClearButtonClick: () -> Unit,
+    onFilterButtonClick: () -> Unit,
     onProductClick: (ProductListItem) -> Unit,
     onLoadMore: () -> Unit,
 ) {
@@ -167,8 +193,12 @@ private fun ProductList(
             }
 
             WCTextButton(
-                onClick = { },
-                text = stringResource(id = string.product_selector_filter_button_title),
+                onClick = onFilterButtonClick,
+                text = StringUtils.getQuantityString(
+                    quantity = state.filterState.filterOptions.size,
+                    default = string.product_selector_filter_button_title_default,
+                    zero = string.product_selector_filter_button_title_zero
+                ),
                 allCaps = false,
                 modifier = Modifier.align(Alignment.CenterEnd)
             )
@@ -329,8 +359,10 @@ fun ProductListPreview() {
             products = products,
             selectedItemsCount = 3,
             loadingState = IDLE,
+            filterState = FilterState(),
             searchQuery = ""
         ),
+        {},
         {},
         {},
         {},
@@ -341,7 +373,16 @@ fun ProductListPreview() {
 @Preview
 @Composable
 fun ProductListEmptyPreview() {
-    EmptyProductList("")
+    EmptyProductList(
+        ViewState(
+            products = emptyList(),
+            selectedItemsCount = 3,
+            loadingState = IDLE,
+            filterState = FilterState(),
+            searchQuery = ""
+        ),
+        {}
+    )
 }
 
 @Preview
