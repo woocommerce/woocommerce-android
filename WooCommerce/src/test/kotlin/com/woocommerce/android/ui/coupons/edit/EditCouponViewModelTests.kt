@@ -32,8 +32,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.TIMEOUT
 import java.math.BigDecimal
 import java.util.Date
 import java.util.concurrent.TimeUnit.DAYS
@@ -252,7 +251,7 @@ class EditCouponViewModelTests : BaseUnitTest() {
     fun `when coupon is fails, then show an error snackbar`() = testBlocking {
         setup {
             whenever(couponRepository.updateCoupon(any())).thenReturn(
-                Result.failure(WooException(WooError(GENERIC_ERROR, UNKNOWN)))
+                Result.failure(WooException(WooError(TIMEOUT, UNKNOWN)))
             )
         }
 
