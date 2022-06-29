@@ -40,10 +40,10 @@ class ScreenshotTest : TestBase() {
     val composeTestRule = createComposeRule()
 
     @get:Rule(order = 3)
-    var activityRule = ActivityTestRule(MainActivity::class.java)
-
-    @Rule @JvmField
     val localeTestRule = LocaleTestRule()
+
+    @get:Rule(order = 4)
+    var activityRule = ActivityTestRule(MainActivity::class.java)
 
     @Before
     fun setUp() {
