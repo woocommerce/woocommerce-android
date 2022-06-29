@@ -2,27 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:orientation="vertical">
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/textSearchAll"
-        style="@style/Woo.TextView.Subtitle1"
-        android:layout_width="0dp"
-        android:background="@drawable/list_primary_selector"
-        android:gravity="center"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/major_100"
-        android:layout_weight="1"
-        android:text="@string/product_search_all" />
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        style="Woo.TabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/textSearchSku"
-        style="@style/Woo.TextView.Subtitle1"
-        android:background="@drawable/list_primary_selector"
-        android:layout_width="0dp"
-        android:gravity="center"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/major_100"
-        android:layout_weight="1"
-        android:text="@string/product_search_sku" />
 </LinearLayout>

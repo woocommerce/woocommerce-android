@@ -5,6 +5,8 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
+import com.google.android.material.tabs.TabLayout
+import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ProductSearchViewLayoutBinding
 import com.woocommerce.android.util.WooAnimUtils
 
@@ -15,7 +17,7 @@ class WCProductSearchView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0
-) : ConstraintLayout(context, attrs, defStyle) {
+) : ConstraintLayout(context, attrs, defStyle), TabLayout.OnTabSelectedListener {
     private var binding = ProductSearchViewLayoutBinding.inflate(LayoutInflater.from(context), this, true)
     private var listener: ProductSearchTypeChangedListener? = null
 
@@ -24,8 +26,6 @@ class WCProductSearchView @JvmOverloads constructor(
         set(value) {
             if (value != field) {
                 field = value
-                binding.textSearchAll.isSelected = value == ProductSearchType.SEARCH_ALL
-                binding.textSearchSku.isSelected = value == ProductSearchType.SEARCH_SKU
                 listener?.onProductSearchTypeChanged(value)
             }
         }
@@ -33,12 +33,16 @@ class WCProductSearchView @JvmOverloads constructor(
     fun isSkuSearch() = productSearchType == ProductSearchType.SEARCH_SKU
 
     init {
-        binding.textSearchAll.setOnClickListener {
-            productSearchType = ProductSearchType.SEARCH_ALL
-        }
-        binding.textSearchSku.setOnClickListener {
-            productSearchType = ProductSearchType.SEARCH_SKU
-        }
+        binding.tabLayout.addTab(binding.tabLayout.newTab().apply {
+            setText(context.getString(R.string.product_search_all))
+                .id = TAB_ALL
+        })
+        binding.tabLayout.addTab(binding.tabLayout.newTab().apply {
+            setText(context.getString(R.string.product_search_sku))
+                .id = TAB_SKU
+        })
+
+        binding.tabLayout.addOnTabSelectedListener(this)
     }
 
     fun show(searchTypeListener: ProductSearchTypeChangedListener? = null) {
@@ -62,5 +66,28 @@ class WCProductSearchView @JvmOverloads constructor(
 
     interface ProductSearchTypeChangedListener {
         fun onProductSearchTypeChanged(searchType: ProductSearchType)
+    }
+
+    override fun onTabSelected(tab: TabLayout.Tab?) {
+        tab?.let {
+            productSearchType = if (it.id == TAB_ALL) {
+                ProductSearchType.SEARCH_ALL
+            } else {
+                ProductSearchType.SEARCH_SKU
+            }
+        }
+    }
+
+    override fun onTabUnselected(tab: TabLayout.Tab?) {
+        // noop
+    }
+
+    override fun onTabReselected(tab: TabLayout.Tab?) {
+        // noop
+    }
+
+    companion object {
+        private const val TAB_ALL = 0
+        private const val TAB_SKU = 1
     }
 }
