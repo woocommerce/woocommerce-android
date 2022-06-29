@@ -323,7 +323,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
             }
             givenCurrencyFormatter(BigDecimal("0.0"), "USD")
             givenResourceProvider()
-            whenViewModelIsCreated()
             givenNetworkConnectivity(connected = true)
             givenToPerformersResult(
                 GetTopPerformers.TopPerformersResult.TopPerformersSuccess(
@@ -333,7 +332,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
                 )
             )
 
-            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            whenViewModelIsCreated()
             (sut.topPerformersState.value as MyStoreViewModel.TopPerformersViewState.Content)
                 .topPerformers[0].onClick.invoke(1L)
 
