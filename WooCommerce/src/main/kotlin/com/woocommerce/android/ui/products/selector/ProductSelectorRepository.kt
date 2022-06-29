@@ -17,14 +17,12 @@ class ProductSelectorRepository @Inject constructor(
 ) {
     suspend fun searchProducts(
         searchQuery: String,
-        isSkuSearch: Boolean,
         offset: Int,
         pageSize: Int
     ): Result<SearchResult> {
         return productStore.searchProducts(
             selectedSite.get(),
             searchString = searchQuery,
-            isSkuSearch = isSkuSearch,
             offset = offset,
             pageSize = pageSize
         ).let { result ->
