@@ -323,7 +323,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
             }
             givenCurrencyFormatter(BigDecimal("0.0"), "USD")
             givenResourceProvider()
-            whenViewModelIsCreated()
             givenNetworkConnectivity(connected = true)
             givenToPerformersResult(
                 GetTopPerformers.TopPerformersResult.TopPerformersSuccess(
