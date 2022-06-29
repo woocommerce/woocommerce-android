@@ -11,6 +11,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <!-- Product search type viw -->
+        <com.woocommerce.android.ui.products.WCProductSearchView
+            android:id="@+id/products_search_type_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/minor_100"
+            app:layout_constraintBottom_toTopOf="@+id/products_wip_card"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <!-- Products work in progress notice card -->
         <com.woocommerce.android.ui.products.FeatureWIPNoticeCard
             android:id="@+id/products_wip_card"
@@ -22,7 +33,7 @@
             app:layout_constraintBottom_toTopOf="@+id/products_sort_filter_card"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/products_search_type_view"
             tools:visibility="visible" />
 
         <!-- Products filter and sort view -->
