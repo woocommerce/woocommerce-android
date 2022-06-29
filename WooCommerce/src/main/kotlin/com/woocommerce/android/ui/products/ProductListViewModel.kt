@@ -88,11 +88,9 @@ class ProductListViewModel @Inject constructor(
 
     fun onSearchQueryChanged(
         query: String,
-        isSkuSearch: Boolean
     ) {
         viewState = viewState.copy(
             query = query,
-            isSkuSearch = isSkuSearch,
             isEmptyViewVisible = false
         )
 
@@ -200,6 +198,11 @@ class ProductListViewModel @Inject constructor(
         loadProducts(loadMore = true)
     }
 
+    fun onSearchTypeChanged(isSkuSearch: Boolean) {
+        viewState = viewState.copy(isSkuSearch = isSkuSearch)
+        onSearchRequested()
+    }
+
     fun onSearchRequested() {
         AnalyticsTracker.track(
             AnalyticsEvent.PRODUCT_LIST_SEARCHED,
@@ -256,7 +259,7 @@ class ProductListViewModel @Inject constructor(
                     )
                     fetchProductList(
                         viewState.query,
-                        isSkuSearch = viewState.isSkuSearch == true,
+                        isSkuSearch = viewState.isSkuSearch,
                         loadMore = loadMore
                     )
                 }
@@ -438,7 +441,7 @@ class ProductListViewModel @Inject constructor(
         val canLoadMore: Boolean? = null,
         val isRefreshing: Boolean? = null,
         val query: String? = null,
-        val isSkuSearch: Boolean? = null,
+        val isSkuSearch: Boolean = false,
         val filterCount: Int? = null,
         val isSearchActive: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null,

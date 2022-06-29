@@ -53,7 +53,7 @@ class ProductListFragment :
     ProductSortAndFilterListener,
     OnLoadMoreListener,
     OnQueryTextListener,
-    OnActionExpandListener {
+    OnActionExpandListener, WCProductSearchView.ProductSearchTypeChangedListener {
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
         val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"
@@ -237,17 +237,18 @@ class ProductListFragment :
     }
 
     override fun onQueryTextChange(newText: String): Boolean {
-        viewModel.onSearchQueryChanged(
-            newText,
-            isSkuSearch = binding.productsSearchTypeView.isSkuSearch()
-        )
+        viewModel.onSearchQueryChanged(newText)
         return true
+    }
+
+    override fun onProductSearchTypeChanged(isSkuSearch: Boolean) {
+        viewModel.onSearchTypeChanged(isSkuSearch)
     }
 
     override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
         viewModel.onSearchOpened()
         onSearchViewActiveChanged(isActive = true)
-        binding.productsSearchTypeView.show()
+        binding.productsSearchTypeView.show(this)
         return true
     }
 

@@ -21,17 +21,6 @@ class WCProductSearchView @JvmOverloads constructor(
     private var binding = ProductSearchViewLayoutBinding.inflate(LayoutInflater.from(context), this, true)
     private var listener: ProductSearchTypeChangedListener? = null
 
-    var productSearchType = ProductSearchType.SEARCH_ALL
-        get() = field
-        set(value) {
-            if (value != field) {
-                field = value
-                listener?.onProductSearchTypeChanged(value)
-            }
-        }
-
-    fun isSkuSearch() = productSearchType == ProductSearchType.SEARCH_SKU
-
     init {
         binding.tabLayout.addTab(binding.tabLayout.newTab().apply {
             setText(context.getString(R.string.product_search_all))
@@ -59,22 +48,11 @@ class WCProductSearchView @JvmOverloads constructor(
         }
     }
 
-    enum class ProductSearchType {
-        SEARCH_ALL,
-        SEARCH_SKU
-    }
-
-    interface ProductSearchTypeChangedListener {
-        fun onProductSearchTypeChanged(searchType: ProductSearchType)
-    }
-
     override fun onTabSelected(tab: TabLayout.Tab?) {
         tab?.let {
-            productSearchType = if (it.id == TAB_ALL) {
-                ProductSearchType.SEARCH_ALL
-            } else {
-                ProductSearchType.SEARCH_SKU
-            }
+            listener?.onProductSearchTypeChanged(
+                isSkuSearch = binding.tabLayout.selectedTabPosition == TAB_SKU
+            )
         }
     }
 
@@ -84,6 +62,10 @@ class WCProductSearchView @JvmOverloads constructor(
 
     override fun onTabReselected(tab: TabLayout.Tab?) {
         // noop
+    }
+
+    interface ProductSearchTypeChangedListener {
+        fun onProductSearchTypeChanged(isSkuSearch: Boolean)
     }
 
     companion object {
