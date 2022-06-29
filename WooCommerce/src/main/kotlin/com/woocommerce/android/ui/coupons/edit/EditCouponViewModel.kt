@@ -198,17 +198,18 @@ class EditCouponViewModel @Inject constructor(
             .onFailure { exception ->
                 WooLog.e(
                     tag = WooLog.T.COUPONS,
-                    message = "Coupon update failed: ${(exception as WooException).error.message}"
+                    message = "Coupon update failed: ${exception.message}"
                 )
 
+                val wooErrorType = (exception as? WooException)?.error?.type
                 analyticsTrackerWrapper.track(
                     stat = AnalyticsEvent.COUPON_UPDATE_FAILED,
                     errorContext = this@EditCouponViewModel.javaClass.simpleName,
-                    errorType = exception.error.type.name,
-                    errorDescription = exception.error.message
+                    errorType = wooErrorType?.name,
+                    errorDescription = exception.message
                 )
 
-                val message = exception.takeIf { exception.error.type == WooErrorType.GENERIC_ERROR }
+                val message = exception.takeIf { wooErrorType == WooErrorType.GENERIC_ERROR }
                     ?.message?.let { UiString.UiStringText(it) }
                     ?: UiString.UiStringRes(R.string.coupon_edit_coupon_update_failed)
                 triggerEvent(ShowUiStringSnackbar(message))
