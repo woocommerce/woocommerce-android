@@ -468,7 +468,7 @@ platform :android do
         ERROR
         UI.user_error! "Abort." unless UI.confirm(error_message)
       else
-        UI.message("Strings.xml file for #{lib[:name]} downloaded to #{download_path}.")
+        UI.message("`strings.xml` file for #{lib[:name]} downloaded to #{download_path}.")
         lib_to_merge = [{
           library: lib[:name],
           strings_path: download_path,
