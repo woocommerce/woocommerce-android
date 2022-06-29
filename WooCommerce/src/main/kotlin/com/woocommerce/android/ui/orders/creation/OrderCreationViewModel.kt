@@ -105,6 +105,12 @@ class OrderCreationViewModel @Inject constructor(
 
     private val retryOrderDraftUpdateTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
+    private val createOrUpdateOrder =
+        when (mode) {
+            Mode.Creation -> AutoSyncPriceModifier(dispatchers, orderCreationRepository)
+            is Mode.Edit -> AutoSyncOrder(dispatchers, orderCreationRepository)
+        }
+
     fun getProductUIModelFromItem(item: Order.Item) = runBlocking {
         mapItemToProductUiModel(item)
     }
