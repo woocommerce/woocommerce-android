@@ -1,5 +1,4 @@
 @file:OptIn(ExperimentalAnimationApi::class)
-
 package com.woocommerce.android.ui.shipping
 
 import androidx.compose.animation.AnimatedContent
@@ -9,7 +8,6 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.CubicBezierEasing
-import androidx.compose.animation.core.ExperimentalTransitionApi
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -70,7 +68,6 @@ import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel.ViewState.
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel.ViewState.InstallationState.InstallationOngoing
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel.ViewState.InstallationState.PreInstallation
 
-@OptIn(ExperimentalTransitionApi::class)
 @Composable
 fun AnimatedVisibilityScope.InstallWCShippingFlow(viewState: InstallationState) {
     when (viewState) {
@@ -252,7 +249,6 @@ private fun AnimatedVisibilityScope.InstallationContent(viewState: InstallationO
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun AnimatedVisibilityScope.MainContent(viewState: InstallationState) {
     Column {
