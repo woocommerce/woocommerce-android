@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.creation
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.transition.TransitionManager
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -227,7 +228,15 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                 createOrderMenuItem?.isEnabled = it
             }
             new.isIdle.takeIfNotEqualTo(old?.isIdle) { enabled ->
-                binding.paymentSection.loadingProgress.isVisible = !enabled
+                TransitionManager.beginDelayedTransition(binding.root)
+                when(viewModel.mode){
+                    OrderCreationViewModel.Mode.Creation -> {
+                        binding.paymentSection.loadingProgress.isVisible = !enabled
+                    }
+                    is OrderCreationViewModel.Mode.Edit -> {
+                        binding.loadingProgress.isVisible = !enabled
+                    }
+                }
                 if (new.isEditable) {
                     binding.paymentSection.shippingButton.isEnabled = enabled
                     binding.paymentSection.feeButton.isEnabled = enabled
