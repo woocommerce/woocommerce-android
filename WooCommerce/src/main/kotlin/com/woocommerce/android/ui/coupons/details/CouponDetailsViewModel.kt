@@ -8,6 +8,7 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.coupons.CouponRepository
 import com.woocommerce.android.util.CouponUtils
@@ -78,6 +79,7 @@ class CouponDetailsViewModel @Inject constructor(
             .map { coupon ->
                 CouponSummaryUi(
                     code = coupon.code,
+                    isEditable = coupon.type?.let { it !is Coupon.Type.Custom } ?: false,
                     isActive = coupon.dateExpires?.after(Date()) ?: true,
                     description = coupon.description,
                     summary = couponUtils.generateSummary(coupon, currencyCode),
@@ -219,6 +221,7 @@ class CouponDetailsViewModel @Inject constructor(
 
     data class CouponSummaryUi(
         val code: String?,
+        val isEditable: Boolean,
         val isActive: Boolean,
         val description: String?,
         val summary: String,
