@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.coupons
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.CouponPerformanceReport
 import com.woocommerce.android.model.toAppModel
@@ -19,7 +20,8 @@ import javax.inject.Inject
 class CouponRepository @Inject constructor(
     private val store: CouponStore,
     private val selectedSite: SelectedSite,
-    private val dateUtils: DateUtils
+    private val dateUtils: DateUtils,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) {
     suspend fun fetchCoupons(
         page: Int,
@@ -28,7 +30,7 @@ class CouponRepository @Inject constructor(
         return store.fetchCoupons(selectedSite.get(), page, pageSize)
             .let { result ->
                 if (result.isError) {
-                    AnalyticsTracker.track(
+                    analyticsTrackerWrapper.track(
                         AnalyticsEvent.COUPONS_LOAD_FAILED,
                         mapOf(
                             AnalyticsTracker.KEY_ERROR_CONTEXT to result.error::class.java.simpleName,
@@ -43,7 +45,7 @@ class CouponRepository @Inject constructor(
                     )
                     Result.failure(WooException(result.error))
                 } else {
-                    AnalyticsTracker.track(
+                    analyticsTrackerWrapper.track(
                         AnalyticsEvent.COUPONS_LOADED,
                         mapOf(Pair(AnalyticsTracker.KEY_IS_LOADING_MORE, page > 1))
                     )
