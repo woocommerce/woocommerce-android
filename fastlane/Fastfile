@@ -613,11 +613,6 @@ platform :android do
         map { |locale|  locale[:google_play] }
     end
 
-    # Override the locales array with one locale until
-    # https://github.com/fastlane/fastlane/issues/19521
-    # is fixed:
-    locales = ["en-EN"]
-
     UI.message("Attempting screenshots for locales: #{locales}")
 
     screenshot_options = {
