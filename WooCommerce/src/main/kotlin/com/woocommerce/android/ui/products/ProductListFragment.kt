@@ -237,13 +237,17 @@ class ProductListFragment :
     }
 
     override fun onQueryTextChange(newText: String): Boolean {
-        viewModel.onSearchQueryChanged(newText)
+        viewModel.onSearchQueryChanged(
+            newText,
+            isSkuSearch = binding.productsSearchTypeView.isSkuSearch()
+        )
         return true
     }
 
     override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
         viewModel.onSearchOpened()
         onSearchViewActiveChanged(isActive = true)
+        binding.productsSearchTypeView.show()
         return true
     }
 
@@ -251,6 +255,7 @@ class ProductListFragment :
         viewModel.onSearchClosed()
         closeSearchView()
         onSearchViewActiveChanged(isActive = false)
+        binding.productsSearchTypeView.hide()
         return true
     }
 

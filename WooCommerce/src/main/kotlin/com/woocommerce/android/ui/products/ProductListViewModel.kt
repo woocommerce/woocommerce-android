@@ -86,8 +86,15 @@ class ProductListViewModel @Inject constructor(
 
     fun getSearchQuery() = viewState.query
 
-    fun onSearchQueryChanged(query: String) {
-        viewState = viewState.copy(query = query, isEmptyViewVisible = false)
+    fun onSearchQueryChanged(
+        query: String,
+        isSkuSearch: Boolean
+    ) {
+        viewState = viewState.copy(
+            query = query,
+            isSkuSearch = isSkuSearch,
+            isEmptyViewVisible = false
+        )
 
         if (query.length > 2) {
             onSearchRequested()
@@ -247,7 +254,11 @@ class ProductListViewModel @Inject constructor(
                         displaySortAndFilterCard = false,
                         isAddProductButtonVisible = false
                     )
-                    fetchProductList(viewState.query, loadMore = loadMore)
+                    fetchProductList(
+                        viewState.query,
+                        isSkuSearch = viewState.isSkuSearch == true,
+                        loadMore = loadMore
+                    )
                 }
             }
         } else {
@@ -427,6 +438,7 @@ class ProductListViewModel @Inject constructor(
         val canLoadMore: Boolean? = null,
         val isRefreshing: Boolean? = null,
         val query: String? = null,
+        val isSkuSearch: Boolean? = null,
         val filterCount: Int? = null,
         val isSearchActive: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null,

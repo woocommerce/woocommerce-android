@@ -16,7 +16,7 @@ class WCProductSearchView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyle: Int = 0
 ) : ConstraintLayout(context, attrs, defStyle) {
-    private var binding = ProductSearchViewLayoutBinding.inflate(LayoutInflater.from(context))
+    private var binding = ProductSearchViewLayoutBinding.inflate(LayoutInflater.from(context), this, true)
     private var listener: ProductSearchTypeChangedListener? = null
 
     var productSearchType = ProductSearchType.SEARCH_ALL
@@ -26,9 +26,11 @@ class WCProductSearchView @JvmOverloads constructor(
                 field = value
                 binding.textSearchAll.isSelected = value == ProductSearchType.SEARCH_ALL
                 binding.textSearchSku.isSelected = value == ProductSearchType.SEARCH_SKU
-                listener?.onProductSearchTypeChanged(productSearchType)
+                listener?.onProductSearchTypeChanged(value)
             }
         }
+
+    fun isSkuSearch() = productSearchType == ProductSearchType.SEARCH_SKU
 
     init {
         binding.textSearchAll.setOnClickListener {
@@ -42,14 +44,14 @@ class WCProductSearchView @JvmOverloads constructor(
     fun show(searchTypeListener: ProductSearchTypeChangedListener? = null) {
         listener = searchTypeListener
         if (!isVisible) {
-            WooAnimUtils.scaleIn(this)
+            WooAnimUtils.fadeIn(this)
         }
     }
 
     fun hide() {
         listener = null
         if (isVisible) {
-            WooAnimUtils.scaleOut(this)
+            WooAnimUtils.fadeOut(this)
         }
     }
 
