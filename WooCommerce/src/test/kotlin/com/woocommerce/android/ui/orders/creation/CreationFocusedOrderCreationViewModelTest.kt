@@ -4,10 +4,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
-import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus.Failed
-import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus.Ongoing
-import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus.PendingDebounce
-import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus.Succeeded
+import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Failed
+import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Ongoing
+import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.PendingDebounce
+import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.Mode
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.Mode.Creation
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.ViewState
@@ -22,25 +22,17 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.Test
-import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
 class CreationFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest() {
     override val mode: Mode = Creation
-
-    @Test
-    fun `when initializing the view model, then register the orderDraft flowState`() {
-        verify(createOrUpdateOrderUseCase).invoke(any(), any())
-    }
 
     @Test
     fun `when submitting customer note, then update orderDraft liveData`() {
@@ -541,12 +533,8 @@ class CreationFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest(
 
     @Test
     fun `when OrderDraftUpdateStatus is WillStart, then adjust view state to reflect the loading preparation`() {
-        createOrUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(PendingDebounce)
-        }
-        createSut()
-
         var viewState: ViewState? = null
+        sut.onOrderStatusChange(PendingDebounce)
 
         sut.viewStateData.observeForever { _, new ->
             viewState = new
@@ -560,12 +548,9 @@ class CreationFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest(
 
     @Test
     fun `when OrderDraftUpdateStatus is Ongoing, then adjust view state to reflect the loading`() {
-        createOrUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(Ongoing)
-        }
-        createSut()
-
         var viewState: ViewState? = null
+
+        sut.onOrderStatusChange(Ongoing)
 
         sut.viewStateData.observeForever { _, new ->
             viewState = new
@@ -580,10 +565,6 @@ class CreationFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest(
     @Test
     fun `when OrderDraftUpdateStatus is Succeeded, then adjust view state to reflect the loading end`() {
         val modifiedOrderValue = defaultOrderValue.copy(id = 999)
-        createOrUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(modifiedOrderValue))
-        }
-        createSut()
 
         var viewState: ViewState? = null
         var orderDraft: Order? = null
@@ -596,6 +577,8 @@ class CreationFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest(
             orderDraft = it
         }
 
+        sut.onOrderStatusChange(Succeeded(modifiedOrderValue))
+
         assertThat(viewState).isNotNull
         assertThat(viewState?.willUpdateOrderDraft).isFalse
         assertThat(viewState?.isUpdatingOrderDraft).isFalse
@@ -607,12 +590,9 @@ class CreationFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest(
 
     @Test
     fun `when OrderDraftUpdateStatus is Failed, then adjust view state to reflect the failure`() {
-        createOrUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(Failed)
-        }
-        createSut()
-
         var viewState: ViewState? = null
+
+        sut.onOrderStatusChange(Failed)
 
         sut.viewStateData.observeForever { _, new ->
             viewState = new
@@ -701,28 +681,22 @@ class CreationFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest(
     @Test
     fun `when isEditable is true on the create flow the order is editable`() {
         // When the order is on Creation mode is always editable
-        createOrUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(defaultOrderValue.copy(isEditable = true)))
-        }
-        createSut()
         var lastReceivedState: ViewState? = null
         sut.viewStateData.liveData.observeForever {
             lastReceivedState = it
         }
+        sut.onOrderStatusChange(Succeeded(defaultOrderValue.copy(isEditable = true)))
         assertThat(lastReceivedState?.isEditable).isEqualTo(true)
     }
 
     @Test
     fun `when isEditable is false on the edit flow the order is editable`() {
         // When the order is on Creation mode is always editable
-        createOrUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(defaultOrderValue.copy(isEditable = false)))
-        }
-        createSut()
         var lastReceivedState: ViewState? = null
         sut.viewStateData.liveData.observeForever {
             lastReceivedState = it
         }
+        sut.onOrderStatusChange(Succeeded(defaultOrderValue.copy(isEditable = false)))
         assertThat(lastReceivedState?.isEditable).isEqualTo(true)
     }
 }

@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.creation
 
 import android.os.Parcelable
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
@@ -28,7 +29,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
-import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus
+import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.AddProduct
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.EditCustomer
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.EditCustomerNote
@@ -68,7 +69,6 @@ class OrderCreationViewModel @Inject constructor(
     private val orderDetailRepository: OrderDetailRepository,
     private val orderCreationRepository: OrderCreationRepository,
     private val mapItemToProductUiModel: MapItemToProductUiModel,
-    private val createOrUpdateOrderDraft: CreateOrUpdateOrderDraft,
     private val createOrderItem: CreateOrderItem,
     parameterRepository: ParameterRepository
 ) : ScopedViewModel(savedState) {
@@ -299,28 +299,31 @@ class OrderCreationViewModel @Inject constructor(
      */
     private fun monitorOrderChanges() {
         viewModelScope.launch {
-            createOrUpdateOrderDraft(_orderDraft.drop(1), retryOrderDraftUpdateTrigger)
-                .collect { updateStatus ->
-                    when (updateStatus) {
-                        OrderDraftUpdateStatus.PendingDebounce ->
-                            viewState = viewState.copy(willUpdateOrderDraft = true, showOrderUpdateSnackbar = false)
-                        OrderDraftUpdateStatus.Ongoing ->
-                            viewState = viewState.copy(willUpdateOrderDraft = false, isUpdatingOrderDraft = true)
-                        OrderDraftUpdateStatus.Failed ->
-                            viewState = viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = true)
-                        is OrderDraftUpdateStatus.Succeeded -> {
-                            viewState = viewState.copy(
-                                isUpdatingOrderDraft = false,
-                                showOrderUpdateSnackbar = false,
-                                isEditable = updateStatus.order.isEditable || mode is Mode.Creation
-                            )
-                            _orderDraft.update { currentDraft ->
-                                // Keep the user's selected status
-                                updateStatus.order.copy(status = currentDraft.status)
-                            }
-                        }
-                    }
+            createOrUpdateOrder(_orderDraft.drop(1), retryOrderDraftUpdateTrigger)
+                .collect { updateStatus -> onOrderStatusChange(updateStatus) }
+        }
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun onOrderStatusChange(updateStatus: OrderUpdateStatus) {
+        when (updateStatus) {
+            OrderUpdateStatus.PendingDebounce ->
+                viewState = viewState.copy(willUpdateOrderDraft = true, showOrderUpdateSnackbar = false)
+            OrderUpdateStatus.Ongoing ->
+                viewState = viewState.copy(willUpdateOrderDraft = false, isUpdatingOrderDraft = true)
+            OrderUpdateStatus.Failed ->
+                viewState = viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = true)
+            is OrderUpdateStatus.Succeeded -> {
+                viewState = viewState.copy(
+                    isUpdatingOrderDraft = false,
+                    showOrderUpdateSnackbar = false,
+                    isEditable = updateStatus.order.isEditable || mode is Mode.Creation
+                )
+                _orderDraft.update { currentDraft ->
+                    // Keep the user's selected status
+                    updateStatus.order.copy(status = currentDraft.status)
                 }
+            }
         }
     }
 

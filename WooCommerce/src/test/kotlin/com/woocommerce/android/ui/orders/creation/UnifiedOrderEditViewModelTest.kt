@@ -3,20 +3,19 @@ package com.woocommerce.android.ui.orders.creation
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus.Succeeded
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flowOf
 import org.junit.Before
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
+import org.mockito.kotlin.stub
 
 @ExperimentalCoroutinesApi
 abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
@@ -24,7 +23,6 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     protected lateinit var viewState: OrderCreationViewModel.ViewState
     protected lateinit var savedState: SavedStateHandle
     protected lateinit var mapItemToProductUIModel: MapItemToProductUiModel
-    protected lateinit var createOrUpdateOrderUseCase: CreateOrUpdateOrderDraft
     protected lateinit var createOrderItemUseCase: CreateOrderItem
     protected lateinit var orderCreationRepository: OrderCreationRepository
     protected lateinit var orderDetailRepository: OrderDetailRepository
@@ -48,9 +46,6 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             on { getLiveData(viewState.javaClass.name, viewState) } doReturn MutableLiveData(viewState)
             on { getLiveData(eq(Order.EMPTY.javaClass.name), any<Order>()) } doReturn MutableLiveData(emptyOrder)
         }
-        createOrUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(Order.EMPTY))
-        }
         createOrderItemUseCase = mock {
             onBlocking { invoke(123, null) } doReturn defaultOrderItem
         }
@@ -67,6 +62,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
         orderCreationRepository = mock {
             onBlocking { placeOrder(defaultOrderValue) } doReturn Result.success(defaultOrderValue)
+        }
+        orderCreationRepository.stub {
+            onBlocking { createOrUpdateDraft(any()) } doReturn Result.success(defaultOrderValue)
         }
         orderDetailRepository = mock {
             on { getOrderStatusOptions() } doReturn orderStatusList
@@ -89,7 +87,6 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             orderDetailRepository = orderDetailRepository,
             orderCreationRepository = orderCreationRepository,
             mapItemToProductUiModel = mapItemToProductUIModel,
-            createOrUpdateOrderDraft = createOrUpdateOrderUseCase,
             createOrderItem = createOrderItemUseCase,
             parameterRepository = parameterRepository
         )
