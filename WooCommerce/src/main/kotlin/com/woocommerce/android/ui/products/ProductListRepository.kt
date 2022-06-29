@@ -78,10 +78,10 @@ class ProductListRepository @Inject constructor(
             offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
             lastSearchQuery = null
             val payload = WCProductStore.FetchProductsPayload(
-                selectedSite.get(),
-                PRODUCT_PAGE_SIZE,
-                offset,
-                productSortingChoice,
+                site = selectedSite.get(),
+                pageSize = PRODUCT_PAGE_SIZE,
+                offset = offset,
+                sorting = productSortingChoice,
                 filterOptions = productFilterOptions,
                 excludedProductIds = excludedProductIds
             )
@@ -108,11 +108,11 @@ class ProductListRepository @Inject constructor(
             offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
             lastSearchQuery = searchQuery
             val payload = WCProductStore.SearchProductsPayload(
-                selectedSite.get(),
-                searchQuery,
-                PRODUCT_PAGE_SIZE,
-                offset,
-                productSortingChoice,
+                site = selectedSite.get(),
+                searchQuery = searchQuery,
+                pageSize = PRODUCT_PAGE_SIZE,
+                offset = offset,
+                sorting = productSortingChoice,
                 excludedProductIds = excludedProductIds
             )
             dispatcher.dispatch(WCProductActionBuilder.newSearchProductsAction(payload))
