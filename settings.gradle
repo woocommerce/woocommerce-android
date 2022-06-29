@@ -18,7 +18,7 @@ pluginManagement {
         id 'com.google.gms.google-services' version '4.3.10'
         id 'io.github.wzieba.tracks.plugin' version '1.0.0'
         id 'io.gitlab.arturbosch.detekt' version gradle.ext.detektVersion
-        id 'io.sentry.android.gradle' version '3.0.1'
+        id 'io.sentry.android.gradle' version '3.1.2'
         id 'org.jetbrains.kotlin.android' version gradle.ext.kotlinVersion
         id 'org.jetbrains.kotlin.jvm' version gradle.ext.kotlinVersion
         id 'org.jetbrains.kotlin.kapt' version gradle.ext.kotlinVersion
