@@ -6,6 +6,7 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.push.NotificationChannelType
@@ -32,6 +33,7 @@ class MainActivityViewModel @Inject constructor(
     private val featureAnnouncementRepository: FeatureAnnouncementRepository,
     private val buildConfigWrapper: BuildConfigWrapper,
     private val prefs: AppPrefs,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     unseenReviewsCountHandler: UnseenReviewsCountHandler
 ) : ScopedViewModel(savedState) {
     init {
@@ -120,7 +122,7 @@ class MainActivityViewModel @Inject constructor(
                     cachedAnnouncement.canBeDisplayedOnAppUpgrade(buildConfigWrapper.versionName)
                 ) {
                     WooLog.i(T.DEVICE, "Displaying Feature Announcement on main activity")
-                    AnalyticsTracker.track(
+                    analyticsTrackerWrapper.track(
                         AnalyticsEvent.FEATURE_ANNOUNCEMENT_SHOWN,
                         mapOf(
                             AnalyticsTracker.KEY_ANNOUNCEMENT_VIEW_SOURCE to

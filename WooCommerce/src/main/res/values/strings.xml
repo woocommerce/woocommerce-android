@@ -1660,6 +1660,8 @@
     <string name="support_system_status_report">System status report</string>
     <string name="support_system_status_report_clipboard_label">WooCommerce SSR</string>
     <string name="support_system_status_report_detail">Various system information about your site</string>
+    <string name="support_system_status_report_copy_label">Copy system status report to clipboard</string>
+    <string name="support_system_status_report_share_label">Share system status report</string>
     <string name="support_system_status_report_copied_to_clipboard">System status report copied to clipboard</string>
     <string name="support_system_status_report_error_copy_to_clipboard">Error copying SSR to clipboard</string>
     <string name="support_system_status_report_share_error">Unable to share System Status Report</string>
