@@ -34,7 +34,6 @@ REMOTE_LIBRARIES_STRINGS_PATHS = [
     import_key: 'aboutAutomatticVersion', # key used in build.gradle to reference the version
     repository: 'Automattic/about-automattic-android',
     strings_file_path: 'library/src/main/res/values/strings.xml',
-    exclusions: [],
     source_id: 'about'
   }
 ].freeze
