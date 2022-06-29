@@ -53,7 +53,7 @@ class ProductListFragment :
     ProductSortAndFilterListener,
     OnLoadMoreListener,
     OnQueryTextListener,
-    OnActionExpandListener, WCProductSearchView.ProductSearchTypeChangedListener {
+    OnActionExpandListener, WCProductSearchTabView.ProductSearchTypeChangedListener {
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
         val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"

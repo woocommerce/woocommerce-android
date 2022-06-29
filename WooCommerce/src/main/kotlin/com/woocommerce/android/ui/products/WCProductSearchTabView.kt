@@ -13,7 +13,7 @@ import com.woocommerce.android.util.WooAnimUtils
 /**
  * Used by product list to choose whether to search product details or product SKU
  */
-class WCProductSearchView @JvmOverloads constructor(
+class WCProductSearchTabView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0
