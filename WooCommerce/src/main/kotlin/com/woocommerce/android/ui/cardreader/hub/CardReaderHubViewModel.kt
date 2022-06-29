@@ -54,9 +54,9 @@ class CardReaderHubViewModel @Inject constructor(
     private val cardReaderHubListWhenMultiplePluginsInstalled = cardReaderHubListWhenSinglePluginInstalled +
         mutableListOf(
             CardReaderHubListItemViewState(
-                icon = R.drawable.ic_card_reader_manual,
+                icon = R.drawable.ic_payment_provider,
                 label = UiString.UiStringRes(R.string.card_reader_manage_payment_provider),
-                onItemClicked = ::onCardReaderManualsClicked
+                onItemClicked = ::onCardReaderPaymentProviderClicked
             )
         )
 
@@ -111,6 +111,10 @@ class CardReaderHubViewModel @Inject constructor(
 
     private fun onCardReaderManualsClicked() {
         triggerEvent(CardReaderHubEvents.NavigateToCardReaderManualsScreen)
+    }
+
+    private fun onCardReaderPaymentProviderClicked() {
+        TODO("Not Implemented")
     }
 
     sealed class CardReaderHubEvents : MultiLiveEvent.Event() {
