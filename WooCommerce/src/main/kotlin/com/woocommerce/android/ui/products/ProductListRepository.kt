@@ -47,6 +47,9 @@ class ProductListRepository @Inject constructor(
     var lastSearchQuery: String? = null
         private set
 
+    var lastIsSkuSearch = false
+        private set
+
     var productSortingChoice: ProductSorting
         get() {
             return ProductSorting.valueOf(
@@ -77,6 +80,7 @@ class ProductListRepository @Inject constructor(
         loadContinuation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
             offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
             lastSearchQuery = null
+            lastIsSkuSearch = false
             val payload = WCProductStore.FetchProductsPayload(
                 site = selectedSite.get(),
                 pageSize = PRODUCT_PAGE_SIZE,
@@ -98,7 +102,7 @@ class ProductListRepository @Inject constructor(
      */
     suspend fun searchProductList(
         searchQuery: String,
-        isSkuSearch: Boolean = true, // TODO nbradbury
+        isSkuSearch: Boolean = false,
         loadMore: Boolean = false,
         excludedProductIds: List<Long>? = null
     ): List<Product>? {
@@ -108,6 +112,7 @@ class ProductListRepository @Inject constructor(
         val result = searchContinuation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
             offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
             lastSearchQuery = searchQuery
+            lastIsSkuSearch = isSkuSearch
             val payload = WCProductStore.SearchProductsPayload(
                 site = selectedSite.get(),
                 searchQuery = searchQuery,

@@ -343,15 +343,22 @@ class ProductListViewModel @Inject constructor(
 
     private suspend fun fetchProductList(
         searchQuery: String? = null,
+        isSkuSearch: Boolean = false,
         loadMore: Boolean = false,
         scrollToTop: Boolean = false
     ) {
         if (searchQuery.isNullOrEmpty()) {
             _productList.value = productRepository.fetchProductList(loadMore, productFilterOptions)
         } else {
-            productRepository.searchProductList(searchQuery, loadMore)?.let { fetchedProducts ->
+            productRepository.searchProductList(
+                searchQuery = searchQuery,
+                isSkuSearch = isSkuSearch,
+                loadMore = loadMore
+            )?.let { fetchedProducts ->
                 // make sure the search query hasn't changed while the fetch was processing
-                if (searchQuery == productRepository.lastSearchQuery) {
+                if (searchQuery == productRepository.lastSearchQuery &&
+                    isSkuSearch == productRepository.lastIsSkuSearch
+                ) {
                     if (loadMore) {
                         _productList.value = _productList.value.orEmpty() + fetchedProducts
                     } else {
