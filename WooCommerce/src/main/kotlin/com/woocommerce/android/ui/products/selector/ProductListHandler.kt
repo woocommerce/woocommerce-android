@@ -18,6 +18,7 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
     private val mutex = Mutex()
     private var offset = 0
     private var canLoadMore = true
+    private var isSkuSearch = false
 
     private val searchQuery = MutableStateFlow("")
     private val searchResults = MutableStateFlow(emptyList<Product>())
@@ -34,6 +35,7 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
 
     suspend fun fetchProducts(
         searchQuery: String = "",
+        isSkuSearch: Boolean = false,
         forceRefresh: Boolean = false,
         filters: Map<ProductFilterOption, String> = emptyMap()
     ): Result<Unit> = mutex.withLock {
@@ -41,7 +43,9 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
         offset = 0
         canLoadMore = true
 
+        this.isSkuSearch = isSkuSearch
         this.searchQuery.value = searchQuery
+
         this.productFilters.value = filters
         return if (searchQuery.isEmpty()) {
             if (forceRefresh) {
@@ -76,6 +80,7 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
             offset = offset,
             pageSize = PAGE_SIZE,
             searchQuery = searchQuery.value,
+            isSkuSearch = isSkuSearch
         ).onSuccess { result ->
             canLoadMore = result.canLoadMore
             offset += PAGE_SIZE

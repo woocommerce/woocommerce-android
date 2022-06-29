@@ -98,6 +98,7 @@ class ProductListRepository @Inject constructor(
      */
     suspend fun searchProductList(
         searchQuery: String,
+        isSkuSearch: Boolean = true, // TODO nbradbury
         loadMore: Boolean = false,
         excludedProductIds: List<Long>? = null
     ): List<Product>? {
@@ -110,6 +111,7 @@ class ProductListRepository @Inject constructor(
             val payload = WCProductStore.SearchProductsPayload(
                 site = selectedSite.get(),
                 searchQuery = searchQuery,
+                isSkuSearch = isSkuSearch,
                 pageSize = PRODUCT_PAGE_SIZE,
                 offset = offset,
                 sorting = productSortingChoice,
