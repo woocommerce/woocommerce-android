@@ -219,6 +219,22 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given payment gateway flag enabled, when multiple plugins installed, then payment provider icon is shown`() {
+        whenever(ippSelectPaymentGateway.isEnabled()).thenReturn(true)
+        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+            .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
+        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+            .thenReturn(buildWCPayPluginInfo(isActive = true))
+
+        initViewModel()
+
+        assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
+            .anyMatch {
+                it.icon == R.drawable.ic_payment_provider
+            }
+    }
+
+    @Test
     fun `given payment flag disabled, when multiple plugins installed, then payment provider row is not shown`() {
         whenever(ippSelectPaymentGateway.isEnabled()).thenReturn(false)
         whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
