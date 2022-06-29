@@ -200,7 +200,11 @@ class ProductListViewModel @Inject constructor(
 
     fun onSearchTypeChanged(isSkuSearch: Boolean) {
         viewState = viewState.copy(isSkuSearch = isSkuSearch)
-        onSearchRequested()
+        viewState.query?.let { query ->
+            if (query.length > 2) {
+                onSearchRequested()
+            }
+        }
     }
 
     fun onSearchRequested() {
