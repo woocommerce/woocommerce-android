@@ -225,9 +225,6 @@
     <ID>NoWildcardImports:com.woocommerce.android.ui.mystore.MyStoreViewModel.kt:29</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.mystore.MyStoreViewModelTest.kt:18</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.mystore.data.StatsRepository.kt:15</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.mystore.domain.GetStats.kt:11</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.mystore.domain.GetStats.kt:7</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.mystore.domain.GetStatsTest.kt:7</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.OrderDetailViewModelTest.kt:20</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.OrderDetailViewModelTest.kt:33</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.OrderDetailViewModelTest.kt:36</ID>
@@ -551,8 +548,6 @@
     <ID>WildcardImport:EditShippingLabelPackagesViewModel.kt$import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*</ID>
     <ID>WildcardImport:EditShippingLabelPaymentFragment.kt$import com.woocommerce.android.extensions.*</ID>
     <ID>WildcardImport:FeatureAnnouncementDialogFragment.kt$import android.view.*</ID>
-    <ID>WildcardImport:GetStats.kt$import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.*</ID>
-    <ID>WildcardImport:GetStats.kt$import kotlinx.coroutines.flow.*</ID>
     <ID>WildcardImport:GroupedProductListFragment.kt$import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*</ID>
     <ID>WildcardImport:InfiniteListHandler.kt$import androidx.compose.runtime.*</ID>
     <ID>WildcardImport:JetpackInstallProgressDialog.kt$import com.woocommerce.android.extensions.*</ID>
@@ -580,7 +575,6 @@
     <ID>WildcardImport:MoreMenuFragment.kt$import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.*</ID>
     <ID>WildcardImport:MoveShippingItemViewModel.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationPackage.*</ID>
     <ID>WildcardImport:MyStoreStatsView.kt$import com.woocommerce.android.extensions.*</ID>
-    <ID>WildcardImport:MyStoreViewModel.kt$import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.*</ID>
     <ID>WildcardImport:MyStoreViewModel.kt$import kotlinx.coroutines.flow.*</ID>
     <ID>WildcardImport:Notification.kt$import com.woocommerce.android.push.*</ID>
     <ID>WildcardImport:NotificationChannelType.kt$import com.woocommerce.android.push.NotificationChannelType.*</ID>

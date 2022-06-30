@@ -4,10 +4,13 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository.StatsException
-import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.*
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.FeatureFlag
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.transform
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
@@ -26,13 +29,13 @@ class GetStats @Inject constructor(
             visitorStats(refresh, granularity)
         ).flowOn(coroutineDispatchers.computation)
 
-    private suspend fun hasOrders(): Flow<HasOrders> =
+    private suspend fun hasOrders(): Flow<LoadStatsResult.HasOrders> =
         statsRepository.checkIfStoreHasNoOrders()
             .transform {
                 if (it.getOrNull() == true) {
-                    emit(HasOrders(false))
+                    emit(LoadStatsResult.HasOrders(false))
                 } else {
-                    emit(HasOrders(true))
+                    emit(LoadStatsResult.HasOrders(true))
                 }
             }
 
@@ -42,14 +45,14 @@ class GetStats @Inject constructor(
                 result.fold(
                     onSuccess = { stats ->
                         appPrefsWrapper.setV4StatsSupported(true)
-                        emit(RevenueStatsSuccess(stats))
+                        emit(LoadStatsResult.RevenueStatsSuccess(stats))
                     },
                     onFailure = {
                         if (isPluginNotActiveError(it)) {
                             appPrefsWrapper.setV4StatsSupported(false)
-                            emit(PluginNotActive)
+                            emit(LoadStatsResult.PluginNotActive)
                         } else {
-                            emit(RevenueStatsError)
+                            emit(LoadStatsResult.RevenueStatsError)
                         }
                     }
                 )
@@ -60,14 +63,14 @@ class GetStats @Inject constructor(
             statsRepository.fetchVisitorStats(granularity, forceRefresh)
                 .transform { result ->
                     result.fold(
-                        onSuccess = { stats -> emit(VisitorsStatsSuccess(stats)) },
-                        onFailure = { emit(VisitorsStatsError) }
+                        onSuccess = { stats -> emit(LoadStatsResult.VisitorsStatsSuccess(stats)) },
+                        onFailure = { emit(LoadStatsResult.VisitorsStatsError) }
                     )
                 }
         } else {
             flow {
                 if (FeatureFlag.JETPACK_CP.isEnabled()) {
-                    emit(IsJetPackCPEnabled)
+                    emit(LoadStatsResult.IsJetPackCPEnabled)
                 }
             }
         }
