@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.creation
 
 import android.os.Parcelable
-import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
@@ -70,6 +69,8 @@ class OrderCreationViewModel @Inject constructor(
     private val orderCreationRepository: OrderCreationRepository,
     private val mapItemToProductUiModel: MapItemToProductUiModel,
     private val createOrderItem: CreateOrderItem,
+    autoSyncOrder: AutoSyncOrder,
+    autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -105,10 +106,10 @@ class OrderCreationViewModel @Inject constructor(
 
     private val retryOrderDraftUpdateTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
-    private val createOrUpdateOrder =
+    private val syncStrategy =
         when (mode) {
-            Mode.Creation -> AutoSyncPriceModifier(dispatchers, orderCreationRepository)
-            is Mode.Edit -> AutoSyncOrder(dispatchers, orderCreationRepository)
+            Mode.Creation -> autoSyncPriceModifier
+            is Mode.Edit -> autoSyncOrder
         }
 
     fun getProductUIModelFromItem(item: Order.Item) = runBlocking {
@@ -299,31 +300,28 @@ class OrderCreationViewModel @Inject constructor(
      */
     private fun monitorOrderChanges() {
         viewModelScope.launch {
-            createOrUpdateOrder(_orderDraft.drop(1), retryOrderDraftUpdateTrigger)
-                .collect { updateStatus -> onOrderStatusChange(updateStatus) }
-        }
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun onOrderStatusChange(updateStatus: OrderUpdateStatus) {
-        when (updateStatus) {
-            OrderUpdateStatus.PendingDebounce ->
-                viewState = viewState.copy(willUpdateOrderDraft = true, showOrderUpdateSnackbar = false)
-            OrderUpdateStatus.Ongoing ->
-                viewState = viewState.copy(willUpdateOrderDraft = false, isUpdatingOrderDraft = true)
-            OrderUpdateStatus.Failed ->
-                viewState = viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = true)
-            is OrderUpdateStatus.Succeeded -> {
-                viewState = viewState.copy(
-                    isUpdatingOrderDraft = false,
-                    showOrderUpdateSnackbar = false,
-                    isEditable = updateStatus.order.isEditable || mode is Mode.Creation
-                )
-                _orderDraft.update { currentDraft ->
-                    // Keep the user's selected status
-                    updateStatus.order.copy(status = currentDraft.status)
+            syncStrategy.syncOrderChanges(_orderDraft.drop(1), retryOrderDraftUpdateTrigger)
+                .collect { updateStatus ->
+                    when (updateStatus) {
+                        OrderUpdateStatus.PendingDebounce ->
+                            viewState = viewState.copy(willUpdateOrderDraft = true, showOrderUpdateSnackbar = false)
+                        OrderUpdateStatus.Ongoing ->
+                            viewState = viewState.copy(willUpdateOrderDraft = false, isUpdatingOrderDraft = true)
+                        OrderUpdateStatus.Failed ->
+                            viewState = viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = true)
+                        is OrderUpdateStatus.Succeeded -> {
+                            viewState = viewState.copy(
+                                isUpdatingOrderDraft = false,
+                                showOrderUpdateSnackbar = false,
+                                isEditable = updateStatus.order.isEditable || mode is Mode.Creation
+                            )
+                            _orderDraft.update { currentDraft ->
+                                // Keep the user's selected status
+                                updateStatus.order.copy(status = currentDraft.status)
+                            }
+                        }
+                    }
                 }
-            }
         }
     }
 
