@@ -305,13 +305,19 @@ class ProductListViewModel @Inject constructor(
                 !isSearching()
             }
 
+        val shouldShowEmptyView = if (isSearching()) {
+            viewState.query?.isNotEmpty() == true
+        } else {
+            _productList.value?.isEmpty() == true
+        }
+
         viewState = viewState.copy(
             isSkeletonShown = false,
             isLoading = false,
             isLoadingMore = false,
             isRefreshing = false,
             canLoadMore = productRepository.canLoadMoreProducts,
-            isEmptyViewVisible = _productList.value?.isEmpty() == true,
+            isEmptyViewVisible = shouldShowEmptyView,
             isAddProductButtonVisible = shouldShowAddProductButton,
             displaySortAndFilterCard = !isSearching() &&
                 (productFilterOptions.isNotEmpty() || _productList.value?.isNotEmpty() == true)
