@@ -148,9 +148,6 @@
     <ID>NoWildcardImports:com.woocommerce.android.cardreader.internal.payments.PaymentManager.kt:20</ID>
     <ID>NoWildcardImports:com.woocommerce.android.extensions.DateExt.kt:10</ID>
     <ID>NoWildcardImports:com.woocommerce.android.extensions.LiveDataExt.kt:3</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.media.MediaFilesRepository.kt:13</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.media.MediaFilesRepository.kt:14</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.media.MediaFilesRepository.kt:22</ID>
     <ID>NoWildcardImports:com.woocommerce.android.media.ProductImagesUploadWorker.kt:13</ID>
     <ID>NoWildcardImports:com.woocommerce.android.media.ProductImagesUploadWorker.kt:14</ID>
     <ID>NoWildcardImports:com.woocommerce.android.media.ProductImagesUploadWorker.kt:4</ID>
@@ -563,9 +560,6 @@
     <ID>WildcardImport:MainSettingsFragment.kt$import com.woocommerce.android.analytics.AnalyticsEvent.*</ID>
     <ID>WildcardImport:MainSettingsFragment.kt$import com.woocommerce.android.util.*</ID>
     <ID>WildcardImport:MarkAllReviewsAsSeen.kt$import com.woocommerce.android.model.RequestResult.*</ID>
-    <ID>WildcardImport:MediaFilesRepository.kt$import kotlinx.coroutines.channels.*</ID>
-    <ID>WildcardImport:MediaFilesRepository.kt$import kotlinx.coroutines.flow.*</ID>
-    <ID>WildcardImport:MediaFilesRepository.kt$import org.wordpress.android.fluxc.store.MediaStore.*</ID>
     <ID>WildcardImport:MoreMenu.kt$import androidx.compose.foundation.layout.*</ID>
     <ID>WildcardImport:MoreMenu.kt$import androidx.compose.material.*</ID>
     <ID>WildcardImport:MoreMenuFragment.kt$import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.*</ID>
