@@ -23,6 +23,8 @@ import androidx.transition.TransitionManager
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 
+private const val EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS = 300L
+
 fun View.show() {
     this.visibility = View.VISIBLE
 }
@@ -89,7 +91,7 @@ fun View.collapse(duration: Long = 300L) {
 
 fun Group.expand() {
     if (this.isVisible) return
-    val animationDuration = 300L
+    val animationDuration = EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS
     val parent = parent as ViewGroup
     val transition = ChangeBounds()
         .setDuration(animationDuration)
@@ -100,7 +102,7 @@ fun Group.expand() {
 
 fun Group.collapse() {
     if (!this.isVisible) return
-    val animationDuration = 300L
+    val animationDuration = EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS
     val parent = parent as ConstraintLayout
     val views = referencedIds.map { parent.getViewById(it) }
     val originalHeights = views.map { it.layoutParams.height }
