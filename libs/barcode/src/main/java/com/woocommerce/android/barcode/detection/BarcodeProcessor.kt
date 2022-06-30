@@ -20,16 +20,16 @@ import android.animation.ValueAnimator
 import android.util.Log
 import androidx.annotation.MainThread
 import com.google.android.gms.tasks.Task
+import com.google.mlkit.vision.barcode.BarcodeScanning
+import com.google.mlkit.vision.barcode.common.Barcode
+import com.google.mlkit.vision.common.InputImage
 import com.woocommerce.android.barcode.InputInfo
 import com.woocommerce.android.barcode.camera.CameraReticleAnimator
+import com.woocommerce.android.barcode.camera.FrameProcessorBase
 import com.woocommerce.android.barcode.camera.GraphicOverlay
 import com.woocommerce.android.barcode.camera.WorkflowModel
 import com.woocommerce.android.barcode.camera.WorkflowModel.WorkflowState
-import com.woocommerce.android.barcode.camera.FrameProcessorBase
 import com.woocommerce.android.barcode.settings.PreferenceUtils
-import com.google.mlkit.vision.barcode.Barcode
-import com.google.mlkit.vision.barcode.BarcodeScanning
-import com.google.mlkit.vision.common.InputImage
 import java.io.IOException
 
 /** A processor to run the barcode detector.  */

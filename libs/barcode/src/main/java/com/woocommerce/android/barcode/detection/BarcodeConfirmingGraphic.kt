@@ -18,9 +18,9 @@ package com.woocommerce.android.barcode.detection
 
 import android.graphics.Canvas
 import android.graphics.Path
+import com.google.mlkit.vision.barcode.common.Barcode
 import com.woocommerce.android.barcode.camera.GraphicOverlay
 import com.woocommerce.android.barcode.settings.PreferenceUtils
-import com.google.mlkit.vision.barcode.Barcode
 
 /** Guides user to move camera closer to confirm the detected barcode.  */
 internal class BarcodeConfirmingGraphic(overlay: GraphicOverlay, private val barcode: Barcode) :

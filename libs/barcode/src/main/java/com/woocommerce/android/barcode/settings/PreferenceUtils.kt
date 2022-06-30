@@ -21,10 +21,10 @@ import android.graphics.RectF
 import android.preference.PreferenceManager
 import androidx.annotation.StringRes
 import com.google.android.gms.common.images.Size
-import com.google.mlkit.vision.barcode.Barcode
+import com.google.mlkit.vision.barcode.common.Barcode
+import com.woocommerce.android.barcode.R
 import com.woocommerce.android.barcode.camera.CameraSizePair
 import com.woocommerce.android.barcode.camera.GraphicOverlay
-import com.woocommerce.android.barcode.R
 
 /** Utility class to retrieve shared preferences.  */
 object PreferenceUtils {
@@ -76,8 +76,8 @@ object PreferenceUtils {
             val pictureSizePrefKey = context.getString(R.string.pref_key_rear_camera_picture_size)
             val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
             CameraSizePair(
-                Size.parseSize(sharedPreferences.getString(previewSizePrefKey, null)),
-                Size.parseSize(sharedPreferences.getString(pictureSizePrefKey, null))
+                Size.parseSize(sharedPreferences.getString(previewSizePrefKey, null) ?: ""),
+                Size.parseSize(sharedPreferences.getString(pictureSizePrefKey, null) ?: "")
             )
         } catch (e: Exception) {
             null
