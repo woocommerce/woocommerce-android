@@ -7,11 +7,14 @@ import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.Mode.Ed
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
 
 @ExperimentalCoroutinesApi
@@ -67,21 +70,27 @@ class EditFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest() {
 
     @Test
     fun `when isEditable is true on the edit flow the order is editable`() {
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(defaultOrderValue.copy(isEditable = true)))
+        }
+        createSut()
         var lastReceivedState: OrderCreationViewModel.ViewState? = null
         sut.viewStateData.liveData.observeForever {
             lastReceivedState = it
         }
-        sut.onOrderStatusChange(Succeeded(defaultOrderValue.copy(isEditable = true)))
         assertThat(lastReceivedState?.isEditable).isEqualTo(true)
     }
 
     @Test
     fun `when isEditable is false on the edit flow the order is NOT editable`() {
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(defaultOrderValue.copy(isEditable = false)))
+        }
+        createSut()
         var lastReceivedState: OrderCreationViewModel.ViewState? = null
         sut.viewStateData.liveData.observeForever {
             lastReceivedState = it
         }
-        sut.onOrderStatusChange(Succeeded(defaultOrderValue.copy(isEditable = false)))
         assertThat(lastReceivedState?.isEditable).isEqualTo(false)
     }
 }
