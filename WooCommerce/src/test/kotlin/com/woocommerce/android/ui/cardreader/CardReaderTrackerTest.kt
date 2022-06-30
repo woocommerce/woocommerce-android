@@ -24,6 +24,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
 import com.woocommerce.android.ui.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -300,6 +301,19 @@ class CardReaderTrackerTest : BaseUnitTest() {
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
                 check { assertThat(it["reason"]).isEqualTo("account_rejected") }
+            )
+        }
+
+    @Test
+    fun `when state ChoosePaymentGatewayProvider, then reason=card_present_select_payment_gateway_show tracked`() =
+        testBlocking {
+            cardReaderTracker.trackOnboardingState(
+                ChoosePaymentGatewayProvider
+            )
+
+            verify(trackerWrapper).track(
+                eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
+                check { assertThat(it["reason"]).isEqualTo("card_present_select_payment_gateway_show") }
             )
         }
 
