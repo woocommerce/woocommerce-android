@@ -212,8 +212,6 @@
     <ID>NoWildcardImports:com.woocommerce.android.ui.main.MainActivityViewModelTest.kt:7</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.main.MainActivityViewModelTest.kt:9</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.main.MainPresenterTest.kt:17</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.media.MediaFileUploadHandler.kt:13</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.media.MediaFileUploadHandler.kt:21</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.moremenu.MoreMenu.kt:11</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.moremenu.MoreMenu.kt:17</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.moremenu.MoreMenuFragment.kt:18</ID>
@@ -565,8 +563,6 @@
     <ID>WildcardImport:MainSettingsFragment.kt$import com.woocommerce.android.analytics.AnalyticsEvent.*</ID>
     <ID>WildcardImport:MainSettingsFragment.kt$import com.woocommerce.android.util.*</ID>
     <ID>WildcardImport:MarkAllReviewsAsSeen.kt$import com.woocommerce.android.model.RequestResult.*</ID>
-    <ID>WildcardImport:MediaFileUploadHandler.kt$import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.*</ID>
-    <ID>WildcardImport:MediaFileUploadHandler.kt$import kotlinx.coroutines.flow.*</ID>
     <ID>WildcardImport:MediaFilesRepository.kt$import kotlinx.coroutines.channels.*</ID>
     <ID>WildcardImport:MediaFilesRepository.kt$import kotlinx.coroutines.flow.*</ID>
     <ID>WildcardImport:MediaFilesRepository.kt$import org.wordpress.android.fluxc.store.MediaStore.*</ID>
