@@ -27,6 +27,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.MediaActionBuilder
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore
+import org.wordpress.android.fluxc.store.MediaStore.OnMediaUploaded
 import org.wordpress.android.mediapicker.MediaPickerUtils
 import java.io.File
 import javax.inject.Inject
@@ -110,7 +111,7 @@ class MediaFilesRepository @Inject constructor(
         @Suppress("LongMethod")
         @SuppressWarnings("unused")
         @Subscribe(threadMode = ThreadMode.BACKGROUND)
-        fun onMediaUploaded(event: MediaStore.OnMediaUploaded) {
+        fun onMediaUploaded(event: OnMediaUploaded) {
             when {
                 event.isError -> {
                     WooLog.w(
