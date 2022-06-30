@@ -30,7 +30,6 @@ import javax.inject.Singleton
  * Uploading media and updating product is done sequentially (using a [Mutex] lock) because our repositories don't
  * play well with parallel requests, due to the use of a single shared continuation.
  */
-@ExperimentalCoroutinesApi
 @Singleton
 class ProductImagesUploadWorker @Inject constructor(
     private val mediaFilesRepository: MediaFilesRepository,
@@ -76,6 +75,7 @@ class ProductImagesUploadWorker @Inject constructor(
             .launchIn(appCoroutineScope)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun handleServiceStatus() {
         pendingWorkList
             .transformLatest { list ->
