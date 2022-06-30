@@ -230,7 +230,8 @@ class ProductListViewModel @Inject constructor(
         )
     }
 
-    final fun loadProducts(
+    @Suppress("LongMethod")
+    fun loadProducts(
         loadMore: Boolean = false,
         scrollToTop: Boolean = false,
         isRefreshing: Boolean = false
@@ -359,6 +360,7 @@ class ProductListViewModel @Inject constructor(
         }
     }
 
+    @Suppress("NestedBlockDepth")
     private suspend fun fetchProductList(
         searchQuery: String? = null,
         isSkuSearch: Boolean = false,

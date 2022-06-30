@@ -22,14 +22,18 @@ class WCProductSearchTabView @JvmOverloads constructor(
     private var listener: ProductSearchTypeChangedListener? = null
 
     init {
-        binding.tabLayout.addTab(binding.tabLayout.newTab().apply {
-            setText(context.getString(R.string.product_search_all))
-                .id = TAB_ALL
-        })
-        binding.tabLayout.addTab(binding.tabLayout.newTab().apply {
-            setText(context.getString(R.string.product_search_sku))
-                .id = TAB_SKU
-        })
+        binding.tabLayout.addTab(
+            binding.tabLayout.newTab().apply {
+                setText(context.getString(R.string.product_search_all))
+                    .id = TAB_ALL
+            }
+        )
+        binding.tabLayout.addTab(
+            binding.tabLayout.newTab().apply {
+                setText(context.getString(R.string.product_search_sku))
+                    .id = TAB_SKU
+            }
+        )
 
         binding.tabLayout.addOnTabSelectedListener(this)
     }
