@@ -3,17 +3,13 @@ package com.woocommerce.android.ui.orders.creation
 import com.woocommerce.android.extensions.areSameAs
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import javax.inject.Inject
 
-class AutoSyncPriceModifier @Inject constructor(
-    dispatchers: CoroutineDispatchers,
-    orderCreationRepository: OrderCreationRepository
-) : CreateUpdateOrder(dispatchers, orderCreationRepository) {
+class AutoSyncPriceModifier @Inject constructor(val createUpdateOrderUseCase: CreateUpdateOrder) : SyncStrategy {
     /**
      * Anything that can be modified during the Order Creation flow that can affect
      * the Order total price should be accounted here
@@ -61,8 +57,11 @@ class AutoSyncPriceModifier @Inject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun invoke(changes: Flow<Order>, retryTrigger: Flow<Unit>): Flow<OrderUpdateStatus> {
-        return super.invoke(
+    override fun syncOrderChanges(
+        changes: Flow<Order>,
+        retryTrigger: Flow<Unit>
+    ): Flow<CreateUpdateOrder.OrderUpdateStatus> {
+        return createUpdateOrderUseCase(
             changes
                 .filter { it.containsPriceModifiers() }
                 .distinctUntilChanged(::arePriceModifiersEquivalent),

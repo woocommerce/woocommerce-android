@@ -11,10 +11,11 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onStart
+import javax.inject.Inject
 
-open class CreateUpdateOrder(
-    protected val dispatchers: CoroutineDispatchers,
-    protected val orderCreationRepository: OrderCreationRepository
+class CreateUpdateOrder @Inject constructor(
+    private val dispatchers: CoroutineDispatchers,
+    private val orderCreationRepository: OrderCreationRepository
 ) {
     companion object {
         const val DEBOUNCE_DURATION_MS = 500L
@@ -37,7 +38,7 @@ open class CreateUpdateOrder(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    open operator fun invoke(changes: Flow<Order>, retryTrigger: Flow<Unit>): Flow<OrderUpdateStatus> {
+    operator fun invoke(changes: Flow<Order>, retryTrigger: Flow<Unit>): Flow<OrderUpdateStatus> {
         return changes
             .flowOn(dispatchers.computation)
             .flatMapLatest {
