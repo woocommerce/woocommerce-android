@@ -25,6 +25,7 @@ class LoginPrologueFragment : Fragment(R.layout.fragment_login_prologue) {
     interface PrologueFinishedListener {
         fun onPrimaryButtonClicked()
         fun onSecondaryButtonClicked()
+        fun onQrCodeLoginClicked()
     }
 
     @Inject lateinit var unifiedLoginTracker: UnifiedLoginTracker
@@ -43,6 +44,10 @@ class LoginPrologueFragment : Fragment(R.layout.fragment_login_prologue) {
         binding.buttonLoginWpcom.setOnClickListener {
             // Login with WordPress.com account
             prologueFinishedListener?.onSecondaryButtonClicked()
+        }
+
+        binding.buttonLoginQrCode?.setOnClickListener {
+            prologueFinishedListener?.onQrCodeLoginClicked()
         }
 
         binding.viewPager.adapter = LoginPrologueAdapter(this)

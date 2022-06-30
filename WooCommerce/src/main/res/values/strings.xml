@@ -172,6 +172,7 @@
     <string name="login_wpcom">Continue with WordPress.com</string>
     <string name="login_store_address">Enter your store address</string>
     <string name="login_configure_link">Read the %sconfiguration instructions%s.</string>
+    <string name="login_with_qr_code">Scan QR code to login</string>
 
     <string name="login_prologue_label_analytics">Track sales and high perfoming products</string>
     <string name="login_prologue_label_orders">Manage your store orders on the go</string>

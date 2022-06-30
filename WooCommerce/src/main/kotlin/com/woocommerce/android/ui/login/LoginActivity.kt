@@ -14,6 +14,7 @@ import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.barcode.LiveBarcodeScanningFragment
 import com.woocommerce.android.databinding.ActivityLoginBinding
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
@@ -52,7 +53,6 @@ import org.wordpress.android.login.LoginMode
 import org.wordpress.android.login.LoginSiteAddressFragment
 import org.wordpress.android.login.LoginUsernamePasswordFragment
 import org.wordpress.android.util.ToastUtils
-import java.util.ArrayList
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
 
@@ -231,6 +231,13 @@ class LoginActivity :
     override fun onSecondaryButtonClicked() {
         unifiedLoginTracker.trackClick(Click.CONTINUE_WITH_WORDPRESS_COM)
         startLoginViaWPCom()
+    }
+
+    override fun onQrCodeLoginClicked() {
+        val fragment =
+            supportFragmentManager.findFragmentByTag(LiveBarcodeScanningFragment.TAG) as? LiveBarcodeScanningFragment
+                ?: LiveBarcodeScanningFragment()
+        slideInFragment(fragment, true, LiveBarcodeScanningFragment.TAG)
     }
 
     private fun showMainActivityAndFinish() {

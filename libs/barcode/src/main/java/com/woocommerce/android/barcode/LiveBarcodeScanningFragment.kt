@@ -32,8 +32,6 @@ import com.woocommerce.android.barcode.camera.CameraSource
 import com.woocommerce.android.barcode.camera.WorkflowModel
 import com.woocommerce.android.barcode.camera.WorkflowModel.WorkflowState
 import com.woocommerce.android.barcode.detection.BarcodeProcessor
-import com.woocommerce.android.extensions.navigateBackWithResult
-import com.woocommerce.android.ui.products.ProductInventoryFragment
 import kotlinx.android.synthetic.main.camera_preview_overlay.graphicOverlay
 import kotlinx.android.synthetic.main.camera_preview_overlay.promptChip
 import kotlinx.android.synthetic.main.fragment_live_barcode.preview
@@ -44,6 +42,10 @@ import java.io.IOException
 
 /** Demonstrates the barcode scanning workflow using camera preview.  */
 class LiveBarcodeScanningFragment : Fragment(), OnClickListener {
+    companion object {
+        const val TAG = "code_scanner_fragment"
+    }
+
     private var cameraSource: CameraSource? = null
     private var promptChipAnimator: AnimatorSet? = null
     private val workflowModel: WorkflowModel by activityViewModels()
@@ -189,14 +191,10 @@ class LiveBarcodeScanningFragment : Fragment(), OnClickListener {
             }
         })
 
-        workflowModel?.detectedBarcode?.observe(viewLifecycleOwner, { barcode ->
-            if (barcode != null) {
-                navigateBackWithResult(ProductInventoryFragment.KEY_SCANNED_BARCODE, barcode.rawValue)
-            }
-        })
-    }
-
-    companion object {
-        private const val TAG = "LiveBarcodeActivity"
+        workflowModel.detectedBarcode.observe(viewLifecycleOwner) { barcode ->
+//            if (barcode != null) {
+//                navigateBackWithResult(ProductInventoryFragment.KEY_SCANNED_BARCODE, barcode.rawValue)
+//            }
+        }
     }
 }
