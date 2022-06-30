@@ -306,7 +306,7 @@ class ProductListViewModel @Inject constructor(
             }
 
         val shouldShowEmptyView = if (isSearching()) {
-            viewState.query?.isNotEmpty() == true
+            viewState.query?.isNotEmpty() == true && _productList.value?.isEmpty() == true
         } else {
             _productList.value?.isEmpty() == true
         }
