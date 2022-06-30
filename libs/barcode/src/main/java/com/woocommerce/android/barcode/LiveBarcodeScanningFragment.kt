@@ -26,25 +26,27 @@ import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import com.woocommerce.android.barcode.camera.CameraSource
 import com.woocommerce.android.barcode.camera.WorkflowModel
 import com.woocommerce.android.barcode.camera.WorkflowModel.WorkflowState
 import com.woocommerce.android.barcode.detection.BarcodeProcessor
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.products.ProductInventoryFragment
-import kotlinx.android.synthetic.main.camera_preview_overlay.*
-import kotlinx.android.synthetic.main.fragment_live_barcode.*
-import kotlinx.android.synthetic.main.top_action_bar_in_live_camera.*
+import kotlinx.android.synthetic.main.camera_preview_overlay.graphicOverlay
+import kotlinx.android.synthetic.main.camera_preview_overlay.promptChip
+import kotlinx.android.synthetic.main.fragment_live_barcode.preview
+import kotlinx.android.synthetic.main.top_action_bar_in_live_camera.closeButton
+import kotlinx.android.synthetic.main.top_action_bar_in_live_camera.flashButton
+import kotlinx.android.synthetic.main.top_action_bar_in_live_camera.settingsButton
 import java.io.IOException
-import java.util.*
 
 /** Demonstrates the barcode scanning workflow using camera preview.  */
 class LiveBarcodeScanningFragment : Fragment(), OnClickListener {
     private var cameraSource: CameraSource? = null
     private var promptChipAnimator: AnimatorSet? = null
-    private var workflowModel: WorkflowModel? = null
+    private val workflowModel: WorkflowModel by activityViewModels()
     private var currentWorkflowState: WorkflowState? = null
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -145,11 +147,10 @@ class LiveBarcodeScanningFragment : Fragment(), OnClickListener {
     }
 
     private fun setUpWorkflowModel() {
-        workflowModel = ViewModelProviders.of(this).get(WorkflowModel::class.java)
 
         // Observes the workflow state changes, if happens, update the overlay view indicators and
         // camera preview state.
-        workflowModel!!.workflowState.observe(viewLifecycleOwner, Observer { workflowState ->
+        workflowModel.workflowState.observe(viewLifecycleOwner, Observer { workflowState ->
             if (workflowState == null || currentWorkflowState == workflowState) {
                 return@Observer
             }

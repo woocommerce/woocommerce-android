@@ -16,16 +16,13 @@
 
 package com.woocommerce.android.barcode.camera
 
-import android.app.Application
-import android.content.Context
 import androidx.annotation.MainThread
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.google.mlkit.vision.barcode.Barcode
-import java.util.HashSet
 
 /** View model for handling application workflow based on camera preview.  */
-class WorkflowModel(application: Application) : AndroidViewModel(application) {
+class WorkflowModel : ViewModel() {
     val workflowState = MutableLiveData<WorkflowState>()
     val detectedBarcode = MutableLiveData<Barcode>()
 
@@ -33,9 +30,6 @@ class WorkflowModel(application: Application) : AndroidViewModel(application) {
 
     var isCameraLive = false
         private set
-
-    private val context: Context
-        get() = getApplication<Application>().applicationContext
 
     /**
      * State set of the application workflow.
