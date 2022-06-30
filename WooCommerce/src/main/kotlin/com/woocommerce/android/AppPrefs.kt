@@ -9,6 +9,7 @@ import android.content.SharedPreferences.Editor
 import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_IS_PLUGIN_EXPLICITLY_SELECTED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_ONBOARDING_COMPLETED_STATUS_V2
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_PREFERRED_PLUGIN
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_PREFERRED_PLUGIN_VERSION
@@ -71,6 +72,7 @@ object AppPrefs {
         USER_EMAIL,
         RECEIPT_PREFIX,
         CARD_READER_ONBOARDING_COMPLETED_STATUS_V2,
+        CARD_READER_IS_PLUGIN_EXPLICITLY_SELECTED,
         CARD_READER_PREFERRED_PLUGIN,
         CARD_READER_PREFERRED_PLUGIN_VERSION,
         CARD_READER_STATEMENT_DESCRIPTOR,
@@ -475,6 +477,19 @@ object AppPrefs {
 
     fun isCardReaderWelcomeDialogShown() = getBoolean(UndeletablePrefKey.CARD_READER_WELCOME_SHOWN, false)
 
+    fun isCardReaderPluginExplicitlySelected(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = getBoolean(
+        getIsPluginExplicitlySelectedKey(
+            localSiteId,
+            remoteSiteId,
+            selfHostedSiteId
+        ),
+        false
+    )
+
     fun getCardReaderPreferredPlugin(
         localSiteId: Int,
         remoteSiteId: Long,
@@ -534,11 +549,29 @@ object AppPrefs {
         }
     }
 
+    fun setIsCardReaderPluginExplicitlySelectedFlag(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long,
+        isPluginExplicitlySelected: Boolean
+    ) {
+        setBoolean(
+            getIsPluginExplicitlySelectedKey(localSiteId, remoteSiteId, selfHostedSiteId),
+            isPluginExplicitlySelected
+        )
+    }
+
     private fun getCardReaderOnboardingStatusKey(
         localSiteId: Int,
         remoteSiteId: Long,
         selfHostedSiteId: Long
     ) = PrefKeyString("$CARD_READER_ONBOARDING_COMPLETED_STATUS_V2:$localSiteId:$remoteSiteId:$selfHostedSiteId")
+
+    private fun getIsPluginExplicitlySelectedKey(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = PrefKeyString("$CARD_READER_IS_PLUGIN_EXPLICITLY_SELECTED:$localSiteId:$remoteSiteId:$selfHostedSiteId")
 
     private fun getCardReaderPreferredPluginKey(
         localSiteId: Int,

@@ -6,6 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
@@ -41,6 +43,7 @@ class CustomerListViewModel @Inject constructor(
     }
 
     fun onCustomerClick(customerRemoteId: Long) {
+        AnalyticsTracker.track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADDED)
         launch {
             customerListRepository.getCustomerByRemoteId(customerRemoteId)?.let { wcCustomer ->
                 val shippingAddress = OrderAddress.Shipping(
@@ -115,6 +118,7 @@ class CustomerListViewModel @Inject constructor(
             searchJob?.cancel()
             searchJob = launch {
                 delay(AppConstants.SEARCH_TYPING_DELAY_MS)
+                AnalyticsTracker.track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_SEARCH)
                 searchCustomerList(query)
             }
         } else {
