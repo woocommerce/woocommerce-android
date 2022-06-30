@@ -153,8 +153,6 @@ android {
     testOptions {
         animationsDisabled = true
     }
-
-    dynamicFeatures = [':libs:barcode']
 }
 
 dependencies {
@@ -219,6 +217,7 @@ dependencies {
     }
 
     implementation project(":libs:cardreader")
+    implementation project(":libs:barcode")
 
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
@@ -318,8 +317,6 @@ dependencies {
         exclude group: "org.wordpress", module: "utils"
         exclude group: "org.wordpress", module: "fluxc"
     }
-
-    implementation 'com.google.mlkit:barcode-scanning:17.0.0'
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {
