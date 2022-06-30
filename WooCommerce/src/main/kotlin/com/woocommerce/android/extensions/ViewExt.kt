@@ -20,7 +20,6 @@ import androidx.transition.ChangeBounds
 import androidx.transition.Transition
 import androidx.transition.TransitionListenerAdapter
 import androidx.transition.TransitionManager
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 
@@ -154,7 +153,6 @@ fun ViewGroup.setEnabledRecursive(enabled: Boolean) {
  * @param handled defines what the [OnTouchListener.onTouch] returns, defaults to returning false
  */
 @SuppressLint("ClickableViewAccessibility")
-@ExperimentalCoroutinesApi
 fun View.touchEvents(
     handled: (MotionEvent) -> Boolean = { false }
 ): Flow<MotionEvent> = callbackFlow {
@@ -171,7 +169,6 @@ fun View.touchEvents(
 /**
  * Returns a Flow of events that are triggered when a scroll is started on a view.
  */
-@ExperimentalCoroutinesApi
 fun View.scrollStartEvents(): Flow<Unit> {
     return touchEvents()
         .map { it.action }

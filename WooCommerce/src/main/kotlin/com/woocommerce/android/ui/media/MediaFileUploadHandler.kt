@@ -17,7 +17,6 @@ import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.MediaModel
@@ -26,7 +25,6 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-@ExperimentalCoroutinesApi
 class MediaFileUploadHandler @Inject constructor(
     private val notificationHandler: ProductImagesNotificationHandler,
     private val worker: ProductImagesUploadWorker,

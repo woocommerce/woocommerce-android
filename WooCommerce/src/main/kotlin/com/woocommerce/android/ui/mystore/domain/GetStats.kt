@@ -7,7 +7,6 @@ import com.woocommerce.android.ui.mystore.data.StatsRepository.StatsException
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.*
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.FeatureFlag
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType
@@ -20,7 +19,6 @@ class GetStats @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val coroutineDispatchers: CoroutineDispatchers
 ) {
-    @ExperimentalCoroutinesApi
     suspend operator fun invoke(refresh: Boolean, granularity: StatsGranularity): Flow<LoadStatsResult> =
         merge(
             hasOrders(),
