@@ -2,8 +2,6 @@ package com.woocommerce.android.ui.orders.creation
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.transition.AutoTransition
-import android.transition.TransitionManager
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -63,16 +61,6 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         currencyFormatter.buildBigDecimalFormatter(
             currencyCode = viewModel.currentDraft.currency
         )
-    }
-
-    private val transition by lazy {
-        AutoTransition().apply {
-            excludeChildren(R.id.order_status_view, true)
-            excludeChildren(R.id.products_section, true)
-            excludeChildren(R.id.payment_section, true)
-            excludeChildren(R.id.customer_section, true)
-            excludeChildren(R.id.notes_section, true)
-        }
     }
 
     override val activityAppBarStatus: AppBarStatus
@@ -239,7 +227,6 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                 createOrderMenuItem?.isEnabled = it
             }
             new.isIdle.takeIfNotEqualTo(old?.isIdle) { enabled ->
-                TransitionManager.beginDelayedTransition(binding.root, transition)
                 when (viewModel.mode) {
                     OrderCreationViewModel.Mode.Creation -> {
                         binding.paymentSection.loadingProgress.isVisible = !enabled
