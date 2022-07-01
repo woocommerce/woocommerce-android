@@ -20,22 +20,13 @@ object PackageUtils {
     fun isTesting(): Boolean {
         if (isTesting == null) {
             isTesting = try {
-                Class.forName("com.woocommerce.android.viewmodel.BaseUnitTest")
+                Class.forName("org.junit.Test")
                 true
             } catch (e: ClassNotFoundException) {
                 false
             }
         }
         return isTesting!!
-    }
-
-    fun isUITesting(): Boolean {
-        return try {
-            Class.forName("com.woocommerce.android.helpers.TestBase")
-            true
-        } catch (e: ClassNotFoundException) {
-            false
-        }
     }
 
     fun isBetaBuild(context: Context): Boolean {
