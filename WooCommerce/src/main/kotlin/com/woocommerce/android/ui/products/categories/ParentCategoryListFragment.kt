@@ -61,6 +61,7 @@ class ParentCategoryListFragment :
 
     override fun getFragmentTitle() = getString(R.string.product_add_category)
 
+    @Suppress("DEPRECATION")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 

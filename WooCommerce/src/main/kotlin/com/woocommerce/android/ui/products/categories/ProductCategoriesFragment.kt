@@ -60,6 +60,7 @@ class ProductCategoriesFragment :
         viewModel.fetchProductCategories()
     }
 
+    @Suppress("DEPRECATION")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 

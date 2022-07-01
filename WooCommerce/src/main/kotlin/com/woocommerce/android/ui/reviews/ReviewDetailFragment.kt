@@ -71,6 +71,7 @@ class ReviewDetailFragment :
         return inflater.inflate(R.layout.fragment_review_detail, container, false)
     }
 
+    @Suppress("DEPRECATION")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         val dimen = requireActivity().resources.getDimensionPixelSize(R.dimen.image_minor_50)
