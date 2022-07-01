@@ -116,6 +116,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
         // cancel pending Glide request when a view is recycled
         val glideRequests = GlideApp.with(this)
+        @Suppress("DEPRECATION")
         setRecyclerListener { holder ->
             glideRequests.clear((holder as ImageViewHolder).viewBinding.productImage)
         }
