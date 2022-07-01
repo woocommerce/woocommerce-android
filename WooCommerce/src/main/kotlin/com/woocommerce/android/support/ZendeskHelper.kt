@@ -487,6 +487,7 @@ private fun buildZendeskTags(allSites: List<SiteModel>?, origin: Origin, extraTa
  * This is a helper function which returns information about the network state of the app to be sent to Zendesk, which
  * could prove useful for the Happiness Engineers while debugging the users' issues.
  */
+@Suppress("DEPRECATION")
 private fun getNetworkInformation(context: Context): String {
     val networkType = when (NetworkUtils.getActiveNetworkInfo(context)?.type) {
         ConnectivityManager.TYPE_WIFI -> ZendeskConstants.networkWifi
