@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.woocommerce.android.ui.login
 
 import android.app.Activity
@@ -70,7 +72,7 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
     private var mInputPassword: String? = null
     private var userAvatarUrl: String? = null
 
-    private var progressDialog: ProgressDialog? = null
+    @Suppress("DEPRECATION") private var progressDialog: ProgressDialog? = null
 
     /**
      * This flag, when set to true calls the CONNECT_SITE_INFO API to verify if Jetpack is
@@ -232,6 +234,7 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
         )
     }
 
+    @Suppress("DEPRECATION")
     private fun showProgressDialog(show: Boolean) {
         if (show) {
             hideProgressDialog()

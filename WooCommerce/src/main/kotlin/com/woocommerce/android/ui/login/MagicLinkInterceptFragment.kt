@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.woocommerce.android.ui.login
 
 import android.app.ProgressDialog
@@ -40,7 +42,7 @@ class MagicLinkInterceptFragment : Fragment() {
     }
 
     private var authToken: String? = null
-    private var progressDialog: ProgressDialog? = null
+    @Suppress("DEPRECATION") private var progressDialog: ProgressDialog? = null
 
     private val viewModel: MagicLinkInterceptViewModel by viewModels()
 
@@ -125,6 +127,7 @@ class MagicLinkInterceptFragment : Fragment() {
         )
     }
 
+    @Suppress("DEPRECATION")
     private fun showProgressDialog(show: Boolean) {
         if (show) {
             hideProgressDialog()
@@ -152,6 +155,7 @@ class MagicLinkInterceptFragment : Fragment() {
         activity?.finish()
     }
 
+    @Suppress("DEPRECATION")
     private fun showLoginScreen() {
         val intent = Intent(context, LoginActivity::class.java)
         LoginMode.WOO_LOGIN_MODE.putInto(intent)
