@@ -104,6 +104,7 @@ class ProductImageViewerFragment :
         // Toolbar doesn't get restored when navigating back.
         // This seems like a bug in the fragment library.
         view.postDelayed({
+            @Suppress("DEPRECATION")
             requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
         }, 500)
     }
@@ -111,6 +112,7 @@ class ProductImageViewerFragment :
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        @Suppress("DEPRECATION")
         requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
     }
 
