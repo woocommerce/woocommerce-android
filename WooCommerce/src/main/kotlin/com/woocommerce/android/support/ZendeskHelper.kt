@@ -500,7 +500,7 @@ private fun getNetworkInformation(context: Context): String {
     return listOf(
         "${ZendeskConstants.networkTypeLabel} $networkType",
         "${ZendeskConstants.networkCarrierLabel} $carrierName",
-        "${ZendeskConstants.networkCountryCodeLabel} ${countryCodeLabel.toUpperCase()}"
+        "${ZendeskConstants.networkCountryCodeLabel} ${countryCodeLabel.uppercase(Locale.getDefault())}"
     ).joinToString(separator = "\n")
 }
 
