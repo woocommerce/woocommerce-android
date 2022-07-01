@@ -110,7 +110,7 @@ object ChromeCustomTabUtils {
             .build()
         val intent = CustomTabsIntent.Builder(tabSession)
             .setDefaultColorSchemeParams(defaultColorSchemeParams)
-            .addDefaultShareMenuItem()
+            .setShareState(CustomTabsIntent.SHARE_STATE_ON)
             .setShowTitle(true)
             .build()
         intent.intent.putExtra(Intent.EXTRA_REFERRER, Uri.parse("android-app://" + context.packageName))
