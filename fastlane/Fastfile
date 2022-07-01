@@ -654,6 +654,63 @@ platform :android do
   end
 
   #####################################################################################
+  # download_promo_strings
+  # -----------------------------------------------------------------------------------
+  # This lane download the translated promo strings from the translation system
+  # -----------------------------------------------------------------------------------
+  # Usage:
+  # fastlane download_promo_strings
+  #
+  # Example:
+  # fastlane download_promo_strings
+  #####################################################################################
+  desc "Downloads translated promo strings from the translation system"
+  lane :download_promo_strings do |options|
+    # "<key in .po file>" => { desc: "<name of txt file>" }
+    files = {
+      'app_store_screenshot-1': { desc: "promo_screenshot_1.txt" },
+      'app_store_screenshot-1_b': { desc: "promo_screenshot_1_b.txt" },
+      'app_store_screenshot-2': { desc: "promo_screenshot_2.txt" },
+      'app_store_screenshot-3': { desc: "promo_screenshot_3.txt" },
+      'app_store_screenshot-4': { desc: "promo_screenshot_4.txt" },
+      'app_store_screenshot-5': { desc: "promo_screenshot_5.txt" },
+      'app_store_screenshot-6': { desc: "promo_screenshot_6.txt" },
+      'app_store_screenshot-7': { desc: "promo_screenshot_7.txt" },
+      'app_store_screenshot-8': { desc: "promo_screenshot_8.txt" },
+    }
+
+    locales = SUPPORTED_LOCALES
+      .select { |hsh| hsh[:promo_config] != false }
+      .map { |hsh| [hsh[:glotpress], hsh[:google_play]] }
+
+    gp_downloadmetadata(project_url: GLOTPRESS_PLAYSTORE_METADATA_PROJECT_URL,
+                        target_files: files,
+                        locales: locales,
+                        source_locale: "en-US",
+                        download_path: File.join(Dir.pwd, "/playstoreres/metadata"))
+
+    # Copy metadata (screenshot-related) txt files into `en-US`
+    en_us_path = File.join(Dir.pwd, "/playstoreres/metadata", "en-US")
+    FileUtils.mkdir_p(en_us_path)
+
+    [
+      "promo_screenshot_1.txt",
+      "promo_screenshot_1_b.txt",
+      "promo_screenshot_2.txt",
+      "promo_screenshot_3.txt",
+      "promo_screenshot_4.txt",
+      "promo_screenshot_5.txt",
+      "promo_screenshot_6.txt",
+      "promo_screenshot_7.txt",
+      "promo_screenshot_8.txt",
+    ].each do |filename|
+      source = File.join(METADATA_DIR_PATH, filename)
+      destination = File.join(en_us_path, filename)
+      FileUtils.cp(source, destination)
+    end
+  end
+
+  #####################################################################################
   # build_apk
   # -----------------------------------------------------------------------------------
   # This lane builds an apk
