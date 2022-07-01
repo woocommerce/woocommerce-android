@@ -677,7 +677,7 @@ class IssueRefundViewModel @Inject constructor(
     private fun updateRefundItems(items: List<ProductRefundListItem>) {
         _refundItems.value = items.filter { it.maxQuantity > 0 }
 
-        val selectedItems = items.sumBy { it.quantity }
+        val selectedItems = items.sumOf { it.quantity }
         refundByItemsState = refundByItemsState.copy(
             selectedItemsHeader = resourceProvider.getString(
                 R.string.order_refunds_items_selected,
