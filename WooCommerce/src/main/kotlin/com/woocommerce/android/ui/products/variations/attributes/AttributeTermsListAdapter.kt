@@ -142,6 +142,7 @@ class AttributeTermsListAdapter(
             areItemsTheSame(oldItemPosition, newItemPosition)
     }
 
+    @Suppress("DEPRECATION")
     @SuppressLint("ClickableViewAccessibility")
     inner class TermViewHolder(val viewBinding: AttributeTermListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {

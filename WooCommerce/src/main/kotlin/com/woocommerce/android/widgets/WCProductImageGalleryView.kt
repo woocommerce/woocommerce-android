@@ -386,6 +386,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             return@OnTouchListener false
         }
 
+        @Suppress("DEPRECATION")
         private val onClickListener = OnClickListener {
             if (adapterPosition > NO_POSITION) {
                 onImageClicked(adapterPosition)
