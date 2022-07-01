@@ -85,24 +85,4 @@ object UiHelpers {
         updateVisibility(imageView, image != null)
         image?.let { imageView.setImageDrawable(image) }
     }
-
-    fun adjustDialogSize(dialog: Dialog) {
-        dialog.window?.let { window ->
-            val size = Point()
-
-            val display = window.windowManager.defaultDisplay
-            display.getSize(size)
-
-            val width = size.x
-
-            val maximumWidth = window.context.resources.getDimension(R.dimen.alert_dialog_max_width).toInt()
-            var proposedWidth = (width * 0.8).toInt()
-
-            if (proposedWidth > maximumWidth) {
-                proposedWidth = maximumWidth
-            }
-
-            window.setLayout(proposedWidth, LayoutParams.WRAP_CONTENT)
-        }
-    }
 }
