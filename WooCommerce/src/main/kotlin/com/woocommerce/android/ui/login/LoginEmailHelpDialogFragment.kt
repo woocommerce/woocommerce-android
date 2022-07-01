@@ -41,7 +41,10 @@ class LoginEmailHelpDialogFragment : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val message = Html.fromHtml(getString(R.string.login_email_help_desc, "<b>", "</b>", "<b>", "</b>"))
+        val message = Html.fromHtml(
+            getString(R.string.login_email_help_desc, "<b>", "</b>", "<b>", "</b>"),
+            Html.FROM_HTML_MODE_LEGACY
+        )
 
         return MaterialAlertDialogBuilder(ContextThemeWrapper(requireActivity(), style.Theme_Woo_Dialog))
             .setTitle(R.string.login_email_help_title)

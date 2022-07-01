@@ -92,7 +92,9 @@ class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_err
             it.setDisplayShowTitleEnabled(false)
         }
 
-        errorMessage?.let { binding.discoveryErrorMessage.text = Html.fromHtml(getString(it)) }
+        errorMessage?.let {
+            binding.discoveryErrorMessage.text = Html.fromHtml(getString(it), Html.FROM_HTML_MODE_LEGACY)
+        }
 
         with(binding.discoveryWordpressOptionView) {
             setOnClickListener {

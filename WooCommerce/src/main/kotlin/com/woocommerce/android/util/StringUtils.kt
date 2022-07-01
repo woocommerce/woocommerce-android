@@ -246,7 +246,9 @@ object StringUtils {
      * double spaces with a single space (just in case)
      */
     fun getRawTextFromHtml(htmlStr: String) =
-        Html.fromHtml(htmlStr).toString().replace("\n", " ").replace("  ", " ")
+        Html.fromHtml(htmlStr, Html.FROM_HTML_MODE_LEGACY).toString()
+            .replace("\n", " ")
+            .replace("  ", " ")
 
     /**
      * Helper method for using the appropriate `Html.fromHtml()` for the build version.
@@ -255,7 +257,7 @@ object StringUtils {
         return if (SystemVersionUtils.isAtLeastN()) {
             Html.fromHtml(htmlStr, Html.FROM_HTML_MODE_LEGACY)
         } else {
-            Html.fromHtml(htmlStr)
+            Html.fromHtml(htmlStr, Html.FROM_HTML_MODE_LEGACY)
         }
     }
 

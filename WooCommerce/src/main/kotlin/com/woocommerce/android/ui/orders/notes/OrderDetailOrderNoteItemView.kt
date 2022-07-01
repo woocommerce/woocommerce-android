@@ -45,8 +45,7 @@ class OrderDetailOrderNoteItemView @JvmOverloads constructor(
 
     private fun getHtmlText(txt: String): Spanned {
         return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            @Suppress("DEPRECATION")
-            Html.fromHtml(txt)
+            Html.fromHtml(txt, Html.FROM_HTML_MODE_LEGACY)
         } else {
             Html.fromHtml(txt, Html.FROM_HTML_MODE_LEGACY)
         }

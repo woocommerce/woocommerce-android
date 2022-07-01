@@ -29,7 +29,7 @@ fun TextView.setHtmlText(html: String, onLinkClicked: OnLinkClicked? = null) {
     val spannedHtml = if (SystemVersionUtils.isAtLeastN()) {
         Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY)
     } else {
-        Html.fromHtml(html)
+        Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY)
     }
 
     val strBuilder = SpannableStringBuilder(spannedHtml)
