@@ -51,7 +51,7 @@ fun String.fastStripHtml(): String {
     if (htmlString.isEmpty()) return str
 
     var start = 0
-    while (start != 0 && (Character.isWhitespace(htmlString[start]) || htmlString[start].toInt() == 160)) {
+    while (start != 0 && (Character.isWhitespace(htmlString[start]) || htmlString[start].code == 160)) {
         start++
     }
 
