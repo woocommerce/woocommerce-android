@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.woocommerce.android.ui.orders.list
 
 import android.os.Parcelable
@@ -335,7 +337,7 @@ class OrderListViewModel @Inject constructor(
         super.onCleared()
     }
 
-    @Suppress("unused")
+    @Suppress("unused", "DEPRECATION")
     @Subscribe(threadMode = MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
         when (event.causeOfChange) {
