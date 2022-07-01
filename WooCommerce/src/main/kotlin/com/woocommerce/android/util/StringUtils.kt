@@ -5,7 +5,6 @@ import android.content.res.Configuration
 import android.content.res.Resources.NotFoundException
 import android.net.Uri
 import android.text.Html
-import android.text.Spanned
 import android.util.Patterns
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
@@ -249,17 +248,6 @@ object StringUtils {
         Html.fromHtml(htmlStr, Html.FROM_HTML_MODE_LEGACY).toString()
             .replace("\n", " ")
             .replace("  ", " ")
-
-    /**
-     * Helper method for using the appropriate `Html.fromHtml()` for the build version.
-     */
-    fun fromHtml(htmlStr: String): Spanned {
-        return if (SystemVersionUtils.isAtLeastN()) {
-            Html.fromHtml(htmlStr, Html.FROM_HTML_MODE_LEGACY)
-        } else {
-            Html.fromHtml(htmlStr, Html.FROM_HTML_MODE_LEGACY)
-        }
-    }
 
     /**
      * Returns a string for the specified locale.

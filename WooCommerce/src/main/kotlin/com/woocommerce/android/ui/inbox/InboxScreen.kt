@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.inbox
 
+import android.text.Html
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -46,7 +47,6 @@ import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.inbox.InboxViewModel.InboxNoteActionUi
 import com.woocommerce.android.ui.inbox.InboxViewModel.InboxNoteUi
 import com.woocommerce.android.ui.inbox.InboxViewModel.InboxState
-import com.woocommerce.android.util.StringUtils
 
 @Composable
 fun InboxScreen(viewModel: InboxViewModel) {
@@ -159,7 +159,7 @@ fun InboxNoteRow(note: InboxNoteUi) {
                 style = MaterialTheme.typography.subtitle1
             )
             Text(
-                text = StringUtils.fromHtml(note.description).toAnnotatedString(),
+                text = Html.fromHtml(note.description, Html.FROM_HTML_MODE_LEGACY).toAnnotatedString(),
                 style = MaterialTheme.typography.body2
             )
         }

@@ -2,7 +2,7 @@
 
 package com.woocommerce.android.extensions
 
-import com.woocommerce.android.util.StringUtils
+import android.text.Html
 import com.woocommerce.android.util.WooLog
 import org.apache.commons.io.FileUtils.byteCountToDisplaySize
 import org.json.JSONArray
@@ -228,7 +228,7 @@ private fun formatSettingsData(data: JSONObject): String {
         if (currencySymbolHTML == MISSING_VALUE) {
             MISSING_VALUE
         } else {
-            StringUtils.fromHtml(currencySymbolHTML)
+            Html.fromHtml(currencySymbolHTML, Html.FROM_HTML_MODE_LEGACY)
         }
     )
         .append(")\n")
