@@ -6,6 +6,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.text.TextUtils
 import android.view.View
 import android.widget.TextView
@@ -75,7 +76,7 @@ open class CurrencyAmountDialog : DialogFragment(), DialogInterface.OnClickListe
             }
         )
 
-        Handler().postDelayed(
+        Handler(Looper.getMainLooper()).postDelayed(
             {
                 currencyEditTextLayout.requestFocus()
                 ActivityUtils.showKeyboard(currencyEditTextLayout)

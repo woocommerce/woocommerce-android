@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.view.WindowManager
 import android.view.animation.Animation
@@ -50,7 +51,7 @@ class ProductImageViewerFragment :
 
     private var isConfirmationShowing = false
     private var confirmationDialog: AlertDialog? = null
-    private val fadeOutToolbarHandler = Handler()
+    private val fadeOutToolbarHandler = Handler(Looper.getMainLooper())
 
     private var remoteMediaId = 0L
     private lateinit var pagerAdapter: ImageViewerAdapter

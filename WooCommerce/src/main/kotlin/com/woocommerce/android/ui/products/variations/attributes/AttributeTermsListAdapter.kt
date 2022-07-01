@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products.variations.attributes
 
 import android.annotation.SuppressLint
 import android.os.Handler
+import android.os.Looper
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -108,7 +109,7 @@ class AttributeTermsListAdapter(
      * to animate
      */
     private fun delayedChangeNotification() {
-        Handler().postDelayed(
+        Handler(Looper.getMainLooper()).postDelayed(
             {
                 notifyDataSetChanged()
             },
