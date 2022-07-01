@@ -26,6 +26,7 @@ class ProductItemSelectorDialog : DialogFragment() {
     companion object {
         const val TAG: String = "ProductItemSelectorDialog"
 
+        @Suppress("DEPRECATION")
         fun newInstance(
             listener: Fragment,
             requestCode: Int,
