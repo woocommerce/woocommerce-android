@@ -5,7 +5,7 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import androidx.core.content.pm.PackageInfoCompat
 import com.woocommerce.android.BuildConfig
-import java.util.Locale
+import java.util.*
 
 object PackageUtils {
     const val PACKAGE_VERSION_CODE_DEFAULT = -1
@@ -39,7 +39,7 @@ object PackageUtils {
     }
 
     fun isBetaBuild(context: Context): Boolean {
-        val versionName = getVersionName(context).toLowerCase(Locale.ROOT)
+        val versionName = getVersionName(context).lowercase(Locale.ROOT)
         return (versionName.contains("beta") || versionName.contains("rc"))
     }
 

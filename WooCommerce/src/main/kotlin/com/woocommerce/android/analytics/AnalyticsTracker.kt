@@ -11,7 +11,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.json.JSONObject
 import org.wordpress.android.fluxc.model.SiteModel
-import java.util.UUID
+import java.util.*
 
 class AnalyticsTracker private constructor(private val context: Context) {
     private var tracksClient: TracksClient? = TracksClient.getClient(context)
@@ -62,7 +62,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
             return
         }
 
-        val eventName = stat.name.toLowerCase()
+        val eventName = stat.name.lowercase(Locale.getDefault())
 
         val user = username ?: getAnonID() ?: generateNewAnonID()
 

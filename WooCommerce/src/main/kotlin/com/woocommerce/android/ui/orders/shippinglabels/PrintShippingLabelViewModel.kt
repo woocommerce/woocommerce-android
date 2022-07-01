@@ -89,7 +89,7 @@ class PrintShippingLabelViewModel @Inject constructor(
             viewState = viewState.copy(isProgressDialogShown = true)
             launch {
                 val requestResult = repository.printShippingLabels(
-                    viewState.paperSize.name.toLowerCase(Locale.US), arguments.shippingLabelIds.toList()
+                    viewState.paperSize.name.lowercase(Locale.US), arguments.shippingLabelIds.toList()
                 )
 
                 viewState = viewState.copy(isProgressDialogShown = false)

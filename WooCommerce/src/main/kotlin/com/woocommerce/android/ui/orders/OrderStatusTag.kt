@@ -7,7 +7,7 @@ import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.widgets.tags.ITag
 import com.woocommerce.android.widgets.tags.TagConfig
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
-import java.util.Locale
+import java.util.*
 
 /**
  * Represents a single order status label.
@@ -16,7 +16,7 @@ class OrderStatusTag(private val orderStatus: OrderStatus) : ITag(orderStatus.st
     override fun getTagConfiguration(context: Context): TagConfig {
         val config = TagConfig(context).apply { tagText = orderStatus.label }
 
-        when (rawText.toLowerCase(Locale.US)) {
+        when (rawText.lowercase(Locale.US)) {
             CoreOrderStatus.PROCESSING.value -> {
                 config.bgColor = ContextCompat.getColor(context, R.color.tag_bg_processing)
             }

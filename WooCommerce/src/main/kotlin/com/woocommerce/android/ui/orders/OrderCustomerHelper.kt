@@ -9,7 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.Order
 import org.wordpress.android.util.ToastUtils
-import java.util.Locale
+import java.util.*
 
 object OrderCustomerHelper {
     enum class Action {
@@ -28,7 +28,7 @@ object OrderCustomerHelper {
             mapOf(
                 AnalyticsTracker.KEY_ID to order.id,
                 AnalyticsTracker.KEY_STATUS to order.status,
-                AnalyticsTracker.KEY_TYPE to Action.EMAIL.name.toLowerCase(Locale.US)
+                AnalyticsTracker.KEY_TYPE to Action.EMAIL.name.lowercase(Locale.US)
             )
         )
 
@@ -57,7 +57,7 @@ object OrderCustomerHelper {
             mapOf(
                 AnalyticsTracker.KEY_ID to order.id,
                 AnalyticsTracker.KEY_STATUS to order.status,
-                AnalyticsTracker.KEY_TYPE to Action.CALL.name.toLowerCase(Locale.US)
+                AnalyticsTracker.KEY_TYPE to Action.CALL.name.lowercase(Locale.US)
             )
         )
 
@@ -86,7 +86,7 @@ object OrderCustomerHelper {
             mapOf(
                 AnalyticsTracker.KEY_ID to order.id,
                 AnalyticsTracker.KEY_STATUS to order.status,
-                AnalyticsTracker.KEY_TYPE to Action.SMS.name.toLowerCase(Locale.US)
+                AnalyticsTracker.KEY_TYPE to Action.SMS.name.lowercase(Locale.US)
             )
         )
 

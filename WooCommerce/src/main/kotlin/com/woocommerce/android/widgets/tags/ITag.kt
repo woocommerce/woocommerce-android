@@ -1,6 +1,7 @@
 package com.woocommerce.android.widgets.tags
 
 import android.content.Context
+import java.util.*
 
 /**
  * Interface for working with individual Tag elements.
@@ -20,7 +21,7 @@ abstract class ITag(val rawText: String) : Comparable<ITag> {
     }
 
     override fun compareTo(other: ITag): Int {
-        return rawText.toLowerCase().compareTo(other.rawText.toLowerCase())
+        return rawText.lowercase(Locale.getDefault()).compareTo(other.rawText.lowercase(Locale.getDefault()))
     }
 
     override fun hashCode(): Int {

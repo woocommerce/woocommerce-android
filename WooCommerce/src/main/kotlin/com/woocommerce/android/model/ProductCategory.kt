@@ -7,8 +7,7 @@ import com.woocommerce.android.ui.products.categories.ProductCategoryItemUiModel
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.WCProductCategoryModel
-import java.util.Locale
-import java.util.Stack
+import java.util.*
 
 @Parcelize
 data class ProductCategory(
@@ -76,7 +75,7 @@ private fun List<ProductCategory>.sortByNameAndParent(): Set<ProductCategoryItem
     val visited = mutableSetOf<Long>()
 
     // we first sort the list by name in a descending order
-    val productCategoriesSortedByNameDesc = this.sortedByDescending { it.name.toLowerCase(Locale.US) }
+    val productCategoriesSortedByNameDesc = this.sortedByDescending { it.name.lowercase(Locale.US) }
 
     // add root nodes to the Stack
     stack.addAll(productCategoriesSortedByNameDesc.filter { it.parentId == 0L })

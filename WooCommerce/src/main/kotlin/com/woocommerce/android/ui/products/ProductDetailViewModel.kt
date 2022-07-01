@@ -121,9 +121,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import java.math.BigDecimal
-import java.util.Collections
-import java.util.Date
-import java.util.Locale
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -826,7 +824,7 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     private fun trackPublishing(it: Product) {
-        val properties = mapOf("product_type" to it.productType.value.toLowerCase(Locale.ROOT))
+        val properties = mapOf("product_type" to it.productType.value.lowercase(Locale.ROOT))
         val statId = if (it.status == DRAFT) ADD_PRODUCT_SAVE_AS_DRAFT_TAPPED else ADD_PRODUCT_PUBLISH_TAPPED
         AnalyticsTracker.track(statId, properties)
     }

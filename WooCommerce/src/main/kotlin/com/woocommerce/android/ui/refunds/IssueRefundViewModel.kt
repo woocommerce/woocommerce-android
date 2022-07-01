@@ -75,7 +75,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
-import java.util.Locale
+import java.util.*
 import javax.inject.Inject
 import kotlin.collections.set
 import kotlin.collections.sumBy
@@ -219,11 +219,11 @@ class IssueRefundViewModel @Inject constructor(
             val refundOptions = mutableListOf<String>()
             // Inform user that multiple shipping lines can only be refunded in wp-admin.
             if (refundableShippingLineIds.size > 1) {
-                val shipping = resourceProvider.getString(R.string.multiple_shipping).toLowerCase(Locale.getDefault())
+                val shipping = resourceProvider.getString(R.string.multiple_shipping).lowercase(Locale.getDefault())
                 refundOptions.add(shipping)
             }
             return if (refundOptions.isNotEmpty()) {
-                val and = resourceProvider.getString(R.string.and).toLowerCase(Locale.getDefault())
+                val and = resourceProvider.getString(R.string.and).lowercase(Locale.getDefault())
                 val options = refundOptions.joinToString(lastSeparator = " $and ")
                 return resourceProvider.getString(R.string.order_refunds_shipping_refund_variable_notice, options)
             } else {

@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStatus
-import java.util.Locale
+import java.util.*
 
 /**
  * Similar to PostStatus except only draft, pending, private, and publish are supported
@@ -38,14 +38,14 @@ enum class ProductStatus(
      * it as uppercase fails with "HTTP 400 Invalid parameter "status")
      */
     override fun toString(): String {
-        return super.toString().toLowerCase(Locale.US)
+        return super.toString().lowercase(Locale.US)
     }
 
     companion object {
         fun fromString(status: String): ProductStatus? {
-            val statusLC = status.toLowerCase(Locale.US)
+            val statusLC = status.lowercase(Locale.US)
             values().forEach { value ->
-                if (value.toString().toLowerCase(Locale.US) == statusLC) return value
+                if (value.toString().lowercase(Locale.US) == statusLC) return value
             }
             return null
         }

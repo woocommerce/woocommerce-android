@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.products.settings
 import android.content.Context
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
-import java.util.Locale
+import java.util.*
 
 enum class ProductCatalogVisibility {
     VISIBLE,
@@ -22,14 +22,14 @@ enum class ProductCatalogVisibility {
     }
 
     override fun toString(): String {
-        return super.toString().toLowerCase(Locale.US)
+        return super.toString().lowercase(Locale.US)
     }
 
     companion object {
         fun fromString(catalogVisibility: String): ProductCatalogVisibility? {
-            val lcCatalogVisibility = catalogVisibility.toLowerCase(Locale.US)
+            val lcCatalogVisibility = catalogVisibility.lowercase(Locale.US)
             values().forEach { value ->
-                if (value.toString().toLowerCase(Locale.US) == lcCatalogVisibility) return value
+                if (value.toString().lowercase(Locale.US) == lcCatalogVisibility) return value
             }
             return null
         }
