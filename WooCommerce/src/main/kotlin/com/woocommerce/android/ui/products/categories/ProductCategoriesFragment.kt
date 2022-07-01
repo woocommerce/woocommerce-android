@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.products.categories
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -105,22 +104,16 @@ class ProductCategoriesFragment :
             }
         }
 
-        viewModel.productCategories.observe(
-            viewLifecycleOwner,
-            Observer {
-                showProductCategories(it)
-            }
-        )
+        viewModel.productCategories.observe(viewLifecycleOwner) {
+            showProductCategories(it)
+        }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ExitProductCategories -> findNavController().navigateUp()
-                    else -> event.isHandled = false
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ExitProductCategories -> findNavController().navigateUp()
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
     private fun setupResultHandlers() {

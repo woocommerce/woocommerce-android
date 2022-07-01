@@ -14,7 +14,6 @@ import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
@@ -94,37 +93,25 @@ class MagicLinkInterceptFragment : Fragment() {
     }
 
     private fun setupObservers() {
-        viewModel.isLoading.observe(
-            viewLifecycleOwner,
-            Observer {
-                showProgressDialog(it)
-            }
-        )
+        viewModel.isLoading.observe(viewLifecycleOwner) {
+            showProgressDialog(it)
+        }
 
-        viewModel.isAuthTokenUpdated.observe(
-            viewLifecycleOwner,
-            Observer { authTokenUpdated ->
-                if (authTokenUpdated) {
-                    showSitePickerScreen()
-                } else showLoginScreen()
-            }
-        )
+        viewModel.isAuthTokenUpdated.observe(viewLifecycleOwner) { authTokenUpdated ->
+            if (authTokenUpdated) {
+                showSitePickerScreen()
+            } else showLoginScreen()
+        }
 
-        viewModel.showSnackbarMessage.observe(
-            viewLifecycleOwner,
-            Observer { messageId ->
-                view?.let {
-                    Snackbar.make(it, getString(messageId), BaseTransientBottomBar.LENGTH_LONG).show()
-                }
+        viewModel.showSnackbarMessage.observe(viewLifecycleOwner) { messageId ->
+            view?.let {
+                Snackbar.make(it, getString(messageId), BaseTransientBottomBar.LENGTH_LONG).show()
             }
-        )
+        }
 
-        viewModel.showRetryOption.observe(
-            viewLifecycleOwner,
-            Observer {
-                showRetryScreen(it)
-            }
-        )
+        viewModel.showRetryOption.observe(viewLifecycleOwner) {
+            showRetryScreen(it)
+        }
     }
 
     @Suppress("DEPRECATION")

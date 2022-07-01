@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.products.reviews
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -117,12 +116,9 @@ class ProductReviewsFragment :
             }
         }
 
-        viewModel.reviewList.observe(
-            viewLifecycleOwner,
-            Observer {
-                showReviewList(it)
-            }
-        )
+        viewModel.reviewList.observe(viewLifecycleOwner) {
+            showReviewList(it)
+        }
 
         observeModerationStatus(
             reviewModerationConsumer = viewModel,

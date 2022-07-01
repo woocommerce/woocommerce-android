@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentShippingLabelAddressSuggestionBinding
@@ -91,19 +90,16 @@ class ShippingLabelAddressSuggestionFragment :
             }
         }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    is ExitWithResult<*> -> navigateBackWithResult(SELECTED_ADDRESS_ACCEPTED, event.data)
-                    is Exit -> navigateBackWithNotice(SUGGESTED_ADDRESS_DISCARDED)
-                    is EditSelectedAddress -> navigateBackWithResult(SELECTED_ADDRESS_TO_BE_EDITED, event.address)
-                    is UseSelectedAddress -> navigateBackWithResult(SELECTED_ADDRESS_ACCEPTED, event.address)
-                    else -> event.isHandled = false
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ExitWithResult<*> -> navigateBackWithResult(SELECTED_ADDRESS_ACCEPTED, event.data)
+                is Exit -> navigateBackWithNotice(SUGGESTED_ADDRESS_DISCARDED)
+                is EditSelectedAddress -> navigateBackWithResult(SELECTED_ADDRESS_TO_BE_EDITED, event.address)
+                is UseSelectedAddress -> navigateBackWithResult(SELECTED_ADDRESS_ACCEPTED, event.address)
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
     private fun Address.toStringMarkingDifferences(other: Address?): String {

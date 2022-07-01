@@ -5,7 +5,6 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import androidx.core.view.isVisible
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -144,32 +143,23 @@ class ProductTagsFragment :
             }
         }
 
-        viewModel.productTags.observe(
-            viewLifecycleOwner,
-            Observer {
-                showProductTags(it)
-            }
-        )
+        viewModel.productTags.observe(viewLifecycleOwner) {
+            showProductTags(it)
+        }
 
-        viewModel.addedProductTags.observe(
-            viewLifecycleOwner,
-            Observer {
-                addTags(it, this)
-            }
-        )
+        viewModel.addedProductTags.observe(viewLifecycleOwner) {
+            addTags(it, this)
+        }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ExitProductTags -> {
-                        viewModel.clearProductTagsState()
-                        findNavController().navigateUp()
-                    }
-                    else -> event.isHandled = false
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ExitProductTags -> {
+                    viewModel.clearProductTagsState()
+                    findNavController().navigateUp()
                 }
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
     private fun showProductTags(productTags: List<ProductTag>) {
