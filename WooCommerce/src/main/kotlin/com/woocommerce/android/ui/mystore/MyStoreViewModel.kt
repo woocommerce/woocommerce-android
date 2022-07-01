@@ -205,7 +205,7 @@ class MyStoreViewModel @Inject constructor(
                     _visitorStatsState.value =
                         VisitorStatsViewState.JetpackCpConnected(BenefitsBannerUiModel(show = false))
                     appPrefsWrapper.recordJetpackBenefitsDismissal()
-                    AnalyticsTracker.track(
+                    analyticsTrackerWrapper.track(
                         stat = AnalyticsEvent.FEATURE_JETPACK_BENEFITS_BANNER,
                         properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "dismissed")
                     )

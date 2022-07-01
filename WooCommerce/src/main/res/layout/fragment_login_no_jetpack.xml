@@ -11,7 +11,8 @@
         android:layout_weight="1"
         android:fillViewport="true">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -21,18 +22,22 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/help"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_gravity="end"/>
 
             <include
-                android:id="@+id/login_user_info"
-                layout="@layout/view_login_user_info"/>
+                layout="@layout/view_login_user_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100" />
 
             <include
-                android:id="@+id/login_no_stores"
-                layout="@layout/view_login_no_stores"/>
+                layout="@layout/view_login_no_stores"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
     </ScrollView>
 
     <View

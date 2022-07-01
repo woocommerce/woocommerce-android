@@ -8,6 +8,7 @@ import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import javax.inject.Inject
 
 class ProductSelectorRepository @Inject constructor(
@@ -43,15 +44,17 @@ class ProductSelectorRepository @Inject constructor(
         }
     }
 
-    fun observeProducts(): Flow<List<Product>> = productStore.observeProducts(selectedSite.get()).map {
-        it.map { product -> product.toAppModel() }
-    }
+    fun observeProducts(filterOptions: Map<ProductFilterOption, String>): Flow<List<Product>> =
+        productStore.observeProducts(selectedSite.get(), filterOptions = filterOptions).map {
+            it.map { product -> product.toAppModel() }
+        }
 
     suspend fun fetchProducts(
         offset: Int,
-        pageSize: Int
+        pageSize: Int,
+        filterOptions: Map<ProductFilterOption, String>
     ): Result<Boolean> {
-        return productStore.fetchProducts(selectedSite.get(), offset, pageSize)
+        return productStore.fetchProducts(selectedSite.get(), offset, pageSize, filterOptions = filterOptions)
             .let { result ->
                 if (result.isError) {
                     WooLog.w(
