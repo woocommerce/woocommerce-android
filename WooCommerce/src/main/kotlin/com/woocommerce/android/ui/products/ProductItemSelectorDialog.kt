@@ -57,6 +57,7 @@ class ProductItemSelectorDialog : DialogFragment() {
 
     private var listener: ProductItemSelectorDialogListener? = null
 
+    @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         listener = targetFragment as ProductItemSelectorDialogListener

@@ -122,6 +122,7 @@ open class CurrencyAmountDialog : DialogFragment(), DialogInterface.OnClickListe
         super.onDismiss(dialog)
     }
 
+    @Suppress("DEPRECATION")
     open fun returnResult(enteredAmount: BigDecimal) {
         val target = targetFragment
         val resultIntent = Intent()
