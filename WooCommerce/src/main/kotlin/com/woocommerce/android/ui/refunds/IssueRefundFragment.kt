@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.woocommerce.android.ui.refunds
 
 import android.annotation.SuppressLint
@@ -101,7 +103,7 @@ class IssueRefundFragment : BaseFragment() {
     }
 
     // TODO: Temporarily unused; it will be used again in a future release - do not remove
-    @Suppress("unused")
+    @Suppress("unused", "DEPRECATION")
     @SuppressLint("WrongConstant")
     private class RefundPageAdapter(
         fragmentManager: FragmentManager
