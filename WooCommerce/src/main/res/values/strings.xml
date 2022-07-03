@@ -925,7 +925,7 @@
         -->
     <string name="card_reader_manage_card_reader">Manage Card Reader</string>
     <string name="card_reader_purchase_card_reader">Order Card Reader</string>
-    <string name="card_reader_manage_payment_provider">Payment Provider</string>
+    <string name="card_reader_manage_payment_provider">Change Payment Provider</string>
     <string name="card_reader_bbpos_manual_card_reader" translatable="false">BBPOS Chipper™ 2X BT</string>
     <string name="card_reader_m2_manual_card_reader" translatable="false">Stripe M2</string>
     <string name="card_reader_wisepad_3_manual_card_reader" translatable="false">WisePad 3</string>
