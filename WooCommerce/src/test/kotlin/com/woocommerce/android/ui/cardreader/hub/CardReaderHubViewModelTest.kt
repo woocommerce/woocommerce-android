@@ -258,6 +258,28 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given multiple plugins installed, when payment provider clicked, then clear plugin selected flag`() {
+        whenever(ippSelectPaymentGateway.isEnabled()).thenReturn(true)
+        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+            .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
+        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+            .thenReturn(buildWCPayPluginInfo(isActive = true))
+
+        initViewModel()
+        (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
+            .find {
+                it.label == UiString.UiStringRes(R.string.card_reader_manage_payment_provider)
+            }!!.onItemClicked.invoke()
+
+        verify(appPrefsWrapper).setIsCardReaderPluginExplicitlySelectedFlag(
+            anyInt(),
+            anyLong(),
+            anyLong(),
+            eq(false)
+        )
+    }
+
+    @Test
     fun `given payment flag disabled, when multiple plugins installed, then payment provider row is not shown`() {
         whenever(ippSelectPaymentGateway.isEnabled()).thenReturn(false)
         whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))

@@ -114,7 +114,18 @@ class CardReaderHubViewModel @Inject constructor(
     }
 
     private fun onCardReaderPaymentProviderClicked() {
+        clearPluginExplicitlySelectedFlag()
         triggerEvent(CardReaderHubEvents.NavigateToCardReaderOnboardingScreen)
+    }
+
+    private fun clearPluginExplicitlySelectedFlag() {
+        val site = selectedSite.get()
+        appPrefsWrapper.setIsCardReaderPluginExplicitlySelectedFlag(
+            site.id,
+            site.siteId,
+            site.selfHostedSiteId,
+            false
+        )
     }
 
     sealed class CardReaderHubEvents : MultiLiveEvent.Event() {
