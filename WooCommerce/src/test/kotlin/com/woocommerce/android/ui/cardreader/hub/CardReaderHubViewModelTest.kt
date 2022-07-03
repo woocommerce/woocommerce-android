@@ -15,8 +15,12 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.ArgumentMatchers.anyInt
+import org.mockito.ArgumentMatchers.anyLong
+import org.mockito.ArgumentMatchers.eq
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
@@ -234,8 +238,8 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             }
     }
 
-    @Test(expected = NotImplementedError::class)
-    fun `given multiple plugins installed, when payment provider clicked, then throw exception`() {
+    @Test
+    fun `given multiple plugins installed, when change payment provider clicked, then trigger onboarding event`() {
         whenever(ippSelectPaymentGateway.isEnabled()).thenReturn(true)
         whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
             .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
@@ -247,6 +251,10 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             .find {
                 it.label == UiString.UiStringRes(R.string.card_reader_manage_payment_provider)
             }!!.onItemClicked.invoke()
+
+        assertThat(viewModel.event.value).isEqualTo(
+            CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderOnboardingScreen
+        )
     }
 
     @Test

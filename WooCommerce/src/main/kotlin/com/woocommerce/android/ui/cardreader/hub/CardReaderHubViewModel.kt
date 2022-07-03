@@ -114,13 +114,14 @@ class CardReaderHubViewModel @Inject constructor(
     }
 
     private fun onCardReaderPaymentProviderClicked() {
-        TODO("Not Implemented")
+        triggerEvent(CardReaderHubEvents.NavigateToCardReaderOnboardingScreen)
     }
 
     sealed class CardReaderHubEvents : MultiLiveEvent.Event() {
         data class NavigateToCardReaderDetail(val cardReaderFlowParam: CardReaderFlowParam) : CardReaderHubEvents()
         data class NavigateToPurchaseCardReaderFlow(val url: String) : CardReaderHubEvents()
         object NavigateToCardReaderManualsScreen : CardReaderHubEvents()
+        object NavigateToCardReaderOnboardingScreen : CardReaderHubEvents()
     }
 
     sealed class CardReaderHubViewState {
