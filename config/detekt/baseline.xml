@@ -356,8 +356,6 @@
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.variations.VariationDetailViewModel.kt:37</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.variations.VariationDetailViewModelTest.kt:24</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.variations.VariationListAdapter.kt:22</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.reviews.ReviewDetailFragment.kt:32</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.reviews.ReviewDetailFragment.kt:41</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.reviews.ReviewDetailRepository.kt:6</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.reviews.ReviewDetailViewModel.kt:9</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.reviews.ReviewDetailViewModelTest.kt:19</ID>
@@ -587,8 +585,6 @@
     <ID>WildcardImport:ProductSelectionListFragment.kt$import android.view.*</ID>
     <ID>WildcardImport:Refund.kt$import org.wordpress.android.fluxc.model.refunds.WCRefundModel.*</ID>
     <ID>WildcardImport:ResourceProvider.kt$import androidx.annotation.*</ID>
-    <ID>WildcardImport:ReviewDetailFragment.kt$import com.woocommerce.android.ui.reviews.ProductReviewStatus.*</ID>
-    <ID>WildcardImport:ReviewDetailFragment.kt$import org.wordpress.android.util.*</ID>
     <ID>WildcardImport:ReviewDetailRepository.kt$import com.woocommerce.android.model.*</ID>
     <ID>WildcardImport:ReviewDetailViewModel.kt$import com.woocommerce.android.model.RequestResult.*</ID>
     <ID>WildcardImport:ReviewListRepository.kt$import com.woocommerce.android.model.RequestResult.*</ID>

@@ -30,7 +30,10 @@ import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.reviews.ProductReviewStatus.*
+import com.woocommerce.android.ui.reviews.ProductReviewStatus.APPROVED
+import com.woocommerce.android.ui.reviews.ProductReviewStatus.HOLD
+import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
+import com.woocommerce.android.ui.reviews.ProductReviewStatus.TRASH
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.NavigateBackFromNotification
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
@@ -39,7 +42,11 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.util.*
+import org.wordpress.android.util.DateTimeUtils
+import org.wordpress.android.util.DisplayUtils
+import org.wordpress.android.util.HtmlUtils
+import org.wordpress.android.util.PhotonUtils
+import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
