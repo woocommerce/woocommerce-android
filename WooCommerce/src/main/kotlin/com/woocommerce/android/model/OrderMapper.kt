@@ -13,7 +13,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderMappingConst
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderMappingConst.SHIPPING_PHONE_KEY
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
-import java.util.*
+import java.util.Date
 import javax.inject.Inject
 import org.wordpress.android.fluxc.model.order.FeeLine as WCFeeLine
 import org.wordpress.android.fluxc.model.order.LineItem as WCLineItem

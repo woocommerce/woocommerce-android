@@ -6,7 +6,9 @@ import com.woocommerce.android.util.WooLog.T
 import org.wordpress.android.util.DateTimeUtils
 import java.security.InvalidParameterException
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.LinkedList
+import java.util.Locale
 
 /**
  * Fix-sized list of log entries

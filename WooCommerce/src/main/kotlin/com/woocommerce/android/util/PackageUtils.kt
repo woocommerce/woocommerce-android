@@ -5,7 +5,7 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import androidx.core.content.pm.PackageInfoCompat
 import com.woocommerce.android.BuildConfig
-import java.util.*
+import java.util.Locale
 
 object PackageUtils {
     const val PACKAGE_VERSION_CODE_DEFAULT = -1

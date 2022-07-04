@@ -1,7 +1,7 @@
 package com.woocommerce.android.widgets.tags
 
 import android.content.Context
-import java.util.*
+import java.util.Locale
 
 /**
  * Interface for working with individual Tag elements.

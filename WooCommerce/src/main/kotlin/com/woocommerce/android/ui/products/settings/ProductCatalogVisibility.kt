@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.products.settings
 import android.content.Context
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
-import java.util.*
+import java.util.Locale
 
 enum class ProductCatalogVisibility {
     VISIBLE,

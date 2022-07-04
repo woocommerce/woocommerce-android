@@ -15,7 +15,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.util.FormatUtils
 import java.io.IOException
-import java.util.*
+import java.util.Locale
 import java.util.regex.Pattern
 import kotlin.math.abs
 

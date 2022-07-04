@@ -11,7 +11,8 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.json.JSONObject
 import org.wordpress.android.fluxc.model.SiteModel
-import java.util.*
+import java.util.Locale
+import java.util.UUID
 
 class AnalyticsTracker private constructor(private val context: Context) {
     private var tracksClient: TracksClient? = TracksClient.getClient(context)

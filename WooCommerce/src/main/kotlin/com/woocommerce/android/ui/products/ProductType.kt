@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.products
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductType
-import java.util.*
+import java.util.Locale
 
 enum class ProductType(@StringRes val stringResource: Int = 0, val value: String = "") {
     SIMPLE(R.string.product_type_simple, CoreProductType.SIMPLE.value),

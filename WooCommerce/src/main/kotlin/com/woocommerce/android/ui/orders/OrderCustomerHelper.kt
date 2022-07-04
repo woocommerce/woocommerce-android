@@ -9,7 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.Order
 import org.wordpress.android.util.ToastUtils
-import java.util.*
+import java.util.Locale
 
 object OrderCustomerHelper {
     enum class Action {

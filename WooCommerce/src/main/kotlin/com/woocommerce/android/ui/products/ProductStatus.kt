@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStatus
-import java.util.*
+import java.util.Locale
 
 /**
  * Similar to PostStatus except only draft, pending, private, and publish are supported
