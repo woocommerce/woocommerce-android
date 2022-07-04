@@ -2,7 +2,6 @@ package com.woocommerce.android.extensions
 
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
-import android.text.Html
 import android.text.Selection
 import android.text.Spannable
 import android.text.SpannableString
@@ -13,6 +12,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
+import androidx.core.text.HtmlCompat
 import androidx.core.text.toSpannable
 import com.woocommerce.android.widgets.WooClickableSpan
 
@@ -25,7 +25,7 @@ typealias OnLinkClicked = (ClickableSpan) -> Unit
  * The callback is triggered in addition to the default link handling behavior, it does not override it.
  */
 fun TextView.setHtmlText(html: String, onLinkClicked: OnLinkClicked? = null) {
-    val spannedHtml = Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY)
+    val spannedHtml = HtmlCompat.fromHtml(html, HtmlCompat.FROM_HTML_MODE_LEGACY)
 
     val strBuilder = SpannableStringBuilder(spannedHtml)
     onLinkClicked?.let { callback ->

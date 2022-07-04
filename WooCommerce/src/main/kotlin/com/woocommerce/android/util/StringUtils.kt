@@ -4,11 +4,11 @@ import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources.NotFoundException
 import android.net.Uri
-import android.text.Html
 import android.util.Patterns
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import androidx.core.text.HtmlCompat
 import com.woocommerce.android.extensions.isInteger
 import com.woocommerce.android.util.WooLog.T.UTILS
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -245,7 +245,7 @@ object StringUtils {
      * double spaces with a single space (just in case)
      */
     fun getRawTextFromHtml(htmlStr: String) =
-        Html.fromHtml(htmlStr, Html.FROM_HTML_MODE_LEGACY).toString()
+        HtmlCompat.fromHtml(htmlStr, HtmlCompat.FROM_HTML_MODE_LEGACY).toString()
             .replace("\n", " ")
             .replace("  ", " ")
 

@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.inbox
 
-import android.text.Html
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import androidx.core.text.HtmlCompat
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -159,7 +159,7 @@ fun InboxNoteRow(note: InboxNoteUi) {
                 style = MaterialTheme.typography.subtitle1
             )
             Text(
-                text = Html.fromHtml(note.description, Html.FROM_HTML_MODE_LEGACY).toAnnotatedString(),
+                text = HtmlCompat.fromHtml(note.description, HtmlCompat.FROM_HTML_MODE_LEGACY).toAnnotatedString(),
                 style = MaterialTheme.typography.body2
             )
         }

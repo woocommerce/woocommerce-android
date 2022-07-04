@@ -26,7 +26,7 @@ fun StringBuilder.appendWithIfNotEmpty(line: String?, separator: String = ", "):
 }
 
 /**
- * This is much faster than Html.fromHtml but should only be used when we know the html is valid
+ * This is much faster than HtmlCompat.fromHtml but should only be used when we know the html is valid
  * since the regex will be unpredictable with invalid html
  * String param containing only valid html
  * @return String without HTML
