@@ -90,7 +90,7 @@ class ZendeskHelper(
         enableLogs: Boolean = BuildConfig.DEBUG
     ) {
         if (isZendeskEnabled) {
-            if (PackageUtils.isUITesting()) return
+            if (PackageUtils.isTesting()) return
             else error("Zendesk shouldn't be initialized more than once!")
         }
         if (zendeskUrl.isEmpty() || applicationId.isEmpty() || oauthClientId.isEmpty()) {

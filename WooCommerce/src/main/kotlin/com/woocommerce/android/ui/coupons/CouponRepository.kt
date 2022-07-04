@@ -9,6 +9,7 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
@@ -81,6 +82,7 @@ class CouponRepository @Inject constructor(
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun observeCoupons(): Flow<List<Coupon>> = store.observeCoupons(selectedSite.get()).map {
         it.map { couponDataModel -> couponDataModel.toAppModel() }
     }

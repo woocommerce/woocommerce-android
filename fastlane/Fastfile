@@ -19,6 +19,9 @@ INSTALLABLE_BUILD_DOMAIN = 'https://d2twmm2nzpx3bg.cloudfront.net'
 METADATA_DIR_PATH = File.join(PROJECT_ROOT_FOLDER, 'WooCommerce', 'metadata')
 RELEASE_NOTES_PATH = File.join(METADATA_DIR_PATH, 'release_notes.txt')
 MAIN_STRINGS_PATH = File.join('WooCommerce', 'src', 'main', 'res', 'values', 'strings.xml')
+RAW_SCREENSHOTS_DIR = File.join(Dir.pwd, 'screenshots', 'raw')
+RAW_SCREENSHOTS_PROCESSING_DIR = File.join(Dir.pwd, 'screenshots', 'raw_tmp')
+PROMO_SCREENSHOTS_DIR = File.join(Dir.pwd, "screenshots", "promo_screenshots")
 FROZEN_STRINGS_DIR_PATH = "./fastlane/resources/values/"
 REMOTE_LIBRARIES_STRINGS_PATHS = [
   {
@@ -73,8 +76,6 @@ SUPPORTED_LOCALES = [
   { glotpress: "zh-cn", android: "zh-rCN", google_play: "zh-CN",  promo_config: {} },
   { glotpress: "zh-tw", android: "zh-rTW", google_play: "zh-TW",  promo_config: {} },
 ].freeze
-
-SCREENSHOT_DIRECTORY = File.join(Dir.pwd, 'screenshots')
 
 platform :android do
   ########################################################################
@@ -604,24 +605,20 @@ platform :android do
     if options[:locales]
       locales = options[:locales].split(',')
     else
-      locales = SUPPORTED_LOCALES.
+      locales = SUPPORTED_LOCALES
+        .map { |locale|  locale[:google_play] }
+        .append("en-US")
         # Depending on how automated this is, possibly on whether we wipe the
         # emulator before running or not, the zh-CN locale might break due to
         # Pinwin Keyboard wanting contacts access. If that's the case, you can
         # skip it by uncommeting the following line.
-        #reject { |locale| locale[:glotpress] == 'zh-cn' }.
-        map { |locale|  locale[:google_play] }
+        #.reject { |locale| locale[:glotpress] == 'zh-cn' }
     end
-
-    # Override the locales array with one locale until
-    # https://github.com/fastlane/fastlane/issues/19521
-    # is fixed:
-    locales = ["en-EN"]
 
     UI.message("Attempting screenshots for locales: #{locales}")
 
     screenshot_options = {
-      output_directory: SCREENSHOT_DIRECTORY,
+      output_directory: RAW_SCREENSHOTS_DIR,
       app_package_name: "com.woocommerce.android",
       app_apk_path: "WooCommerce/build/outputs/apk/vanilla/debug/WooCommerce-vanilla-debug.apk",
       tests_apk_path: "WooCommerce/build/outputs/apk/androidTest/vanilla/debug/WooCommerce-vanilla-debug-androidTest.apk",
@@ -656,6 +653,126 @@ platform :android do
         }
       )
     )
+  end
+
+  #####################################################################################
+  # download_promo_strings
+  # -----------------------------------------------------------------------------------
+  # This lane download the translated promo strings from the translation system
+  # -----------------------------------------------------------------------------------
+  # Usage:
+  # fastlane download_promo_strings
+  #
+  # Example:
+  # fastlane download_promo_strings
+  #####################################################################################
+  desc "Downloads translated promo strings from the translation system"
+  lane :download_promo_strings do |options|
+    # "<key in .po file>" => { desc: "<name of txt file>" }
+    files = {
+      'app_store_screenshot-1': { desc: "promo_screenshot_1.txt" },
+      'app_store_screenshot-1_b': { desc: "promo_screenshot_1_b.txt" },
+      'app_store_screenshot-2': { desc: "promo_screenshot_2.txt" },
+      'app_store_screenshot-3': { desc: "promo_screenshot_3.txt" },
+      'app_store_screenshot-4': { desc: "promo_screenshot_4.txt" },
+      'app_store_screenshot-5': { desc: "promo_screenshot_5.txt" },
+      'app_store_screenshot-6': { desc: "promo_screenshot_6.txt" },
+      'app_store_screenshot-7': { desc: "promo_screenshot_7.txt" },
+      'app_store_screenshot-8': { desc: "promo_screenshot_8.txt" },
+    }
+
+    locales = SUPPORTED_LOCALES
+      .select { |hsh| hsh[:promo_config] != false }
+      .map { |hsh| [hsh[:glotpress], hsh[:google_play]] }
+
+    gp_downloadmetadata(project_url: GLOTPRESS_PLAYSTORE_METADATA_PROJECT_URL,
+                        target_files: files,
+                        locales: locales,
+                        source_locale: "en-US",
+                        download_path: File.join(Dir.pwd, "/playstoreres/metadata"))
+
+    # Copy metadata (screenshot-related) txt files into `en-US`
+    en_us_path = File.join(Dir.pwd, "/playstoreres/metadata", "en-US")
+    FileUtils.mkdir_p(en_us_path)
+
+    [
+      "promo_screenshot_1.txt",
+      "promo_screenshot_1_b.txt",
+      "promo_screenshot_2.txt",
+      "promo_screenshot_3.txt",
+      "promo_screenshot_4.txt",
+      "promo_screenshot_5.txt",
+      "promo_screenshot_6.txt",
+      "promo_screenshot_7.txt",
+      "promo_screenshot_8.txt",
+    ].each do |filename|
+      source = File.join(METADATA_DIR_PATH, filename)
+      destination = File.join(en_us_path, filename)
+      FileUtils.cp(source, destination)
+    end
+  end
+
+  #####################################################################################
+  # create_promo_screenshots
+  # -----------------------------------------------------------------------------------
+  # This lane creates the promo screenshot from the original ones that
+  # are taken by the screenshot lane
+  # -----------------------------------------------------------------------------------
+  # Usage:
+  # fastlane create_promo_screenshots
+  #
+  # Example:
+  # fastlane create_promo_screenshots
+  #####################################################################################
+  desc "Creates promo screenshots"
+  lane :create_promo_screenshots do |options|
+    begin
+      require "rmagick"
+    rescue LoadError => e
+      UI.user_error!("The rmagick gem doesn't seem to be installed. Be sure to use `bundle install --with screenshots`.")
+    end
+
+    # Clean temporary folder from previous runs
+    FileUtils.rm_rf(PROMO_SCREENSHOTS_DIR)
+
+    # Create a copy of the files to work with – this ensures that if we're doing multiple
+    # screenshot generation tasks close together, we can keep reusing the same source files
+    FileUtils.rm_rf(RAW_SCREENSHOTS_PROCESSING_DIR)
+    FileUtils.copy_entry(RAW_SCREENSHOTS_DIR, RAW_SCREENSHOTS_PROCESSING_DIR)
+
+    locales = SUPPORTED_LOCALES
+      .select { |hsh| hsh[:promo_config] != false }
+      .map { |hsh| hsh[:google_play] }
+      .append("en-US")
+
+    # Allow creating promo screenshots for just one locale
+    if options[:locale] != nil
+      locales.keep_if { |locale|
+        locale.casecmp(options[:locale]) == 0
+      }
+    end
+
+    UI.message("Creating promo screenshots for Locales: #{locales}")
+
+    # Remove locales we're not interested in
+    Pathname(RAW_SCREENSHOTS_PROCESSING_DIR)
+      .children
+      .select(&:directory?)
+      .reject { |dir| locales.include? File.basename(dir) }
+      .each do |dir|
+      FileUtils.rm_rf(dir)
+    end
+
+    # Run screenshots generator tool
+    promo_screenshots(
+      orig_folder: RAW_SCREENSHOTS_PROCESSING_DIR,
+      metadata_folder: METADATA_DIR_PATH,
+      output_folder: PROMO_SCREENSHOTS_DIR,
+      force: options[:force],
+    )
+
+    # Clean up the temp directories
+    FileUtils.rm_rf(RAW_SCREENSHOTS_PROCESSING_DIR)
   end
 
   #####################################################################################
