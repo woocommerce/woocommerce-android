@@ -15,6 +15,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingParams.Check
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingParams.Failed
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.GenericError
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.NoConnectionError
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.OnboardingCompleted
@@ -86,15 +87,15 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
     init {
         when (val onboardingParam = arguments.cardReaderOnboardingParam) {
-            is Check -> refreshState()
+            is Check -> refreshState(onboardingParam.pluginType)
             is Failed -> showOnboardingState(onboardingParam.onboardingState)
         }.exhaustive
     }
 
-    private fun refreshState() {
+    private fun refreshState(pluginType: PluginType? = null) {
         launch {
             viewState.value = OnboardingViewState.LoadingState
-            val state = cardReaderChecker.getOnboardingState()
+            val state = cardReaderChecker.getOnboardingState(pluginType)
             cardReaderTracker.trackOnboardingState(state)
             showOnboardingState(state)
         }
@@ -199,6 +200,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     ::onLearnMoreClicked
                 )
             WcpayAndStripeActivated -> updateUiWithWcPayAndStripeActivated()
+            ChoosePaymentGatewayProvider -> TODO()
         }.exhaustive
     }
 
