@@ -649,7 +649,7 @@ class ProductDetailViewModel @Inject constructor(
      * changes have been made to the [Product] model locally that still need to be saved to the backend.
      */
     fun onBackButtonClickedProductDetail(): Boolean {
-        val isProductDetailUpdated = _hasChanges.value ?: false
+        val isProductDetailUpdated = _hasChanges.value
         // Consider a non created product with ongoing uploads same as product with non saved changes
         val isUploadingImagesForNonCreatedProduct = isProductUnderCreation && isUploadingImages()
 
