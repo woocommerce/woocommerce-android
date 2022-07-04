@@ -514,7 +514,6 @@
     <ID>WildcardImport:JetpackInstallViewModel.kt$import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.*</ID>
     <ID>WildcardImport:JetpackInstallViewModel.kt$import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.*</ID>
     <ID>WildcardImport:JetpackInstallViewModel.kt$import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.*</ID>
-    <ID>WildcardImport:LiveDataExt.kt$import androidx.lifecycle.*</ID>
     <ID>WildcardImport:MagicLinkInterceptRepository.kt$import com.woocommerce.android.model.RequestResult.*</ID>
     <ID>WildcardImport:MagicLinkInterceptRepository.kt$import org.wordpress.android.fluxc.store.AccountStore.*</ID>
     <ID>WildcardImport:MainActivity.kt$import com.woocommerce.android.*</ID>
@@ -554,7 +553,6 @@
     <ID>WildcardImport:OrderListFragment.kt$import com.woocommerce.android.extensions.*</ID>
     <ID>WildcardImport:OrderListFragment.kt$import com.woocommerce.android.model.FeatureFeedbackSettings.*</ID>
     <ID>WildcardImport:OrderListFragment.kt$import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.*</ID>
-    <ID>WildcardImport:OrderListViewModel.kt$import androidx.lifecycle.*</ID>
     <ID>WildcardImport:OrderStatusSelectorDialog.kt$import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.*</ID>
     <ID>WildcardImport:PaymentErrorMapper.kt$import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.*</ID>
     <ID>WildcardImport:PaymentManager.kt$import com.woocommerce.android.cardreader.payments.CardPaymentStatus.*</ID>
@@ -569,7 +567,6 @@
     <ID>WildcardImport:ProductDetailRepository.kt$import com.woocommerce.android.model.*</ID>
     <ID>WildcardImport:ProductDetailRepository.kt$import org.wordpress.android.fluxc.action.WCProductAction.*</ID>
     <ID>WildcardImport:ProductDetailRepository.kt$import org.wordpress.android.fluxc.store.WCProductStore.*</ID>
-    <ID>WildcardImport:ProductDetailViewModel.kt$import androidx.lifecycle.*</ID>
     <ID>WildcardImport:ProductDetailViewModel.kt$import com.woocommerce.android.analytics.AnalyticsEvent.*</ID>
     <ID>WildcardImport:ProductDetailViewModel.kt$import com.woocommerce.android.extensions.*</ID>
     <ID>WildcardImport:ProductDetailViewModel.kt$import com.woocommerce.android.media.MediaFilesRepository.UploadResult.*</ID>
@@ -601,7 +598,6 @@
     <ID>WildcardImport:ReviewModerationHandler.kt$import com.woocommerce.android.model.ActionStatus.*</ID>
     <ID>WildcardImport:ReviewModerationHandler.kt$import kotlinx.coroutines.*</ID>
     <ID>WildcardImport:ReviewModerationHandler.kt$import kotlinx.coroutines.flow.*</ID>
-    <ID>WildcardImport:ScopedViewModel.kt$import androidx.lifecycle.*</ID>
     <ID>WildcardImport:ShippingLabelAddressSuggestionFragment.kt$import com.woocommerce.android.extensions.*</ID>
     <ID>WildcardImport:ShippingLabelAddressSuggestionFragment.kt$import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*</ID>
     <ID>WildcardImport:ShippingLabelRepository.kt$import com.woocommerce.android.model.*</ID>
