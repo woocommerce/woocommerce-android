@@ -352,7 +352,6 @@
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.addons.AddonsExt.kt:4</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.downloads.AddProductDownloadBottomSheetFragment.kt:23</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModelTest.kt:6</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.reviews.ProductReviewsFragment.kt:28</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.reviews.ProductReviewsViewModel.kt:19</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.variations.VariationDetailFragment.kt:20</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.variations.VariationDetailFragment.kt:37</ID>
@@ -589,7 +588,6 @@
     <ID>WildcardImport:ProductListViewModel.kt$import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.*</ID>
     <ID>WildcardImport:ProductListViewModel.kt$import kotlinx.coroutines.*</ID>
     <ID>WildcardImport:ProductListViewModel.kt$import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.*</ID>
-    <ID>WildcardImport:ProductReviewsFragment.kt$import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*</ID>
     <ID>WildcardImport:ProductReviewsViewModel.kt$import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*</ID>
     <ID>WildcardImport:ProductSelectionListFragment.kt$import android.view.*</ID>
     <ID>WildcardImport:Refund.kt$import org.wordpress.android.fluxc.model.refunds.WCRefundModel.*</ID>
