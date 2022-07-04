@@ -297,7 +297,7 @@ class ProductListFragment :
             new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) { isVisible ->
                 showAddProductButton(show = isVisible)
             }
-            new.isBottomNavBarVisible?.takeIfNotEqualTo(old?.isBottomNavBarVisible) { isBottomNavBarVisible ->
+            new.isBottomNavBarVisible.takeIfNotEqualTo(old?.isBottomNavBarVisible) { isBottomNavBarVisible ->
                 showBottomNavBar(isVisible = isBottomNavBarVisible)
             }
         }

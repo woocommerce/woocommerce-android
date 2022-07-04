@@ -84,7 +84,7 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
             new.previewShippingLabel?.takeIfNotEqualTo(old?.previewShippingLabel) {
                 writeShippingLabelToFile(it)
             }
-            new.isLabelExpired?.takeIfNotEqualTo(old?.isLabelExpired) { isExpired ->
+            new.isLabelExpired.takeIfNotEqualTo(old?.isLabelExpired) { isExpired ->
                 binding.expirationWarningBanner.isVisible = isExpired
                 binding.shippingLabelPrintPaperSize.isEnabled = !isExpired
                 binding.shippingLabelPrintBtn.isEnabled = !isExpired

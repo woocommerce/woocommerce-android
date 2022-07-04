@@ -135,7 +135,7 @@ class RefundByItemsFragment :
                     currencyFormatter.buildBigDecimalFormatter(new.currency)
                 )
             }
-            new.isNextButtonEnabled?.takeIfNotEqualTo(old?.isNextButtonEnabled) {
+            new.isNextButtonEnabled.takeIfNotEqualTo(old?.isNextButtonEnabled) {
                 binding.issueRefundBtnNextFromItems.isEnabled = it
             }
             new.formattedProductsRefund?.takeIfNotEqualTo(old?.formattedProductsRefund) {
