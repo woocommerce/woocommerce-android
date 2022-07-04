@@ -4,7 +4,6 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository.StatsException
-import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.*
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
@@ -53,10 +52,10 @@ class GetStatsTest : BaseUnitTest() {
             givenCheckIfStoreHasNoOrdersFlow(Result.success(true))
 
             val result = getStats(refresh = false, granularity = ANY_GRANULARITY)
-                .filter { it is HasOrders }
+                .filter { it is GetStats.LoadStatsResult.HasOrders }
                 .first()
 
-            assertThat(result).isEqualTo(HasOrders(false))
+            assertThat(result).isEqualTo(GetStats.LoadStatsResult.HasOrders(false))
         }
 
     @Test
@@ -65,10 +64,10 @@ class GetStatsTest : BaseUnitTest() {
             givenCheckIfStoreHasNoOrdersFlow(Result.success(false))
 
             val result = getStats(refresh = false, granularity = ANY_GRANULARITY)
-                .filter { it is HasOrders }
+                .filter { it is GetStats.LoadStatsResult.HasOrders }
                 .first()
 
-            assertThat(result).isEqualTo(HasOrders(true))
+            assertThat(result).isEqualTo(GetStats.LoadStatsResult.HasOrders(true))
         }
 
     @Test
@@ -77,10 +76,10 @@ class GetStatsTest : BaseUnitTest() {
             givenFetchRevenueStats(Result.success(ANY_REVENUE_STATS))
 
             val result = getStats(refresh = false, granularity = ANY_GRANULARITY)
-                .filter { it is RevenueStatsSuccess }
+                .filter { it is GetStats.LoadStatsResult.RevenueStatsSuccess }
                 .first()
 
-            assertThat(result).isEqualTo(RevenueStatsSuccess(ANY_REVENUE_STATS))
+            assertThat(result).isEqualTo(GetStats.LoadStatsResult.RevenueStatsSuccess(ANY_REVENUE_STATS))
         }
 
     @Test
@@ -89,10 +88,10 @@ class GetStatsTest : BaseUnitTest() {
             givenFetchRevenueStats(Result.failure(StatsException(GENERIC_ORDER_STATS_ERROR)))
 
             val result = getStats(refresh = false, granularity = ANY_GRANULARITY)
-                .filter { it is RevenueStatsError }
+                .filter { it is GetStats.LoadStatsResult.RevenueStatsError }
                 .first()
 
-            assertThat(result).isEqualTo(RevenueStatsError)
+            assertThat(result).isEqualTo(GetStats.LoadStatsResult.RevenueStatsError)
         }
 
     @Test
@@ -101,10 +100,10 @@ class GetStatsTest : BaseUnitTest() {
             givenFetchRevenueStats(Result.failure(StatsException(PLUGIN_NOT_ACTIVE_ORDER_STATS_ERROR)))
 
             val result = getStats(refresh = false, granularity = ANY_GRANULARITY)
-                .filter { it is PluginNotActive }
+                .filter { it is GetStats.LoadStatsResult.PluginNotActive }
                 .first()
 
-            assertThat(result).isEqualTo(PluginNotActive)
+            assertThat(result).isEqualTo(GetStats.LoadStatsResult.PluginNotActive)
         }
 
     @Test
@@ -133,10 +132,10 @@ class GetStatsTest : BaseUnitTest() {
             givenFetchVisitorStats(Result.success(ANY_VISITOR_STATS))
 
             val result = getStats(refresh = false, granularity = ANY_GRANULARITY)
-                .filter { it is VisitorsStatsSuccess }
+                .filter { it is GetStats.LoadStatsResult.VisitorsStatsSuccess }
                 .first()
 
-            assertThat(result).isEqualTo(VisitorsStatsSuccess(ANY_VISITOR_STATS))
+            assertThat(result).isEqualTo(GetStats.LoadStatsResult.VisitorsStatsSuccess(ANY_VISITOR_STATS))
         }
 
     @Test
@@ -145,10 +144,10 @@ class GetStatsTest : BaseUnitTest() {
             givenFetchVisitorStats(Result.failure(StatsException(GENERIC_ORDER_STATS_ERROR)))
 
             val result = getStats(refresh = false, granularity = ANY_GRANULARITY)
-                .filter { it is VisitorsStatsError }
+                .filter { it is GetStats.LoadStatsResult.VisitorsStatsError }
                 .first()
 
-            assertThat(result).isEqualTo(VisitorsStatsError)
+            assertThat(result).isEqualTo(GetStats.LoadStatsResult.VisitorsStatsError)
         }
 
     @Test
@@ -157,10 +156,10 @@ class GetStatsTest : BaseUnitTest() {
             givenIsJetpackConnected(true)
 
             val result = getStats(refresh = false, granularity = ANY_GRANULARITY)
-                .filter { it is IsJetPackCPEnabled }
+                .filter { it is GetStats.LoadStatsResult.IsJetPackCPEnabled }
                 .first()
 
-            assertThat(result).isEqualTo(IsJetPackCPEnabled)
+            assertThat(result).isEqualTo(GetStats.LoadStatsResult.IsJetPackCPEnabled)
         }
 
     private suspend fun givenCheckIfStoreHasNoOrdersFlow(result: Result<Boolean>) {

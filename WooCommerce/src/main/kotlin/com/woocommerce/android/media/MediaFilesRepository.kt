@@ -10,8 +10,16 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.ResourceProvider
-import kotlinx.coroutines.channels.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.ProducerScope
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.onFailure
+import kotlinx.coroutines.channels.trySendBlocking
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -19,8 +27,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.MediaActionBuilder
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore
-import org.wordpress.android.fluxc.store.MediaStore.*
-import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType.GENERIC_ERROR
+import org.wordpress.android.fluxc.store.MediaStore.OnMediaUploaded
 import org.wordpress.android.mediapicker.MediaPickerUtils
 import java.io.File
 import javax.inject.Inject
@@ -51,19 +58,20 @@ class MediaFilesRepository @Inject constructor(
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun uploadMedia(localMediaModel: MediaModel, stripLocation: Boolean = true): Flow<UploadResult> {
         return callbackFlow {
             WooLog.d(T.MEDIA, "MediaFilesRepository > Dispatching request to upload ${localMediaModel.filePath}")
             val listener = OnMediaUploadListener(this)
             dispatcher.register(listener)
-            val payload = UploadMediaPayload(selectedSite.get(), localMediaModel, stripLocation)
+            val payload = MediaStore.UploadMediaPayload(selectedSite.get(), localMediaModel, stripLocation)
             dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(payload))
 
             awaitClose {
                 dispatcher.unregister(listener)
                 // Cancel upload if the collection was cancelled before completion
                 if (!isClosedForSend) {
-                    val payload = CancelMediaPayload(selectedSite.get(), localMediaModel, true)
+                    val payload = MediaStore.CancelMediaPayload(selectedSite.get(), localMediaModel, true)
                     dispatcher.dispatch(MediaActionBuilder.newCancelMediaUploadAction(payload))
                 }
             }
@@ -144,7 +152,7 @@ class MediaFilesRepository @Inject constructor(
                             UploadFailure(
                                 error = MediaUploadException(
                                     event.media,
-                                    GENERIC_ERROR,
+                                    MediaStore.MediaErrorType.GENERIC_ERROR,
                                     resourceProvider.getString(R.string.product_image_service_error_uploading)
                                 )
                             )
