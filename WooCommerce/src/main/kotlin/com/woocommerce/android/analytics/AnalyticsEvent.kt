@@ -258,7 +258,6 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED,
     CARD_PRESENT_ONBOARDING_NOT_COMPLETED,
 
-
     // -- Card Present Payments - collection
     CARD_PRESENT_COLLECT_PAYMENT_TAPPED,
     CARD_PRESENT_COLLECT_PAYMENT_FAILED,
