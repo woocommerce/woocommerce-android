@@ -34,6 +34,10 @@
             app:keepAddButtons="true" />
 
         <include
+            android:id="@+id/multiple_lines_warning_section"
+            layout="@layout/multiple_lines_warning" />
+
+        <include
             android:id="@+id/payment_section"
             layout="@layout/order_creation_payment_section" />
 
