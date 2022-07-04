@@ -2,9 +2,9 @@ package com.woocommerce.android.ui.dialog
 
 import android.app.Activity
 import android.content.DialogInterface.OnClickListener
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import androidx.annotation.StringRes
 import com.woocommerce.android.R.string
 import java.lang.ref.WeakReference
 

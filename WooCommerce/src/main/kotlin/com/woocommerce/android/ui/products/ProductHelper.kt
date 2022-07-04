@@ -55,8 +55,9 @@ object ProductHelper {
             permalink = "",
             externalUrl = "",
             buttonText = "",
-            salePrice = BigDecimal.ZERO,
-            regularPrice = BigDecimal.ZERO,
+            price = BigDecimal.ZERO,
+            salePrice = null,
+            regularPrice = null,
             taxClass = Product.TAX_CLASS_DEFAULT,
             isStockManaged = false,
             stockQuantity = 0.0,
@@ -86,7 +87,9 @@ object ProductHelper {
             groupedProductIds = listOf(),
             crossSellProductIds = listOf(),
             upsellProductIds = listOf(),
+            variationIds = listOf(),
             downloads = listOf(),
+            isPurchasable = false
         )
     }
 }

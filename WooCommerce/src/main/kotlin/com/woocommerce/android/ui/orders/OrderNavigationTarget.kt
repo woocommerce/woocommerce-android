@@ -29,18 +29,18 @@ sealed class OrderNavigationTarget : Event() {
     }
 
     data class IssueOrderRefund(val remoteOrderId: Long) : OrderNavigationTarget()
-    data class ViewRefundedProducts(val remoteOrderId: Long) : OrderNavigationTarget()
-    data class ViewOrderFulfillInfo(val orderIdentifier: String) : OrderNavigationTarget()
-    data class AddOrderNote(val orderIdentifier: String, val orderNumber: String) : OrderNavigationTarget()
+    data class ViewRefundedProducts(val orderId: Long) : OrderNavigationTarget()
+    data class ViewOrderFulfillInfo(val orderId: Long) : OrderNavigationTarget()
+    data class AddOrderNote(val orderId: Long, val orderNumber: String) : OrderNavigationTarget()
     data class RefundShippingLabel(val remoteOrderId: Long, val shippingLabelId: Long) : OrderNavigationTarget()
     data class AddOrderShipmentTracking(
-        val orderIdentifier: String,
+        val orderId: Long,
         val orderTrackingProvider: String,
         val isCustomProvider: Boolean
     ) : OrderNavigationTarget()
 
     data class ViewShipmentTrackingProviders(
-        val orderIdentifier: String,
+        val orderId: Long,
         val selectedProvider: String
     ) : OrderNavigationTarget()
     data class PrintShippingLabel(val remoteOrderId: Long, val shippingLabelId: Long) : OrderNavigationTarget()
@@ -49,13 +49,12 @@ sealed class OrderNavigationTarget : Event() {
     object ViewPrintShippingLabelInfo : OrderNavigationTarget()
     object ViewShippingLabelFormatOptions : OrderNavigationTarget()
     data class ViewPrintCustomsForm(val invoices: List<String>, val isReprint: Boolean) : OrderNavigationTarget()
-    data class StartShippingLabelCreationFlow(val orderIdentifier: String) : OrderNavigationTarget()
-    data class StartCardReaderConnectFlow(val skipOnboarding: Boolean) : OrderNavigationTarget()
-    object ShowCardReaderWelcomeDialog : OrderNavigationTarget()
-    data class StartCardReaderPaymentFlow(val orderIdentifier: String) : OrderNavigationTarget()
+    data class StartShippingLabelCreationFlow(val orderId: Long) : OrderNavigationTarget()
+    data class StartCardReaderPaymentFlow(val orderId: Long) : OrderNavigationTarget()
     object ViewPrintingInstructions : OrderNavigationTarget()
     data class PreviewReceipt(val billingEmail: String, val receiptUrl: String, val orderId: Long) :
         OrderNavigationTarget()
     data class ViewOrderedAddons(val remoteOrderID: Long, val orderItemID: Long, val addonsProductID: Long) :
         OrderNavigationTarget()
+    data class EditOrder(val orderId: Long) : OrderNavigationTarget()
 }

@@ -32,8 +32,6 @@ class LoginPrologueFragment : Fragment(R.layout.fragment_login_prologue) {
     private var prologueFinishedListener: PrologueFinishedListener? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         val binding = FragmentLoginPrologueBinding.bind(view)
 
         binding.buttonLoginStore.setOnClickListener {

@@ -1,8 +1,10 @@
+import se.bjurr.violations.comments.github.plugin.gradle.ViolationCommentsToGitHubTask
+import se.bjurr.violations.lib.model.SEVERITY
+
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'org.jetbrains.kotlin.kapt'
-    id 'org.jetbrains.kotlin.plugin.allopen'
     id 'org.jetbrains.kotlin.plugin.parcelize'
     id 'dagger.hilt.android.plugin'
     id 'se.bjurr.violations.violation-comments-to-github-gradle-plugin'
@@ -18,7 +20,10 @@ repositories {
             includeGroup "org.wordpress"
             includeGroup "org.wordpress.fluxc"
             includeGroup "org.wordpress.fluxc.plugins"
+            includeGroup "org.wordpress.wellsql"
             includeGroup "org.wordpress.mediapicker"
+            includeGroup "com.automattic"
+            includeGroup "com.automattic.tracks"
         }
     }
     maven {
@@ -29,30 +34,25 @@ repositories {
         }
     }
     mavenCentral()
-    //noinspection JcenterRepositoryObsolete
-    jcenter {
+    maven {
+        url "https://a8c-libs.s3.amazonaws.com/android/jcenter-mirror"
         content {
-            includeModule("org.wordpress", "wellsql")
-            includeModule("org.wordpress", "wellsql-core")
-            includeModule("com.google.android", "flexbox")
-            includeModule("com.android.volley", "volley")
-            includeModule("com.jraska", "falcon")
+            includeVersion "com.android.volley", "volley", "1.1.1"
+            includeVersion "com.google.android", "flexbox", "2.0.1"
+            includeVersion "com.jraska", "falcon", "2.1.1"
+            includeVersion "org.wordpress", "wellsql", "1.6.0"
+            includeVersion "org.wordpress", "wellsql-core", "1.6.0"
         }
     }
     maven {
         url "https://jitpack.io"
         content {
-            includeModule("com.github.Automattic", "Automattic-Tracks-Android")
             includeModule("com.github.wordpress-mobile.WordPress-Aztec-Android", "aztec")
             includeModule("com.github.wordpress-mobile.WordPress-Aztec-Android", "glide-loader")
             includeModule("com.github.chrisbanes", "PhotoView")
             includeModule("com.github.PhilJay", "MPAndroidChart")
         }
     }
-}
-
-allOpen {
-    annotation("com.woocommerce.android.annotations.OpenClass")
 }
 
 android {
@@ -64,9 +64,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "8.1"
+            versionName "9.5-rc-1"
         }
-        versionCode 265
+        versionCode 310
 
         minSdkVersion 21
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
@@ -85,10 +85,13 @@ android {
         packagingOptions {
             exclude 'META-INF/gradle/incremental.annotation.processors'
             exclude("META-INF/*.kotlin_module")
+            pickFirst 'META-INF/AL2.0'
+            pickFirst 'META-INF/LGPL2.1'
         }
     }
 
     buildFeatures {
+        compose true
         viewBinding true
     }
 
@@ -99,21 +102,36 @@ android {
 
     kotlinOptions {
         jvmTarget = "1.8"
+        freeCompilerArgs += [
+                "-Xopt-in=kotlin.RequiresOptIn"
+        ]
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion composeVersion
     }
 
     flavorDimensions "buildType"
 
     productFlavors {
-        vanilla { // Release version
+        // Used for release/beta builds. Usually shouldn't be build locally.
+        // AppName: WooCommerce
+        vanilla {
             dimension "buildType"
         }
 
-        wasabi { // Development only version, can be installed along release versions
+        // Used for local development - preferred variant for developers.
+        // AppName: WooCommerce (Dev)
+        wasabi {
             applicationId "com.woocommerce.android.dev"
             dimension "buildType"
+            isDefault true
         }
 
-        jalapeno { // Pre-Alpha version, used for PR builds, can be installed along release and dev versions.
+        // Used for CI builds on PRs (downloadable apks). Can be used locally when a developer needs
+        // to install multiple versions of the app on the same device.
+        // AppName: WooCommerce (PreAlpha)
+        jalapeno {
             applicationId "com.woocommerce.android.prealpha"
             dimension "buildType"
         }
@@ -130,6 +148,7 @@ android {
         debug {
             minifyEnabled false
             pseudoLocalesEnabled true
+            isDefault true
         }
     }
 
@@ -143,8 +162,6 @@ android {
 
     lintOptions {
         disable 'InvalidPackage'
-        // see https://github.com/woocommerce/woocommerce-android/pull/3699
-        disable "NullSafeMutableLiveData"
         // TODO remove this after we update AGP, it's a bug that has been fixed in 4.1.1 and later
         // see: https://issuetracker.google.com/issues/168794947
         disable "ParcelCreator"
@@ -156,27 +173,27 @@ android {
 }
 
 dependencies {
-
     implementation("org.wordpress:libaddressinput.common:$libaddressinputVersion") {
         exclude group: "org.json", module: "json"
         exclude group: "com.google.guava", module: "guava"
     }
 
-    implementation 'com.google.firebase:firebase-messaging-ktx:23.0.0'
-    implementation 'com.google.android.gms:play-services-auth:19.2.0'
+    implementation 'com.google.firebase:firebase-messaging-ktx:23.0.5'
+    implementation 'com.google.android.gms:play-services-auth:20.2.0'
 
     // Support library
     implementation "androidx.legacy:legacy-support-v4:1.0.0"
-    implementation "androidx.constraintlayout:constraintlayout:2.1.1"
-    implementation "androidx.recyclerview:recyclerview:1.1.0"
+    implementation "androidx.core:core-ktx:$coreKtxVersion"
+    implementation "androidx.constraintlayout:constraintlayout:2.1.3"
+    implementation "androidx.recyclerview:recyclerview:1.2.1"
     implementation "androidx.recyclerview:recyclerview-selection:1.1.0"
     implementation "androidx.appcompat:appcompat:$appCompatVersion"
     implementation "com.google.android.material:material:$materialVersion"
     implementation "androidx.cardview:cardview:1.0.0"
-    implementation("androidx.browser:browser:1.3.0") {
+    implementation("androidx.browser:browser:1.4.0") {
         exclude group: 'com.google.guava', module: 'listenablefuture'
     }
-    implementation "androidx.preference:preference:1.1.1"
+    implementation "androidx.preference:preference:1.2.0"
     implementation "androidx.datastore:datastore-preferences:1.0.0"
 
     implementation "androidx.navigation:navigation-fragment-ktx:$gradle.ext.navigationVersion"
@@ -188,7 +205,7 @@ dependencies {
         exclude group: "com.android.support"
     }
 
-    implementation 'com.github.Automattic:Automattic-Tracks-Android:2.1.0'
+    implementation 'com.automattic:Automattic-Tracks-Android:2.2.0'
 
     implementation("${gradle.ext.fluxCBinaryPath}:$fluxCVersion") {
         exclude group: "com.android.support"
@@ -222,6 +239,8 @@ dependencies {
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
 
+    implementation "com.automattic:about:$aboutAutomatticVersion"
+
     // Dagger
     implementation "com.google.dagger:hilt-android:$gradle.ext.daggerVersion"
     implementation "androidx.hilt:hilt-navigation-fragment:$hiltJetpackVersion"
@@ -229,7 +248,7 @@ dependencies {
     implementation "com.google.dagger:dagger-android-support:$gradle.ext.daggerVersion"
     kapt "com.google.dagger:dagger-android-processor:$gradle.ext.daggerVersion"
 
-    implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 
     implementation "com.github.bumptech.glide:glide:$glideVersion"
     kapt "com.github.bumptech.glide:compiler:$glideVersion"
@@ -246,7 +265,7 @@ dependencies {
         // See https://github.com/wordpress-mobile/WordPress-FluxC-Android/issues/919
         exclude group: 'com.squareup.okhttp3'
     }
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android-core:2.9.1'
 
     // Dependencies for local unit tests
     testImplementation "junit:junit:$jUnitVersion"
@@ -262,7 +281,7 @@ dependencies {
 
     // Dependencies for Espresso UI tests
     androidTestImplementation "androidx.test.ext:junit:$jUnitExtVersion"
-    androidTestImplementation "androidx.test:rules:1.4.0"
+    androidTestImplementation "androidx.test:rules:$androidxTestCoreVersion"
     androidTestImplementation "org.assertj:assertj-core:$assertjVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
     androidTestImplementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
@@ -271,7 +290,7 @@ dependencies {
     kaptAndroidTest "com.google.dagger:hilt-android-compiler:$gradle.ext.daggerVersion"
 
     // Dependencies for screenshots
-    androidTestImplementation 'tools.fastlane:screengrab:2.0.0'
+    androidTestImplementation 'tools.fastlane:screengrab:2.1.1'
     androidTestImplementation('com.github.tomakehurst:wiremock:2.26.3') {
         exclude group: 'org.apache.httpcomponents', module: 'httpclient'
         exclude group: 'org.apache.commons', module: 'commons-lang3'
@@ -281,16 +300,15 @@ dependencies {
     androidTestImplementation 'org.apache.httpcomponents:httpclient-android:4.3.5.1'
 
     // Resolve conflicts between main and test APK
-    androidTestImplementation "androidx.annotation:annotation:1.1.0"
+    androidTestImplementation "androidx.annotation:annotation:1.3.0"
 
-    implementation ("com.zendesk:support:5.0.3") {
+    implementation ("com.zendesk:support:5.0.8") {
         exclude group: 'com.android.support', module: 'support-annotations'
     }
 
     // ViewModel and LiveData
-    // TODO Try to re-enable NullSafeMutableLiveData lint check when we move to fragment-ktx v1.4.0+
-    implementation "androidx.fragment:fragment-ktx:1.3.6"
-    implementation "androidx.activity:activity-ktx:1.3.1"
+    implementation "androidx.fragment:fragment-ktx:1.4.1"
+    implementation "androidx.activity:activity-ktx:1.4.0"
     implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-process:$lifecycleVersion"
@@ -300,10 +318,9 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
 
-    testImplementation 'app.cash.turbine:turbine:0.7.0'
+    testImplementation 'app.cash.turbine:turbine:0.8.0'
 
-    // Use caution when updating these, as commons-text 1.9 caused the reviews tab to crash on API 21
-    implementation "org.apache.commons:commons-lang3:3.9"
+    // Use caution when updating this, as commons-text 1.9 caused the reviews tab to crash on API 21
     implementation "org.apache.commons:commons-text:1.8"
     implementation "commons-io:commons-io:2.11.0"
 
@@ -317,6 +334,20 @@ dependencies {
         exclude group: "org.wordpress", module: "utils"
         exclude group: "org.wordpress", module: "fluxc"
     }
+
+    // Jetpack Compose
+    implementation 'androidx.activity:activity-compose:1.4.0'
+    implementation "com.google.accompanist:accompanist-swiperefresh:$composeAccompanistVersion"
+    implementation "androidx.compose.material:material:$composeVersion"
+    implementation "androidx.compose.animation:animation:$composeVersion"
+    implementation "androidx.compose.ui:ui-tooling:$composeVersion"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycleViewmodelComposeVersion"
+    implementation "androidx.compose.runtime:runtime-livedata:$composeVersion"
+    implementation "com.google.android.material:compose-theme-adapter:$composeThemeAdapterVersion"
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$composeVersion"
+    debugImplementation "androidx.compose.ui:ui-test-manifest:$composeVersion"
+
+    implementation "io.coil-kt:coil-compose:$coilVersion"
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {
@@ -352,7 +383,7 @@ android.buildTypes.all { buildType ->
     }
 }
 
-task violationCommentsToGitHub(type: se.bjurr.violations.comments.github.plugin.gradle.ViolationCommentsToGitHubTask) {
+tasks.register("violationCommentsToGitHub", ViolationCommentsToGitHubTask) {
     repositoryOwner = "woocommerce"
     repositoryName = "woocommerce-android"
     pullRequestId = System.properties['GITHUB_PULLREQUESTID']
@@ -363,18 +394,49 @@ task violationCommentsToGitHub(type: se.bjurr.violations.comments.github.plugin.
     createCommentWithAllSingleFileComments = false
     createSingleFileComments = true
     commentOnlyChangedContent = true
-    minSeverity = se.bjurr.violations.lib.model.SEVERITY.INFO //ERROR, INFO, WARN
+    minSeverity = SEVERITY.INFO //ERROR, INFO, WARN
     commentTemplate = """
 **Reporter**: {{violation.reporter}}{{#violation.rule}}\n
 **Rule**: {{violation.rule}}{{/violation.rule}}
 **Severity**: {{violation.severity}}
-**File**: {{violation.file}} L{{violation.startLine}}{{#violation.source}}
+**File**: {{violation.file}}:{{violation.startLine}}{{#violation.source}}
 **Source**: {{violation.source}}{{/violation.source}}
 {{violation.message}}
 """
     violations = [
             ["CHECKSTYLE", ".", ".*/build/.*/checkstyle/.*\\.xml\$", "CheckStyle"],
             ["CHECKSTYLE", ".", ".*/build/.*/detekt/.*\\.xml\$", "Detekt"]
+    ]
+}
+
+tasks.register("dependencyTreeDiffCommentToGitHub", ViolationCommentsToGitHubTask) {
+    repositoryOwner = "woocommerce"
+    repositoryName = "woocommerce-android"
+    pullRequestId = System.properties['GITHUB_PULLREQUESTID']
+    oAuth2Token = System.properties['GITHUB_OAUTH2TOKEN']
+    gitHubUrl = "https://api.github.com/"
+    createCommentWithAllSingleFileComments = true
+    createSingleFileComments = false
+    commentOnlyChangedContent = true
+    commentOnlyChangedFiles = false
+    minSeverity = SEVERITY.INFO
+    commentTemplate = """
+### The PR caused the following dependency changes:
+
+<details><summary>expand</summary>
+<p>
+
+```diff
+{{{violation.message}}}
+```
+
+</p>
+</details>
+
+*Please review and act accordingly*
+"""
+    violations = [
+            ["GENERIC", ".", ".*/build/.*/diff/.*\\.txt\$", "DependenciesDiffChecker"],
     ]
 }
 

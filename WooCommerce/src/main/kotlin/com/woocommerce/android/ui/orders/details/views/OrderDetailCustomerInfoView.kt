@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.orders.details.views
 
 import android.content.Context
+import android.os.Bundle
+import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.PopupMenu
@@ -8,8 +10,8 @@ import androidx.core.view.isVisible
 import androidx.navigation.findNavController
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.OrderDetailCustomerInfoBinding
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
@@ -27,16 +29,50 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
+    private companion object {
+        const val KEY_SUPER_STATE = "ORDER-DETAIL-CUSTOMER-INFO-VIEW-SUPER-STATE"
+        const val KEY_IS_CUSTOMER_INFO_VIEW_EXPANDED = "ORDER-DETAIL-CUSTOMER-INFO-VIEW-IS_CUSTOMER_INFO_VIEW_EXPANDED"
+    }
+
     private val binding = OrderDetailCustomerInfoBinding.inflate(LayoutInflater.from(ctx), this)
+    private var isCustomerInfoViewExpanded = false
+
+    override fun onSaveInstanceState(): Parcelable {
+        val bundle = Bundle()
+        bundle.putBoolean(KEY_IS_CUSTOMER_INFO_VIEW_EXPANDED, isCustomerInfoViewExpanded)
+        bundle.putParcelable(KEY_SUPER_STATE, super.onSaveInstanceState())
+        return bundle
+    }
+
+    override fun onRestoreInstanceState(state: Parcelable?) {
+        var viewState = state
+        if (state is Bundle) {
+            isCustomerInfoViewExpanded = state.getBoolean(KEY_IS_CUSTOMER_INFO_VIEW_EXPANDED)
+            viewState = state.getParcelable(KEY_SUPER_STATE)
+        }
+        super.onRestoreInstanceState(viewState)
+    }
 
     fun updateCustomerInfo(
         order: Order,
         isVirtualOrder: Boolean, // don't display shipping section for virtual products
         isReadOnly: Boolean
     ) {
+        val noBillingInfo = order.billingAddress.hasInfo().not() && order.formatBillingInformationForDisplay().isEmpty()
+        val noShippingInfo = order.formatShippingInformationForDisplay().isEmpty()
+        val noCustomerNoteInfo = order.customerNote.isEmpty()
+
+        // hide this entire view if there is no info to display
+        val hideCustomerInfo = isReadOnly && noBillingInfo && noShippingInfo && noCustomerNoteInfo
+        if (hideCustomerInfo) {
+            hide()
+            return
+        }
+
         showCustomerNote(order, isReadOnly)
         showShippingAddress(order, isVirtualOrder, isReadOnly)
         showBillingInfo(order, isReadOnly)
+        restoreCustomerInfoViewExpandedOrCollapsedState()
     }
 
     private fun showBillingInfo(order: Order, isReadOnly: Boolean) {
@@ -48,12 +84,6 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             if (order.billingAddress.hasInfo()) {
                 binding.customerInfoBillingAddr.setText(resources.getString(R.string.orderdetail_empty_address), 0)
             } else {
-                // hide this entire view if there are no extra details and the shipping address is also empty
-                if (shippingAddress.isEmpty()) {
-                    hide()
-                    return
-                }
-
                 // hide the entire billing section since billing address is empty
                 binding.customerInfoMorePanel.hide()
                 binding.customerInfoViewMore.hide()
@@ -77,6 +107,9 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         binding.customerInfoBillingAddr.setIsReadOnly(isReadOnly)
         if (!isReadOnly) {
             binding.customerInfoBillingAddressSection.setOnClickListener { navigateToBillingAddressEditingView() }
+            binding.customerInfoBillingAddr.binding.notEmptyLabel.setClickableParent(
+                binding.customerInfoBillingAddressSection
+            )
         }
         binding.customerInfoViewMore.setOnClickListener { onViewMoreCustomerInfoClick() }
 
@@ -97,24 +130,34 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
     private fun onViewMoreCustomerInfoClick() {
         val isChecked = binding.customerInfoViewMoreButtonImage.rotation == 0F
         if (isChecked) {
-            AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_SHOW_BILLING_TAPPED)
+            AnalyticsTracker.track(AnalyticsEvent.ORDER_DETAIL_CUSTOMER_INFO_SHOW_BILLING_TAPPED)
             expandCustomerInfoView()
         } else {
-            AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_HIDE_BILLING_TAPPED)
+            AnalyticsTracker.track(AnalyticsEvent.ORDER_DETAIL_CUSTOMER_INFO_HIDE_BILLING_TAPPED)
             collapseCustomerInfoView()
         }
     }
 
     private fun expandCustomerInfoView() {
         binding.customerInfoMorePanel.expand()
+        isCustomerInfoViewExpanded = true
         binding.customerInfoViewMoreButtonImage.animate().rotation(180F).setDuration(200).start()
         binding.customerInfoViewMoreButtonTitle.text = context.getString(R.string.orderdetail_hide_billing)
     }
 
     private fun collapseCustomerInfoView() {
         binding.customerInfoMorePanel.collapse()
+        isCustomerInfoViewExpanded = false
         binding.customerInfoViewMoreButtonImage.animate().rotation(0F).setDuration(200).start()
         binding.customerInfoViewMoreButtonTitle.text = context.getString(R.string.orderdetail_show_billing)
+    }
+
+    private fun restoreCustomerInfoViewExpandedOrCollapsedState() {
+        if (isCustomerInfoViewExpanded) {
+            expandCustomerInfoView()
+        } else {
+            collapseCustomerInfoView()
+        }
     }
 
     private fun showBillingAddressEmailInfo(order: Order) {
@@ -124,7 +167,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             binding.customerInfoEmailAddr.visibility = VISIBLE
             binding.customerInfoEmailBtn.visibility - VISIBLE
             binding.customerInfoEmailBtn.setOnClickListener {
-                AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_EMAIL_MENU_EMAIL_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.ORDER_DETAIL_CUSTOMER_INFO_EMAIL_MENU_EMAIL_TAPPED)
                 OrderCustomerHelper.createEmail(context, order, order.billingAddress.email)
                 AppRatingDialog.incrementInteractions()
             }
@@ -168,7 +211,11 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         } else {
             ""
         }
-        binding.customerInfoCustomerNote.setText(text, R.string.order_detail_add_customer_note)
+        binding.customerInfoCustomerNote.setText(
+            text,
+            R.string.order_detail_add_customer_note,
+            context.resources.getInteger(R.integer.default_max_lines_read_more_textview)
+        )
         binding.customerInfoCustomerNote.setIsReadOnly(isReadOnly)
 
         if (!isReadOnly) {
@@ -208,6 +255,9 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
 
         if (!isReadOnly) {
             binding.customerInfoShippingAddressSection.setOnClickListener { navigateToShippingAddressEditingView() }
+            binding.customerInfoShippingAddr.binding.notEmptyLabel.setClickableParent(
+                binding.customerInfoShippingAddressSection
+            )
         }
     }
 
@@ -228,14 +278,14 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         popup.menuInflater.inflate(R.menu.menu_order_detail_phone_actions, popup.menu)
 
         popup.menu.findItem(R.id.menu_call)?.setOnMenuItemClickListener {
-            AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_PHONE_TAPPED)
+            AnalyticsTracker.track(AnalyticsEvent.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_PHONE_TAPPED)
             OrderCustomerHelper.dialPhone(context, order, order.billingAddress.phone)
             AppRatingDialog.incrementInteractions()
             true
         }
 
         popup.menu.findItem(R.id.menu_message)?.setOnMenuItemClickListener {
-            AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_SMS_TAPPED)
+            AnalyticsTracker.track(AnalyticsEvent.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_SMS_TAPPED)
             OrderCustomerHelper.sendSms(context, order, order.billingAddress.phone)
             AppRatingDialog.incrementInteractions()
             true

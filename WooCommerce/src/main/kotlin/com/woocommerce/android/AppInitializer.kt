@@ -10,11 +10,12 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.network.ConnectionChangeReceiver
-import com.woocommerce.android.push.FCMRegistrationIntentService
+import com.woocommerce.android.push.RegisterDevice
+import com.woocommerce.android.push.RegisterDevice.Mode.IF_NEEDED
 import com.woocommerce.android.push.WooNotificationBuilder
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.tools.NetworkStatus
@@ -23,24 +24,30 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.SendTelemetry
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.main.MainActivity
-import com.woocommerce.android.util.*
+import com.woocommerce.android.util.AppThemeUtils
+import com.woocommerce.android.util.ApplicationLifecycleMonitor
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
+import com.woocommerce.android.util.PackageUtils
+import com.woocommerce.android.util.REGEX_API_JETPACK_TUNNEL_METHOD
+import com.woocommerce.android.util.REGEX_API_NUMERIC_PARAM
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.DASHBOARD
 import com.woocommerce.android.util.WooLog.T.UTILS
+import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.util.crashlogging.UploadEncryptedLogs
 import com.woocommerce.android.util.encryptedlogging.ObserveEncryptedLogsUploadResult
 import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.DispatchingAndroidInjector
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
-import org.wordpress.android.fluxc.generated.WCCoreActionBuilder
+import org.wordpress.android.fluxc.logging.FluxCCrashLogger
+import org.wordpress.android.fluxc.logging.FluxCCrashLoggerProvider
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.OnJetpackTimeoutError
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
@@ -57,6 +64,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     }
 
     @Inject lateinit var crashLogging: CrashLogging
+    @Inject lateinit var fluxCCrashLogger: FluxCCrashLogger
     @Inject lateinit var androidInjector: DispatchingAndroidInjector<Any>
 
     @Inject lateinit var dispatcher: Dispatcher
@@ -72,7 +80,9 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var uploadEncryptedLogs: UploadEncryptedLogs
     @Inject lateinit var observeEncryptedLogsUploadResults: ObserveEncryptedLogsUploadResult
     @Inject lateinit var sendTelemetry: SendTelemetry
+    @Inject lateinit var siteObserver: SiteObserver
     @Inject lateinit var wooLog: WooLogWrapper
+    @Inject lateinit var registerDevice: RegisterDevice
 
     // Listens for changes in device connectivity
     @Inject lateinit var connectionReceiver: ConnectionChangeReceiver
@@ -93,9 +103,9 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             selectedSite.getIfExists()?.let {
                 appCoroutineScope.launch {
                     wooCommerceStore.fetchWooCommerceSite(it)
+                    wooCommerceStore.fetchSiteGeneralSettings(it)
+                    wooCommerceStore.fetchSiteProductSettings(it)
                 }
-                dispatcher.dispatch(WCCoreActionBuilder.newFetchSiteSettingsAction(it))
-                dispatcher.dispatch(WCCoreActionBuilder.newFetchProductSettingsAction(it))
             }
             return true
         }
@@ -110,6 +120,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         AppThemeUtils.setAppTheme()
 
         dispatcher.register(this)
+
+        FluxCCrashLoggerProvider.initLogger(fluxCCrashLogger)
 
         AppRatingDialog.init(application)
 
@@ -139,23 +151,25 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                 wooLog.i(UTILS, "WCTracker telemetry result: $result")
             }
         }
+        appCoroutineScope.launch {
+            siteObserver.observeAndUpdateSelectedSiteData()
+        }
     }
 
     override fun onAppComesFromBackground() {
-        AnalyticsTracker.track(Stat.APPLICATION_OPENED)
+        AnalyticsTracker.track(AnalyticsEvent.APPLICATION_OPENED)
 
         if (!connectionReceiverRegistered) {
             connectionReceiverRegistered = true
             application.registerReceiver(connectionReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
         }
 
-        if (isGooglePlayServicesAvailable(application)) {
-            // Register for Cloud messaging
-            FCMRegistrationIntentService.enqueueWork(application)
-        }
-
         if (networkStatus.isConnected()) {
             updateSelectedSite.runIfNotLimited()
+
+            appCoroutineScope.launch {
+                registerDevice(IF_NEEDED)
+            }
         }
     }
 
@@ -167,7 +181,13 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             dispatcher.dispatch(AccountActionBuilder.newFetchSettingsAction())
             appCoroutineScope.launch {
                 wooCommerceStore.fetchWooCommerceSites()
-                if (!selectedSite.exists() && ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(STARTED)) {
+
+                // Added to fix this crash
+                // https://github.com/woocommerce/woocommerce-android/issues/4842
+                if (selectedSite.getSelectedSiteId() != -1 &&
+                    !selectedSite.exists() &&
+                    ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(STARTED)
+                ) {
                     // The previously selected site is not connected anymore, take the user to the site picker
                     WooLog.i(DASHBOARD, "Selected site no longer exists, showing site picker")
                     val intent = Intent(application, MainActivity::class.java)
@@ -184,7 +204,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     }
 
     override fun onAppGoesToBackground() {
-        AnalyticsTracker.track(Stat.APPLICATION_CLOSED)
+        AnalyticsTracker.track(AnalyticsEvent.APPLICATION_CLOSED)
 
         if (connectionReceiverRegistered) {
             connectionReceiverRegistered = false
@@ -225,7 +245,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
         when {
             oldVersionCode == 0 -> {
-                AnalyticsTracker.track(Stat.APPLICATION_INSTALLED)
+                AnalyticsTracker.track(AnalyticsEvent.APPLICATION_INSTALLED)
                 // Store the current app version code to SharedPrefs, even if the value is -1
                 // to prevent duplicate install events being called
                 prefs.setLastAppVersionCode(versionCode)
@@ -234,7 +254,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                 // Track upgrade event only if oldVersionCode is not -1, to prevent
                 // duplicate upgrade events being called
                 if (oldVersionCode > PackageUtils.PACKAGE_VERSION_CODE_DEFAULT) {
-                    AnalyticsTracker.track(Stat.APPLICATION_UPGRADED)
+                    AnalyticsTracker.track(AnalyticsEvent.APPLICATION_UPGRADED)
                 }
 
                 // store the latest version code to SharedPrefs, only if the value
@@ -245,7 +265,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                 // we are not able to read the current app version code
                 // track this event along with the last stored version code
                 AnalyticsTracker.track(
-                    Stat.APPLICATION_VERSION_CHECK_FAILED,
+                    AnalyticsEvent.APPLICATION_VERSION_CHECK_FAILED,
                     mapOf(AnalyticsTracker.KEY_LAST_KNOWN_VERSION_CODE to oldVersionCode)
                 )
             }
@@ -258,7 +278,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         val isLoggedOut = event.causeOfChange == null && event.error == null
         if (!accountStore.hasAccessToken() && isLoggedOut) {
             // Logged out
-            AnalyticsTracker.track(Stat.ACCOUNT_LOGOUT)
+            AnalyticsTracker.track(AnalyticsEvent.ACCOUNT_LOGOUT)
 
             // Reset analytics
             AnalyticsTracker.flush()
@@ -272,6 +292,13 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             val hasUserOptedOut = !AnalyticsTracker.sendUsageStats
             if (hasUserOptedOut != accountStore.account.tracksOptOut) {
                 AnalyticsTracker.sendUsageStats = !accountStore.account.tracksOptOut
+            }
+        }
+
+        val userAccountFetched = !isLoggedOut && event.causeOfChange == AccountAction.FETCH_ACCOUNT
+        if (userAccountFetched) {
+            appCoroutineScope.launch {
+                registerDevice(IF_NEEDED)
             }
         }
     }
@@ -297,7 +324,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                 "protocol" to protocol,
                 "times_retried" to timesRetried.toString()
             )
-            AnalyticsTracker.track(Stat.JETPACK_TUNNEL_TIMEOUT, properties)
+            AnalyticsTracker.track(AnalyticsEvent.JETPACK_TUNNEL_TIMEOUT, properties)
         }
     }
 }

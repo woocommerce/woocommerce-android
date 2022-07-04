@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
@@ -69,7 +70,7 @@ class ShippingPackageSelectorViewModel @Inject constructor(
     }
 
     fun onCreateNewPackageButtonClicked() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.SHIPPING_LABEL_ADD_PACKAGE_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.SHIPPING_LABEL_ADD_PACKAGE_TAPPED)
         triggerEvent(ShowCreatePackageScreen(arguments.position))
     }
 

@@ -5,11 +5,11 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.woocommerce.android.extensions.areSameImagesAs
 import com.woocommerce.android.extensions.fastStripHtml
-import com.woocommerce.android.extensions.formatDateToISO8601Format
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.extensions.isEquivalentTo
 import com.woocommerce.android.extensions.isNotSet
+import com.woocommerce.android.extensions.parseFromIso8601DateFormat
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
@@ -47,6 +47,7 @@ data class Product(
     val permalink: String,
     val externalUrl: String,
     val buttonText: String,
+    val price: BigDecimal?,
     val salePrice: BigDecimal?,
     val regularPrice: BigDecimal?,
     val taxClass: String,
@@ -68,12 +69,14 @@ data class Product(
     val isSoldIndividually: Boolean,
     val taxStatus: ProductTaxStatus,
     val isSaleScheduled: Boolean,
+    val isPurchasable: Boolean,
     val menuOrder: Int,
     val categories: List<ProductCategory>,
     val tags: List<ProductTag>,
     val groupedProductIds: List<Long>,
     val crossSellProductIds: List<Long>,
     val upsellProductIds: List<Long>,
+    val variationIds: List<Long>,
     override val length: Float,
     override val width: Float,
     override val height: Float,
@@ -458,6 +461,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductMo
         it.downloadExpiry = downloadExpiry
         it.downloadable = isDownloadable
         it.attributes = attributesToJson()
+        it.purchasable = isPurchasable
     }
 }
 
@@ -483,6 +487,7 @@ fun WCProductModel.toAppModel(): Product {
         permalink = this.permalink,
         externalUrl = this.externalUrl,
         buttonText = this.buttonText,
+        price = this.price.toBigDecimalOrNull(),
         salePrice = this.salePrice.toBigDecimalOrNull(),
         regularPrice = this.regularPrice.toBigDecimalOrNull(),
         // In Core, if a tax class is empty it is considered as standard and we are following the same
@@ -519,8 +524,8 @@ fun WCProductModel.toAppModel(): Product {
             )
         },
         attributes = this.getAttributeList().map { it.toAppModel() },
-        saleEndDateGmt = this.dateOnSaleToGmt.formatDateToISO8601Format(),
-        saleStartDateGmt = this.dateOnSaleFromGmt.formatDateToISO8601Format(),
+        saleEndDateGmt = this.dateOnSaleToGmt.parseFromIso8601DateFormat(),
+        saleStartDateGmt = this.dateOnSaleFromGmt.parseFromIso8601DateFormat(),
         isSoldIndividually = this.soldIndividually,
         taxStatus = ProductTaxStatus.fromString(this.taxStatus),
         isSaleScheduled = this.dateOnSaleFromGmt.isNotEmpty() || this.dateOnSaleToGmt.isNotEmpty(),
@@ -542,6 +547,8 @@ fun WCProductModel.toAppModel(): Product {
         groupedProductIds = this.getGroupedProductIdList(),
         crossSellProductIds = this.getCrossSellProductIdList(),
         upsellProductIds = this.getUpsellProductIdList(),
+        variationIds = this.getVariationIdList(),
+        isPurchasable = this.purchasable
     )
 }
 

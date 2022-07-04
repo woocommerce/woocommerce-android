@@ -13,10 +13,14 @@ import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadData
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus
 import com.woocommerce.android.ui.products.ProductDetailViewModel.HideImageUploadErrorSnackbar
+import com.woocommerce.android.ui.products.ProductDetailViewModel.MenuButtonsState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
-import com.woocommerce.android.ui.products.models.ProductProperty.*
+import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
+import com.woocommerce.android.ui.products.models.ProductProperty.Editable
+import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
+import com.woocommerce.android.ui.products.models.ProductProperty.RatingBar
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
@@ -26,23 +30,35 @@ import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.ProductUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.anyVararg
+import org.mockito.kotlin.clearInvocations
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.time.ZoneOffset
-import java.util.*
-import kotlin.collections.ArrayList
+import java.util.Date
+import kotlin.test.assertNull
 
 @ExperimentalCoroutinesApi
 class ProductDetailViewModelTest : BaseUnitTest() {
@@ -85,7 +101,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val siteParams = SiteParameters(
         currencyCode = "USD",
         currencySymbol = "$",
-        currencyPosition = null,
+        currencyFormattingParameters = null,
         weightUnit = "kg",
         dimensionUnit = "cm",
         gmtOffset = 0f
@@ -105,8 +121,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     private val productWithParameters = ProductDetailViewState(
         productDraft = product,
-        storedProduct = product,
-        productBeforeEnteringFragment = product,
         isSkeletonShown = false,
         uploadingImageUris = emptyList(),
         showBottomSheetButton = true
@@ -210,7 +224,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        doReturn("").whenever(prefs).getSelectedProductType()
         doReturn(true).whenever(networkStatus).isConnected()
 
         viewModel = spy(
@@ -246,9 +259,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays the product detail properties correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Displays the product detail properties correctly`() = testBlocking {
         doReturn(true).whenever(networkStatus).isConnected()
-        doReturn(productWithTagsAndCategories).whenever(productRepository).getProduct(any())
+        doReturn(productWithTagsAndCategories).whenever(productRepository).getProductAsync(any())
 
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
@@ -263,8 +276,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays the product detail view correctly`() {
-        doReturn(product).whenever(productRepository).getProduct(any())
+    fun `Displays the product detail view correctly`() = testBlocking {
+        doReturn(product).whenever(productRepository).getProductAsync(any())
 
         var productData: ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
@@ -275,9 +288,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Display error message on fetch product error`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        whenever(productRepository.fetchProduct(PRODUCT_REMOTE_ID)).thenReturn(null)
-        whenever(productRepository.getProduct(PRODUCT_REMOTE_ID)).thenReturn(null)
+    fun `Display error message on fetch product error`() = testBlocking {
+        whenever(productRepository.fetchProductOrLoadFromCache(PRODUCT_REMOTE_ID)).thenReturn(null)
+        whenever(productRepository.getProductAsync(PRODUCT_REMOTE_ID)).thenReturn(null)
 
         var snackbar: ShowSnackbar? = null
         viewModel.event.observeForever {
@@ -286,14 +299,14 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(productRepository, times(1)).fetchProduct(PRODUCT_REMOTE_ID)
+        verify(productRepository, times(1)).fetchProductOrLoadFromCache(PRODUCT_REMOTE_ID)
 
         assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.product_detail_fetch_product_error))
     }
 
     @Test
-    fun `Do not fetch product from api when not connected`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        doReturn(offlineProduct).whenever(productRepository).getProduct(any())
+    fun `Do not fetch product from api when not connected`() = testBlocking {
+        doReturn(offlineProduct).whenever(productRepository).getProductAsync(any())
         doReturn(false).whenever(networkStatus).isConnected()
 
         var snackbar: ShowSnackbar? = null
@@ -303,15 +316,15 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(productRepository, times(1)).getProduct(PRODUCT_REMOTE_ID)
-        verify(productRepository, times(0)).fetchProduct(any())
+        verify(productRepository, times(1)).getProductAsync(PRODUCT_REMOTE_ID)
+        verify(productRepository, times(0)).fetchProductOrLoadFromCache(any())
 
         assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
     }
 
     @Test
-    fun `Shows and hides product detail skeleton correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        doReturn(null).whenever(productRepository).getProduct(any())
+    fun `Shows and hides product detail skeleton correctly`() = testBlocking {
+        doReturn(null).whenever(productRepository).getProductAsync(any())
 
         val isSkeletonShown = ArrayList<Boolean>()
         viewModel.productDetailViewStateData.observeForever { old, new ->
@@ -324,8 +337,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays the updated product detail view correctly`() {
-        doReturn(product).whenever(productRepository).getProduct(any())
+    fun `Displays the updated product detail view correctly`() = testBlocking {
+        doReturn(product).whenever(productRepository).getProductAsync(any())
 
         var productData: ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
@@ -341,25 +354,71 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays update menu action if product is edited`() {
-        doReturn(product).whenever(productRepository).getProduct(any())
+    fun `When update product price is null, product detail view displayed correctly`() = testBlocking {
+        doReturn(product).whenever(productRepository).getProductAsync(any())
 
         var productData: ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
 
         viewModel.start()
 
-        assertThat(productData?.isProductUpdated).isNull()
+        assertThat(productData).isEqualTo(productWithParameters)
+
+        val updatedRegularPrice = null
+        val updatedSalePrice = null
+        viewModel.updateProductDraft(
+            regularPrice = updatedRegularPrice,
+            salePrice = updatedSalePrice
+        )
+
+        assertNull(productData?.productDraft?.regularPrice)
+        assertNull(productData?.productDraft?.salePrice)
+    }
+
+    @Test
+    fun `When update product price is zero, product detail view displayed correctly`() = testBlocking {
+        doReturn(product).whenever(productRepository).getProductAsync(any())
+
+        var productData: ProductDetailViewState? = null
+        viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
+
+        viewModel.start()
+
+        assertThat(productData).isEqualTo(productWithParameters)
+
+        val updatedRegularPrice = BigDecimal.ZERO
+        val updatedSalePrice = BigDecimal.ZERO
+        viewModel.updateProductDraft(
+            regularPrice = updatedRegularPrice,
+            salePrice = updatedSalePrice
+        )
+
+        assertThat(productData?.productDraft?.regularPrice).isEqualTo(updatedRegularPrice)
+        assertThat(productData?.productDraft?.salePrice).isEqualTo(updatedSalePrice)
+    }
+
+    @Test
+    fun `Displays update menu action if product is edited`() = testBlocking {
+        doReturn(product).whenever(productRepository).getProductAsync(any())
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+
+        var hasChanges: Boolean? = null
+        viewModel.hasChanges.observeForever { hasChanges = it }
+
+        viewModel.start()
+
+        assertThat(hasChanges).isFalse()
 
         val updatedDescription = "Updated product description"
         viewModel.updateProductDraft(updatedDescription)
 
-        assertThat(productData?.isProductUpdated).isTrue()
+        assertThat(hasChanges).isTrue()
     }
 
     @Test
-    fun `Displays progress dialog when product is edited`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        doReturn(product).whenever(productRepository).getProduct(any())
+    fun `Displays progress dialog when product is edited`() = testBlocking {
+        doReturn(product).whenever(productRepository).getProductAsync(any())
         doReturn(false).whenever(productRepository).updateProduct(any())
 
         val isProgressDialogShown = ArrayList<Boolean>()
@@ -371,14 +430,14 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        viewModel.onUpdateButtonClicked(false)
+        viewModel.onSaveButtonClicked()
 
         assertThat(isProgressDialogShown).containsExactly(true, false)
     }
 
     @Test
-    fun `Do not update product when not connected`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        doReturn(product).whenever(productRepository).getProduct(any())
+    fun `Do not update product when not connected`() = testBlocking {
+        doReturn(product).whenever(productRepository).getProductAsync(any())
         doReturn(false).whenever(networkStatus).isConnected()
 
         var snackbar: ShowSnackbar? = null
@@ -391,7 +450,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        viewModel.onUpdateButtonClicked(false)
+        viewModel.onSaveButtonClicked()
 
         verify(productRepository, times(0)).updateProduct(any())
         assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
@@ -399,8 +458,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Display error message on update product error`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        doReturn(product).whenever(productRepository).getProduct(any())
+    fun `Display error message on update product error`() = testBlocking {
+        doReturn(product).whenever(productRepository).getProductAsync(any())
         doReturn(false).whenever(productRepository).updateProduct(any())
 
         var snackbar: ShowSnackbar? = null
@@ -413,7 +472,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        viewModel.onUpdateButtonClicked(false)
+        viewModel.onSaveButtonClicked()
 
         verify(productRepository, times(1)).updateProduct(any())
         assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.product_detail_update_product_error))
@@ -421,8 +480,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Display success message on update product success`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        doReturn(product).whenever(productRepository).getProduct(any())
+    fun `Display success message on update product success`() = testBlocking {
+        doReturn(product).whenever(productRepository).getProductAsync(any())
         doReturn(true).whenever(productRepository).updateProduct(any())
 
         var successSnackbarShown = false
@@ -435,22 +494,25 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         var productData: ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
 
+        var hasChanges: Boolean? = null
+        viewModel.hasChanges.observeForever { hasChanges = it }
+
         viewModel.start()
 
-        viewModel.onUpdateButtonClicked(false)
+        viewModel.onSaveButtonClicked()
 
         verify(productRepository, times(1)).updateProduct(any())
-        verify(productRepository, times(2)).getProduct(PRODUCT_REMOTE_ID)
+        verify(productRepository, times(2)).getProductAsync(PRODUCT_REMOTE_ID)
 
         assertThat(successSnackbarShown).isTrue()
-        assertThat(productData?.isProgressDialogShown).isFalse()
-        assertThat(productData?.isProductUpdated).isFalse()
+        assertThat(productData?.isProgressDialogShown).isFalse
+        assertThat(hasChanges).isFalse()
         assertThat(productData?.productDraft).isEqualTo(product)
     }
 
     @Test
     fun `Correctly sorts the Product Categories By their Parent Ids and by name`() {
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val sortedByNameAndParent = viewModel.sortAndStyleProductCategories(
                 product, productCategories
             ).toList()
@@ -514,9 +576,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Should update view state with not null sale end date when sale is scheduled`() {
+    fun `Should update view state with not null sale end date when sale is scheduled`() = testBlocking {
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
-        doReturn(product).whenever(productRepository).getProduct(any())
+        doReturn(product).whenever(productRepository).getProductAsync(any())
 
         viewModel.start()
         viewModel.updateProductDraft(saleEndDate = SALE_END_DATE, isSaleScheduled = true)
@@ -525,9 +587,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Should update with stored product sale end date when sale is not scheduled`() {
+    fun `Should update with stored product sale end date when sale is not scheduled`() = testBlocking {
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
-        doReturn(product).whenever(productRepository).getProduct(any())
+        doReturn(product).whenever(productRepository).getProductAsync(any())
 
         viewModel.start()
         viewModel.updateProductDraft(saleEndDate = SALE_END_DATE, isSaleScheduled = false)
@@ -536,25 +598,26 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Should update sale end date when sale schedule is unknown but stored product sale is scheduled`() {
-        viewModel.productDetailViewStateData.observeForever { _, _ -> }
-        val storedProduct = product.copy(isSaleScheduled = true)
-        doReturn(storedProduct).whenever(productRepository).getProduct(any())
+    fun `Should update sale end date when sale schedule is unknown but stored product sale is scheduled`() =
+        testBlocking {
+            viewModel.productDetailViewStateData.observeForever { _, _ -> }
+            val storedProduct = product.copy(isSaleScheduled = true)
+            doReturn(storedProduct).whenever(productRepository).getProductAsync(any())
 
-        viewModel.start()
-        viewModel.updateProductDraft(saleEndDate = SALE_END_DATE, isSaleScheduled = null)
+            viewModel.start()
+            viewModel.updateProductDraft(saleEndDate = SALE_END_DATE, isSaleScheduled = null)
 
-        assertThat(productsDraft?.saleEndDateGmt).isEqualTo(SALE_END_DATE)
-    }
+            assertThat(productsDraft?.saleEndDateGmt).isEqualTo(SALE_END_DATE)
+        }
 
     @Test
-    fun `Should update with null sale end date and stored product has scheduled sale`() {
+    fun `Should update with null sale end date and stored product has scheduled sale`() = testBlocking {
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
         val storedProduct = product.copy(
             saleEndDateGmt = SALE_END_DATE,
             isSaleScheduled = true
         )
-        doReturn(storedProduct).whenever(productRepository).getProduct(any())
+        doReturn(storedProduct).whenever(productRepository).getProductAsync(any())
 
         viewModel.start()
         viewModel.updateProductDraft(saleEndDate = null)
@@ -563,12 +626,12 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Re-ordering attribute terms is saved correctly`() {
+    fun `Re-ordering attribute terms is saved correctly`() = testBlocking {
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
         val storedProduct = product.copy(
             attributes = ProductTestUtils.generateProductAttributeList()
         )
-        doReturn(storedProduct).whenever(productRepository).getProduct(any())
+        doReturn(storedProduct).whenever(productRepository).getProductAsync(any())
 
         val attribute = storedProduct.attributes[0]
         val firstTerm = attribute.terms[0]
@@ -591,7 +654,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     /**
      * Protection for a race condition bug in Variations.
      *
-     * We're requiring [ProductDetailRepository.fetchProduct] to be called right after
+     * We're requiring [ProductDetailRepository.fetchProductOrLoadFromCache] to be called right after
      * [VariationRepository.createEmptyVariation] to fix a race condition problem in the Product Details page. The
      * bug can be reproduced inconsistently by following these steps:
      *
@@ -613,9 +676,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
      */
     @Test
     fun `When generating a variation, the latest Product should be fetched from the site`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // Given
-            doReturn(product).whenever(productRepository).getProduct(any())
+            doReturn(product).whenever(productRepository).getProductAsync(any())
 
             var productData: ProductDetailViewState? = null
             viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
@@ -628,7 +691,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             assertThat(productData?.productDraft?.numVariations).isZero()
 
             doReturn(mock<ProductVariation>()).whenever(variationRepository).createEmptyVariation(any())
-            doReturn(product.copy(numVariations = 1_914)).whenever(productRepository).fetchProduct(eq(product.remoteId))
+            doReturn(product.copy(numVariations = 1_914)).whenever(productRepository)
+                .fetchProductOrLoadFromCache(eq(product.remoteId))
 
             // When
             viewModel.onGenerateVariationClicked()
@@ -636,7 +700,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             // Then
             verify(variationRepository, times(1)).createEmptyVariation(eq(product))
             // Prove that we fetched from the API.
-            verify(productRepository, times(1)).fetchProduct(eq(product.remoteId))
+            verify(productRepository, times(1)).fetchProductOrLoadFromCache(eq(product.remoteId))
 
             // The VM state should have been updated with the _fetched_ product's numVariations
             assertThat(productData?.productDraft?.numVariations).isEqualTo(1_914)
@@ -646,8 +710,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     fun `when there image upload errors, then show a snackbar`() = testBlocking {
         val errorEvents = MutableSharedFlow<List<ProductImageUploadData>>()
         doReturn(errorEvents).whenever(mediaFileUploadHandler).observeCurrentUploadErrors(PRODUCT_REMOTE_ID)
-        doReturn(product).whenever(productRepository).fetchProduct(any())
-        doReturn(product).whenever(productRepository).getProduct(any())
+        doReturn(product).whenever(productRepository).fetchProductOrLoadFromCache(any())
+        doReturn(product).whenever(productRepository).getProductAsync(any())
         val errorMessage = "message"
         doReturn(errorMessage).whenever(resources).getString(any(), anyVararg())
 
@@ -675,8 +739,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     fun `when image uploads gets cleared, then auto-dismiss the snackbar`() = testBlocking {
         val errorEvents = MutableSharedFlow<List<ProductImageUploadData>>()
         doReturn(errorEvents).whenever(mediaFileUploadHandler).observeCurrentUploadErrors(PRODUCT_REMOTE_ID)
-        doReturn(product).whenever(productRepository).fetchProduct(any())
-        doReturn(product).whenever(productRepository).getProduct(any())
+        doReturn(product).whenever(productRepository).fetchProductOrLoadFromCache(any())
+        doReturn(product).whenever(productRepository).getProductAsync(any())
 
         viewModel.start()
         errorEvents.emit(emptyList())
@@ -685,65 +749,174 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Publish option not shown when product is published except addProduct flow`() {
-        doReturn(product).whenever(productRepository).getProduct(any())
+    fun `Publish option not shown when product is published except addProduct flow`() = testBlocking {
+        doReturn(product).whenever(productRepository).getProductAsync(any())
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        var menuButtonsState: MenuButtonsState? = null
+        viewModel.menuButtonsState.observeForever { menuButtonsState = it }
+
         viewModel.start()
         viewModel.updateProductDraft(productStatus = ProductStatus.PUBLISH)
-        assertThat(viewModel.isPublishOptionNeeded).isFalse()
+        assertThat(menuButtonsState?.publishOption).isFalse
     }
 
     @Test
-    fun `Publish option not shown when product is published privately except addProduct flow`() {
-        doReturn(product).whenever(productRepository).getProduct(any())
-        doReturn(false).whenever(viewModel).isAddFlowEntryPoint
-        doReturn(false).whenever(viewModel).isProductUnderCreation
+    fun `Publish option not shown when product is published privately except addProduct flow`() = testBlocking {
+        doReturn(product).whenever(productRepository).getProductAsync(any())
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        var menuButtonsState: MenuButtonsState? = null
+        viewModel.menuButtonsState.observeForever { menuButtonsState = it }
+
         viewModel.start()
         viewModel.updateProductDraft(productStatus = ProductStatus.PRIVATE)
-        assertThat(viewModel.isPublishOptionNeeded).isFalse()
+        assertThat(menuButtonsState?.publishOption).isFalse
     }
 
     @Test
-    fun `Publish option shown when product is published and from addProduct flow and is under product creation`() {
-        doReturn(true).whenever(viewModel).isAddFlowEntryPoint
-        doReturn(true).whenever(viewModel).isProductUnderCreation
-        viewModel.start()
-        viewModel.updateProductDraft(productStatus = ProductStatus.PUBLISH)
-        assertThat(viewModel.isPublishOptionNeeded).isTrue()
-    }
+    fun `Publish option shown when product is Draft`() = testBlocking {
+        doReturn(product).whenever(productRepository).getProductAsync(any())
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
-    @Test
-    fun `Publish option shown when product is Draft`() {
-        doReturn(product).whenever(productRepository).getProduct(any())
+        var menuButtonsState: MenuButtonsState? = null
+        viewModel.menuButtonsState.observeForever { menuButtonsState = it }
+
         viewModel.start()
         viewModel.updateProductDraft(productStatus = ProductStatus.DRAFT)
-        assertThat(viewModel.isPublishOptionNeeded).isTrue()
+        assertThat(menuButtonsState?.publishOption).isTrue
     }
 
     @Test
-    fun `Publish option shown when product is Pending Review`() {
-        doReturn(product).whenever(productRepository).getProduct(any())
+    fun `Publish option shown when product is Pending Review`() = testBlocking {
+        doReturn(product).whenever(productRepository).getProductAsync(any())
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+
+        var menuButtonsState: MenuButtonsState? = null
+        viewModel.menuButtonsState.observeForever { menuButtonsState = it }
+
         viewModel.start()
         viewModel.updateProductDraft(productStatus = ProductStatus.PENDING)
-        assertThat(viewModel.isPublishOptionNeeded).isTrue()
+        assertThat(menuButtonsState?.publishOption).isTrue()
     }
 
     @Test
-    fun `Save option shown when product has changes except add product flow irrespective of product statuses`() {
-        doReturn(product).whenever(productRepository).getProduct(any())
-        doReturn(false).whenever(viewModel).isAddFlowEntryPoint
-        doReturn(false).whenever(viewModel).isProductUnderCreation
-        doReturn(true).whenever(viewModel).hasChanges()
+    fun `Save option shown when product has changes except add product flow irrespective of product statuses`() =
+        testBlocking {
+            doReturn(product).whenever(productRepository).getProductAsync(any())
+            viewModel.productDetailViewStateData.observeForever { _, _ -> }
+
+            var menuButtonsState: MenuButtonsState? = null
+            viewModel.menuButtonsState.observeForever { menuButtonsState = it }
+
+            viewModel.start()
+            // Trigger changes
+            viewModel.updateProductDraft(title = product.name + "2")
+
+            assertThat(menuButtonsState?.saveOption).isTrue()
+        }
+
+    @Test
+    fun `when restoring saved state, then re-fetch stored product to correctly calculate hasChanges`() = testBlocking {
+        // Make sure draft product has different data than draft product
+        doReturn(product.copy(name = product.name + "test")).whenever(productRepository).getProductAsync(any())
+        savedState.set(ProductDetailViewState::class.java.name, productWithParameters)
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+
+        var hasChanges: Boolean? = null
+        viewModel.hasChanges.observeForever { hasChanges = it }
+
         viewModel.start()
-        assertThat(viewModel.isSaveOptionNeeded).isTrue()
+
+        assertThat(hasChanges).isTrue
     }
 
     @Test
-    fun `Save option not shown when product has changes but in add product flow`() {
-        doReturn(true).whenever(viewModel).isAddFlowEntryPoint
-        doReturn(true).whenever(viewModel).isProductUnderCreation
-        doReturn(true).whenever(viewModel).hasChanges()
+    fun `given regular price set, when updating inventory, then price remains unchanged`() = testBlocking {
+        doReturn(
+            product.copy(
+                regularPrice = BigDecimal(99)
+            )
+        ).whenever(productRepository).getProductAsync(any())
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
         viewModel.start()
-        assertThat(viewModel.isSaveOptionNeeded).isFalse()
+
+        viewModel.updateProductDraft(sku = "E9999999")
+
+        assertThat(viewModel.getProduct().productDraft?.regularPrice).isEqualTo(BigDecimal(99))
+    }
+
+    @Test
+    fun `given sale price set, when updating attributes, then price remains unchanged`() = testBlocking {
+        doReturn(
+            product.copy(
+                salePrice = BigDecimal(99)
+            )
+        ).whenever(productRepository).getProductAsync(any())
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        viewModel.start()
+
+        viewModel.updateProductDraft(sku = "E9999999")
+
+        assertThat(viewModel.getProduct().productDraft?.salePrice).isEqualTo(BigDecimal(99))
+    }
+
+    @Test
+    fun `given regular price greater than 0, when setting price to 0, then price is set to zero`() = testBlocking {
+        doReturn(
+            product.copy(
+                regularPrice = BigDecimal(99)
+            )
+        ).whenever(productRepository).getProductAsync(any())
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        viewModel.start()
+
+        viewModel.updateProductDraft(regularPrice = BigDecimal(0))
+
+        assertThat(viewModel.getProduct().productDraft?.regularPrice).isEqualTo(BigDecimal(0))
+    }
+
+    @Test
+    fun `given sale price greater than 0, when setting price to 0, then price is set to zero`() = testBlocking {
+        doReturn(
+            product.copy(
+                regularPrice = BigDecimal(99)
+            )
+        ).whenever(productRepository).getProductAsync(any())
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        viewModel.start()
+
+        viewModel.updateProductDraft(salePrice = BigDecimal(0))
+
+        assertThat(viewModel.getProduct().productDraft?.salePrice).isEqualTo(BigDecimal(0))
+    }
+
+    @Test
+    fun `given regular price greater than 0, when setting price to null, then price is set to null`() = testBlocking {
+        doReturn(
+            product.copy(
+                regularPrice = BigDecimal(99)
+            )
+        ).whenever(productRepository).getProductAsync(any())
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        viewModel.start()
+
+        viewModel.updateProductDraft(regularPrice = null)
+
+        assertThat(viewModel.getProduct().productDraft?.regularPrice).isNull()
+    }
+
+    @Test
+    fun `given sale price greater than 0, when setting price to null, then price is set to null`() = testBlocking {
+        doReturn(
+            product.copy(
+                regularPrice = BigDecimal(99)
+            )
+        ).whenever(productRepository).getProductAsync(any())
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        viewModel.start()
+
+        viewModel.updateProductDraft(salePrice = null)
+
+        assertThat(viewModel.getProduct().productDraft?.salePrice).isNull()
     }
 
     private val productsDraft

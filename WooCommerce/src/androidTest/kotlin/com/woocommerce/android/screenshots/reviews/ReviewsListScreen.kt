@@ -4,31 +4,35 @@ import androidx.test.espresso.Espresso
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import com.woocommerce.android.R
-import com.woocommerce.android.screenshots.TabNavComponent
+import com.woocommerce.android.screenshots.moremenu.MoreMenuScreen
 import com.woocommerce.android.screenshots.util.CustomMatchers
 import com.woocommerce.android.screenshots.util.ReviewData
 import com.woocommerce.android.screenshots.util.Screen
 import org.hamcrest.Matchers
 
-class ReviewsListScreen : Screen {
+class ReviewsListScreen : Screen(LIST_VIEW) {
     companion object {
         const val LIST_VIEW = R.id.reviewsList
-
-        const val REVIEW_ICON = R.id.notif_icon
     }
-
-    val tabBar = TabNavComponent()
-
-    constructor() : super(LIST_VIEW)
 
     fun selectReviewByTitle(reviewTitle: String): SingleReviewScreen {
         selectListItem(reviewTitle, LIST_VIEW)
         return SingleReviewScreen()
     }
 
+    fun selectReviewByIndex(reviewIndex: Int): SingleReviewScreen {
+        selectItemAtIndexInRecyclerView(reviewIndex, LIST_VIEW, LIST_VIEW)
+        return SingleReviewScreen()
+    }
+
     fun scrollToReview(reviewTitle: String): ReviewsListScreen {
         scrollToListItem(reviewTitle, LIST_VIEW)
         return ReviewsListScreen()
+    }
+
+    fun goBackToMoreMenuScreen(): MoreMenuScreen {
+        pressBack()
+        return MoreMenuScreen()
     }
 
     fun assertReviewCard(review: ReviewData): ReviewsListScreen {

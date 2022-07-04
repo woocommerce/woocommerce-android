@@ -16,9 +16,9 @@ import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.ui.sitepicker.SitePickerActivity
+import com.woocommerce.android.ui.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginMode
 
@@ -66,14 +66,12 @@ class MagicLinkInterceptFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         retryButton = view.findViewById(R.id.login_open_email_client)
         retryContainer = view.findViewById(R.id.login_magic_link_container)
         retryButton?.text = getString(R.string.retry)
         showRetryScreen(false)
         retryButton?.setOnClickListener {
-            AnalyticsTracker.track(Stat.LOGIN_MAGIC_LINK_INTERCEPT_RETRY_TAPPED)
+            AnalyticsTracker.track(AnalyticsEvent.LOGIN_MAGIC_LINK_INTERCEPT_RETRY_TAPPED)
             viewModel.fetchAccountInfo()
         }
 
@@ -85,7 +83,7 @@ class MagicLinkInterceptFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-        AnalyticsTracker.track(Stat.LOGIN_MAGIC_LINK_INTERCEPT_SCREEN_VIEWED)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_MAGIC_LINK_INTERCEPT_SCREEN_VIEWED)
     }
 
     private fun initializeViewModel() {
@@ -149,10 +147,9 @@ class MagicLinkInterceptFragment : Fragment() {
     }
 
     private fun showSitePickerScreen() {
-        context?.let {
-            SitePickerActivity.showSitePickerFromLogin(it)
-            activity?.finish()
-        }
+        val intent = Intent(context, MainActivity::class.java)
+        startActivity(intent)
+        activity?.finish()
     }
 
     private fun showLoginScreen() {

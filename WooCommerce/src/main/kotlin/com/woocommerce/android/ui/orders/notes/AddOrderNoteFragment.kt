@@ -11,14 +11,15 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.ADD_ORDER_NOTE_ADD_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_NOTE_ADD_BUTTON_TAPPED
 import com.woocommerce.android.databinding.FragmentAddOrderNoteBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -43,6 +44,11 @@ class AddOrderNoteFragment : BaseFragment(R.layout.fragment_add_order_note), Bac
     private var progressDialog: CustomProgressDialog? = null
 
     private var addMenuItem: MenuItem? = null
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Visible(
+            navigationIcon = R.drawable.ic_gridicons_cross_24dp
+        )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -130,13 +136,12 @@ class AddOrderNoteFragment : BaseFragment(R.layout.fragment_add_order_note), Bac
                 }
                 binding.addNoteSwitch.isChecked = it.isCustomerNote
 
-                if (new.showCustomerNoteSwitch) {
-                    binding.addNoteSwitch.isVisible = true
-                    val noteIcon = if (it.isCustomerNote) R.drawable.ic_note_public else R.drawable.ic_note_private
-                    binding.addNoteIcon.setImageResource(noteIcon)
-                } else {
-                    binding.addNoteSwitch.isVisible = false
-                }
+                val noteIcon = if (it.isCustomerNote) R.drawable.ic_note_public else R.drawable.ic_note_private
+                binding.addNoteIcon.setImageResource(noteIcon)
+            }
+
+            new.showCustomerNoteSwitch.takeIfNotEqualTo(old?.showCustomerNoteSwitch) {
+                binding.addNoteSwitch.isVisible = it
             }
 
             new.canAddNote.takeIfNotEqualTo(old?.canAddNote) {

@@ -3,30 +3,30 @@ package com.woocommerce.android.ui.jetpack
 import android.os.Parcelable
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.PluginActivated
+import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.PluginActivationFailed
+import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.PluginInstallFailed
+import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.PluginInstalled
+import com.woocommerce.android.util.ContinuationWrapper
+import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.channels.ProducerScope
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.retryWhen
+import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.PluginActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
-import javax.inject.Inject
-import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.PluginInstalled
-import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.PluginInstallFailed
-import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.PluginActivated
-import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.PluginActivationFailed
-import com.woocommerce.android.util.ContinuationWrapper
-import com.woocommerce.android.util.WooLog
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.retryWhen
-import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.store.PluginStore
 import org.wordpress.android.fluxc.store.PluginStore.*
 import org.wordpress.android.fluxc.store.Store
 import java.lang.Exception
+import javax.inject.Inject
 
 class PluginRepository @Inject constructor(
     private val dispatcher: Dispatcher,
@@ -49,7 +49,7 @@ class PluginRepository @Inject constructor(
     private var continuationFetchJetpackSitePlugin = ContinuationWrapper<SitePluginModel?>(WooLog.T.WP)
 
     // Note that the `newInstallSitePluginAction` action automatically tries to activate the plugin after
-    // installation is successful, so when using this function, there's no need to call `activateJetpackPlugin()
+    // installation is successful, so when using this function, there's no need to call `activatePlugin()`
     // separately.
     fun installPlugin(slug: String, name: String) = callbackFlow<PluginStatus> {
         val listener = PluginActionListener(this)

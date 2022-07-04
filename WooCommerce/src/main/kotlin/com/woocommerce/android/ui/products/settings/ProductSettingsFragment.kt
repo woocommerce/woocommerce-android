@@ -7,8 +7,8 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductSettingsBinding
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.handleResult
@@ -34,35 +34,35 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
         setupObservers()
 
         binding.productStatus.setOnClickListener {
-            AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_STATUS_TAPPED)
+            AnalyticsTracker.track(AnalyticsEvent.PRODUCT_SETTINGS_STATUS_TAPPED)
             viewModel.onSettingsStatusButtonClicked()
         }
         binding.productCatalogVisibility.setOnClickListener {
-            AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_CATALOG_VISIBILITY_TAPPED)
+            AnalyticsTracker.track(AnalyticsEvent.PRODUCT_SETTINGS_CATALOG_VISIBILITY_TAPPED)
             viewModel.onSettingsCatalogVisibilityButtonClicked()
         }
         binding.productVisibility.setOnClickListener {
-            AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_VISIBILITY_TAPPED)
+            AnalyticsTracker.track(AnalyticsEvent.PRODUCT_SETTINGS_VISIBILITY_TAPPED)
             viewModel.onSettingsVisibilityButtonClicked()
         }
         binding.productSlug.setOnClickListener {
-            AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_SLUG_TAPPED)
+            AnalyticsTracker.track(AnalyticsEvent.PRODUCT_SETTINGS_SLUG_TAPPED)
             viewModel.onSettingsSlugButtonClicked()
         }
         binding.productMenuOrder.setOnClickListener {
-            AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_MENU_ORDER_TAPPED)
+            AnalyticsTracker.track(AnalyticsEvent.PRODUCT_SETTINGS_MENU_ORDER_TAPPED)
             viewModel.onSettingsMenuOrderButtonClicked()
         }
 
         binding.productReviewsAllowed.visibility = View.VISIBLE
         binding.productReviewsAllowedDivider.visibility = View.VISIBLE
         binding.productReviewsAllowed.setOnCheckedChangeListener { _, isChecked ->
-            AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_REVIEWS_TOGGLED)
+            AnalyticsTracker.track(AnalyticsEvent.PRODUCT_SETTINGS_REVIEWS_TOGGLED)
             viewModel.updateProductDraft(reviewsAllowed = isChecked)
             activity?.invalidateOptionsMenu()
         }
 
-        if (viewModel.getProduct().storedProduct?.productType == SIMPLE) {
+        if (viewModel.getProduct().productDraft?.productType == SIMPLE) {
             binding.productIsDownloadable.visibility = View.VISIBLE
             binding.productIsDownloadableDivider.visibility = View.VISIBLE
             binding.productIsDownloadable.setOnCheckedChangeListener { checkbox, isChecked ->
@@ -74,7 +74,7 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
         }
 
         binding.productPurchaseNote.setOnClickListener {
-            AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_PURCHASE_NOTE_TAPPED)
+            AnalyticsTracker.track(AnalyticsEvent.PRODUCT_SETTINGS_PURCHASE_NOTE_TAPPED)
             val purchaseNote = viewModel.getProduct().productDraft?.purchaseNote ?: ""
             viewModel.onEditProductCardClicked(
                 ViewProductPurchaseNoteEditor(

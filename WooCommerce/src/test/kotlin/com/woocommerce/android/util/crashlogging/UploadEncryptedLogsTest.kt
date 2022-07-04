@@ -1,25 +1,20 @@
 package com.woocommerce.android.util.crashlogging
 
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import com.woocommerce.android.util.CoroutineTestRule
-import kotlinx.coroutines.test.runBlockingTest
+import com.woocommerce.android.viewmodel.BaseUnitTest
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.store.EncryptedLogStore
 
 @RunWith(MockitoJUnitRunner::class)
-class UploadEncryptedLogsTest {
+class UploadEncryptedLogsTest : BaseUnitTest() {
     private lateinit var sut: UploadEncryptedLogs
 
     private val encryptedLogStore: EncryptedLogStore = mock()
-
-    @get:Rule
-    val coroutinesTestRule = CoroutineTestRule()
 
     @Before
     fun setUp() {
@@ -30,7 +25,7 @@ class UploadEncryptedLogsTest {
     }
 
     @Test
-    fun `should start upload when invoked`() = runBlockingTest {
+    fun `should start upload when invoked`() = testBlocking {
         sut.invoke()
 
         verify(encryptedLogStore, times(1)).uploadQueuedEncryptedLogs()

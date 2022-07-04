@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.mystore.domain
 
 import com.woocommerce.android.ui.mystore.data.StatsRepository
-import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.LoadTopPerformersResult.TopPerformersLoadedError
-import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.LoadTopPerformersResult.TopPerformersLoadedSuccess
+import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformersResult.TopPerformersError
+import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformersResult.TopPerformersSuccess
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -36,7 +36,7 @@ class GetTopPerformersTest : BaseUnitTest() {
             ).first()
 
             assertThat(result).isEqualTo(
-                TopPerformersLoadedSuccess(SORTED_PERFORMERS_PRODUCT_LIST)
+                TopPerformersSuccess(SORTED_PERFORMERS_PRODUCT_LIST)
             )
         }
 
@@ -49,7 +49,7 @@ class GetTopPerformersTest : BaseUnitTest() {
                 false, WCStatsStore.StatsGranularity.DAYS, ANY_TOP_PERFORMERS_NUMBER
             ).first()
 
-            assertThat(result).isEqualTo(TopPerformersLoadedError)
+            assertThat(result).isEqualTo(TopPerformersError)
         }
 
     private suspend fun givenFetchProductLeaderboardsResult(result: Result<List<WCTopPerformerProductModel>>) {

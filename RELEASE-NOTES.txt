@@ -1,5 +1,81 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
+9.6
+-----
+
+
+9.5
+-----
+
+
+9.4
+-----
+
+
+9.3
+-----
+- [*] In-Person Payments: Individual Card Reader Manual tabs removed from IPP Screen and moved to the new screen `Card Reader Manuals` [https://github.com/woocommerce/woocommerce-android/pull/6518]
+- [*] Show "We don't support stripe in Canada" when both WCPay and Stripe are active [https://github.com/woocommerce/woocommerce-android/pull/6573]
+- [***] In-Person Payments: In-Person Payments in Canada is now available for public! [https://github.com/woocommerce/woocommerce-android/pull/6579]
+- [*] In-Person Payments: Removed unnecessary notification when interac refund is initiated [https://github.com/woocommerce/woocommerce-android/pull/6601]
+- [*] In-Person Payments: Do not connect to the last know reader automatically after logout and site change [https://github.com/woocommerce/woocommerce-android/pull/6616]
+
+9.2
+-----
+- [*] In-Person Payments: update the reader's battery level when it's changed on the card reader's details screen
+- [*] In-Person Payments: In cases when IPP onboarding is not completed, we show the details about what's wrong right away, without making a network call
+- [*] Fixed a bug that caused decimal values to be rounded when the decimal separator was a comma [https://github.com/woocommerce/woocommerce-android/pull/6426]
+- [*] Most of the fields in order detail now support long press to copy to the clipboard [https://github.com/woocommerce/woocommerce-android/pull/6430]
+- [*] Fixed a crash when trying to remove an unsynchronized product in a new synced order [https://github.com/woocommerce/woocommerce-android/pull/6459]
+
+9.1
+-----
+- [**] Variation Detail: Don't clear price on attribute/visibility/inventory change. [https://github.com/woocommerce/woocommerce-android/compare/issue/6345-fix-price-on-variations-2?expand=1]
+- [*] Introduced Location permission rationale dialog in IPP connection flow
+[***] Merchants can now view coupons in their stores by enabling Coupon Management in Beta Features. [https://github.com/woocommerce/woocommerce-android/pull/6318]
+
+9.0
+-----
+- [*] Fixes a bug that caused the scheduled sale dates of a product to be different than the selected dates. [https://github.com/woocommerce/woocommerce-android/pull/6188]
+
+8.9
+-----
+- [*] Fixed an issue to update the product price to zero, if required. [https://github.com/woocommerce/woocommerce-android/pull/6039]
+- [*] Added support for moderating reviews of specific products from the Product Details screen. [https://github.com/woocommerce/woocommerce-android/pull/6070]
+- [*] In-Person Payments: Removed collecting L2/L3 data. [https://github.com/woocommerce/woocommerce-android/pull/6084]
+- [***] Order Creation is now available for the general public making possible to fully create custom orders directly from the app [https://github.com/woocommerce/woocommerce-android/pull/6092]
+
+8.8
+-----
+
+8.7
+-----
+- [*] Fixed an issue where on rare cases the app might end up displaying order notes for the wrong note. [https://github.com/woocommerce/woocommerce-android/pull/5971]
+- [*] In-Person Payments: Add support for accepting payments on bookable products
+- [***] Beta Feature: Order Creation is now improved, supporting Fees and Shipping costs.
+
+8.6
+-----
+- [**] In-Person Payments: Add support for Stripe by WooCommerce extension
+- [***] All merchants can create Simple Payments orders. [https://github.com/woocommerce/woocommerce-android/issues/5804]
+- [***] Introduced a new main navigation tab called "More", where you can browse different sub-sections of the app: Switch Store, Settings, WooCommerce Admin, View Store and Reviews. [https://github.com/woocommerce/woocommerce-android/pull/5897]
+
+8.5
+-----
+- [***] Beta Feature: It's now possible to create Orders from the app. For now only including products, customer notes, shipping and billing addresses.
+- [***] Store admins can now access sites with plugins that have Jetpack Connection Package (e.g. WooCommerce Payments, Jetpack Backup) in the app. These sites do not require Jetpack-the-plugin to connect anymore. Store admins can still install Jetpack-the-plugin from the app through settings or a Jetpack banner. [https://github.com/woocommerce/woocommerce-android/pull/5771]
+
+8.4
+-----
+- [*] New Home Screen UI. Store stats are now shown in a line chart, new stats have been added such as conversion rate and revenue stats are not rounded anymore.
+- [*] Fixed an issue which resulted in showing wrong order prices if the store used more than 2 digits for price formatting [https://github.com/woocommerce/woocommerce-android/pull/5612]
+- [***] Fixed a bug that resulted in crashing app on start after upgrading from 7.4 or 7.5
+
+8.3
+-----
+- [*] App Settings: Updated the About screen
+- [**] Refunds: Add support for refunding fees
+
 8.2
 -----
 - [*] In-Person Payments: Better error handling

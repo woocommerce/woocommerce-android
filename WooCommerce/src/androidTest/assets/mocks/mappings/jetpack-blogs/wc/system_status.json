@@ -1,0 +1,303 @@
+{
+    "request": {
+        "method": "GET",
+        "urlPathPattern": "/rest/v1.1/jetpack-blogs/161477129/rest-api/",
+        "queryParameters": {
+            "json": {
+                "equalTo": "true"
+            },
+            "path": {
+                "matches": "/wc/v3/system_status(.*)"
+            },  
+            "query": {
+                "matches": "(.*)active_plugins(.*)"
+            }, 
+            "locale": {
+                "matches": "(.*)"
+            }
+        }
+    },
+    "response": {
+        "status": 200,
+        "jsonBody": {
+            "data": {
+                "active_plugins": [{
+                    "plugin": "akismet/akismet.php",
+                    "name": "Akismet Anti-Spam",
+                    "version": "4.2.2",
+                    "version_latest": "4.2.2",
+                    "url": "https://akismet.com/",
+                    "author_name": "Automattic",
+                    "author_url": "https://automattic.com/wordpress-plugins/",
+                    "network_activated": false
+                }, {
+                    "plugin": "amp/amp.php",
+                    "name": "AMP",
+                    "version": "2.2.1",
+                    "version_latest": "2.2.1",
+                    "url": "https://amp-wp.org",
+                    "author_name": "AMP Project Contributors",
+                    "author_url": "https://github.com/ampproject/amp-wp/graphs/contributors",
+                    "network_activated": false
+                }, {
+                    "plugin": "jetpack/jetpack.php",
+                    "name": "Jetpack",
+                    "version": "10.7-a.1",
+                    "version_latest": "10.7-a.1",
+                    "url": "https://jetpack.com",
+                    "author_name": "Automattic",
+                    "author_url": "https://jetpack.com",
+                    "network_activated": false
+                }, {
+                    "plugin": "storefront-powerpack/storefront-powerpack.php",
+                    "name": "Storefront Powerpack",
+                    "version": "2.0.0",
+                    "version_latest": "2.0.0",
+                    "url": "https://woocommerce.com/products/storefront-powerpack/",
+                    "author_name": "WooCommerce",
+                    "author_url": "https://woocommerce.com/",
+                    "network_activated": false
+                }, {
+                    "plugin": "woocommerce-admin/woocommerce-admin.php",
+                    "name": "WooCommerce Admin",
+                    "version": "3.1.0",
+                    "version_latest": "3.1.0",
+                    "url": "https://github.com/woocommerce/woocommerce-admin",
+                    "author_name": "WooCommerce",
+                    "author_url": "https://woocommerce.com/",
+                    "network_activated": false
+                }, {
+                    "plugin": "woocommerce-gateway-stripe/woocommerce-gateway-stripe.php",
+                    "name": "WooCommerce Stripe Gateway",
+                    "version": "6.1.0",
+                    "version_latest": "6.1.0",
+                    "url": "https://wordpress.org/plugins/woocommerce-gateway-stripe/",
+                    "author_name": "WooCommerce",
+                    "author_url": "https://woocommerce.com/",
+                    "network_activated": false
+                }, {
+                    "plugin": "woocommerce-product-addons/woocommerce-product-addons.php",
+                    "name": "WooCommerce Product Add-ons",
+                    "version": "4.5.0",
+                    "version_latest": "4.5.0",
+                    "url": "https://woocommerce.com/products/product-add-ons/",
+                    "author_name": "WooCommerce",
+                    "author_url": "https://woocommerce.com",
+                    "network_activated": false
+                }, {
+                    "plugin": "woocommerce-services/woocommerce-services.php",
+                    "name": "WooCommerce Shipping &amp; Tax",
+                    "version": "1.25.22",
+                    "version_latest": "1.25.22",
+                    "url": "https://woocommerce.com/",
+                    "author_name": "WooCommerce",
+                    "author_url": "https://woocommerce.com/",
+                    "network_activated": false
+                }, {
+                    "plugin": "woocommerce-shipment-tracking-master/woocommerce-shipment-tracking.php",
+                    "name": "WooCommerce Shipment Tracking",
+                    "version": "1.6.14",
+                    "version_latest": "1.6.31",
+                    "url": "https://woocommerce.com/products/shipment-tracking/",
+                    "author_name": "WooCommerce",
+                    "author_url": "https://woocommerce.com",
+                    "network_activated": false
+                }, {
+                    "plugin": "woocommerce/woocommerce.php",
+                    "name": "WooCommerce",
+                    "version": "6.1.1",
+                    "version_latest": "6.1.1",
+                    "url": "https://woocommerce.com/",
+                    "author_name": "Automattic",
+                    "author_url": "https://woocommerce.com",
+                    "network_activated": false
+                }],
+                "inactive_plugins": [{
+                    "plugin": "classic-editor/classic-editor.php",
+                    "name": "Classic Editor",
+                    "version": "1.6.2",
+                    "version_latest": "1.6.2",
+                    "url": "https://wordpress.org/plugins/classic-editor/",
+                    "author_name": "WordPress Contributors",
+                    "author_url": "https://github.com/WordPress/classic-editor/",
+                    "network_activated": false
+                }, {
+                    "plugin": "coblocks/class-coblocks.php",
+                    "name": "CoBlocks",
+                    "version": "2.19.1",
+                    "version_latest": "2.19.1",
+                    "url": "",
+                    "author_name": "GoDaddy",
+                    "author_url": "https://www.godaddy.com",
+                    "network_activated": false
+                }, {
+                    "plugin": "facebook-for-woocommerce/facebook-for-woocommerce.php",
+                    "name": "Facebook for WooCommerce",
+                    "version": "2.6.9",
+                    "version_latest": "2.6.9",
+                    "url": "https://github.com/facebookincubator/facebook-for-woocommerce/",
+                    "author_name": "Facebook",
+                    "author_url": "https://www.facebook.com/",
+                    "network_activated": false
+                }, {
+                    "plugin": "gutenberg/gutenberg.php",
+                    "name": "Gutenberg",
+                    "version": "12.5.1",
+                    "version_latest": "12.5.1",
+                    "url": "https://github.com/WordPress/gutenberg",
+                    "author_name": "Gutenberg Team",
+                    "author_url": "",
+                    "network_activated": false
+                }, {
+                    "plugin": "klarna-checkout-for-woocommerce/klarna-checkout-for-woocommerce.php",
+                    "name": "Klarna Checkout for WooCommerce",
+                    "version": "2.6.4",
+                    "version_latest": "2.6.4",
+                    "url": "https://krokedil.com/klarna/",
+                    "author_name": "Krokedil",
+                    "author_url": "https://krokedil.com/",
+                    "network_activated": false
+                }, {
+                    "plugin": "klarna-payments-for-woocommerce/klarna-payments-for-woocommerce.php",
+                    "name": "Klarna Payments for WooCommerce",
+                    "version": "2.8.1",
+                    "version_latest": "2.8.1",
+                    "url": "https://krokedil.com/klarna-payments/",
+                    "author_name": "krokedil, klarna, automattic",
+                    "author_url": "https://krokedil.com/",
+                    "network_activated": false
+                }, {
+                    "plugin": "layout-grid/index.php",
+                    "name": "Layout Grid",
+                    "version": "1.8",
+                    "version_latest": "1.8",
+                    "url": "",
+                    "author_name": "Automattic",
+                    "author_url": "https://automattic.com",
+                    "network_activated": false
+                }, {
+                    "plugin": "mailchimp-for-woocommerce/mailchimp-woocommerce.php",
+                    "name": "Mailchimp for WooCommerce",
+                    "version": "2.5.4",
+                    "version_latest": "2.5.4",
+                    "url": "https://mailchimp.com/connect-your-store/",
+                    "author_name": "Mailchimp",
+                    "author_url": "https://mailchimp.com",
+                    "network_activated": false
+                }, {
+                    "plugin": "page-optimize/page-optimize.php",
+                    "name": "Page Optimize",
+                    "version": "0.5.2",
+                    "version_latest": "0.5.2",
+                    "url": "https://wordpress.org/plugins/page-optimize/",
+                    "author_name": "Automattic",
+                    "author_url": "http://automattic.com/",
+                    "network_activated": false
+                }, {
+                    "plugin": "taxjar-simplified-taxes-for-woocommerce/taxjar-woocommerce.php",
+                    "name": "TaxJar - Sales Tax Automation for WooCommerce",
+                    "version": "4.1.0",
+                    "version_latest": "4.1.0",
+                    "url": "https://www.taxjar.com/woocommerce-sales-tax-plugin/",
+                    "author_name": "TaxJar",
+                    "author_url": "https://www.taxjar.com",
+                    "network_activated": false
+                }, {
+                    "plugin": "woocommerce-shipping-australia-post/woocommerce-shipping-australia-post.php",
+                    "name": "WooCommerce Australia Post Shipping",
+                    "version": "2.4.32",
+                    "version_latest": "2.4.32",
+                    "url": "https://woocommerce.com/products/australia-post-shipping-method/",
+                    "author_name": "WooCommerce",
+                    "author_url": "https://woocommerce.com",
+                    "network_activated": false
+                }, {
+                    "plugin": "woocommerce-shipping-canada-post/woocommerce-shipping-canada-post.php",
+                    "name": "WooCommerce Canada Post Shipping",
+                    "version": "2.5.27",
+                    "version_latest": "2.5.27",
+                    "url": "https://woocommerce.com/products/canada-post-shipping-method/",
+                    "author_name": "WooCommerce",
+                    "author_url": "https://woocommerce.com",
+                    "network_activated": false
+                }, {
+                    "plugin": "woocommerce-gateway-eway/woocommerce-gateway-eway.php",
+                    "name": "WooCommerce Eway Payment Gateway",
+                    "version": "3.4.1",
+                    "version_latest": "3.4.1",
+                    "url": "https://woocommerce.com/products/eway/",
+                    "author_name": "WooCommerce",
+                    "author_url": "https://woocommerce.com/",
+                    "network_activated": false
+                }, {
+                    "plugin": "woocommerce-payfast-gateway/gateway-payfast.php",
+                    "name": "WooCommerce PayFast Gateway",
+                    "version": "1.4.20",
+                    "version_latest": "1.4.20",
+                    "url": "https://woocommerce.com/products/payfast-payment-gateway/",
+                    "author_name": "WooCommerce",
+                    "author_url": "http://woocommerce.com/",
+                    "network_activated": false
+                }, {
+                    "plugin": "woocommerce-gateway-paypal-express-checkout/woocommerce-gateway-paypal-express-checkout.php",
+                    "name": "WooCommerce PayPal Checkout Gateway",
+                    "version": "2.1.3",
+                    "version_latest": "2.1.3",
+                    "url": "",
+                    "author_name": "WooCommerce",
+                    "author_url": "https://woocommerce.com",
+                    "network_activated": false
+                }, {
+                    "plugin": "woocommerce-shipping-royalmail/woocommerce-shipping-royalmail.php",
+                    "name": "WooCommerce Royal Mail",
+                    "version": "2.5.41",
+                    "version_latest": "2.5.41",
+                    "url": "https://woocommerce.com/products/royal-mail/",
+                    "author_name": "WooCommerce",
+                    "author_url": "https://woocommerce.com/",
+                    "network_activated": false
+                }, {
+                    "plugin": "woocommerce-square/woocommerce-square.php",
+                    "name": "WooCommerce Square",
+                    "version": "2.8.0",
+                    "version_latest": "2.8.0",
+                    "url": "https://woocommerce.com/products/square/",
+                    "author_name": "WooCommerce",
+                    "author_url": "https://www.woocommerce.com/",
+                    "network_activated": false
+                }, {
+                    "plugin": "woocommerce-shipping-ups/woocommerce-shipping-ups.php",
+                    "name": "WooCommerce UPS Shipping",
+                    "version": "3.2.37",
+                    "version_latest": "3.2.37",
+                    "url": "https://woocommerce.com/products/ups-shipping-method/",
+                    "author_name": "WooCommerce",
+                    "author_url": "https://woocommerce.com",
+                    "network_activated": false
+                }, {
+                    "plugin": "woocommerce-shipping-usps/woocommerce-shipping-usps.php",
+                    "name": "WooCommerce USPS Shipping",
+                    "version": "4.4.69",
+                    "version_latest": "4.4.69",
+                    "url": "https://woocommerce.com/products/usps-shipping-method/",
+                    "author_name": "WooCommerce",
+                    "author_url": "https://woocommerce.com",
+                    "network_activated": false
+                }, {
+                    "plugin": "full-site-editing/full-site-editing-plugin.php",
+                    "name": "WordPress.com Editing Toolkit",
+                    "version": "3.26189",
+                    "version_latest": "3.26189",
+                    "url": "",
+                    "author_name": "Automattic",
+                    "author_url": "https://automattic.com/wordpress-plugins/",
+                    "network_activated": false
+                }]
+            }
+        },
+        "headers": {
+            "Content-Type": "application/json",
+            "Connection": "keep-alive"
+        }
+    }
+}

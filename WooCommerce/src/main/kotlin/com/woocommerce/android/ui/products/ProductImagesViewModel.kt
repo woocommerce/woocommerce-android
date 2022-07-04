@@ -6,10 +6,10 @@ import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
 import com.woocommerce.android.RequestCodes
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_IMAGE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_BUTTON_TAPPED
 import com.woocommerce.android.extensions.areSameImagesAs
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.toAppModel
@@ -97,7 +97,7 @@ class ProductImagesViewModel @Inject constructor(
 
     fun onShowStorageChooserButtonClicked() {
         AnalyticsTracker.track(
-            Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
+            AnalyticsEvent.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
             mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_DEVICE)
         )
         triggerEvent(ShowStorageChooser)
@@ -105,7 +105,7 @@ class ProductImagesViewModel @Inject constructor(
 
     fun onShowCameraButtonClicked() {
         AnalyticsTracker.track(
-            Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
+            AnalyticsEvent.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
             mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_CAMERA)
         )
         triggerEvent(ShowCamera)
@@ -113,7 +113,7 @@ class ProductImagesViewModel @Inject constructor(
 
     fun onShowWPMediaPickerButtonClicked() {
         AnalyticsTracker.track(
-            Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
+            AnalyticsEvent.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
             mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_WPMEDIA)
         )
         triggerEvent(ShowWPMediaPicker)

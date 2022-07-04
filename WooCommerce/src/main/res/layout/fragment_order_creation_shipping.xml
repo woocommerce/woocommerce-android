@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.woocommerce.android.widgets.WCElevatedLinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/major_100">
+
+            <com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView
+                android:id="@+id/amountEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/amount"
+                android:imeOptions="flagNoFullscreen"
+                app:supportsEmptyState="false"
+                app:supportsNegativeValues="true" />
+
+            <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+                android:id="@+id/nameEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/order_creation_shipping_name"
+                android:imeOptions="flagNoFullscreen"
+                android:inputType="text" />
+        </com.woocommerce.android.widgets.WCElevatedLinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/removeShippingButton"
+            style="@style/Woo.Button.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/major_100"
+            android:text="@string/order_creation_remove_shipping" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</ScrollView>

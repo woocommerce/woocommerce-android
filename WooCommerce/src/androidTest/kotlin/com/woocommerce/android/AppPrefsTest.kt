@@ -1,8 +1,9 @@
 package com.woocommerce.android
 
 import androidx.test.platform.app.InstrumentationRegistry
-import com.woocommerce.android.AppPrefs.CardReaderOnboardingCompletedStatus
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.PluginType
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.*
+import com.woocommerce.android.ui.cardreader.onboarding.PersistentOnboardingData
+import com.woocommerce.android.ui.cardreader.onboarding.PluginType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -33,59 +34,216 @@ class AppPrefsTest {
     }
 
     @Test
+    fun whenFCMTokenIsSetThenGetReturnsStoredValue() {
+        val token = "fcm_token"
+
+        AppPrefs.setFCMToken(token)
+
+        assertThat(AppPrefs.getFCMToken()).isEqualTo(token)
+    }
+
+    @Test
     fun whenCardReaderOnboardingCompletedWithStripeExtThenCorrectOnboardingStatusIsStored() {
-        AppPrefs.setCardReaderOnboardingCompleted(
+        AppPrefs.setCardReaderOnboardingData(
             localSiteId = 0,
             remoteSiteId = 0L,
             selfHostedSiteId = 0L,
-            pluginType = PluginType.STRIPE_TERMINAL_GATEWAY
+            PersistentOnboardingData(
+                CARD_READER_ONBOARDING_COMPLETED,
+                PluginType.STRIPE_EXTENSION_GATEWAY,
+                null,
+            )
         )
 
         assertThat(
-            AppPrefs.getCardReaderOnboardingCompletedStatus(
+            AppPrefs.getCardReaderOnboardingStatus(
                 localSiteId = 0,
                 remoteSiteId = 0L,
                 selfHostedSiteId = 0L
             )
-        ).isEqualTo(CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_COMPLETED_WITH_STRIPE_EXTENSION)
+        ).isEqualTo(CARD_READER_ONBOARDING_COMPLETED)
+    }
+
+    @Test
+    fun whenCardReaderOnboardingCompletedWithStripeExtThenCorrectPreferredPluginIsStored() {
+        AppPrefs.setCardReaderOnboardingData(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            PersistentOnboardingData(
+                CARD_READER_ONBOARDING_COMPLETED,
+                PluginType.STRIPE_EXTENSION_GATEWAY,
+                null,
+            )
+        )
+
+        assertThat(
+            AppPrefs.getCardReaderPreferredPlugin(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L
+            )
+        ).isEqualTo(PluginType.STRIPE_EXTENSION_GATEWAY)
+    }
+
+    @Test
+    fun whenCardReaderOnboardingPendingRequirementWithStripeExtThenCorrectOnboardingStatusIsStored() {
+        AppPrefs.setCardReaderOnboardingData(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            PersistentOnboardingData(
+                CARD_READER_ONBOARDING_PENDING,
+                PluginType.STRIPE_EXTENSION_GATEWAY,
+                null,
+            )
+        )
+
+        assertThat(
+            AppPrefs.getCardReaderOnboardingStatus(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L
+            )
+        ).isEqualTo(
+            CARD_READER_ONBOARDING_PENDING
+        )
+    }
+
+    @Test
+    fun whenCardReaderOnboardingPendingRequirementWithStripeExtThenCorrectPreferredPluginIsStored() {
+        AppPrefs.setCardReaderOnboardingData(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            PersistentOnboardingData(
+                CARD_READER_ONBOARDING_PENDING,
+                PluginType.STRIPE_EXTENSION_GATEWAY,
+                null,
+            )
+        )
+
+        assertThat(
+            AppPrefs.getCardReaderPreferredPlugin(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L
+            )
+        ).isEqualTo(
+            PluginType.STRIPE_EXTENSION_GATEWAY
+        )
     }
 
     @Test
     fun whenCardReaderOnboardingCompletedWithWCPayThenCorrectOnboardingStatusIsStored() {
-        AppPrefs.setCardReaderOnboardingCompleted(
+        AppPrefs.setCardReaderOnboardingData(
             localSiteId = 0,
             remoteSiteId = 0L,
             selfHostedSiteId = 0L,
-            pluginType = PluginType.WOOCOMMERCE_PAYMENTS
+            PersistentOnboardingData(
+                CARD_READER_ONBOARDING_COMPLETED,
+                PluginType.WOOCOMMERCE_PAYMENTS,
+                null,
+            )
         )
 
         assertThat(
-            AppPrefs.getCardReaderOnboardingCompletedStatus(
+            AppPrefs.getCardReaderOnboardingStatus(
                 localSiteId = 0,
                 remoteSiteId = 0L,
                 selfHostedSiteId = 0L
             )
-        ).isEqualTo(CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_COMPLETED_WITH_WCPAY)
+        ).isEqualTo(CARD_READER_ONBOARDING_COMPLETED)
+    }
+
+    @Test
+    fun whenCardReaderOnboardingCompletedWithWCPayThenCorrectPreferredPluginIsStored() {
+        AppPrefs.setCardReaderOnboardingData(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            PersistentOnboardingData(
+                CARD_READER_ONBOARDING_COMPLETED,
+                PluginType.WOOCOMMERCE_PAYMENTS,
+                null,
+            )
+        )
+
+        assertThat(
+            AppPrefs.getCardReaderPreferredPlugin(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L
+            )
+        ).isEqualTo(PluginType.WOOCOMMERCE_PAYMENTS)
+    }
+
+    @Test
+    fun whenCardReaderOnboardingPendingRequirementsWithWCPayThenCorrectOnboardingStatusIsStored() {
+        AppPrefs.setCardReaderOnboardingData(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            PersistentOnboardingData(
+                CARD_READER_ONBOARDING_PENDING,
+                PluginType.WOOCOMMERCE_PAYMENTS,
+                null,
+            )
+        )
+
+        assertThat(
+            AppPrefs.getCardReaderOnboardingStatus(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L
+            )
+        ).isEqualTo(CARD_READER_ONBOARDING_PENDING)
+    }
+
+    @Test
+    fun whenCardReaderOnboardingPendingRequirementsWithWCPayThenCorrectPreferredPluginIsStored() {
+        AppPrefs.setCardReaderOnboardingData(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            PersistentOnboardingData(
+                CARD_READER_ONBOARDING_PENDING,
+                PluginType.WOOCOMMERCE_PAYMENTS,
+                null,
+            )
+        )
+
+        assertThat(
+            AppPrefs.getCardReaderPreferredPlugin(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L
+            )
+        ).isEqualTo(PluginType.WOOCOMMERCE_PAYMENTS)
     }
 
     @Test
     fun whenCardReaderOnboardingNotCompletedThenCorrectOnboardingStatusIsStored() {
         assertThat(
-            AppPrefs.getCardReaderOnboardingCompletedStatus(
+            AppPrefs.getCardReaderOnboardingStatus(
                 localSiteId = 1,
                 remoteSiteId = 0L,
                 selfHostedSiteId = 0L
             )
-        ).isEqualTo(CardReaderOnboardingCompletedStatus.CARD_READER_ONBOARDING_NOT_COMPLETED)
+        ).isEqualTo(CARD_READER_ONBOARDING_NOT_COMPLETED)
     }
 
     @Test
     fun whenCardReaderOnboardingCompletedWithWCPayThenCorrectOnboardingStatusFlagIsReturned() {
-        AppPrefs.setCardReaderOnboardingCompleted(
+        AppPrefs.setCardReaderOnboardingData(
             localSiteId = 0,
             remoteSiteId = 0L,
             selfHostedSiteId = 0L,
-            pluginType = PluginType.WOOCOMMERCE_PAYMENTS
+            PersistentOnboardingData(
+                CARD_READER_ONBOARDING_COMPLETED,
+                PluginType.WOOCOMMERCE_PAYMENTS,
+                null,
+            )
         )
 
         assertThat(
@@ -98,12 +256,16 @@ class AppPrefsTest {
     }
 
     @Test
-    fun whenCardReaderOnboardingCompletedWithStripeExtThenCorrectOnboardingStatusFlagIsReturned() {
-        AppPrefs.setCardReaderOnboardingCompleted(
+    fun whenCardReaderOnboardingPendingRequirementsWithWCPayThenCorrectOnboardingStatusFlagIsReturned() {
+        AppPrefs.setCardReaderOnboardingData(
             localSiteId = 0,
             remoteSiteId = 0L,
             selfHostedSiteId = 0L,
-            pluginType = PluginType.STRIPE_TERMINAL_GATEWAY
+            PersistentOnboardingData(
+                CARD_READER_ONBOARDING_PENDING,
+                PluginType.WOOCOMMERCE_PAYMENTS,
+                null,
+            )
         )
 
         assertThat(
@@ -112,7 +274,51 @@ class AppPrefsTest {
                 remoteSiteId = 0L,
                 selfHostedSiteId = 0L
             )
-        ).isTrue
+        ).isFalse
+    }
+
+    @Test
+    fun whenCardReaderOnboardingCompletedWithStripeExtThenCorrectOnboardingStatusFlagIsReturned() {
+        AppPrefs.setCardReaderOnboardingData(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            PersistentOnboardingData(
+                CARD_READER_ONBOARDING_PENDING,
+                PluginType.STRIPE_EXTENSION_GATEWAY,
+                null,
+            )
+        )
+
+        assertThat(
+            AppPrefs.isCardReaderOnboardingCompleted(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L
+            )
+        ).isFalse
+    }
+
+    @Test
+    fun whenCardReaderOnboardingPendingRequirementsWithStripeExtThenCorrectOnboardingStatusFlagIsReturned() {
+        AppPrefs.setCardReaderOnboardingData(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            PersistentOnboardingData(
+                CARD_READER_ONBOARDING_PENDING,
+                PluginType.STRIPE_EXTENSION_GATEWAY,
+                null,
+            )
+        )
+
+        assertThat(
+            AppPrefs.isCardReaderOnboardingCompleted(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L
+            )
+        ).isFalse
     }
 
     @Test
@@ -128,11 +334,15 @@ class AppPrefsTest {
 
     @Test
     fun whenCardReaderOnboardingNotCompletedThenCorrectOnboardingStatusIsReturned() {
-        AppPrefs.setCardReaderOnboardingCompleted(
+        AppPrefs.setCardReaderOnboardingData(
             localSiteId = 0,
             remoteSiteId = 0L,
             selfHostedSiteId = 0L,
-            pluginType = null
+            PersistentOnboardingData(
+                CARD_READER_ONBOARDING_NOT_COMPLETED,
+                null,
+                null,
+            )
         )
 
         assertThat(
@@ -142,5 +352,170 @@ class AppPrefsTest {
                 selfHostedSiteId = 0L
             )
         ).isFalse
+    }
+
+    @Test
+    fun whenEmptyPreferredPluginSetThenNullReturned() {
+        AppPrefs.setCardReaderOnboardingData(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            PersistentOnboardingData(
+                CARD_READER_ONBOARDING_NOT_COMPLETED,
+                null,
+                null,
+            )
+        )
+
+        assertThat(
+            AppPrefs.getCardReaderPreferredPlugin(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L
+            )
+        ).isNull()
+    }
+
+    @Test
+    fun givenCardReaderStateDescriptorSetWhenGettingDescriptorThenSameDescriptorReturned() {
+        val statementDescriptor = "descriptor"
+        AppPrefs.setCardReaderStatementDescriptor(
+            statementDescriptor = statementDescriptor,
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+        )
+
+        assertThat(
+            AppPrefs.getCardReaderStatementDescriptor(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L
+            )
+        ).isEqualTo(statementDescriptor)
+    }
+
+    @Test
+    fun givenCardReaderStatementDescriptorNotEmptyWhenSettingItToNullThenValueOverriddenWithNull() {
+        val statementDescriptor = "descriptor"
+        AppPrefs.setCardReaderStatementDescriptor(
+            statementDescriptor = statementDescriptor,
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+        )
+
+        AppPrefs.setCardReaderStatementDescriptor(
+            statementDescriptor = null,
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+        )
+
+        assertThat(
+            AppPrefs.getCardReaderStatementDescriptor(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L
+            )
+        ).isEqualTo(null)
+    }
+
+    @Test
+    fun givenSpecificSiteIdWhenProductSortingChoiceIsSetThenGetReturnsStoredValue() {
+        val siteIds = 1 to 2
+        val productSortingChoices = "TITLE_ASC" to "TITLE_DESC"
+
+        AppPrefs.setProductSortingChoice(siteIds.first, productSortingChoices.first)
+        AppPrefs.setProductSortingChoice(siteIds.second, productSortingChoices.second)
+
+        assertThat(AppPrefs.getProductSortingChoice(siteIds.first)).isEqualTo(productSortingChoices.first)
+        assertThat(AppPrefs.getProductSortingChoice(siteIds.second)).isEqualTo(productSortingChoices.second)
+    }
+
+    @Test
+    fun givenSetCardReaderOnboardingStatusAndPreferredPluginVersionGetReturnsVersion() {
+        val version = "4.0.0"
+        val plugin = PluginType.WOOCOMMERCE_PAYMENTS
+        AppPrefs.setCardReaderOnboardingData(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            PersistentOnboardingData(
+                CARD_READER_ONBOARDING_NOT_COMPLETED,
+                plugin,
+                version,
+            )
+        )
+
+        assertThat(
+            AppPrefs.getCardReaderPreferredPluginVersion(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L,
+                plugin,
+            )
+        ).isEqualTo(version)
+    }
+
+    @Test
+    fun givenSetCardReaderOnboardingStatusAndPreferredPluginVersionWithOnePluginGetWithAnotherReturnsNull() {
+        val version = "4.0.0"
+        val plugin = PluginType.WOOCOMMERCE_PAYMENTS
+        AppPrefs.setCardReaderOnboardingData(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            PersistentOnboardingData(
+                CARD_READER_ONBOARDING_NOT_COMPLETED,
+                plugin,
+                version,
+            )
+        )
+
+        assertThat(
+            AppPrefs.getCardReaderPreferredPluginVersion(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L,
+                PluginType.STRIPE_EXTENSION_GATEWAY,
+            )
+        ).isNull()
+    }
+
+    @Test
+    fun givenIsPluginExplicitlySelectedIsFalseThenReturnFalse() {
+        AppPrefs.setIsCardReaderPluginExplicitlySelectedFlag(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            isPluginExplicitlySelected = false
+        )
+
+        assertThat(
+            AppPrefs.isCardReaderPluginExplicitlySelected(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L,
+            )
+        ).isFalse
+    }
+
+    @Test
+    fun givenIsPluginExplicitlySelectedIsTrueThenReturnTrue() {
+        AppPrefs.setIsCardReaderPluginExplicitlySelectedFlag(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            isPluginExplicitlySelected = true
+        )
+
+        assertThat(
+            AppPrefs.isCardReaderPluginExplicitlySelected(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L,
+            )
+        ).isTrue
     }
 }

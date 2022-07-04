@@ -5,6 +5,7 @@ If reading this you find anything is not up-to-date, please fix it or report to 
 * **CPP** - Card Present Payments
 * **Stripe** - Third party company we use as payments processing for In-Person Payments
 * **WCPay** - Or WooCommerce Payments is a plugin for WooCommerce (which itself is a plugin for Wordpress) that contains integrations with different payments platform including Stripe
+* **Stripe Extension/Plugin** - is another plugin for WooCommerce which can be used to accept payments using Stripe Payment Gateway.
 * **Card Reader** - At the moment the app supports *BBPOS Chipper 2X BT*. We are working on adding support for *Stripe M2* (ask Aaron to order your own reader)
 * **COD** - Cash On Delivery. Paying with a card is also "cash", so CPP is COD 🤷 (Cash On Delivery option can be renamed to "Pay On Delivery" on the site, but internally COD is used for both)
 * **POS** - Point Of Sale

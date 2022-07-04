@@ -11,16 +11,19 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
-msgctxt "release_note_081"
+msgctxt "release_note_095"
 msgid ""
-"8.1:\n"
-"The orders tab has gotten an update with this release. The tabs are now gone, and we’ve given you a filter by status or date range option. This is based upon your direct feedback over the years, and we know you’ll like the change!\n"
+"9.5:\n"
+"We keep adding new functionality to our experimental Coupon Management feature! This release includes editing and deleting coupons along with several improvements on viewing. Turn this feature on for early access in the More tab, Settings, Beta Features.\n"
+"\n"
+"We also fixed a bug that was making it hard for some of you to search orders. Thanks to everyone who reported this! Your feedback is vital to us!\n"
+"\n"
 msgstr ""
 
-msgctxt "release_note_080"
+msgctxt "release_note_094"
 msgid ""
-"8.0:\n"
-"We’ve made some updates to our in-person payments support! Your card reader might have firmware software updates – some are super important and are required to be installed immediately. With this release, you can defer the upgrade of the optional updates for a better time.\n"
+"9.4:\n"
+"Even though this release doesn’t have any new features, we still put a lot of love into it! In product details, some third-party extensions were causing the app to crash when viewing variable products. We’ve fixed this crash and made a handful of minor improvements to make your experience smoother.\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

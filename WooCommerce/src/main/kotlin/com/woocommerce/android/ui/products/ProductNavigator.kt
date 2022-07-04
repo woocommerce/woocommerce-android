@@ -15,6 +15,8 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAtt
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
+import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToProductFilter
+import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToVariationSelector
 import com.woocommerce.android.ui.products.ProductNavigationTarget.RenameProductAttribute
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
@@ -49,6 +51,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVa
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
 import com.woocommerce.android.ui.products.categories.ProductCategoriesFragmentDirections
 import com.woocommerce.android.ui.products.downloads.ProductDownloadsFragmentDirections
+import com.woocommerce.android.ui.products.selector.ProductSelectorFragmentDirections
 import com.woocommerce.android.ui.products.settings.ProductSettingsFragmentDirections
 import com.woocommerce.android.ui.products.variations.attributes.AddAttributeTermsFragmentDirections
 import com.woocommerce.android.ui.products.variations.attributes.AttributeListFragmentDirections
@@ -231,7 +234,11 @@ class ProductNavigator @Inject constructor() {
 
             is ViewProductTypes -> {
                 val action = ProductDetailFragmentDirections
-                    .actionProductDetailFragmentToProductTypesBottomSheetFragment(target.isAddProduct)
+                    .actionProductDetailFragmentToProductTypesBottomSheetFragment(
+                        target.isAddProduct,
+                        currentProductType = target.currentProductType,
+                        isCurrentProductVirtual = target.isCurrentProductVirtual
+                    )
                 fragment.findNavController().navigateSafely(action)
             }
 
@@ -269,37 +276,37 @@ class ProductNavigator @Inject constructor() {
 
             is ViewProductAdd -> {
                 val action = NavGraphMainDirections.actionGlobalProductDetailFragment(isAddProduct = true)
-                fragment.findNavController().navigate(action)
+                fragment.findNavController().navigateSafely(action)
             }
 
             is ViewProductDownloads -> {
                 val action = ProductDetailFragmentDirections
                     .actionProductDetailFragmentToProductDownloadsFragment()
-                fragment.findNavController().navigate(action)
+                fragment.findNavController().navigateSafely(action)
             }
 
             is ViewProductDownloadsSettings -> {
                 val action = ProductDownloadsFragmentDirections
                     .actionProductDownloadsFragmentToProductDownloadsSettingsFragment()
 
-                fragment.findNavController().navigate(action)
+                fragment.findNavController().navigateSafely(action)
             }
 
             is ViewProductDownloadDetails -> {
                 val action = NavGraphProductsDirections
                     .actionGlobalProductDownloadDetailsFragment(target.isEditing, target.file)
-                fragment.findNavController().navigate(action)
+                fragment.findNavController().navigateSafely(action)
             }
 
             is ViewProductAddonsDetails -> {
                 ProductDetailFragmentDirections
                     .actionProductDetailFragmentToProductAddonsFragment()
-                    .apply { fragment.findNavController().navigate(this) }
+                    .apply { fragment.findNavController().navigateSafely(this) }
             }
 
             is AddProductDownloadableFile -> {
                 val action = NavGraphProductsDirections.actionGlobalAddProductDownloadBottomSheetFragment()
-                fragment.findNavController().navigate(action)
+                fragment.findNavController().navigateSafely(action)
             }
 
             is AddProductAttribute -> {
@@ -307,19 +314,19 @@ class ProductNavigator @Inject constructor() {
                     true ->
                         ProductDetailFragmentDirections
                             .actionProductDetailFragmentToAddAttributeFragment(isVariationCreation = true)
-                            .run { fragment.findNavController().navigate(this) }
+                            .run { fragment.findNavController().navigateSafely(this) }
 
                     else ->
                         AttributeListFragmentDirections
                             .actionAttributeListFragmentToAddAttributeFragment()
-                            .run { fragment.findNavController().navigate(this) }
+                            .run { fragment.findNavController().navigateSafely(this) }
                 }
             }
 
             is RenameProductAttribute -> {
                 val action = AddAttributeTermsFragmentDirections
                     .actionAttributeTermsFragmentToRenameAttributeFragment(target.attributeName)
-                fragment.findNavController().navigate(action)
+                fragment.findNavController().navigateSafely(action)
             }
 
             is AddProductAttributeTerms -> {
@@ -329,12 +336,33 @@ class ProductNavigator @Inject constructor() {
                     isNewAttribute = target.isNewAttribute,
                     isVariationCreation = target.isVariationCreation
                 )
-                fragment.findNavController().navigate(action)
+                fragment.findNavController().navigateSafely(action)
             }
 
             is ViewMediaUploadErrors -> {
                 val action = NavGraphProductsDirections.actionGlobalMediaUploadErrorsFragment(target.remoteId)
                 fragment.findNavController().navigateSafely(action)
+            }
+
+            is NavigateToVariationSelector -> {
+                fragment.findNavController().navigateSafely(
+                    ProductSelectorFragmentDirections.actionProductSelectorFragmentToVariationSelectorFragment(
+                        target.productId,
+                        target.selectedVariationIds.toLongArray()
+                    )
+                )
+            }
+
+            is NavigateToProductFilter -> {
+                fragment.findNavController().navigateSafely(
+                    ProductSelectorFragmentDirections.actionProductSelectorFragmentToNavGraphProductFilters(
+                        target.stockStatus,
+                        target.productType,
+                        target.productStatus,
+                        target.productCategory,
+                        target.productCategoryName
+                    )
+                )
             }
 
             is ExitProduct -> fragment.findNavController().navigateUp()

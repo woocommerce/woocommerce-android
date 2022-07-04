@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentRefundByItemsBinding
+import com.woocommerce.android.databinding.RefundByItemsFeesBinding
 import com.woocommerce.android.databinding.RefundByItemsProductsBinding
 import com.woocommerce.android.databinding.RefundByItemsShippingBinding
 import com.woocommerce.android.extensions.hide
@@ -25,6 +26,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.OpenUrl
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundAmountDialog
+import com.woocommerce.android.ui.refunds.RefundFeeListAdapter.OnFeeLineCheckedChangeListener
 import com.woocommerce.android.ui.refunds.RefundShippingListAdapter.OnCheckedChangeListener
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
@@ -36,7 +38,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class RefundByItemsFragment :
     BaseFragment(R.layout.fragment_refund_by_items),
-    OnCheckedChangeListener {
+    OnCheckedChangeListener,
+    OnFeeLineCheckedChangeListener {
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var imageMap: ProductImageMap
 
@@ -48,6 +51,9 @@ class RefundByItemsFragment :
 
     private var _shippingLinesBinding: RefundByItemsShippingBinding? = null
     private val shippingLinesBinding get() = _shippingLinesBinding!!
+
+    private var _feeLinesBinding: RefundByItemsFeesBinding? = null
+    private val feeLinesBinding get() = _feeLinesBinding!!
 
     private val viewModel: IssueRefundViewModel by hiltNavGraphViewModels(R.id.nav_graph_refunds)
 
@@ -62,6 +68,7 @@ class RefundByItemsFragment :
         _binding = FragmentRefundByItemsBinding.bind(view)
         _productsBinding = binding.issueRefundProductsList
         _shippingLinesBinding = binding.issueRefundShippingSection
+        _feeLinesBinding = binding.issueRefundFeesSection
 
         initializeViews()
         setupObservers()
@@ -72,6 +79,7 @@ class RefundByItemsFragment :
         _binding = null
         _productsBinding = null
         _shippingLinesBinding = null
+        _feeLinesBinding = null
     }
 
     private fun initializeViews() {
@@ -81,6 +89,9 @@ class RefundByItemsFragment :
 
         shippingLinesBinding.issueRefundShippingLines.layoutManager = LinearLayoutManager(context)
         shippingLinesBinding.issueRefundShippingLines.setHasFixedSize(true)
+
+        feeLinesBinding.issueRefundFeeLines.layoutManager = LinearLayoutManager(context)
+        feeLinesBinding.issueRefundFeeLines.setHasFixedSize(true)
 
         binding.issueRefundSelectButton.setOnClickListener {
             viewModel.onSelectButtonTapped()
@@ -93,6 +104,11 @@ class RefundByItemsFragment :
         binding.issueRefundShippingMainSwitch.setOnCheckedChangeListener { _, isChecked: Boolean ->
             viewModel.onShippingRefundMainSwitchChanged(isChecked)
             binding.issueRefundShippingSection.root.isVisible = isChecked
+        }
+
+        binding.issueRefundFeesMainSwitch.setOnCheckedChangeListener { _, isChecked: Boolean ->
+            viewModel.onFeesRefundMainSwitchChanged(isChecked)
+            binding.issueRefundFeesSection.root.isVisible = isChecked
         }
 
         // TODO: Temporarily disabled, this will be used in a future release - do not remove
@@ -114,6 +130,10 @@ class RefundByItemsFragment :
                     this,
                     currencyFormatter.buildBigDecimalFormatter(new.currency)
                 )
+                feeLinesBinding.issueRefundFeeLines.adapter = RefundFeeListAdapter(
+                    this,
+                    currencyFormatter.buildBigDecimalFormatter(new.currency)
+                )
             }
             new.isNextButtonEnabled?.takeIfNotEqualTo(old?.isNextButtonEnabled) {
                 binding.issueRefundBtnNextFromItems.isEnabled = it
@@ -124,11 +144,14 @@ class RefundByItemsFragment :
             new.shippingSubtotal?.takeIfNotEqualTo(old?.shippingSubtotal) {
                 shippingLinesBinding.issueRefundShippingSubtotal.text = it
             }
-            new.shippingTaxes?.takeIfNotEqualTo(old?.shippingSubtotal) {
+            new.shippingTaxes?.takeIfNotEqualTo(old?.shippingTaxes) {
                 shippingLinesBinding.issueRefundShippingTax.text = it
             }
-            new.feesTotal?.takeIfNotEqualTo(old?.feesTotal) {
-                productsBinding.issueRefundFeesTotal.text = it
+            new.feesSubtotal?.takeIfNotEqualTo(old?.feesSubtotal) {
+                feeLinesBinding.issueRefundFeesSubtotal.text = it
+            }
+            new.feesTaxes?.takeIfNotEqualTo(old?.feesTaxes) {
+                feeLinesBinding.issueRefundFeesTax.text = it
             }
             new.taxes?.takeIfNotEqualTo(old?.taxes) {
                 productsBinding.issueRefundTaxesTotal.text = it
@@ -160,6 +183,24 @@ class RefundByItemsFragment :
             new.formattedShippingRefundTotal?.takeIfNotEqualTo(old?.formattedShippingRefundTotal) {
                 shippingLinesBinding.issueRefundShippingTotal.text = it
             }
+            new.isFeesMainSwitchChecked.takeIfNotEqualTo(old?.isFeesMainSwitchChecked) { checked ->
+                binding.issueRefundFeesMainSwitch.isChecked = checked
+            }
+            new.selectedFeeLines?.takeIfNotEqualTo(old?.selectedFeeLines) { feeLines ->
+                val adapter = feeLinesBinding.issueRefundFeeLines.adapter as RefundFeeListAdapter
+                adapter.updateToggleStates(feeLines)
+
+                if (feeLines.isEmpty()) {
+                    viewModel.onFeesRefundMainSwitchChanged(isChecked = false)
+                    binding.issueRefundFeesSection.root.hide()
+                }
+            }
+            new.isFeesRefundAvailable?.takeIfNotEqualTo(old?.isFeesRefundAvailable) { isVisible ->
+                binding.issueRefundFeesContainer.isVisible = isVisible
+            }
+            new.formattedFeesRefundTotal?.takeIfNotEqualTo(old?.formattedFeesRefundTotal) {
+                feeLinesBinding.issueRefundFeesTotal.text = it
+            }
             new.isRefundNoticeVisible.takeIfNotEqualTo(old?.isRefundNoticeVisible) { isVisible ->
                 if (isVisible) {
                     productsBinding.issueRefundRefundNotice.show()
@@ -169,13 +210,6 @@ class RefundByItemsFragment :
             }
             new.refundNotice.takeIfNotEqualTo(old?.refundNotice) { notice ->
                 notice?.let { updateRefundNoticeView(it) }
-            }
-            new.isFeesVisible?.takeIfNotEqualTo(old?.isFeesVisible) { isVisible ->
-                if (isVisible) {
-                    productsBinding.issueRefundFeesGroup.show()
-                } else {
-                    productsBinding.issueRefundFeesGroup.hide()
-                }
             }
         }
 
@@ -191,6 +225,14 @@ class RefundByItemsFragment :
             viewLifecycleOwner,
             Observer { list ->
                 val adapter = shippingLinesBinding.issueRefundShippingLines.adapter as RefundShippingListAdapter
+                adapter.update(list)
+            }
+        )
+
+        viewModel.refundFeeLines.observe(
+            viewLifecycleOwner,
+            { list ->
+                val adapter = feeLinesBinding.issueRefundFeeLines.adapter as RefundFeeListAdapter
                 adapter.update(list)
             }
         )
@@ -246,5 +288,9 @@ class RefundByItemsFragment :
 
     override fun onShippingLineSwitchChanged(isChecked: Boolean, itemId: Long) {
         viewModel.onShippingLineSwitchChanged(isChecked, itemId)
+    }
+
+    override fun onFeeLineSwitchChanged(isChecked: Boolean, itemId: Long) {
+        viewModel.onFeeLineSwitchChanged(isChecked, itemId)
     }
 }

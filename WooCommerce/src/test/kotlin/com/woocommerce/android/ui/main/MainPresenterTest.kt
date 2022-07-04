@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.main
 
-import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.OrderTestUtils
+import com.woocommerce.android.ui.cardreader.ClearCardReaderDataAction
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,14 +28,11 @@ import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS_COUNT
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
-import org.wordpress.android.fluxc.store.NotificationStore
-import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersCountPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
@@ -50,9 +47,7 @@ class MainPresenterTest : BaseUnitTest() {
 
     private val dispatcher: Dispatcher = mock()
     private val accountStore: AccountStore = mock()
-    private val siteStore: SiteStore = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
-    private val notificationStore: NotificationStore = mock()
     private val selectedSite: SelectedSite = mock {
         val siteModel = SiteModel()
         on { get() } doReturn siteModel
@@ -60,10 +55,11 @@ class MainPresenterTest : BaseUnitTest() {
         on { exists() } doReturn true
     }
     private val productImageMap: ProductImageMap = mock()
-    private val appPrefs: AppPrefs = mock()
+    private val appPrefs: AppPrefsWrapper = mock()
+    private val clearCardReaderDataAction: ClearCardReaderDataAction = mock()
 
     private val wcOrderStore: WCOrderStore = mock {
-        on { observeOrdersForSite(any(), any()) } doReturn emptyFlow()
+        on { observeOrderCountForSite(any(), any()) } doReturn emptyFlow()
     }
 
     private lateinit var mainPresenter: MainPresenter
@@ -76,16 +72,14 @@ class MainPresenterTest : BaseUnitTest() {
             MainPresenter(
                 dispatcher,
                 accountStore,
-                siteStore,
                 wooCommerceStore,
-                notificationStore,
                 selectedSite,
                 productImageMap,
                 appPrefs,
-                wcOrderStore
+                wcOrderStore,
+                clearCardReaderDataAction
             )
         )
-        mainPresenter.takeView(mainContractView)
         actionCaptor = argumentCaptor()
     }
 
@@ -99,6 +93,7 @@ class MainPresenterTest : BaseUnitTest() {
 
     @Test
     fun `Handles token from magic link correctly`() {
+        mainPresenter.takeView(mainContractView)
         // Storing a token with the presenter should trigger a dispatch
         mainPresenter.storeMagicLinkToken("a-token")
         verify(dispatcher, times(1)).dispatch(actionCaptor.capture())
@@ -115,6 +110,8 @@ class MainPresenterTest : BaseUnitTest() {
     @Test
     fun `Triggers a selected site update after site info fetch`() = testBlocking {
         whenever(wooCommerceStore.fetchWooCommerceSites()).thenReturn(WooResult())
+
+        mainPresenter.takeView(mainContractView)
 
         // Magic link login requires the presenter to fetch account and site info
         // Trigger the beginning of magic link flow to put the presenter in 'magic link' mode
@@ -144,9 +141,8 @@ class MainPresenterTest : BaseUnitTest() {
     @Test
     fun `Displays unfilled orders count correctly`() {
         val totalOrders = 25
-        whenever(wcOrderStore.observeOrdersForSite(any(), eq(listOf(CoreOrderStatus.PROCESSING.value)))).doReturn(
-            flowOf(generateFakeOrders(totalOrders))
-        )
+        whenever(wcOrderStore.observeOrderCountForSite(any(), eq(listOf(CoreOrderStatus.PROCESSING.value))))
+            .doReturn(flowOf(totalOrders))
 
         mainPresenter.takeView(mainContractView)
 
@@ -155,9 +151,8 @@ class MainPresenterTest : BaseUnitTest() {
 
     @Test
     fun `Hides orders badge correctly`() {
-        whenever(wcOrderStore.observeOrdersForSite(any(), eq(listOf(CoreOrderStatus.PROCESSING.value)))).doReturn(
-            flowOf(emptyList())
-        )
+        whenever(wcOrderStore.observeOrderCountForSite(any(), eq(listOf(CoreOrderStatus.PROCESSING.value))))
+            .doReturn(flowOf(0))
 
         mainPresenter.takeView(mainContractView)
 
@@ -183,19 +178,18 @@ class MainPresenterTest : BaseUnitTest() {
     fun `Updates orders badge on new unfilled orders`() = runBlocking {
         val initialOrderCount = 25
         val postUpdateOrderCount = 30
-        val fakeObserveResult = MutableSharedFlow<List<WCOrderModel>>()
-        whenever(wcOrderStore.observeOrdersForSite(any(), eq(listOf(CoreOrderStatus.PROCESSING.value)))).doReturn(
-            fakeObserveResult
-        )
+        val fakeObserveResult = MutableSharedFlow<Int>()
+        whenever(wcOrderStore.observeOrderCountForSite(any(), eq(listOf(CoreOrderStatus.PROCESSING.value))))
+            .doReturn(fakeObserveResult)
         mainPresenter.takeView(mainContractView)
 
-        fakeObserveResult.emit(generateFakeOrders(initialOrderCount))
+        fakeObserveResult.emit(initialOrderCount)
         verify(mainContractView).showOrderBadge(initialOrderCount)
 
-        fakeObserveResult.emit(generateFakeOrders(postUpdateOrderCount))
+        fakeObserveResult.emit(postUpdateOrderCount)
         verify(mainContractView).showOrderBadge(postUpdateOrderCount)
 
-        fakeObserveResult.emit(emptyList())
+        fakeObserveResult.emit(0)
         verify(mainContractView).hideOrderBadge()
     }
 
@@ -210,11 +204,10 @@ class MainPresenterTest : BaseUnitTest() {
         }
     }
 
-    private fun generateFakeOrders(size: Int): List<WCOrderModel> {
-        return mutableListOf<WCOrderModel>().also { list ->
-            repeat(size) { repeatCount ->
-                list.add(OrderTestUtils.generateOrder())
-            }
-        }
+    @Test
+    fun `when selected site changes, then card reader data is cleared`() = testBlocking {
+        mainPresenter.selectedSiteChanged(site = selectedSite.get())
+
+        verify(clearCardReaderDataAction).invoke()
     }
 }

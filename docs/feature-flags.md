@@ -1,8 +1,8 @@
 # Feature Flags
 
-In WooCommerce Android, we use [feature flags](https://martinfowler.com/articles/feature-toggles.html) to allow us to merge in-progress features into `develop`, while still allowing us to safely deliver builds for testing and production. It's mostly useful for features that require multiple PRs to ship, and may take some time to complete.
+In WooCommerce Android, we use [feature flags](https://martinfowler.com/articles/feature-toggles.html) to allow us to merge in-progress features into `trunk`, while still allowing us to safely deliver builds for testing and production. It's mostly useful for features that require multiple PRs to ship, and may take some time to complete.
 
-We currently do this through [`FeatureFlag`](https://github.com/woocommerce/woocommerce-android/blob/develop/WooCommerce/src/main/kotlin/com/woocommerce/android/util/FeatureFlag.kt).
+We currently do this through [`FeatureFlag`](https://github.com/woocommerce/woocommerce-android/blob/trunk/WooCommerce/src/main/kotlin/com/woocommerce/android/util/FeatureFlag.kt).
 
 ### FeatureFlag
 

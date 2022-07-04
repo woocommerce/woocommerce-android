@@ -1,8 +1,10 @@
 package com.woocommerce.android.extensions
 
+import android.os.Bundle
 import androidx.annotation.IdRes
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
+import androidx.navigation.fragment.FragmentNavigator
 
 /**
  * Prevents crashes caused by rapidly double-clicking views which navigate to the same
@@ -20,20 +22,30 @@ object CallThrottler {
     }
 }
 
-fun NavController.navigateSafely(directions: NavDirections, skipThrottling: Boolean = false) {
+fun NavController.navigateSafely(
+    directions: NavDirections,
+    skipThrottling: Boolean = false,
+    extras: FragmentNavigator.Extras? = null
+) {
     if (skipThrottling) {
         currentDestination?.getAction(directions.actionId)?.let { navigate(directions) }
     } else {
         CallThrottler.throttle {
-            currentDestination?.getAction(directions.actionId)?.let { navigate(directions) }
+            currentDestination?.getAction(directions.actionId)?.let {
+                if (extras != null) {
+                    navigate(directions, extras)
+                } else {
+                    navigate(directions)
+                }
+            }
         }
     }
 }
 
-fun NavController.navigateSafely(@IdRes resId: Int) {
+fun NavController.navigateSafely(@IdRes resId: Int, bundle: Bundle? = null) {
     CallThrottler.throttle {
         if (currentDestination?.id != resId) {
-            navigate(resId, null)
+            navigate(resId, bundle)
         }
     }
 }

@@ -1,14 +1,15 @@
 package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.R
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_ATTRIBUTE_EDIT_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_VIEW_INVENTORY_SETTINGS_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_VIEW_PRODUCT_DESCRIPTION_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_ATTRIBUTE_EDIT_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_INVENTORY_SETTINGS_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_PRODUCT_DESCRIPTION_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
 import com.woocommerce.android.extensions.addIfNotEmpty
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.filterNotEmpty
@@ -38,7 +39,6 @@ import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.OTHER
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
-import com.woocommerce.android.ui.products.ProductType.VIRTUAL
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
@@ -49,10 +49,12 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
+import java.math.BigDecimal
 
 class ProductDetailCardBuilder(
     private val viewModel: ProductDetailViewModel,
@@ -60,6 +62,7 @@ class ProductDetailCardBuilder(
     private val currencyFormatter: CurrencyFormatter,
     private val parameters: SiteParameters,
     private val addonRepository: AddonRepository,
+    private val variationRepository: VariationRepository
 ) {
     private lateinit var originalSku: String
 
@@ -74,7 +77,6 @@ class ProductDetailCardBuilder(
             VARIABLE -> cards.addIfNotEmpty(getVariableProductCard(product))
             GROUPED -> cards.addIfNotEmpty(getGroupedProductCard(product))
             EXTERNAL -> cards.addIfNotEmpty(getExternalProductCard(product))
-            VIRTUAL -> cards.addIfNotEmpty(getOtherProductCard(product))
             OTHER -> cards.addIfNotEmpty(getOtherProductCard(product))
         }
 
@@ -149,6 +151,7 @@ class ProductDetailCardBuilder(
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
+                product.warning(),
                 product.variations(),
                 product.variationAttributes(),
                 product.productReviews(),
@@ -197,7 +200,7 @@ class ProductDetailCardBuilder(
             onClick = {
                 viewModel.onEditProductCardClicked(
                     ViewProductDownloads,
-                    Stat.PRODUCT_DETAIL_VIEW_DOWNLOADABLE_FILES_TAPPED
+                    AnalyticsEvent.PRODUCT_DETAIL_VIEW_DOWNLOADABLE_FILES_TAPPED
                 )
             }
         )
@@ -215,7 +218,7 @@ class ProductDetailCardBuilder(
                         shortDescription,
                         resources.getString(string.product_short_description)
                     ),
-                    Stat.PRODUCT_DETAIL_VIEW_SHORT_DESCRIPTION_TAPPED
+                    AnalyticsEvent.PRODUCT_DETAIL_VIEW_SHORT_DESCRIPTION_TAPPED
                 )
             }
         } else {
@@ -301,7 +304,7 @@ class ProductDetailCardBuilder(
                             shippingClassId
                         )
                     ),
-                    Stat.PRODUCT_DETAIL_VIEW_SHIPPING_SETTINGS_TAPPED
+                    AnalyticsEvent.PRODUCT_DETAIL_VIEW_SHIPPING_SETTINGS_TAPPED
                 )
             }
         } else {
@@ -327,7 +330,7 @@ class ProductDetailCardBuilder(
             ) {
                 viewModel.onEditProductCardClicked(
                     ViewProductExternalLink(this.remoteId),
-                    Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_PRODUCT_LINK_TAPPED
+                    AnalyticsEvent.PRODUCT_DETAIL_VIEW_EXTERNAL_PRODUCT_LINK_TAPPED
                 )
             }
         } else {
@@ -367,7 +370,7 @@ class ProductDetailCardBuilder(
                         salePrice
                     )
                 ),
-                Stat.PRODUCT_DETAIL_VIEW_PRICE_SETTINGS_TAPPED
+                AnalyticsEvent.PRODUCT_DETAIL_VIEW_PRICE_SETTINGS_TAPPED
             )
         }
     }
@@ -381,7 +384,6 @@ class ProductDetailCardBuilder(
                     else -> resources.getString(string.product_type_physical)
                 }
             }
-            VIRTUAL -> resources.getString(string.product_type_virtual)
             VARIABLE -> resources.getString(string.product_type_variable)
             GROUPED -> resources.getString(string.product_type_grouped)
             EXTERNAL -> resources.getString(string.product_type_external)
@@ -392,8 +394,8 @@ class ProductDetailCardBuilder(
     private fun Product.productType(): ProductProperty {
         val onClickHandler = {
             viewModel.onEditProductCardClicked(
-                ViewProductTypes(false),
-                Stat.PRODUCT_DETAIL_VIEW_PRODUCT_TYPE_TAPPED
+                ViewProductTypes(false, currentProductType = type, isCurrentProductVirtual = isVirtual),
+                AnalyticsEvent.PRODUCT_DETAIL_VIEW_PRODUCT_TYPE_TAPPED
             )
         }
 
@@ -420,7 +422,7 @@ class ProductDetailCardBuilder(
             ) {
                 viewModel.onEditProductCardClicked(
                     ViewProductReviews(this.remoteId),
-                    Stat.PRODUCT_DETAIL_VIEW_PRODUCT_REVIEWS_TAPPED
+                    AnalyticsEvent.PRODUCT_DETAIL_VIEW_PRODUCT_REVIEWS_TAPPED
                 )
             }
         } else {
@@ -451,7 +453,7 @@ class ProductDetailCardBuilder(
         ) {
             viewModel.onEditProductCardClicked(
                 ViewGroupedProducts(this.remoteId, this.groupedProductIds),
-                Stat.PRODUCT_DETAIL_VIEW_GROUPED_PRODUCTS_TAPPED
+                AnalyticsEvent.PRODUCT_DETAIL_VIEW_GROUPED_PRODUCTS_TAPPED
             )
         }
     }
@@ -480,16 +482,19 @@ class ProductDetailCardBuilder(
         ) {
             viewModel.onEditProductCardClicked(
                 ViewLinkedProducts(this.remoteId),
-                Stat.PRODUCT_DETAIL_VIEW_LINKED_PRODUCTS_TAPPED
+                AnalyticsEvent.PRODUCT_DETAIL_VIEW_LINKED_PRODUCTS_TAPPED
             )
         }
     }
 
     private fun Product.title(): ProductProperty {
         val name = this.name.fastStripHtml()
+        val (badgeText, badgeColor) = this.status.getBadgeResources()
         return Editable(
-            string.product_detail_title_hint,
-            name,
+            hint = string.product_detail_title_hint,
+            text = name,
+            badgeText = badgeText,
+            badgeColor = badgeColor,
             onTextChanged = viewModel::onProductTitleChanged
         )
     }
@@ -551,7 +556,7 @@ class ProductDetailCardBuilder(
             showTitle = false,
             onClick = {
                 AnalyticsTracker.track(
-                    Stat.PRODUCT_VARIATION_ADD_FIRST_TAPPED,
+                    AnalyticsEvent.PRODUCT_VARIATION_ADD_FIRST_TAPPED,
                     mapOf(AnalyticsTracker.KEY_PRODUCT_ID to remoteId)
                 )
                 viewModel.saveAsDraftIfNewVariableProduct()
@@ -560,7 +565,7 @@ class ProductDetailCardBuilder(
         )
 
     private fun Product.variationAttributes() =
-        takeIf { this.numVariations > 0 && this.variationEnabledAttributes.isNotEmpty() }?.let {
+        takeIf { this.variationEnabledAttributes.isNotEmpty() }?.let {
             val properties = mutableMapOf<String, String>()
             for (attribute in this.variationEnabledAttributes) {
                 properties[attribute.name] = attribute.terms.size.toString()
@@ -591,7 +596,7 @@ class ProductDetailCardBuilder(
             ) {
                 viewModel.onEditProductCardClicked(
                     ViewProductCategories(this.remoteId),
-                    Stat.PRODUCT_DETAIL_VIEW_CATEGORIES_TAPPED
+                    AnalyticsEvent.PRODUCT_DETAIL_VIEW_CATEGORIES_TAPPED
                 )
             }
         } else {
@@ -611,7 +616,7 @@ class ProductDetailCardBuilder(
             ) {
                 viewModel.onEditProductCardClicked(
                     ViewProductTags(this.remoteId),
-                    Stat.PRODUCT_DETAIL_VIEW_TAGS_TAPPED
+                    AnalyticsEvent.PRODUCT_DETAIL_VIEW_TAGS_TAPPED
                 )
             }
         } else {
@@ -632,9 +637,30 @@ class ProductDetailCardBuilder(
                 onClick = {
                     viewModel.onEditProductCardClicked(
                         ViewProductAddonsDetails,
-                        Stat.PRODUCT_ADDONS_PRODUCT_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED
+                        AnalyticsEvent.PRODUCT_ADDONS_PRODUCT_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED
                     )
                 }
             )
         }
+
+    private fun Product.warning(): ProductProperty? {
+        val variations = variationRepository.getProductVariationList(this.remoteId)
+
+        val missingPriceVariation = variations
+            .find { it.regularPrice == null || it.regularPrice == BigDecimal.ZERO }
+
+        return missingPriceVariation?.let {
+            ProductProperty.Warning(resources.getString(string.variation_detail_price_warning))
+        }
+    }
+}
+
+fun ProductStatus?.getBadgeResources(): Pair<Int?, Int?> {
+    return if (this == null) Pair(null, null)
+    else when (this) {
+        ProductStatus.PUBLISH -> Pair(null, null)
+        ProductStatus.PENDING -> Pair(string.product_status_pending, R.color.product_status_badge_pending)
+        ProductStatus.PRIVATE -> Pair(string.product_status_privately_published, R.color.product_status_badge_draft)
+        else -> Pair(this.stringResource, R.color.product_status_badge_draft)
+    }
 }

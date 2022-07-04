@@ -4,13 +4,13 @@ import com.stripe.stripeterminal.external.callable.Callback
 import com.stripe.stripeterminal.external.callable.PaymentIntentCallback
 import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.TerminalException
+import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.internal.LOG_TAG
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.Failure
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.Success
-import com.woocommerce.android.cardreader.LogWrapper
+import com.woocommerce.android.cardreader.internal.sendAndLog
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 
@@ -27,13 +27,13 @@ internal class CollectPaymentAction(private val terminal: TerminalWrapper, priva
                 object : PaymentIntentCallback {
                     override fun onSuccess(paymentIntent: PaymentIntent) {
                         logWrapper.d(LOG_TAG, "Payment collected")
-                        this@callbackFlow.sendBlocking(Success(paymentIntent))
+                        this@callbackFlow.sendAndLog(Success(paymentIntent), logWrapper)
                         this@callbackFlow.close()
                     }
 
                     override fun onFailure(e: TerminalException) {
                         logWrapper.d(LOG_TAG, "Payment collection failed")
-                        this@callbackFlow.sendBlocking(Failure(e))
+                        this@callbackFlow.sendAndLog(Failure(e), logWrapper)
                         this@callbackFlow.close()
                     }
                 }

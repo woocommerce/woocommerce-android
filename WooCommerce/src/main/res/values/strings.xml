@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">WooCommerce</string>
 
     <!-- Android O notification channels, these show in the Android app settings -->
@@ -23,6 +23,7 @@
     <string name="my_store">My store</string>
     <string name="orders">Orders</string>
     <string name="email_address">Email address</string>
+    <string name="email">Email</string>
     <string name="currency_total">%1$s%2$s</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="order_total">Order total</string>
@@ -31,6 +32,7 @@
     <string name="edit">Edit</string>
     <string name="payment">Payment</string>
     <string name="taxes">Taxes</string>
+    <string name="tax">Tax</string>
     <string name="subtotal">Subtotal</string>
     <string name="products_total">Products total</string>
     <string name="discount">Discount</string>
@@ -83,6 +85,15 @@
     <string name="product_attributes_error_saving">Error while saving your attributes</string>
     <string name="product_attribute_remove">Remove this attribute?</string>
     <string name="review_notifications">Reviews</string>
+    <string name="more_menu">Menu</string>
+    <string name="more_menu_button_woo_admin">WooCommerce Admin</string>
+    <string name="more_menu_button_payments">Payments</string>
+    <string name="more_menu_button_analytics">Analytics</string>
+    <string name="more_menu_button_inbox">Inbox</string>
+    <string name="more_menu_button_store">View Store</string>
+    <string name="more_menu_button_coupons">Coupons</string>
+    <string name="more_menu_button_reviews">Reviews</string>
+    <string name="more_menu_avatar">User profile picture</string>
     <string name="version_with_name_param">Version %s</string>
     <string name="share_store_button">Share your store</string>
     <string name="share_store_dialog_title">Share your store\'s URL</string>
@@ -97,6 +108,7 @@
     <string name="dismiss">Dismiss</string>
     <string name="no_thanks">No thanks</string>
     <string name="apply">Apply</string>
+    <string name="copied_to_clipboard">Copied to clipboard</string>
     <string name="error_copy_to_clipboard">Error copying to clipboard</string>
     <string name="read_more">Read more</string>
     <string name="database_downgraded">Database downgraded, recreating tables and loading stores</string>
@@ -121,6 +133,16 @@
     <string name="generic_string" translatable="false">%s</string>
     <string name="error_required_field">Required field</string>
     <string name="analytics">Analytics</string>
+    <string name="card">Card</string>
+    <string name="cash">Cash</string>
+    <string name="create">Create</string>
+    <string name="exclusive_or">or</string>
+    <string name="count">Count: %s</string>
+    <string name="no_sku">No SKU</string>
+    <string name="amount">Amount</string>
+    <string name="copy" tools:override="true">Copy</string>
+    <string name="variations_bulk_update_sale_price">Update Sale Price</string>
+    <string name="variations_bulk_update_regular_price">Update Regular Price</string>
 
     <!--
         Date/Time Labels
@@ -192,11 +214,11 @@
     <string name="login_not_connected_to_account">It looks like %1$s is connected to a different WordPress.com account.</string>
     <string name="login_try_another_account">Log in with another account</string>
     <string name="login_try_another_store">Try another store</string>
-    <string name="login_not_woo_store">It looks like %1$s is not a WooCommerce site. Install the WooCommerce plugin on your site and then %2$s</string>
-    <string name="login_not_connected_jetpack">To use this app for %1$s you\'ll need to have the Jetpack plugin setup and connected to this account. \n\nOnce setup, %2$s</string>
+    <string name="login_not_woo_store">It looks like %1$s is not a WooCommerce site. Install the WooCommerce plugin on your site and then refresh the app.</string>
+    <string name="login_not_connected_jetpack">To use this app for %1$s you\'ll need to have the Jetpack plugin setup and connected to this account. \n\nOnce setup, refresh the app</string>
     <string name="login_no_jetpack">To use this app for %1$s you\'ll need to have the Jetpack plugin setup and connected to a WordPress.com account</string>
     <string name="login_not_wordpress_site_v2">We were not able to detect a WordPress site at the address you entered. Please make sure WordPress is installed and that you are running the latest available version.</string>
-    <string name="login_refresh_app">refresh the app</string>
+    <string name="login_refresh_app">Refresh the app</string>
     <string name="login_refresh_app_continue">refresh the app to continue</string>
     <string name="login_refresh_app_progress">Checking for WooCommerce…</string>
     <string name="login_refresh_app_progress_jetpack">Attempting to login with Jetpack…</string>
@@ -234,23 +256,17 @@
     <string name="dashboard_stats_visitors">Visitors</string>
     <string name="dashboard_stats_orders">Orders</string>
     <string name="dashboard_stats_revenue">Revenue</string>
+    <string name="dashboard_stats_conversion">Conversion</string>
     <string name="dashboard_state_no_data">No revenue this period</string>
     <string name="dashboard_stats_error">Error fetching data</string>
     <string name="dashboard_stats_error_content_description">Error image</string>
     <string name="dashboard_stats_todays_stats">Today\'s Stats</string>
 
-    <string name="dashboard_stats_updated_now">Updated moments ago</string>
-    <string name="dashboard_stats_updated_minutes">Updated %d minutes ago</string>
-    <string name="dashboard_stats_updated_one_hour">Updated 1 hour ago</string>
-    <string name="dashboard_stats_updated_hours">Updated %d hours ago</string>
-    <string name="dashboard_stats_updated_one_day">Updated 1 day ago</string>
-    <string name="dashboard_stats_updated_date_time">Updated on %s</string>
-
     <string name="dashboard_top_performers_title">Top performers</string>
-    <string name="dashboard_top_performers_description">Gain insights into how products are performing on your store</string>
-    <string name="dashboard_top_performers_total_spend">Total spend</string>
+    <string name="dashboard_top_performers_items_sold">Items Sold</string>
     <string name="dashboard_top_performers_total_orders">Total orders: %s</string>
     <string name="dashboard_top_performers_empty">No activity this period</string>
+    <string name="dashboard_top_performers_net_sales">Net sales: %s</string>
 
     <string name="dashboard_action_view_order">View Order</string>
     <string name="dashboard_action_view_orders">View Orders</string>
@@ -294,16 +310,35 @@
     <string name="orderlist_loading">Looking up your orders…</string>
     <string name="orderlist_no_filters_title">All Orders</string>
     <string name="orderlist_filters_title">Filtered Orders</string>
-    <string name="orderlist_simple_payments_wip_title">Take payments from your device!</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">We are working on making it easier for you to take payments from your device! For now, tap the "+" button and you\'ll be able to create an order with the amount you want to collect.</string>
-    <string name="orderlist_simple_payments_wip_message_disabled">We are working on making it easier for you to take payments from your device! Enable it in Settings &gt; Beta features.</string>
+    <string name="orderlist_simple_payments_wip_title">Create orders &amp; take payments!</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">We\'ve been working on making it possible to create orders and take payments from your device! You can try these features out by tapping on the "+" button</string>
     <string name="orderlist_simple_payments_menu">Simple payment</string>
+    <string name="order_card_transition_name">order_card_%1$s</string>
+    <string name="order_card_detail_transition_name">order_card_detail</string>
     <!--
          Simple Payments
     -->
     <string name="simple_payments_dialog_title">Take payment</string>
+    <string name="simple_payments_title">Simple payment</string>
     <string name="simple_payments_enter_amount">Enter amount</string>
-    <string name="simple_payments_creation_error">Unable to create order</string>
+    <string name="simple_payments_creation_error">Unable to create simple payment order</string>
+    <string name="simple_payments_update_error">Unable to update simple payment order</string>
+    <string name="simple_payments_edit_email_hint">Enter email</string>
+    <string name="simple_payments_custom_amount">Custom amount</string>
+    <string name="simple_payments_charge_taxes">Charge taxes</string>
+    <string name="simple_payments_take_payment_button">Take payment (%s)</string>
+    <string name="simple_payments_tax_with_percent">Tax (%s%%)</string>
+    <string name="simple_payments_tax_message">Taxes are automatically calculated based on your store address</string>
+    <string name="simple_payments_choose_method">Choose your payment method</string>
+    <string name="simple_payments_cash_dlg_title">Mark as paid?</string>
+    <string name="simple_payments_cash_dlg_message">This will create your order and mark it as paid if you received payment outside of WooCommerce</string>
+    <string name="simple_payments_cash_dlg_button">Mark as paid</string>
+    <string name="simple_payments_share_payment_link">Share payment link</string>
+    <string name="simple_payments_share_payment_dialog_title">Checkout - %s</string>
+    <!--
+         Taxes
+    -->
+    <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
     <!--
          Order Creation
     -->
@@ -312,7 +347,53 @@
     <string name="orderlist_bottom_sheet_create_order_description">Create a new manual order</string>
     <string name="orderlist_bottom_sheet_simple_payment_action">Simple payment</string>
     <string name="orderlist_bottom_sheet_simple_payment_description">Create an order with minimal information</string>
-    <string name="order_creation_fragment_title">New Order</string>
+    <string name="order_creation_fragment_title">New order</string>
+    <string name="order_creation_status_edit_content_description">Edit order status</string>
+    <string name="order_creation_customer">Customer</string>
+    <string name="order_creation_customer_edit_content_description">Edit customer details</string>
+    <string name="order_creation_customer_note">Customer note</string>
+    <string name="order_creation_customer_note_edit_content_description">Edit customer note</string>
+    <string name="order_creation_add_customer">Add customer details</string>
+    <string name="order_creation_add_customer_note">Add note</string>
+    <string name="order_creation_products">Products</string>
+    <string name="order_creation_add_products">Add product</string>
+    <string name="order_creation_add_fee">Add fee</string>
+    <string name="order_creation_customer_details">Customer details</string>
+    <string name="order_creation_product_stock_quantity">%s in stock</string>
+    <string name="order_creation_product_instock">In stock</string>
+    <string name="order_creation_new_customer_add_different_shipping_address">Add a different shipping address</string>
+    <string name="order_creation_product_details_title">Product</string>
+    <string name="order_creation_add_discount">Add discount</string>
+    <string name="order_creation_remove_product">Remove product from order</string>
+    <string name="order_creation_variations_screen_title">Select variation</string>
+    <string name="order_creation_payment">Payment</string>
+    <string name="order_creation_payment_products_total">Products Total</string>
+    <string name="order_creation_payment_order_total">Order Total</string>
+    <string name="order_creation_payment_fee">Fees</string>
+    <string name="order_creation_loading_dialog_title">Creating your order</string>
+    <string name="order_creation_loading_dialog_message">Please wait…</string>
+    <string name="order_creation_failure_snackbar">Order creation failed</string>
+    <string name="order_creation_success_snackbar">Order created</string>
+    <string name="order_creation_payment_tax">Taxes</string>
+    <string name="order_creation_price_calculation_failed">Couldn’t update pricing</string>
+    <string name="order_creation_shipping_name">Name</string>
+    <string name="order_creation_shipping_title_add">Add Shipping</string>
+    <string name="order_creation_add_shipping">Add shipping</string>
+    <string name="order_creation_edit_shipping">Shipping</string>
+    <string name="order_creation_remove_shipping">Remove shipping from order</string>
+    <string name="order_creation_add_fee_removal_hint">Remove fee from order</string>
+    <string name="order_creation_fee_percentage_hint">Percentage (%)</string>
+    <string name="order_creation_fee_percentage_toggle_text">Calculate as percentage</string>
+    <string name="order_creation_fee_percentage_calculated_amount">Calculated amount: %s</string>
+    <string name="order_creation_customer_search_empty">No customers found</string>
+    <string name="order_creation_customer_search_hint">Search customers</string>
+    <string name="order_creation_change_product_quantity">Change the product quantity from %d to %d</string>
+    <!--
+        Order Editing
+    -->
+    <string name="order_editing_non_editable_title">Parts of this order are not currently editable</string>
+    <string name="order_editing_non_editable_message">To edit Products or Payment Details, change the status to Pending Payment.</string>
+    <string name="order_editing_locked_content_description">locked</string>
     <!--
         Order Filters
     -->
@@ -346,7 +427,6 @@
     <string name="orderdetail_customer_note">\u0022%1$s\u0022</string>
     <string name="orderdetail_customer_name_default">Guest</string>
     <string name="orderdetail_orderstatus_ordernum">Order #%s</string>
-    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
     <string name="orderdetail_orderstatus_name">%1$s %2$s</string>
     <string name="orderdetail_shipping_method">Shipping method</string>
     <string name="orderdetail_shipping_details">Shipping details</string>
@@ -732,6 +812,11 @@
     <string name="shipping_label_move_item_dialog_description">This item is currently in %s. Where would you like to move it?</string>
     <string name="shipping_label_move_item_dialog_new_package_option">Add to new package</string>
     <string name="shipping_label_move_item_dialog_original_packaging_option">Ship in original packaging</string>
+    <string name="shipping_label_install_wc_shipping_banner_title">Need a shipping label?</string>
+    <string name="shipping_label_install_wc_shipping_banner_description">Print labels from your phone, with WooCommerce Shipping.</string>
+    <string name="shipping_label_install_wc_shipping_banner_button">Get WooCommerce Shipping</string>
+    <string name="shipping_label_install_wc_shipping_banner_dismiss_button_description">Dismiss banner to install WC Shipping</string>
+
     <!--
             Refunds
         -->
@@ -765,8 +850,10 @@
     <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
     <string name="order_refunds_products_refund">Products refund</string>
     <string name="order_refunds_shipping_refund">Shipping refund</string>
+    <string name="order_refunds_fees_refund">Fees refund</string>
     <string name="order_refunds_select_quantity">Select quantity</string>
     <string name="order_refunds_refund_shipping">Refund shipping</string>
+    <string name="order_refunds_refund_fees">Refund fees</string>
     <string name="order_refunds_refund_in_progress">Refund in progress, please wait…</string>
     <string name="order_refunds_refund_info_description_one">%d item</string>
     <string name="order_refunds_refund_info_description_many">%d items</string>
@@ -805,6 +892,7 @@
     <string name="orderstatus_cancelled">Cancelled</string>
     <string name="orderstatus_refunded">Refunded</string>
     <string name="orderstatus_contentDesc">Order status</string>
+    <string name="orderstatus_contentDesc_withStatus">Order status: %s</string>
     <!--
         Add Shipment Tracking Labels
     -->
@@ -838,8 +926,34 @@
         -->
     <string name="card_reader_manage_card_reader">Manage Card Reader</string>
     <string name="card_reader_purchase_card_reader">Order Card Reader</string>
-    <string name="card_reader_bbpos_manual_card_reader">BBPOS Chipper Card Reader Manual</string>
-    <string name="card_reader_m2_manual_card_reader">Stripe M2 Card Reader Manual</string>
+    <string name="card_reader_bbpos_manual_card_reader" translatable="false">BBPOS Chipper™ 2X BT</string>
+    <string name="card_reader_m2_manual_card_reader" translatable="false">Stripe M2</string>
+    <string name="card_reader_wisepad_3_manual_card_reader" translatable="false">WisePad 3</string>
+    <string name="card_reader_icon_content_description">Card Reader Image</string>
+
+    <!--
+            Card Reader Interac refund
+        -->
+    <string name="card_reader_interac_refund_refund_loading_header">Getting ready to refund payment</string>
+    <string name="card_reader_interac_refund_refund_failed_header">Refund failed</string>
+    <string name="card_reader_interac_refund_refund_payment">Refund payment</string>
+    <string name="card_reader_interac_refund_refund_processing_state">Processing refund</string>
+    <string name="card_reader_interac_refund_refund_completed_header">Refund successful</string>
+    <string name="card_reader_interac_refund_refund_failed_unexpected_error_state">Sorry, this refund couldn\’t be processed</string>
+    <string name="card_reader_interac_refund_refund_failed_unknown">Refund was declined for an unknown reason</string>
+    <string name="card_reader_interac_refund_refund_failed_fraud">Try another means of refund</string>
+    <string name="card_reader_interac_refund_refund_failed_generic">Refund was declined for an unspecified reason</string>
+    <string name="card_reader_interac_refund_refund_failed_card_not_supported">The card does not support this type of refund</string>
+    <string name="card_reader_interac_refund_refund_failed_duplicate_transaction">An identical refund was submitted recently</string>
+    <string name="card_reader_interac_refund_refund_failed_insufficient_funds">Refund declined due to insufficient funds</string>
+    <string name="card_reader_interac_refund_refund_failed_invalid_amount">The refund amount is not allowed for the card presented</string>
+    <string name="card_reader_interac_refund_refund_failed_test_card">System test cards are not permitted for refund</string>
+    <string name="card_reader_interac_refund_refund_failed_ok">OK</string>
+    <string name="card_reader_interac_refund_refund_failed_cancelled">Refund cancelled</string>
+    <string name="card_reader_interac_refund_order_refunded_refund_cancelled">The order is already refunded</string>
+    <string name="card_reader_interac_refund_refund_payment_hint">Tap or insert to refund</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund">Applying refund to order</string>
+    <string name="card_reader_interac_refund_notifying_backend_about_successful_refund_failed">Something went wrong while applying the refund</string>
     <!--
         Card Reader Payments
     -->
@@ -871,7 +985,7 @@
     <string name="card_reader_payment_failed_server_error_state">No connection to server</string>
     <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Card declined</string>
     <string name="card_reader_payment_failed_unexpected_error_state">Sorry, this payment couldn\’t be processed</string>
-    <string name="card_reader_payment_failed_amount_too_small">Amount must be at least $0.50 usd</string>
+    <string name="card_reader_payment_failed_amount_too_small">Amount must be at least $0.50</string>
     <string name="card_reader_payment_failed_temporary">Trying again may succeed</string>
     <string name="card_reader_payment_failed_fraud">Try another means of payment</string>
     <string name="card_reader_payment_failed_generic">Payment was declined for an unspecified reason</string>
@@ -900,13 +1014,14 @@
     <string name="card_reader_payment_send_receipt">Send receipt</string>
     <string name="card_reader_payment_save_for_later">Save receipt and continue</string>
 
-    <string name="card_reader_payment_description">Online payment for order %s for %s</string>
+    <string name="card_reader_payment_description">In-Person Payment for Order %s for %s</string>
     <string name="card_reader_payment_receipt_email_subject">Your receipt from %s</string>
     <string name="card_reader_payment_receipt_email_content">Thank you for your purchase! Click the link below for your payment receipt.\n\n%s</string>
     <string name="card_reader_payment_email_client_not_found">Can\'t detect your email client app</string>
     <string name="card_reader_refetching_order_failed">Error fetching order. Order state in the app might be outdated.</string>
     <string name="card_reader_payment_order_paid_payment_cancelled">The order is already paid</string>
     <string name="card_reader_payment_reader_not_connected">Please make sure that the card reader is connected.</string>
+    <string name="card_reader_payment_reader_receipt_sent">A receipt has been sent to &lt;strong&gt;%s&lt;/strong&gt;</string>
 
     <string name="card_reader_welcome_dialog_header">Collect payments with a card reader</string>
     <string name="card_reader_welcome_dialog_text">Congrats, you are now able to accept debit and credit card payments with WooCommerce Payments!</string>
@@ -915,7 +1030,7 @@
         -->
     <string name="card_reader_connect_scanning_header">Scanning for readers</string>
     <string name="card_reader_connect_scanning_progress" translatable="false">@string/card_reader_connect_scanning_header</string>
-    <string name="card_reader_connect_scanning_hint">Press the power button of your reader until you see a flashing blue light</string>
+    <string name="card_reader_connect_scanning_hint">Press the power button of your reader</string>
     <string name="card_reader_connect_reader_found_header">Do you want to connect reader %s?</string>
     <string name="card_reader_connect_multiple_readers_found_header">Several readers found</string>
     <string name="card_reader_connect_to_reader">Connect to reader</string>
@@ -932,6 +1047,9 @@
     <string name="card_reader_connect_missing_permissions_header">Missing required precise location permission</string>
     <string name="card_reader_connect_location_provider_disabled_header">Location is disabled</string>
     <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth is disabled</string>
+    <string name="card_reader_connect_permission_rationale_header">Location Access Required</string>
+    <string name="card_reader_connect_permission_rationale_hint">Card reader payments require precise location permission</string>
+    <string name="card_reader_connect_permission_rationale_action" translatable="false">@string/continue_button</string>
     <string name="card_reader_connect_open_permission_settings">Open settings</string>
     <string name="card_reader_connect_open_location_settings">Open settings</string>
     <string name="card_reader_connect_open_bluetooth_settings">Turn on bluetooth</string>
@@ -987,6 +1105,10 @@
     <string name="card_reader_onboarding_country_not_supported_contact_support">Need some help? &lt;a href=\'\'&gt;Contact support&lt;/a&gt;</string>
     <string name="card_reader_onboarding_country_not_supported_learn_more">&lt;a href=\'\'&gt;Learn more&lt;/a&gt; about accepting payments with your mobile device and ordering card readers</string>
 
+    <string name="card_reader_onboarding_stripe_unsupported_in_country_header">We don\'t support WooCommerce Stripe extension in %1$s</string>
+    <string name="card_reader_onboarding_wcpay_unsupported_in_country_header">We don\'t support WooCommerce Payments extension in %1$s</string>
+    <string name="card_reader_onboarding_stripe_account_in_unsupported_country">We don\'t support Stripe accounts registered in %1$s</string>
+
     <string name="card_reader_onboarding_wcpay_not_installed_header">Install WooCommerce Payments</string>
     <string name="card_reader_onboarding_wcpay_not_installed_hint">You\’ll need to install the free WooCommerce Payments extension on your store to accept In-Person Payments.</string>
     <string name="card_reader_onboarding_wcpay_not_installed_refresh_button">Refresh after installing</string>
@@ -1003,30 +1125,45 @@
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">Outdated version of the WooCommerce Payments extension is installed on your store. Please update it to accept In-Person Payments.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Refresh after updating</string>
 
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_header">Finish setup WooCommerce Stripe Payment Gateway in your store admin</string>
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_hint">You’re almost there! Please finish setting up WooCommerce Stripe Payment Gateway to start accepting In-Person Payments.</string>
-    <string name="card_reader_onboarding_stripe_terminal_not_setup_refresh_button">Refresh</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_header">Finish Stripe setup on your store admin</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_hint">You’re almost there! Please finish setting up Stripe to start accepting Card-Present Payments.</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">Refresh</string>
 
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_header">Update WooCommerce Stripe Payment Gateway</string>
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_hint">Outdated version of the WooCommerce Stripe Payment Gateway extension is installed on your store. Please update it to accept In-Person Payments.</string>
-    <string name="card_reader_onboarding_stripe_terminal_unsupported_version_refresh_button">Refresh after updating</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_header">Update Stripe</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">Outdated version of the WooCommerce Stripe Gateway extension is installed on your store. Please update it to accept In-Person Payments.</string>
+    <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">Refresh after updating</string>
 
 
-    <string name="card_reader_onboarding_account_rejected_header">In-Person Payments isn\’t available for this store</string>
+    <string name="card_reader_onboarding_account_rejected_header">In-Person Payments is currently unavailable</string>
     <string name="card_reader_onboarding_account_rejected_hint">We are sorry but we can\’t support In-Person Payments for this store.</string>
 
     <string name="card_reader_onboarding_account_under_review_header">In-Person Payments is currently unavailable</string>
     <string name="card_reader_onboarding_account_under_review_hint">You\’ll be able to accept In-Person Payments as soon as we finish reviewing your account.</string>
 
     <string name="card_reader_onboarding_account_overdue_requirements_header">In-Person Payments is currently unavailable</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_hint">You have at least one overdue requirement on your account. Please take care of that to resume In-Person Payments</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">You have at least one overdue requirement on your account. Please take care of that to resume In-Person Payments.</string>
 
-    <string name="card_reader_onboarding_account_pending_requirements_header">Your WooCommerce Payments account has pending requirements</string>
+    <string name="card_reader_onboarding_account_pending_requirements_header">Your account has pending requirements</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">There are pending requirements in your account. Please complete those requirements by %1$s to keep accepting In-Person Payments.</string>
     <string name="card_reader_onboarding_account_pending_requirements_dismiss_button" translatable="false">@string/dismiss</string>
 
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">In-Person Payments is currently unavailable</string>
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">In-Person Payments isn\’t available in Test Mode. Please turn it off to continue.</string>
+
+    <string name="card_reader_onboarding_both_plugins_activated_header">Conflicting payment plugins detected</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_admin">In-Person Payments will only work with one of following plugins activated. Please deactivate one of these plugins to continue:</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">In-Person Payments will only work with one of following plugins activated. Please contact a site administrator to deactivate one of these plugins to continue:</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_one">WooCommerce Stripe Gateway</string>
+    <string name="card_reader_onboarding_both_plugins_activated_hint_plugin_two">WooCommerce Payments</string>
+    <string name="card_reader_onboarding_both_plugins_activated_open_store_admin_label">Manage Plugins</string>
+    <string name="card_reader_onboarding_both_plugins_activated_refresh_button">Refresh after updating</string>
+
+    <string name="card_reader_onboarding_choose_payment_provider">Choose your Payment Provider</string>
+    <string name="card_reader_onboarding_choose_plugin_hint">In-Person Payments can be processed through either of these payment providers. Which provider would you like to use?</string>
+    <string name="card_reader_onboarding_choose_wcpayment_button">WooCommerce Payments</string>
+    <string name="card_reader_onboarding_choose_stripe_button">Stripe</string>
+    <string name="card_reader_onboarding_confirm_payment_method_button">Confirm Payment Method</string>
+
 
     <string name="card_reader_onboarding_learn_more">&lt;a href=\'\'&gt;Learn more&lt;/a&gt; about accepting payments with your mobile device and ordering card readers</string>
     <string name="card_reader_onboarding_contact_support">Need some help? &lt;a href=\'\'&gt;Contact support&lt;/a&gt;</string>
@@ -1073,6 +1210,8 @@
     <string name="wc_load_review_error">Error loading product review detail</string>
     <string name="wc_moderate_review_error">Error updating product review status</string>
     <string name="wc_review_title">Review</string>
+    <string name="review_card_transition_name">review_card_%1$s</string>
+    <string name="review_card_detail_transition_name">review_card_detail</string>
     <!--
         Product Reviews List
     -->
@@ -1149,9 +1288,9 @@
     <string name="product_no_shipping_class">No shipping class</string>
     <string name="product_shipping_settings">Shipping settings</string>
     <string name="product_total_orders">Total orders</string>
-    <string name="product_ratings_count">\u2022  rated %d times</string>
-    <string name="product_ratings_count_one">\u2022  rated once</string>
-    <string name="product_ratings_count_zero">\u2022  no ratings</string>
+    <string name="product_ratings_count">\u2022  %d approved reviews</string>
+    <string name="product_ratings_count_one">\u2022  one approved review</string>
+    <string name="product_ratings_count_zero">\u2022  no approved reviews</string>
     <string name="product_reviews">Reviews</string>
     <string name="product_downloads">Downloads</string>
     <string name="product_downloadable_files">Downloadable files</string>
@@ -1164,6 +1303,7 @@
     <string name="product_view_in_store">View product on store</string>
     <string name="product_view_affiliate">View affiliate product</string>
     <string name="product_stock_status_instock">In stock</string>
+    <string name="product_stock_status_instock_quantified">%s in stock</string>
     <string name="product_stock_status_instock_with_variations">In stock \u2022 %d variations</string>
     <string name="product_stock_status_out_of_stock">Out of stock</string>
     <string name="product_stock_status_on_backorder">On backorder</string>
@@ -1303,12 +1443,24 @@
     <string name="product_add_ons_details_info_notice">You can edit product add-ons in the web dashboard.</string>
     <string name="product_count_one">%d product</string>
     <string name="product_count_many">%d products</string>
+    <string name="category_count_one">%d category</string>
+    <string name="category_count_many">%d categories</string>
     <string name="cross_sell_product_count_one">%d cross-sell product</string>
     <string name="cross_sell_product_count_many">%d cross-sell products</string>
     <string name="upsell_product_count_one">%d upsell product</string>
     <string name="upsell_product_count_many">%d upsell products</string>
     <string name="product_detail_background_image_upload">Image uploading will continue in the background</string>
-
+    <string name="product_card_transition_name">product_card_%1$s</string>
+    <string name="product_card_detail_transition_name">product_card_detail</string>
+    <string name="product_category_selector_title">Select categories</string>
+    <string name="product_category_selector_empty_state">No product categories found</string>
+    <string name="product_category_selector_select_button_title_default">Select %1$d Categories</string>
+    <string name="product_category_selector_select_button_title_one">Select 1 category</string>
+    <string name="product_category_selector_check_content_description">Click to uncheck</string>
+    <string name="product_category_selector_clear_selection">Clear selection</string>
+    <string name="product_category_selector_search_hint">Search Categories</string>
+    <string name="product_category_selector_loading_failed">Loading product categories failed</string>
+    <string name="product_category_selector_search_failed">Searching product categories failed</string>
     <!--
         Product Add more details Bottom sheet
     -->
@@ -1332,7 +1484,31 @@
     <string name="variation_list_generate_new_variation">Generate new variation</string>
     <string name="variation_created_title">Variation Created</string>
     <string name="variation_create_dialog_title">Generating variation</string>
+    <string name="variation_loading_dialog_title">Fetching variations…</string>
     <string name="variation_confirm_delete">Do you want to delete this Variation?</string>
+    <string name="variation_list_menu_bulk_update">Bulk update…</string>
+    <string name="variations_bulk_limit_exceeded_button_ok">OK</string>
+
+    <!--
+        Variations bulk update
+    -->
+    <string name="variations_bulk_update_dialog_title">Bulk update</string>
+    <string name="variations_bulk_update_dialog_subtitle">Choose a value to update</string>
+    <string name="variations_bulk_update_dialog_price_section_title">Price</string>
+    <string name="variations_bulk_update_dialog_regular_price_label">Regular price</string>
+    <string name="variations_bulk_update_dialog_sale_price_label">Sale price</string>
+    <string name="variations_bulk_update_dialog_price_none">None</string>
+    <string name="variations_bulk_update_dialog_price_mixed">Mixed</string>
+    <string name="variations_bulk_update_price_info">Price will be updated for %d variations</string>
+    <string name="variations_bulk_update_current_price">Current price is %s</string>
+    <string name="variations_bulk_update_current_prices_mixed">Current prices are mixed</string>
+    <string name="variations_bulk_update_error">Something went wrong. Please try again.</string>
+    <string name="variations_bulk_update_regular_prices_success">Updated Regular Prices.</string>
+    <string name="variations_bulk_update_sale_prices_success">Updated Sale Prices.</string>
+    <string name="variations_bulk_update_sale_prices_dialog_title">Updating sale prices</string>
+    <string name="variations_bulk_update_regular_prices_dialog_title">Updating regular prices</string>
+    <string name="variations_bulk_update_warning_title">Bulk update limit exceeded</string>
+    <string name="variations_bulk_update_warning_message">Currently bulk update is supported for 100 variations maximum.</string>
 
     <!--
         Product images
@@ -1387,6 +1563,7 @@
     <string name="orders_empty_message_for_filtered_orders">We\'re sorry, we couldn\'t find any orders</string>
     <string name="empty_message_with_search">We\'re sorry, we couldn\'t find results for \"%s\"</string>
     <string name="reviews_empty_message">No reviews yet!</string>
+    <string name="empty_message_with_filters">We\'re sorry, no products match the selected filters"</string>
     <!--
         Settings
     -->
@@ -1395,8 +1572,8 @@
     <string name="send_feedback">Send feedback</string>
     <string name="beta_features">Beta features</string>
     <string name="beta_features_add_ons">View Add-ons</string>
+    <string name="beta_features_coupons">Coupons Management</string>
     <string name="beta_features_simple_payments">Simple payments</string>
-    <string name="beta_features_order_creation">Order creation</string>
     <string name="settings_signout">Log out</string>
     <string name="settings_preferences">Preferences</string>
     <string name="settings_confirm_logout">Are you sure you want to logout from the account %s?</string>
@@ -1407,10 +1584,6 @@
     <string name="settings_enable_product_adding_teaser_message">Test out the new simple, linked and grouped product creation as we get ready to launch</string>
     <string name="settings_enable_product_addons_teaser_title">View Add-ons</string>
     <string name="settings_enable_product_addons_teaser_message">Test out viewing Order Add-ons as we get ready to launch</string>
-    <string name="settings_enable_simple_payments_teaser_title">Simple payments</string>
-    <string name="settings_enable_simple_payments_teaser_message">Test out creating orders with minimal information as we get ready to launch</string>
-    <string name="settings_enable_order_creation_teaser_title">Order Creation</string>
-    <string name="settings_enable_order_creation_teaser_message">Test out creating orders with full details as we get ready to launch</string>
     <string name="settings_enable_product_teaser_title">Product editing</string>
     <string name="settings_enable_product_teaser_message">Test out the new product editing functionality as we get ready to launch</string>
     <string name="settings_send_stats_detail">Share information with our analytics tool about your use of services while logged in to your WordPress account</string>
@@ -1426,6 +1599,8 @@
     <string name="settings_card_reader">Manage card reader</string>
     <string name="settings_card_reader_payments">In-Person Payments</string>
     <string name="settings_card_reader_connect">Connect card reader</string>
+    <string name="settings_card_reader_manuals">Card Reader Manuals</string>
+    <string name="settings_install_jetpack">Install Jetpack</string>
     <string name="settings_notifs">Notifications</string>
     <string name="settings_notifs_device">Manage notifications</string>
     <string name="settings_notifs_device_detail">Sounds, urgency, and notification dot</string>
@@ -1454,6 +1629,8 @@
     <string name="settings_app_theme_option_battery_saver">Set by Battery Saver</string>
     <string name="settings_app_theme_option_default" translatable="false">@string/settings_app_theme_option_battery_saver</string>
     <string name="settings_about_title">About WooCommerce</string>
+    <string name="settings_about_recommend_app_subject">WooCommerce</string>
+    <string name="settings_about_recommend_app_message">Hey! Here is a link to download the WooCommerce app. I\'m really enjoying it and thought you might too. %1$s</string>
     <!--
         WCToggleSingleOptionView
     -->
@@ -1465,6 +1642,7 @@
     <string name="support_help">Help &amp; support</string>
     <string name="support_email_subject">WooCommerce Android %s support</string>
     <string name="invalid_email_message">Your email address isn\'t valid</string>
+    <string name="a8c_email_message">Please use a non-Automattic email to submit a support ticket</string>
     <string name="support_identity_input_dialog_enter_email_and_name">To continue please enter your email address and name</string>
     <string name="support_identity_input_dialog_enter_email">Please enter your email address</string>
     <string name="support_identity_input_dialog_email_label">Email</string>
@@ -1483,6 +1661,8 @@
     <string name="support_system_status_report">System status report</string>
     <string name="support_system_status_report_clipboard_label">WooCommerce SSR</string>
     <string name="support_system_status_report_detail">Various system information about your site</string>
+    <string name="support_system_status_report_copy_label">Copy system status report to clipboard</string>
+    <string name="support_system_status_report_share_label">Share system status report</string>
     <string name="support_system_status_report_copied_to_clipboard">System status report copied to clipboard</string>
     <string name="support_system_status_report_error_copy_to_clipboard">Error copying SSR to clipboard</string>
     <string name="support_system_status_report_share_error">Unable to share System Status Report</string>
@@ -1587,6 +1767,10 @@
     <string name="login_discovery_error_http_auth">We were unable to access your site because it requires &lt;b&gt;HTTP Authentication&lt;/b&gt;. You will need to reach out to your host to resolve this.</string>
     <string name="login_discovery_error_ssl">We were unable to access your site because of a problem with the &lt;b&gt;SSL Certificate&lt;/b&gt;. You will need to reach out to your host to resolve this.</string>
     <string name="login_discovery_error_generic">We were unable to access your site. You will need to reach out to your host to resolve this.</string>
+    <string name="login_error_xml_rpc_services_disabled">XML-RPC services are disabled on this site.</string>
+    <string name="login_error_xml_rpc_cannot_read_site">Unable to read the WordPress site at that URL. Tap on help icon to view the FAQ.</string>
+    <string name="login_error_xml_rpc_cannot_read_site_auth_required">XML-RPC calls seem blocked on this site (error code 401). If attempt to login fails tap on help icon to view the FAQ.</string>
+    <string name="login_error_xml_rpc_auth_error_communicating">There was a problem communicating with the site. An HTTP error code 401 was returned.</string>
     <string name="sign_up">Sign Up for WordPress.com</string>
 
     <string name="google_error_timeout">Google took too long to respond. You may need to wait until you have a stronger internet connection.</string>
@@ -1601,7 +1785,7 @@
     <string name="checking_email">Checking email</string>
     <string name="email_invalid">Enter a valid email address</string>
     <string name="forgot_password">Lost your password?</string>
-    <string name="error_generic">An error occurred</string>
+
     <string name="no_site_error">The site at this address is not a WordPress site. For us to connect to it, the site must use WordPress.</string>
     <string name="invalid_site_url_message">Check that the site URL entered is valid</string>
     <string name="xmlrpc_missing_method_error">Couldn\'t connect. Required XML-RPC methods are missing on the server.</string>
@@ -1632,7 +1816,9 @@
     <string name="magic_link_sent_login_title">Magic link sent</string>
     <string name="selfhosted_site_login_title">Login credentials</string>
     <string name="verification_2fa_screen_title">Code verification</string>
-    <string name="site_picker_title">Pick store</string>
+    <string name="site_picker_title">Select store</string>
+    <string name="site_picker_label">Select store to connect</string>
+    <string name="site_picker_error">Error fetching stores</string>
 
     <string name="signup_email_screen_title">Email signup</string>
     <string name="signup_magic_link_title">Magic link sent</string>
@@ -1696,6 +1882,7 @@
     <string name="product_publish_draft_dialog_title">Saving draft</string>
     <string name="product_publish_dialog_message" translatable="false">@string/product_update_dialog_message</string>
     <string name="product_detail_publish_product_error">Error publishing product</string>
+    <string name="product_detail_save_product_error">Cannot update product</string>
     <string name="product_detail_publish_product_success">Product published</string>
     <string name="product_detail_publish_product_draft_error">Error saving product draft</string>
     <string name="product_detail_publish_product_draft_success">Product draft saved</string>
@@ -1744,6 +1931,168 @@
     <string name="jetpack_install_progress_step_two_message">Activating</string>
     <string name="jetpack_install_progress_step_three_message">Connecting your store</string>
     <string name="jetpack_install_progress_step_four_message">All done</string>
+    <string name="jetpack_install_progress_failed_title">Sorry, something went wrong during %s</string>
+    <string name="jetpack_install_progress_failed_reason_installation">installation</string>
+    <string name="jetpack_install_progress_failed_reason_activation">activation</string>
+    <string name="jetpack_install_progress_failed_reason_connection">connecting</string>
+    <string name="jetpack_install_progress_failed_try">Please try again.</string>
+    <string name="jetpack_install_progress_failed_alternative">Alternatively, you can %s Jetpack in WP Admin.</string>
+    <string name="jetpack_install_progress_failed_alternative_install">install</string>
+    <string name="jetpack_install_progress_failed_alternative_activate">activate</string>
+    <string name="jetpack_install_progress_failed_option_wp_admin">%s Jetpack in WP Admin</string>
+    <string name="jetpack_install_progress_option_wp_admin_install">Install</string>
+    <string name="jetpack_install_progress_option_wp_admin_activate">Activate</string>
+    <string name="jetpack_install_progress_failed_option_contact_support">Contact Support</string>
+
+    <!-- Inbox -->
+    <string name="inbox_screen_title">Inbox</string>
+    <string name="dismiss_inbox_note">Dismiss</string>
+    <string name="inbox_note_recency_now">Moments ago</string>
+    <string name="inbox_note_recency_minutes">%d minutes ago</string>
+    <string name="inbox_note_recency_one_hour">An hour ago</string>
+    <string name="inbox_note_recency_hours">%d hours ago</string>
+    <string name="inbox_note_recency_one_day">A day ago</string>
+    <string name="inbox_note_recency_days">%d days ago</string>
+    <string name="inbox_note_recency_date_time">Created on %s</string>
+    <string name="empty_inbox_title">Congrats, you’ve read everything!</string>
+    <string name="empty_inbox_description">Come back soon for more tips and insights on growing your store</string>
+    <string name="inbox_note_survey_actioned">Thank you for your feedback!</string>
+    <string name="inbox_note_dismiss_all_notes">Dismiss all</string>
+    <string name="inbox_screen_sync_error">Error syncing inbox</string>
+
+    <!-- coupons -->
+    <string name="coupons">Coupons</string>
+    <string name="coupon_list_item_label_active">Active</string>
+    <string name="coupon_list_item_label_expired">Expired</string>
+    <string name="coupon_list_item_label_everything">everything</string>
+    <string name="coupon_list_item_label_products_and_categories">%1s and %2s</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1s excl. %2s</string>
+    <string name="coupon_list_empty_heading">No coupons found</string>
+    <string name="coupon_list_wip_title">View and edit coupons</string>
+    <string name="coupon_list_wip_message_enabled">We’ve been working on making it possible to view coupons on your device!</string>
+    <string name="coupon_list_view_coupon">View coupon summary</string>
+    <string name="coupon_list_loading_failed">Fetching coupons failed</string>
+    <string name="coupon_list_search_failed">Searching coupons failed</string>
+    <string name="coupon_details_heading">Coupon Summary</string>
+    <string name="coupon_details_minimum_spend">Minimum spend of %s</string>
+    <string name="coupon_details_maximum_spend">Maximum spend of %s</string>
+    <string name="coupon_details_performance_heading">Performance</string>
+    <string name="coupon_details_performance_discounted_order_heading">Discounted Orders</string>
+    <string name="coupon_details_performance_amount_heading">Amount</string>
+    <string name="coupon_details_menu_copy">Copy Coupon Code</string>
+    <string name="coupon_details_menu_share">Share Coupon</string>
+    <string name="coupon_details_delete">Delete Coupon</string>
+    <string name="coupon_details_delete_confirmation">Are you sure you want to delete this coupon?</string>
+    <string name="coupon_details_delete_failure">Deleting coupon failed</string>
+    <string name="coupon_details_delete_successful">Coupon deleted</string>
+    <string name="coupon_details_performance_loading_failure">Loading coupon performance failed</string>
+    <string name="coupon_type_percent">Percentage Discount</string>
+    <string name="coupon_type_fixed_cart">Fixed Cart Discount</string>
+    <string name="coupon_type_fixed_product">Fixed Product Discount</string>
+    <string name="coupon_type_custom">Custom Discount (%1$s)</string>
+    <string name="coupon_summary_template">%1$s off %2$s</string>
+    <string name="coupon_details_expiration_date">Expires %1$s</string>
+    <string name="coupon_summary_loading_failure">Loading coupon summary failed</string>
+    <string name="coupon_beta_features_heading">Coupons Management</string>
+    <string name="coupon_beta_features_subheading">Test out managing coupons in the app</string>
+    <string name="coupon_details_copy_clipboard_label">Coupon Code</string>
+    <string name="coupon_details_copy_success">Coupon code copied to clipboard.</string>
+    <string name="coupon_details_copy_error">Error copying coupon code to clipboard.</string>
+    <string name="coupon_details_share_coupon_all">Apply %1$s off to all products with the promo code %2$s</string>
+    <string name="coupon_details_share_coupon_some">Apply %1$s off to select products with the promo code %2$s</string>
+    <string name="coupon_details_share_coupon_error">Error sharing coupon code.</string>
+    <string name="coupon_details_share_formatting_failure">Unable to generate coupon code sharing message</string>
+    <string name="coupons_list_search_hint">Search coupons</string>
+    <string name="coupon_details_usage_limit_per_user_multiple">%1$d uses per user</string>
+    <string name="coupon_details_usage_limit_per_user_single">%1$d use per user</string>
+    <string name="coupon_details_usage_limit_per_coupon_multiple">Can be used %1$d times</string>
+    <string name="coupon_details_usage_limit_per_coupon_single">Can be used %1$d time</string>
+    <string name="coupon_details_usage_limit_per_items_multiple">Limited to %1$d items in cart</string>
+    <string name="coupon_details_usage_limit_per_items_single">Limited to %1$d item in cart</string>
+    <string name="coupon_details_individual_use_only">Individual use only</string>
+    <string name="coupon_details_allows_free_shipping">Allows free shipping</string>
+    <string name="coupon_details_excludes_sale_items">Excludes sale items</string>
+    <string name="coupon_details_restricted_emails">Restricted to customers with emails: %1$s</string>
+    <string name="coupon_details_menu_edit">Edit Coupon</string>
+    <string name="coupon_edit_screen_title">Edit %1$s</string>
+    <string name="coupon_edit_details_section">Coupon Details</string>
+    <string name="coupon_edit_conditions_section">Apply this coupon to</string>
+    <string name="coupon_edit_amount_hint">Amount (%1$s)</string>
+    <string name="coupon_edit_amount_percentage_helper">Set the percentage of the discount you want to offer.</string>
+    <string name="coupon_edit_amount_rate_helper">Set the amount of the discount you want to offer.</string>
+    <string name="coupon_edit_code_hint">Coupon Code</string>
+    <string name="coupon_edit_code_helper">Customers need to enter this code to use the coupon.</string>
+    <string name="coupon_edit_regenerate_coupon">Regenerate Coupon Code</string>
+    <string name="coupon_edit_save_button">Save</string>
+    <string name="coupon_edit_add_description">Add Description (Optional)</string>
+    <string name="coupon_edit_edit_description">Edit Description</string>
+    <string name="coupon_edit_description_editor_title">Coupon Description</string>
+    <string name="coupon_edit_add_description_hint">Add the description of the coupon.</string>
+    <string name="coupon_edit_expiry_date">Coupon Expiry Date</string>
+    <string name="coupon_edit_expiry_date_none">None</string>
+    <string name="coupon_edit_expiry_clear_expiry_date">Clear</string>
+    <string name="coupon_edit_free_shipping">Include Free Shipping?</string>
+    <string name="coupon_edit_usage_section">Usage Details</string>
+    <string name="coupon_edit_usage_restrictions">Usage Restrictions</string>
+    <string name="coupon_edit_select_categories_title">Select Product Categories</string>
+    <string name="coupon_edit_edit_products_title">Edit Product Categories (%1$d)</string>
+    <string name="coupon_edit_coupon_updated">Coupon updated</string>
+    <string name="coupon_edit_coupon_update_failed">Updating coupon failed</string>
+    <string name="coupon_edit_saving_dialog_title">Saving coupon</string>
+    <string name="coupon_edit_saving_dialog_subtitle">Please wait…</string>
+    <string name="coupon_restrictions_minimum_spend_hint">Minimum Spend (%1$s)</string>
+    <string name="coupon_restrictions_maximum_spend_hint">Maximum Spend (%1$s)</string>
+    <string name="coupon_restrictions_minimum_maximum_spend_placeholder">None</string>
+    <string name="coupon_restrictions_limit_per_coupon_hint">Usage Limit Per Coupon</string>
+    <string name="coupon_restrictions_limit_per_coupon_placeholder">Unlimited</string>
+    <string name="coupon_restrictions_amount_limit_hint">Limit Usage To X Items</string>
+    <string name="coupon_restrictions_amount_limit_placeholder">All Qualifying</string>
+    <string name="coupon_restrictions_limit_per_user_hint">Usage Limit Per User</string>
+    <string name="coupon_restrictions_limit_per_user_placeholder">Unlimited</string>
+    <string name="coupon_restrictions_individual_use">Individual Use Only</string>
+    <string name="coupon_restrictions_individual_use_hint">Turn this on if the coupon cannot be used in conjunction with other coupons.</string>
+    <string name="coupon_restrictions_exclude_sale_items">Exclude Sale Items</string>
+    <string name="coupon_restrictions_exclude_sale_items_hint">Turn this on if the coupon should not apply to items on sale. Per-item coupons will only work if the item is not on sale. Per-cart coupons will only work if there are items in the cart that are not on sale.</string>
+    <string name="coupon_restrictions_allowed_emails">Allowed emails</string>
+    <string name="coupon_restrictions_allowed_emails_placeholder">No restrictions</string>
+    <string name="coupon_restrictions_allowed_emails_hint">List of allowed billing emails to check against when an order is placed. Separate email addresses with commas. You can also use an asterisk (*) to match parts of an email. For example \"*@gmail.com\" would match all gmail addresses.</string>
+    <string name="coupon_restrictions_allowed_emails_invalid">Some email address are invalid. Please fix the entered email(s).</string>
+    <string name="coupon_restrictions_exclusions_section_title">Apply this coupon to</string>
+    <string name="coupon_restrictions_exclude_products">Exclude Products</string>
+    <string name="coupon_restrictions_exclude_categories">Exclude Product Categories</string>
+    <string name="coupon_conditions_products_select_products_title">Select Products</string>
+    <string name="coupon_conditions_products_all_products_title">All Products</string>
+    <string name="coupon_conditions_products_edit_products_title">Edit Products (%d)</string>
+
+    <!-- Product selector -->
+    <string name="product_selector_select_product_label">Select product %s</string>
+    <string name="product_selector_select_variation_label">Select variation %s</string>
+    <string name="product_selector_sku_value">SKU: %s</string>
+    <string name="product_selector_select_button_title_default">Select %d Products</string>
+    <string name="product_selector_select_button_title_one">Select %d Product</string>
+    <string name="product_selector_clear_button_title">Clear Selection</string>
+    <string name="product_selector_filter_button_title_zero">Filter</string>
+    <string name="product_selector_filter_button_title_default">Filter (%d)</string>
+    <string name="product_selector_arrow_content_description">Show details</string>
+    <string name="product_selector_search_hint">Search Products</string>
+    <string name="product_selector_loading_failed">Loading products failed</string>
+    <string name="product_selector_search_failed">Searching products failed</string>
+    <string name="product_selector_empty_state">No products found</string>
+    <string name="product_selector_clear_filters_button_title">Clear Filters</string>
+
+    <!-- WC Shipping installation flow -->
+    <string name="install_wc_shipping_flow_onboarding_screen_title">Fulfill your orders with WooCommerce Shipping</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_subtitle">Save time and money</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_postage_bullet_title">Buy postage when you need it</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_postage_bullet_desc">No need to wonder where that stampbook went.</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_print_bullet_title">Print from your phone</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_print_bullet_desc">Pick up an order, then just pay, print, package, and post.</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_discounts_bullet_title">Discounted rates</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_discounts_bullet_desc">Access discounted shipping rates. Currently available with DHL and USPS, with more to come soon!</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_link">What is WooCommerce Shipping?</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_add_extension_button">Add Extension To Store</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_not_now_button">Not Now</string>
+    <string name="install_wc_shipping_extension_name">WooCommerce Shipping</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>
@@ -2121,7 +2470,36 @@
     <string name="product_downloadable_files_download_settings">Download Settings</string>
     <string name="shipping_label_payments_cant_edit_warning">Only the site owner can manage the shipping label payment methods. Please contact Store Owner %1$s (%2$s) to manage payment methods.</string>
     <string name="magic_link_not_meaning_to_create_account">Didn\'t mean to create a new account? Go back to re-enter your email address.</string>
-    <string name="order_creation_customer_note">Customer Note</string>
-    <string name="order_creation_add_customer_note">Add note</string>
+    <string name="about_automattic_main_page_title">About %1$s</string>
+    <string name="about_automattic_legal_page_title">Legal and More</string>
+    <string name="about_automattic_acknowledgements_page_title">Acknowledgements</string>
+    <string name="about_automattic_share_with_friends_item_title">Share with Friends</string>
+    <string name="about_automattic_rate_us_item_title">Rate Us</string>
+    <string name="about_automattic_instagram_item_title">Instagram</string>
+    <string name="about_automattic_twitter_item_title">Twitter</string>
+    <string name="about_automattic_legal_and_more_item_title">Legal and More</string>
+    <string name="about_automattic_family_item_title">Automattic Family</string>
+    <string name="about_automattic_work_with_us_item_title">Work With Us</string>
+    <string name="about_automattic_work_with_us_item_subtitle">Work from Anywhere</string>
+    <string name="about_automattic_terms_of_service_item_title">Terms of Service</string>
+    <string name="about_automattic_privacy_policy_item_title">Privacy Policy</string>
+    <string name="about_automattic_california_privacy_notice_item_title">California Privacy Notice</string>
+    <string name="about_automattic_source_code_item_title">Source Code</string>
+    <string name="about_automattic_acknowledgements_item_title">Acknowledgements</string>
+    <string name="about_automattic_dayone">Day One</string>
+    <string name="about_automattic_jetpack">Jetpack</string>
+    <string name="about_automattic_pocketcasts">Pocket Casts</string>
+    <string name="about_automattic_simplenote">Simplenote</string>
+    <string name="about_automattic_tumblr">Tumblr</string>
+    <string name="about_automattic_woocommerce">WooCommerce</string>
+    <string name="about_automattic_wordpress">WordPress</string>
+    <string name="about_automattic_version_label">Version %1$s</string>
+    <string name="about_automattic_logo_description">Automattic logo</string>
+    <string name="about_automattic_back_icon_description">Back icon</string>
+    <string name="about_automattic_app_icon_description">App icon</string>
+    <string name="error_generic">An error occurred</string>
+    <string name="install_wc_shipping_preinstall_title">Install extension</string>
+    <string name="install_wc_shipping_installation_info">Things to know before installing</string>
+    <string name="install_wc_shipping_proceed_button">Proceed With Installation</string>
     <string name="title_barcode">Camera Barcode Scanner</string>
 </resources>

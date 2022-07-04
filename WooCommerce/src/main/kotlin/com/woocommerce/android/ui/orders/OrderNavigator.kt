@@ -5,14 +5,15 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.common.InfoScreenFragment.InfoScreenLinkAction.LearnMoreAboutShippingLabels
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.EditOrder
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderConnectFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderPaymentFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabelCreationFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
@@ -26,6 +27,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProdu
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShipmentTrackingProviders
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelFormatOptions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelPaperSizes
+import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragmentDirections
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragmentDirections
@@ -50,20 +52,20 @@ class OrderNavigator @Inject constructor() {
             }
             is ViewRefundedProducts -> {
                 val action = OrderDetailFragmentDirections
-                    .actionOrderDetailFragmentToRefundDetailFragment(target.remoteOrderId)
+                    .actionOrderDetailFragmentToRefundDetailFragment(target.orderId)
                 fragment.findNavController().navigateSafely(action)
             }
             is AddOrderNote -> {
                 val action = OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToAddOrderNoteFragment(
-                        orderId = target.orderIdentifier,
+                        orderId = target.orderId,
                         orderNumber = target.orderNumber
                     )
                 fragment.findNavController().navigateSafely(action)
             }
             is ViewOrderFulfillInfo -> {
                 val action = OrderDetailFragmentDirections
-                    .actionOrderDetailFragmentToOrderFulfillFragment(target.orderIdentifier)
+                    .actionOrderDetailFragmentToOrderFulfillFragment(orderId = target.orderId)
                 fragment.findNavController().navigateSafely(action)
             }
             is RefundShippingLabel -> {
@@ -76,16 +78,16 @@ class OrderNavigator @Inject constructor() {
             is AddOrderShipmentTracking -> {
                 val action = OrderDetailFragmentDirections
                     .actionGlobalAddOrderShipmentTrackingFragment(
-                        orderId = target.orderIdentifier,
+                        orderId = target.orderId,
                         orderTrackingProvider = target.orderTrackingProvider,
-                        isCustomProvider = target.isCustomProvider
+                        isCustomProvider = target.isCustomProvider,
                     )
                 fragment.findNavController().navigateSafely(action)
             }
             is ViewShipmentTrackingProviders -> {
                 val action = AddOrderShipmentTrackingFragmentDirections
                     .actionAddOrderShipmentTrackingFragmentToAddOrderTrackingProviderListFragment(
-                        orderId = target.orderIdentifier, selectedProvider = target.selectedProvider
+                        orderId = target.orderId, selectedProvider = target.selectedProvider
                     )
                 fragment.findNavController().navigateSafely(action)
             }
@@ -144,21 +146,13 @@ class OrderNavigator @Inject constructor() {
             }
             is StartShippingLabelCreationFlow -> {
                 val action = OrderDetailFragmentDirections
-                    .actionOrderDetailFragmentToCreateShippingLabelFragment(target.orderIdentifier)
-                fragment.findNavController().navigateSafely(action)
-            }
-            is OrderNavigationTarget.ShowCardReaderWelcomeDialog -> {
-                val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToCardReaderWelcomeDialog()
-                fragment.findNavController().navigateSafely(action)
-            }
-            is StartCardReaderConnectFlow -> {
-                val action = OrderDetailFragmentDirections
-                    .actionOrderDetailFragmentToCardReaderConnectDialog(target.skipOnboarding)
+                    .actionOrderDetailFragmentToCreateShippingLabelFragment(target.orderId)
                 fragment.findNavController().navigateSafely(action)
             }
             is StartCardReaderPaymentFlow -> {
-                val action = OrderDetailFragmentDirections
-                    .actionOrderDetailFragmentToCardReaderPaymentDialog(target.orderIdentifier)
+                val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToCardReaderFlow(
+                    CardReaderFlowParam.PaymentOrRefund.Payment(target.orderId)
+                )
                 fragment.findNavController().navigateSafely(action)
             }
             is ViewPrintingInstructions -> {
@@ -181,6 +175,12 @@ class OrderNavigator @Inject constructor() {
                         orderId = target.remoteOrderID,
                         orderItemId = target.orderItemID,
                         addonsProductId = target.addonsProductID
+                    ).let { fragment.findNavController().navigateSafely(it) }
+            }
+            is EditOrder -> {
+                OrderDetailFragmentDirections
+                    .actionOrderDetailFragmentToOrderCreationFragment(
+                        OrderCreationViewModel.Mode.Edit(target.orderId)
                     ).let { fragment.findNavController().navigateSafely(it) }
             }
         }

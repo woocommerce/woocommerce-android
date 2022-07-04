@@ -12,8 +12,8 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentLoginDiscoveryErrorBinding
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
@@ -81,8 +81,6 @@ class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_err
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         setHasOptionsMenu(true)
 
         val binding = FragmentLoginDiscoveryErrorBinding.bind(view)
@@ -98,7 +96,7 @@ class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_err
 
         with(binding.discoveryWordpressOptionView) {
             setOnClickListener {
-                AnalyticsTracker.track(Stat.LOGIN_DISCOVERY_ERROR_SIGN_IN_WORDPRESS_BUTTON_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.LOGIN_DISCOVERY_ERROR_SIGN_IN_WORDPRESS_BUTTON_TAPPED)
                 unifiedLoginTracker.trackClick(Click.CONTINUE_WITH_WORDPRESS_COM)
                 jetpackLoginListener?.showEmailLoginScreen(siteAddress)
             }
@@ -106,7 +104,7 @@ class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_err
 
         with(binding.discoveryTroubleshootOptionView) {
             setOnClickListener {
-                AnalyticsTracker.track(Stat.LOGIN_DISCOVERY_ERROR_TROUBLESHOOT_BUTTON_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.LOGIN_DISCOVERY_ERROR_TROUBLESHOOT_BUTTON_TAPPED)
                 unifiedLoginTracker.trackClick(Click.HELP_TROUBLESHOOTING_TIPS)
                 jetpackLoginListener?.showJetpackTroubleshootingTips()
             }
@@ -114,7 +112,7 @@ class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_err
 
         with(binding.discoveryTryOptionView) {
             setOnClickListener {
-                AnalyticsTracker.track(Stat.LOGIN_DISCOVERY_ERROR_TRY_AGAIN_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.LOGIN_DISCOVERY_ERROR_TRY_AGAIN_TAPPED)
                 unifiedLoginTracker.trackClick(Click.TRY_AGAIN)
                 jetpackLoginListener?.showUsernamePasswordScreen(
                     siteAddress, siteXmlRpcAddress, mInputUsername, mInputPassword
@@ -130,7 +128,7 @@ class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_err
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.help) {
-            AnalyticsTracker.track(Stat.LOGIN_DISCOVERY_ERROR_MENU_HELP_TAPPED)
+            AnalyticsTracker.track(AnalyticsEvent.LOGIN_DISCOVERY_ERROR_MENU_HELP_TAPPED)
             loginListener?.helpSiteAddress(siteAddress)
             return true
         }
@@ -155,7 +153,7 @@ class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_err
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-        AnalyticsTracker.track(Stat.LOGIN_DISCOVERY_ERROR_SCREEN_VIEWED)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_DISCOVERY_ERROR_SCREEN_VIEWED)
         unifiedLoginTracker.track(step = Step.CONNECTION_ERROR)
     }
 }

@@ -10,8 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentLoginJetpackRequiredBinding
 import org.wordpress.android.login.LoginListener
 
@@ -46,8 +46,6 @@ class LoginJetpackRequiredFragment : Fragment(R.layout.fragment_login_jetpack_re
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         val binding = FragmentLoginJetpackRequiredBinding.bind(view)
         val btnBinding = binding.epilogueButtonBar
 
@@ -66,7 +64,7 @@ class LoginJetpackRequiredFragment : Fragment(R.layout.fragment_login_jetpack_re
         with(btnBinding.buttonPrimary) {
             text = getString(R.string.login_jetpack_view_instructions)
             setOnClickListener {
-                AnalyticsTracker.track(Stat.LOGIN_JETPACK_REQUIRED_VIEW_INSTRUCTIONS_BUTTON_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.LOGIN_JETPACK_REQUIRED_VIEW_INSTRUCTIONS_BUTTON_TAPPED)
                 jetpackLoginListener?.showJetpackInstructions()
             }
         }
@@ -82,7 +80,7 @@ class LoginJetpackRequiredFragment : Fragment(R.layout.fragment_login_jetpack_re
         }
 
         binding.btnSecondaryAction.setOnClickListener {
-            AnalyticsTracker.track(Stat.LOGIN_JETPACK_REQUIRED_WHAT_IS_JETPACK_LINK_TAPPED)
+            AnalyticsTracker.track(AnalyticsEvent.LOGIN_JETPACK_REQUIRED_WHAT_IS_JETPACK_LINK_TAPPED)
             jetpackLoginListener?.showWhatIsJetpackDialog()
         }
     }
@@ -94,7 +92,7 @@ class LoginJetpackRequiredFragment : Fragment(R.layout.fragment_login_jetpack_re
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.help) {
-            AnalyticsTracker.track(Stat.LOGIN_JETPACK_REQUIRED_MENU_HELP_TAPPED)
+            AnalyticsTracker.track(AnalyticsEvent.LOGIN_JETPACK_REQUIRED_MENU_HELP_TAPPED)
             loginListener?.helpSiteAddress(siteAddress)
             return true
         }
@@ -119,6 +117,6 @@ class LoginJetpackRequiredFragment : Fragment(R.layout.fragment_login_jetpack_re
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-        AnalyticsTracker.track(Stat.LOGIN_JETPACK_REQUIRED_SCREEN_VIEWED)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_JETPACK_REQUIRED_SCREEN_VIEWED)
     }
 }

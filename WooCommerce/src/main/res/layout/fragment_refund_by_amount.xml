@@ -1,6 +1,6 @@
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/scrollView"
     android:fillViewport="true"
     android:layout_width="match_parent"
@@ -30,7 +30,9 @@
                     android:layout_marginEnd="@dimen/major_100"
                     android:layout_marginTop="@dimen/major_75"
                     android:layout_marginBottom="@dimen/minor_100"
-                    tools:hint="Enter Refund Amount"/>
+                    tools:hint="Enter Refund Amount"
+                    app:supportsEmptyState="false"
+                    app:supportsNegativeValues="false" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/issueRefund_txtAvailableForRefund"

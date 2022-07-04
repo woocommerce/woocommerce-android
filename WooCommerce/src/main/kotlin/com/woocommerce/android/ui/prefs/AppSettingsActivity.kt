@@ -6,23 +6,20 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.navigation.findNavController
-import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.ActivityAppSettingsBinding
 import com.woocommerce.android.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
 import com.woocommerce.android.util.AnalyticsUtils
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.PreferencesWrapper
 import dagger.android.DispatchingAndroidInjector
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -31,8 +28,6 @@ class AppSettingsActivity :
     AppSettingsListener,
     AppSettingsContract.View {
     companion object {
-        private const val KEY_SITE_CHANGED = "key_site_changed"
-        const val RESULT_CODE_SITE_CHANGED = Activity.RESULT_FIRST_USER
         const val RESULT_CODE_BETA_OPTIONS_CHANGED = 2
         const val KEY_BETA_OPTION_CHANGED = "key_beta_option_changed"
     }
@@ -43,8 +38,6 @@ class AppSettingsActivity :
     @Inject lateinit var prefs: AppPrefs
     @Inject lateinit var notificationMessageHandler: NotificationMessageHandler
 
-    private val sharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
-    private var siteChanged = false
     private var isBetaOptionChanged = false
 
     private lateinit var binding: ActivityAppSettingsBinding
@@ -63,13 +56,9 @@ class AppSettingsActivity :
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         savedInstanceState?.let {
-            siteChanged = it.getBoolean(KEY_SITE_CHANGED)
             isBetaOptionChanged = it.getBoolean(KEY_BETA_OPTION_CHANGED)
         }
 
-        if (siteChanged) {
-            setResult(RESULT_CODE_SITE_CHANGED)
-        }
         if (isBetaOptionChanged) {
             setResult(RESULT_CODE_BETA_OPTIONS_CHANGED)
         }
@@ -86,7 +75,6 @@ class AppSettingsActivity :
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putBoolean(KEY_SITE_CHANGED, siteChanged)
         outState.putBoolean(KEY_BETA_OPTION_CHANGED, isBetaOptionChanged)
         super.onSaveInstanceState(outState)
     }
@@ -102,18 +90,6 @@ class AppSettingsActivity :
         }
     }
 
-    /**
-     * User switched sites from the main settings fragment, set the result code so the calling activity
-     * will know the site changed
-     */
-    override fun onSiteChanged() {
-        if (FeatureFlag.CARD_READER.isEnabled()) presenter.clearCardReaderData()
-        siteChanged = true
-        setResult(RESULT_CODE_SITE_CHANGED)
-
-        prefs.resetSitePreferences()
-    }
-
     override fun onRequestLogout() {
         confirmLogout()
     }
@@ -126,18 +102,10 @@ class AppSettingsActivity :
         }
     }
 
-    override fun onSimplePaymentsOptionChanged(enabled: Boolean) {
-        if (AppPrefs.isSimplePaymentsEnabled != enabled) {
+    override fun onCouponsOptionChanged(enabled: Boolean) {
+        if (AppPrefs.isCouponsEnabled != enabled) {
             isBetaOptionChanged = true
-            AppPrefs.isSimplePaymentsEnabled = enabled
-            setResult(RESULT_CODE_BETA_OPTIONS_CHANGED)
-        }
-    }
-
-    override fun onOrderCreationOptionChanged(enabled: Boolean) {
-        if (AppPrefs.isOrderCreationEnabled != enabled) {
-            isBetaOptionChanged = true
-            AppPrefs.isOrderCreationEnabled = enabled
+            AppPrefs.isCouponsEnabled = enabled
             setResult(RESULT_CODE_BETA_OPTIONS_CHANGED)
         }
     }
@@ -167,18 +135,17 @@ class AppSettingsActivity :
             .setMessage(message)
             .setPositiveButton(R.string.signout) { _, _ ->
                 AnalyticsTracker.track(
-                    Stat.SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT,
+                    AnalyticsEvent.SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT,
                     mapOf(
                         AnalyticsTracker.KEY_RESULT to AnalyticsUtils.getConfirmationResultLabel(true)
                     )
                 )
 
-                if (FeatureFlag.CARD_READER.isEnabled()) presenter.clearCardReaderData()
                 presenter.logout()
             }
             .setNegativeButton(R.string.back) { _, _ ->
                 AnalyticsTracker.track(
-                    Stat.SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT,
+                    AnalyticsEvent.SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT,
                     mapOf(
                         AnalyticsTracker.KEY_RESULT to AnalyticsUtils.getConfirmationResultLabel(false)
                     )
@@ -187,9 +154,5 @@ class AppSettingsActivity :
             .setCancelable(true)
             .create()
             .show()
-    }
-
-    override fun clearNotificationPreferences() {
-        sharedPreferences.edit().remove(PreferencesWrapper.WPCOM_PUSH_DEVICE_TOKEN).apply()
     }
 }

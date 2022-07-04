@@ -8,20 +8,14 @@ import androidx.lifecycle.Observer
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentShippingLabelAddressSuggestionBinding
-import com.woocommerce.android.extensions.appendWithIfNotEmpty
-import com.woocommerce.android.extensions.navigateBackWithNotice
-import com.woocommerce.android.extensions.navigateBackWithResult
-import com.woocommerce.android.extensions.setHtmlText
-import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.extensions.*
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.EditSelectedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.UseSelectedAddress
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -133,9 +127,9 @@ class ShippingLabelAddressSuggestionFragment :
         append(this.address1, other.address1)
         append(this.address2, other.address2)
         append(this.city, other.city)
-        append(this.state, other.state, ", ")
+        append(this.state.asLocation().name, other.state.asLocation().name, ", ")
         append(this.postcode, other.postcode, " ")
-        append(this.getCountryLabelByCountryCode(), other.getCountryLabelByCountryCode())
+        append(this.country.name, other.country.name)
 
         return stringBuilder.toString()
     }

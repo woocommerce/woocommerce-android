@@ -2,17 +2,14 @@ package com.woocommerce.android.push
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.push.NotificationTestUtils.TEST_ORDER_NOTE_FULL_DATA_2
 import com.woocommerce.android.push.NotificationTestUtils.TEST_ORDER_NOTE_FULL_DATA_SITE_2
 import com.woocommerce.android.push.NotificationTestUtils.TEST_REVIEW_NOTE_FULL_DATA_2
 import com.woocommerce.android.push.NotificationTestUtils.TEST_REVIEW_NOTE_FULL_DATA_SITE_2
 import com.woocommerce.android.support.ZendeskHelper
-import com.woocommerce.android.util.Base64Decoder
-import com.woocommerce.android.util.NotificationsParser
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLogWrapper
+import com.woocommerce.android.util.*
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -82,7 +79,7 @@ class NotificationMessageHandlerTest {
             notificationBuilder = notificationBuilder,
             analyticsTracker = notificationAnalyticsTracker,
             zendeskHelper = zendeskHelper,
-            notificationsParser = notificationsParser
+            notificationsParser = notificationsParser,
         )
 
         doReturn(true).whenever(accountStore).hasAccessToken()
@@ -545,7 +542,7 @@ class NotificationMessageHandlerTest {
         notificationMessageHandler.markNotificationTapped(orderNotification.remoteNoteId)
 
         verify(notificationAnalyticsTracker, atLeastOnce()).trackNotificationAnalytics(
-            eq(AnalyticsTracker.Stat.PUSH_NOTIFICATION_TAPPED), eq(orderNotification)
+            eq(AnalyticsEvent.PUSH_NOTIFICATION_TAPPED), eq(orderNotification)
         )
     }
 
@@ -556,7 +553,7 @@ class NotificationMessageHandlerTest {
         notificationMessageHandler.markNotificationsOfTypeTapped(orderNotification.channelType)
 
         verify(notificationAnalyticsTracker, atLeastOnce()).trackNotificationAnalytics(
-            eq(AnalyticsTracker.Stat.PUSH_NOTIFICATION_TAPPED), eq(orderNotification)
+            eq(AnalyticsEvent.PUSH_NOTIFICATION_TAPPED), eq(orderNotification)
         )
     }
 }

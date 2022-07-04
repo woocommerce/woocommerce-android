@@ -1,29 +1,31 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
-import com.woocommerce.android.model.Address
-import com.woocommerce.android.model.ContentsType
-import com.woocommerce.android.model.CustomsLine
-import com.woocommerce.android.model.CustomsPackage
-import com.woocommerce.android.model.Location
-import com.woocommerce.android.model.PackageDimensions
-import com.woocommerce.android.model.PaymentMethod
-import com.woocommerce.android.model.RestrictionType
-import com.woocommerce.android.model.ShippingLabelPackage
+import com.woocommerce.android.model.*
 import com.woocommerce.android.model.ShippingLabelPackage.Item
-import com.woocommerce.android.model.ShippingPackage
-import com.woocommerce.android.model.ShippingRate
 import java.math.BigDecimal
 import java.util.Date
 
 object CreateShippingLabelTestUtils {
+    val testCountry = Location(
+        code = "US",
+        name = "USA",
+    )
+
+    val testState = AmbiguousLocation.Defined(
+        Location(
+            parentCode = "US",
+            code = "CA",
+            name = "California",
+        )
+    )
     fun generateAddress(): Address {
         return Address(
             company = "KFC",
             firstName = "Harland",
             lastName = "Sanders",
             phone = "12345678",
-            country = "US",
-            state = "KY",
+            country = testCountry,
+            state = testState,
             address1 = "123 Main St.",
             address2 = "",
             city = "Lexington",

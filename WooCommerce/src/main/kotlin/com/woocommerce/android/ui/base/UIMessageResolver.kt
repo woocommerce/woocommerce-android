@@ -6,6 +6,7 @@ import androidx.annotation.StringRes
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
+import com.woocommerce.android.model.UiString
 
 /**
  * Centralized snackbar creation and management. An implementing class could then be injected at the
@@ -60,6 +61,28 @@ interface UIMessageResolver {
         return getIndefiniteSnackbarWithAction(
             snackbarRoot,
             String.format(message, *stringArgs),
+            actionText,
+            actionListener
+        )
+    }
+
+    /**
+     * Create and return a snackbar displaying the provided message and a generic action button.
+     *
+     * @param [message] The message string
+     * @param [message] The action string
+     * @param [stringArgs] Optional. One or more format argument stringArgs
+     * @param [actionListener] Listener to handle the undo button click event
+     */
+    fun getIndefiniteActionSnack(
+        @StringRes message: Int,
+        vararg stringArgs: String = arrayOf(),
+        actionText: String,
+        actionListener: View.OnClickListener
+    ): Snackbar {
+        return getIndefiniteSnackbarWithAction(
+            snackbarRoot,
+            snackbarRoot.context.getString(message, *stringArgs),
             actionText,
             actionListener
         )
@@ -148,6 +171,20 @@ interface UIMessageResolver {
      * @param [msgId] The resource ID of the message to display in the snackbar
      */
     fun showSnack(@StringRes msgId: Int) = Snackbar.make(snackbarRoot, msgId, BaseTransientBottomBar.LENGTH_LONG).show()
+
+    /**
+     * Display a snackbar with the provided [UiString].
+     *
+     * @param [message] The message to display in the snackbar
+     */
+    fun showSnack(message: UiString) {
+        val snackbar = when (message) {
+            is UiString.UiStringRes ->
+                Snackbar.make(snackbarRoot, message.stringRes, BaseTransientBottomBar.LENGTH_LONG)
+            is UiString.UiStringText -> Snackbar.make(snackbarRoot, message.text, BaseTransientBottomBar.LENGTH_LONG)
+        }
+        snackbar.show()
+    }
 
     private fun getIndefiniteSnackbarWithAction(
         view: View,

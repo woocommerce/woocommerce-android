@@ -1,7 +1,15 @@
 package com.woocommerce.android.ui.orders.shippinglabels
 
-import com.woocommerce.android.annotations.OpenClassOnDebug
-import com.woocommerce.android.model.*
+import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.CustomsPackage
+import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.ShippingAccountSettings
+import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.ShippingLabelMapper
+import com.woocommerce.android.model.ShippingLabelPackage
+import com.woocommerce.android.model.ShippingPackage
+import com.woocommerce.android.model.ShippingRate
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -19,11 +27,11 @@ import org.wordpress.android.fluxc.store.WCShippingLabelStore
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@OpenClassOnDebug
 @Singleton
 class ShippingLabelRepository @Inject constructor(
     private val shippingLabelStore: WCShippingLabelStore,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val shippingLabelMapper: ShippingLabelMapper,
 ) {
     private var accountSettings: ShippingAccountSettings? = null
     private var availablePackages: List<ShippingPackage>? = null
@@ -46,7 +54,7 @@ class ShippingLabelRepository @Inject constructor(
         return shippingLabelStore.getShippingLabelById(
             selectedSite.get(), orderId, shippingLabelId
         )
-            ?.toAppModel()
+            ?.let { shippingLabelMapper.toAppModel(it) }
     }
 
     suspend fun printShippingLabels(paperSize: String, shippingLabelIds: List<Long>): WooResult<String> {
@@ -100,7 +108,7 @@ class ShippingLabelRepository @Inject constructor(
     ): WooResult<List<WCShippingRatesResult.ShippingPackage>> {
         val carrierRates = shippingLabelStore.getShippingRates(
             site = selectedSite.get(),
-            orderId = order.remoteId.value,
+            orderId = order.id,
             origin = origin.toShippingLabelModel(),
             destination = destination.toShippingLabelModel(),
             packages = packages.mapIndexed { i, box ->
@@ -216,7 +224,7 @@ class ShippingLabelRepository @Inject constructor(
         ).let { result ->
             when {
                 result.isError -> WooResult(result.error)
-                result.model != null -> WooResult(result.model!!.map { it.toAppModel() })
+                result.model != null -> WooResult(result.model!!.map { shippingLabelMapper.toAppModel(it) })
                 else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
             }
         }

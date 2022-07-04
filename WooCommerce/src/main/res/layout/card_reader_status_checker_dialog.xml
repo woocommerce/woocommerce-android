@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    tools:context=".ui.cardreader.connect.CardReaderConnectDialogFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="@dimen/payments_dialog_width"
+        android:layout_height="@dimen/payments_dialog_height"
+        android:background="@color/color_surface_elevated"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:paddingTop="@dimen/major_200"
+        android:paddingBottom="@dimen/payments_dialog_bottom_padding">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/header_label"
+            style="@style/Woo.TextView.Subtitle2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/major_125"
+            android:layout_marginTop="0dp"
+            android:layout_marginBottom="0dp"
+            android:gravity="center"
+            android:text="@string/card_reader_onboarding_title"
+            android:textColor="@color/color_on_surface_high"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <FrameLayout
+            android:id="@+id/progress_bar_wrapper"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/major_175"
+            android:paddingBottom="@dimen/major_150"
+            app:layout_constraintBottom_toTopOf="@id/hint_label"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/header_label">
+
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="@dimen/progress_bar_large"
+                android:layout_height="@dimen/progress_bar_large"
+                android:layout_marginTop="@dimen/minor_25" />
+        </FrameLayout>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/hint_label"
+            style="@style/Woo.Card.Body.High"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_125"
+            android:layout_marginEnd="@dimen/major_125"
+            android:layout_marginBottom="@dimen/minor_75"
+            android:gravity="center"
+            android:text="@string/card_reader_onboarding_loading"
+            app:layout_constraintBottom_toTopOf="@id/hint_label_bottom"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/hint_label_bottom"
+            style="@style/Woo.TextView.Body2"
+            android:layout_width="0dp"
+            android:text="@string/please_wait"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/minor_75"
+            android:layout_marginHorizontal="@dimen/major_125"
+            android:gravity="center_horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

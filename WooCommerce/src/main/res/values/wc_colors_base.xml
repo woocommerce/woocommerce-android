@@ -18,10 +18,13 @@
     <color name="woo_red_30">#F86368</color>
     <color name="woo_red_50">#D63638</color>
 
+    <color name="woo_blue_5">#BBE0FA</color>
     <color name="woo_blue_30">#5198D9</color>
+    <color name="woo_blue_40">#1689DB</color>
     <color name="woo_blue_50">#2271B1</color>
 
     <color name="woo_orange_5">#F7DCC6</color>
+    <color name="woo_orange_10">#FFBF86</color>
     <color name="woo_orange_30">#E68B28</color>
     <color name="woo_orange_50">#B26200</color>
     <color name="woo_orange_70">#351F04</color>
@@ -59,4 +62,6 @@
 
     <color name="jetpack_green_40">#069e08</color>
     <color name="jetpack_black">#0B2621</color>
+
+    <color name="wp_blue">#399CE3</color>
 </resources>

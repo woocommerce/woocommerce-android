@@ -1,10 +1,10 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Parcelable
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.Address
-import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.model.ShippingLabelAddressMapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.DESTINATION
@@ -23,7 +23,8 @@ import javax.inject.Inject
 
 class ShippingLabelAddressValidator @Inject constructor(
     private val shippingLabelStore: WCShippingLabelStore,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val shippingLabelAddressMapper: ShippingLabelAddressMapper,
 ) {
     suspend fun validateAddress(
         address: Address,
@@ -48,7 +49,7 @@ class ShippingLabelAddressValidator @Inject constructor(
 
         if (result.isError) {
             AnalyticsTracker.track(
-                Stat.SHIPPING_LABEL_ADDRESS_VALIDATION_FAILED,
+                AnalyticsEvent.SHIPPING_LABEL_ADDRESS_VALIDATION_FAILED,
                 mapOf("error" to result.error.type.name)
             )
 
@@ -57,7 +58,7 @@ class ShippingLabelAddressValidator @Inject constructor(
         return when (val validationResult = result.model) {
             null -> {
                 AnalyticsTracker.track(
-                    Stat.SHIPPING_LABEL_ADDRESS_VALIDATION_FAILED,
+                    AnalyticsEvent.SHIPPING_LABEL_ADDRESS_VALIDATION_FAILED,
                     mapOf("error" to "response_model_null")
                 )
 
@@ -65,7 +66,7 @@ class ShippingLabelAddressValidator @Inject constructor(
             }
             is InvalidRequest -> {
                 AnalyticsTracker.track(
-                    Stat.SHIPPING_LABEL_ADDRESS_VALIDATION_FAILED,
+                    AnalyticsEvent.SHIPPING_LABEL_ADDRESS_VALIDATION_FAILED,
                     mapOf("error" to "address_not_found")
                 )
 
@@ -73,16 +74,16 @@ class ShippingLabelAddressValidator @Inject constructor(
             }
             is InvalidAddress -> {
                 AnalyticsTracker.track(
-                    Stat.SHIPPING_LABEL_ADDRESS_VALIDATION_FAILED,
+                    AnalyticsEvent.SHIPPING_LABEL_ADDRESS_VALIDATION_FAILED,
                     mapOf("error" to "invalid_address")
                 )
 
                 ValidationResult.Invalid(validationResult.message)
             }
             is WCAddressVerificationResult.Valid -> {
-                AnalyticsTracker.track(Stat.SHIPPING_LABEL_ADDRESS_VALIDATION_SUCCEEDED)
+                AnalyticsTracker.track(AnalyticsEvent.SHIPPING_LABEL_ADDRESS_VALIDATION_SUCCEEDED)
                 val suggestion =
-                    validationResult.suggestedAddress.toAppModel()
+                    validationResult.suggestedAddress.let { shippingLabelAddressMapper.toAppModel(it) }
                 if (suggestion.toString() != address.toString()) {
                     ValidationResult.SuggestedChanges(suggestion, validationResult.isTrivialNormalization)
                 } else {

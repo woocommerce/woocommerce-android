@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R.string
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
@@ -24,9 +25,6 @@ class ProductInventoryViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val productRepository: ProductDetailRepository,
 ) : ScopedViewModel(savedState) {
-    companion object {
-        private const val SEARCH_TYPING_DELAY_MS = 500L
-    }
     private val navArgs: ProductInventoryFragmentArgs by savedState.navArgs()
     private val isProduct = navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_INVENTORY
 
@@ -78,7 +76,7 @@ class ProductInventoryViewModel @Inject constructor(
                 // so we don't actually perform the fetch until the user stops typing
                 skuVerificationJob?.cancel()
                 skuVerificationJob = launch {
-                    delay(SEARCH_TYPING_DELAY_MS)
+                    delay(AppConstants.SEARCH_TYPING_DELAY_MS)
 
                     // only after the SKU is available remotely, reset the error if it's available locally, as well
                     // to avoid showing/hiding error message

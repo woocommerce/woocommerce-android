@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.main
 
+import android.animation.ValueAnimator
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
@@ -9,19 +10,23 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.WindowManager
+import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.NavHostFragment
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.material.appbar.AppBarLayout
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
@@ -29,26 +34,28 @@ import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.RequestCodes
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.ActivityMainBinding
 import com.woocommerce.android.extensions.active
+import com.woocommerce.android.extensions.collapse
+import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ANALYTICS
+import com.woocommerce.android.ui.main.BottomNavigationPosition.MORE
 import com.woocommerce.android.ui.main.BottomNavigationPosition.MY_STORE
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.PRODUCTS
-import com.woocommerce.android.ui.main.BottomNavigationPosition.REVIEWS
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForNotification
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShowFeatureAnnouncement
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
@@ -57,17 +64,16 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
+import com.woocommerce.android.ui.moremenu.MoreMenuFragmentDirections
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
-import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.DisabledAppBarLayoutBehavior
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
@@ -75,13 +81,13 @@ import javax.inject.Inject
 import kotlin.math.abs
 
 // TODO Extract logic out of MainActivity to reduce size
+@Suppress("LargeClass")
 @AndroidEntryPoint
 class MainActivity :
     AppUpgradeActivity(),
     MainContract.View,
     MainNavigationRouter,
-    MainBottomNavigationView.MainNavigationListener,
-    NavController.OnDestinationChangedListener {
+    MainBottomNavigationView.MainNavigationListener {
     companion object {
         private const val MAGIC_LOGIN = "magic-login"
 
@@ -108,11 +114,11 @@ class MainActivity :
     @Inject lateinit var loginAnalyticsListener: LoginAnalyticsListener
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var crashLogging: CrashLogging
 
     private val viewModel: MainActivityViewModel by viewModels()
 
     private var isBottomNavShowing = true
-    private var previousDestinationId: Int? = null
     private var unfilledOrderCount: Int = 0
     private var isMainThemeApplied = false
     private var restoreToolbarHeight = 0
@@ -132,30 +138,64 @@ class MainActivity :
         }
     }
 
+    private val showSubtitleAnimator by lazy {
+        createCollapsingToolbarMarginBottomAnimator(
+            from = resources.getDimensionPixelSize(dimen.expanded_toolbar_bottom_margin),
+            to = resources.getDimensionPixelSize(dimen.expanded_toolbar_bottom_margin_with_subtitle),
+            duration = 200L
+        )
+    }
+
+    private val hideSubtitleAnimator by lazy {
+        createCollapsingToolbarMarginBottomAnimator(
+            from = resources.getDimensionPixelSize(dimen.expanded_toolbar_bottom_margin_with_subtitle),
+            to = resources.getDimensionPixelSize(dimen.expanded_toolbar_bottom_margin),
+            duration = 200L
+        )
+    }
+
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
     private var progressDialog: ProgressDialog? = null
 
     private val fragmentLifecycleObserver: FragmentLifecycleCallbacks = object : FragmentLifecycleCallbacks() {
         override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
             val currentDestination = navController.currentDestination!!
-            val isFullScreenFragment = currentDestination.id == R.id.productImageViewerFragment
             val isDialogDestination = currentDestination.navigatorName == DIALOG_NAVIGATOR_NAME
+            if (isDialogDestination) return
 
-            if (!isFullScreenFragment && !isDialogDestination) {
-                // re-expand the AppBar when returning to top level fragment, collapse it when entering a child fragment
-                if (f is TopLevelFragment) {
-                    // We need to post this to the view handler to make sure shouldExpandToolbar returns the correct value
-                    f.view?.post {
-                        if (f.view != null) {
-                            expandToolbar(expand = f.shouldExpandToolbar(), animate = false)
+            when (val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
+                is AppBarStatus.Visible -> {
+                    showToolbar()
+                    // re-expand the AppBar when returning to top level fragment,
+                    // collapse it when entering a child fragment
+                    if (f is TopLevelFragment) {
+                        // Post this to the view handler to make sure shouldExpandToolbar returns the correct value
+                        f.view?.post {
+                            if (f.view != null) {
+                                expandToolbar(expand = f.shouldExpandToolbar(), animate = false)
+                            }
                         }
+                        enableToolbarExpansion(true)
+                    } else {
+                        expandToolbar(expand = false, animate = false)
+                        enableToolbarExpansion(false)
                     }
-                } else {
-                    expandToolbar(expand = false, animate = false)
-                }
 
-                // collapsible toolbar should only be able to expand for top-level fragments
-                enableToolbarExpansion(f is TopLevelFragment)
+                    toolbar.navigationIcon = appBarStatus.navigationIcon?.let {
+                        ContextCompat.getDrawable(this@MainActivity, it)
+                    }
+                    binding.appBarLayout.elevation = if (appBarStatus.hasShadow) {
+                        resources.getDimensionPixelSize(dimen.appbar_elevation).toFloat()
+                    } else 0f
+                    binding.appBarDivider.isVisible = appBarStatus.hasDivider
+                }
+                AppBarStatus.Hidden -> hideToolbar()
+            }
+
+            if (f is TopLevelFragment) {
+                showBottomNav()
+            } else {
+                hideBottomNav()
             }
         }
     }
@@ -177,13 +217,19 @@ class MainActivity :
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         this.menu = menu
         return super.onCreateOptionsMenu(menu)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Verify authenticated session
+        if (!presenter.userIsLoggedIn()) {
+            showLoginScreen()
+            return
+        }
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -192,21 +238,18 @@ class MainActivity :
         setSupportActionBar(toolbar)
         toolbar.navigationIcon = null
 
-        presenter.takeView(this)
-
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
+        val graphInflater = navHostFragment.navController.navInflater
+
+        val navGraph = graphInflater.inflate(R.navigation.nav_graph_main)
+        navGraph.setStartDestination(viewModel.startDestination)
+
         navController = navHostFragment.navController
-        navController.addOnDestinationChangedListener(this@MainActivity)
-
+        navController.graph = navGraph
         navHostFragment.childFragmentManager.registerFragmentLifecycleCallbacks(fragmentLifecycleObserver, false)
-
         binding.bottomNav.init(navController, this)
 
-        // Verify authenticated session
-        if (!presenter.userIsLoggedIn()) {
-            showLoginScreen()
-            return
-        }
+        presenter.takeView(this)
 
         // fetch the site list if the database has been downgraded - otherwise the site picker will be displayed,
         // which we don't want in this situation
@@ -216,12 +259,7 @@ class MainActivity :
             return
         }
 
-        if (!selectedSite.exists()) {
-            showSitePickerScreen()
-            return
-        }
-
-        if (!presenter.isUserEligible()) {
+        if (selectedSite.exists() && !presenter.isUserEligible()) {
             showUserEligibilityErrorScreen()
             return
         }
@@ -254,8 +292,9 @@ class MainActivity :
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
 
-        updateReviewsBadge()
-        updateOrderBadge(false)
+        if (selectedSite.exists()) {
+            updateOrderBadge(false)
+        }
 
         checkConnection()
         viewModel.showFeatureAnnouncementIfNeeded()
@@ -333,7 +372,7 @@ class MainActivity :
             currentDestinationId == R.id.dashboard ||
                 currentDestinationId == R.id.orders ||
                 currentDestinationId == R.id.products ||
-                currentDestinationId == R.id.reviews ||
+                currentDestinationId == R.id.moreMenu ||
                 currentDestinationId == R.id.analytics
         } else {
             true
@@ -382,88 +421,15 @@ class MainActivity :
         return null
     }
 
-    /**
-     * The current fragment in the nav controller has changed
-     */
-    override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
-        val isAtRoot = isAtNavigationRoot()
-        val isTopLevelNavigation = isAtTopLevelNavigation(isAtRoot = isAtRoot, destination = destination)
-
-        // go no further if this is the initial navigation to the root fragment, or if the destination is
-        // a dialog (since we don't need to change anything for dialogs)
-        if ((isAtRoot && previousDestinationId == null) || isDialogDestination(destination)) {
-            previousDestinationId = destination.id
-            return
+    private fun showToolbar() {
+        if (restoreToolbarHeight > 0) {
+            binding.collapsingToolbar.updateLayoutParams { height = restoreToolbarHeight }
         }
+    }
 
-        val showCrossIcon: Boolean
-        if (isTopLevelNavigation) {
-            if (destination.id != R.id.dashboard) {
-                // MyStoreFragment handle the elevation by themselves
-                binding.appBarLayout.elevation = 0f
-            }
-            showCrossIcon = false
-        } else {
-            binding.appBarLayout.elevation =
-                resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
-
-            showCrossIcon = when (destination.id) {
-                R.id.productFilterListFragment,
-                R.id.issueRefundFragment,
-                R.id.addOrderShipmentTrackingFragment,
-                R.id.addOrderNoteFragment,
-                R.id.printShippingLabelInfoFragment,
-                R.id.shippingLabelFormatOptionsFragment,
-                R.id.printingInstructionsFragment,
-                R.id.editCustomerOrderNoteFragment,
-                R.id.shippingAddressEditingFragment,
-                R.id.billingAddressEditingFragment,
-                R.id.orderFilterCategoriesFragment -> {
-                    true
-                }
-                R.id.productDetailFragment -> {
-                    // show Cross icon only when product detail isn't opened from the product list
-                    binding.bottomNav.currentPosition != PRODUCTS
-                }
-                else -> {
-                    false
-                }
-            }
-        }
-
-        if (isAtRoot) {
-            toolbar.navigationIcon = null
-        } else if (showCrossIcon) {
-            toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_gridicons_cross_24dp)
-        } else {
-            toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_back_24dp)
-        }
-
-        val isFullScreenFragment = destination.id == R.id.productImageViewerFragment
-
-        supportActionBar?.let {
-            // the image viewers should be shown full screen
-            if (isFullScreenFragment) {
-                window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-                restoreToolbarHeight = binding.collapsingToolbar.layoutParams.height
-                binding.collapsingToolbar.layoutParams.height = 0
-            } else {
-                window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-                if (restoreToolbarHeight > 0) {
-                    binding.collapsingToolbar.layoutParams.height = restoreToolbarHeight
-                    restoreToolbarHeight = 0
-                }
-            }
-        }
-
-        // show bottom nav if this is a dialog destination from root or, just root itself
-        if (isTopLevelNavigation) {
-            showBottomNav()
-        } else {
-            hideBottomNav()
-        }
-
-        previousDestinationId = destination.id
+    private fun hideToolbar() {
+        restoreToolbarHeight = binding.collapsingToolbar.layoutParams.height
+        binding.collapsingToolbar.updateLayoutParams { height = 0 }
     }
 
     override fun setTitle(title: CharSequence?) {
@@ -483,19 +449,34 @@ class MainActivity :
         }
     }
 
+    private fun createCollapsingToolbarMarginBottomAnimator(from: Int, to: Int, duration: Long): ValueAnimator {
+        return ValueAnimator.ofInt(from, to)
+            .also { valueAnimator ->
+                valueAnimator.duration = duration
+                valueAnimator.interpolator = AccelerateDecelerateInterpolator()
+                valueAnimator.addUpdateListener {
+                    binding.collapsingToolbar.expandedTitleMarginBottom = it.animatedValue as Int
+                }
+            }
+    }
+
     private fun removeSubtitle() {
-        binding.toolbarSubtitle.hide()
         binding.appBarLayout.removeOnOffsetChangedListener(appBarOffsetListener)
-        binding.collapsingToolbar.expandedTitleMarginBottom =
-            resources.getDimensionPixelSize(dimen.expanded_toolbar_bottom_margin)
+        if (binding.toolbarSubtitle.visibility == View.GONE) return
+        if (binding.collapsingToolbar.layoutParams.height != 0) {
+            binding.toolbarSubtitle.collapse(duration = 200L)
+            hideSubtitleAnimator.start()
+        } else {
+            binding.toolbarSubtitle.hide()
+        }
     }
 
     private fun setFadingSubtitleOnCollapsingToolbar(subtitle: CharSequence) {
-        binding.collapsingToolbar.expandedTitleMarginBottom =
-            resources.getDimensionPixelSize(dimen.expanded_toolbar_bottom_margin_with_subtitle)
         binding.appBarLayout.addOnOffsetChangedListener(appBarOffsetListener)
         binding.toolbarSubtitle.text = subtitle
-        binding.toolbarSubtitle.show()
+        if (binding.toolbarSubtitle.visibility == View.VISIBLE) return
+        binding.toolbarSubtitle.expand(duration = 200L)
+        showSubtitleAnimator.start()
     }
 
     fun enableToolbarExpansion(enable: Boolean) {
@@ -538,12 +519,6 @@ class MainActivity :
                 return
             }
             RequestCodes.SETTINGS -> {
-                // restart the activity if the user returned from settings and they switched sites
-                if (resultCode == AppSettingsActivity.RESULT_CODE_SITE_CHANGED) {
-                    presenter.selectedSiteChanged(selectedSite.get())
-                    restart()
-                }
-
                 // beta features have changed. Restart activity for changes to take effect
                 if (resultCode == AppSettingsActivity.RESULT_CODE_BETA_OPTIONS_CHANGED) {
                     restart()
@@ -567,21 +542,13 @@ class MainActivity :
         finish()
     }
 
-    /**
-     * displays the site picker activity and finishes this activity
-     */
-    override fun showSitePickerScreen() {
-        SitePickerActivity.showSitePickerFromLogin(this)
-        finish()
-    }
-
     override fun showUserEligibilityErrorScreen() {
         val action = NavGraphMainDirections.actionGlobalUserEligibilityErrorFragment()
         navController.navigateSafely(action)
     }
 
     override fun showSettingsScreen() {
-        AnalyticsTracker.track(Stat.MAIN_MENU_SETTINGS_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.MAIN_MENU_SETTINGS_TAPPED)
         val intent = Intent(this, AppSettingsActivity::class.java)
         startActivityForResult(intent, RequestCodes.SETTINGS)
     }
@@ -589,14 +556,20 @@ class MainActivity :
     override fun updateSelectedSite() {
         hideProgressDialog()
 
-        if (!selectedSite.exists()) {
-            showSitePickerScreen()
-            return
-        }
-
         // Complete UI initialization
         binding.bottomNav.init(navController, this)
         initFragment(null)
+    }
+
+    fun startSitePicker() {
+        navController.navigateSafely(
+            MoreMenuFragmentDirections.actionGlobalLoginToSitePickerFragment(openedFromLogin = false)
+        )
+    }
+
+    fun handleSitePickerResult() {
+        presenter.selectedSiteChanged(selectedSite.get())
+        restart()
     }
 
     /**
@@ -620,24 +593,6 @@ class MainActivity :
         return Intent.ACTION_VIEW == action && host.contains(MAGIC_LOGIN)
     }
 
-    // region Bottom Navigation
-    override fun updateReviewsBadge() {
-        if (AppPrefs.getHasUnseenReviews()) {
-            showReviewsBadge()
-        } else {
-            hideReviewsBadge()
-        }
-    }
-
-    override fun hideReviewsBadge() {
-        binding.bottomNav.showReviewsBadge(false)
-        viewModel.removeReviewNotifications()
-    }
-
-    override fun showReviewsBadge() {
-        binding.bottomNav.showReviewsBadge(true)
-    }
-
     override fun updateOrderBadge(hideCountUntilComplete: Boolean) {
         if (hideCountUntilComplete) {
             binding.bottomNav.clearOrderBadgeCount()
@@ -655,30 +610,32 @@ class MainActivity :
         binding.bottomNav.setOrderBadgeCount(0)
     }
 
+    private fun showMoreMenuBadge(count: Int) {
+        binding.bottomNav.showMoreMenuBadge(count)
+    }
+
     override fun onNavItemSelected(navPos: BottomNavigationPosition) {
         val stat = when (navPos) {
-            MY_STORE -> Stat.MAIN_TAB_DASHBOARD_SELECTED
-            ANALYTICS -> Stat.MAIN_TAB_ANALYTICS_SELECTED
-            ORDERS -> Stat.MAIN_TAB_ORDERS_SELECTED
-            PRODUCTS -> Stat.MAIN_TAB_PRODUCTS_SELECTED
-            REVIEWS -> Stat.MAIN_TAB_NOTIFICATIONS_SELECTED
+            MY_STORE -> AnalyticsEvent.MAIN_TAB_DASHBOARD_SELECTED
+            ANALYTICS -> AnalyticsEvent.MAIN_TAB_ANALYTICS_SELECTED
+            ORDERS -> AnalyticsEvent.MAIN_TAB_ORDERS_SELECTED
+            PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_SELECTED
+            MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_SELECTED
         }
         AnalyticsTracker.track(stat)
 
-        if (navPos == REVIEWS) {
-            viewModel.removeReviewNotifications()
-        } else if (navPos == ORDERS) {
+        if (navPos == ORDERS) {
             viewModel.removeOrderNotifications()
         }
     }
 
     override fun onNavItemReselected(navPos: BottomNavigationPosition) {
         val stat = when (navPos) {
-            MY_STORE -> Stat.MAIN_TAB_DASHBOARD_RESELECTED
-            ANALYTICS -> Stat.MAIN_TAB_ANALYTICS_RESELECTED
-            ORDERS -> Stat.MAIN_TAB_ORDERS_RESELECTED
-            PRODUCTS -> Stat.MAIN_TAB_PRODUCTS_RESELECTED
-            REVIEWS -> Stat.MAIN_TAB_NOTIFICATIONS_RESELECTED
+            MY_STORE -> AnalyticsEvent.MAIN_TAB_DASHBOARD_RESELECTED
+            ANALYTICS -> AnalyticsEvent.MAIN_TAB_ANALYTICS_RESELECTED
+            ORDERS -> AnalyticsEvent.MAIN_TAB_ORDERS_RESELECTED
+            PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_RESELECTED
+            MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_RESELECTED
         }
         AnalyticsTracker.track(stat)
 
@@ -720,42 +677,42 @@ class MainActivity :
     // endregion
 
     private fun setupObservers() {
-        viewModel.event.observe(
-            this,
-            { event ->
-                when (event) {
-                    is ViewMyStoreStats -> binding.bottomNav.currentPosition = MY_STORE
-                    is ViewOrderList -> binding.bottomNav.currentPosition = ORDERS
-                    is ViewReviewList -> binding.bottomNav.currentPosition = REVIEWS
-                    is ViewZendeskTickets -> {
-                        binding.bottomNav.currentPosition = MY_STORE
-                        startActivity(HelpActivity.createIntent(this, Origin.ZENDESK_NOTIFICATION, null))
-                    }
-                    is ViewOrderDetail -> {
-                        showOrderDetail(
-                            event.localSiteId,
-                            remoteOrderId = event.uniqueId,
-                            remoteNoteId = event.remoteNoteId,
-                            launchedFromNotification = true
-                        )
-                    }
-                    is ViewReviewDetail -> {
-                        showReviewDetail(event.uniqueId, launchedFromNotification = true, enableModeration = true)
-                    }
-                    is RestartActivityForNotification -> {
-                        // Add flags for handling the push notification after restart
-                        intent.putExtra(FIELD_OPENED_FROM_PUSH, true)
-                        intent.putExtra(FIELD_REMOTE_NOTIFICATION, event.notification)
-                        intent.putExtra(FIELD_PUSH_ID, event.pushId)
-                        restart()
-                    }
-                    is ShowFeatureAnnouncement -> {
-                        val action = NavGraphMainDirections.actionOpenWhatsnewFromMain(event.announcement)
-                        navController.navigateSafely(action)
-                    }
+        viewModel.event.observe(this) { event ->
+            when (event) {
+                is ViewMyStoreStats -> binding.bottomNav.currentPosition = MY_STORE
+                is ViewOrderList -> binding.bottomNav.currentPosition = ORDERS
+                is ViewZendeskTickets -> {
+                    binding.bottomNav.currentPosition = MY_STORE
+                    startActivity(HelpActivity.createIntent(this, Origin.ZENDESK_NOTIFICATION, null))
+                }
+                is ViewOrderDetail -> {
+                    showOrderDetail(
+                        orderId = event.uniqueId,
+                        remoteNoteId = event.remoteNoteId,
+                        launchedFromNotification = true
+                    )
+                }
+                is ViewReviewDetail -> {
+                    showReviewDetail(event.uniqueId, launchedFromNotification = true)
+                }
+                is ViewReviewList -> showReviewList()
+                is RestartActivityForNotification -> {
+                    // Add flags for handling the push notification after restart
+                    intent.putExtra(FIELD_OPENED_FROM_PUSH, true)
+                    intent.putExtra(FIELD_REMOTE_NOTIFICATION, event.notification)
+                    intent.putExtra(FIELD_PUSH_ID, event.pushId)
+                    restart()
+                }
+                is ShowFeatureAnnouncement -> {
+                    val action = NavGraphMainDirections.actionOpenWhatsnewFromMain(event.announcement)
+                    navController.navigateSafely(action)
                 }
             }
-        )
+        }
+
+        viewModel.unseenReviewsCount.observe(this) { count ->
+            showMoreMenuBadge(count)
+        }
     }
 
     override fun showProductDetail(remoteProductId: Long, enableTrash: Boolean) {
@@ -764,6 +721,17 @@ class MainActivity :
             isTrashEnabled = enableTrash
         )
         navController.navigateSafely(action)
+    }
+
+    override fun showProductDetailWithSharedTransition(remoteProductId: Long, sharedView: View, enableTrash: Boolean) {
+        val productCardDetailTransitionName = getString(R.string.product_card_detail_transition_name)
+        val extras = FragmentNavigatorExtras(sharedView to productCardDetailTransitionName)
+
+        val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
+            remoteProductId = remoteProductId,
+            isTrashEnabled = enableTrash
+        )
+        navController.navigateSafely(directions = action, extras = extras)
     }
 
     override fun showProductVariationDetail(remoteProductId: Long, remoteVariationId: Long) {
@@ -780,26 +748,46 @@ class MainActivity :
         navController.navigateSafely(action)
     }
 
+    private fun showReviewList() {
+        showBottomNav()
+        binding.bottomNav.currentPosition = MORE
+        binding.bottomNav.active(MORE.position)
+        val action = MoreMenuFragmentDirections.actionMoreMenuToReviewList()
+        navController.navigateSafely(action)
+    }
+
     override fun showReviewDetail(
         remoteReviewId: Long,
         launchedFromNotification: Boolean,
-        enableModeration: Boolean,
         tempStatus: String?
     ) {
-        // make sure the review tab is active if the user came here from a notification
         if (launchedFromNotification) {
-            showBottomNav()
-            binding.bottomNav.currentPosition = REVIEWS
-            binding.bottomNav.active(REVIEWS.position)
+            binding.bottomNav.currentPosition = MORE
+            binding.bottomNav.active(MORE.position)
         }
 
+        val action = NavGraphMainDirections.actionGlobalReviewDetailFragment(
+            remoteReviewId = remoteReviewId,
+            tempStatus = tempStatus,
+            launchedFromNotification = launchedFromNotification
+        )
+        navController.navigateSafely(action)
+    }
+
+    override fun showReviewDetailWithSharedTransition(
+        remoteReviewId: Long,
+        launchedFromNotification: Boolean,
+        sharedView: View,
+        tempStatus: String?
+    ) {
+        val reviewCardDetailTransitionName = getString(R.string.review_card_detail_transition_name)
+        val extras = FragmentNavigatorExtras(sharedView to reviewCardDetailTransitionName)
         val action = ReviewListFragmentDirections.actionReviewListFragmentToReviewDetailFragment(
             remoteReviewId = remoteReviewId,
             tempStatus = tempStatus,
-            launchedFromNotification = launchedFromNotification,
-            enableModeration = enableModeration
+            launchedFromNotification = launchedFromNotification
         )
-        navController.navigateSafely(action)
+        navController.navigateSafely(directions = action, extras = extras)
     }
 
     override fun showProductFilters(
@@ -820,21 +808,31 @@ class MainActivity :
     }
 
     override fun showOrderDetail(
-        localSiteId: Int,
-        localOrderId: Int,
-        remoteOrderId: Long,
+        orderId: Long,
         remoteNoteId: Long,
         launchedFromNotification: Boolean
     ) {
         if (launchedFromNotification) {
-            showBottomNav()
             binding.bottomNav.currentPosition = ORDERS
             binding.bottomNav.active(ORDERS.position)
         }
 
-        val orderId = OrderIdentifier(localOrderId, localSiteId, remoteOrderId)
         val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(orderId, remoteNoteId)
+        crashLogging.recordEvent("Opening order $orderId")
         navController.navigateSafely(action)
+    }
+
+    override fun showOrderDetailWithSharedTransition(
+        orderId: Long,
+        remoteNoteId: Long,
+        sharedView: View
+    ) {
+        val orderCardDetailTransitionName = getString(R.string.order_card_detail_transition_name)
+        val extras = FragmentNavigatorExtras(sharedView to orderCardDetailTransitionName)
+
+        val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(orderId, remoteNoteId)
+        crashLogging.recordEvent("Opening order $orderId")
+        navController.navigateSafely(directions = action, extras = extras)
     }
 
     override fun showFeedbackSurvey() {

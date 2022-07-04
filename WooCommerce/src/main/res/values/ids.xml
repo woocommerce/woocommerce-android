@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item type="id" name="stats_tab_layout" />
+    <item type="id" name="more_menu_compose_view" />
 </resources>

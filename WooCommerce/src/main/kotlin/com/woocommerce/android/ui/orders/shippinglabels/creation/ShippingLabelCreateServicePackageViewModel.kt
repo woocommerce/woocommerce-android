@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
@@ -78,7 +79,7 @@ class ShippingLabelCreateServicePackageViewModel @Inject constructor(
                 when {
                     result.isError -> {
                         AnalyticsTracker.track(
-                            stat = AnalyticsTracker.Stat.SHIPPING_LABEL_ADD_PACKAGE_FAILED,
+                            stat = AnalyticsEvent.SHIPPING_LABEL_ADD_PACKAGE_FAILED,
                             properties = mapOf(
                                 "type" to "predefined",
                                 "error" to result.error.message

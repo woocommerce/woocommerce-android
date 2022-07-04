@@ -1,0 +1,62 @@
+# Nodes with values to reuse in the pipeline.
+common_params:
+  # Common plugin settings to use with the `plugins` key.
+  - &common_plugins
+    - automattic/bash-cache#2.5.0
+
+steps:
+  - label: "checkstyle"
+    command: |
+      echo "--- 🧹 Linting"
+      cp -v gradle.properties-example gradle.properties
+      ./gradlew checkstyle
+    plugins: *common_plugins
+    artifact_paths:
+      - "**/build/reports/checkstyle/checkstyle.*"
+
+  - label: "detekt"
+    command: |
+      echo "--- 🧹 Linting"
+      cp gradle.properties-example gradle.properties
+      ./gradlew detektAll
+    plugins: *common_plugins
+    artifact_paths:
+      - "**/build/reports/detekt/detekt.html"
+
+  - label: "lint"
+    command: |
+      echo "--- 🧹 Linting"
+      cp gradle.properties-example gradle.properties
+      ./gradlew lintJalapenoDebug
+    plugins: *common_plugins
+    artifact_paths:
+      - "**/build/reports/lint-results*.*"
+
+  - label: "Dependency Tree Diff"
+    command: |
+      cp gradle.properties-example gradle.properties
+      .buildkite/commands/dependency-tree-diff.sh
+    if: build.pull_request.id != null
+    plugins: *common_plugins
+
+  - label: "Unit tests"
+    command: |
+      echo "--- 🧪 Testing"
+      cp gradle.properties-example gradle.properties
+      ./gradlew testJalapenoDebug lib:cardreader:testDebug
+      echo "--- ⚒️ Generating and uploading code coverage"
+      ./gradlew jacocoTestReport
+      .buildkite/commands/upload-code-coverage.sh
+    plugins: *common_plugins
+
+  - label: "Ensure Screenshot Tests Build"
+    command: |
+      echo "--- ⚒️ Building"
+      cp gradle.properties-example gradle.properties
+      ./gradlew assembleJalapenoDebugAndroidTest
+    plugins: *common_plugins
+
+  - label: "🛠 Installable Build"
+    command: ".buildkite/commands/installable-build.sh"
+    if: build.pull_request.id != null
+    plugins: *common_plugins

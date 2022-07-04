@@ -4,9 +4,10 @@ import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
@@ -37,7 +38,6 @@ class ProductListViewModel @Inject constructor(
     mediaFileUploadHandler: MediaFileUploadHandler
 ) : ScopedViewModel(savedState) {
     companion object {
-        private const val SEARCH_TYPING_DELAY_MS = 500L
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
         private const val KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME = "key_product_filter_selected_category_name"
     }
@@ -137,7 +137,7 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun onFiltersButtonTapped() {
-        AnalyticsTracker.track(Stat.PRODUCT_LIST_VIEW_FILTER_OPTIONS_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_VIEW_FILTER_OPTIONS_TAPPED)
         triggerEvent(
             ShowProductFilterScreen(
                 productFilterOptions[ProductFilterOption.STOCK_STATUS],
@@ -150,18 +150,18 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun onSortButtonTapped() {
-        AnalyticsTracker.track(Stat.PRODUCT_LIST_VIEW_SORTING_OPTIONS_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_VIEW_SORTING_OPTIONS_TAPPED)
         triggerEvent(ShowProductSortingBottomSheet)
     }
 
     fun onRefreshRequested() {
-        AnalyticsTracker.track(Stat.PRODUCT_LIST_PULLED_TO_REFRESH)
+        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_PULLED_TO_REFRESH)
         refreshProducts()
     }
 
     fun onAddProductButtonClicked() {
         launch {
-            AnalyticsTracker.track(Stat.PRODUCT_LIST_ADD_PRODUCT_BUTTON_TAPPED)
+            AnalyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_ADD_PRODUCT_BUTTON_TAPPED)
             triggerEvent(ShowAddProductBottomSheet)
         }
     }
@@ -195,7 +195,7 @@ class ProductListViewModel @Inject constructor(
 
     fun onSearchRequested() {
         AnalyticsTracker.track(
-            Stat.PRODUCT_LIST_SEARCHED,
+            AnalyticsEvent.PRODUCT_LIST_SEARCHED,
             mapOf(AnalyticsTracker.KEY_SEARCH to viewState.query)
         )
         refreshProducts()
@@ -237,7 +237,7 @@ class ProductListViewModel @Inject constructor(
             // the fetch until the user stops typing
             searchJob?.cancel()
             searchJob = launch {
-                delay(SEARCH_TYPING_DELAY_MS)
+                delay(AppConstants.SEARCH_TYPING_DELAY_MS)
                 if (checkConnection()) {
                     viewState = viewState.copy(
                         isLoading = true,
@@ -305,13 +305,19 @@ class ProductListViewModel @Inject constructor(
                 !isSearching()
             }
 
+        val shouldShowEmptyView = if (isSearching()) {
+            viewState.query?.isNotEmpty() == true && _productList.value?.isEmpty() == true
+        } else {
+            _productList.value?.isEmpty() == true
+        }
+
         viewState = viewState.copy(
             isSkeletonShown = false,
             isLoading = false,
             isLoadingMore = false,
             isRefreshing = false,
             canLoadMore = productRepository.canLoadMoreProducts,
-            isEmptyViewVisible = _productList.value?.isEmpty() == true,
+            isEmptyViewVisible = shouldShowEmptyView,
             isAddProductButtonVisible = shouldShowAddProductButton,
             displaySortAndFilterCard = !isSearching() &&
                 (productFilterOptions.isNotEmpty() || _productList.value?.isNotEmpty() == true)
@@ -346,9 +352,15 @@ class ProductListViewModel @Inject constructor(
         loadMore: Boolean = false,
         scrollToTop: Boolean = false
     ) {
-        if (searchQuery.isNullOrEmpty()) {
-            _productList.value = productRepository.fetchProductList(loadMore, productFilterOptions)
-        } else {
+        if (!isSearching()) {
+            val products = productRepository.fetchProductList(loadMore, productFilterOptions)
+            // don't update the product list if a search was initiated while fetching
+            if (isSearching()) {
+                WooLog.i(WooLog.T.PRODUCTS, "Search initiated while fetching products")
+            } else {
+                _productList.value = products
+            }
+        } else if (searchQuery?.isNotEmpty() == true) {
             productRepository.searchProductList(searchQuery, loadMore)?.let { fetchedProducts ->
                 // make sure the search query hasn't changed while the fetch was processing
                 if (searchQuery == productRepository.lastSearchQuery) {

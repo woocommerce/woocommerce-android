@@ -12,8 +12,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.barcode.LiveBarcodeScanningFragment
 import com.woocommerce.android.databinding.ActivityLoginBinding
 import com.woocommerce.android.support.HelpActivity
@@ -151,10 +151,10 @@ class LoginActivity :
     private fun slideInFragment(fragment: Fragment, shouldAddToBackStack: Boolean, tag: String) {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.setCustomAnimations(
-            R.anim.activity_slide_in_from_right,
-            R.anim.activity_slide_out_to_left,
-            R.anim.activity_slide_in_from_left,
-            R.anim.activity_slide_out_to_right
+            R.anim.default_enter_anim,
+            R.anim.default_exit_anim,
+            R.anim.default_pop_enter_anim,
+            R.anim.default_pop_exit_anim
         )
         fragmentTransaction.replace(R.id.fragment_container, fragment, tag)
         if (shouldAddToBackStack) {
@@ -631,7 +631,7 @@ class LoginActivity :
     }
 
     override fun showHelpFindingConnectedEmail() {
-        AnalyticsTracker.track(Stat.LOGIN_BY_EMAIL_HELP_FINDING_CONNECTED_EMAIL_LINK_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_BY_EMAIL_HELP_FINDING_CONNECTED_EMAIL_LINK_TAPPED)
         unifiedLoginTracker.trackClick(Click.HELP_FINDING_CONNECTED_EMAIL)
 
         LoginEmailHelpDialogFragment().show(supportFragmentManager, LoginEmailHelpDialogFragment.TAG)

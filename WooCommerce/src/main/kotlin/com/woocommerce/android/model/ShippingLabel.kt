@@ -6,7 +6,7 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel
 import java.math.BigDecimal
-import java.util.Date
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 @Parcelize
@@ -56,44 +56,6 @@ data class ShippingLabel(
         val status: String,
         val refundDate: Date?
     ) : Parcelable
-}
-
-fun WCShippingLabelModel.toAppModel(): ShippingLabel {
-    return ShippingLabel(
-        id = remoteShippingLabelId,
-        trackingNumber = trackingNumber,
-        carrierId = carrierId,
-        serviceName = serviceName,
-        status = status,
-        createdDate = dateCreated?.let { Date(it) },
-        expiryDate = expiryDate?.let { Date(it) },
-        packageName = packageName,
-        rate = rate.toBigDecimal(),
-        refundableAmount = refundableAmount.toBigDecimal(),
-        currency = currency,
-        productNames = getProductNameList().map { it.trim() },
-        productIds = getProductIdsList(),
-        originAddress = getOriginAddress()?.toAppModel(),
-        destinationAddress = getDestinationAddress()?.toAppModel(),
-        refund = getRefundModel()?.toAppModel(),
-        commercialInvoiceUrl = commercialInvoiceUrl
-    )
-}
-
-fun WCShippingLabelModel.ShippingLabelAddress.toAppModel(): Address {
-    return Address(
-        company = company ?: "",
-        firstName = name ?: "",
-        lastName = "",
-        phone = phone ?: "",
-        country = country ?: "",
-        state = state ?: "",
-        address1 = address ?: "",
-        address2 = address2 ?: "",
-        city = city ?: "",
-        postcode = postcode ?: "",
-        email = ""
-    )
 }
 
 fun WCShippingLabelModel.WCShippingLabelRefundModel.toAppModel(): ShippingLabel.Refund {

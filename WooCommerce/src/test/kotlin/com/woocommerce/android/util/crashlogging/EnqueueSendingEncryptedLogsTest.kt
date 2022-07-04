@@ -2,17 +2,17 @@ package com.woocommerce.android.util.crashlogging
 
 import com.automattic.android.tracks.crashlogging.EventLevel.FATAL
 import com.automattic.android.tracks.crashlogging.EventLevel.INFO
+import com.woocommerce.android.tools.NetworkStatus
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.argForWhich
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import com.woocommerce.android.tools.NetworkStatus
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.junit.MockitoJUnitRunner
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.EncryptedLogAction.UPLOAD_LOG
 import org.wordpress.android.fluxc.store.EncryptedLogStore.UploadEncryptedLogPayload

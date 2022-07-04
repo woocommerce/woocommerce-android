@@ -5,11 +5,11 @@ import android.view.View
 import android.widget.Toast
 import androidx.core.widget.doOnTextChanged
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentRefundSummaryBinding
+import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateSafely
@@ -28,6 +28,7 @@ import javax.inject.Inject
 class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), BackPressListener {
     companion object {
         const val REFUND_ORDER_NOTICE_KEY = "refund_order_notice"
+        const val KEY_INTERAC_SUCCESS = "interac_refund_success"
     }
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
@@ -58,24 +59,23 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
 
     private fun setupObservers() {
         viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> uiMessageResolver.getSnack(event.message, *event.args).show()
-                    is Exit -> navigateBackWithNotice(REFUND_ORDER_NOTICE_KEY, R.id.orderDetailFragment)
-                    is ShowRefundConfirmation -> {
-                        val action =
-                            RefundSummaryFragmentDirections.actionRefundSummaryFragmentToRefundConfirmationDialog(
-                                title = event.title,
-                                message = event.message,
-                                positiveButtonTitle = event.confirmButtonTitle
-                            )
-                        findNavController().navigateSafely(action)
-                    }
-                    else -> event.isHandled = false
+            viewLifecycleOwner
+        ) { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.getSnack(event.message, *event.args).show()
+                is Exit -> navigateBackWithNotice(REFUND_ORDER_NOTICE_KEY, R.id.orderDetailFragment)
+                is ShowRefundConfirmation -> {
+                    val action =
+                        RefundSummaryFragmentDirections.actionRefundSummaryFragmentToRefundConfirmationDialog(
+                            title = event.title,
+                            message = event.message,
+                            positiveButtonTitle = event.confirmButtonTitle
+                        )
+                    findNavController().navigateSafely(action)
                 }
+                else -> event.isHandled = false
             }
-        )
+        }
 
         viewModel.refundSummaryStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.isFormEnabled?.takeIfNotEqualTo(old?.isFormEnabled) {
@@ -100,6 +100,12 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
                 } else {
                     binding.refundSummaryMethodDescription.hide()
                 }
+            }
+            handleDialogNotice<String>(
+                KEY_INTERAC_SUCCESS,
+                entryId = R.id.refundSummaryFragment
+            ) {
+                viewModel.refund()
             }
         }
     }

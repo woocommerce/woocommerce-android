@@ -2,28 +2,35 @@ package com.woocommerce.android.ui.jetpack
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.*
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.*
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.*
+import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.*
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 @HiltViewModel
 class JetpackInstallViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val repository: PluginRepository
+    private val repository: PluginRepository,
+    private val selectedSite: SelectedSite,
+    private val wooCommerceStore: WooCommerceStore
 ) : ScopedViewModel(savedState) {
     companion object {
-        const val CONNECTION_DELAY = 1000L
         const val JETPACK_SLUG = "jetpack"
         const val JETPACK_NAME = "jetpack/jetpack"
+        const val CONNECTION_ERROR = "Connection error."
+        const val ATTEMPT_LIMIT = 2
+        const val SYNC_CHECK_DELAY = 3000L
     }
 
     val viewStateLiveData = LiveDataDelegate(savedState, JetpackInstallProgressViewState())
@@ -52,39 +59,65 @@ class JetpackInstallViewModel @Inject constructor(
 
                     is PluginInstallFailed -> {
                         AnalyticsTracker.track(
-                            Stat.JETPACK_INSTALL_FAILED,
+                            AnalyticsEvent.JETPACK_INSTALL_FAILED,
                             errorContext = this@JetpackInstallViewModel.javaClass.simpleName,
                             errorType = it.errorType,
                             errorDescription = it.errorDescription
                         )
-                        viewState = viewState.copy(installStatus = Failed(it.errorDescription))
+                        viewState = viewState.copy(installStatus = Failed(INSTALLATION, it.errorDescription))
                     }
 
                     is PluginActivated -> {
-                        AnalyticsTracker.track(Stat.JETPACK_INSTALL_SUCCEEDED)
-                        simulateConnectingAndFinishedSteps()
+                        AnalyticsTracker.track(AnalyticsEvent.JETPACK_INSTALL_SUCCEEDED)
+                        checkJetpackConnection()
                     }
 
                     is PluginActivationFailed -> {
                         AnalyticsTracker.track(
-                            Stat.JETPACK_INSTALL_FAILED,
+                            AnalyticsEvent.JETPACK_INSTALL_FAILED,
                             errorContext = this@JetpackInstallViewModel.javaClass.simpleName,
                             errorType = it.errorType,
                             errorDescription = it.errorDescription
                         )
-                        viewState = viewState.copy(installStatus = Failed(it.errorDescription))
+                        viewState = viewState.copy(installStatus = Failed(ACTIVATION, it.errorDescription))
                     }
                 }
             }
         }
     }
 
-    private fun simulateConnectingAndFinishedSteps() {
+    fun checkJetpackConnection(retry: Boolean = false) {
         launch {
-            viewState = viewState.copy(installStatus = Connecting)
-            delay(CONNECTION_DELAY)
-            viewState = viewState.copy(installStatus = Finished)
+            viewState = viewState.copy(installStatus = Connecting(retry))
+            val isJetpackConnected = isJetpackConnectedAfterInstallation()
+            viewState = if (isJetpackConnected) {
+                viewState.copy(installStatus = Finished)
+            } else {
+                viewState.copy(installStatus = Failed(CONNECTION, CONNECTION_ERROR))
+            }
         }
+    }
+
+    // After Jetpack-the-plugin is installed and activated on the site via the app, it will do a site sync.
+    // The app needs the sync to be finished before the entire installation is considered finished and the site
+    // can be used as a full WooCommerce site in the app.
+    private suspend fun isJetpackConnectedAfterInstallation(): Boolean {
+        var attempt = 0
+        while (attempt < ATTEMPT_LIMIT) {
+            val result = wooCommerceStore.fetchWooCommerceSites()
+            val sites = result.model
+            if (sites != null) {
+                val syncedSite = sites.firstOrNull { it.siteId == selectedSite.get().siteId }
+                if (syncedSite?.isJetpackConnected == true && syncedSite.hasWooCommerce) {
+                    selectedSite.set(syncedSite)
+                    return true
+                } else {
+                    attempt++
+                    delay(SYNC_CHECK_DELAY)
+                }
+            }
+        }
+        return false
     }
 
     @Parcelize
@@ -100,12 +133,18 @@ class JetpackInstallViewModel @Inject constructor(
         object Activating : InstallStatus()
 
         @Parcelize
-        object Connecting : InstallStatus()
+        data class Connecting(val retry: Boolean = false) : InstallStatus()
 
         @Parcelize
         object Finished : InstallStatus()
 
         @Parcelize
-        data class Failed(val error: String) : InstallStatus()
+        data class Failed(val errorType: FailureType, val errorDescription: String) : InstallStatus()
+    }
+
+    enum class FailureType {
+        INSTALLATION,
+        ACTIVATION,
+        CONNECTION
     }
 }

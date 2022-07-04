@@ -6,8 +6,10 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.DimenRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.res.use
+import androidx.core.view.children
 import androidx.core.view.isVisible
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
@@ -21,20 +23,42 @@ class OrderCreationSectionView @JvmOverloads constructor(
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
     private val binding = OrderCreationSectionBinding.inflate(LayoutInflater.from(ctx), this, true)
 
+    var isEachAddButtonEnabled
+        get() = binding.addButtonsLayout.children.all { it.isEnabled }
+        set(value) {
+            binding.addButtonsLayout.children.forEach {
+                it.isEnabled = value
+            }
+        }
+
     var header: CharSequence
         get() = binding.headerLabel.text
         set(value) {
             binding.headerLabel.text = value
         }
 
+    var content: View?
+        get() = binding.contentLayout.children.firstOrNull()
+        set(value) {
+            updateContent(value)
+        }
+
     var keepAddButtons: Boolean = false
+    var hasEditButton: Boolean = true
+
+    var isLocked: Boolean = false
+        set(value) {
+            field = value
+            binding.lockIcon.isVisible = value
+        }
 
     init {
         attrs?.let {
             context.obtainStyledAttributes(attrs, R.styleable.OrderCreationSectionView, defStyleAttr, 0)
                 .use { a ->
                     header = a.getString(R.styleable.OrderCreationSectionView_header).orEmpty()
-                    keepAddButtons = a.getBoolean(R.styleable.OrderCreationSectionView_keepAddButtons, false)
+                    keepAddButtons = a.getBoolean(R.styleable.OrderCreationSectionView_keepAddButtons, keepAddButtons)
+                    hasEditButton = a.getBoolean(R.styleable.OrderCreationSectionView_hasEditButton, hasEditButton)
                 }
         }
     }
@@ -55,8 +79,8 @@ class OrderCreationSectionView @JvmOverloads constructor(
         }
     }
 
-    fun updateContent(content: View?) {
-        binding.editButton.isVisible = content != null
+    private fun updateContent(content: View?) {
+        binding.editButton.isVisible = content != null && hasEditButton
         binding.contentLayout.isVisible = content != null
         binding.contentLayout.removeAllViews()
         content?.let {
@@ -70,8 +94,22 @@ class OrderCreationSectionView @JvmOverloads constructor(
         binding.addButtonsLayout.isVisible = keepAddButtons || content == null
     }
 
+    fun setContentHorizontalPadding(@DimenRes padding: Int) {
+        val paddingSize = context.resources.getDimensionPixelSize(padding)
+        binding.contentLayout.setPadding(
+            paddingSize,
+            binding.contentLayout.paddingTop,
+            paddingSize,
+            binding.contentLayout.paddingBottom
+        )
+    }
+
     fun setOnEditButtonClicked(listener: () -> Unit) {
         binding.editButton.setOnClickListener { listener() }
+    }
+
+    fun setEditButtonContentDescription(contentDescription: String) {
+        binding.editButton.contentDescription = contentDescription
     }
 
     data class AddButton(

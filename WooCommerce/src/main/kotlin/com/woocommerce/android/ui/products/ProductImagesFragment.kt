@@ -19,8 +19,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductImagesBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
@@ -318,7 +318,7 @@ class ProductImagesFragment :
         result.processDeviceMediaResult()?.let { mediaUris ->
             if (mediaUris.isNotEmpty()) {
                 AnalyticsTracker.track(
-                    Stat.PRODUCT_IMAGE_ADDED,
+                    AnalyticsEvent.PRODUCT_IMAGE_ADDED,
                     mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to source)
                 )
                 viewModel.uploadProductImages(navArgs.remoteId, mediaUris)
@@ -329,7 +329,7 @@ class ProductImagesFragment :
     private fun handleMediaLibraryPickerResult(result: ActivityResult) {
         result.processMediaLibraryResult()?.let {
             AnalyticsTracker.track(
-                Stat.PRODUCT_IMAGE_ADDED,
+                AnalyticsEvent.PRODUCT_IMAGE_ADDED,
                 mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_WPMEDIA)
             )
             viewModel.onMediaLibraryImagesAdded(it)

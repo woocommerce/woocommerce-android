@@ -215,7 +215,7 @@ class OrderDetailShippingLabelsAdapter(
             shippingLabel.originAddress?.let {
                 viewBinding.shippingLabelItemShipFrom.setShippingLabelValue(
                     it.getFullAddress(
-                        it.firstName, it.getEnvelopeAddress(), it.getCountryLabelByCountryCode()
+                        it.firstName, it.getEnvelopeAddress(), it.country.name
                     )
                 )
             }
@@ -224,7 +224,7 @@ class OrderDetailShippingLabelsAdapter(
             shippingLabel.destinationAddress?.let {
                 viewBinding.shippingLabelItemShipTo.setShippingLabelValue(
                     it.getFullAddress(
-                        it.firstName, it.getEnvelopeAddress(), it.getCountryLabelByCountryCode()
+                        it.firstName, it.getEnvelopeAddress(), it.country.name
                     )
                 )
             }

@@ -1,19 +1,18 @@
 package com.woocommerce.android.ui.main
 
-import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.NotificationReceivedEvent
-import com.woocommerce.android.extensions.NotificationsUnseenReviewsEvent
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationChannelType.NEW_ORDER
 import com.woocommerce.android.tools.ProductImageMap
-import com.woocommerce.android.tools.ProductImageMap.RequestFetchProductEvent
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SelectedSite.SelectedSiteChangedEvent
+import com.woocommerce.android.ui.cardreader.ClearCardReaderDataAction
 import com.woocommerce.android.util.WooLog
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -24,59 +23,51 @@ import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS_COUNT
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
-import org.wordpress.android.fluxc.generated.WCProductActionBuilder
-import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.AccountStore.UpdateTokenPayload
-import org.wordpress.android.fluxc.store.NotificationStore
-import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersCountPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
-import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 class MainPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val accountStore: AccountStore,
-    private val siteStore: SiteStore,
     private val wooCommerceStore: WooCommerceStore,
-    private val notificationStore: NotificationStore,
     private val selectedSite: SelectedSite,
     private val productImageMap: ProductImageMap,
-    private val appPrefs: AppPrefs,
+    private val appPrefsWrapper: AppPrefsWrapper,
     private val wcOrderStore: WCOrderStore,
+    private val clearCardReaderDataAction: ClearCardReaderDataAction
 ) : MainContract.Presenter {
     private var mainView: MainContract.View? = null
 
     private var isHandlingMagicLink: Boolean = false
     private var pendingUnfilledOrderCountCheck: Boolean = false
 
-    override fun takeView(
-        view: MainContract.View
-    ) {
+    override fun takeView(view: MainContract.View) {
         mainView = view
         dispatcher.register(this)
         ConnectionChangeReceiver.getEventBus().register(this)
 
         coroutineScope.launch {
             selectedSite.getIfExists()?.let { siteModel ->
-                wcOrderStore.observeOrdersForSite(
-                    LocalOrRemoteId.LocalId(siteModel.id), listOf(PROCESSING.value)
-                ).collect {
+                wcOrderStore.observeOrderCountForSite(
+                    siteModel, listOf(PROCESSING.value)
+                ).collect { count ->
                     AnalyticsTracker.track(
-                        AnalyticsTracker.Stat.UNFULFILLED_ORDERS_LOADED,
-                        mapOf(AnalyticsTracker.KEY_HAS_UNFULFILLED_ORDERS to it.size)
+                        AnalyticsEvent.UNFULFILLED_ORDERS_LOADED,
+                        mapOf(AnalyticsTracker.KEY_HAS_UNFULFILLED_ORDERS to count)
                     )
 
-                    if (it.isNotEmpty()) {
-                        mainView?.showOrderBadge(it.size)
+                    if (count > 0) {
+                        mainView?.showOrderBadge(count)
                     } else {
                         mainView?.hideOrderBadge()
                     }
@@ -111,6 +102,7 @@ class MainPresenter @Inject constructor(
             WCOrderActionBuilder
                 .newFetchOrderStatusOptionsAction(FetchOrderStatusOptionsPayload(site))
         )
+        coroutineScope.launch { clearCardReaderDataAction() }
     }
 
     override fun fetchUnfilledOrderCount() {
@@ -132,7 +124,7 @@ class MainPresenter @Inject constructor(
         }
     }
 
-    override fun isUserEligible() = appPrefs.isUserEligible()
+    override fun isUserEligible() = appPrefsWrapper.isUserEligible()
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -213,31 +205,11 @@ class MainPresenter @Inject constructor(
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: NotificationsUnseenReviewsEvent) {
-        if (event.hasUnseen) {
-            mainView?.showReviewsBadge()
-        } else {
-            mainView?.hideReviewsBadge()
-        }
-    }
-
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: NotificationReceivedEvent) {
         // a new order notification came in so update the unfilled order count
         if (event.channel == NEW_ORDER) {
             fetchUnfilledOrderCount()
         }
-    }
-
-    /**
-     * A request to fetch a product has been sent - dispatch the action to fetch it
-     */
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: RequestFetchProductEvent) {
-        val payload = WCProductStore.FetchSingleProductPayload(event.site, event.remoteProductId)
-        dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
     }
 
     fun onEventMainThread(event: SelectedSiteChangedEvent) {

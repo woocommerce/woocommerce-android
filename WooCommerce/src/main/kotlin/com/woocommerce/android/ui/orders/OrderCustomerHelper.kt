@@ -5,8 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.Order
 import org.wordpress.android.util.ToastUtils
 import java.util.Locale
@@ -24,9 +24,9 @@ object OrderCustomerHelper {
         emailAddr: String
     ) {
         AnalyticsTracker.track(
-            Stat.ORDER_CONTACT_ACTION,
+            AnalyticsEvent.ORDER_CONTACT_ACTION,
             mapOf(
-                AnalyticsTracker.KEY_ID to order.remoteId,
+                AnalyticsTracker.KEY_ID to order.id,
                 AnalyticsTracker.KEY_STATUS to order.status,
                 AnalyticsTracker.KEY_TYPE to Action.EMAIL.name.toLowerCase(Locale.US)
             )
@@ -38,7 +38,7 @@ object OrderCustomerHelper {
             context.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
             AnalyticsTracker.track(
-                Stat.ORDER_CONTACT_ACTION_FAILED,
+                AnalyticsEvent.ORDER_CONTACT_ACTION_FAILED,
                 this.javaClass.simpleName,
                 e.javaClass.simpleName, "No e-mail app was found"
             )
@@ -53,9 +53,9 @@ object OrderCustomerHelper {
         phone: String
     ) {
         AnalyticsTracker.track(
-            Stat.ORDER_CONTACT_ACTION,
+            AnalyticsEvent.ORDER_CONTACT_ACTION,
             mapOf(
-                AnalyticsTracker.KEY_ID to order.remoteId,
+                AnalyticsTracker.KEY_ID to order.id,
                 AnalyticsTracker.KEY_STATUS to order.status,
                 AnalyticsTracker.KEY_TYPE to Action.CALL.name.toLowerCase(Locale.US)
             )
@@ -67,7 +67,7 @@ object OrderCustomerHelper {
             context.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
             AnalyticsTracker.track(
-                Stat.ORDER_CONTACT_ACTION_FAILED,
+                AnalyticsEvent.ORDER_CONTACT_ACTION_FAILED,
                 this.javaClass.simpleName,
                 e.javaClass.simpleName, "No phone app was found"
             )
@@ -82,9 +82,9 @@ object OrderCustomerHelper {
         phone: String
     ) {
         AnalyticsTracker.track(
-            Stat.ORDER_CONTACT_ACTION,
+            AnalyticsEvent.ORDER_CONTACT_ACTION,
             mapOf(
-                AnalyticsTracker.KEY_ID to order.remoteId,
+                AnalyticsTracker.KEY_ID to order.id,
                 AnalyticsTracker.KEY_STATUS to order.status,
                 AnalyticsTracker.KEY_TYPE to Action.SMS.name.toLowerCase(Locale.US)
             )
@@ -96,7 +96,7 @@ object OrderCustomerHelper {
             context.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
             AnalyticsTracker.track(
-                Stat.ORDER_CONTACT_ACTION_FAILED,
+                AnalyticsEvent.ORDER_CONTACT_ACTION_FAILED,
                 this.javaClass.simpleName,
                 e.javaClass.simpleName, "No SMS app was found"
             )

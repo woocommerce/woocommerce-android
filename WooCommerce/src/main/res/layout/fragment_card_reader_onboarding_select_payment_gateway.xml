@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/card_illustration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginTop="@dimen/major_200"
+        android:layout_marginBottom="@dimen/major_100"
+        android:src="@drawable/ic_credit_card_give"
+        app:layout_constraintBottom_toTopOf="@id/textHeader"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textHeader"
+        style="@style/TextAppearance.Woo.Headline4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginEnd="@dimen/major_100"
+        android:layout_marginBottom="@dimen/major_100"
+        android:text="@string/card_reader_onboarding_choose_payment_provider"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/hintLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/card_illustration" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/hintLabel"
+        style="@style/TextAppearance.Woo.Body1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginEnd="@dimen/major_100"
+        android:layout_marginBottom="@dimen/major_100"
+        android:text="@string/card_reader_onboarding_choose_plugin_hint"
+        android:textColor="@color/color_on_surface_high"
+        app:layout_constraintBottom_toTopOf="@id/selectWcPayButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textHeader" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/selectWcPayButton"
+        style="@style/Woo.Button.Outlined"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/image_major_72"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginEnd="@dimen/major_100"
+        android:layout_marginBottom="@dimen/minor_100"
+        android:paddingStart="@dimen/image_major_64"
+        android:paddingEnd="@dimen/image_major_64"
+        android:text="@string/card_reader_onboarding_choose_wcpayment_button"
+        android:textAlignment="viewStart"
+        android:textColor="@color/color_on_surface"
+        app:cornerRadius="@dimen/corner_radius_large"
+        app:layout_constraintBottom_toTopOf="@+id/selectStripeButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/hintLabel"
+        app:strokeColor="@color/woo_purple_60" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/icSelectWcPay"
+        android:layout_width="@dimen/major_200"
+        android:layout_height="@dimen/major_200"
+        android:layout_marginStart="@dimen/major_100"
+        app:layout_constraintBottom_toBottomOf="@+id/selectWcPayButton"
+        app:layout_constraintEnd_toEndOf="@id/selectWcPayButton"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="@id/selectWcPayButton"
+        app:layout_constraintTop_toTopOf="@+id/selectWcPayButton"
+        app:srcCompat="@drawable/ic_wcpay" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/icCheckmarkWcPay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/major_100"
+        android:tint="@color/woo_purple_60"
+        app:layout_constraintBottom_toBottomOf="@+id/selectWcPayButton"
+        app:layout_constraintEnd_toEndOf="@id/selectWcPayButton"
+        app:layout_constraintHorizontal_bias="1"
+        app:layout_constraintStart_toStartOf="@id/selectWcPayButton"
+        app:layout_constraintTop_toTopOf="@+id/selectWcPayButton"
+        app:srcCompat="@drawable/ic_menu_action_mode_check" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/selectStripeButton"
+        style="@style/Woo.Button.Outlined"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/image_major_72"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginEnd="@dimen/major_100"
+        android:layout_marginBottom="@dimen/skeleton_text_large_width"
+        android:paddingStart="@dimen/image_major_64"
+        android:paddingEnd="@dimen/image_major_64"
+        android:text="@string/card_reader_onboarding_choose_stripe_button"
+        android:textAlignment="viewStart"
+        android:textColor="@color/color_on_surface"
+        app:cornerRadius="@dimen/corner_radius_large"
+        app:layout_constraintBottom_toTopOf="@id/confirmPaymentMethod"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/selectWcPayButton" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/icSelectStripe"
+        android:layout_width="@dimen/major_200"
+        android:layout_height="@dimen/major_200"
+        android:layout_marginStart="@dimen/major_100"
+        app:layout_constraintBottom_toBottomOf="@id/selectStripeButton"
+        app:layout_constraintEnd_toEndOf="@id/selectStripeButton"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="@id/selectStripeButton"
+        app:layout_constraintTop_toTopOf="@id/selectStripeButton"
+        app:srcCompat="@drawable/ic_stripe" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/icCheckmarkStripe"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/major_100"
+        android:tint="@color/woo_purple_60"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@id/selectStripeButton"
+        app:layout_constraintEnd_toEndOf="@id/selectStripeButton"
+        app:layout_constraintHorizontal_bias="1"
+        app:layout_constraintStart_toStartOf="@id/selectStripeButton"
+        app:layout_constraintTop_toTopOf="@id/selectStripeButton"
+        app:srcCompat="@drawable/ic_menu_action_mode_check" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/confirmPaymentMethod"
+        style="@style/Woo.Button.Colored"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginEnd="@dimen/major_100"
+        android:layout_marginBottom="@dimen/major_100"
+        android:text="@string/card_reader_onboarding_confirm_payment_method_button"
+        app:cornerRadius="@dimen/corner_radius_large"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/selectStripeButton" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

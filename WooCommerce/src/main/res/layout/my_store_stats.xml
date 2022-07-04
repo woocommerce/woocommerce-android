@@ -1,32 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <LinearLayout
+        android:id="@+id/myStoreStats_linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <include android:id="@+id/stats_view_row" layout="@layout/dashboard_main_stats_row" />
+        <include
+            android:id="@+id/stats_view_row"
+            layout="@layout/dashboard_main_stats_row" />
 
         <FrameLayout
             android:id="@+id/chart_container"
             android:layout_width="match_parent"
             android:layout_height="200dp">
 
-            <com.woocommerce.android.ui.mystore.DashboardStatsBarChart
+            <com.woocommerce.android.ui.mystore.DashboardStatsLineChart
                 android:id="@+id/chart"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginStart="@dimen/major_100"
-                android:layout_marginEnd="@dimen/major_100"
                 android:layout_marginTop="@dimen/major_75"
-                android:layout_marginBottom="@dimen/major_75"
-                app:radius="@dimen/chart_bar_radius"/>
+                android:layout_marginEnd="@dimen/major_100"
+                android:layout_marginBottom="@dimen/major_75" />
 
             <ImageView
                 android:id="@+id/dashboard_stats_error"
@@ -36,15 +37,7 @@
                 android:contentDescription="@string/dashboard_stats_error_content_description"
                 android:visibility="gone"
                 app:srcCompat="@drawable/ic_woo_error_state"
-                tools:visibility="visible"/>
+                tools:visibility="visible" />
         </FrameLayout>
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/dashboard_recency_text"
-            style="@style/Woo.TextView.Caption"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            tools:text="dashboard_recency_text"/>
     </LinearLayout>
 </merge>

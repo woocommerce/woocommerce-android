@@ -6,13 +6,13 @@ import com.woocommerce.android.util.UnitTestUtils.jsonFileAs
 import com.woocommerce.android.util.UnitTestUtils.jsonFileToString
 import org.wordpress.android.fluxc.domain.Addon
 import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted.*
-import org.wordpress.android.fluxc.model.WCOrderModel
-import org.wordpress.android.fluxc.model.order.LineItem
+import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.WCProductModel
+import org.wordpress.android.fluxc.model.order.LineItem
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.addons.mappers.RemoteAddonMapper
 
 object AddonTestFixtures {
-    val defaultWCOrderModel: WCOrderModel by lazy {
+    val defaultOrderModel: OrderEntity by lazy {
         OrderTestUtils.generateOrder()
             .copy(lineItems = "mocks/order_items.json".jsonFileToString() ?: "")
     }

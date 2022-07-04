@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:layoutDescription="@xml/layout_order_creation_customer_info_scene">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/name_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:focusableInTouchMode="false"
+        android:orientation="vertical"
+        android:layout_marginStart="@dimen/major_100">
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceSubtitle1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="George Costanza" />
+
+        <TextView
+            android:id="@+id/email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceBody2"
+            app:layout_constraintStart_toStartOf="@id/name"
+            app:layout_constraintTop_toBottomOf="@id/name"
+            tools:text="george@woo.com" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <View
+        android:id="@+id/name_divider"
+        style="@style/Woo.Divider"
+        android:layout_width="0dp"
+        android:layout_marginTop="@dimen/minor_100"
+        app:layout_constraintStart_toStartOf="@id/name_email"
+        app:layout_constraintTop_toBottomOf="@id/name_email" />
+
+    <TextView
+        android:id="@+id/shipping_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/minor_100"
+        android:text="@string/order_detail_shipping_address_section"
+        android:textAppearance="?attr/textAppearanceHeadline6"
+        app:layout_constraintStart_toStartOf="@id/name_divider"
+        app:layout_constraintTop_toBottomOf="@id/name_divider" />
+
+    <TextView
+        android:id="@+id/shipping_address_details"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?attr/textAppearanceBody2"
+        app:layout_constraintStart_toStartOf="@id/shipping_header"
+        app:layout_constraintTop_toBottomOf="@id/shipping_header"
+        tools:text="George Costanza\n2270 Oak Street\nNew York, NY 13420\nUnited States" />
+
+    <View
+        android:id="@+id/shipping_divider"
+        style="@style/Woo.Divider"
+        android:layout_width="0dp"
+        android:layout_marginTop="@dimen/minor_100"
+        app:layout_constraintStart_toStartOf="@id/shipping_address_details"
+        app:layout_constraintTop_toBottomOf="@id/shipping_address_details" />
+
+    <TextView
+        android:id="@+id/billing_header"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/minor_100"
+        android:text="@string/order_detail_billing_address_section"
+        android:textAppearance="?attr/textAppearanceHeadline6"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@id/shipping_address_details"
+        app:layout_constraintTop_toBottomOf="@id/shipping_divider" />
+
+    <TextView
+        android:id="@+id/billing_address_details"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?attr/textAppearanceBody2"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@id/shipping_address_details"
+        app:layout_constraintTop_toBottomOf="@id/billing_header"
+        tools:text="George Costanza\n2270 Oak Street\nNew York, NY 13420\nUnited States" />
+
+    <Button
+        android:id="@+id/customerInfo_viewMoreButtonTitle"
+        style="@style/Woo.Button.TextButton.TextStart"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="@string/orderdetail_show_billing"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/billing_address_details" />
+
+    <ImageView
+        android:id="@+id/customerInfo_viewMoreButtonImage"
+        android:layout_width="@dimen/min_tap_target"
+        android:layout_height="@dimen/min_tap_target"
+        android:importantForAccessibility="no"
+        android:padding="@dimen/minor_100"
+        android:src="@drawable/ic_arrow_down"
+        app:layout_constraintBottom_toBottomOf="@id/customerInfo_viewMoreButtonTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/customerInfo_viewMoreButtonTitle" />
+
+</androidx.constraintlayout.motion.widget.MotionLayout>

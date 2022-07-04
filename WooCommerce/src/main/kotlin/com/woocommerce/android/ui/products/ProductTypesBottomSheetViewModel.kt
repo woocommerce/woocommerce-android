@@ -8,9 +8,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAdd
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -21,11 +20,11 @@ import kotlinx.parcelize.Parcelize
 import java.util.Locale.ROOT
 import javax.inject.Inject
 
-@OpenClassOnDebug
 @HiltViewModel
 class ProductTypesBottomSheetViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val prefs: AppPrefs
+    private val prefs: AppPrefs,
+    private val productTypeBottomSheetBuilder: ProductTypeBottomSheetBuilder
 ) : ScopedViewModel(savedState) {
     private val navArgs: ProductTypesBottomSheetFragmentArgs by savedState.navArgs()
 
@@ -34,17 +33,21 @@ class ProductTypesBottomSheetViewModel @Inject constructor(
 
     fun loadProductTypes() {
         _productTypesBottomSheetList.value = if (navArgs.isAddProduct) {
-            ProductTypeBottomSheetBuilder().buildBottomSheetList()
-                .filter { it.isEnabledForAddFlow }
+            productTypeBottomSheetBuilder.buildBottomSheetList()
         } else {
-            ProductTypeBottomSheetBuilder().buildBottomSheetList()
+            productTypeBottomSheetBuilder.buildBottomSheetList()
+                .filter {
+                    val currentProductType = navArgs.currentProductType
+                        ?.let { nonNullProductType -> ProductType.fromString(nonNullProductType) }
+                    !(it.type == currentProductType && it.isVirtual == navArgs.isCurrentProductVirtual)
+                }
         }
     }
 
     fun onProductTypeSelected(productTypeUiItem: ProductTypesBottomSheetUiItem) {
         if (navArgs.isAddProduct) {
-            val properties = mapOf("product_type" to productTypeUiItem.type.value.toLowerCase(ROOT))
-            AnalyticsTracker.track(Stat.ADD_PRODUCT_PRODUCT_TYPE_SELECTED, properties)
+            val properties = mapOf("product_type" to productTypeUiItem.type.value.lowercase(ROOT))
+            AnalyticsTracker.track(AnalyticsEvent.ADD_PRODUCT_PRODUCT_TYPE_SELECTED, properties)
 
             saveUserSelection(productTypeUiItem)
             triggerEvent(ViewProductAdd)
@@ -75,7 +78,6 @@ class ProductTypesBottomSheetViewModel @Inject constructor(
         @StringRes val titleResource: Int,
         @StringRes val descResource: Int,
         @DrawableRes val iconResource: Int,
-        val isEnabledForAddFlow: Boolean = true,
         val isVirtual: Boolean = false
     ) : Parcelable
 }

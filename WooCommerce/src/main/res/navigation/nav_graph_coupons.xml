@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph_coupons"
+    app:startDestination="@id/couponListFragment">
+    <fragment
+        android:id="@+id/couponListFragment"
+        android:name="com.woocommerce.android.ui.coupons.CouponListFragment"
+        android:label="CouponListFragment">
+        <action
+            android:id="@+id/action_couponListFragment_to_couponDetailsFragment"
+            app:destination="@id/couponDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/couponDetailsFragment"
+        android:name="com.woocommerce.android.ui.coupons.details.CouponDetailsFragment"
+        android:label="CouponDetailsFragment">
+        <argument
+            android:name="couponId"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_couponDetailsFragment_to_editCouponFragment"
+            app:destination="@id/editCouponFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/editCouponFragment"
+        android:name="com.woocommerce.android.ui.coupons.edit.EditCouponFragment"
+        android:label="EditCouponFragment">
+        <argument
+            android:name="couponId"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_editCouponFragment_to_productSelectorFragment"
+            app:destination="@id/productSelectorFragment" />
+        <action
+            android:id="@+id/action_editCouponFragment_to_couponRestrictionsFragment"
+            app:destination="@id/couponRestrictionsFragment" />
+        <action
+            android:id="@+id/action_editCouponFragment_to_productCategorySelectorFragment"
+            app:destination="@id/productCategorySelectorFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/couponRestrictionsFragment"
+        android:name="com.woocommerce.android.ui.coupons.edit.CouponRestrictionsFragment"
+        android:label="CouponRestrictionsFragment">
+        <argument
+            android:name="restrictions"
+            app:argType="com.woocommerce.android.model.Coupon$CouponRestrictions" />
+        <argument
+            android:name="currencyCode"
+            app:argType="string" />
+        <argument
+            android:name="showLimitUsageToXItems"
+            app:argType="boolean" />
+        <action
+            android:id="@+id/action_couponRestrictionsFragment_to_emailRestrictionFragment"
+            app:destination="@id/emailRestrictionFragment" />
+        <action
+            android:id="@+id/action_couponRestrictions_to_productCategorySelector"
+            app:destination="@id/productCategorySelectorFragment" />
+        <action
+            android:id="@+id/action_couponRestrictionsFragment_to_productSelectorFragment"
+            app:destination="@id/productSelectorFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/productSelectorFragment"
+        android:name="com.woocommerce.android.ui.products.selector.ProductSelectorFragment"
+        android:label="ProductSelectorFragment" >
+        <argument
+            android:name="productIds"
+            app:argType="long[]" />
+        <action
+            android:id="@+id/action_productSelectorFragment_to_variationSelectorFragment"
+            app:destination="@id/variationSelectorFragment" />
+        <action
+            android:id="@+id/action_productSelectorFragment_to_nav_graph_product_filters"
+            app:destination="@id/nav_graph_product_filters">
+            <argument
+                android:name="selectedStockStatus"
+                app:argType="string"
+                app:nullable="true" />
+            <argument
+                android:name="selectedProductType"
+                app:argType="string"
+                app:nullable="true" />
+            <argument
+                android:name="selectedProductStatus"
+                app:argType="string"
+                app:nullable="true" />
+            <argument
+                android:name="selectedProductCategoryId"
+                app:argType="string"
+                app:nullable="true" />
+            <argument
+                android:name="selectedProductCategoryName"
+                app:argType="string"
+                app:nullable="true" />
+        </action>
+    </fragment>
+    <fragment
+        android:id="@+id/variationSelectorFragment"
+        android:name="com.woocommerce.android.ui.products.variations.selector.VariationSelectorFragment"
+        android:label="VariationSelectorFragment" >
+        <argument
+            android:name="productId"
+            app:argType="long" />
+        <argument
+            android:name="variationIds"
+            app:argType="long[]" />
+    </fragment>
+    <fragment
+        android:id="@+id/productCategorySelectorFragment"
+        android:name="com.woocommerce.android.ui.products.categories.selector.ProductCategorySelectorFragment"
+        android:label="ProductCategorySelectorFragment">
+        <argument
+            android:name="categoryIds"
+            app:argType="long[]" />
+    </fragment>
+    <fragment
+        android:id="@+id/emailRestrictionFragment"
+        android:name="com.woocommerce.android.ui.coupons.edit.EmailRestrictionFragment"
+        android:label="EmailRestrictionFragment">
+        <argument
+            android:name="allowedEmails"
+            app:argType="string" />
+    </fragment>
+    <include app:graph="@navigation/nav_graph_product_filters" />
+</navigation>

@@ -77,6 +77,7 @@
         <attr name="android:maxLength" />
         <attr name="android:enabled" />
         <attr name="android:text" />
+        <attr name="android:imeOptions" />
     </declare-styleable>
 
     <declare-styleable name="WCMaterialOutlinedSpinnerView">
@@ -86,6 +87,18 @@
 
     <declare-styleable name="WCMaterialOutlinedCurrencyEditTextView">
         <attr name="android:enabled" />
+        <attr name="android:textSize" />
+        <attr name="android:gravity" />
+        <attr name="android:imeOptions" />
+        <attr name="editTextLayoutMode" format="enum">
+            <enum name="fill" value="0" />
+            <enum name="wrap" value="1" />
+        </attr>
+        <attr name="supportsNegativeValues" format="boolean" />
+        <attr name="supportsEmptyState" format="boolean" />
+        <!-- Specifies whether the edit text should full format the price, or offers a normal
+             Editing experience, default value is false -->
+        <attr name="usesFullFormatting" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="ShippingLabelItemView">
@@ -163,7 +176,7 @@
     <declare-styleable name="ShippingLabelCreationStepView">
         <attr name="caption" format="string" />
         <attr name="details" format="string" />
-        <attr name="icon" format="reference" />
+        <attr name="icon" />
         <attr name="continue_button_visible" format="boolean" />
         <attr name="edit_button_visible" format="boolean" />
         <attr name="divider_visible" format="boolean" />
@@ -171,9 +184,13 @@
         <attr name="android:enabled" />
     </declare-styleable>
 
+    <attr name="title" format="reference|string" />
+    <attr name="message" format="reference|string" />
+    <attr name="icon" format="reference" />
+
     <declare-styleable name="WCWarningBanner">
-        <attr name="title" format="string" />
-        <attr name="message" format="string" />
+        <attr name="title" />
+        <attr name="message" />
     </declare-styleable>
 
     <declare-styleable name="CircleProgressOverlayView">
@@ -187,6 +204,30 @@
     <declare-styleable name="OrderCreationSectionView">
         <attr name="header" format="string" />
         <attr name="keepAddButtons" format="boolean" />
+        <attr name="hasEditButton" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="ScalableImageView">
+        <attr format="enum" name="scaleType">
+            <enum name="center" value="0" />
+            <enum name="centerCrop" value="1" />
+            <enum name="centerInside" value="2" />
+            <enum name="fitCenter" value="3" />
+            <enum name="fitEnd" value="4" />
+            <enum name="fitStart" value="5" />
+            <enum name="fitXY" value="6" />
+            <enum name="fitTop" value="7" />
+            <enum name="fitBottom" value="8" />
+            <enum name="matrix" value="9" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="ExpandableMessageView">
+        <attr name="title" />
+        <attr name="message" />
+        <attr name="icon" />
+        <attr name="iconTint" />
+        <attr name="isExpanded" format="boolean" />
     </declare-styleable>
 
 </resources>

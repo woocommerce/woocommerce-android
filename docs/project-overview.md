@@ -87,3 +87,14 @@ Contributors can build and run the app without issue, but Google Sign-In will al
 Google Sign-In requires configuration files which contain client and server information
 that can't be shared publicly. More documentation and guides can be found on the
 [Google Identity Platform website][google-ident].
+
+
+
+[wp-com-apps]: https://developer.wordpress.com/apps/
+[wp-app]: https://apps.wordpress.com/mobile/
+[wp-api]: https://developer.wordpress.org/rest-api/
+[oauth]: https://oauth.net
+[google-ident]: https://cloud.google.com/identity-platform/docs/
+[detekt]: https://detekt.github.io/detekt/
+[jetpack]: https://wordpress.org/plugins/jetpack/
+[checkstyle]: https://checkstyle.org

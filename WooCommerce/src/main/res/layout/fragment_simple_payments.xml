@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/containerButton"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:background="@color/color_surface"
+            android:orientation="vertical">
+
+            <View
+                android:id="@+id/divider1"
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"
+                android:layout_marginBottom="@dimen/major_100"
+                android:background="@color/divider_color" />
+
+            <!-- Custom amount -->
+            <LinearLayout
+                android:id="@+id/containerAmount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/major_100"
+                android:orientation="horizontal">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/textCustomAmountLabel"
+                    style="@style/Woo.Card.Body.Bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:drawableStart="@drawable/ic_gridicons_money"
+                    android:drawablePadding="@dimen/major_100"
+                    android:text="@string/simple_payments_custom_amount" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/textCustomAmount"
+                    style="@style/Woo.Card.Body.Bold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    tools:text="$40.00" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/divider2"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/major_100"
+                android:background="@color/divider_color" />
+
+            <!-- Email -->
+            <LinearLayout
+                android:id="@+id/containerEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/textEmail"
+                    style="@style/Woo.Card.Body.High"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/email" />
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editEmail"
+                    style="@style/Woo.TextInputEditText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    android:hint="@string/simple_payments_edit_email_hint"
+                    android:inputType="textEmailAddress"
+                    app:errorEnabled="true" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/divider3"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/major_100"
+                android:layout_marginBottom="@dimen/major_100"
+                android:background="@color/divider_color" />
+
+            <!-- Payment -->
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/textPayment"
+                style="@style/Woo.Card.Title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/major_100"
+                android:text="@string/payment" />
+
+            <!-- Subtotal -->
+            <LinearLayout
+                android:id="@+id/containerSubtotal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.google.android.material.textview.MaterialTextView
+                    style="@style/Woo.Card.Body.High"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/subtotal" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/textSubtotal"
+                    style="@style/Woo.Card.Body.High"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    tools:text="$40.00" />
+            </LinearLayout>
+
+            <!-- Charge taxes -->
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switchChargeTaxes"
+                style="@style/Woo.Card.Body.High"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/simple_payments_charge_taxes" />
+
+            <!-- Taxes -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/listTaxes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </androidx.recyclerview.widget.RecyclerView>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/textTaxMessage"
+                style="@style/Woo.TextView.Caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/minor_50"
+                android:layout_marginBottom="@dimen/major_100"
+                android:text="@string/simple_payments_tax_message" />
+
+            <!-- Total -->
+            <LinearLayout
+                android:id="@+id/containerTotal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/textTotalLabel"
+                    style="@style/Woo.Card.Body.Bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/order_total" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/textTotal"
+                    style="@style/Woo.Card.Body.Bold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    tools:text="$44.00" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/divider4"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_100"
+                android:background="@color/divider_color" />
+
+            <!-- Customer provided note -->
+            <com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
+                android:id="@+id/notes_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:header="@string/order_creation_customer_note" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <FrameLayout
+        android:id="@+id/containerButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/color_surface"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonDone"
+            style="@style/Woo.Button.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/major_100"
+            tools:text="Take payment ($44.00)" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleSmallInverse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            tools:visibility="visible" />
+    </FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

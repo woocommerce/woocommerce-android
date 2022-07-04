@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.prefs
 
-import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.ui.cardreader.ClearCardReaderDataAction
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -17,9 +17,9 @@ import javax.inject.Inject
 class AppSettingsPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val accountStore: AccountStore,
-    private val cardReaderManager: CardReaderManager,
     @Suppress("unused") // We keep it here to make sure that the store is subscribed to the event bus
-    private val notificationStore: NotificationStore
+    private val notificationStore: NotificationStore,
+    private val clearCardReaderDataAction: ClearCardReaderDataAction
 ) : AppSettingsContract.Presenter {
     private var appSettingsView: AppSettingsContract.View? = null
 
@@ -34,17 +34,9 @@ class AppSettingsPresenter @Inject constructor(
     }
 
     override fun logout() {
+        coroutineScope.launch { clearCardReaderDataAction() }
         // First unregister the device for push notifications
         dispatcher.dispatch(NotificationActionBuilder.newUnregisterDeviceAction())
-    }
-
-    override fun clearCardReaderData() {
-        coroutineScope.launch {
-            if (cardReaderManager.initialized) {
-                cardReaderManager.disconnectReader()
-                cardReaderManager.clearCachedCredentials()
-            }
-        }
     }
 
     override fun userIsLoggedIn(): Boolean {
@@ -58,8 +50,7 @@ class AppSettingsPresenter @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onDeviceUnregistered(event: OnDeviceUnregistered) {
-        // Now that we've unregistered the device, we can clear the token and logout
-        appSettingsView?.clearNotificationPreferences()
+        // Now that we've unregistered the device, we can logout
         dispatcher.dispatch(AccountActionBuilder.newSignOutAction())
         dispatcher.dispatch(SiteActionBuilder.newRemoveWpcomAndJetpackSitesAction())
     }

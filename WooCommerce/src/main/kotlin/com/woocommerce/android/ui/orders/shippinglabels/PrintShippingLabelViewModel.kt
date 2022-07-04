@@ -3,8 +3,8 @@ package com.woocommerce.android.ui.orders.shippinglabels
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.media.FileUtils
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintCustomsForm
@@ -85,7 +85,7 @@ class PrintShippingLabelViewModel @Inject constructor(
 
     fun onPrintShippingLabelClicked() {
         if (networkStatus.isConnected()) {
-            AnalyticsTracker.track(Stat.SHIPPING_LABEL_PRINT_REQUESTED)
+            AnalyticsTracker.track(AnalyticsEvent.SHIPPING_LABEL_PRINT_REQUESTED)
             viewState = viewState.copy(isProgressDialogShown = true)
             launch {
                 val requestResult = repository.printShippingLabels(

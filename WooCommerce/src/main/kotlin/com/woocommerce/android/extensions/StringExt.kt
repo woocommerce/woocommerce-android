@@ -77,3 +77,15 @@ fun String.semverCompareTo(otherVersion: String): Int {
         return -1
     }
 }
+
+fun String.capitalizeWords(): String {
+    return this.split(" ").joinToString(" ") { word ->
+        word.replaceFirstChar { it.uppercase() }
+    }
+}
+
+/**
+ * Returns this string if it's not empty or null otherwise.
+ * Syntactic sugar for `string.ifEmpty { null }`.
+ */
+fun String.orNullIfEmpty(): String? = this.ifEmpty { null }

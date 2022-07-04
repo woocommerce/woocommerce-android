@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/color_surface"
+    android:orientation="vertical">
+
+    <com.google.android.material.textview.MaterialTextView
+        style="@style/TextAppearance.Woo.Subtitle1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/default_window_background"
+        android:padding="@dimen/major_100"
+        android:text="@string/simple_payments_choose_method" />
+
+    <View
+        android:id="@+id/divider1"
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:background="@color/divider_color" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textCash"
+        style="@style/Woo.Card.Body.Bold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="0dp"
+        android:background="?attr/selectableItemBackground"
+        android:drawableStart="@drawable/ic_gridicons_money"
+        android:drawableEnd="@drawable/ic_arrow_right"
+        android:drawablePadding="@dimen/major_100"
+        android:padding="@dimen/major_100"
+        android:text="@string/cash" />
+
+    <View
+        android:id="@+id/divider2"
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:background="@color/divider_color" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textCard"
+        style="@style/Woo.Card.Body.Bold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="0dp"
+        android:background="?attr/selectableItemBackground"
+        android:drawableStart="@drawable/ic_gridicons_credit_card"
+        android:drawableEnd="@drawable/ic_arrow_right"
+        android:drawablePadding="@dimen/major_100"
+        android:padding="@dimen/major_100"
+        android:text="@string/card" />
+
+    <View
+        android:id="@+id/divider3"
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:background="@color/divider_color" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textShare"
+        style="@style/Woo.Card.Body.Bold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="0dp"
+        android:background="?attr/selectableItemBackground"
+        android:drawableStart="@drawable/ic_gridicons_link"
+        android:drawableEnd="@drawable/ic_arrow_right"
+        android:drawablePadding="@dimen/major_100"
+        android:padding="@dimen/major_100"
+        android:text="@string/simple_payments_share_payment_link" />
+
+    <View
+        android:id="@+id/divider4"
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:background="@color/divider_color" />
+
+</LinearLayout>

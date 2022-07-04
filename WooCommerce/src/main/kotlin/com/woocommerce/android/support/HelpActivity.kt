@@ -4,25 +4,22 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.ActivityHelpBinding
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PackageUtils
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
-import java.util.ArrayList
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -64,7 +61,6 @@ class HelpActivity : AppCompatActivity() {
         }
 
         with(binding.contactPaymentsContainer) {
-            visibility = if (FeatureFlag.CARD_READER.isEnabled()) View.VISIBLE else View.GONE
             setOnClickListener { createNewZendeskTicket(TicketType.Payments) }
         }
 
@@ -132,10 +128,10 @@ class HelpActivity : AppCompatActivity() {
 
         supportHelper.showSupportIdentityInputDialog(this, emailSuggestion, isNameInputHidden = true) { email, _ ->
             zendeskHelper.setSupportEmail(email)
-            AnalyticsTracker.track(Stat.SUPPORT_IDENTITY_SET)
+            AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
             createNewZendeskTicket(ticketType)
         }
-        AnalyticsTracker.track(Stat.SUPPORT_IDENTITY_FORM_VIEWED)
+        AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_FORM_VIEWED)
     }
 
     private fun refreshContactEmailText() {
@@ -159,12 +155,12 @@ class HelpActivity : AppCompatActivity() {
     }
 
     private fun showZendeskTickets() {
-        AnalyticsTracker.track(Stat.SUPPORT_TICKETS_VIEWED)
+        AnalyticsTracker.track(AnalyticsEvent.SUPPORT_TICKETS_VIEWED)
         zendeskHelper.showAllTickets(this, originFromExtras, selectedSiteOrNull(), extraTagsFromExtras)
     }
 
     private fun showZendeskFaq() {
-        AnalyticsTracker.track(Stat.SUPPORT_HELP_CENTER_VIEWED)
+        AnalyticsTracker.track(AnalyticsEvent.SUPPORT_HELP_CENTER_VIEWED)
         ChromeCustomTabUtils.launchUrl(this, AppUrls.APP_HELP_CENTER)
         /* TODO: for now we simply link to the online woo mobile support documentation, but we should show the
         Zendesk FAQ once it's ready
@@ -174,7 +170,7 @@ class HelpActivity : AppCompatActivity() {
     }
 
     private fun showApplicationLog() {
-        AnalyticsTracker.track(Stat.SUPPORT_APPLICATION_LOG_VIEWED)
+        AnalyticsTracker.track(AnalyticsEvent.SUPPORT_APPLICATION_LOG_VIEWED)
         startActivity(Intent(this, WooLogViewerActivity::class.java))
     }
 
@@ -200,7 +196,8 @@ class HelpActivity : AppCompatActivity() {
         LOGIN_EPILOGUE("origin:login-epilogue"),
         LOGIN_CONNECTED_EMAIL_HELP("origin:login-connected-email-help"),
         SIGNUP_EMAIL("origin:signup-email"),
-        SIGNUP_MAGIC_LINK("origin:signup-magic-link");
+        SIGNUP_MAGIC_LINK("origin:signup-magic-link"),
+        JETPACK_INSTALLATION("origin:jetpack-installation");
 
         override fun toString(): String {
             return stringValue

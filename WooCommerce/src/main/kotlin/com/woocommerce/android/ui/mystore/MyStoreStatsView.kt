@@ -2,51 +2,57 @@ package com.woocommerce.android.ui.mystore
 
 import android.content.Context
 import android.os.Handler
-import android.text.format.DateFormat
+import android.os.Looper
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
+import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
+import androidx.lifecycle.LifecycleCoroutineScope
 import com.github.mikephil.charting.charts.Chart
 import com.github.mikephil.charting.components.AxisBase
-import com.github.mikephil.charting.components.XAxis.XAxisPosition
-import com.github.mikephil.charting.data.BarData
-import com.github.mikephil.charting.data.BarDataSet
-import com.github.mikephil.charting.data.BarEntry
+import com.github.mikephil.charting.components.MarkerImage
+import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.formatter.IAxisValueFormatter
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.ChartTouchListener.ChartGesture
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.google.android.material.card.MaterialCardView
-import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.MyStoreStatsBinding
-import com.woocommerce.android.extensions.formatDateToYearMonth
-import com.woocommerce.android.extensions.formatToDateOnly
-import com.woocommerce.android.extensions.formatToMonthDateOnly
+import com.woocommerce.android.extensions.*
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.MyStoreFragment.Companion.DEFAULT_STATS_GRANULARITY
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.util.FormatCurrencyRounded
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
+import com.woocommerce.android.util.roundToTheNextPowerOfTen
 import com.woocommerce.android.widgets.SkeletonView
-import org.wordpress.android.fluxc.model.WCRevenueStatsModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
-import org.wordpress.android.util.DateTimeUtils
-import java.util.ArrayList
-import java.util.Date
-import java.util.Locale
+import org.wordpress.android.util.DisplayUtils
+import java.text.DecimalFormat
+import java.util.*
 import kotlin.math.round
 
+@FlowPreview
 class MyStoreStatsView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
@@ -55,27 +61,24 @@ class MyStoreStatsView @JvmOverloads constructor(
     private val binding = MyStoreStatsBinding.inflate(LayoutInflater.from(ctx), this)
 
     companion object {
-        private const val UPDATE_DELAY_TIME_MS = 60 * 1000L
+        private const val LINE_CHART_DOT_OFFSET = -5
+
+        private const val EVENT_EMITTER_INTERACTION_DEBOUNCE = 1000L
     }
 
     private lateinit var activeGranularity: StatsGranularity
-    private var listener: MyStoreStatsListener? = null
 
     private lateinit var selectedSite: SelectedSite
-    private lateinit var formatCurrencyForDisplay: FormatCurrencyRounded
     private lateinit var dateUtils: DateUtils
+    private lateinit var currencyFormatter: CurrencyFormatter
+    private lateinit var usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter
 
-    private var revenueStatsModel: WCRevenueStatsModel? = null
+    private var revenueStatsModel: RevenueStatsUiModel? = null
     private var chartRevenueStats = mapOf<String, Double>()
     private var chartOrderStats = mapOf<String, Long>()
     private var chartVisitorStats = mapOf<String, Int>()
-    private var chartCurrencyCode: String? = null
 
     private var skeletonView = SkeletonView()
-
-    private lateinit var lastUpdatedRunnable: Runnable
-    private var lastUpdatedHandler: Handler? = null
-    private var lastUpdated: Date? = null
 
     private var isRequestingStats = false
         set(value) {
@@ -83,7 +86,7 @@ class MyStoreStatsView @JvmOverloads constructor(
             // to appear, and we remove the chart's empty string so it doesn't briefly show
             // up before the chart data is added once the request completes
             if (value) {
-                clearLabelValues()
+                clearStatsHeaderValues()
                 binding.chart.setNoDataText(null)
                 binding.chart.clear()
             } else {
@@ -93,102 +96,87 @@ class MyStoreStatsView @JvmOverloads constructor(
             field = value
         }
 
-    private val fadeHandler = Handler()
+    private val fadeHandler = Handler(Looper.getMainLooper())
 
-    private val visitorsLayout
-        get() = binding.root.findViewById<ViewGroup>(R.id.visitors_layout)
-
-    private val visitorsValue
-        get() = binding.root.findViewById<MaterialTextView>(R.id.visitors_value)
+    private val statsDateValue
+        get() = binding.statsViewRow.statsDateTextView
 
     private val revenueValue
-        get() = binding.root.findViewById<MaterialTextView>(R.id.revenue_value)
+        get() = binding.statsViewRow.totalRevenueTextView
 
     private val ordersValue
-        get() = binding.root.findViewById<MaterialTextView>(R.id.orders_value)
+        get() = binding.statsViewRow.ordersValueTextView
+
+    private val visitorsValue
+        get() = binding.statsViewRow.visitorsValueTextview
+
+    private val conversionValue
+        get() = binding.statsViewRow.conversionValueTextView
+
+    private lateinit var coroutineScope: CoroutineScope
+    private val chartUserInteractions = MutableSharedFlow<Unit>()
+    private lateinit var chartUserInteractionsJob: Job
 
     fun initView(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
-        listener: MyStoreStatsListener,
         selectedSite: SelectedSite,
-        formatCurrencyForDisplay: FormatCurrencyRounded,
-        dateUtils: DateUtils
+        dateUtils: DateUtils,
+        currencyFormatter: CurrencyFormatter,
+        usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter,
+        lifecycleScope: LifecycleCoroutineScope
     ) {
-        this.listener = listener
         this.selectedSite = selectedSite
         this.activeGranularity = period
-        this.formatCurrencyForDisplay = formatCurrencyForDisplay
         this.dateUtils = dateUtils
+        this.currencyFormatter = currencyFormatter
+        this.usageTracksEventEmitter = usageTracksEventEmitter
+        this.coroutineScope = lifecycleScope
 
         initChart()
 
-        lastUpdatedHandler = Handler()
-        lastUpdatedRunnable = Runnable {
-            updateRecencyMessage()
-            lastUpdatedHandler?.postDelayed(
-                lastUpdatedRunnable,
-                UPDATE_DELAY_TIME_MS
-            )
+        visitorsValue.addTextChangedListener {
+            updateConversionRate()
+        }
+
+        ordersValue.addTextChangedListener {
+            updateConversionRate()
+        }
+
+        chartUserInteractionsJob = coroutineScope.launch {
+            chartUserInteractions
+                .debounce(EVENT_EMITTER_INTERACTION_DEBOUNCE)
+                .collect { usageTracksEventEmitter.interacted() }
         }
     }
 
-    fun removeListener() {
-        listener = null
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        chartUserInteractionsJob.cancel()
     }
 
     fun loadDashboardStats(granularity: StatsGranularity) {
         this.activeGranularity = granularity
         // Track range change
         AnalyticsTracker.track(
-            Stat.DASHBOARD_MAIN_STATS_DATE,
-            mapOf(AnalyticsTracker.KEY_RANGE to granularity.toString().toLowerCase(Locale.ROOT))
+            AnalyticsEvent.DASHBOARD_MAIN_STATS_DATE,
+            mapOf(AnalyticsTracker.KEY_RANGE to granularity.toString().lowercase())
         )
-
         isRequestingStats = true
-        listener?.onRequestLoadStats(granularity)
-    }
-
-    override fun onVisibilityChanged(changedView: View, visibility: Int) {
-        super.onVisibilityChanged(changedView, visibility)
-        if (visibility == View.VISIBLE) {
-            updateRecencyMessage()
-        } else {
-            lastUpdatedHandler?.removeCallbacks(lastUpdatedRunnable)
-        }
     }
 
     fun showSkeleton(show: Boolean) {
         if (show) {
-            // inflate the skeleton view and adjust the bar widths based on the granularity
-            val inflater = LayoutInflater.from(context)
-            val skeleton = inflater.inflate(
+            skeletonView.show(
+                binding.myStoreStatsLinearLayout,
                 R.layout.skeleton_dashboard_stats,
-                binding.chartContainer,
-                false
-            ) as ViewGroup
-            val barWidth = getSkeletonBarWidth()
-            for (i in 0 until skeleton.childCount) {
-                skeleton.getChildAt(i).layoutParams.width = barWidth
-            }
-
-            skeletonView.show(binding.chartContainer, skeleton, delayed = true)
-            binding.dashboardRecencyText.text = null
+                delayed = true
+            )
         } else {
             skeletonView.hide()
         }
     }
 
-    private fun getSkeletonBarWidth(): Int {
-        val resId = when (activeGranularity) {
-            StatsGranularity.DAYS -> R.dimen.skeleton_bar_chart_bar_width_days
-            StatsGranularity.WEEKS -> R.dimen.skeleton_bar_chart_bar_width_weeks
-            StatsGranularity.MONTHS -> R.dimen.skeleton_bar_chart_bar_width_months
-            StatsGranularity.YEARS -> R.dimen.skeleton_bar_chart_bar_width_years
-        }
-        return context.resources.getDimensionPixelSize(resId)
-    }
-
-    private fun getBarLabelCount(): Int {
+    private fun getChartXAxisLabelCount(): Int {
         val resId = when (activeGranularity) {
             StatsGranularity.DAYS -> R.integer.stats_label_count_days
             StatsGranularity.WEEKS -> R.integer.stats_label_count_weeks
@@ -208,33 +196,30 @@ class MyStoreStatsView @JvmOverloads constructor(
     private fun initChart() {
         with(binding.chart) {
             with(xAxis) {
-                position = XAxisPosition.BOTTOM
+                position = XAxis.XAxisPosition.BOTTOM
                 setDrawGridLines(false)
                 setDrawAxisLine(false)
                 granularity = 1f // Don't break x axis values down further than 1 unit of time
                 textColor = ContextCompat.getColor(context, R.color.graph_label_color)
-
                 // Couldn't use the dimension resource here due to the way this component is written :/
                 textSize = 10f
             }
-
-            axisRight.isEnabled = false
             with(axisLeft) {
-                setDrawTopYLabelEntry(true)
-                setDrawAxisLine(false)
+                setLabelCount(3, true)
+                valueFormatter = RevenueAxisFormatter()
                 setDrawGridLines(true)
+                gridLineWidth = 1f
                 gridColor = ContextCompat.getColor(context, R.color.graph_grid_color)
+                setDrawAxisLine(false)
                 textColor = ContextCompat.getColor(context, R.color.graph_label_color)
-
                 // Couldn't use the dimension resource here due to the way this component is written :/
                 textSize = 10f
             }
-
+            axisRight.isEnabled = false
             description.isEnabled = false
             legend.isEnabled = false
 
-            // touch has to be enabled in order to show a marker when a bar is tapped, but we don't want
-            // pinch/zoom, drag, or scaling to be enabled
+            // touch has to be enabled in order to show a marker when dragging across the line chart
             setTouchEnabled(true)
             setPinchZoom(false)
             isScaleXEnabled = false
@@ -253,39 +238,127 @@ class MyStoreStatsView @JvmOverloads constructor(
      */
     override fun onNothingSelected() {
         // update the total values of the chart here
+        binding.chart.highlightValue(null)
         updateChartView()
-        if (visitorsLayout.visibility == View.GONE) {
-            visitorsLayout.visibility = View.VISIBLE
-        }
+        visitorsValue.isVisible = true
+        binding.statsViewRow.emptyVisitorStatsIndicator.isVisible = false
         fadeInLabelValue(visitorsValue, chartVisitorStats.values.sum().toString())
-
-        // update date bar when unselected
-        listener?.onChartValueUnSelected(revenueStatsModel, activeGranularity)
+        updateDate(revenueStatsModel, activeGranularity)
+        updateColorForStatsHeaderValues(R.color.color_on_surface_high)
+        onUserInteractionWithChart()
     }
 
-    override fun onValueSelected(e: Entry?, h: Highlight?) {
-        val barEntry = e as BarEntry
+    private fun onUserInteractionWithChart() {
+        coroutineScope.launch {
+            chartUserInteractions.emit(Unit)
+        }
+    }
 
+    private fun updateColorForStatsHeaderValues(@ColorRes colorRes: Int) {
+        val color = ContextCompat.getColor(context, colorRes)
+        revenueValue.setTextColor(color)
+        ordersValue.setTextColor(color)
+        visitorsValue.setTextColor(color)
+        conversionValue.setTextColor(color)
+    }
+
+    /**
+     * Method to update the date value for a given [revenueStatsModel] based on the [granularity]
+     * This is used to display the date bar when the **stats tab is loaded**
+     * [StatsGranularity.DAYS] would be Tuesday, Aug 08
+     * [StatsGranularity.WEEKS] would be Aug 4 - Aug 08
+     * [StatsGranularity.MONTHS] would be August
+     * [StatsGranularity.YEARS] would be 2019
+     */
+    private fun updateDate(
+        revenueStats: RevenueStatsUiModel?,
+        granularity: StatsGranularity
+    ) {
+        if (revenueStats?.intervalList.isNullOrEmpty()) {
+            statsDateValue.visibility = View.GONE
+        } else {
+            val startInterval = revenueStats?.intervalList?.first()?.interval
+            val startDate = startInterval?.let { getDateValue(it, granularity) }
+
+            val dateRangeString = when (granularity) {
+                StatsGranularity.WEEKS -> {
+                    val endInterval = revenueStats?.intervalList?.last()?.interval
+                    val endDate = endInterval?.let { getDateValue(it, granularity) }
+                    String.format(Locale.getDefault(), "%s – %s", startDate, endDate)
+                }
+                else -> {
+                    startDate
+                }
+            }
+            statsDateValue.visibility = View.VISIBLE
+            statsDateValue.text = dateRangeString
+        }
+    }
+
+    /**
+     * Method to get the date value for a given [dateString] based on the [activeGranularity]
+     * This is used to populate the date bar when the **stats tab is loaded**
+     * [StatsGranularity.DAYS] would be Tuesday, Aug 08
+     * [StatsGranularity.WEEKS] would be Aug 4
+     * [StatsGranularity.MONTHS] would be August
+     * [StatsGranularity.YEARS] would be 2019
+     */
+    private fun getDateValue(
+        dateString: String,
+        activeGranularity: StatsGranularity
+    ): String {
+        return when (activeGranularity) {
+            StatsGranularity.DAYS -> dateUtils.getDayMonthDateString(dateString).orEmpty()
+            StatsGranularity.WEEKS -> dateString.formatToMonthDateOnly()
+            StatsGranularity.MONTHS -> dateUtils.getMonthString(dateString).orEmpty()
+            StatsGranularity.YEARS -> dateUtils.getYearString(dateString).orEmpty()
+        }
+    }
+
+    override fun onValueSelected(entry: Entry?, h: Highlight?) {
+        if (entry == null) return
         // display the revenue for this entry
-        val formattedRevenue = getFormattedRevenueValue(barEntry.y.toDouble())
+        val formattedRevenue = getFormattedRevenueValue(entry.y.toDouble())
         revenueValue.text = formattedRevenue
 
         // display the order count for this entry
-        val date = getDateFromIndex(barEntry.x.toInt())
-        val value = chartOrderStats[date]?.toInt() ?: 0
-        ordersValue.text = value.toString()
+        val date = getDateFromIndex(entry.x.toInt())
+        val orderCount = chartOrderStats[date]?.toInt() ?: 0
+        ordersValue.text = orderCount.toString()
+        updateVisitorsValue(date)
+        updateConversionRate()
+        updateDateOnScrubbing(date, activeGranularity)
+        updateColorForStatsHeaderValues(R.color.color_secondary)
+        onUserInteractionWithChart()
+    }
 
-        // display the visitor count for this entry only if the text is NOT empty
-        val visitorValue = getFormattedVisitorValue(date)
-        if (visitorValue.isEmpty()) {
-            visitorsLayout.visibility = View.GONE
+    private fun updateVisitorsValue(date: String) {
+        if (activeGranularity == StatsGranularity.DAYS) {
+            visitorsValue.isVisible = false
+            visitorsValue.setText(R.string.emdash)
+            binding.statsViewRow.emptyVisitorStatsIndicator.isVisible = true
         } else {
-            visitorsLayout.visibility = View.VISIBLE
-            visitorsValue.text = visitorValue
+            visitorsValue.isVisible = true
+            binding.statsViewRow.emptyVisitorStatsIndicator.isVisible = false
+            visitorsValue.text = chartVisitorStats[date]?.toString() ?: "0"
         }
+    }
 
-        // update the date bar
-        listener?.onChartValueSelected(date, activeGranularity)
+    /**
+     * Method to update the date value for a given [dateString] based on the [activeGranularity]
+     * This is used to display the date bar when the **scrubbing interaction is taking place**
+     * [StatsGranularity.DAYS] would be Tuesday, Aug 08›7am
+     * [StatsGranularity.WEEKS] would be Aug 08
+     * [StatsGranularity.MONTHS] would be August›08
+     * [StatsGranularity.YEARS] would be 2019›August
+     */
+    private fun updateDateOnScrubbing(dateString: String, activeGranularity: StatsGranularity) {
+        statsDateValue.text = when (activeGranularity) {
+            StatsGranularity.DAYS -> dateString.formatDateToFriendlyDayHour()
+            StatsGranularity.WEEKS -> dateString.formatToMonthDateOnly()
+            StatsGranularity.MONTHS -> dateString.formatDateToFriendlyLongMonthDate()
+            StatsGranularity.YEARS -> dateString.formatDateToFriendlyLongMonthYear()
+        }
     }
 
     /**
@@ -298,26 +371,19 @@ class MyStoreStatsView @JvmOverloads constructor(
         }
     }
 
-    /**
-     * removes the highlighted value, which in turn removes the marker view
-     */
-    private fun hideMarker() {
-        binding.chart.highlightValue(null)
-    }
-
-    fun updateView(revenueStatsModel: WCRevenueStatsModel?, currencyCode: String?) {
+    fun updateView(revenueStatsModel: RevenueStatsUiModel?) {
+        updateDate(revenueStatsModel, activeGranularity)
         this.revenueStatsModel = revenueStatsModel
-        chartCurrencyCode = currencyCode
 
         // There are times when the stats v4 api returns no grossRevenue or ordersCount for a site
         // https://github.com/woocommerce/woocommerce-android/issues/1455#issuecomment-540401646
-        this.chartRevenueStats = revenueStatsModel?.getIntervalList()?.map {
-            it.interval!! to (it.subtotals?.totalSales ?: 0.0)
-        }?.toMap() ?: mapOf()
+        this.chartRevenueStats = revenueStatsModel?.intervalList?.associate {
+            it.interval!! to (it.sales ?: 0.0)
+        } ?: mapOf()
 
-        this.chartOrderStats = revenueStatsModel?.getIntervalList()?.map {
-            it.interval!! to (it.subtotals?.ordersCount ?: 0)
-        }?.toMap() ?: mapOf()
+        this.chartOrderStats = revenueStatsModel?.intervalList?.associate {
+            it.interval!! to (it.ordersCount ?: 0)
+        } ?: mapOf()
 
         updateChartView()
     }
@@ -330,38 +396,56 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     fun showVisitorStats(visitorStats: Map<String, Int>) {
         chartVisitorStats = getFormattedVisitorStats(visitorStats)
-        if (visitorsLayout.visibility == View.GONE) {
-            WooAnimUtils.fadeIn(visitorsLayout)
-        }
-
         // Make sure the empty view is hidden
-        binding.statsViewRow.emptyVisitorStatsGroup.isVisible = false
-        binding.statsViewRow.visitorsValue.isVisible = true
+        binding.statsViewRow.emptyVisitorsStatsGroup.isVisible = false
 
-        fadeInLabelValue(visitorsValue, visitorStats.values.sum().toString())
+        val totalVisitors = visitorStats.values.sum()
+        fadeInLabelValue(visitorsValue, totalVisitors.toString())
     }
 
     fun showVisitorStatsError() {
-        if (visitorsLayout.visibility == View.VISIBLE) {
-            WooAnimUtils.fadeOut(visitorsLayout)
-        }
+        binding.statsViewRow.emptyVisitorStatsIndicator.isVisible = true
+        binding.statsViewRow.jetpackIconImageView.isVisible = false
+        binding.statsViewRow.visitorsValueTextview.isVisible = false
     }
 
     fun showEmptyVisitorStatsForJetpackCP() {
-        visitorsLayout.isVisible = true
-        binding.statsViewRow.emptyVisitorStatsGroup.isVisible = true
-        binding.statsViewRow.visitorsValue.isVisible = false
+        binding.statsViewRow.emptyVisitorsStatsGroup.isVisible = true
+        binding.statsViewRow.visitorsValueTextview.isVisible = false
     }
 
-    fun clearLabelValues() {
-        val color = ContextCompat.getColor(context, R.color.skeleton_color)
-        visitorsValue.setTextColor(color)
-        revenueValue.setTextColor(color)
-        ordersValue.setTextColor(color)
+    private fun updateConversionRate() {
+        val ordersCount = ordersValue.text.toString().toIntOrNull()
+        val visitorsCount = visitorsValue.text.toString().toIntOrNull()
+
+        if (visitorsCount == null || ordersCount == null) {
+            conversionValue.isVisible = false
+            binding.statsViewRow.emptyConversionRateIndicator.isVisible = true
+            return
+        }
+
+        val conversionRateDisplayValue = when (visitorsCount) {
+            0 -> "0%"
+            else -> {
+                val conversionRate = (ordersCount / visitorsCount.toFloat()) * 100
+                DecimalFormat("##.#").format(conversionRate) + "%"
+            }
+        }
+        val color = ContextCompat.getColor(context, R.color.color_on_surface_high)
+        conversionValue.setTextColor(color)
+        binding.statsViewRow.emptyConversionRateIndicator.isVisible = false
+        conversionValue.isVisible = true
+        conversionValue.text = conversionRateDisplayValue
+    }
+
+    fun clearStatsHeaderValues() {
+        statsDateValue.text = ""
+        updateColorForStatsHeaderValues(R.color.skeleton_color)
 
         visitorsValue.setText(R.string.emdash)
         revenueValue.setText(R.string.emdash)
         ordersValue.setText(R.string.emdash)
+        conversionValue.setText(R.string.emdash)
     }
 
     fun clearChartData() {
@@ -369,85 +453,78 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     private fun updateChartView() {
-        val wasEmpty = binding.chart.barData?.let { it.dataSetCount == 0 } ?: true
+        val wasEmpty = binding.chart.lineData?.let { it.dataSetCount == 0 } ?: true
 
-        val totalModel = revenueStatsModel?.parseTotal()
-        val grossRevenue = totalModel?.totalSales ?: 0.0
-        val revenue = formatCurrencyForDisplay(grossRevenue, chartCurrencyCode.orEmpty())
+        val grossRevenue = revenueStatsModel?.totalSales ?: 0.0
+        val revenue = getFormattedRevenueValue(grossRevenue)
 
-        val orderCount = totalModel?.ordersCount ?: 0
+        val orderCount = revenueStatsModel?.totalOrdersCount ?: 0
         val orders = orderCount.toString()
 
         fadeInLabelValue(revenueValue, revenue)
         fadeInLabelValue(ordersValue, orders)
 
-        if (chartRevenueStats.isEmpty() || totalModel?.totalSales?.toInt() == 0) {
-            clearLastUpdated()
+        if (chartRevenueStats.isEmpty() || revenueStatsModel?.totalSales == 0.toDouble()) {
             isRequestingStats = false
             return
         }
 
-        val barColors = ArrayList<Int>()
-        val normalColor = ContextCompat.getColor(context, R.color.graph_data_color)
-        for (entry in chartRevenueStats) {
-            barColors.add(normalColor)
-        }
-
-        val dataSet = generateBarDataSet(chartRevenueStats).apply {
-            colors = barColors
+        val dataSet = generateLineDataSet(chartRevenueStats).apply {
+            color = ContextCompat.getColor(context, R.color.color_primary)
             setDrawValues(false)
             isHighlightEnabled = true
-            highLightColor = ContextCompat.getColor(context, R.color.graph_highlight_color)
+            highLightColor = ContextCompat.getColor(context, R.color.graph_data_color)
+            highlightLineWidth = 1.5f
+            setDrawHorizontalHighlightIndicator(false)
+            setDrawCircles(false)
+            lineWidth = 2f
+            if (chartRevenueStats.all { it.value <= 0 }) {
+                setDrawFilled(false)
+            } else {
+                fillDrawable = ContextCompat.getDrawable(context, R.drawable.line_chart_fill_gradient)
+                setDrawFilled(true)
+            }
         }
 
         // determine the min revenue so we can set the min value for the left axis, which should be zero unless
         // the stats contain any negative revenue
-        var minRevenue = 0f
-        for (value in dataSet.values) {
-            if (value.y < minRevenue) minRevenue = value.y
-        }
-
+        val minRevenue = dataSet.values.minOf { it.y }
+        val maxRevenue = dataSet.values.maxOf { it.y }
         val duration = context.resources.getInteger(android.R.integer.config_shortAnimTime)
         with(binding.chart) {
-            data = BarData(dataSet)
+            data = LineData(dataSet)
             if (wasEmpty) {
                 animateY(duration)
             }
             with(xAxis) {
-                // Added axis minimum offset & axis max offset in order to align the bar chart with the x-axis labels
-                // Related fix: https://github.com/PhilJay/MPAndroidChart/issues/2566
-                val axisValue = 0.5f
-                axisMinimum = data.xMin - axisValue
-                axisMaximum = data.xMax + axisValue
-                labelCount = getBarLabelCount()
-                setCenterAxisLabels(false)
+                labelCount = getChartXAxisLabelCount()
                 valueFormatter = StartEndDateAxisFormatter()
-                yOffset = if (minRevenue < 0f) {
-                    resources.getDimension(R.dimen.chart_axis_bottom_padding)
-                } else 0f
             }
             with(axisLeft) {
-                if (minRevenue < 0f) {
+                if (minRevenue < 0) {
                     setDrawZeroLine(true)
                     zeroLineColor = ContextCompat.getColor(context, R.color.divider_color)
-                    setLabelCount(3, true)
-                } else labelCount = 3
-                valueFormatter = RevenueAxisFormatter()
+                }
+                axisMinimum = minRevenue.roundToTheNextPowerOfTen()
+                axisMaximum = maxRevenue.roundToTheNextPowerOfTen()
             }
+            val dot = MarkerImage(context, R.drawable.chart_highlight_dot)
+            val offset = DisplayUtils.dpToPx(context, LINE_CHART_DOT_OFFSET).toFloat()
+            dot.setOffset(offset, offset)
+            marker = dot
         }
-
-        hideMarker()
-        resetLastUpdated()
         isRequestingStats = false
     }
 
     private fun getFormattedRevenueValue(revenue: Double) =
-        formatCurrencyForDisplay(revenue, chartCurrencyCode.orEmpty())
+        if (revenue == 0.0) {
+            currencyFormatter.formatCurrencyRounded(revenue, revenueStatsModel?.currencyCode.orEmpty())
+        } else {
+            currencyFormatter
+                .formatCurrency(revenue.toBigDecimal(), revenueStatsModel?.currencyCode.orEmpty())
+        }
 
     private fun getDateFromIndex(dateIndex: Int) = chartRevenueStats.keys.elementAt(dateIndex - 1)
-
-    private fun getFormattedVisitorValue(date: String) =
-        if (activeGranularity == StatsGranularity.DAYS) "" else chartVisitorStats[date]?.toString() ?: "0"
 
     /**
      * Method to format the incoming visitor stats data
@@ -487,12 +564,12 @@ class MyStoreStatsView @JvmOverloads constructor(
         )
     }
 
-    private fun generateBarDataSet(revenueStats: Map<String, Double>): BarDataSet {
+    private fun generateLineDataSet(revenueStats: Map<String, Double>): LineDataSet {
         chartRevenueStats = revenueStats
-        val barEntries = chartRevenueStats.values.mapIndexed { index, value ->
-            BarEntry((index + 1).toFloat(), value.toFloat())
+        val entries = chartRevenueStats.values.mapIndexed { index, value ->
+            Entry((index + 1).toFloat(), value.toFloat())
         }
-        return BarDataSet(barEntries, "")
+        return LineDataSet(entries, "")
     }
 
     @StringRes
@@ -505,28 +582,6 @@ class MyStoreStatsView @JvmOverloads constructor(
         }
     }
 
-    private fun clearLastUpdated() {
-        lastUpdated = null
-        updateRecencyMessage()
-    }
-
-    private fun resetLastUpdated() {
-        lastUpdated = Date()
-        updateRecencyMessage()
-    }
-
-    private fun updateRecencyMessage() {
-        binding.dashboardRecencyText.text = getRecencyMessage()
-        lastUpdatedHandler?.removeCallbacks(lastUpdatedRunnable)
-
-        if (lastUpdated != null) {
-            lastUpdatedHandler?.postDelayed(
-                lastUpdatedRunnable,
-                UPDATE_DELAY_TIME_MS
-            )
-        }
-    }
-
     private fun getEntryValue(dateString: String): String {
         return when (activeGranularity) {
             StatsGranularity.DAYS -> dateUtils.getShortHourString(dateString).orEmpty()
@@ -536,51 +591,8 @@ class MyStoreStatsView @JvmOverloads constructor(
         }
     }
 
-    /**
-     * Returns the text to use for the "recency message" which tells the user when stats were last updated
-     */
-    private fun getRecencyMessage(): String? {
-        if (lastUpdated == null) {
-            return null
-        }
-
-        val now = Date()
-
-        // up to 2 minutes -> "Updated moments ago"
-        val minutes = DateTimeUtils.minutesBetween(now, lastUpdated)
-        if (minutes <= 2) {
-            return context.getString(R.string.dashboard_stats_updated_now)
-        }
-
-        // up to 59 minutes -> "Updated 5 minutes ago"
-        if (minutes <= 59) {
-            return String.format(context.getString(R.string.dashboard_stats_updated_minutes), minutes)
-        }
-
-        // 1 hour -> "Updated 1 hour ago"
-        val hours = DateTimeUtils.hoursBetween(now, lastUpdated)
-        if (hours == 1) {
-            return context.getString(R.string.dashboard_stats_updated_one_hour)
-        }
-
-        // up to 23 hours -> "Updated 5 hours ago"
-        if (hours <= 23) {
-            return String.format(context.getString(R.string.dashboard_stats_updated_hours), hours)
-        }
-
-        // up to 47 hours -> "Updated 1 day ago"
-        if (hours <= 47) {
-            return context.getString(R.string.dashboard_stats_updated_one_day)
-        }
-
-        // otherwise date & time
-        val dateStr = DateFormat.getDateFormat(context).format(lastUpdated)
-        val timeStr = DateFormat.getTimeFormat(context).format(lastUpdated)
-        return String.format(context.getString(R.string.dashboard_stats_updated_date_time), "$dateStr $timeStr")
-    }
-
-    private inner class StartEndDateAxisFormatter : IAxisValueFormatter {
-        override fun getFormattedValue(value: Float, axis: AxisBase): String {
+    private inner class StartEndDateAxisFormatter : ValueFormatter() {
+        override fun getAxisLabel(value: Float, axis: AxisBase): String {
             var index = round(value).toInt() - 1
             index = if (index == -1) index + 1 else index
             return if (index > -1 && index < chartRevenueStats.keys.size) {
@@ -627,13 +639,19 @@ class MyStoreStatsView @JvmOverloads constructor(
         }
     }
 
-    /**
-     * Custom AxisFormatter for the Y-axis which only displays 3 labels:
-     * the maximum, minimum and 0 value labels
-     */
-    private inner class RevenueAxisFormatter : IAxisValueFormatter {
-        override fun getFormattedValue(value: Float, axis: AxisBase): String {
-            return getFormattedRevenueValue(value.toDouble())
+    private inner class RevenueAxisFormatter : ValueFormatter() {
+        override fun getAxisLabel(value: Float, axis: AxisBase): String {
+            return if (-1 < value && value < 1 && value != 0f) {
+                currencyFormatter.formatCurrency(
+                    value.toBigDecimal(),
+                    revenueStatsModel?.currencyCode.orEmpty()
+                )
+            } else {
+                currencyFormatter.formatCurrencyRounded(
+                    value.toDouble(),
+                    revenueStatsModel?.currencyCode.orEmpty()
+                ).replace(".0", "")
+            }
         }
     }
 }

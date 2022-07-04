@@ -1,2 +1,0 @@
-8.1:
-Der Tab „Bestellungen“ wurde in dieser Version aktualisiert. Wir haben die Tabs entfernt und stattdessen eine Option zum Filtern nach Status oder Zeitraum hinzugefügt. Diese Änderung basiert auf jahrelangem Feedback der Benutzer. Deshalb wissen wir, dass sie dir gefallen wird!

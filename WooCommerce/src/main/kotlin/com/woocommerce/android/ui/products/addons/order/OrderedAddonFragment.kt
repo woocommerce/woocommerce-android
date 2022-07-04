@@ -17,7 +17,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderedAddonBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.products.addons.AddonListAdapter
@@ -32,11 +31,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
-    companion object {
-        val TAG: String = OrderedAddonFragment::class.java.simpleName
-        val CURRENT_WIP_NOTICE_FEATURE = FeatureFeedbackSettings.Feature.PRODUCT_ADDONS
-    }
-
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     private val viewModel: OrderedAddonViewModel by viewModels()
@@ -100,7 +94,7 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
         when (event) {
             is ShowSurveyView ->
                 NavGraphMainDirections
-                    .actionGlobalFeedbackSurveyFragment(SurveyType.PRODUCT)
+                    .actionGlobalFeedbackSurveyFragment(SurveyType.ADDONS)
                     .apply { findNavController().navigateSafely(this) }
         }
     }

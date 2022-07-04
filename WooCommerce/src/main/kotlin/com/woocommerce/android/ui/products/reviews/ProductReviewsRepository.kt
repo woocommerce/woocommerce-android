@@ -3,8 +3,10 @@ package com.woocommerce.android.ui.products.reviews
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
+import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductReviewsPayload
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductReviewChanged
@@ -12,10 +14,10 @@ import javax.inject.Inject
 
 class ProductReviewsRepository @Inject constructor(
     private val selectedSite: SelectedSite,
-    private val productStore: WCProductStore
+    private val productStore: WCProductStore,
+    private val coroutineDispatchers: CoroutineDispatchers
 ) {
     companion object {
-        private const val PRODUCT_REVIEW_STATUS_APPROVED = "approved"
         private const val PAGE_SIZE = WCProductStore.NUM_REVIEWS_PER_FETCH
     }
 
@@ -35,8 +37,7 @@ class ProductReviewsRepository @Inject constructor(
 
         val payload = FetchProductReviewsPayload(
             selectedSite.get(), newOffset,
-            productIds = listOf(remoteProductId),
-            filterByStatus = listOf(PRODUCT_REVIEW_STATUS_APPROVED)
+            productIds = listOf(remoteProductId)
         )
         val result = productStore.fetchProductReviews(payload)
         if (result.isError) {
@@ -55,10 +56,11 @@ class ProductReviewsRepository @Inject constructor(
     /**
      * Returns all product reviews for the current site and product from the local database
      */
-    fun getProductReviewsFromDB(remoteProductId: Long): List<ProductReview> {
-        return productStore.getProductReviewsForProductAndSiteId(
-            localSiteId = selectedSite.get().id,
-            remoteProductId = remoteProductId
-        ).map { it.toAppModel() }
-    }
+    suspend fun getProductReviewsFromDB(remoteProductId: Long): List<ProductReview> =
+        withContext(coroutineDispatchers.io) {
+            productStore.getProductReviewsForProductAndSiteId(
+                localSiteId = selectedSite.get().id,
+                remoteProductId = remoteProductId
+            ).map { it.toAppModel() }
+        }
 }

@@ -10,9 +10,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductTagsBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductTag
@@ -33,10 +34,6 @@ class ProductTagsFragment :
     BaseProductFragment(R.layout.fragment_product_tags),
     OnLoadMoreListener,
     OnProductTagClickListener {
-    companion object {
-        private const val SEARCH_TYPING_DELAY_MS = 250L
-    }
-
     private lateinit var productTagsAdapter: ProductTagsAdapter
 
     private val skeletonView = SkeletonView()
@@ -73,7 +70,7 @@ class ProductTagsFragment :
 
         val activity = requireActivity()
 
-        productTagsAdapter = ProductTagsAdapter(activity.baseContext, this, this)
+        productTagsAdapter = ProductTagsAdapter(this, this)
         with(binding.productTagsRecycler) {
             layoutManager = LinearLayoutManager(activity)
             adapter = productTagsAdapter
@@ -87,7 +84,7 @@ class ProductTagsFragment :
         binding.productTagsLayout.apply {
             scrollUpChild = binding.productTagsRecycler
             setOnRefreshListener {
-                AnalyticsTracker.track(Stat.PRODUCT_TAGS_PULLED_TO_REFRESH)
+                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_TAGS_PULLED_TO_REFRESH)
                 viewModel.refreshProductTags()
             }
         }
@@ -115,7 +112,7 @@ class ProductTagsFragment :
                     viewModel.setProductTagsFilter(filter)
                 }
             },
-            SEARCH_TYPING_DELAY_MS
+            AppConstants.SEARCH_TYPING_DELAY_MS
         )
     }
 
@@ -175,7 +172,7 @@ class ProductTagsFragment :
     }
 
     private fun showProductTags(productTags: List<ProductTag>) {
-        productTagsAdapter.setProductTags(productTags)
+        productTagsAdapter.submitList(productTags)
         updateSelectedTags()
     }
 

@@ -6,13 +6,14 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.RequestResult
+import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
+import com.woocommerce.android.ui.reviews.domain.MarkAllReviewsAsSeen
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.flow.emptyFlow
 import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
@@ -26,8 +27,12 @@ class ReviewListViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val reviewListRepository: ReviewListRepository = mock()
     private val dispatcher: Dispatcher = mock()
-    private val selectedSite: SelectedSite = mock()
     private val savedState: SavedStateHandle = SavedStateHandle()
+    private val markAllReviewsAsSeen: MarkAllReviewsAsSeen = mock()
+    private val unseenReviewsCountHandler: UnseenReviewsCountHandler = mock()
+    private val reviewModerationHandler: ReviewModerationHandler = mock() {
+        on { pendingModerationStatus } doReturn emptyFlow()
+    }
 
     private val reviews = ProductReviewTestUtils.generateProductReviewList()
     private lateinit var viewModel: ReviewListViewModel
@@ -39,8 +44,10 @@ class ReviewListViewModelTest : BaseUnitTest() {
                 savedState,
                 networkStatus,
                 dispatcher,
-                selectedSite,
-                reviewListRepository
+                reviewListRepository,
+                markAllReviewsAsSeen,
+                unseenReviewsCountHandler,
+                reviewModerationHandler
             )
         )
 
@@ -56,7 +63,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
      * - check for unread reviews
      */
     @Test
-    fun `Load product reviews list successfully`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Load product reviews list successfully`() = testBlocking {
         doReturn(reviews).whenever(reviewListRepository).getCachedProductReviews()
         doReturn(true).whenever(reviewListRepository).getHasUnreadCachedProductReviews()
         doReturn(true).whenever(networkStatus).isConnected()
@@ -85,30 +92,29 @@ class ReviewListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Handle loading product reviews list while offline correctly`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            doReturn(reviews).whenever(reviewListRepository).getCachedProductReviews()
-            doReturn(false).whenever(networkStatus).isConnected()
+    fun `Handle loading product reviews list while offline correctly`() = testBlocking {
+        doReturn(reviews).whenever(reviewListRepository).getCachedProductReviews()
+        doReturn(false).whenever(networkStatus).isConnected()
 
-            var snackbar: ShowSnackbar? = null
-            viewModel.event.observeForever {
-                if (it is ShowSnackbar) snackbar = it
-            }
-
-            val skeletonShown = mutableListOf<Boolean>()
-            viewModel.viewStateData.observeForever { old, new ->
-                new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { skeletonShown.add(it) }
-            }
-
-            viewModel.start()
-
-            verify(reviewListRepository, times(0)).fetchProductReviews(any())
-            verify(reviewListRepository, times(1)).getCachedProductReviews()
-            Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
+        var snackbar: ShowSnackbar? = null
+        viewModel.event.observeForever {
+            if (it is ShowSnackbar) snackbar = it
         }
 
+        val skeletonShown = mutableListOf<Boolean>()
+        viewModel.viewStateData.observeForever { old, new ->
+            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { skeletonShown.add(it) }
+        }
+
+        viewModel.start()
+
+        verify(reviewListRepository, times(0)).fetchProductReviews(any())
+        verify(reviewListRepository, times(1)).getCachedProductReviews()
+        Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
+    }
+
     @Test
-    fun `Load product reviews list failed`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Load product reviews list failed`() = testBlocking {
         doReturn(reviews).whenever(reviewListRepository).getCachedProductReviews()
         doReturn(false).whenever(reviewListRepository).getHasUnreadCachedProductReviews()
         doReturn(true).whenever(networkStatus).isConnected()
@@ -143,7 +149,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Show and hide review list skeleton correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Show and hide review list skeleton correctly`() = testBlocking {
         doReturn(emptyList<ProductReview>()).whenever(reviewListRepository).getCachedProductReviews()
         doReturn(RequestResult.SUCCESS).whenever(reviewListRepository).fetchProductReviews(any())
 
@@ -158,22 +164,21 @@ class ReviewListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Shows and hides review list load more progress correctly`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            doReturn(true).whenever(reviewListRepository).canLoadMore
-            doReturn(RequestResult.SUCCESS).whenever(reviewListRepository).fetchProductReviews(any())
+    fun `Shows and hides review list load more progress correctly`() = testBlocking {
+        doReturn(true).whenever(reviewListRepository).canLoadMore
+        doReturn(RequestResult.SUCCESS).whenever(reviewListRepository).fetchProductReviews(any())
 
-            val isLoadingMore = mutableListOf<Boolean>()
-            viewModel.viewStateData.observeForever { old, new ->
-                new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { isLoadingMore.add(it) }
-            }
-
-            viewModel.loadMoreReviews()
-            Assertions.assertThat(isLoadingMore).containsExactly(true, false)
+        val isLoadingMore = mutableListOf<Boolean>()
+        viewModel.viewStateData.observeForever { old, new ->
+            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { isLoadingMore.add(it) }
         }
 
+        viewModel.loadMoreReviews()
+        Assertions.assertThat(isLoadingMore).containsExactly(true, false)
+    }
+
     @Test
-    fun `Report has unread reviews status correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Report has unread reviews status correctly`() = testBlocking {
         doReturn(true).whenever(reviewListRepository).getHasUnreadCachedProductReviews()
 
         var hasUnread = false
@@ -186,7 +191,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Refreshing reviews list handled correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Refreshing reviews list handled correctly`() = testBlocking {
         doReturn(true).whenever(reviewListRepository).getHasUnreadCachedProductReviews()
         doReturn(RequestResult.SUCCESS).whenever(reviewListRepository).fetchProductReviews(any())
 
@@ -203,43 +208,22 @@ class ReviewListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Marking all reviews as read while offline handled correctly`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            doReturn(false).whenever(networkStatus).isConnected()
+    fun `Marking all reviews as read while offline handled correctly`() = testBlocking {
+        doReturn(false).whenever(networkStatus).isConnected()
 
-            var snackbar: ShowSnackbar? = null
-            viewModel.event.observeForever {
-                if (it is ShowSnackbar) snackbar = it
-            }
-
-            viewModel.markAllReviewsAsRead()
-            Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
+        var snackbar: ShowSnackbar? = null
+        viewModel.event.observeForever {
+            if (it is ShowSnackbar) snackbar = it
         }
 
-    @Test
-    fun `Notify UI that request to mark all as read was successful`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            doReturn(true).whenever(networkStatus).isConnected()
-            doReturn(RequestResult.SUCCESS).whenever(reviewListRepository).markAllProductReviewsAsRead()
-
-            val markReadActions = mutableListOf<ActionStatus>()
-            var snackbar: ShowSnackbar? = null
-            viewModel.event.observeForever {
-                when (it) {
-                    is ShowSnackbar -> snackbar = it
-                    is MarkAllAsRead -> markReadActions.add(it.status)
-                }
-            }
-
-            viewModel.markAllReviewsAsRead()
-            Assertions.assertThat(markReadActions).containsExactly(ActionStatus.SUBMITTED, ActionStatus.SUCCESS)
-            Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.wc_mark_all_read_success))
-        }
+        viewModel.markAllReviewsAsRead()
+        Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
+    }
 
     @Test
-    fun `Notify UI that request to mark all as read failed`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Notify UI that request to mark all as read was successful`() = testBlocking {
         doReturn(true).whenever(networkStatus).isConnected()
-        doReturn(RequestResult.ERROR).whenever(reviewListRepository).markAllProductReviewsAsRead()
+        doReturn(MarkAllReviewsAsSeen.Success).whenever(markAllReviewsAsSeen).invoke()
 
         val markReadActions = mutableListOf<ActionStatus>()
         var snackbar: ShowSnackbar? = null
@@ -251,6 +235,27 @@ class ReviewListViewModelTest : BaseUnitTest() {
         }
 
         viewModel.markAllReviewsAsRead()
+
+        Assertions.assertThat(markReadActions).containsExactly(ActionStatus.SUBMITTED, ActionStatus.SUCCESS)
+        Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.wc_mark_all_read_success))
+    }
+
+    @Test
+    fun `Notify UI that request to mark all as read failed`() = testBlocking {
+        doReturn(true).whenever(networkStatus).isConnected()
+        doReturn(MarkAllReviewsAsSeen.Fail).whenever(markAllReviewsAsSeen).invoke()
+
+        val markReadActions = mutableListOf<ActionStatus>()
+        var snackbar: ShowSnackbar? = null
+        viewModel.event.observeForever {
+            when (it) {
+                is ShowSnackbar -> snackbar = it
+                is MarkAllAsRead -> markReadActions.add(it.status)
+            }
+        }
+
+        viewModel.markAllReviewsAsRead()
+
         Assertions.assertThat(markReadActions).containsExactly(ActionStatus.SUBMITTED, ActionStatus.ERROR)
         Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.wc_mark_all_read_error))
     }

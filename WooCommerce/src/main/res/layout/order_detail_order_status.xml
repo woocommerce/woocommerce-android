@@ -1,61 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_height="wrap_content"
-    android:layout_width="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
     <LinearLayout
-        android:layout_height="wrap_content"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/orderStatus_dateAndOrderNum"
+            android:id="@+id/orderStatus_subtitle"
             style="@style/Woo.TextView.Caption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/minor_50"
-            tools:text="Nov 3, 2020 \u2022 #120"/>
+            tools:text="Nov 3, 2020 \u2022 #120" />
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/orderStatus_name"
+            android:id="@+id/orderStatus_header"
             style="@style/Woo.TextView.Headline6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/minor_00"
+            android:layout_marginBottom="@dimen/minor_00"
             tools:text="George Carlin" />
 
-        <FrameLayout
-            android:id="@+id/orderStatus_edit"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/orderStatus_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:contentDescription="@string/orderdetail_change_order_status"
-            android:focusable="true"
-            android:orientation="horizontal"
-            android:paddingBottom="@dimen/major_75"
-            android:paddingEnd="@dimen/major_100"
-            android:paddingStart="@dimen/major_100">
+            android:focusable="false"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-        <com.woocommerce.android.widgets.FlowLayout
+            <com.woocommerce.android.widgets.tags.TagView
                 android:id="@+id/orderStatus_orderTags"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:contentDescription="@string/orderstatus_contentDesc" />
+                android:layout_marginStart="@dimen/major_100"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/orderStatus_editAction"
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/orderStatus_editImage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:background="@drawable/ic_edit_pencil"
-                android:clickable="false"
-                android:focusable="false"
                 android:importantForAccessibility="no"
-                android:textColor="@color/button_fg_selector" />
-        </FrameLayout>
+                android:paddingHorizontal="@dimen/major_100"
+                android:paddingVertical="@dimen/major_75"
+                android:src="@drawable/ic_edit_pencil"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/orderStatus_editButton"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/orderStatus_editButton"
+                style="@style/Woo.Button.TextButton.Secondary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/order_creation_status_edit_content_description"
+                android:text="@string/edit"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 </merge>

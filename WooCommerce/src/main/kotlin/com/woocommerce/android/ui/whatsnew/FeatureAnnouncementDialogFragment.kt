@@ -42,7 +42,6 @@ class FeatureAnnouncementDialogFragment : DialogFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         val binding = FeatureAnnouncementDialogFragmentBinding.bind(view)
 
         viewModel.setAnnouncementData(navArgs.announcement)
@@ -88,7 +87,7 @@ class FeatureAnnouncementDialogFragment : DialogFragment() {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.announcement.takeIfNotEqualTo(old?.announcement) {
                 it?.let {
-                    listAdapter.updateData(it.features)
+                    listAdapter.submitList(it.features)
                 }
             }
         }

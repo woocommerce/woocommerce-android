@@ -1,253 +1,245 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="?attr/colorSurface"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <View style="@style/Woo.Divider" />
-
-    <!--
-        Primary store
-    -->
-    <com.woocommerce.android.ui.prefs.WCSettingsCategoryHeaderView
+    <LinearLayout xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/settings_selected_store" />
-
-    <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-        android:id="@+id/option_store"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:optionTitle="testwooshop.mystagingwebsite.com"
-        tools:optionValue="Woo Tester" />
-
-    <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-        android:id="@+id/option_switch_store"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:optionTitle="@string/settings_switch_store" />
-
-    <View style="@style/Woo.Divider" />
-    <!--
-        Help & support
-    -->
-    <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-        android:id="@+id/option_help_and_support"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:optionTitle="@string/support_help" />
-
-    <LinearLayout
-        android:id="@+id/store_settings_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
+        android:background="?attr/colorSurface"
         android:orientation="vertical">
 
         <View style="@style/Woo.Divider" />
+
         <!--
-                Store Settings
-            -->
-        <com.woocommerce.android.ui.prefs.WCSettingsCategoryHeaderView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/settings_store" />
-        <!--
-            Card Reader
+            Help & support
         -->
         <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-            android:id="@+id/option_card_reader_payments"
+            android:id="@+id/option_help_and_support"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:optionTitle="@string/settings_card_reader_payments" />
+            app:optionTitle="@string/support_help" />
 
-    </LinearLayout>
-
-    <View style="@style/Woo.Divider" />
-
-    <!--
-        Notifications (pre- API 26)
-    -->
-    <LinearLayout
-        android:id="@+id/container_notifs_old"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        tools:visibility="visible">
-
-        <com.woocommerce.android.ui.prefs.WCSettingsCategoryHeaderView
+        <LinearLayout
+            android:id="@+id/store_settings_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/settings_notifs" />
+            android:orientation="vertical">
 
-        <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
-            android:id="@+id/option_notifs_orders"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:toggleOptionDesc="@string/settings_notifs_orders_detail"
-            app:toggleOptionTitle="@string/settings_notifs_orders" />
+            <View style="@style/Woo.Divider" />
+            <!--
+                    Store Settings
+                -->
+            <com.woocommerce.android.ui.prefs.WCSettingsCategoryHeaderView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_store" />
+            <!--
+                Card Reader
+            -->
+            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+                android:id="@+id/option_card_reader_payments"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:optionTitle="@string/settings_card_reader_payments" />
 
-        <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
-            android:id="@+id/option_notifs_tone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:toggleOptionDesc="@string/settings_notifs_tone_detail"
-            app:toggleOptionTitle="@string/settings_notifs_tone" />
+            <!--
+                Install Jetpack
+            -->
+            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+                android:id="@+id/option_install_jetpack"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:optionTitle="@string/settings_install_jetpack"
+                tools:visibility="visible" />
 
-        <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
-            android:id="@+id/option_notifs_reviews"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:toggleOptionDesc="@string/settings_notifs_reviews_detail"
-            app:toggleOptionTitle="@string/settings_notifs_reviews" />
+        </LinearLayout>
 
         <View style="@style/Woo.Divider" />
-    </LinearLayout>
 
-    <!--
-        Notifications (API 26+)
-    -->
-    <LinearLayout
-        android:id="@+id/container_notifs_new"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        <!--
+            Notifications (pre- API 26)
+        -->
+        <LinearLayout
+            android:id="@+id/container_notifs_old"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            tools:visibility="visible">
 
+            <com.woocommerce.android.ui.prefs.WCSettingsCategoryHeaderView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_notifs" />
+
+            <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
+                android:id="@+id/option_notifs_orders"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:toggleOptionDesc="@string/settings_notifs_orders_detail"
+                app:toggleOptionTitle="@string/settings_notifs_orders" />
+
+            <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
+                android:id="@+id/option_notifs_tone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:toggleOptionDesc="@string/settings_notifs_tone_detail"
+                app:toggleOptionTitle="@string/settings_notifs_tone" />
+
+            <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
+                android:id="@+id/option_notifs_reviews"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:toggleOptionDesc="@string/settings_notifs_reviews_detail"
+                app:toggleOptionTitle="@string/settings_notifs_reviews" />
+
+            <View style="@style/Woo.Divider" />
+        </LinearLayout>
+
+        <!--
+            Notifications (API 26+)
+        -->
+        <LinearLayout
+            android:id="@+id/container_notifs_new"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.woocommerce.android.ui.prefs.WCSettingsCategoryHeaderView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_preferences" />
+
+            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+                android:id="@+id/option_notifications"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:optionTitle="@string/settings_notifs_device"
+                app:optionValue="@string/settings_notifs_device_detail" />
+
+        </LinearLayout>
+
+        <!--
+            Appearance (App Theme)
+        -->
+        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+            android:id="@+id/option_theme"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:optionTitle="@string/settings_app_theme_title"
+            app:optionValue="@string/settings_app_theme_option_default" />
+
+        <!--
+            Image Optimization
+        -->
+        <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
+            android:id="@+id/option_image_optimization"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:toggleOptionDesc="@string/settings_image_optimization_message"
+            app:toggleOptionTitle="@string/settings_image_optimization_title" />
+
+        <!--
+            Privacy
+        -->
+        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+            android:id="@+id/option_privacy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:optionTitle="@string/privacy_settings" />
+
+        <View style="@style/Woo.Divider" />
+
+        <!--
+            Beta Features
+        -->
+        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+            android:id="@+id/option_beta_features"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:optionTitle="@string/beta_features"
+            app:optionValue="@string/beta_features_add_ons" />
+
+        <!--
+            Send Feedback
+        -->
+        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+            android:id="@+id/option_send_feedback"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:optionTitle="@string/send_feedback" />
+
+        <View style="@style/Woo.Divider" />
+
+        <!--
+            About
+        -->
         <com.woocommerce.android.ui.prefs.WCSettingsCategoryHeaderView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/settings_preferences" />
+            android:text="@string/settings_about" />
 
         <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-            android:id="@+id/option_notifications"
+            android:id="@+id/option_about"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:optionTitle="@string/settings_notifs_device"
-            app:optionValue="@string/settings_notifs_device_detail" />
+            app:optionTitle="@string/app_name" />
 
-    </LinearLayout>
-
-    <!--
-        Appearance (App Theme)
-    -->
-    <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-        android:id="@+id/option_theme"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:optionTitle="@string/settings_app_theme_title"
-        app:optionValue="@string/settings_app_theme_option_default" />
-
-    <!--
-        Image Optimization
-    -->
-    <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
-        android:id="@+id/option_image_optimization"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:toggleOptionDesc="@string/settings_image_optimization_message"
-        app:toggleOptionTitle="@string/settings_image_optimization_title" />
-
-    <!--
-        Privacy
-    -->
-    <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-        android:id="@+id/option_privacy"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:optionTitle="@string/privacy_settings" />
-
-    <View style="@style/Woo.Divider" />
-
-    <!--
-        Beta Features
-    -->
-    <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-        android:id="@+id/option_beta_features"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:optionTitle="@string/beta_features"
-        app:optionValue="@string/beta_features_add_ons" />
-
-    <!--
-        Send Feedback
-    -->
-    <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-        android:id="@+id/option_send_feedback"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:optionTitle="@string/send_feedback" />
-
-    <View style="@style/Woo.Divider" />
-
-    <!--
-        About
-    -->
-    <com.woocommerce.android.ui.prefs.WCSettingsCategoryHeaderView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/settings_about" />
-
-    <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-        android:id="@+id/option_about"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:optionTitle="@string/app_name" />
-
-    <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-        android:id="@+id/option_whats_new"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:optionTitle="@string/settings_whats_new"
-        android:visibility="gone"
-        tools:visibility="visible"  />
-
-    <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-        android:id="@+id/option_licenses"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:optionTitle="@string/settings_licenses" />
-
-    <View style="@style/Woo.Divider" />
-
-    <com.woocommerce.android.ui.prefs.WCSettingsButton
-        android:id="@+id/btn_option_logout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/settings_signout" />
-
-    <View style="@style/Woo.Divider" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/major_100"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:id="@+id/imageHeart"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:importantForAccessibility="no"
-            android:paddingStart="@dimen/major_100"
-            android:paddingEnd="0dp"
-            android:scaleType="center"
-            app:srcCompat="@drawable/ic_gridicons_heart_outline" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/settingsHiring"
-            style="@style/Woo.TextView.Caption"
+        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+            android:id="@+id/option_whats_new"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_margin="@dimen/minor_00"
-            android:gravity="center_vertical"
-            android:paddingStart="@dimen/major_100"
-            android:paddingEnd="@dimen/major_100"
-            android:text="@string/settings_hiring"
-            tools:text="Made with love by Automattic. We're hiring!" />
+            android:visibility="gone"
+            app:optionTitle="@string/settings_whats_new"
+            tools:visibility="visible" />
+
+        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+            android:id="@+id/option_licenses"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:optionTitle="@string/settings_licenses" />
+
+        <View style="@style/Woo.Divider" />
+
+        <com.woocommerce.android.ui.prefs.WCSettingsButton
+            android:id="@+id/btn_option_logout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_signout" />
+
+        <View style="@style/Woo.Divider" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/major_100"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/imageHeart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:importantForAccessibility="no"
+                android:paddingStart="@dimen/major_100"
+                android:paddingEnd="0dp"
+                android:scaleType="center"
+                app:srcCompat="@drawable/ic_gridicons_heart_outline" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/settingsHiring"
+                style="@style/Woo.TextView.Caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_margin="@dimen/minor_00"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/major_100"
+                android:paddingEnd="@dimen/major_100"
+                android:text="@string/settings_hiring"
+                tools:text="Made with love by Automattic. We're hiring!" />
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+</ScrollView>

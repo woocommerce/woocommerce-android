@@ -3,11 +3,7 @@ package com.woocommerce.android.ui.common
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import kotlin.test.assertFalse
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -20,6 +16,9 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.user.WCUserModel
 import org.wordpress.android.fluxc.store.WCUserStore
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 class UserEligibilityFetcherTest : BaseUnitTest() {
@@ -58,7 +57,7 @@ class UserEligibilityFetcherTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Fetches user info correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Fetches user info correctly`() = testBlocking {
         doReturn(expectedUser.isUserEligible()).whenever(appPrefsWrapper).isUserEligible()
         doReturn(expectedUser.email).whenever(appPrefsWrapper).getUserEmail()
 
@@ -81,7 +80,7 @@ class UserEligibilityFetcherTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Do not update prefs when request failed`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Do not update prefs when request failed`() = testBlocking {
         doReturn(true).whenever(appPrefsWrapper).isUserEligible()
         doReturn(null).whenever(appPrefsWrapper).getUserEmail()
 

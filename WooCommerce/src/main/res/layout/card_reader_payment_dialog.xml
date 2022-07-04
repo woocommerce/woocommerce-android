@@ -10,7 +10,7 @@
         android:layout_height="@dimen/payments_dialog_height"
         android:background="@color/color_surface_elevated"
         android:paddingTop="@dimen/major_150"
-        android:paddingBottom="@dimen/major_150">
+        android:paddingBottom="@dimen/major_75">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/header_label"
@@ -99,6 +99,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/payment_state_label"
             tools:text="Tap or insert to pay" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/receipt_sent_label"
+            style="@style/Woo.TextView.Body2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/major_125"
+            android:layout_marginTop="@dimen/margin_extra_large"
+            android:gravity="center_horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/content_group"
+            tools:text="A receipt has been emailed to xyz" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/primary_action_btn"

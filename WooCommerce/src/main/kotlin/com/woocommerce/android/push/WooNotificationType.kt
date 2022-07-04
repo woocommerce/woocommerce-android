@@ -1,9 +1,9 @@
 package com.woocommerce.android.push
 
-import org.wordpress.android.fluxc.model.notification.NotificationModel
 import com.woocommerce.android.push.WooNotificationType.NEW_ORDER
 import com.woocommerce.android.push.WooNotificationType.PRODUCT_REVIEW
 import com.woocommerce.android.push.WooNotificationType.ZENDESK
+import org.wordpress.android.fluxc.model.notification.NotificationModel
 
 enum class WooNotificationType {
     NEW_ORDER,

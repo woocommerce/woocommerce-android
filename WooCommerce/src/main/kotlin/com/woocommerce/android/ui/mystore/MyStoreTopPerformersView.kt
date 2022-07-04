@@ -6,23 +6,20 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.TOP_EARNER_PRODUCT_TAPPED
 import com.woocommerce.android.databinding.MyStoreTopPerformersBinding
 import com.woocommerce.android.databinding.TopPerformersListItemBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.FormatCurrencyRounded
 import com.woocommerce.android.widgets.SkeletonView
-import org.apache.commons.text.StringEscapeUtils
-import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
-import org.wordpress.android.util.FormatUtils
-import org.wordpress.android.util.PhotonUtils
+import java.util.*
 
 class MyStoreTopPerformersView @JvmOverloads constructor(
     ctx: Context,
@@ -32,30 +29,14 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
     private val binding = MyStoreTopPerformersBinding.inflate(LayoutInflater.from(ctx), this, true)
 
     private lateinit var selectedSite: SelectedSite
-    private lateinit var formatCurrencyForDisplay: FormatCurrencyRounded
-    private lateinit var statsCurrencyCode: String
 
-    private var listener: MyStoreStatsListener? = null
     private var skeletonView = SkeletonView()
 
-    fun initView(
-        listener: MyStoreStatsListener,
-        selectedSite: SelectedSite,
-        formatCurrencyForDisplay: FormatCurrencyRounded,
-        statsCurrencyCode: String
-    ) {
-        this.listener = listener
+    fun initView(selectedSite: SelectedSite) {
         this.selectedSite = selectedSite
-        this.formatCurrencyForDisplay = formatCurrencyForDisplay
-        this.statsCurrencyCode = statsCurrencyCode
 
         binding.topPerformersRecycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
-        binding.topPerformersRecycler.adapter = TopPerformersAdapter(
-            context,
-            formatCurrencyForDisplay,
-            statsCurrencyCode,
-            listener
-        )
+        binding.topPerformersRecycler.adapter = TopPerformersAdapter()
         binding.topPerformersRecycler.itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
 
         // Setting this field to false ensures that the RecyclerView children do NOT receive the multiple clicks,
@@ -64,35 +45,23 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
         binding.topPerformersRecycler.isMotionEventSplittingEnabled = false
     }
 
-    fun removeListener() {
-        listener = null
+    fun onDateGranularityChanged(granularity: StatsGranularity) {
+        trackDateRangeChanged(granularity)
+        binding.topPerformersRecycler.adapter = TopPerformersAdapter()
+        showEmptyView(false)
     }
 
-    /**
-     * Load top performers stats when tab is selected in [MyStoreStatsView]
-     */
-    fun loadTopPerformerStats(granularity: StatsGranularity) {
-        // Track range change
+    private fun trackDateRangeChanged(granularity: StatsGranularity) {
         AnalyticsTracker.track(
-            Stat.DASHBOARD_TOP_PERFORMERS_DATE,
-            mapOf(AnalyticsTracker.KEY_RANGE to granularity.toString().toLowerCase())
+            AnalyticsEvent.DASHBOARD_TOP_PERFORMERS_DATE,
+            mapOf(AnalyticsTracker.KEY_RANGE to granularity.toString().lowercase(Locale.getDefault()))
         )
-
-        binding.topPerformersRecycler.adapter = TopPerformersAdapter(
-            context,
-            formatCurrencyForDisplay,
-            statsCurrencyCode,
-            listener
-        )
-        showEmptyView(false)
-        showErrorView(false)
-        listener?.onRequestLoadTopPerformersStats(granularity)
     }
 
     fun showSkeleton(show: Boolean) {
         if (show) {
             skeletonView.show(
-                binding.dashboardTopPerformersContainer,
+                binding.topPerformersLinearLayout,
                 R.layout.skeleton_dashboard_top_performers,
                 delayed = true
             )
@@ -102,80 +71,69 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
     }
 
     private fun showEmptyView(show: Boolean) {
-        binding.topPerformersEmptyView.isVisible = show
+        binding.topPerformersEmptyViewLinearLayout.isVisible = show
     }
 
-    fun updateView(topPerformers: List<WCTopPerformerProductModel>) {
-        (binding.topPerformersRecycler.adapter as TopPerformersAdapter).setTopPerformers(topPerformers)
+    fun updateView(topPerformers: List<TopPerformerProductUiModel>) {
+        (binding.topPerformersRecycler.adapter as TopPerformersAdapter).submitList(topPerformers)
         showEmptyView(topPerformers.isEmpty())
     }
 
     fun showErrorView(show: Boolean) {
         showEmptyView(false)
-        binding.topPerformersEmptyView.isVisible = show
+        binding.topPerformersEmptyViewLinearLayout.isVisible = show
         binding.topPerformersRecycler.isVisible = !show
     }
 
     class TopPerformersViewHolder(val viewBinding: TopPerformersListItemBinding) :
-        RecyclerView.ViewHolder(viewBinding.getRoot())
+        RecyclerView.ViewHolder(viewBinding.root)
 
-    class TopPerformersAdapter(
-        context: Context,
-        val formatCurrencyForDisplay: FormatCurrencyRounded,
-        val statsCurrencyCode: String,
-        val listener: MyStoreStatsListener?
-    ) : RecyclerView.Adapter<TopPerformersViewHolder>() {
-        private val orderString: String
-        private val imageSize: Int
-        private val topPerformersList: ArrayList<WCTopPerformerProductModel> = ArrayList()
-
+    class TopPerformersAdapter : ListAdapter<TopPerformerProductUiModel, TopPerformersViewHolder>(ItemDiffCallback) {
         init {
             setHasStableIds(true)
-            orderString = context.getString(R.string.dashboard_top_performers_total_orders)
-            imageSize = context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
         }
 
-        fun setTopPerformers(newList: List<WCTopPerformerProductModel>) {
-            topPerformersList.clear()
-            topPerformersList.addAll(newList)
-            notifyDataSetChanged()
-        }
-
-        override fun getItemCount() = topPerformersList.size
-
-        override fun getItemId(position: Int): Long {
-            return topPerformersList[position].id.toLong()
-        }
+        override fun getItemId(position: Int): Long = getItem(position).productId
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TopPerformersViewHolder {
             return TopPerformersViewHolder(
                 TopPerformersListItemBinding.inflate(
-                    LayoutInflater.from(parent.getContext()),
+                    LayoutInflater.from(parent.context),
                     parent, false
                 )
             )
         }
 
         override fun onBindViewHolder(holder: TopPerformersViewHolder, position: Int) {
-            val topPerformer = topPerformersList[position]
-            val numOrders = String.format(orderString, FormatUtils.formatDecimal(topPerformer.quantity))
-            val total = formatCurrencyForDisplay(topPerformer.total, statsCurrencyCode)
-
-            holder.viewBinding.textProductName.text = StringEscapeUtils.unescapeHtml4(topPerformer.product.name)
-            holder.viewBinding.textProductOrders.text = numOrders
-            holder.viewBinding.textTotalSpend.text = total
+            val topPerformer = getItem(position)
+            holder.viewBinding.textProductName.text = topPerformer.name
+            holder.viewBinding.itemsSoldTextView.text = topPerformer.timesOrdered
+            holder.viewBinding.netSalesTextView.text = topPerformer.netSales
             holder.viewBinding.divider.isVisible = position < itemCount - 1
-
-            val imageUrl = PhotonUtils.getPhotonImageUrl(topPerformer.product.getFirstImageUrl(), imageSize, 0)
             GlideApp.with(holder.itemView.context)
-                .load(imageUrl)
+                .load(topPerformer.imageUrl)
                 .placeholder(ContextCompat.getDrawable(holder.itemView.context, R.drawable.ic_product))
                 .into(holder.viewBinding.imageProduct)
 
             holder.itemView.setOnClickListener {
-                AnalyticsTracker.track(TOP_EARNER_PRODUCT_TAPPED)
-                listener?.onTopPerformerClicked(topPerformer)
+                topPerformer.onClick(topPerformer.productId)
             }
+        }
+    }
+
+    object ItemDiffCallback : DiffUtil.ItemCallback<TopPerformerProductUiModel>() {
+        override fun areItemsTheSame(
+            oldItem: TopPerformerProductUiModel,
+            newItem: TopPerformerProductUiModel
+        ): Boolean {
+            return oldItem.productId == newItem.productId
+        }
+
+        override fun areContentsTheSame(
+            oldItem: TopPerformerProductUiModel,
+            newItem: TopPerformerProductUiModel
+        ): Boolean {
+            return oldItem == newItem
         }
     }
 }

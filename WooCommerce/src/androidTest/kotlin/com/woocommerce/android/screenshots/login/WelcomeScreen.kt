@@ -1,7 +1,8 @@
 package com.woocommerce.android.screenshots.login
 
+import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import com.woocommerce.android.R
-import com.woocommerce.android.screenshots.mystore.MyStoreScreen
+import com.woocommerce.android.screenshots.TabNavComponent
 import com.woocommerce.android.screenshots.util.Screen
 
 class WelcomeScreen : Screen {
@@ -9,9 +10,12 @@ class WelcomeScreen : Screen {
         const val LOGIN_BUTTON = R.id.button_login_store
         const val WPCOM_LOGIN_BUTTON = R.id.button_login_wpcom
 
-        fun logoutIfNeeded(): WelcomeScreen {
+        fun logoutIfNeeded(composeTestRule: ComposeContentTestRule): WelcomeScreen {
             if (isElementDisplayed(R.id.dashboard)) {
-                MyStoreScreen().openSettingsPane().logOut()
+                TabNavComponent()
+                    .gotoMoreMenuScreen()
+                    .openSettings(composeTestRule)
+                    .logOut()
             }
 
             Thread.sleep(1000)

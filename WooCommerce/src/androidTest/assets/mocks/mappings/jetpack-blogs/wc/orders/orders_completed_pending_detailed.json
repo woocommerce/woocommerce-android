@@ -86,12 +86,12 @@
                 "date_paid_gmt": "{{currentYear}}-01-28T11:28:30"
             }, {
                 "id": 75,
-                "status": "completed",
+                "status": "pending",
                 "currency": "USD",
                 "prices_include_tax": false,
                 "discount_total": "0.00",
                 "shipping_total": "0.00",
-                "total": "1203.18",
+                "total": "1220.00",
                 "total_tax": "0.00",
                 "order_key": "wc_order_iSN68PMsVSXV5",
                 "billing": {
@@ -191,8 +191,8 @@
                 "total_tax": "0.00",
                 "order_key": "wc_order_Jtcn9Ecp49oCe",
                 "billing": {
-                    "first_name": "Yuri",
-                    "last_name": "Zhivago",
+                    "first_name": "Lydia",
+                    "last_name": "Donin",
                     "company": "",
                     "address_1": "1684 Lamberts Branch Road",
                     "address_2": "",

@@ -2,8 +2,17 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_graph_main"
-    app:startDestination="@id/dashboard">
+    android:id="@+id/nav_graph_main">
+
+    <include app:graph="@navigation/nav_graph_orders" />
+    <include app:graph="@navigation/nav_graph_order_filters" />
+    <include app:graph="@navigation/nav_graph_products" />
+    <include app:graph="@navigation/nav_graph_product_filters" />
+    <include app:graph="@navigation/nav_graph_order_creations" />
+    <include app:graph="@navigation/nav_graph_simple_payments" />
+    <include app:graph="@navigation/nav_graph_jetpack_install" />
+    <include app:graph="@navigation/nav_graph_coupons" />
+
     <fragment
         android:id="@+id/dashboard"
         android:name="com.woocommerce.android.ui.mystore.MyStoreFragment"
@@ -11,12 +20,8 @@
         tools:layout="@layout/fragment_my_store">
         <action
             android:id="@+id/action_myStore_to_jetpackBenefitsDialog"
-            app:destination="@id/jetpackBenefitsDialog" />
+            app:destination="@id/nav_graph_jetpack_install" />
     </fragment>
-    <dialog
-        android:id="@+id/simplePaymentsDialog"
-        android:name="com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsDialog"
-        android:label="SimplePaymentsDialog" />
     <fragment
         android:id="@+id/orders"
         android:name="com.woocommerce.android.ui.orders.list.OrderListFragment"
@@ -24,13 +29,10 @@
         tools:layout="@layout/fragment_order_list">
         <action
             android:id="@+id/action_orderListFragment_to_orderDetailFragment"
-            app:destination="@id/nav_graph_orders"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:popExitAnim="@anim/activity_slide_out_to_right">
+            app:destination="@id/nav_graph_orders">
             <argument
                 android:name="orderId"
-                android:defaultValue='""'
-                app:argType="string" />
+                app:argType="long" />
             <argument
                 android:name="remoteNoteId"
                 android:defaultValue="0L"
@@ -40,22 +42,34 @@
             android:id="@+id/action_orderListFragment_to_orderFilterListFragment"
             app:destination="@id/nav_graph_order_filters"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
-            android:id="@+id/action_orderListFragment_to_simplePaymentsDialog"
-            app:destination="@id/simplePaymentsDialog"
+            android:id="@+id/action_orderListFragment_to_simplePayments"
+            app:destination="@id/nav_graph_simple_payments"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_orderListFragment_to_orderCreationBottomSheet"
             app:destination="@id/orderCreationBottomSheetFragment"
             app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out"/>
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_orderListFragment_to_orderCreationFragment"
             app:destination="@id/nav_graph_order_creations"
             app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@anim/activity_fade_out" >
+            <argument
+                android:name="mode"
+                app:argType="com.woocommerce.android.ui.orders.creation.OrderCreationViewModel$Mode" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/products"
@@ -66,6 +80,8 @@
             android:id="@+id/action_productListFragment_to_productFilterListFragment"
             app:destination="@id/nav_graph_product_filters"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out">
             <argument
                 android:name="selectedStockStatus"
@@ -92,6 +108,8 @@
             android:id="@+id/action_productListFragment_to_productTypesBottomSheet"
             app:destination="@id/productTypesBottomSheetFragment"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out">
             <argument
                 android:name="isAddProduct"
@@ -106,9 +124,7 @@
         tools:layout="@layout/fragment_reviews_list">
         <action
             android:id="@+id/action_reviewListFragment_to_reviewDetailFragment"
-            app:destination="@id/reviewDetailFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/reviewDetailFragment" />
     </fragment>
     <fragment
         android:id="@+id/analytics"
@@ -117,7 +133,7 @@
         tools:layout="@layout/fragment_analytics">
         <action
             android:id="@+id/action_AnalyticsFragment_to_DateRangeSelector"
-            app:destination="@id/analyticsDateRangeSelectorDialog"/>
+            app:destination="@id/analyticsDateRangeSelectorDialog" />
     </fragment>
     <dialog
         android:id="@+id/analyticsDateRangeSelectorDialog"
@@ -140,11 +156,28 @@
             android:name="title"
             android:defaultValue="@null"
             app:argType="string"
-            app:nullable="true"  />
+            app:nullable="true" />
     </dialog>
     <action
         android:id="@+id/action_global_item_selector_dialog"
         app:destination="@id/itemSelectorDialog" />
+    <fragment
+        android:id="@+id/moreMenu"
+        android:name="com.woocommerce.android.ui.moremenu.MoreMenuFragment"
+        android:label="fragment_more_menu">
+        <action
+            android:id="@+id/action_moreMenu_to_reviewList"
+            app:destination="@id/reviews" />
+        <action
+            android:id="@+id/action_moreMenu_to_settingsActivity"
+            app:destination="@id/appSettingsActivity" />
+        <action
+            android:id="@+id/action_moreMenuFragment_to_inboxFragment"
+            app:destination="@id/inboxFragment" />
+        <action
+            android:id="@+id/action_moreMenu_to_couponListFragment"
+            app:destination="@id/nav_graph_coupons" />
+    </fragment>
     <fragment
         android:id="@+id/feedbackSurveyFragment"
         android:name="com.woocommerce.android.ui.feedback.FeedbackSurveyFragment"
@@ -156,21 +189,13 @@
         <action
             android:id="@+id/action_feedbackSurveyFragment_to_feedbackCompletedFragment"
             app:destination="@id/feedbackCompletedFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right"
             app:popUpTo="@id/feedbackSurveyFragment"
             app:popUpToInclusive="true" />
     </fragment>
 
     <action
         android:id="@+id/action_global_feedbackSurveyFragment"
-        app:destination="@id/feedbackSurveyFragment"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:exitAnim="@anim/activity_slide_out_to_left"
-        app:popEnterAnim="@anim/activity_slide_in_from_left"
-        app:popExitAnim="@anim/activity_slide_out_to_right" />
+        app:destination="@id/feedbackSurveyFragment" />
     <fragment
         android:id="@+id/feedbackCompletedFragment"
         android:name="com.woocommerce.android.ui.feedback.FeedbackCompletedFragment"
@@ -182,9 +207,7 @@
 
     <action
         android:id="@+id/action_global_productDetailFragment"
-        app:destination="@id/nav_graph_products"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:popExitAnim="@anim/activity_slide_out_to_right">
+        app:destination="@id/nav_graph_products">
         <argument
             android:name="remoteProductId"
             android:defaultValue="0L"
@@ -198,6 +221,9 @@
             android:defaultValue="false"
             app:argType="boolean" />
     </action>
+    <action
+        android:id="@+id/action_global_reviewDetailFragment"
+        app:destination="@id/reviewDetailFragment" />
     <fragment
         android:id="@+id/reviewDetailFragment"
         android:name="com.woocommerce.android.ui.reviews.ReviewDetailFragment"
@@ -214,15 +240,11 @@
         <argument
             android:name="launchedFromNotification"
             app:argType="boolean" />
-        <argument
-            android:name="enableModeration"
-            app:argType="boolean" />
+        <action
+            android:id="@+id/action_reviewDetailFromNotification_to_reviewListFragment"
+            app:destination="@id/reviews"
+            app:popUpTo="@+id/moreMenu" />
     </fragment>
-    <include app:graph="@navigation/nav_graph_orders" />
-    <include app:graph="@navigation/nav_graph_order_filters" />
-    <include app:graph="@navigation/nav_graph_products" />
-    <include app:graph="@navigation/nav_graph_product_filters" />
-    <include app:graph="@navigation/nav_graph_order_creations" />
 
     <fragment
         android:id="@+id/infoScreenFragment"
@@ -278,15 +300,18 @@
         app:destination="@id/WPComWebViewFragment" />
     <action
         android:id="@+id/action_global_userEligibilityErrorFragment"
-        app:destination="@id/userEligibilityErrorFragment"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:popExitAnim="@anim/activity_slide_out_to_right" />
+        app:destination="@id/userEligibilityErrorFragment" />
 
     <action
         android:id="@+id/action_global_infoScreenFragment"
         app:destination="@id/infoScreenFragment"
         app:enterAnim="@anim/activity_fade_in"
+        app:exitAnim="@null"
+        app:popEnterAnim="@null"
         app:popExitAnim="@anim/activity_fade_out" />
+    <action
+        android:id="@+id/action_global_login_to_sitePickerFragment"
+        app:destination="@id/sitePickerFragment" />
     <dialog
         android:id="@+id/productTypesBottomSheetFragment"
         android:name="com.woocommerce.android.ui.products.ProductTypesBottomSheetFragment"
@@ -297,6 +322,15 @@
             app:argType="long" />
         <argument
             android:name="isAddProduct"
+            android:defaultValue="false"
+            app:argType="boolean" />
+        <argument
+            android:name="currentProductType"
+            android:defaultValue="null"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="isCurrentProductVirtual"
             android:defaultValue="false"
             app:argType="boolean" />
     </dialog>
@@ -313,35 +347,51 @@
         android:id="@+id/action_open_Whatsnew_from_Main"
         app:destination="@id/featureAnnouncementDialogFragmentOnMain"
         app:enterAnim="@anim/activity_fade_in"
+        app:exitAnim="@null"
+        app:popEnterAnim="@null"
         app:popExitAnim="@anim/activity_fade_out" />
-    <dialog
-        android:id="@+id/jetpackBenefitsDialog"
-        android:name="com.woocommerce.android.ui.jetpack.JetpackBenefitsDialog"
-        android:label="JetpackBenefitsDialog">
-        <action
-            android:id="@+id/action_jetpackBenefitsDialog_to_jetpackInstallStartDialog"
-            app:destination="@id/jetpackInstallStartDialog" />
-    </dialog>
-    <dialog
-        android:id="@+id/jetpackInstallStartDialog"
-        android:name="com.woocommerce.android.ui.jetpack.JetpackInstallStartDialog"
-        android:label="JetpackInstallStartDialog"
-        tools:layout="@layout/dialog_jetpack_install_start">
-        <action
-            android:id="@+id/action_jetpackInstallStartDialog_to_jetpackInstallProgressDialog"
-            app:destination="@id/jetpackInstallProgressDialog" />
-    </dialog>
-    <dialog
-        android:id="@+id/jetpackInstallProgressDialog"
-        android:name="com.woocommerce.android.ui.jetpack.JetpackInstallProgressDialog"
-        android:label="JetpackInstallProgressDialog"
-        tools:layout="@layout/dialog_jetpack_install_progress">
-        <action
-            android:id="@+id/action_jetpackInstallProgressDialog_to_dashboard"
-            app:destination="@id/dashboard" />
-    </dialog>
     <dialog
         android:id="@+id/orderCreationBottomSheetFragment"
         android:name="com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment"
-        tools:layout="@layout/dialog_order_creation_bottom_sheet"/>
+        tools:layout="@layout/dialog_order_creation_bottom_sheet" />
+    <activity
+        android:id="@+id/appSettingsActivity"
+        android:name="com.woocommerce.android.ui.prefs.AppSettingsActivity"
+        android:label="AppSettingsActivity" />
+    <fragment
+        android:id="@+id/inboxFragment"
+        android:name="com.woocommerce.android.ui.inbox.InboxFragment"
+        android:label="InboxFragment" />
+    <fragment
+        android:id="@+id/sitePickerFragment"
+        android:name="com.woocommerce.android.ui.sitepicker.SitePickerFragment"
+        android:label="fragment_site_picker"
+        tools:layout="@layout/fragment_site_picker">
+        <argument
+            android:name="openedFromLogin"
+            android:defaultValue="true"
+            app:argType="boolean" />
+    </fragment>
+    <fragment
+        android:id="@+id/simpleTextEditorFragment"
+        android:name="com.woocommerce.android.ui.common.texteditor.SimpleTextEditorFragment"
+        android:label="SimpleTextEditorFragment">
+        <argument
+            android:name="currentText"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="screenTitle"
+            app:argType="string" />
+        <argument
+            android:name="hint"
+            app:argType="string" />
+        <argument
+            android:name="requestCode"
+            android:defaultValue="-1"
+            app:argType="integer" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_simpleTextEditorFragment"
+        app:destination="@id/simpleTextEditorFragment" />
 </navigation>

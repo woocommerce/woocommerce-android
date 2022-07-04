@@ -3,20 +3,14 @@ package com.woocommerce.android.ui.orders.list
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LifecycleRegistry
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.*
 import androidx.paging.PagedList
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TOTAL_DURATION
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
@@ -44,19 +38,18 @@ import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
+import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
 import org.wordpress.android.fluxc.store.ListStore
 import org.wordpress.android.fluxc.store.WCOrderFetcher
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderSummariesFetched
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 private const val EMPTY_VIEW_THROTTLE = 250L
 typealias PagedOrdersList = PagedList<OrderListItemUIType>
 
-@OpenClassOnDebug
 @Suppress("LeakingThis")
 @HiltViewModel
 class OrderListViewModel @Inject constructor(
@@ -70,7 +63,6 @@ class OrderListViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val fetcher: WCOrderFetcher,
     private val resourceProvider: ResourceProvider,
-    private val wooCommerceStore: WooCommerceStore,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters,
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount,
@@ -100,6 +92,9 @@ class OrderListViewModel @Inject constructor(
     private val _isFetchingFirstPage = MediatorLiveData<Boolean>()
     val isFetchingFirstPage: LiveData<Boolean> = _isFetchingFirstPage
 
+    private val _orderStatusOptions = MutableLiveData<Map<String, WCOrderStatusModel>>()
+    val orderStatusOptions: LiveData<Map<String, WCOrderStatusModel>> = _orderStatusOptions
+
     private val _isEmpty = MediatorLiveData<Boolean>()
     val isEmpty: LiveData<Boolean> = _isEmpty
 
@@ -124,9 +119,12 @@ class OrderListViewModel @Inject constructor(
         dispatcher.register(this)
 
         launch {
+            // Populate any cached order status options immediately since we use this
+            // value in many different places in the order list view.
+            _orderStatusOptions.value = orderListRepository.getCachedOrderStatusOptions()
+
             _emptyViewType.postValue(EmptyViewType.ORDER_LIST_LOADING)
             if (selectedSite.exists()) {
-                wooCommerceStore.fetchSitePlugins(selectedSite.get())
                 loadOrders()
             } else {
                 WooLog.w(
@@ -153,9 +151,26 @@ class OrderListViewModel @Inject constructor(
      * processing list will always use the same [processingPagedListWrapper].
      */
     fun submitSearchOrFilter(searchQuery: String) {
-        val listDescriptor = WCOrderListDescriptor(selectedSite.get(), searchQuery = searchQuery)
+        val listDescriptor = WCOrderListDescriptor(
+            selectedSite.get(),
+            searchQuery = sanitizeSearchQuery(searchQuery)
+        )
         val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
         activatePagedListWrapper(pagedListWrapper, isFirstInit = true)
+    }
+
+    /**
+     * Removes the `#` from the start of the search keyword, if present.
+     *
+     *  This allows searching for an order with `#123` and getting the results for order `123`.
+     *  See https://github.com/woocommerce/woocommerce-android/issues/2621
+     *
+     */
+    private fun sanitizeSearchQuery(searchQuery: String): String {
+        if (searchQuery.startsWith("#")) {
+            return searchQuery.drop(1)
+        }
+        return searchQuery
     }
 
     /**
@@ -166,7 +181,7 @@ class OrderListViewModel @Inject constructor(
         if (networkStatus.isConnected()) {
             launch(dispatchers.main) {
                 activePagedListWrapper?.fetchFirstPage()
-                orderListRepository.fetchOrderStatusOptionsFromApi()
+                fetchOrderStatusOptions()
                 fetchPaymentGateways()
             }
         } else {
@@ -185,6 +200,20 @@ class OrderListViewModel @Inject constructor(
                 }
                 else -> {
                     /* do nothing */
+                }
+            }
+        }
+    }
+
+    /**
+     * Refresh the order count by order status list with fresh data from the API
+     */
+    fun fetchOrderStatusOptions() {
+        launch(dispatchers.main) {
+            // Fetch and load order status options
+            when (orderListRepository.fetchOrderStatusOptionsFromApi()) {
+                SUCCESS -> _orderStatusOptions.value = orderListRepository.getCachedOrderStatusOptions()
+                else -> { /* do nothing */
                 }
             }
         }
@@ -357,7 +386,7 @@ class OrderListViewModel @Inject constructor(
 
         val totalDurationInSeconds = event.duration.toDouble() / 1_000
         AnalyticsTracker.track(
-            Stat.ORDERS_LIST_LOADED,
+            AnalyticsEvent.ORDERS_LIST_LOADED,
             mapOf(
                 KEY_TOTAL_DURATION to totalDurationInSeconds,
                 KEY_STATUS to event.listDescriptor.statusFilter
@@ -366,7 +395,7 @@ class OrderListViewModel @Inject constructor(
     }
 
     fun onFiltersButtonTapped() {
-        AnalyticsTracker.track(Stat.ORDERS_LIST_VIEW_FILTER_OPTIONS_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.ORDERS_LIST_VIEW_FILTER_OPTIONS_TAPPED)
         triggerEvent(ShowOrderFilters)
     }
 

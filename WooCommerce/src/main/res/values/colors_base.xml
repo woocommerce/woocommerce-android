@@ -110,6 +110,7 @@
     <color name="tag_bg_processing">@color/woo_celadon_5</color>
     <color name="tag_bg_failed">@color/woo_red_5</color>
     <color name="tag_bg_on_hold">@color/woo_orange_5</color>
+    <color name="tag_bg_completed">@color/woo_blue_5</color>
     <color name="tag_bg_other">@color/woo_gray_5</color>
 
     <!--
@@ -135,7 +136,11 @@
     <color name="product_status_fg_other">@color/woo_blue_50</color>
     <color name="product_status_fg_pending">@color/woo_orange_50</color>
     <color name="product_filer_bg_selected">@color/color_primary_surface</color>
-
+    <!--
+        Product Status Badge
+    -->
+    <color name="product_status_badge_draft">@color/woo_gray_5</color>
+    <color name="product_status_badge_pending">@color/woo_orange_10</color>
     <!--
         Aztec Editor
     -->
@@ -170,7 +175,7 @@
     <color name="disconnected_state_number_background_color">@color/woo_gray_0</color>
 
     <!--
-    Jetpack plugin installation dialog
+        Jetpack plugin installation dialog
     -->
     <color name="jetpack_button_color">@color/color_secondary</color>
     <color name="jetpack_install_progressbar">@color/jetpack_green_40</color>
@@ -184,4 +189,21 @@
     -->
     <color name="color_media_picker_toolbar_background">@color/color_toolbar</color>
     <color name="color_media_picker_toolbar_foreground">@color/color_on_surface</color>
+
+    <!--
+    More menu button
+    -->
+    <color name="more_menu_button_background">@color/color_surface</color>
+    <color name="more_menu_button_icon_background">@color/woo_gray_0</color>
+
+
+    <!-- Woo application log -->
+    <color name="log_text_verbose">@color/woo_gray_40</color>
+    <color name="log_text_debug">@color/woo_blue_50</color>
+    <color name="log_text_info">@color/woo_black</color>
+    <color name="log_text_warning">@color/woo_purple_50</color>
+    <color name="log_text_error">@color/woo_red_50</color>
+
+    <!-- Text colors -->
+    <color name="link_text">@color/woo_blue_40</color>
 </resources>

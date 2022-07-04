@@ -13,10 +13,65 @@
             android:id="@+id/action_orderCreationFragment_to_orderStatusSelectorDialog"
             app:destination="@id/orderStatusSelectorDialog"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_orderCreationFragment_to_orderCreationCustomerNoteFragment"
             app:destination="@id/orderCreationCustomerNoteFragment" />
+        <action
+            android:id="@+id/action_orderCreationFragment_to_orderCreationProductSelectionFragment"
+            app:destination="@id/orderCreationProductSelectionFragment" />
+
+        <action
+            android:id="@+id/action_orderCreationFragment_to_orderCreationCustomerFragment"
+            app:destination="@id/orderCreationCustomerFragment" />
+        <action
+            android:id="@+id/action_orderCreationFragment_to_orderCreationProductDetailsFragment"
+            app:destination="@id/orderCreationProductDetailsFragment"
+            app:enterAnim="@anim/default_enter_anim"
+            app:exitAnim="@anim/default_exit_anim"
+            app:popEnterAnim="@anim/default_pop_enter_anim"
+            app:popExitAnim="@anim/default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_orderCreationFragment_to_orderDetailFragment"
+            app:destination="@id/nav_graph_orders"
+            app:enterAnim="@anim/default_enter_anim"
+            app:exitAnim="@anim/default_exit_anim"
+            app:popEnterAnim="@anim/default_pop_enter_anim"
+            app:popExitAnim="@anim/default_pop_exit_anim"
+            app:popUpTo="@id/orders">
+            <argument
+                android:name="orderId"
+                app:argType="long" />
+        </action>
+        <action
+            android:id="@+id/action_orderCreationFragment_to_orderCreationShippingFragment"
+            app:destination="@id/orderCreationShippingFragment"
+            app:enterAnim="@anim/default_enter_anim"
+            app:exitAnim="@anim/default_exit_anim"
+            app:popEnterAnim="@anim/default_pop_enter_anim"
+            app:popExitAnim="@anim/default_pop_exit_anim"
+            />
+        <action
+            android:id="@+id/action_orderCreationFragment_to_orderCreationEditFeeFragment"
+            app:destination="@id/orderCreationFeeFragment"
+            app:enterAnim="@anim/default_enter_anim"
+            app:exitAnim="@anim/default_exit_anim"
+            app:popEnterAnim="@anim/default_pop_enter_anim"
+            app:popExitAnim="@anim/default_pop_exit_anim" >
+            <argument
+                android:name="orderSubTotal"
+                app:argType="java.math.BigDecimal" />
+            <argument
+                android:name="currentFeeValue"
+                app:argType="java.math.BigDecimal"
+                app:nullable="true"
+                android:defaultValue="@null"/>
+        </action>
+        <argument
+            android:name="mode"
+            app:argType="com.woocommerce.android.ui.orders.creation.OrderCreationViewModel$Mode" />
     </fragment>
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
@@ -31,7 +86,104 @@
     </dialog>
     <fragment
         android:id="@+id/orderCreationCustomerNoteFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.OrderCreationCustomerNoteFragment"
-        android:label="OrderCreationCustomerNoteFragment" />
+        android:name="com.woocommerce.android.ui.orders.creation.notes.OrderCreationCustomerNoteFragment"
+        android:label="OrderCreationCustomerNoteFragment"
+        tools:layout="@layout/fragment_edit_customer_order_note" />
+    <fragment
+        android:id="@+id/orderCreationProductSelectionFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.products.OrderCreationProductSelectionFragment"
+        android:label="OrderCreationProductSelectionFragment"
+        tools:layout="@layout/fragment_order_creation_product_selection">
+        <action
+            android:id="@+id/action_orderCreationProductSelectionFragment_to_orderCreationVariationSelectionFragment"
+            app:destination="@id/orderCreationVariationSelectionFragment"
+            app:enterAnim="@anim/default_enter_anim"
+            app:exitAnim="@anim/default_exit_anim"
+            app:popEnterAnim="@anim/default_pop_enter_anim"
+            app:popExitAnim="@anim/default_pop_exit_anim" />
+    </fragment>
+    <fragment
+        android:id="@+id/orderCreationCustomerFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.OrderCreationCustomerAddFragment"
+        android:label="OrderCreationCustomerFragment"
+        tools:layout="@layout/fragment_base_edit_address">
+        <action
+            android:id="@+id/action_search_filter_fragment"
+            app:destination="@id/searchFilterFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchFilterFragment"
+        android:name="com.woocommerce.android.ui.searchfilter.SearchFilterFragment"
+        android:label="searchFilterFragment"
+        tools:layout="@layout/fragment_search_filter">
+        <argument
+            android:name="title"
+            android:defaultValue='""'
+            app:argType="string" />
+        <argument
+            android:name="hint"
+            android:defaultValue='""'
+            app:argType="string" />
+        <argument
+            android:name="items"
+            app:argType="com.woocommerce.android.ui.searchfilter.SearchFilterItem[]" />
+        <argument
+            android:name="requestKey"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/orderCreationProductDetailsFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.products.OrderCreationProductDetailsFragment"
+        android:label="OrderCreationProductDetailsFragment"
+        tools:layout="@layout/fragment_order_creation_product_details">
+        <argument
+            android:name="item"
+            app:argType="com.woocommerce.android.model.Order$Item" />
+    </fragment>
+    <fragment
+        android:id="@+id/orderCreationVariationSelectionFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.variations.OrderCreationVariationSelectionFragment"
+        android:label="OrderCreationVariationSelectionFragment"
+        tools:layout="@layout/fragment_order_creation_product_selection">
+        <argument
+            android:name="productId"
+            app:argType="long" />
+    </fragment>
+    <fragment
+        android:id="@+id/orderCreationShippingFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.shipping.OrderCreationShippingFragment"
+        android:label="OrderCreationShippingFragment"
+        tools:layout="@layout/fragment_order_creation_shipping" >
+        <argument
+            android:name="currentShippingLine"
+            app:nullable="true"
+            app:argType="com.woocommerce.android.model.Order$ShippingLine" />
+    </fragment>
+    <fragment
+        android:id="@+id/orderCreationFeeFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.fees.OrderCreationFeeFragment"
+        android:label="OrderCreationFeeFragment"
+        tools:layout="@layout/fragment_order_creation_fee" >
+        <argument
+            android:name="orderSubTotal"
+            app:argType="java.math.BigDecimal" />
+        <argument
+            android:name="currentFeeValue"
+            app:argType="java.math.BigDecimal"
+            app:nullable="true"
+            android:defaultValue="@null"/>
+    </fragment>
 
+    <action
+        android:id="@+id/action_global_customerListFragment"
+        app:destination="@id/customerListFragment"
+        app:enterAnim="@null"
+        app:exitAnim="@null"
+        app:popEnterAnim="@null"
+        app:popExitAnim="@null" />
+    <fragment
+        android:id="@+id/customerListFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.customerlist.CustomerListFragment"
+        android:label="customerListFragment"
+        tools:layout="@layout/fragment_customer_list" />
 </navigation>

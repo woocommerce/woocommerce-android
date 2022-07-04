@@ -7,24 +7,32 @@ import android.content.Context
  */
 enum class FeatureFlag {
     DB_DOWNGRADE,
-    ORDER_CREATION,
-    CARD_READER,
     JETPACK_CP,
-    ORDER_FILTERS,
     ANALYTICS_HUB,
-    PAYMENTS_STRIPE_EXTENSION;
+    IN_PERSON_PAYMENTS_CANADA, // Keeping the flag for a few sprints so we can quickly disable the feature if needed
+    MORE_MENU_INBOX,
+    COUPONS_M2,
+    IPP_SELECT_PAYMENT_GATEWAY,
+    WC_SHIPPING_BANNER,
+    UNIFIED_ORDER_EDITING,
+    ORDER_CREATION_CUSTOMER_SEARCH;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
             DB_DOWNGRADE -> {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
-            ORDER_CREATION,
-            JETPACK_CP -> PackageUtils.isDebugBuild() || PackageUtils.isTesting()
-            CARD_READER -> true // Keeping the flag for a few sprints so we can quickly disable the feature if needed
-            PAYMENTS_STRIPE_EXTENSION -> false
-            ORDER_FILTERS,
-            ANALYTICS_HUB -> PackageUtils.isDebugBuild()
+            JETPACK_CP,
+            IN_PERSON_PAYMENTS_CANADA -> true
+            ANALYTICS_HUB,
+            MORE_MENU_INBOX,
+            COUPONS_M2,
+            WC_SHIPPING_BANNER,
+            IPP_SELECT_PAYMENT_GATEWAY,
+            UNIFIED_ORDER_EDITING -> PackageUtils.isDebugBuild()
+            ORDER_CREATION_CUSTOMER_SEARCH -> {
+                UNIFIED_ORDER_EDITING.isEnabled()
+            }
         }
     }
 }

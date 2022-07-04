@@ -6,8 +6,8 @@ import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.*
@@ -44,7 +44,7 @@ class OrderStatusSelectorDialog : DialogFragment() {
             .setSingleChoiceItems(orderStatusList.map { it.label }.toTypedArray(), selectedIndex) { _, which ->
                 selectedOrderStatus = orderStatusList[which].statusKey
                 AnalyticsTracker.track(
-                    Stat.FILTER_ORDERS_BY_STATUS_DIALOG_OPTION_SELECTED,
+                    AnalyticsEvent.FILTER_ORDERS_BY_STATUS_DIALOG_OPTION_SELECTED,
                     mapOf("status" to selectedOrderStatus)
                 )
             }
@@ -52,7 +52,7 @@ class OrderStatusSelectorDialog : DialogFragment() {
                 val newSelectedIndex = getCurrentOrderStatusIndex()
                 if (newSelectedIndex != selectedIndex) {
                     AnalyticsTracker.track(
-                        Stat.SET_ORDER_STATUS_DIALOG_APPLY_BUTTON_TAPPED,
+                        AnalyticsEvent.SET_ORDER_STATUS_DIALOG_APPLY_BUTTON_TAPPED,
                         mapOf("status" to selectedOrderStatus)
                     )
                     navigateBackWithResult(

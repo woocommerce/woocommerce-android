@@ -3,14 +3,13 @@ package com.woocommerce.android.ui.reviews
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.ProductReview
-import com.woocommerce.android.model.RequestResult.ERROR
-import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
-import com.woocommerce.android.model.RequestResult.SUCCESS
+import com.woocommerce.android.model.RequestResult.*
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.MarkNotificationAsRead
+import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.NavigateBackFromNotification
+import com.woocommerce.android.ui.reviews.domain.MarkReviewAsSeen
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -19,39 +18,32 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
 @HiltViewModel
 class ReviewDetailViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val networkStatus: NetworkStatus,
-    private val repository: ReviewDetailRepository
+    private val repository: ReviewDetailRepository,
+    private val markReviewAsSeen: MarkReviewAsSeen,
+    private val reviewModerationHandler: ReviewModerationHandler
 ) : ScopedViewModel(savedState) {
     private var remoteReviewId = 0L
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
-    fun start(remoteReviewId: Long, launchedFromNotification: Boolean) {
-        loadProductReview(remoteReviewId, launchedFromNotification)
-    }
+    private var launchedFromNotification: Boolean = false
 
-    override fun onCleared() {
-        super.onCleared()
-        repository.onCleanup()
+    fun start(remoteReviewId: Long, launchedFromNotification: Boolean) {
+        this.launchedFromNotification = launchedFromNotification
+        loadProductReview(remoteReviewId, launchedFromNotification)
     }
 
     fun moderateReview(newStatus: ProductReviewStatus) {
         if (networkStatus.isConnected()) {
             viewState.productReview?.let { review ->
-                // post an event to tell the notification list to moderate this
-                // review, then close the fragment
-                val event = OnRequestModerateReviewEvent(
-                    ProductReviewModerationRequest(review, newStatus)
-                )
-                EventBus.getDefault().post(event)
-
+                reviewModerationHandler.postModerationRequest(review, newStatus)
                 // Close the detail view
                 triggerEvent(Exit)
             }
@@ -64,7 +56,19 @@ class ReviewDetailViewModel @Inject constructor(
     private fun loadProductReview(remoteReviewId: Long, launchedFromNotification: Boolean) {
         // Mark the notification as read
         launch {
-            markAsRead(remoteReviewId, launchedFromNotification)
+            repository.getCachedNotificationForReview(remoteReviewId)?.let {
+                markReviewAsSeen(remoteReviewId, it)
+                if (launchedFromNotification) {
+                    // Send the track event that a product review notification was opened
+                    AnalyticsTracker.track(
+                        AnalyticsEvent.NOTIFICATION_OPEN,
+                        mapOf(
+                            AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_REVIEW,
+                            AnalyticsTracker.KEY_ALREADY_READ to it.read
+                        )
+                    )
+                }
+            }
         }
 
         val shouldFetch = remoteReviewId != this.remoteReviewId
@@ -111,25 +115,13 @@ class ReviewDetailViewModel @Inject constructor(
         }
     }
 
-    private suspend fun markAsRead(remoteReviewId: Long, launchedFromNotification: Boolean) {
-        repository.getCachedNotificationForReview(remoteReviewId)?.let {
-            // remove notification from the notification panel if it exists
-            triggerEvent(MarkNotificationAsRead(it.remoteNoteId))
-
-            // send request to mark notification as read to the server
-            repository.markNotificationAsRead(it)
-
-            if (launchedFromNotification) {
-                // Send the track event that a product review notification was opened
-                AnalyticsTracker.track(
-                    Stat.NOTIFICATION_OPEN,
-                    mapOf(
-                        AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_REVIEW,
-                        AnalyticsTracker.KEY_ALREADY_READ to it.read
-                    )
-                )
-            }
+    fun onBackPressed(): Boolean {
+        if (launchedFromNotification) {
+            triggerEvent(NavigateBackFromNotification)
+        } else {
+            triggerEvent(Exit)
         }
+        return false
     }
 
     @Parcelize
@@ -139,6 +131,6 @@ class ReviewDetailViewModel @Inject constructor(
     ) : Parcelable
 
     sealed class ReviewDetailEvent : Event() {
-        data class MarkNotificationAsRead(val remoteNoteId: Long) : ReviewDetailEvent()
+        object NavigateBackFromNotification : ReviewDetailEvent()
     }
 }

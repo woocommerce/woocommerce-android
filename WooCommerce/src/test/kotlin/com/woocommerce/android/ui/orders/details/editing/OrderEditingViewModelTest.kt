@@ -6,11 +6,12 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.orders.details.editing.address.testCountry
+import com.woocommerce.android.ui.orders.details.editing.address.testState
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -24,7 +25,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
 
     private val orderEditingRepository: OrderEditingRepository = mock()
     private val orderDetailRepository: OrderDetailRepository = mock {
-        on { getOrder(any()) } doReturn testOrder
+        onBlocking { getOrderById(any()) } doReturn testOrder
     }
     private val networkStatus: NetworkStatus = mock {
         on { isConnected() } doReturn true
@@ -33,7 +34,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
     @Before
     fun setUp() {
         sut = OrderEditingViewModel(
-            SavedStateHandle(),
+            SavedStateHandle().apply { set("orderId", 1L) },
             coroutinesTestRule.testDispatchers,
             orderDetailRepository,
             orderEditingRepository,
@@ -43,7 +44,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `should replicate billing to shipping when toggle is activated`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             orderEditingRepository.stub {
                 onBlocking {
                     updateBothOrderAddresses(any(), any(), any())
@@ -58,7 +59,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
 
             verify(orderEditingRepository)
                 .updateBothOrderAddresses(
-                    testOrder.remoteId,
+                    testOrder.id,
                     addressToUpdate.toShippingAddressModel(),
                     addressToUpdate.toBillingAddressModel("")
                 )
@@ -66,7 +67,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `should replicate shipping to billing when toggle is activated`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             orderEditingRepository.stub {
                 onBlocking {
                     updateBothOrderAddresses(any(), any(), any())
@@ -81,7 +82,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
 
             verify(orderEditingRepository)
                 .updateBothOrderAddresses(
-                    testOrder.remoteId,
+                    testOrder.id,
                     addressToUpdate.toShippingAddressModel(),
                     addressToUpdate.toBillingAddressModel("")
                 )
@@ -129,13 +130,13 @@ class OrderEditingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `should replace email info with original one when empty`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val originalOrder = testOrder.copy(
                 billingAddress = addressToUpdate.copy(email = "original@email.com")
             )
 
             orderDetailRepository.stub {
-                on { getOrder(any()) } doReturn originalOrder
+                onBlocking { getOrderById(any()) } doReturn originalOrder
             }
 
             orderEditingRepository.stub {
@@ -152,7 +153,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
 
             verify(orderEditingRepository)
                 .updateBothOrderAddresses(
-                    testOrder.remoteId,
+                    testOrder.id,
                     addressToUpdate.toShippingAddressModel(),
                     addressToUpdate.toBillingAddressModel("original@email.com")
                 )
@@ -229,7 +230,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
         var eventWasCalled = false
         orderEditingRepository.stub {
             onBlocking {
-                updateOrderAddress(testOrder.remoteId, addressToUpdate.toBillingAddressModel())
+                updateOrderAddress(testOrder.id, addressToUpdate.toBillingAddressModel())
             } doReturn flowOf(
                 UpdateOrderResult.OptimisticUpdateResult(
                     OnOrderChanged()
@@ -254,7 +255,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
     fun `should emit generic error event for errors other than empty billing mail error`() {
         orderEditingRepository.stub {
             onBlocking {
-                updateOrderAddress(testOrder.remoteId, addressToUpdate.toBillingAddressModel())
+                updateOrderAddress(testOrder.id, addressToUpdate.toBillingAddressModel())
             } doReturn flowOf(
                 RemoteUpdateResult(
                     OnOrderChanged(orderError = OrderError(type = OrderErrorType.INVALID_RESPONSE))
@@ -276,7 +277,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
     fun `should emit empty mail failure if store returns empty billing mail error`() {
         orderEditingRepository.stub {
             onBlocking {
-                updateOrderAddress(testOrder.remoteId, addressToUpdate.toBillingAddressModel())
+                updateOrderAddress(testOrder.id, addressToUpdate.toBillingAddressModel())
             } doReturn flowOf(
                 RemoteUpdateResult(
                     OnOrderChanged(orderError = OrderError(type = OrderErrorType.EMPTY_BILLING_EMAIL))
@@ -303,8 +304,8 @@ class OrderEditingViewModelTest : BaseUnitTest() {
             firstName = "Joe",
             lastName = "Doe",
             phone = "123456789",
-            country = "United States",
-            state = "California",
+            country = testCountry,
+            state = testState,
             address1 = "Address 1",
             address2 = "",
             city = "San Francisco",

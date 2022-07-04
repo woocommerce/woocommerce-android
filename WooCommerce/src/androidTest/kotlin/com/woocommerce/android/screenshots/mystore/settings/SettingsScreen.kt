@@ -1,31 +1,51 @@
 package com.woocommerce.android.screenshots.mystore.settings
 
 import androidx.test.espresso.Espresso
+import androidx.test.espresso.ViewInteraction
+import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.matcher.ViewMatchers
 import com.woocommerce.android.R
-import com.woocommerce.android.screenshots.mystore.MyStoreScreen
+import com.woocommerce.android.screenshots.moremenu.MoreMenuScreen
 import com.woocommerce.android.screenshots.util.NestedScrollViewExtension
 import com.woocommerce.android.screenshots.util.Screen
 
 class SettingsScreen : Screen {
     companion object {
-        const val SELECTED_STORE = R.id.option_store
+        const val HELP_BUTTON = R.id.option_help_and_support
         const val BETA_FEATURES_BUTTON = R.id.option_beta_features
         const val LOG_OUT_BUTTON = R.id.btn_option_logout
     }
 
-    // Using SELECTED_STORE even if we don't need to interact with it because for some reason Espresso can't find
+    // Using HELP_BUTTON even if we don't need to interact with it because for some reason Espresso can't find
     // LOG_OUT_BUTTON
-    constructor() : super(SELECTED_STORE)
+    constructor() : super(HELP_BUTTON)
 
     fun openBetaFeatures(): BetaFeaturesScreen {
         clickOn(BETA_FEATURES_BUTTON)
         return BetaFeaturesScreen()
     }
 
-    fun goBackToMyStoreScreen(): MyStoreScreen {
+    fun goBackToMoreMenuScreen(): MoreMenuScreen {
         pressBack()
-        return MyStoreScreen()
+        return MoreMenuScreen()
+    }
+
+    fun setTheme(theme: String): SettingsScreen {
+        clickOn(R.id.option_theme)
+
+        val themeString = if (theme == "dark")
+            R.string.settings_app_theme_option_dark
+        else
+            R.string.settings_app_theme_option_light
+
+        val themeCheckbox: ViewInteraction = Espresso.onView(
+            ViewMatchers.withText(getTranslatedString(themeString))
+        )
+
+        waitForElementToBeDisplayed(themeCheckbox)
+        themeCheckbox.perform(ViewActions.click())
+
+        return this
     }
 
     fun logOut() {

@@ -23,6 +23,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.*
@@ -33,7 +34,6 @@ import org.wordpress.android.fluxc.model.list.PagedListWrapper
 import org.wordpress.android.fluxc.store.ListStore
 import org.wordpress.android.fluxc.store.WCOrderFetcher
 import org.wordpress.android.fluxc.store.WCOrderStore
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.test.*
 
 @InternalCoroutinesApi
@@ -47,11 +47,11 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock()
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
 
+    private val orderStatusOptions = OrderTestUtils.generateOrderStatusOptionsMappedByStatus()
     private lateinit var viewModel: OrderListViewModel
     private val listStore: ListStore = mock()
     private val pagedListWrapper: PagedListWrapper<OrderListItemUIType> = mock()
     private val orderFetcher: WCOrderFetcher = mock()
-    private val wooCommerceStore: WooCommerceStore = mock()
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters = mock()
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
@@ -85,7 +85,6 @@ class OrderListViewModelTest : BaseUnitTest() {
             selectedSite = selectedSite,
             fetcher = orderFetcher,
             resourceProvider = resourceProvider,
-            wooCommerceStore = wooCommerceStore,
             appPrefsWrapper = appPrefsWrapper,
             getWCOrderListDescriptorWithFilters = getWCOrderListDescriptorWithFilters,
             getSelectedOrderFiltersCount = getSelectedOrderFiltersCount
@@ -99,6 +98,7 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         verify(viewModel.activePagedListWrapper, times(1))?.fetchFirstPage()
         verify(orderListRepository, times(1)).fetchPaymentGateways()
+        verify(orderListRepository, times(1)).fetchOrderStatusOptionsFromApi()
     }
 
     @Test
@@ -139,6 +139,23 @@ class OrderListViewModelTest : BaseUnitTest() {
             }
         }
         assertTrue(isRefreshPending)
+    }
+
+    /* Test order status options are emitted via [OrderListViewModel.orderStatusOptions]
+    * once fetched, and verify expected methods are called the correct number of
+    * times.
+    */
+    @Test
+    fun `Request to fetch order status options emits options`() = testBlocking {
+        doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchOrderStatusOptionsFromApi()
+        doReturn(orderStatusOptions).whenever(orderListRepository).getCachedOrderStatusOptions()
+
+        clearInvocations(orderListRepository)
+        viewModel.fetchOrderStatusOptions()
+
+        verify(orderListRepository, times(1)).fetchOrderStatusOptionsFromApi()
+        verify(orderListRepository, times(1)).getCachedOrderStatusOptions()
+        assertEquals(orderStatusOptions, viewModel.orderStatusOptions.getOrAwaitValue())
     }
 
     @Test

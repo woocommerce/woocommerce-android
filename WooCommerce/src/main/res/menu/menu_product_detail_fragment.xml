@@ -5,21 +5,25 @@
     <item
         android:id="@+id/menu_save"
         android:title="@string/save"
+        android:visible="false"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/menu_publish"
         android:title="@string/product_add_tool_bar_menu_button_done"
+        android:visible="false"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/menu_save_as_draft"
         android:title="@string/product_detail_save_as_draft"
+        android:visible="false"
         app:showAsAction="withText" />
 
     <item
         android:id="@+id/menu_share"
         android:title="@string/share"
+        android:visible="false"
         app:showAsAction="withText" />
 
     <item
@@ -31,11 +35,11 @@
     <item
         android:id="@+id/menu_product_settings"
         android:title="@string/product_settings"
-        android:visible="false"
         app:showAsAction="withText" />
 
     <item
         android:id="@+id/menu_trash_product"
         android:title="@string/product_trash"
+        android:visible="false"
         app:showAsAction="withText" />
 </menu>

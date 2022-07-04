@@ -8,35 +8,37 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.MenuItem.OnActionExpandListener
 import android.view.View
-import androidx.annotation.StringRes
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
+import androidx.core.view.ViewGroupCompat
+import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.transition.MaterialFadeThrough
 import com.woocommerce.android.*
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentOrderListBinding
 import com.woocommerce.android.extensions.*
 import com.woocommerce.android.model.FeatureFeedbackSettings
-import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.FeatureFeedbackSettings.*
+import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.*
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
-import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
+import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
 import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.Companion.KEY_ORDER_CREATION_ACTION_RESULT
 import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.OrderCreationAction
-import com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsDialog.Companion.KEY_SIMPLE_PAYMENTS_RESULT
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
@@ -53,7 +55,6 @@ class OrderListFragment :
         const val TAG: String = "OrderListFragment"
         const val STATE_KEY_SEARCH_QUERY = "search-query"
         const val STATE_KEY_IS_SEARCHING = "is_searching"
-        private const val SEARCH_TYPING_DELAY_MS = 500L
         const val FILTER_CHANGE_NOTICE_KEY = "filters_changed_notice"
     }
 
@@ -91,7 +92,8 @@ class OrderListFragment :
         get() = binding.orderListView.emptyView
 
     private val feedbackState
-        get() = FeedbackPrefs.getFeatureFeedbackSettings(TAG)?.state ?: FeatureFeedbackSettings.FeedbackState.UNANSWERED
+        get() = FeedbackPrefs.getFeatureFeedbackSettings(SIMPLE_PAYMENTS_AND_ORDER_CREATION)?.feedbackState
+            ?: FeedbackState.UNANSWERED
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -100,6 +102,12 @@ class OrderListFragment :
             isSearching = bundle.getBoolean(STATE_KEY_IS_SEARCHING)
             searchQuery = bundle.getString(STATE_KEY_SEARCH_QUERY, "")
         }
+
+        val transitionDuration = resources.getInteger(R.integer.default_fragment_transition).toLong()
+        val fadeThroughTransition = MaterialFadeThrough().apply { duration = transitionDuration }
+        enterTransition = fadeThroughTransition
+        exitTransition = fadeThroughTransition
+        reenterTransition = fadeThroughTransition
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -120,16 +128,20 @@ class OrderListFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        postponeEnterTransition()
 
         setHasOptionsMenu(true)
 
         _binding = FragmentOrderListBinding.bind(view)
+        view.doOnPreDraw { startPostponedEnterTransition() }
+
         binding.orderListView.init(currencyFormatter = currencyFormatter, orderListListener = this)
+        ViewGroupCompat.setTransitionGroup(binding.orderRefreshLayout, true)
         binding.orderRefreshLayout.apply {
             // Set the scrolling view in the custom refresh SwipeRefreshLayout
             scrollUpChild = binding.orderListView.ordersList
             setOnRefreshListener {
-                AnalyticsTracker.track(Stat.ORDERS_LIST_PULLED_TO_REFRESH)
+                AnalyticsTracker.track(AnalyticsEvent.ORDERS_LIST_PULLED_TO_REFRESH)
                 refreshOrders()
             }
         }
@@ -169,11 +181,6 @@ class OrderListFragment :
         _binding = null
     }
 
-    private fun isSimplePaymentsAvailable(): Boolean {
-        return AppPrefs.isSimplePaymentsEnabled &&
-            viewModel.isCardReaderOnboardingCompleted()
-    }
-
     /**
      * This is a replacement for activity?.invalidateOptionsMenu() since that causes the
      * search menu item to collapse
@@ -196,7 +203,7 @@ class OrderListFragment :
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_search -> {
-                AnalyticsTracker.track(Stat.ORDERS_LIST_MENU_SEARCH_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.ORDERS_LIST_MENU_SEARCH_TAPPED)
                 enableSearchListeners()
                 true
             }
@@ -205,20 +212,8 @@ class OrderListFragment :
     }
 
     private fun initCreateOrderFAB(fabButton: FloatingActionButton) {
-        val isSimplePaymentAvailable = isSimplePaymentsAvailable()
-        val isOrderCreationAvailable = FeatureFlag.ORDER_CREATION.isEnabled() && AppPrefs.isOrderCreationEnabled
-
-        if (isSimplePaymentAvailable || isOrderCreationAvailable) {
-            fabButton.visibility = View.VISIBLE
-            fabButton.setOnClickListener {
-                when {
-                    isSimplePaymentAvailable && isOrderCreationAvailable -> showOrderCreationBottomSheet()
-                    isSimplePaymentAvailable -> showSimplePaymentsDialog()
-                    isOrderCreationAvailable -> openOrderCreationFragment()
-                }
-            }
-            pinFabAboveBottomNavigationBar(fabButton)
-        }
+        fabButton.setOnClickListener { showOrderCreationBottomSheet() }
+        pinFabAboveBottomNavigationBar(fabButton)
     }
 
     private fun isChildFragmentShowing() = (activity as? MainNavigationRouter)?.isChildFragmentShowing() ?: false
@@ -240,6 +235,13 @@ class OrderListFragment :
     @Suppress("LongMethod")
     private fun initObservers() {
         // setup observers
+        viewModel.orderStatusOptions.observe(viewLifecycleOwner) {
+            it?.let { options ->
+                // So the order status can be matched to the appropriate label
+                binding.orderListView.setOrderStatusOptions(options)
+            }
+        }
+
         viewModel.isFetchingFirstPage.observe(viewLifecycleOwner) {
             binding.orderRefreshLayout.isRefreshing = it == true
         }
@@ -302,11 +304,6 @@ class OrderListFragment :
         handleResult<String>(FILTER_CHANGE_NOTICE_KEY) {
             viewModel.loadOrders()
         }
-        handleDialogResult<Order>(KEY_SIMPLE_PAYMENTS_RESULT, R.id.orders) { order ->
-            binding.orderListView.post {
-                openOrderDetail(order.localId.value, order.remoteId.value, order.status.value)
-            }
-        }
         handleDialogResult<OrderCreationAction>(KEY_ORDER_CREATION_ACTION_RESULT, R.id.orders) {
             binding.orderListView.post {
                 when (it) {
@@ -318,12 +315,12 @@ class OrderListFragment :
     }
 
     private fun showOrderFilters() {
-        findNavController().navigate(R.id.action_orderListFragment_to_orderFilterListFragment)
+        findNavController().navigateSafely(R.id.action_orderListFragment_to_orderFilterListFragment)
     }
 
     private fun showSimplePaymentsDialog() {
-        AnalyticsTracker.track(Stat.SIMPLE_PAYMENTS_FLOW_STARTED)
-        findNavController().navigate(R.id.action_orderListFragment_to_simplePaymentsDialog)
+        AnalyticsTracker.track(AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_STARTED)
+        findNavController().navigateSafely(R.id.action_orderListFragment_to_simplePayments)
     }
 
     private fun showOrderCreationBottomSheet() {
@@ -332,7 +329,12 @@ class OrderListFragment :
     }
 
     private fun openOrderCreationFragment() {
-        findNavController().navigate(R.id.action_orderListFragment_to_orderCreationFragment)
+        AnalyticsTracker.track(AnalyticsEvent.ORDER_ADD_NEW)
+        findNavController().navigateSafely(
+            OrderListFragmentDirections.actionOrderListFragmentToOrderCreationFragment(
+                OrderCreationViewModel.Mode.Creation
+            )
+        )
     }
 
     private fun hideEmptyView() {
@@ -354,12 +356,12 @@ class OrderListFragment :
         }
     }
 
-    override fun openOrderDetail(localOrderId: Int, remoteOrderId: Long, orderStatus: String) {
+    override fun openOrderDetail(orderId: Long, orderStatus: String, sharedView: View?) {
         // Track user clicked to open an order and the status of that order
         AnalyticsTracker.track(
-            Stat.ORDER_OPEN,
+            AnalyticsEvent.ORDER_OPEN,
             mapOf(
-                AnalyticsTracker.KEY_ID to remoteOrderId,
+                AnalyticsTracker.KEY_ID to orderId,
                 AnalyticsTracker.KEY_STATUS to orderStatus
             )
         )
@@ -373,9 +375,17 @@ class OrderListFragment :
             searchQuery = savedSearch
             isSearching = true
         }
-
         showOptionsMenu(false)
-        (activity as? MainNavigationRouter)?.showOrderDetail(selectedSite.get().id, localOrderId, remoteOrderId)
+        (activity as? MainNavigationRouter)?.run {
+            if (sharedView != null) {
+                showOrderDetailWithSharedTransition(
+                    orderId = orderId,
+                    sharedView = sharedView
+                )
+            } else {
+                showOrderDetail(orderId)
+            }
+        }
     }
 
     // region search
@@ -440,7 +450,7 @@ class OrderListFragment :
                     if (query == it.query.toString()) handleNewSearchRequest(query)
                 }
             },
-            SEARCH_TYPING_DELAY_MS
+            AppConstants.SEARCH_TYPING_DELAY_MS
         )
     }
 
@@ -450,7 +460,7 @@ class OrderListFragment :
      */
     private fun handleNewSearchRequest(query: String) {
         AnalyticsTracker.track(
-            Stat.ORDERS_LIST_FILTER,
+            AnalyticsEvent.ORDERS_LIST_SEARCH,
             mapOf(AnalyticsTracker.KEY_SEARCH to query)
         )
 
@@ -508,61 +518,51 @@ class OrderListFragment :
     }
 
     private fun displaySimplePaymentsWIPCard(show: Boolean) {
-        if (!show ||
-            feedbackState == FeatureFeedbackSettings.FeedbackState.DISMISSED ||
-            !viewModel.isCardReaderOnboardingCompleted()
-        ) {
+        if (!show || feedbackState == FeedbackState.DISMISSED) {
             binding.simplePaymentsWIPcard.isVisible = false
             return
-        }
-
-        val isEnabled = AppPrefs.isSimplePaymentsEnabled
-        @StringRes val messageId = if (isEnabled) {
-            R.string.orderlist_simple_payments_wip_message_enabled
-        } else {
-            R.string.orderlist_simple_payments_wip_message_disabled
         }
 
         binding.simplePaymentsWIPcard.isVisible = true
         binding.simplePaymentsWIPcard.initView(
             getString(R.string.orderlist_simple_payments_wip_title),
-            getString(messageId),
+            getString(R.string.orderlist_simple_payments_wip_message_enabled),
             onGiveFeedbackClick = { onGiveFeedbackClicked() },
             onDismissClick = { onDismissWIPCardClicked() },
-            showFeedbackButton = isEnabled
+            showFeedbackButton = true
         )
     }
 
     private fun onGiveFeedbackClicked() {
         AnalyticsTracker.track(
-            Stat.FEATURE_FEEDBACK_BANNER,
+            AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
             mapOf(
                 AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FEEDBACK,
                 AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
             )
         )
-        registerFeedbackSetting(FeatureFeedbackSettings.FeedbackState.GIVEN)
+        registerFeedbackSetting(FeedbackState.GIVEN)
         NavGraphMainDirections
-            .actionGlobalFeedbackSurveyFragment(SurveyType.SIMPLE_PAYMENTS)
+            .actionGlobalFeedbackSurveyFragment(SurveyType.ORDER_CREATION)
             .apply { findNavController().navigateSafely(this) }
     }
 
     private fun onDismissWIPCardClicked() {
         AnalyticsTracker.track(
-            Stat.FEATURE_FEEDBACK_BANNER,
+            AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
             mapOf(
                 AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FEEDBACK,
                 AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
             )
         )
-        registerFeedbackSetting(FeatureFeedbackSettings.FeedbackState.DISMISSED)
+        registerFeedbackSetting(FeedbackState.DISMISSED)
         displaySimplePaymentsWIPCard(false)
     }
 
-    private fun registerFeedbackSetting(state: FeatureFeedbackSettings.FeedbackState) {
+    private fun registerFeedbackSetting(state: FeedbackState) {
         FeatureFeedbackSettings(
-            FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS.name,
+            SIMPLE_PAYMENTS_AND_ORDER_CREATION,
             state
-        ).registerItselfWith(TAG)
+        ).registerItself()
     }
 }

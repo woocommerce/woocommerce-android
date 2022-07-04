@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.CallSuper
 import androidx.annotation.LayoutRes
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.Observer
@@ -29,14 +30,9 @@ abstract class BaseProductFragment : BaseFragment, BackPressListener {
 
     protected val viewModel: ProductDetailViewModel by hiltNavGraphViewModels(R.id.nav_graph_products)
 
+    @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // if this is the initial creation of this fragment, tell the viewModel to make a copy of the product
-        // as it exists now so we can easily discard changes are determine if any changes were made inside
-        // this fragment
-        if (savedInstanceState == null) {
-            viewModel.updateProductBeforeEnteringFragment()
-        }
 
         setupObservers(viewModel)
     }
@@ -66,6 +62,7 @@ abstract class BaseProductFragment : BaseFragment, BackPressListener {
         )
     }
 
+    @CallSuper
     override fun onStop() {
         super.onStop()
         WooDialog.onCleared()

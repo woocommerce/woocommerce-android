@@ -46,8 +46,12 @@ class SupportHelper {
                 val newEmail = emailEditText.text
                 val newName = nameEditText.text
                 if (StringUtils.isValidEmail(newEmail)) {
-                    emailAndNameSelected(newEmail, newName)
-                    dialog.dismiss()
+                    if (StringUtils.isA8cEmail(newEmail)) {
+                        emailEditText.error = context.getString(R.string.a8c_email_message)
+                    } else {
+                        emailAndNameSelected(newEmail, newName)
+                        dialog.dismiss()
+                    }
                 } else {
                     emailEditText.error = context.getString(R.string.invalid_email_message)
                 }

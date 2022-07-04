@@ -20,8 +20,8 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:background">@color/color_toolbar</item>
     </style>
     <style name="Widget.Woo.Toolbar.Surface" parent="ThemeOverlay.MaterialComponents.Toolbar.Surface">
-        <item name="actionMenuTextColor">@color/woo_pink_50</item>
-        <item name="colorControlNormal">@color/woo_pink_50</item>
+        <item name="actionMenuTextColor">@color/action_menu_fg_selector</item>
+        <item name="colorControlNormal">@color/woo_pink_30</item>
     </style>
     <style name="TextAppearance.Woo.CollapsingToolbar.Expanded" parent="TextAppearance.MaterialComponents.Headline4">
         <item name="android:textColor">@color/color_on_surface</item>
@@ -86,7 +86,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="tabPaddingStart">25dp</item>
         <item name="tabPaddingEnd">25dp</item>
         <item name="android:background">@color/color_surface</item>
-        <item name="tabTextColor">@color/color_on_surface</item>
+        <item name="tabTextColor">@color/color_on_surface_medium</item>
     </style>
 
     <style name="Woo.TabLayout.Scrollable">
@@ -164,7 +164,9 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:layout_marginTop">@dimen/major_100</item>
     </style>
 
-    <style name="Woo.Card.Title" parent="Woo.TextView.Subtitle1" />
+    <style name="Woo.Card.Title" parent="Woo.TextView.Subtitle1">
+        <item name="android:textStyle">bold</item>
+    </style>
 
     <style name="Woo.Card.Header" parent="Woo.TextView.Subtitle2">
         <item name="android:layout_marginTop">@dimen/major_100</item>
@@ -174,7 +176,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:textColor">@color/color_on_surface_disabled</item>
     </style>
 
-    <style name="Woo.Card.Body" parent="Woo.TextView.Body2"/>
+    <style name="Woo.Card.Body" parent="Woo.TextView.Body2" />
 
     <style name="Woo.Card.Body.High" parent="Woo.TextView.Body2">
         <item name="android:textColor">@color/color_on_surface_high</item>
@@ -187,8 +189,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
 
     <style name="Woo.Card.StatusMessage" parent="Woo.TextView.Subtitle1"/>
 
-    <style name="Woo.Card.ListHeader" parent="Woo.TextView.Subtitle2">
-        <item name="android:layout_marginTop">@dimen/major_100</item>
+    <style name="Woo.Card.ListHeader" parent="Woo.TextView.Body2">
         <item name="android:layout_marginBottom">@dimen/major_75</item>
         <item name="android:layout_marginStart">@dimen/major_100</item>
         <item name="android:layout_marginEnd">@dimen/major_100</item>
@@ -433,6 +434,18 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <!--  Borderless button with smaller text used for inner options  -->
     <style name="Woo.Button.TextButton.Secondary">
         <item name="android:textAppearance">@style/TextAppearance.Woo.Body1</item>
+    </style>
+
+    <style name="Woo.Button.Icon" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:minHeight">@dimen/min_tap_target</item>
+        <item name="android:minWidth">@dimen/min_tap_target</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="iconPadding">0dp</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconTint">@color/button_fg_selector</item>
     </style>
 
     <style name="Woo.Button.TextButton.Expander">
@@ -768,8 +781,8 @@ theme across the entire app. Overridden versions should be added to the styles.x
     </style>
 
     <style name="Woo.Animations">
-        <item name="android:windowEnterAnimation">@anim/activity_slide_in_from_right</item>
-        <item name="android:windowExitAnimation">@anim/activity_slide_out_to_right</item>
+        <item name="android:windowEnterAnimation">@anim/default_enter_anim</item>
+        <item name="android:windowExitAnimation">@anim/default_pop_exit_anim</item>
     </style>
 
     <style name="Woo.Animations.Dialog">

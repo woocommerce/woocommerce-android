@@ -52,17 +52,21 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <com.woocommerce.android.widgets.CurrencyEditText
+    <com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView
         android:id="@+id/editPrice"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:imeOptions="flagNoExtractUi"
         android:textSize="@dimen/text_major_100"
+        app:boxBackgroundMode="none"
+        app:editTextLayoutMode="wrap"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:supportsEmptyState="false"
+        app:supportsNegativeValues="false"
+        app:usesFullFormatting="true"
         tools:hint="0.00" />
 
     <com.google.android.material.button.MaterialButton

@@ -1,9 +1,9 @@
 pluginManagement {
-    gradle.ext.agpVersion = '4.2.2'
-    gradle.ext.daggerVersion = '2.40.1'
-    gradle.ext.detektVersion = '1.18.1'
-    gradle.ext.kotlinVersion = '1.5.31'
-    gradle.ext.navigationVersion = '2.4.0-rc01'
+    gradle.ext.agpVersion = '7.1.1'
+    gradle.ext.daggerVersion = '2.40.5'
+    gradle.ext.detektVersion = '1.19.0'
+    gradle.ext.kotlinVersion = '1.6.10'
+    gradle.ext.navigationVersion = '2.4.1'
 
     repositories {
         gradlePluginPortal()
@@ -15,16 +15,15 @@ pluginManagement {
         id 'com.android.application' version gradle.ext.agpVersion
         id 'com.android.library' version gradle.ext.agpVersion
         id 'com.automattic.android.fetchstyle'
-        id 'com.google.gms.google-services' version '4.3.8'
+        id 'com.google.gms.google-services' version '4.3.10'
         id 'io.github.wzieba.tracks.plugin' version '1.0.0'
         id 'io.gitlab.arturbosch.detekt' version gradle.ext.detektVersion
-        id 'io.sentry.android.gradle' version '2.0.0'
+        id 'io.sentry.android.gradle' version '3.0.1'
         id 'org.jetbrains.kotlin.android' version gradle.ext.kotlinVersion
         id 'org.jetbrains.kotlin.jvm' version gradle.ext.kotlinVersion
         id 'org.jetbrains.kotlin.kapt' version gradle.ext.kotlinVersion
-        id 'org.jetbrains.kotlin.plugin.allopen' version gradle.ext.kotlinVersion
         id 'org.jetbrains.kotlin.plugin.parcelize' version gradle.ext.kotlinVersion
-        id 'se.bjurr.violations.violation-comments-to-github-gradle-plugin' version '1.68.3'
+        id 'se.bjurr.violations.violation-comments-to-github-gradle-plugin' version '1.69.0'
     }
 
     resolutionStrategy {
@@ -41,6 +40,38 @@ pluginManagement {
     }
 }
 
+plugins {
+    id 'com.gradle.enterprise' version '3.9'
+    id 'com.gradle.common-custom-user-data-gradle-plugin' version '1.6.5'
+}
+
+gradleEnterprise {
+    server = "https://gradle.a8c.com"
+    allowUntrustedServer = false
+    buildScan {
+        def disableGE = System.getenv("GRADLE_ENTERPRISE_ANALYTICS_DISABLE")
+        if (!(disableGE == "1" || disableGE == "true")) {
+            publishAlways()
+        }
+        capture {
+            taskInputFiles = true
+        }
+        uploadInBackground = System.getenv("CI") == null
+
+        if (!System.getenv().containsKey("CI")) {
+            // Obfuscate personal data unless it's a CI build
+            obfuscation {
+                username { username -> System.getenv("GRADLE_ENTERPRISE_ANALYTICS_USERNAME") ?: username }
+                hostname { hostname -> System.getenv("GRADLE_ENTERPRISE_ANALYTICS_HOSTNAME") ?: hostname }
+                ipAddresses { addresses -> addresses.collect { address -> "0.0.0.0"} }
+            }
+        }
+    }
+}
+
+rootProject.name = 'WCAndroid'
+
+include ':quicklogin'
 include ':libs:barcode'
 include ':libs:cardreader'
 include ':WooCommerce'

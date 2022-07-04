@@ -2,22 +2,25 @@ package com.woocommerce.android.ui.products.variations
 
 import android.os.Bundle
 import android.os.Parcelable
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentVariationListBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.handleResult
@@ -33,6 +36,8 @@ import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.variations.VariationDetailFragment.Companion.KEY_VARIATION_DETAILS_RESULT
 import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.DeletedVariationData
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowAddAttributeView
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowBulkUpdateAttrPicker
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowBulkUpdateLimitExceededWarning
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowVariationDetail
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -94,6 +99,7 @@ class VariationListFragment :
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
         layoutManager?.let {
             outState.putParcelable(LIST_STATE_KEY, it.onSaveInstanceState())
         }
@@ -118,7 +124,7 @@ class VariationListFragment :
         binding.variationListRefreshLayout.apply {
             scrollUpChild = binding.variationList
             setOnRefreshListener {
-                AnalyticsTracker.track(Stat.PRODUCT_VARIANTS_PULLED_TO_REFRESH)
+                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_VARIANTS_PULLED_TO_REFRESH)
                 viewModel.refreshVariations(navArgs.remoteProductId)
             }
         }
@@ -147,43 +153,49 @@ class VariationListFragment :
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) {
                 binding.loadMoreProgress.isVisible = it
             }
-            new.isWarningVisible?.takeIfNotEqualTo(old?.isWarningVisible) { showWarning(it) }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible, ::handleEmptyViewChanges)
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) {
+                hideProgressDialog()
                 showProgressDialog(it, R.string.variation_create_dialog_title)
+            }
+            new.isVariationsOptionsMenuEnabled.takeIfNotEqualTo(old?.isVariationsOptionsMenuEnabled) {
+                requireActivity().invalidateOptionsMenu()
+            }
+            new.isBulkUpdateProgressDialogShown.takeIfNotEqualTo(old?.isBulkUpdateProgressDialogShown) {
+                hideProgressDialog()
+                showProgressDialog(it, R.string.variation_loading_dialog_title)
             }
         }
 
-        viewModel.variationList.observe(
-            viewLifecycleOwner,
-            Observer {
-                showVariations(it, viewModel.viewStateLiveData.liveData.value?.parentProduct)
-                requireActivity().invalidateOptionsMenu()
-            }
-        )
+        viewModel.variationList.observe(viewLifecycleOwner) {
+            showVariations(it, viewModel.viewStateLiveData.liveData.value?.parentProduct)
+        }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowVariationDetail -> openVariationDetail(event.variation)
-                    is ShowAddAttributeView -> openAddAttributeView()
-                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_LIST_RESULT, event.data)
-                    is Exit -> activity?.onBackPressed()
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowVariationDetail -> openVariationDetail(event.variation)
+                is ShowAddAttributeView -> openAddAttributeView()
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ShowBulkUpdateAttrPicker -> openBulkUpdateView(event.variationsToUpdate)
+                is ShowBulkUpdateLimitExceededWarning -> showBulkUpdateLimitExceededWarning()
+                is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_LIST_RESULT, event.data)
+                is Exit -> activity?.onBackPressed()
             }
-        )
+        }
+    }
+
+    private fun showBulkUpdateLimitExceededWarning() {
+        val builder = MaterialAlertDialogBuilder(requireContext())
+        builder.setTitle(getString(R.string.variations_bulk_update_warning_title))
+            .setMessage(getString(R.string.variations_bulk_update_warning_message))
+            .setNegativeButton(getString(R.string.variations_bulk_limit_exceeded_button_ok), null)
+            .show()
     }
 
     private fun setupResultHandlers(viewModel: VariationListViewModel) {
         handleResult<DeletedVariationData>(KEY_VARIATION_DETAILS_RESULT) {
             viewModel.onVariationDeleted(it.productID, it.variationID)
         }
-    }
-
-    private fun showWarning(isVisible: Boolean) {
-        binding.variationVisibilityWarning.isVisible = isVisible
     }
 
     private fun openVariationDetail(variation: ProductVariation) {
@@ -198,6 +210,12 @@ class VariationListFragment :
         VariationListFragmentDirections
             .actionVariationListFragmentToAddAttributeFragment(true)
             .run { findNavController().navigateSafely(this) }
+
+    private fun openBulkUpdateView(variationsToUpdate: Collection<ProductVariation>) {
+        VariationListFragmentDirections
+            .actionVariationListFragmentToVariationsBulkUpdateAttrPickerFragment(variationsToUpdate.toTypedArray())
+            .run { findNavController().navigateSafely(this) }
+    }
 
     override fun getFragmentTitle() = getString(R.string.product_variations)
 
@@ -228,7 +246,7 @@ class VariationListFragment :
             adapter = binding.variationList.adapter as VariationListAdapter
         }
 
-        adapter.setVariationList(variations)
+        adapter.submitList(variations)
     }
 
     private fun handleEmptyViewChanges(isEmptyViewVisible: Boolean) {
@@ -261,5 +279,25 @@ class VariationListFragment :
     override fun onRequestAllowBackPress(): Boolean {
         viewModel.onExit()
         return false
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
+        inflater.inflate(R.menu.menu_variation_list_fragment, menu)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        val isBatchUpdateEnabled = viewModel.viewStateLiveData.liveData.value?.isVariationsOptionsMenuEnabled ?: false
+        menu.findItem(R.id.menu_bulk_update)?.isVisible = isBatchUpdateEnabled
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_bulk_update -> {
+                viewModel.onBulkUpdateClicked()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }

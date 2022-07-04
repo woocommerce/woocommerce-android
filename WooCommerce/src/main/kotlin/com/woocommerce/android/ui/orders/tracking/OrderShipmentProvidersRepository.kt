@@ -5,17 +5,16 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.ORDERS
-import javax.inject.Inject
-import org.wordpress.android.fluxc.model.order.OrderIdentifier
-import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentProvidersPayload
+import javax.inject.Inject
 
 class OrderShipmentProvidersRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val orderStore: WCOrderStore
 ) {
-    suspend fun fetchOrderShipmentProviders(orderIdentifier: OrderIdentifier): List<OrderShipmentProvider>? {
+    @Suppress("ReturnCount")
+    suspend fun fetchOrderShipmentProviders(orderId: Long): List<OrderShipmentProvider>? {
         // Check db first
         val providersInDb = getShipmentProvidersFromDB()
         if (providersInDb.isNotEmpty()) {
@@ -23,12 +22,11 @@ class OrderShipmentProvidersRepository @Inject constructor(
         }
 
         // Fetch from API
-        val order = orderStore.getOrderByIdentifier(orderIdentifier)
+        val order = orderStore.getOrderByIdAndSite(orderId, selectedSite.get())
         if (order == null) {
             WooLog.e(
                 ORDERS,
-                "Can't find order with id ${orderIdentifier.toIdSet().remoteOrderId} " +
-                    "while trying to fetch shipment providers list"
+                "Can't find order with id $orderId while trying to fetch shipment providers list"
             )
             return null
         }

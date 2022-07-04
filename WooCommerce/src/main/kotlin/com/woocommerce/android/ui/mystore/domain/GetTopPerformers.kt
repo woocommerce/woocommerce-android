@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.mystore.domain
 
 import com.woocommerce.android.ui.mystore.data.StatsRepository
-import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.LoadTopPerformersResult.TopPerformersLoadedError
-import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.LoadTopPerformersResult.TopPerformersLoadedSuccess
+import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformersResult.TopPerformersError
+import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformersResult.TopPerformersSuccess
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -19,16 +19,16 @@ class GetTopPerformers @Inject constructor(
         forceRefresh: Boolean,
         granularity: WCStatsStore.StatsGranularity,
         topPerformersCount: Int
-    ): Flow<LoadTopPerformersResult> =
+    ): Flow<TopPerformersResult> =
         statsRepository.fetchProductLeaderboards(forceRefresh, granularity, topPerformersCount)
             .transform { result ->
                 result.fold(
                     onSuccess = { topPerformers ->
                         val sortedTopPerformers = sortTopPerformers(topPerformers)
-                        emit(TopPerformersLoadedSuccess(sortedTopPerformers))
+                        emit(TopPerformersSuccess(sortedTopPerformers))
                     },
                     onFailure = {
-                        emit(TopPerformersLoadedError)
+                        emit(TopPerformersError)
                     }
                 )
             }.flowOn(coroutineDispatchers.computation)
@@ -39,11 +39,11 @@ class GetTopPerformers @Inject constructor(
                 .thenByDescending(WCTopPerformerProductModel::total)
         )
 
-    sealed class LoadTopPerformersResult {
-        data class TopPerformersLoadedSuccess(
+    sealed class TopPerformersResult {
+        data class TopPerformersSuccess(
             val topPerformers: List<WCTopPerformerProductModel>
-        ) : LoadTopPerformersResult()
+        ) : TopPerformersResult()
 
-        object TopPerformersLoadedError : LoadTopPerformersResult()
+        object TopPerformersError : TopPerformersResult()
     }
 }

@@ -7,8 +7,8 @@ import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductCategoriesListBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
@@ -67,7 +67,7 @@ class ParentCategoryListFragment :
         val activity = requireActivity()
 
         parentCategoryListAdapter = ParentCategoryListAdapter(
-            activity.baseContext, viewModel.getSelectedParentId(), this, this
+            viewModel.getSelectedParentId(), this, this
         )
         with(binding.productCategoriesRecycler) {
             layoutManager = androidx.recyclerview.widget.LinearLayoutManager(activity)
@@ -77,7 +77,7 @@ class ParentCategoryListFragment :
         binding.productCategoriesLayout.apply {
             scrollUpChild = binding.productCategoriesRecycler
             setOnRefreshListener {
-                AnalyticsTracker.track(Stat.PARENT_CATEGORIES_PULLED_TO_REFRESH)
+                AnalyticsTracker.track(AnalyticsEvent.PARENT_CATEGORIES_PULLED_TO_REFRESH)
                 viewModel.refreshParentCategories()
             }
         }
@@ -119,7 +119,7 @@ class ParentCategoryListFragment :
     }
 
     private fun showParentCategories(productCategories: List<ProductCategoryItemUiModel>) {
-        parentCategoryListAdapter.parentCategoryList = productCategories
+        parentCategoryListAdapter.submitList(productCategories)
     }
 
     private fun showSkeleton(show: Boolean) {

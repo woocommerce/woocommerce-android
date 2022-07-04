@@ -15,7 +15,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.*
@@ -25,7 +24,7 @@ import java.math.BigDecimal
 @ExperimentalCoroutinesApi
 class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     companion object {
-        private const val ORDER_ID = "1-1-1"
+        private const val ORDER_ID = 1L
     }
 
     private val availablePackages = listOf(
@@ -58,7 +57,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
             shippingLabelPackages = currentPackages
         ).initSavedStateHandle()
         whenever(shippingLabelRepository.getShippingPackages()).thenReturn(WooResult(availablePackages))
-        whenever(orderDetailRepository.getOrder(ORDER_ID)).thenReturn(testOrder)
+        whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(testOrder)
         whenever(productDetailRepository.getProduct(any())).thenReturn(testProduct)
         viewModel = EditShippingLabelPackagesViewModel(
             savedState,
@@ -71,21 +70,21 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `test first opening of the screen`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `test first opening of the screen`() = testBlocking {
         whenever(shippingLabelRepository.getLastUsedPackage()).thenReturn(availablePackages.first())
 
         setup(emptyArray())
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
-        verify(orderDetailRepository).getOrder(any())
+        verify(orderDetailRepository).getOrderById(any())
         verify(shippingLabelRepository).getLastUsedPackage()
         assertThat(viewState!!.packagesUiModels.size).isEqualTo(1)
         assertThat(viewState!!.packages.first().selectedPackage).isEqualTo(availablePackages.first())
     }
 
     @Test
-    fun `test edit flow`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `test edit flow`() = testBlocking {
         val currentShippingPackages = arrayOf(
             CreateShippingLabelTestUtils.generateShippingLabelPackage(
                 selectedPackage = availablePackages[0]
@@ -95,13 +94,13 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
-        verify(orderDetailRepository, never()).getOrder(any())
+        verify(orderDetailRepository, never()).getOrderById(any())
         verify(shippingLabelRepository, never()).getAccountSettings()
         assertThat(viewState!!.packages).isEqualTo(currentShippingPackages.toList())
     }
 
     @Test
-    fun `no last used package`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `no last used package`() = testBlocking {
         whenever(shippingLabelRepository.getLastUsedPackage()).thenReturn(null)
 
         setup(emptyArray())
@@ -112,7 +111,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `edit weight of package`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `edit weight of package`() = testBlocking {
         whenever(shippingLabelRepository.getLastUsedPackage()).thenReturn(availablePackages.first())
 
         setup(emptyArray())
@@ -125,7 +124,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `select a package`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `select a package`() = testBlocking {
         whenever(shippingLabelRepository.getLastUsedPackage()).thenReturn(availablePackages.first())
 
         setup(emptyArray())
@@ -138,7 +137,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `exit without saving changes`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `exit without saving changes`() = testBlocking {
         whenever(shippingLabelRepository.getLastUsedPackage()).thenReturn(availablePackages.first())
 
         setup(emptyArray())
@@ -151,7 +150,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
 
     @Suppress("UNCHECKED_CAST")
     @Test
-    fun `save changes and exit`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `save changes and exit`() = testBlocking {
         whenever(shippingLabelRepository.getLastUsedPackage()).thenReturn(availablePackages.first())
 
         setup(emptyArray())

@@ -1,145 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/chart_height"
-    android:orientation="horizontal"
-    android:paddingTop="@dimen/major_200"
-    android:paddingBottom="@dimen/major_300"
-    android:paddingStart="@dimen/major_200"
-    android:paddingEnd="@dimen/major_200">
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/major_100">
 
     <View
-        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
+        android:layout_width="104dp"
+        android:layout_height="18dp"
+        android:layout_marginBottom="10dp"
+        android:background="@color/skeleton_color" />
+
+    <View
+        android:layout_width="165dp"
         android:layout_height="40dp"
-        android:layout_gravity="bottom"
-        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
-        android:background="@color/skeleton_color"/>
+        android:layout_marginBottom="38dp"
+        android:background="@drawable/skeleton_background" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:gravity="center">
+
+        <View
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/skeleton_background" />
+
+        <View
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginStart="81dp"
+            android:layout_marginEnd="81dp"
+            android:background="@drawable/skeleton_background" />
+
+        <View
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/skeleton_background" />
+
+    </LinearLayout>
 
     <View
-        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
-        android:layout_height="60dp"
-        android:layout_gravity="bottom"
-        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
-        android:background="@color/skeleton_color"/>
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="60dp"
+        android:background="@color/graph_grid_color" />
 
     <View
-        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
-        android:layout_height="100dp"
-        android:layout_gravity="bottom"
-        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
-        android:background="@color/skeleton_color"/>
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="60dp"
+        android:background="@color/skeleton_color" />
 
     <View
-        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
-        android:layout_height="40dp"
-        android:layout_gravity="bottom"
-        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
-        android:background="@color/skeleton_color"/>
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="60dp"
+        android:background="@color/graph_grid_color" />
 
     <View
-        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
-        android:layout_height="0dp"
-        android:layout_gravity="bottom"
-        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
-        android:background="@color/skeleton_color"/>
-
-    <View
-        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
-        android:layout_height="40dp"
-        android:layout_gravity="bottom"
-        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
-        android:background="@color/skeleton_color"/>
-
-    <View
-        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
-        android:layout_height="160dp"
-        android:layout_gravity="bottom"
-        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
-        android:background="@color/skeleton_color"/>
-
-    <View
-        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
-        android:layout_height="100dp"
-        android:layout_gravity="bottom"
-        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
-        android:background="@color/skeleton_color"/>
-
-    <View
-        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
-        android:layout_height="@dimen/skeleton_bar_chart_bar_width_days"
-        android:layout_gravity="bottom"
-        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
-        android:background="@color/skeleton_color"/>
-
-    <View
-        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
-        android:layout_height="0dp"
-        android:layout_gravity="bottom"
-        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
-        android:background="@color/skeleton_color"/>
-
-    <View
-        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
-        android:layout_height="40dp"
-        android:layout_gravity="bottom"
-        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
-        android:background="@color/skeleton_color"/>
-
-    <View
-        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
-        android:layout_height="100dp"
-        android:layout_gravity="bottom"
-        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
-        android:background="@color/skeleton_color"/>
-
-    <View
-        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
-        android:layout_height="40dp"
-        android:layout_gravity="bottom"
-        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
-        android:background="@color/skeleton_color"/>
-
-    <View
-        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
-        android:layout_height="0dp"
-        android:layout_gravity="bottom"
-        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
-        android:background="@color/skeleton_color"/>
-
-    <View
-        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
-        android:layout_height="40dp"
-        android:layout_gravity="bottom"
-        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
-        android:background="@color/skeleton_color"/>
-
-    <View
-        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
-        android:layout_height="100dp"
-        android:layout_gravity="bottom"
-        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
-        android:background="@color/skeleton_color"/>
-
-    <View
-        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
-        android:layout_height="40dp"
-        android:layout_gravity="bottom"
-        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
-        android:background="@color/skeleton_color"/>
-
-    <View
-        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
-        android:layout_height="0dp"
-        android:layout_gravity="bottom"
-        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
-        android:background="@color/skeleton_color"/>
-
-    <View
-        android:layout_width="@dimen/skeleton_bar_chart_bar_width_days"
-        android:layout_height="40dp"
-        android:layout_gravity="bottom"
-        android:layout_marginStart="@dimen/skeleton_bar_chart_bar_spacing"
-        android:background="@color/skeleton_color"/>
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/graph_grid_color" />
 
 </LinearLayout>

@@ -7,9 +7,11 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.DialogSimplePaymentsBinding
-import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.filterNotNull
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.CurrencyFormatter
@@ -24,7 +26,7 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private val viewModel: SimplePaymentsViewModel by viewModels()
+    private val viewModel: SimplePaymentsDialogViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,19 +49,18 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
         }
 
         val binding = DialogSimplePaymentsBinding.bind(view)
-        binding.editPrice.initView(viewModel.currencyCode, viewModel.decimals, currencyFormatter)
         binding.buttonDone.setOnClickListener {
             viewModel.onDoneButtonClicked()
         }
         binding.imageClose.setOnClickListener {
-            AnalyticsTracker.track(AnalyticsTracker.Stat.SIMPLE_PAYMENTS_FLOW_CANCELED)
+            AnalyticsTracker.track(AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_CANCELED)
             findNavController().navigateUp()
         }
 
-        if (!isLandscape && binding.editPrice.requestFocus()) {
+        if (!isLandscape && binding.editPrice.editText.requestFocus()) {
             binding.editPrice.postDelayed(
                 {
-                    ActivityUtils.showKeyboard(binding.editPrice)
+                    ActivityUtils.showKeyboard(binding.editPrice.editText)
                 },
                 KEYBOARD_DELAY
             )
@@ -69,7 +70,7 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
     }
 
     private fun setupObservers(binding: DialogSimplePaymentsBinding) {
-        binding.editPrice.value.observe(
+        binding.editPrice.value.filterNotNull().observe(
             this,
             {
                 viewModel.currentPrice = it
@@ -90,7 +91,10 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
                 binding.buttonDone.isEnabled = isEnabled
             }
             new.createdOrder.takeIfNotEqualTo(old?.createdOrder) { order ->
-                navigateBackWithResult(KEY_SIMPLE_PAYMENTS_RESULT, order!!)
+                val action = SimplePaymentsDialogDirections.actionSimplePaymentDialogToSimplePaymentFragment(
+                    order!!
+                )
+                findNavController().navigateSafely(action)
             }
             new.isProgressShowing.takeIfNotEqualTo(old?.isProgressShowing) { show ->
                 binding.progressBar.isVisible = show
@@ -105,7 +109,6 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
     }
 
     companion object {
-        const val KEY_SIMPLE_PAYMENTS_RESULT = "simple_payments_result"
         private const val HEIGHT_RATIO = 0.6
         private const val WIDTH_RATIO = 0.9
         private const val HEIGHT_RATIO_LANDSCAPE = 0.9

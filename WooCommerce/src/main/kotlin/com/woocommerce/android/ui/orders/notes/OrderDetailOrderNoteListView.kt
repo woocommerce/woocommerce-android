@@ -8,8 +8,8 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.OrderDetailNoteListBinding
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.ui.orders.notes.OrderNoteListItem.Header
@@ -34,7 +34,7 @@ class OrderDetailOrderNoteListView @JvmOverloads constructor(
         listener = orderDetailListener
 
         binding.noteListAddNoteContainer.setOnClickListener {
-            AnalyticsTracker.track(Stat.ORDER_DETAIL_ADD_NOTE_BUTTON_TAPPED)
+            AnalyticsTracker.track(AnalyticsEvent.ORDER_DETAIL_ADD_NOTE_BUTTON_TAPPED)
 
             listener.onRequestAddNote()
         }

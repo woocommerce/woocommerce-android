@@ -4,22 +4,28 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentReviewsListBinding
+import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.reviews.ReviewListAdapter
+import com.woocommerce.android.ui.reviews.ReviewModerationUi
+import com.woocommerce.android.ui.reviews.observeModerationStatus
+import com.woocommerce.android.ui.reviews.reviewList
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,7 +34,12 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ProductReviewsFragment :
     BaseFragment(R.layout.fragment_reviews_list),
-    ReviewListAdapter.OnReviewClickListener {
+    ReviewListAdapter.OnReviewClickListener,
+    ReviewModerationUi,
+    BackPressListener {
+    companion object {
+        const val PRODUCT_REVIEWS_MODIFIED = "product-reviews-modified"
+    }
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     val viewModel: ProductReviewsViewModel by viewModels()
@@ -47,6 +58,7 @@ class ProductReviewsFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentReviewsListBinding.bind(view)
+        setupViews()
         setupObservers()
     }
 
@@ -57,9 +69,7 @@ class ProductReviewsFragment :
         _binding = null
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
+    private fun setupViews() {
         _reviewsAdapter = ReviewListAdapter(this)
 
         binding.reviewsList.apply {
@@ -84,7 +94,7 @@ class ProductReviewsFragment :
             // Set the scrolling view in the custom SwipeRefreshLayout
             scrollUpChild = binding.reviewsList
             setOnRefreshListener {
-                AnalyticsTracker.track(Stat.PRODUCT_REVIEWS_PULLED_TO_REFRESH)
+                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_REVIEWS_PULLED_TO_REFRESH)
                 viewModel.refreshProductReviews()
             }
         }
@@ -98,21 +108,25 @@ class ProductReviewsFragment :
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { showEmptyView(it) }
         }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    else -> event.isHandled = false
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ExitWithResult<*> -> navigateBackWithNotice(PRODUCT_REVIEWS_MODIFIED)
+                is Exit -> findNavController().navigateUp()
+                else -> event.isHandled = false
             }
-        )
+        }
 
         viewModel.reviewList.observe(
             viewLifecycleOwner,
             Observer {
                 showReviewList(it)
             }
+        )
+
+        observeModerationStatus(
+            reviewModerationConsumer = viewModel,
+            uiMessageResolver = uiMessageResolver
         )
     }
 
@@ -144,11 +158,15 @@ class ProductReviewsFragment :
         }
     }
 
-    override fun onReviewClick(review: ProductReview) {
+    override fun onReviewClick(review: ProductReview, sharedView: View?) {
         (activity as? MainNavigationRouter)?.showReviewDetail(
             review.remoteId,
-            launchedFromNotification = false,
-            enableModeration = false
+            launchedFromNotification = false
         )
+    }
+
+    override fun onRequestAllowBackPress(): Boolean {
+        viewModel.onBackButtonClicked()
+        return false
     }
 }

@@ -1,15 +1,19 @@
 package com.woocommerce.android.di
 
 import android.app.Application
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.cardreader.CardReaderManagerFactory
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.LogWrapper
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.cardreader.onboarding.toInPersonPaymentsPluginType
 import com.woocommerce.android.util.CapturePaymentResponseMapper
 import com.woocommerce.android.util.WooLog
 import dagger.Module
 import dagger.Provides
+import dagger.Reusable
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
@@ -30,19 +34,32 @@ class CardReaderModule {
     fun provideInPersonPaymentsStore(
         selectedSite: SelectedSite,
         inPersonPaymentsStore: WCInPersonPaymentsStore,
-        responseMapper: CapturePaymentResponseMapper
+        responseMapper: CapturePaymentResponseMapper,
+        appPrefs: AppPrefs
     ) = object : CardReaderStore {
-        override suspend fun fetchCustomerIdByOrderId(orderId: Long): String? {
-            return inPersonPaymentsStore.createCustomerByOrderId(selectedSite.get(), orderId).model?.customerId
-        }
-
         override suspend fun fetchConnectionToken(): String {
-            val result = inPersonPaymentsStore.fetchConnectionToken(selectedSite.get())
+            val result = inPersonPaymentsStore.fetchConnectionToken(
+                appPrefs.getCardReaderPreferredPlugin(
+                    selectedSite.get().id,
+                    selectedSite.get().siteId,
+                    selectedSite.get().selfHostedSiteId
+                )!!.toInPersonPaymentsPluginType(),
+                selectedSite.get()
+            )
             return result.model?.token.orEmpty()
         }
 
         override suspend fun capturePaymentIntent(orderId: Long, paymentId: String): CapturePaymentResponse {
-            val response = inPersonPaymentsStore.capturePayment(selectedSite.get(), paymentId, orderId)
+            val response = inPersonPaymentsStore.capturePayment(
+                appPrefs.getCardReaderPreferredPlugin(
+                    selectedSite.get().id,
+                    selectedSite.get().siteId,
+                    selectedSite.get().selfHostedSiteId
+                )!!.toInPersonPaymentsPluginType(),
+                selectedSite.get(),
+                paymentId,
+                orderId
+            )
             return responseMapper.mapResponse(response)
         }
     }
@@ -63,4 +80,8 @@ class CardReaderModule {
             WooLog.e(TAG, "$tag: $message")
         }
     }
+
+    @Provides
+    @Reusable
+    fun provideCardReaderConfigFactory() = CardReaderConfigFactory()
 }

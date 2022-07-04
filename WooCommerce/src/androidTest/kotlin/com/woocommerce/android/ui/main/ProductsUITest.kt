@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.main
 
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.rule.ActivityTestRule
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.helpers.InitializationRule
@@ -7,8 +8,8 @@ import com.woocommerce.android.helpers.TestBase
 import com.woocommerce.android.screenshots.TabNavComponent
 import com.woocommerce.android.screenshots.login.WelcomeScreen
 import com.woocommerce.android.screenshots.products.ProductListScreen
-import com.woocommerce.android.screenshots.util.ProductData
 import com.woocommerce.android.screenshots.util.MocksReader
+import com.woocommerce.android.screenshots.util.ProductData
 import com.woocommerce.android.screenshots.util.iterator
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -23,15 +24,18 @@ class ProductsUITest : TestBase() {
     val rule = HiltAndroidRule(this)
 
     @get:Rule(order = 1)
-    val initRule = InitializationRule()
+    val composeTestRule = createComposeRule()
 
     @get:Rule(order = 2)
+    val initRule = InitializationRule()
+
+    @get:Rule(order = 3)
     var activityRule = ActivityTestRule(MainActivity::class.java)
 
     @Before
     fun setUp() {
         WelcomeScreen
-            .logoutIfNeeded()
+            .logoutIfNeeded(composeTestRule)
             .selectLogin()
             .proceedWith(BuildConfig.SCREENSHOTS_URL)
             .proceedWith(BuildConfig.SCREENSHOTS_USERNAME)

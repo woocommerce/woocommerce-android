@@ -16,7 +16,6 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.*
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.parcelize.IgnoredOnParcel
@@ -93,10 +92,8 @@ import it.
 class ShippingLabelsStateMachine @Inject constructor() {
     // the flow can be observed by a ViewModel (similar to LiveData) and it can react by perform actions and update
     // the view states based on the triggered states and side-effects
-    @ExperimentalCoroutinesApi
     private val _transitions = MutableStateFlow(Transition(State.Idle, SideEffect.NoOp))
 
-    @ExperimentalCoroutinesApi
     val transitions: StateFlow<Transition> = _transitions
 
     // the actual state machine behavior is defined by a DSL using the following format:
@@ -162,8 +159,8 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 transitionTo(
                     State.CustomsDeclaration(data),
                     SideEffect.ShowCustomsForm(
-                        originCountryCode = data.stepsState.originAddressStep.data.country,
-                        destinationCountryCode = data.stepsState.shippingAddressStep.data.country,
+                        originCountryCode = data.stepsState.originAddressStep.data.country.code,
+                        destinationCountryCode = data.stepsState.shippingAddressStep.data.country.code,
                         shippingPackages = data.stepsState.packagingStep.data,
                         customsPackages = data.stepsState.customsStep.data ?: emptyList()
                     )
@@ -205,8 +202,8 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 transitionTo(
                     State.CustomsDeclaration(data),
                     SideEffect.ShowCustomsForm(
-                        originCountryCode = data.stepsState.originAddressStep.data.country,
-                        destinationCountryCode = data.stepsState.shippingAddressStep.data.country,
+                        originCountryCode = data.stepsState.originAddressStep.data.country.code,
+                        destinationCountryCode = data.stepsState.shippingAddressStep.data.country.code,
                         shippingPackages = data.stepsState.packagingStep.data,
                         customsPackages = data.stepsState.customsStep.data ?: emptyList()
                     )
@@ -416,7 +413,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
             }
 
             on<Event.PurchaseSuccess> {
-                transitionTo(State.Idle, SideEffect.ShowLabelsPrint(data.order.remoteId.value, it.labels))
+                transitionTo(State.Idle, SideEffect.ShowLabelsPrint(data.order.id, it.labels))
             }
         }
 
@@ -434,7 +431,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
     /**
      * Starts the initial event sequence (see the diagram)
      */
-    fun start(orderId: String) {
+    fun start(orderId: Long) {
         stateMachine.transition(Event.FlowStarted(orderId))
     }
 
@@ -539,7 +536,8 @@ class ShippingLabelsStateMachine @Inject constructor() {
             val originAddress = originAddressStep.data
             val shippingAddress = shippingAddressStep.data
 
-            fun Address.isUSMilitaryState() = country == "US" && US_MILITARY_STATES.contains(state)
+            fun Address.isUSMilitaryState() =
+                country.code == "US" && US_MILITARY_STATES.contains(state.asLocation().code)
 
             return@lazy if (originAddress.isUSMilitaryState() || shippingAddress.isUSMilitaryState()) {
                 // Special case: Any shipment from/to military addresses must have Customs
@@ -700,7 +698,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         object DataLoadingFailure : State()
 
         @Parcelize
-        data class DataLoading(val orderId: String) : State()
+        data class DataLoading(val orderId: Long) : State()
 
         @Parcelize
         data class WaitingForInput(override val data: StateMachineData) : State()
@@ -742,7 +740,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
     sealed class Event {
         abstract class UserInput : Event()
 
-        data class FlowStarted(val orderId: String) : Event()
+        data class FlowStarted(val orderId: Long) : Event()
         data class DataLoaded(
             val order: Order,
             val originAddress: Address,

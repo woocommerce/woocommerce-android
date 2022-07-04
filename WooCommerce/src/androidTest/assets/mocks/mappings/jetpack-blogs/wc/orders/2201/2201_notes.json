@@ -1,0 +1,45 @@
+{
+    "request": {
+        "method": "GET",
+        "urlPathPattern": "/rest/v1.1/jetpack-blogs/161477129/rest-api/",
+        "queryParameters": {
+            "json": {
+                "equalTo": "true"
+            },
+            "path": {
+                "matches": "/wc/v3/orders/2201/notes(.*)"
+            },         
+            "locale": {
+                "matches": "(.*)"
+            }
+        }
+    },
+    "response": {
+        "status": 200,
+        "jsonBody": {
+            "data": [{
+                "id": 7854,
+                "author": "WooCommerce",
+                "date_created": "2020-10-31T13:13:57",
+                "date_created_gmt": "2020-10-31T13:13:57",
+                "note": "Awaiting check payment Order status changed from Pending payment to On hold.",
+                "customer_note": false,
+                "_links": {
+                    "self": [{
+                        "href": "https://automatticwidgets.wpcomstaging.com/wp-json/wc/v3/orders/2789/notes/7854"
+                    }],
+                    "collection": [{
+                        "href": "https://automatticwidgets.wpcomstaging.com/wp-json/wc/v3/orders/2789/notes"
+                    }],
+                    "up": [{
+                        "href": "https://automatticwidgets.wpcomstaging.com/wp-json/wc/v3/orders/2789"
+                    }]
+                }
+            }]
+        },
+        "headers": {
+            "Content-Type": "application/json",
+            "Connection": "keep-alive"
+        }
+    }
+}

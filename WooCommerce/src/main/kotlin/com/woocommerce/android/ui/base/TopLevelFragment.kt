@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.base
 
 import androidx.annotation.LayoutRes
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 
 /**
@@ -11,6 +12,12 @@ abstract class TopLevelFragment : BaseFragment, TopLevelFragmentView {
     constructor(@LayoutRes layoutId: Int) : super(layoutId)
 
     abstract fun shouldExpandToolbar(): Boolean
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Visible(
+            navigationIcon = null,
+            hasShadow = false
+        )
 
     /**
      * Called when the fragment shows or hides a search view so we can properly disable the collapsing

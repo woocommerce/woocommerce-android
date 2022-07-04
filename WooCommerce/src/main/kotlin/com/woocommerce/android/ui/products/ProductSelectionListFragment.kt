@@ -1,12 +1,8 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Bundle
-import android.view.ActionMode
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
+import android.view.*
 import android.view.MenuItem.OnActionExpandListener
-import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.view.isVisible
@@ -24,6 +20,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -40,12 +37,16 @@ class ProductSelectionListFragment :
     OnQueryTextListener,
     OnActionExpandListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     val viewModel: ProductSelectionListViewModel by viewModels()
 
     private var tracker: SelectionTracker<Long>? = null
     private val productSelectionListAdapter: ProductListAdapter by lazy {
-        ProductListAdapter(loadMoreListener = this)
+        ProductListAdapter(
+            loadMoreListener = this,
+            currencyFormatter = currencyFormatter
+        )
     }
 
     private val skeletonView = SkeletonView()
@@ -217,7 +218,7 @@ class ProductSelectionListFragment :
     }
 
     private fun showProductList(productSelectionList: List<Product>) {
-        productSelectionListAdapter.setProductList(productSelectionList)
+        productSelectionListAdapter.submitList(productSelectionList)
     }
 
     private fun enableProductsRefresh(enable: Boolean) {
