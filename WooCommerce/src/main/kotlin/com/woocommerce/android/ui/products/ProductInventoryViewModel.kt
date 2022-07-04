@@ -24,7 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductInventoryViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val productRepository: ProductDetailRepository,
+    private val productRepository: ProductDetailRepository
 ) : ScopedViewModel(savedState) {
     private val navArgs: ProductInventoryFragmentArgs by savedState.navArgs()
     private val isProduct = navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_INVENTORY
