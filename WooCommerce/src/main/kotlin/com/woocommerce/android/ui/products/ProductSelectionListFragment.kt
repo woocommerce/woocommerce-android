@@ -200,7 +200,7 @@ class ProductSelectionListFragment :
                     is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                     is ExitWithResult<*> -> {
                         val key = viewModel.groupedProductListType.resultKey
-                        val productIds = (event.data as? List<Long>) ?: emptyList()
+                        val productIds = (event.data as? List<*>) ?: emptyList<Long>()
                         navigateBackWithResult(key, productIds)
                     }
                     else -> event.isHandled = false
