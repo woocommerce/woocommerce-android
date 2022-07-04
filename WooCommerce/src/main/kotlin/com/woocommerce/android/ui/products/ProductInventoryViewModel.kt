@@ -4,8 +4,9 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
 import com.woocommerce.android.RequestCodes
-import com.woocommerce.android.ui.products.ProductType.*
-import com.woocommerce.android.util.DynamicFeature
+import com.woocommerce.android.ui.products.ProductType.EXTERNAL
+import com.woocommerce.android.ui.products.ProductType.GROUPED
+import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -22,7 +23,6 @@ import javax.inject.Inject
 class ProductInventoryViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val productRepository: ProductDetailRepository,
-    private val dynamicFeature: DynamicFeature
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val SEARCH_TYPING_DELAY_MS = 500L
@@ -41,7 +41,7 @@ class ProductInventoryViewModel @Inject constructor(
             // Stock quantity field is only editable if the value is whole decimal (e.g: 10.0).
             // Otherwise it is set to read-only, because the API doesn't support updating amount with non-zero
             // fractional yet
-            isStockQuantityEditable = true //navArgs.inventoryData.stockQuantity?.isInteger()
+            isStockQuantityEditable = true  //navArgs.inventoryData.stockQuantity?.isInteger()
         )
     )
     private var viewState by viewStateData
@@ -120,15 +120,6 @@ class ProductInventoryViewModel @Inject constructor(
         } else {
             triggerEvent(Exit)
         }
-    }
-
-    fun onBarcodeScannerClicked() {
-//        dynamicFeature.installModule("barcode")
-        triggerEvent(ProductNavigationTarget.ViewBarcodeScanner)
-    }
-
-    fun onBarcodeScanned(barcode: String) {
-        onSkuChanged(barcode)
     }
 
     private fun clearSkuError() {

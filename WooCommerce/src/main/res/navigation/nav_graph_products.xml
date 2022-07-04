@@ -335,9 +335,6 @@
             android:name="productType"
             android:defaultValue="SIMPLE"
             app:argType="com.woocommerce.android.ui.products.ProductType" />
-        <action
-            android:id="@+id/action_productInventoryFragment_to_nav_graph_barcode_scanner"
-            app:destination="@id/nav_graph_barcode_module" />
     </fragment>
     <fragment
         android:id="@+id/editVariationAttributesFragment"
@@ -691,9 +688,4 @@
         app:popEnterAnim="@anim/activity_slide_in_from_left"
         app:popExitAnim="@anim/activity_slide_out_to_right" />
     <include app:graph="@navigation/nav_graph_image_gallery" />
-    <include-dynamic
-        android:id="@+id/nav_graph_barcode_module"
-        app:moduleName="barcode"
-        app:graphResName="nav_graph_barcode_scanner"
-        app:graphPackage="${applicationId}.barcode" />
 </navigation>

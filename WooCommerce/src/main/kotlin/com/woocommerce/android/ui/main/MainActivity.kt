@@ -21,15 +21,21 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
-import androidx.navigation.dynamicfeatures.fragment.DynamicNavHostFragment
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.appbar.AppBarLayout
-import com.woocommerce.android.*
+import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.NavGraphMainDirections
+import com.woocommerce.android.R
 import com.woocommerce.android.R.dimen
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.ActivityMainBinding
-import com.woocommerce.android.extensions.*
+import com.woocommerce.android.extensions.active
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
@@ -38,8 +44,19 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.login.LoginActivity
-import com.woocommerce.android.ui.main.BottomNavigationPosition.*
-import com.woocommerce.android.ui.main.MainActivityViewModel.*
+import com.woocommerce.android.ui.main.BottomNavigationPosition.ANALYTICS
+import com.woocommerce.android.ui.main.BottomNavigationPosition.MY_STORE
+import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
+import com.woocommerce.android.ui.main.BottomNavigationPosition.PRODUCTS
+import com.woocommerce.android.ui.main.BottomNavigationPosition.REVIEWS
+import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForNotification
+import com.woocommerce.android.ui.main.MainActivityViewModel.ShowFeatureAnnouncement
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderDetail
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewDetail
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
@@ -54,7 +71,6 @@ import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
-import java.util.*
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -178,8 +194,7 @@ class MainActivity :
 
         presenter.takeView(this)
 
-        val navHostFragment = supportFragmentManager
-            .findFragmentById(R.id.nav_host_fragment_main) as DynamicNavHostFragment
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
         navController = navHostFragment.navController
         navController.addOnDestinationChangedListener(this@MainActivity)
 

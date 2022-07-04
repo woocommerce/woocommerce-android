@@ -102,6 +102,4 @@ sealed class ProductNavigationTarget : Event() {
     data class RenameProductAttribute(
         val attributeName: String
     ) : ProductNavigationTarget()
-
-    object ViewBarcodeScanner : ProductNavigationTarget()
 }

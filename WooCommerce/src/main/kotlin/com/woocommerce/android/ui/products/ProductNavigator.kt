@@ -10,7 +10,43 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.products.GroupedProductListType.GROUPED
-import com.woocommerce.android.ui.products.ProductNavigationTarget.*
+import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttribute
+import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttributeTerms
+import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
+import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
+import com.woocommerce.android.ui.products.ProductNavigationTarget.RenameProductAttribute
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewMediaUploadErrors
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAdd
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAddonsDetails
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAttributes
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadDetails
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloads
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadsSettings
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductExternalLink
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageGallery
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductInventory
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductMenuOrder
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPurchaseNoteEditor
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductReviews
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSelectionList
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTags
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTypes
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
 import com.woocommerce.android.ui.products.categories.ProductCategoriesFragmentDirections
 import com.woocommerce.android.ui.products.downloads.ProductDownloadsFragmentDirections
 import com.woocommerce.android.ui.products.settings.ProductSettingsFragmentDirections
@@ -302,11 +338,6 @@ class ProductNavigator @Inject constructor() {
             }
 
             is ExitProduct -> fragment.findNavController().navigateUp()
-
-            is ViewBarcodeScanner -> {
-                val action = ProductInventoryFragmentDirections.actionProductInventoryFragmentToNavGraphBarcodeScanner()
-                fragment.findNavController().navigate(action)
-            }
         }
     }
 

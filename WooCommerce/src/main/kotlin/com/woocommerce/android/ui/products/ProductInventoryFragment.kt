@@ -1,9 +1,6 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
@@ -12,27 +9,27 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.databinding.FragmentProductInventoryBinding
-import com.woocommerce.android.extensions.*
+import com.woocommerce.android.extensions.collapse
+import com.woocommerce.android.extensions.expand
+import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.products.ProductItemSelectorDialog.ProductItemSelectorDialogListener
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProductInventoryFragment :
     BaseProductEditorFragment(R.layout.fragment_product_inventory),
     ProductItemSelectorDialogListener {
-    companion object {
-        const val KEY_SCANNED_BARCODE = "key-scanned-barcode"
-    }
     private val viewModel: ProductInventoryViewModel by viewModels()
 
     override val lastEvent: Event?
         get() = viewModel.event.value
-
-    @Inject lateinit var navigator: ProductNavigator
 
     private var productBackOrderSelectorDialog: ProductItemSelectorDialog? = null
     private var productStockStatusSelectorDialog: ProductItemSelectorDialog? = null
@@ -54,27 +51,8 @@ class ProductInventoryFragment :
 
         _binding = FragmentProductInventoryBinding.bind(view)
 
-        setHasOptionsMenu(true)
-
         setupObservers(viewModel)
         setupViews()
-        setupResultHandlers(viewModel)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        menu.clear()
-        inflater.inflate(R.menu.menu_product_inventory, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_product_inventory_scanner -> {
-                viewModel.onBarcodeScannerClicked()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
     }
 
     override fun onDestroyView() {
@@ -83,12 +61,6 @@ class ProductInventoryFragment :
     }
 
     override fun getFragmentTitle() = getString(R.string.product_inventory)
-
-    private fun setupResultHandlers(viewModel: ProductInventoryViewModel) {
-        handleResult<String>(KEY_SCANNED_BARCODE) {
-            viewModel.onBarcodeScanned(it)
-        }
-    }
 
     private fun setupObservers(viewModel: ProductInventoryViewModel) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
@@ -158,7 +130,6 @@ class ProductInventoryFragment :
                         is ExitWithResult<*> -> navigateBackWithResult(KEY_INVENTORY_DIALOG_RESULT, event.data)
                         is Exit -> findNavController().navigateUp()
                         is ShowDialog -> event.showDialog()
-                        is ProductNavigationTarget -> navigator.navigate(this, event)
                         else -> event.isHandled = false
                     }
                 }
