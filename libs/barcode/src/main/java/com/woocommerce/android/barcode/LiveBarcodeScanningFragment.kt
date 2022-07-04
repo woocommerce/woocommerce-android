@@ -50,6 +50,7 @@ class LiveBarcodeScanningFragment : Fragment(), OnClickListener {
     private var promptChipAnimator: AnimatorSet? = null
     private val workflowModel: WorkflowModel by activityViewModels()
     private var currentWorkflowState: WorkflowState? = null
+    private var onCodeScanned: (rawValue: String?) -> Unit = {}
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -85,11 +86,11 @@ class LiveBarcodeScanningFragment : Fragment(), OnClickListener {
     override fun onResume() {
         super.onResume()
 
-        workflowModel?.markCameraFrozen()
+        workflowModel.markCameraFrozen()
         settingsButton.isEnabled = true
         currentWorkflowState = WorkflowState.NOT_STARTED
-        cameraSource?.setFrameProcessor(BarcodeProcessor(graphicOverlay, workflowModel!!))
-        workflowModel?.setWorkflowState(WorkflowState.DETECTING)
+        cameraSource?.setFrameProcessor(BarcodeProcessor(graphicOverlay, workflowModel))
+        workflowModel.setWorkflowState(WorkflowState.DETECTING)
     }
 
     override fun onPause() {
@@ -124,8 +125,12 @@ class LiveBarcodeScanningFragment : Fragment(), OnClickListener {
         }
     }
 
+    fun setOnBarCodeScanner(onCodeScanned: (rawValue: String?) -> Unit) {
+        this.onCodeScanned = onCodeScanned
+    }
+
     private fun startCameraPreview() {
-        val workflowModel = this.workflowModel ?: return
+        val workflowModel = this.workflowModel
         val cameraSource = this.cameraSource ?: return
         if (!workflowModel.isCameraLive) {
             try {
@@ -140,7 +145,7 @@ class LiveBarcodeScanningFragment : Fragment(), OnClickListener {
     }
 
     private fun stopCameraPreview() {
-        val workflowModel = this.workflowModel ?: return
+        val workflowModel = this.workflowModel
         if (workflowModel.isCameraLive) {
             workflowModel.markCameraFrozen()
             flashButton.isSelected = false
@@ -192,9 +197,9 @@ class LiveBarcodeScanningFragment : Fragment(), OnClickListener {
         })
 
         workflowModel.detectedBarcode.observe(viewLifecycleOwner) { barcode ->
-//            if (barcode != null) {
-//                navigateBackWithResult(ProductInventoryFragment.KEY_SCANNED_BARCODE, barcode.rawValue)
-//            }
+            if (barcode != null) {
+                onCodeScanned(barcode.rawValue)
+            }
         }
     }
 }

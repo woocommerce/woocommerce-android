@@ -237,6 +237,17 @@ class LoginActivity :
         val fragment =
             supportFragmentManager.findFragmentByTag(LiveBarcodeScanningFragment.TAG) as? LiveBarcodeScanningFragment
                 ?: LiveBarcodeScanningFragment()
+        fragment.setOnBarCodeScanner { rawValue ->
+//        val intent = Intent(this, MagicLinkInterceptActivity::class.java)
+//            intent.action = Intent.ACTION_VIEW
+//            intent.data = Uri.parse(rawValue)
+//            startActivity(intent)
+
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(rawValue))
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or
+                Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+        }
         slideInFragment(fragment, true, LiveBarcodeScanningFragment.TAG)
     }
 
