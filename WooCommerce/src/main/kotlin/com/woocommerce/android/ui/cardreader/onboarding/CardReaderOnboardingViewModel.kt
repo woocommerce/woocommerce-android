@@ -216,7 +216,6 @@ class CardReaderOnboardingViewModel @Inject constructor(
         }
     }
 
-
     private fun updateUiWithWcPayAndStripeActivated() {
         launch {
             val userInfo = userEligibilityFetcher.fetchUserInfo()
@@ -351,7 +350,6 @@ class CardReaderOnboardingViewModel @Inject constructor(
             val icCheckmarkStripe = R.drawable.ic_menu_action_mode_check
             val confirmPaymentMethodButtonLabel = UiString
                 .UiStringRes(R.string.card_reader_onboarding_confirm_payment_method_button)
-
         }
 
         data class WcPayAndStripeInstalledState(
