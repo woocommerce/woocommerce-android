@@ -16,7 +16,6 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.*
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.parcelize.IgnoredOnParcel
@@ -93,10 +92,8 @@ import it.
 class ShippingLabelsStateMachine @Inject constructor() {
     // the flow can be observed by a ViewModel (similar to LiveData) and it can react by perform actions and update
     // the view states based on the triggered states and side-effects
-    @ExperimentalCoroutinesApi
     private val _transitions = MutableStateFlow(Transition(State.Idle, SideEffect.NoOp))
 
-    @ExperimentalCoroutinesApi
     val transitions: StateFlow<Transition> = _transitions
 
     // the actual state machine behavior is defined by a DSL using the following format:
