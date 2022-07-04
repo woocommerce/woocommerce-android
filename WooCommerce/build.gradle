@@ -5,7 +5,6 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'org.jetbrains.kotlin.kapt'
-    id 'org.jetbrains.kotlin.plugin.allopen'
     id 'org.jetbrains.kotlin.plugin.parcelize'
     id 'dagger.hilt.android.plugin'
     id 'se.bjurr.violations.violation-comments-to-github-gradle-plugin'
@@ -56,10 +55,6 @@ repositories {
     }
 }
 
-allOpen {
-    annotation("com.woocommerce.android.annotations.OpenClass")
-}
-
 android {
     compileSdkVersion 31
 
@@ -69,9 +64,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "9.2-rc-2"
+            versionName "9.5-rc-1"
         }
-        versionCode 301
+        versionCode 310
 
         minSdkVersion 21
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
@@ -183,7 +178,7 @@ dependencies {
         exclude group: "com.google.guava", module: "guava"
     }
 
-    implementation 'com.google.firebase:firebase-messaging-ktx:23.0.3'
+    implementation 'com.google.firebase:firebase-messaging-ktx:23.0.5'
     implementation 'com.google.android.gms:play-services-auth:20.2.0'
 
     // Support library
@@ -268,7 +263,7 @@ dependencies {
         // See https://github.com/wordpress-mobile/WordPress-FluxC-Android/issues/919
         exclude group: 'com.squareup.okhttp3'
     }
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.9.1'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android-core:2.9.1'
 
     // Dependencies for local unit tests
     testImplementation "junit:junit:$jUnitVersion"
@@ -349,6 +344,8 @@ dependencies {
     implementation "com.google.android.material:compose-theme-adapter:$composeThemeAdapterVersion"
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$composeVersion"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$composeVersion"
+
+    implementation "io.coil-kt:coil-compose:$coilVersion"
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {

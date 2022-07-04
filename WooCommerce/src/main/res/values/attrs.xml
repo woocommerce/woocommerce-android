@@ -176,7 +176,7 @@
     <declare-styleable name="ShippingLabelCreationStepView">
         <attr name="caption" format="string" />
         <attr name="details" format="string" />
-        <attr name="icon" format="reference" />
+        <attr name="icon" />
         <attr name="continue_button_visible" format="boolean" />
         <attr name="edit_button_visible" format="boolean" />
         <attr name="divider_visible" format="boolean" />
@@ -184,9 +184,13 @@
         <attr name="android:enabled" />
     </declare-styleable>
 
+    <attr name="title" format="reference|string" />
+    <attr name="message" format="reference|string" />
+    <attr name="icon" format="reference" />
+
     <declare-styleable name="WCWarningBanner">
-        <attr name="title" format="string" />
-        <attr name="message" format="string" />
+        <attr name="title" />
+        <attr name="message" />
     </declare-styleable>
 
     <declare-styleable name="CircleProgressOverlayView">
@@ -201,6 +205,29 @@
         <attr name="header" format="string" />
         <attr name="keepAddButtons" format="boolean" />
         <attr name="hasEditButton" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="ScalableImageView">
+        <attr format="enum" name="scaleType">
+            <enum name="center" value="0" />
+            <enum name="centerCrop" value="1" />
+            <enum name="centerInside" value="2" />
+            <enum name="fitCenter" value="3" />
+            <enum name="fitEnd" value="4" />
+            <enum name="fitStart" value="5" />
+            <enum name="fitXY" value="6" />
+            <enum name="fitTop" value="7" />
+            <enum name="fitBottom" value="8" />
+            <enum name="matrix" value="9" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="ExpandableMessageView">
+        <attr name="title" />
+        <attr name="message" />
+        <attr name="icon" />
+        <attr name="iconTint" />
+        <attr name="isExpanded" format="boolean" />
     </declare-styleable>
 
 </resources>

@@ -1,0 +1,2 @@
+9.4:
+Deze release heeft misschien geen verrassende nieuwe functies, maar we hebben er wel ons uiterste best op gedaan! In productgegevens zorgden sommige extensies van derden er voor dat de app crashte tijdens het bekijken van variabele producten. Deze crash hebben we verholpen en er zijn tal van kleine verbeteringen doorgevoerd om je ervaring soepeler te laten verlopen.

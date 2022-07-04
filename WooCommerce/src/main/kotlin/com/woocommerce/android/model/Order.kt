@@ -47,6 +47,7 @@ data class Order(
     val chargeId: String?,
     val shippingPhone: String,
     val paymentUrl: String,
+    val isEditable: Boolean
 ) : Parcelable {
     @IgnoredOnParcel
     val isOrderPaid = datePaid != null
@@ -240,6 +241,8 @@ data class Order(
 
     sealed class Status(val value: String) : Parcelable {
         companion object {
+            const val AUTO_DRAFT = "auto-draft"
+
             fun fromValue(value: String): Status {
                 return fromDataModel(CoreOrderStatus.fromValue(value)) ?: Custom(value)
             }
@@ -321,7 +324,8 @@ data class Order(
                 feesLines = emptyList(),
                 taxLines = emptyList(),
                 shippingPhone = "",
-                paymentUrl = ""
+                paymentUrl = "",
+                isEditable = true
             )
         }
 

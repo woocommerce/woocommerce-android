@@ -18,6 +18,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.REFUND_CREATE
 import com.woocommerce.android.analytics.AnalyticsEvent.REFUND_CREATE_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.REFUND_CREATE_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.calculateTotals
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.isCashPayment
@@ -98,6 +99,7 @@ class IssueRefundViewModel @Inject constructor(
     private val paymentChargeRepository: PaymentChargeRepository,
     private val orderMapper: OrderMapper,
     private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DEFAULT_DECIMAL_PRECISION = 2
@@ -308,7 +310,7 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     fun onNextButtonTappedFromItems() {
-        AnalyticsTracker.track(
+        analyticsTrackerWrapper.track(
             CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
             mapOf(
                 AnalyticsTracker.KEY_REFUND_TYPE to ITEMS.name,
@@ -320,7 +322,7 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     fun onNextButtonTappedFromAmounts() {
-        AnalyticsTracker.track(
+        analyticsTrackerWrapper.track(
             CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
             mapOf(
                 AnalyticsTracker.KEY_REFUND_TYPE to AMOUNT.name,
@@ -366,16 +368,16 @@ class IssueRefundViewModel @Inject constructor(
                     if (isInteracRefund() && inPersonPaymentsCanadaFeatureFlag.isEnabled()) {
                         triggerEvent(IssueRefundEvent.NavigateToCardReaderScreen(order.id, commonState.refundTotal))
                     } else {
+                        triggerEvent(
+                            ShowSnackbar(
+                                R.string.order_refunds_amount_refund_progress_message,
+                                arrayOf(formatCurrency(commonState.refundTotal))
+                            )
+                        )
                         refund()
                     }
-                    triggerEvent(
-                        ShowSnackbar(
-                            R.string.order_refunds_amount_refund_progress_message,
-                            arrayOf(formatCurrency(commonState.refundTotal))
-                        )
-                    )
 
-                    AnalyticsTracker.track(
+                    analyticsTrackerWrapper.track(
                         REFUND_CREATE,
                         mapOf(
                             AnalyticsTracker.KEY_ORDER_ID to order.id,
@@ -473,7 +475,7 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     private fun trackRefundError(result: WooResult<WCRefundModel>) {
-        AnalyticsTracker.track(
+        analyticsTrackerWrapper.track(
             REFUND_CREATE_FAILED,
             mapOf(
                 AnalyticsTracker.KEY_ORDER_ID to order.id,
@@ -497,7 +499,7 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     private fun trackRefundSuccess(result: WooResult<WCRefundModel>) {
-        AnalyticsTracker.track(
+        analyticsTrackerWrapper.track(
             REFUND_CREATE_SUCCESS,
             mapOf(
                 AnalyticsTracker.KEY_ORDER_ID to order.id,
@@ -518,10 +520,10 @@ class IssueRefundViewModel @Inject constructor(
         val note = OrderNote(note = reason, isCustomerNote = false)
         orderDetailRepository.addOrderNote(order.id, note).fold(
             onSuccess = {
-                AnalyticsTracker.track(ORDER_NOTE_ADD_SUCCESS)
+                analyticsTrackerWrapper.track(ORDER_NOTE_ADD_SUCCESS)
             },
             onFailure = {
-                AnalyticsTracker.track(
+                analyticsTrackerWrapper.track(
                     ORDER_NOTE_ADD_FAILED,
                     prepareTracksEventsDetails(it as WooException)
                 )
@@ -530,7 +532,7 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     fun onRefundIssued(reason: String) {
-        AnalyticsTracker.track(
+        analyticsTrackerWrapper.track(
             CREATE_ORDER_REFUND_SUMMARY_REFUND_BUTTON_TAPPED,
             mapOf(
                 AnalyticsTracker.KEY_ORDER_ID to order.id
@@ -558,7 +560,7 @@ class IssueRefundViewModel @Inject constructor(
             triggerEvent(ShowNumberPicker(it))
         }
 
-        AnalyticsTracker.track(
+        analyticsTrackerWrapper.track(
             CREATE_ORDER_REFUND_ITEM_QUANTITY_DIALOG_OPENED,
             mapOf(AnalyticsTracker.KEY_ORDER_ID to order.id)
         )
@@ -582,7 +584,7 @@ class IssueRefundViewModel @Inject constructor(
             )
         )
 
-        AnalyticsTracker.track(
+        analyticsTrackerWrapper.track(
             CREATE_ORDER_REFUND_PRODUCT_AMOUNT_DIALOG_OPENED,
             mapOf(AnalyticsTracker.KEY_ORDER_ID to order.id)
         )
@@ -647,7 +649,7 @@ class IssueRefundViewModel @Inject constructor(
             }
         }
 
-        AnalyticsTracker.track(
+        analyticsTrackerWrapper.track(
             CREATE_ORDER_REFUND_SELECT_ALL_ITEMS_BUTTON_TAPPED,
             mapOf(AnalyticsTracker.KEY_ORDER_ID to order.id)
         )
@@ -663,7 +665,7 @@ class IssueRefundViewModel @Inject constructor(
         commonState = commonState.copy(refundType = type)
         updateRefundTotal(refundAmount)
 
-        AnalyticsTracker.track(
+        analyticsTrackerWrapper.track(
             CREATE_ORDER_REFUND_TAB_CHANGED,
             mapOf(
                 AnalyticsTracker.KEY_ORDER_ID to order.id,

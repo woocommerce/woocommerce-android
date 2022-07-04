@@ -11,7 +11,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TOTAL_DURATION
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
@@ -31,9 +30,6 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
@@ -54,7 +50,6 @@ import javax.inject.Inject
 private const val EMPTY_VIEW_THROTTLE = 250L
 typealias PagedOrdersList = PagedList<OrderListItemUIType>
 
-@OpenClassOnDebug
 @Suppress("LeakingThis")
 @HiltViewModel
 class OrderListViewModel @Inject constructor(
@@ -139,12 +134,6 @@ class OrderListViewModel @Inject constructor(
                 )
             }
         }
-
-        // Observe any order list changes
-        orderStore.observeOrdersForSite(selectedSite.get())
-            .distinctUntilChanged()
-            .onEach { loadOrders() }
-            .launchIn(viewModelScope)
     }
 
     fun loadOrders() {
@@ -162,9 +151,26 @@ class OrderListViewModel @Inject constructor(
      * processing list will always use the same [processingPagedListWrapper].
      */
     fun submitSearchOrFilter(searchQuery: String) {
-        val listDescriptor = WCOrderListDescriptor(selectedSite.get(), searchQuery = searchQuery)
+        val listDescriptor = WCOrderListDescriptor(
+            selectedSite.get(),
+            searchQuery = sanitizeSearchQuery(searchQuery)
+        )
         val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
         activatePagedListWrapper(pagedListWrapper, isFirstInit = true)
+    }
+
+    /**
+     * Removes the `#` from the start of the search keyword, if present.
+     *
+     *  This allows searching for an order with `#123` and getting the results for order `123`.
+     *  See https://github.com/woocommerce/woocommerce-android/issues/2621
+     *
+     */
+    private fun sanitizeSearchQuery(searchQuery: String): String {
+        if (searchQuery.startsWith("#")) {
+            return searchQuery.drop(1)
+        }
+        return searchQuery
     }
 
     /**

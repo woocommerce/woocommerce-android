@@ -10,7 +10,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderDetailOrderStatusBinding
 import com.woocommerce.android.extensions.getMediumDate
 import com.woocommerce.android.extensions.getTimeString
-import com.woocommerce.android.extensions.isToday
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.ui.orders.OrderStatusTag
@@ -34,16 +33,7 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
     }
 
     fun updateOrder(order: Order) {
-        val dateStr = getFormattedDate(order.dateCreated)
-        binding.orderStatusSubtitle.text =
-            when (mode) {
-                Mode.OrderEdit -> context.getString(
-                    R.string.orderdetail_orderstatus_date_and_ordernum,
-                    dateStr,
-                    order.number
-                )
-                Mode.OrderCreation -> dateStr
-            }
+        binding.orderStatusSubtitle.text = getFormattedDate(order.dateCreated)
 
         when (mode) {
             Mode.OrderEdit -> {
@@ -62,11 +52,7 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
                 date.getMediumDate(context)
             }
             Mode.OrderEdit -> {
-                when (date.isToday()) {
-                    true -> date.getTimeString(context)
-                    false -> date.getMediumDate(context)
-                    null -> ""
-                }
+                "${date.getMediumDate(context)}, ${date.getTimeString(context)}"
             }
         }
     }

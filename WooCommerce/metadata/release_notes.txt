@@ -1,3 +1,4 @@
-Much of the information on an order from a customer is important! We’ve heard you’d like to copy and paste some of those details outside the app. Now you can long-press on most fields to copy them to the clipboard. Paste away in a text message, e-mail, or note!
+We keep adding new functionality to our experimental Coupon Management feature! This release includes editing and deleting coupons along with several improvements on viewing. Turn this feature on for early access in the More tab, Settings, Beta Features.
 
-We’ve also addressed several bugs around in-person payments and order creation. Thank you for your feedback!
+We also fixed a bug that was making it hard for some of you to search orders. Thanks to everyone who reported this! Your feedback is vital to us!
+

@@ -43,16 +43,6 @@ class AppPrefsTest {
     }
 
     @Test
-    fun whenFCMTokenIsRemovedThenGetReturnsEmptyString() {
-        val token = "fcm_token"
-        AppPrefs.setFCMToken(token)
-
-        AppPrefs.removeFCMToken()
-
-        assertThat(AppPrefs.getFCMToken()).isEmpty()
-    }
-
-    @Test
     fun whenCardReaderOnboardingCompletedWithStripeExtThenCorrectOnboardingStatusIsStored() {
         AppPrefs.setCardReaderOnboardingData(
             localSiteId = 0,
@@ -491,5 +481,41 @@ class AppPrefsTest {
                 PluginType.STRIPE_EXTENSION_GATEWAY,
             )
         ).isNull()
+    }
+
+    @Test
+    fun givenIsPluginExplicitlySelectedIsFalseThenReturnFalse() {
+        AppPrefs.setIsCardReaderPluginExplicitlySelectedFlag(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            isPluginExplicitlySelected = false
+        )
+
+        assertThat(
+            AppPrefs.isCardReaderPluginExplicitlySelected(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L,
+            )
+        ).isFalse
+    }
+
+    @Test
+    fun givenIsPluginExplicitlySelectedIsTrueThenReturnTrue() {
+        AppPrefs.setIsCardReaderPluginExplicitlySelectedFlag(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            isPluginExplicitlySelected = true
+        )
+
+        assertThat(
+            AppPrefs.isCardReaderPluginExplicitlySelected(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L,
+            )
+        ).isTrue
     }
 }

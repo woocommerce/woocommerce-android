@@ -7,16 +7,20 @@ import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.CouponPerformanceReport
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
+import org.wordpress.android.fluxc.model.coupon.UpdateCouponRequest
 import org.wordpress.android.fluxc.store.CouponStore
 import javax.inject.Inject
 
 class CouponRepository @Inject constructor(
     private val store: CouponStore,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val dateUtils: DateUtils
 ) {
     suspend fun fetchCoupons(
         page: Int,
@@ -78,6 +82,7 @@ class CouponRepository @Inject constructor(
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun observeCoupons(): Flow<List<Coupon>> = store.observeCoupons(selectedSite.get()).map {
         it.map { couponDataModel -> couponDataModel.toAppModel() }
     }
@@ -108,6 +113,40 @@ class CouponRepository @Inject constructor(
             site = selectedSite.get(),
             couponId = couponId,
             trash = false
+        )
+
+        return when {
+            result.isError -> Result.failure(WooException(result.error))
+            else -> Result.success(Unit)
+        }
+    }
+
+    suspend fun updateCoupon(coupon: Coupon): Result<Unit> {
+        val request = UpdateCouponRequest(
+            code = coupon.code,
+            description = coupon.description,
+            amount = coupon.amount?.toPlainString(),
+            discountType = coupon.type?.value,
+            isShippingFree = coupon.isShippingFree,
+            expiryDate = coupon.dateExpires?.time?.let { dateUtils.toIso8601Format(it) } ?: "",
+            productIds = coupon.productIds,
+            productCategoryIds = coupon.categoryIds,
+            usageLimit = coupon.restrictions.usageLimit,
+            usageLimitPerUser = coupon.restrictions.usageLimitPerUser,
+            restrictedEmails = coupon.restrictions.restrictedEmails,
+            areSaleItemsExcluded = coupon.restrictions.areSaleItemsExcluded,
+            isForIndividualUse = coupon.restrictions.isForIndividualUse,
+            maximumAmount = coupon.restrictions.maximumAmount?.toPlainString(),
+            minimumAmount = coupon.restrictions.minimumAmount?.toPlainString(),
+            limitUsageToXItems = coupon.restrictions.limitUsageToXItems,
+            excludedProductIds = coupon.restrictions.excludedProductIds,
+            excludedProductCategoryIds = coupon.restrictions.excludedCategoryIds
+        )
+
+        val result = store.updateCoupon(
+            site = selectedSite.get(),
+            couponId = coupon.id,
+            updateCouponRequest = request
         )
 
         return when {

@@ -24,7 +24,7 @@ class MoreMenuRepository @Inject constructor(
 
     suspend fun isInboxEnabled(): Boolean =
         withContext(Dispatchers.IO) {
-            if (!FeatureFlag.MORE_MENU_INBOX.isEnabled()) return@withContext false
+            if (!selectedSite.exists() || !FeatureFlag.MORE_MENU_INBOX.isEnabled()) return@withContext false
 
             val currentWooCoreVersion =
                 wooCommerceStore.getSitePlugin(selectedSite.get(), WOO_CORE)?.version ?: "0.0"

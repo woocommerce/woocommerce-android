@@ -8,6 +8,7 @@ import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.ShippingLine
+import com.woocommerce.android.model.Order.Status.Companion.AUTO_DRAFT
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -37,14 +38,8 @@ class OrderCreationRepository @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) {
     suspend fun placeOrder(order: Order): Result<Order> {
-        val status = withContext(dispatchers.io) {
-            // Currently this query will run on the current thread, so forcing the usage of IO dispatcher
-            orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), order.status.value)
-                ?: WCOrderStatusModel(statusKey = order.status.value)
-        }
-
         val request = UpdateOrderRequest(
-            status = status,
+            status = order.status.toDataModel(),
             lineItems = order.items.map { item ->
                 LineItem(
                     id = item.itemId.takeIf { it != 0L },
@@ -88,7 +83,7 @@ class OrderCreationRepository @Inject constructor(
         return when {
             result.isError -> {
                 WooLog.e(WooLog.T.ORDERS, "${result.error.type.name}: ${result.error.message}")
-                AnalyticsTracker.track(
+                analyticsTrackerWrapper.track(
                     AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_FAILED,
                     mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_AMOUNT)
                 )
@@ -100,6 +95,7 @@ class OrderCreationRepository @Inject constructor(
 
     suspend fun createOrUpdateDraft(order: Order): Result<Order> {
         val request = UpdateOrderRequest(
+            status = order.status.toDataModel(),
             lineItems = order.items.map { item ->
                 LineItem(
                     id = item.itemId.takeIf { it != 0L },
@@ -173,6 +169,15 @@ class OrderCreationRepository @Inject constructor(
         return version.semverCompareTo(AUTO_DRAFT_SUPPORTED_VERSION) >= 0
     }
 
+    private suspend fun Order.Status.toDataModel(): WCOrderStatusModel {
+        val key = this.value
+        return withContext(dispatchers.io) {
+            // Currently this query will run on the current thread, so forcing the usage of IO dispatcher
+            orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), key)
+                ?: WCOrderStatusModel(statusKey = key).apply { label = key }
+        }
+    }
+
     private fun ShippingLine.toDataModel() = WCShippingLine(
         id = itemId.takeIf { it != 0L },
         methodId = methodId,
@@ -188,6 +193,5 @@ class OrderCreationRepository @Inject constructor(
 
     companion object {
         const val AUTO_DRAFT_SUPPORTED_VERSION = "6.3.0"
-        const val AUTO_DRAFT = "auto-draft"
     }
 }

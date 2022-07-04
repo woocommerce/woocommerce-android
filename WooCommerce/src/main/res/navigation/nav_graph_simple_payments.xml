@@ -10,10 +10,10 @@
         <action
             android:id="@+id/action_simplePaymentDialog_to_simplePaymentFragment"
             app:destination="@+id/simplePaymentsFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:enterAnim="@anim/default_enter_anim"
+            app:exitAnim="@anim/default_exit_anim"
+            app:popEnterAnim="@anim/default_pop_enter_anim"
+            app:popExitAnim="@anim/default_pop_exit_anim" />
     </dialog>
     <fragment
         android:id="@+id/simplePaymentsFragment"
@@ -26,17 +26,17 @@
         <action
             android:id="@+id/action_simplePaymentsFragment_to_simplePaymentsCustomerNoteFragment"
             app:destination="@id/simplePaymentsCustomerNoteFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:enterAnim="@anim/default_enter_anim"
+            app:exitAnim="@anim/default_exit_anim"
+            app:popEnterAnim="@anim/default_pop_enter_anim"
+            app:popExitAnim="@anim/default_pop_exit_anim" />
         <action
             android:id="@+id/action_simplePaymentsFragment_to_takePaymentFragment"
             app:destination="@id/takePaymentFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:enterAnim="@anim/default_enter_anim"
+            app:exitAnim="@anim/default_exit_anim"
+            app:popEnterAnim="@anim/default_pop_enter_anim"
+            app:popExitAnim="@anim/default_pop_exit_anim" />
     </fragment>
     <fragment
         android:id="@+id/simplePaymentsCustomerNoteFragment"
@@ -63,6 +63,10 @@
                 app:argType="com.woocommerce.android.ui.cardreader.onboarding.CardReaderFlowParam"
                 app:nullable="false" />
         </action>
+        <action
+            android:id="@+id/action_takePaymentFragment_to_orderList"
+            app:popUpTo="@+id/orders"
+            app:popUpToInclusive="false" />
     </fragment>
     <include app:graph="@navigation/nav_graph_card_reader_flow" />
 </navigation>

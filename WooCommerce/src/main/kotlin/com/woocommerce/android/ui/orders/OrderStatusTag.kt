@@ -27,7 +27,7 @@ class OrderStatusTag(private val orderStatus: OrderStatus) : ITag(orderStatus.st
                 config.bgColor = ContextCompat.getColor(context, R.color.tag_bg_failed)
             }
             CoreOrderStatus.COMPLETED.value -> {
-                config.bgColor = ContextCompat.getColor(context, R.color.tag_bg_other)
+                config.bgColor = ContextCompat.getColor(context, R.color.tag_bg_completed)
             }
             CoreOrderStatus.ON_HOLD.value -> {
                 config.bgColor = ContextCompat.getColor(context, R.color.tag_bg_on_hold)

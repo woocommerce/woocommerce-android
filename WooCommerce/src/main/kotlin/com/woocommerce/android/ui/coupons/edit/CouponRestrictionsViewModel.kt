@@ -4,6 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.Coupon.CouponRestrictions
+import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.EditExcludedProductCategories
+import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.EditExcludedProducts
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -45,31 +48,31 @@ class CouponRestrictionsViewModel @Inject constructor(
         triggerEvent(event)
     }
 
-    fun onMinimumAmountChanged(value: BigDecimal) {
+    fun onMinimumAmountChanged(value: BigDecimal?) {
         restrictionsDraft.update {
             it.copy(minimumAmount = value)
         }
     }
 
-    fun onMaximumAmountChanged(value: BigDecimal) {
+    fun onMaximumAmountChanged(value: BigDecimal?) {
         restrictionsDraft.update {
             it.copy(maximumAmount = value)
         }
     }
 
-    fun onUsageLimitPerCouponChanged(value: Int) {
+    fun onUsageLimitPerCouponChanged(value: Int?) {
         restrictionsDraft.update {
             it.copy(usageLimit = value)
         }
     }
 
-    fun onLimitUsageToXItemsChanged(value: Int) {
+    fun onLimitUsageToXItemsChanged(value: Int?) {
         restrictionsDraft.update {
             it.copy(limitUsageToXItems = value)
         }
     }
 
-    fun onUsageLimitPerUserChanged(value: Int) {
+    fun onUsageLimitPerUserChanged(value: Int?) {
         restrictionsDraft.update {
             it.copy(usageLimitPerUser = value)
         }
@@ -87,10 +90,47 @@ class CouponRestrictionsViewModel @Inject constructor(
         }
     }
 
+    fun onAllowedEmailsButtonClicked() {
+        triggerEvent(OpenAllowedEmailsEditor(restrictionsDraft.value.restrictedEmails.joinToString(", ")))
+    }
+
+    fun onAllowedEmailsUpdated(allowedEmailsInput: String) {
+        val emails = if (allowedEmailsInput.isEmpty()) {
+            emptyList()
+        } else {
+            allowedEmailsInput.split(",").map { it.trim() }
+        }
+        restrictionsDraft.update {
+            it.copy(restrictedEmails = emails)
+        }
+    }
+
+    fun onExcludeProductsButtonClick() {
+        triggerEvent(EditExcludedProducts(restrictionsDraft.value.excludedProductIds))
+    }
+
+    fun onExcludeCategoriesButtonClick() {
+        triggerEvent(EditExcludedProductCategories(restrictionsDraft.value.excludedCategoryIds))
+    }
+
+    fun onExcludedProductChanged(excludedProductIds: Set<Long>) {
+        restrictionsDraft.update {
+            it.copy(excludedProductIds = excludedProductIds.toList())
+        }
+    }
+
+    fun onExcludedProductCategoriesChanged(excludedCategoryIds: Set<Long>) {
+        restrictionsDraft.update {
+            it.copy(excludedCategoryIds = excludedCategoryIds.toList())
+        }
+    }
+
     data class ViewState(
         val restrictions: CouponRestrictions,
         val currencyCode: String,
         val hasChanges: Boolean,
         val showLimitUsageToXItems: Boolean
     )
+
+    data class OpenAllowedEmailsEditor(val allowedEmails: String) : MultiLiveEvent.Event()
 }

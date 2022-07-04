@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CouponUtils
@@ -14,7 +14,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -29,14 +28,15 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.Date
 import javax.inject.Inject
 
-@OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+@OptIn(FlowPreview::class)
 @HiltViewModel
 class CouponListViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val wooCommerceStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
     private val couponListHandler: CouponListHandler,
-    private val couponUtils: CouponUtils
+    private val couponUtils: CouponUtils,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val LOADING_STATE_DELAY = 100L
@@ -105,7 +105,7 @@ class CouponListViewModel @Inject constructor(
 
     fun onSearchStateChanged(open: Boolean) {
         searchQuery.value = if (open) {
-            AnalyticsTracker.track(AnalyticsEvent.COUPONS_LIST_SEARCH_TAPPED)
+            analyticsTrackerWrapper.track(AnalyticsEvent.COUPONS_LIST_SEARCH_TAPPED)
             searchQuery.value.orEmpty()
         } else {
             null

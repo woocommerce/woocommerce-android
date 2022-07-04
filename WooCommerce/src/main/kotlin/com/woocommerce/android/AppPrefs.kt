@@ -9,6 +9,7 @@ import android.content.SharedPreferences.Editor
 import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_IS_PLUGIN_EXPLICITLY_SELECTED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_ONBOARDING_COMPLETED_STATUS_V2
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_PREFERRED_PLUGIN
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_PREFERRED_PLUGIN_VERSION
@@ -71,6 +72,7 @@ object AppPrefs {
         USER_EMAIL,
         RECEIPT_PREFIX,
         CARD_READER_ONBOARDING_COMPLETED_STATUS_V2,
+        CARD_READER_IS_PLUGIN_EXPLICITLY_SELECTED,
         CARD_READER_PREFERRED_PLUGIN,
         CARD_READER_PREFERRED_PLUGIN_VERSION,
         CARD_READER_STATEMENT_DESCRIPTOR,
@@ -86,7 +88,6 @@ object AppPrefs {
     private enum class DeletableSitePrefKey : PrefKey {
         TRACKING_EXTENSION_AVAILABLE,
         JETPACK_BENEFITS_BANNER_DISMISSAL_DATE,
-        WC_PREF_NOTIFICATIONS_TOKEN,
     }
 
     /**
@@ -132,6 +133,11 @@ object AppPrefs {
 
         // card reader welcome dialog was shown
         CARD_READER_WELCOME_SHOWN,
+
+        WC_PREF_NOTIFICATIONS_TOKEN,
+
+        // Hide banner in order detail to install WC Shipping plugin
+        WC_SHIPPING_BANNER_DISMISSED,
     }
 
     fun init(context: Context) {
@@ -204,14 +210,10 @@ object AppPrefs {
         setDeletableInt(UndeletablePrefKey.CANCELLED_APP_VERSION_CODE, versionCode)
     }
 
-    fun getFCMToken() = getString(DeletableSitePrefKey.WC_PREF_NOTIFICATIONS_TOKEN)
+    fun getFCMToken() = getString(UndeletablePrefKey.WC_PREF_NOTIFICATIONS_TOKEN)
 
     fun setFCMToken(token: String) {
-        setString(DeletableSitePrefKey.WC_PREF_NOTIFICATIONS_TOKEN, token)
-    }
-
-    fun removeFCMToken() {
-        remove(DeletableSitePrefKey.WC_PREF_NOTIFICATIONS_TOKEN)
+        setString(UndeletablePrefKey.WC_PREF_NOTIFICATIONS_TOKEN, token)
     }
 
     fun setSupportEmail(email: String?) {
@@ -475,6 +477,19 @@ object AppPrefs {
 
     fun isCardReaderWelcomeDialogShown() = getBoolean(UndeletablePrefKey.CARD_READER_WELCOME_SHOWN, false)
 
+    fun isCardReaderPluginExplicitlySelected(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = getBoolean(
+        getIsPluginExplicitlySelectedKey(
+            localSiteId,
+            remoteSiteId,
+            selfHostedSiteId
+        ),
+        false
+    )
+
     fun getCardReaderPreferredPlugin(
         localSiteId: Int,
         remoteSiteId: Long,
@@ -534,11 +549,29 @@ object AppPrefs {
         }
     }
 
+    fun setIsCardReaderPluginExplicitlySelectedFlag(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long,
+        isPluginExplicitlySelected: Boolean
+    ) {
+        setBoolean(
+            getIsPluginExplicitlySelectedKey(localSiteId, remoteSiteId, selfHostedSiteId),
+            isPluginExplicitlySelected
+        )
+    }
+
     private fun getCardReaderOnboardingStatusKey(
         localSiteId: Int,
         remoteSiteId: Long,
         selfHostedSiteId: Long
     ) = PrefKeyString("$CARD_READER_ONBOARDING_COMPLETED_STATUS_V2:$localSiteId:$remoteSiteId:$selfHostedSiteId")
+
+    private fun getIsPluginExplicitlySelectedKey(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = PrefKeyString("$CARD_READER_IS_PLUGIN_EXPLICITLY_SELECTED:$localSiteId:$remoteSiteId:$selfHostedSiteId")
 
     private fun getCardReaderPreferredPluginKey(
         localSiteId: Int,
@@ -630,6 +663,19 @@ object AppPrefs {
             endDateMillis
         )
     }
+
+    fun setWcShippingBannerDismissed(dismissed: Boolean, currentSiteId: Int) {
+        setBoolean(
+            PrefKeyString("${UndeletablePrefKey.WC_SHIPPING_BANNER_DISMISSED}:$currentSiteId"),
+            dismissed
+        )
+    }
+
+    fun getWcShippingBannerDismissed(currentSiteId: Int) =
+        getBoolean(
+            PrefKeyString("${UndeletablePrefKey.WC_SHIPPING_BANNER_DISMISSED}:$currentSiteId"),
+            false
+        )
 
     /**
      * Remove all user and site-related preferences.

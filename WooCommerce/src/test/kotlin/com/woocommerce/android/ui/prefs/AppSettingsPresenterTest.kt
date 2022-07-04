@@ -1,12 +1,17 @@
 package com.woocommerce.android.ui.prefs
 
 import com.woocommerce.android.ui.cardreader.ClearCardReaderDataAction
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.KArgumentCaptor
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.action.NotificationAction
@@ -68,12 +73,10 @@ class AppSettingsPresenterTest : BaseUnitTest() {
 
     @Test
     fun `cleanPaymentsData with initialized manager should disconnect reader`() {
-        if (FeatureFlag.CARD_READER.isEnabled()) {
-            testBlocking {
-                appSettingsPresenter.logout()
+        testBlocking {
+            appSettingsPresenter.logout()
 
-                verify(clearCardReaderDataAction).invoke()
-            }
+            verify(clearCardReaderDataAction).invoke()
         }
     }
 }

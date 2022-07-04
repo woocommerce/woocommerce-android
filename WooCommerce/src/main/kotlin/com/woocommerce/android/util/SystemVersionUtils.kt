@@ -10,6 +10,8 @@ object SystemVersionUtils {
 
     fun isAtLeastQ() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
 
+    fun isAtLeastP() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
+
     fun isAtLeastO() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
 
     fun isAtLeastN() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N

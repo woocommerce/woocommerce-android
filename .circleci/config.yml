@@ -21,95 +21,8 @@ orbs:
   bundle-install: toshimaru/bundle-install@0.3.1
   slack: circleci/slack@3.4.2
 
-parameters:
-  release_build:
-     type: boolean
-     default: false
-
 version: 2.1
 jobs:
-  Lint:
-    executor:
-      name: android/default
-      api-version: "28"
-    steps:
-      - checkout
-      - android/restore-gradle-cache:
-          cache-prefix: lint-cache-v1
-      - copy-gradle-properties
-      - run:
-          name: Checkstyle & Detekt
-          command: ./gradlew --stacktrace checkstyle detektAll
-      - run:
-          name: Lint
-          command: ./gradlew --stacktrace lintVanillaRelease
-      - run:
-          name: Violations
-          when: on_fail
-          command: |
-            if [ -n "$GITHUB_API_TOKEN" ]; then
-              ./gradlew violationCommentsToGitHub -DGITHUB_PULLREQUESTID=${CIRCLE_PULL_REQUEST##*/} -DGITHUB_OAUTH2TOKEN=$GITHUB_API_TOKEN
-            else
-              echo "Not posting lint errors to Github because \$GITHUB_API_TOKEN is not found"
-            fi
-      - android/save-gradle-cache:
-          cache-prefix: lint-cache-v1
-      - store_artifacts:
-          path: WooCommerce/build/reports
-          destination: reports
-  Dependency Tree Diff:
-    executor:
-      name: android/default
-      api-version: "28"
-    steps:
-      - checkout
-      - copy-gradle-properties
-      - run:
-          name: Build dependency diff report
-          command: |
-            if [ -n "$CIRCLE_PULL_REQUEST" ]; then
-              ./tools/dependency-tree-diff/dependency-tree-diff.sh
-            fi
-  Test:
-    executor:
-      name: android/default
-      api-version: "28"
-    steps:
-      - checkout
-      - android/restore-gradle-cache:
-          cache-prefix: tests-cache-v1
-      - copy-gradle-properties
-      - run:
-          name: Unit tests WooCommerce
-          command: ./gradlew --stacktrace testVanillaRelease
-      - run:
-          name: Unit tests CardReaderModule
-          command: ./gradlew --stacktrace lib:cardreader:testRelease
-      - android/save-gradle-cache:
-          cache-prefix: tests-cache-v1
-      - android/save-test-results
-  Ensure Screenshots Tests Build:
-    executor:
-      name: android/default
-      api-version: "28"
-    steps:
-      - checkout
-      - android/restore-gradle-cache:
-          cache-prefix: tests-cache-v1
-      - copy-gradle-properties
-      - run:
-          # The instrumentation tests are not currently used and do tend to get
-          # out of date when the UI changes, failing to build.
-          #
-          # This is a problem for the screenshots automation, which depends on
-          # those tests.
-          #
-          # This check lets developers know when they accidentally broke the
-          # instrumentation tests build, giving them a chance to either fix the
-          # build or remove the broken tests if they are now obsolete.
-          name: Check instrumentation tests build
-          command: ./gradlew assembleVanillaDebugAndroidTest
-
   Connected Tests:
     parameters:
       post-to-slack:
@@ -156,85 +69,10 @@ jobs:
                 failure_message: 'WooCommerce Android UI Tests failed.'
                 success_message: 'WooCommerce Android UI Tests passed.'
 
-  Installable Build:
-    executor:
-      name: android/default
-      api-version: "28"
-    steps:
-      - checkout
-      - bundle-install/bundle-install:
-          cache_key_prefix: installable-build-v2
-      - run:
-          name: Copy Secrets
-          command: FASTLANE_SKIP_UPDATE_CHECK=1 bundle exec fastlane run configure_apply
-      - update-gradle-memory
-      - android/restore-gradle-cache
-      - run:
-          name: Build APK
-          command: |
-            if [ -n "$CIRCLE_PULL_REQUEST" ]; then
-              PR_NUMBER=$(basename $CIRCLE_PULL_REQUEST)
-              PREFIX="pr-${PR_NUMBER}"
-            else
-              PREFIX="$CIRCLE_BRANCH"
-            fi
-            VERSION_NAME="${PREFIX}-build-${CIRCLE_BUILD_NUM}"
-            echo "export VERSION_NAME=$VERSION_NAME" >> $BASH_ENV
-            ./gradlew --stacktrace assembleJalapenoDebug -PversionName="$VERSION_NAME"
-      - android/save-gradle-cache
-      - run:
-          name: Prepare APK
-          command: |
-            mkdir -p Artifacts
-            mv WooCommerce/build/outputs/apk/jalapeno/debug/WooCommerce-jalapeno-debug.apk "Artifacts/WooCommerce-${VERSION_NAME}.apk"
-      - store_artifacts:
-          path: Artifacts
-          destination: Artifacts
-  Release Build:
-    executor:
-      name: android/default
-      api-version: "28"
-    steps:
-      - git/shallow-checkout
-      - bundle-install/bundle-install:
-          cache_key_prefix: release-build-v2
-      - run:
-          name: Copy Secrets
-          command: FASTLANE_SKIP_UPDATE_CHECK=1 bundle exec fastlane run configure_apply
-      - update-gradle-memory
-      - android/restore-gradle-cache
-      - run:
-          name: Build APK
-          command: |
-            APP_VERSION=$(./gradlew -q printVersionName | tail -1)
-            echo "export SLACK_FAILURE_MESSAGE=':red_circle: Build for WooCommerce Android $APP_VERSION failed!'" >> $BASH_ENV
-            echo "export SLACK_SUCCESS_MESSAGE=':tada: WooCommerce Android $APP_VERSION has been deployed!'" >> $BASH_ENV
-            # Prevent fastlane from checking for updates, also removing the verbose fastlane changelog at the end of each invocation.
-            echo "export FASTLANE_SKIP_UPDATE_CHECK=1" >> $BASH_ENV
-            mv ~/.configure/woocommerce-android/secrets/debug_a8c.keystore ~/.android/debug.keystore
-            if [[ $APP_VERSION == *"-rc-"* ]]; then
-              bundle exec fastlane build_and_upload_beta skip_confirm:true skip_prechecks:true create_release:true
-            else
-              bundle exec fastlane build_and_upload_release skip_confirm:true skip_prechecks:true create_release:true
-            fi
-      - android/save-gradle-cache
-      - slack/status:
-          include_job_number_field: false
-          include_project_field: false
-          include_visit_job_action: false
-          webhook: '${SLACK_BUILD_WEBHOOK}'
-          failure_message: '${SLACK_FAILURE_MESSAGE}'
-          success_message: '${SLACK_SUCCESS_MESSAGE}'
-
 
 workflows:
   "WooCommerce Android":
-    unless: << pipeline.parameters.release_build >>
     jobs:
-      - Lint
-      - Dependency Tree Diff
-      - Test
-      - Ensure Screenshots Tests Build
       - Connected Tests:
           name: UI Tests (Pixel 2 | API 28)
           post-to-slack: true
@@ -245,7 +83,6 @@ workflows:
                 - develop
                 - /^release.*/
   Optional UI Tests:
-    unless: << pipeline.parameters.release_build >>
     #Optionally run connected tests on PRs
     jobs:
       - Hold:

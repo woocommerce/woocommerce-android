@@ -65,7 +65,11 @@
             app:enterAnim="@anim/activity_fade_in"
             app:exitAnim="@null"
             app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out" />
+            app:popExitAnim="@anim/activity_fade_out" >
+            <argument
+                android:name="mode"
+                app:argType="com.woocommerce.android.ui.orders.creation.OrderCreationViewModel$Mode" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/products"

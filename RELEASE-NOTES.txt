@@ -1,10 +1,24 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
+9.6
+-----
+
+
+9.5
+-----
+
+
+9.4
+-----
+
+
 9.3
 -----
 - [*] In-Person Payments: Individual Card Reader Manual tabs removed from IPP Screen and moved to the new screen `Card Reader Manuals` [https://github.com/woocommerce/woocommerce-android/pull/6518]
 - [*] Show "We don't support stripe in Canada" when both WCPay and Stripe are active [https://github.com/woocommerce/woocommerce-android/pull/6573]
 - [***] In-Person Payments: In-Person Payments in Canada is now available for public! [https://github.com/woocommerce/woocommerce-android/pull/6579]
+- [*] In-Person Payments: Removed unnecessary notification when interac refund is initiated [https://github.com/woocommerce/woocommerce-android/pull/6601]
+- [*] In-Person Payments: Do not connect to the last know reader automatically after logout and site change [https://github.com/woocommerce/woocommerce-android/pull/6616]
 
 9.2
 -----

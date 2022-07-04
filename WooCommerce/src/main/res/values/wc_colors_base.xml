@@ -18,7 +18,9 @@
     <color name="woo_red_30">#F86368</color>
     <color name="woo_red_50">#D63638</color>
 
+    <color name="woo_blue_5">#BBE0FA</color>
     <color name="woo_blue_30">#5198D9</color>
+    <color name="woo_blue_40">#1689DB</color>
     <color name="woo_blue_50">#2271B1</color>
 
     <color name="woo_orange_5">#F7DCC6</color>

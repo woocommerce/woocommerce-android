@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.creation
 
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
@@ -19,8 +20,9 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.OrderUpdateStore
+import java.math.BigDecimal
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@ExperimentalCoroutinesApi
 class OrderCreationRepositoryTest : BaseUnitTest() {
     companion object {
         const val DEFAULT_ERROR_MESSAGE = "error_message"
@@ -43,6 +45,11 @@ class OrderCreationRepositoryTest : BaseUnitTest() {
         orderUpdateStore = mock {
             onBlocking {
                 updateOrder(eq(siteModel), eq(123), any())
+            } doReturn WooResult(
+                WooError(WooErrorType.API_ERROR, BaseRequest.GenericErrorType.NETWORK_ERROR, DEFAULT_ERROR_MESSAGE)
+            )
+            onBlocking {
+                createSimplePayment(eq(siteModel), eq("1"), eq(true), eq(null))
             } doReturn WooResult(
                 WooError(WooErrorType.API_ERROR, BaseRequest.GenericErrorType.NETWORK_ERROR, DEFAULT_ERROR_MESSAGE)
             )
@@ -69,6 +76,16 @@ class OrderCreationRepositoryTest : BaseUnitTest() {
             errorContext = eq(sut.javaClass.simpleName),
             errorType = eq(WooErrorType.API_ERROR.name),
             errorDescription = eq(DEFAULT_ERROR_MESSAGE)
+        )
+    }
+
+    @Test
+    fun `given simple payment order created, when error, then error track event is tracked`() = testBlocking {
+        sut.createSimplePaymentOrder(BigDecimal.ONE)
+
+        verify(trackerWrapper).track(
+            AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_FAILED,
+            mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_AMOUNT)
         )
     }
 }
