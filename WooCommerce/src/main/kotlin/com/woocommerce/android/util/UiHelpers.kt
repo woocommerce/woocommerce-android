@@ -1,17 +1,13 @@
 package com.woocommerce.android.util
 
-import android.app.Dialog
 import android.content.Context
-import android.graphics.Point
 import android.graphics.drawable.Drawable
 import android.view.View
-import android.view.WindowManager.LayoutParams
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.text.HtmlCompat
-import com.woocommerce.android.R
 import com.woocommerce.android.model.UiDimen
 import com.woocommerce.android.model.UiDimen.UiDimenDPInt
 import com.woocommerce.android.model.UiDimen.UiDimenRes
