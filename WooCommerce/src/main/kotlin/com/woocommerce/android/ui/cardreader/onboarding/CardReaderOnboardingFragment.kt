@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.cardreader.onboarding
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
@@ -118,7 +119,6 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
     ) {
         val binding = FragmentCardReaderOnboardingSelectPaymentGatewayBinding.bind(view)
         UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
-        UiHelpers.setTextOrHide(binding.hintLabel, state.hintLabel)
         UiHelpers.setImageOrHideInLandscape(binding.cardIllustration, state.cardIllustration)
         UiHelpers.setImageOrHideInLandscape(binding.icSelectWcPay, state.icWcPayLogo)
         UiHelpers.setImageOrHideInLandscape(binding.icCheckmarkWcPay, state.icCheckmarkWcPay)
@@ -133,6 +133,21 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         }
         binding.confirmPaymentMethod.setOnClickListener {
             state.onConfirmPaymentMethodClicked.invoke()
+        }
+
+        when(state.selectedPlugin) {
+            PluginType.WOOCOMMERCE_PAYMENTS -> {
+                binding.selectWcPayButton.strokeColor = ColorStateList.valueOf(resources.getColor(R.color.woo_purple_60))
+                binding.icCheckmarkWcPay.visibility = View.VISIBLE
+                binding.icCheckmarkStripe.visibility = View.GONE
+                binding.selectStripeButton.strokeColor = ColorStateList.valueOf(resources.getColor(R.color.gray_5))
+            }
+            PluginType.STRIPE_EXTENSION_GATEWAY -> {
+                binding.selectStripeButton.strokeColor = ColorStateList.valueOf(resources.getColor(R.color.woo_purple_60))
+                binding.icCheckmarkWcPay.visibility = View.GONE
+                binding.icCheckmarkStripe.visibility = View.VISIBLE
+                binding.selectWcPayButton.strokeColor = ColorStateList.valueOf(resources.getColor(R.color.gray_5))
+            }
         }
     }
 

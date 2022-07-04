@@ -204,21 +204,14 @@ class CardReaderOnboardingViewModel @Inject constructor(
         }.exhaustive
     }
 
-    private fun updateUiWithSelectPaymentPlugin() {
+    private fun updateUiWithSelectPaymentPlugin(selectedPlugin: PluginType = WOOCOMMERCE_PAYMENTS) {
         launch {
-            val userInfo = userEligibilityFetcher.fetchUserInfo()
-            val canManagePlugins = userInfo?.getUserRoles()?.contains(ADMINISTRATOR) ?: false
-
             viewState.value =
                 OnboardingViewState.SelectPaymentPluginState(
-                    hintLabel = if (canManagePlugins) {
-                        UiString.UiStringRes(R.string.card_reader_onboarding_both_plugins_activated_hint_admin)
-                    } else {
-                        UiString.UiStringRes(R.string.card_reader_onboarding_both_plugins_activated_hint_store_owner)
-                    },
-                    onWcPayOptionClicked = ::onContactSupportClicked,
-                    onStripeOptionClicked = ::onLearnMoreClicked,
-                    onConfirmPaymentMethodClicked = ::refreshState
+                    selectedPlugin = selectedPlugin,
+                    onWcPayOptionClicked = ::onWCPayOptionClicked,
+                    onStripeOptionClicked = ::onStripeOptionClicked,
+                    onConfirmPaymentMethodClicked = { (::refreshState)(selectedPlugin) }
                 )
         }
     }
@@ -246,6 +239,14 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     }
                 )
         }
+    }
+
+    private fun onWCPayOptionClicked() {
+        updateUiWithSelectPaymentPlugin(WOOCOMMERCE_PAYMENTS)
+    }
+
+    private fun onStripeOptionClicked() {
+        updateUiWithSelectPaymentPlugin(STRIPE_EXTENSION_GATEWAY)
     }
 
     private fun onWPAdminActionClicked() {
@@ -333,7 +334,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
         }
 
         data class SelectPaymentPluginState(
-            val hintLabel: UiString,
+            val selectedPlugin: PluginType,
             val onWcPayOptionClicked: (() -> Unit),
             val onStripeOptionClicked: (() -> Unit),
             val onConfirmPaymentMethodClicked: (() -> Unit),
