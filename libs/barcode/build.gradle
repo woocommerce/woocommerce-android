@@ -4,46 +4,6 @@ plugins {
     id 'kotlin-android-extensions'
 }
 
-repositories {
-    maven {
-        url 'https://a8c-libs.s3.amazonaws.com/android'
-        content {
-            includeGroup "org.wordpress"
-            includeGroup "org.wordpress.fluxc"
-            includeGroup "org.wordpress.fluxc.plugins"
-            includeGroup "org.wordpress.mediapicker"
-        }
-    }
-    maven {
-        url 'https://zendesk.jfrog.io/zendesk/repo'
-        content {
-            includeGroup "com.zendesk"
-            includeGroup "com.zendesk.belvedere2"
-        }
-    }
-    mavenCentral()
-    //noinspection JcenterRepositoryObsolete
-    jcenter {
-        content {
-            includeModule("org.wordpress", "wellsql")
-            includeModule("org.wordpress", "wellsql-core")
-            includeModule("com.google.android", "flexbox")
-            includeModule("com.android.volley", "volley")
-            includeModule("com.jraska", "falcon")
-        }
-    }
-    maven {
-        url "https://jitpack.io"
-        content {
-            includeModule("com.github.Automattic", "Automattic-Tracks-Android")
-            includeModule("com.github.wordpress-mobile.WordPress-Aztec-Android", "aztec")
-            includeModule("com.github.wordpress-mobile.WordPress-Aztec-Android", "glide-loader")
-            includeModule("com.github.chrisbanes", "PhotoView")
-            includeModule("com.github.PhilJay", "MPAndroidChart")
-        }
-    }
-}
-
 android {
     compileSdkVersion 31
 
@@ -52,12 +12,11 @@ android {
         targetSdkVersion 31
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
-        missingDimensionStrategy 'buildType', 'wasabi'
     }
 
     buildTypes {
         release {
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -74,15 +33,14 @@ android {
 }
 
 dependencies {
-    implementation "androidx.core:core-ktx:1.7.0"
-    implementation "androidx.annotation:annotation:1.3.0"
+    implementation "androidx.core:core-ktx:$coreKtxVersion"
+    implementation "androidx.annotation:annotation:1.4.0"
     implementation "androidx.interpolator:interpolator:1.0.0"
-    implementation 'com.google.android.material:material:1.4.0'
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0"
+    implementation "com.google.android.material:material:$materialVersion"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"
     implementation "android.arch.lifecycle:extensions:1.1.1"
-    implementation 'androidx.preference:preference-ktx:1.1.1'
+    implementation 'androidx.preference:preference-ktx:1.2.0'
 
     // Barcode model
-//    implementation 'com.google.mlkit:barcode-scanning:17.0.0'
     implementation 'com.google.android.gms:play-services-mlkit-barcode-scanning:18.0.0'
 }
