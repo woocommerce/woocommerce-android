@@ -279,8 +279,6 @@
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModelTest.kt:8</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.kt:9</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsViewModelTest.kt:16</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.kt:11</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.kt:18</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreateCustomPackageViewModelTest.kt:9</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.kt:15</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.kt:16</ID>
@@ -598,8 +596,6 @@
     <ID>WildcardImport:ReviewModerationHandler.kt$import com.woocommerce.android.model.ActionStatus.*</ID>
     <ID>WildcardImport:ReviewModerationHandler.kt$import kotlinx.coroutines.*</ID>
     <ID>WildcardImport:ReviewModerationHandler.kt$import kotlinx.coroutines.flow.*</ID>
-    <ID>WildcardImport:ShippingLabelAddressSuggestionFragment.kt$import com.woocommerce.android.extensions.*</ID>
-    <ID>WildcardImport:ShippingLabelAddressSuggestionFragment.kt$import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*</ID>
     <ID>WildcardImport:ShippingLabelRepository.kt$import com.woocommerce.android.model.*</ID>
     <ID>WildcardImport:ShippingLabelsStateMachine.kt$import com.woocommerce.android.model.*</ID>
     <ID>WildcardImport:ShippingLabelsStateMachine.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.*</ID>
