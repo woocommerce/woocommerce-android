@@ -8,10 +8,10 @@ import org.junit.Test
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 
+@ExperimentalCoroutinesApi
 class AutoSyncPriceModifierStrategyTest : SyncStrategyTest() {
     private val sut: AutoSyncPriceModifier = AutoSyncPriceModifier(createUpdateOrderUseCase)
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `WHEN the user commits a change NOT affecting the price THEN the change is NOT submitted to the API`() =
         testBlocking {
@@ -24,7 +24,6 @@ class AutoSyncPriceModifierStrategyTest : SyncStrategyTest() {
             job.cancel()
         }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `WHEN the user commits a price modifier change THEN the change is submitted to the API`() = testBlocking {
         val job = sut.syncOrderChanges(orderDraftChanges, retryTrigger)
@@ -36,7 +35,6 @@ class AutoSyncPriceModifierStrategyTest : SyncStrategyTest() {
         job.cancel()
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `WHEN the order is NOT changed by the user THEN the change is NOT submitted to the API`() = testBlocking {
         val job = sut.syncOrderChanges(orderDraftChanges, retryTrigger)

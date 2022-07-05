@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import javax.inject.Inject
 
+@ExperimentalCoroutinesApi
 class AutoSyncPriceModifier @Inject constructor(val createUpdateOrderUseCase: CreateUpdateOrder) : SyncStrategy {
     /**
      * Anything that can be modified during the Order Creation flow that can affect
@@ -56,7 +57,6 @@ class AutoSyncPriceModifier @Inject constructor(val createUpdateOrderUseCase: Cr
             old.billingAddress.isSamePhysicalAddress(new.billingAddress)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun syncOrderChanges(
         changes: Flow<Order>,
         retryTrigger: Flow<Unit>

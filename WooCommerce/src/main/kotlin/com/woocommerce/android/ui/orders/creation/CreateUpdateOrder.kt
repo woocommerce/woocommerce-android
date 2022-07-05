@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onStart
 import javax.inject.Inject
 
+@ExperimentalCoroutinesApi
 class CreateUpdateOrder @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val orderCreationRepository: OrderCreationRepository
@@ -37,7 +38,6 @@ class CreateUpdateOrder @Inject constructor(
         object Failed : OrderUpdateStatus
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(changes: Flow<Order>, retryTrigger: Flow<Unit>): Flow<OrderUpdateStatus> {
         return changes
             .flowOn(dispatchers.computation)

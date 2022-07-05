@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateS
 import com.woocommerce.android.util.InlineClassesAnswer
 import com.woocommerce.android.util.advanceTimeAndRun
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -24,6 +25,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 
+@ExperimentalCoroutinesApi
 class CreateUpdateOrderTests : BaseUnitTest() {
     private val orderCreationRepository = mock<OrderCreationRepository> {
         onBlocking { createOrUpdateDraft(any()) } doAnswer InlineClassesAnswer {

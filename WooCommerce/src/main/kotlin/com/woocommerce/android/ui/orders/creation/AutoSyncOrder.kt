@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
 
+@ExperimentalCoroutinesApi
 class AutoSyncOrder @Inject constructor(val createUpdateOrderUseCase: CreateUpdateOrder) : SyncStrategy {
     private fun areEquivalent(old: Order, new: Order): Boolean {
         // Make sure to update the prices only when items did change
@@ -55,7 +56,6 @@ class AutoSyncOrder @Inject constructor(val createUpdateOrderUseCase: CreateUpda
             hasSameCustomerInfo
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun syncOrderChanges(
         changes: Flow<Order>,
         retryTrigger: Flow<Unit>
