@@ -11,7 +11,7 @@
     <androidx.appcompat.widget.AppCompatImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:srcCompat="@drawable/ic_info_outline_24dp"
+        app:srcCompat="@drawable/tintable_ic_info_outline_24dp"
         app:tint="@color/woo_purple_60" />
 
     <com.google.android.material.textview.MaterialTextView

@@ -91,7 +91,7 @@
             android:layout_marginBottom="@dimen/major_100"
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginEnd="@dimen/major_100"
-            android:drawableStart="@drawable/ic_info_outline_24dp"
+            android:drawableStart="@drawable/deprecated_ic_info_outline_24dp"
             android:drawablePadding="@dimen/major_100"
             android:text="@string/orderdetail_shipping_label_notice"
             android:visibility="gone"

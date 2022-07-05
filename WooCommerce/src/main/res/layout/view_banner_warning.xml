@@ -14,7 +14,7 @@
         android:layout_marginTop="@dimen/major_100"
         android:layout_marginEnd="@dimen/major_100"
         android:contentDescription="@string/product_property_edit"
-        android:src="@drawable/ic_info_outline_24dp"
+        android:src="@drawable/tintable_ic_info_outline_24dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="@color/warning_banner_foreground_color" />

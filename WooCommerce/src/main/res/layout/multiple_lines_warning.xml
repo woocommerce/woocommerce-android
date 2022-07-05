@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:drawablePadding="@dimen/minor_100"
             android:textAppearance="@style/TextAppearance.Woo.Subtitle1"
-            app:drawableStartCompat="@drawable/ic_info_outline_24dp"
+            app:drawableStartCompat="@drawable/tintable_ic_info_outline_24dp"
             app:drawableTint="@color/color_primary"
             tools:text="@string/lines_incomplete" />
 

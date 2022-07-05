@@ -100,7 +100,7 @@
         app:layout_constraintBottom_toBottomOf="@id/discount_label"
         app:layout_constraintStart_toEndOf="@id/discount_label"
         app:layout_constraintTop_toTopOf="@id/discount_label"
-        app:srcCompat="@drawable/ic_info_outline_24dp" />
+        app:srcCompat="@drawable/deprecated_ic_info_outline_24dp" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/discount_price"
