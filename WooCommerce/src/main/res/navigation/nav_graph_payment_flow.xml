@@ -24,6 +24,10 @@
             app:destination="@id/cardReaderStatusCheckerDialogFragment"
             app:popUpTo="@+id/selectPaymentMethodFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_selectPaymentMethodFragment_to_orderList"
+            app:popUpTo="@+id/orders"
+            app:popUpToInclusive="false" />
     </fragment>
 
     <!-- Onboarding flow -->
