@@ -1,13 +1,15 @@
 package com.woocommerce.android.screenshots
 
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.rule.ActivityTestRule
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.helpers.InitializationRule
 import com.woocommerce.android.helpers.TestBase
 import com.woocommerce.android.screenshots.login.WelcomeScreen
 import com.woocommerce.android.screenshots.mystore.MyStoreScreen
+import com.woocommerce.android.screenshots.orders.CardReaderPaymentScreen
 import com.woocommerce.android.screenshots.orders.OrderCreationScreen
 import com.woocommerce.android.screenshots.products.ProductListScreen
 import com.woocommerce.android.ui.main.MainActivity
@@ -37,7 +39,7 @@ class ScreenshotTest : TestBase() {
     val localeTestRule = LocaleTestRule()
 
     @get:Rule(order = 4)
-    var activityRule = ActivityTestRule(MainActivity::class.java)
+    var activityRule = ActivityScenarioRule(MainActivity::class.java)
 
     @Before
     fun setUp() {
@@ -89,5 +91,15 @@ class ScreenshotTest : TestBase() {
             .tapOnCreateProduct()
             .thenTakeScreenshot<ProductListScreen>("add-product")
             .goBackToProductList()
+
+        // Capture In-Person Payment
+        AppPrefs.setCardReaderWelcomeDialogShown() // Skip card reader welcome screen
+        TabNavComponent()
+            .gotoOrdersScreen()
+            .selectOrder(2)
+            .tapOnCollectPayment()
+            .thenTakeScreenshot<CardReaderPaymentScreen>("in-person-payments")
+            .goBackToOrderDetails()
+            .goBackToOrdersScreen()
     }
 }

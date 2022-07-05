@@ -7,7 +7,7 @@
                 "equalTo": "true"
             },
             "path": {
-                "matches": "/wc/v3/orders/(.*)"
+                "equalTo": "/wc/v3/orders/&_method=get"
             },
             "query": {
                 "matches": "(.*)include(.*)"
@@ -188,7 +188,7 @@
                 "date_paid_gmt": null
             }, {
                 "id": 2787,
-                "status": "completed",
+                "status": "pending",
                 "currency": "USD",
                 "prices_include_tax": false,
                 "discount_total": "0.00",
@@ -221,8 +221,8 @@
                     "country": "GB",
                     "phone": "078 1369 7987"
                 },
-                "payment_method": "cheque",
-                "payment_method_title": "Check payments",
+                "payment_method": "cod",
+                "payment_method_title": "Cash On Delivery",
                 "customer_note": "",
                 "number": "2787",
                 "meta_data": [{
