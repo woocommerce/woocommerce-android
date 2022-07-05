@@ -639,7 +639,7 @@ class CardReaderPaymentViewModel
             R.string.card_reader_payment_description_v2,
             this.number,
             selectedSite.get().name.orEmpty(),
-            selectedSite.get().remoteId()
+            selectedSite.get().remoteId().value
         )
 
     private fun Order.getAmountLabel(): String = currencyFormatter
