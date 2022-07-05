@@ -166,7 +166,6 @@ class CardReaderTracker @Inject constructor(
         val preferredPlugin = when (pluginType) {
             WOOCOMMERCE_PAYMENTS -> "woocommerce-payments"
             STRIPE_EXTENSION_GATEWAY -> "woocommerce-stripe-gateway"
-            null -> "unknown"
         }
         track(
             AnalyticsEvent.CARD_PRESENT_PAYMENT_GATEWAY_SELECTED,
