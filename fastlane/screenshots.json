@@ -1,0 +1,51 @@
+{
+  "version": 0.1,
+  "shadow_offset": 0,
+  "background_color": "#FFFFFF",
+  "stylesheet": "playstoreres/assets/style.css",
+  "devices": [
+    {
+      "name": "Pixel 3",
+      "canvas_size": [1080,1920],
+      "text_size": [750,350],
+      "text_offset": [157,0 ],
+      "font_size": "80px",
+      "screenshot_size": [636, 1191],
+      "screenshot_offset": [226, 501],
+      "screenshot_mask": "playstoreres/assets/pixel-3-mask.png",
+      "device_frame": "playstoreres/assets/pixel-3.png",
+      "device_frame_size": [900, 1626],
+      "device_frame_offset": [91, 286]
+    },
+    {
+      "name": "Nexus 9",
+      "canvas_size": [3000,2000],
+      "text_size": [3000,120],
+      "text_offset": [0,120 ],
+      "font_size": "100px",
+      "screenshot_size": [1731, 1298],
+      "screenshot_offset": [634, 493],
+      "device_frame": "playstoreres/assets/nexus-9.png",
+      "device_frame_size": [2139, 1451],
+      "device_frame_offset": [430, 419]
+    }
+  ],
+  "entries": [
+    // Your Store in Your Pocket
+    {
+      "device": "Pixel 3",
+      "filename": "Pixel 3-01.png",
+      "background": "#674399",
+      "screenshot": "images/phoneScreenshots/1-order-dashboard-dark.png",
+      "text": "playstoreres/metadata/{locale}/promo_screenshot_1.txt"
+    },
+    // View and manage orders
+    {
+      "device": "Pixel 3",
+      "filename": "Pixel 3-02.png",
+      "background": "#674399",
+      "screenshot": "images/phoneScreenshots/2-order-list-dark.png",
+      "text": "playstoreres/metadata/{locale}/promo_screenshot_2.txt"
+    }
+  ]
+}
