@@ -681,6 +681,45 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when wcpay and stripe extension active, then confirm illustration shown`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.ChoosePaymentGatewayProvider
+            )
+
+            val viewModel = createVM()
+
+            val viewStateData = viewModel.viewStateData.value as OnboardingViewState.SelectPaymentPluginState
+            assertThat(viewStateData.cardIllustration).isNotNull()
+        }
+
+    @Test
+    fun `when wcpay and stripe extension active, then confirm header shown`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.ChoosePaymentGatewayProvider
+            )
+
+            val viewModel = createVM()
+
+            val viewStateData = viewModel.viewStateData.value as OnboardingViewState.SelectPaymentPluginState
+            assertThat(viewStateData.headerLabel).isNotNull()
+        }
+
+    @Test
+    fun `when wcpay and stripe extension active, then confirm hint shown`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.ChoosePaymentGatewayProvider
+            )
+
+            val viewModel = createVM()
+
+            val viewStateData = viewModel.viewStateData.value as OnboardingViewState.SelectPaymentPluginState
+            assertThat(viewStateData.choosePluginHintLabel).isNotNull()
+        }
+
+    @Test
     fun `when wcpay and stripe active, then wcpay button shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
