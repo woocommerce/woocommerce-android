@@ -211,6 +211,7 @@ class MainPresenter @Inject constructor(
         }
     }
 
+    @Suppress("unused", "UNUSED_PARAMETER")
     fun onEventMainThread(event: SelectedSiteChangedEvent) {
         if (pendingUnfilledOrderCountCheck) {
             fetchUnfilledOrderCount()
