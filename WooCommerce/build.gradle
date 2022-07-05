@@ -64,9 +64,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "9.4-rc-2"
+            versionName "9.5-rc-1"
         }
-        versionCode 307
+        versionCode 310
 
         minSdkVersion 21
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
@@ -204,6 +204,7 @@ dependencies {
         exclude group: "com.android.support"
     }
 
+    implementation "com.automattic.tracks:experimentation:trunk-f25f5b5e77df8313f19d47d07e7411256d18df79"
     implementation 'com.automattic:Automattic-Tracks-Android:2.2.0'
 
     implementation("${gradle.ext.fluxCBinaryPath}:$fluxCVersion") {
@@ -263,7 +264,7 @@ dependencies {
         // See https://github.com/wordpress-mobile/WordPress-FluxC-Android/issues/919
         exclude group: 'com.squareup.okhttp3'
     }
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.9.1'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android-core:2.9.1'
 
     // Dependencies for local unit tests
     testImplementation "junit:junit:$jUnitVersion"

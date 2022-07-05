@@ -384,7 +384,15 @@
     <string name="order_creation_fee_percentage_hint">Percentage (%)</string>
     <string name="order_creation_fee_percentage_toggle_text">Calculate as percentage</string>
     <string name="order_creation_fee_percentage_calculated_amount">Calculated amount: %s</string>
+    <string name="order_creation_customer_search_empty">No customers found</string>
+    <string name="order_creation_customer_search_hint">Search customers</string>
     <string name="order_creation_change_product_quantity">Change the product quantity from %d to %d</string>
+    <!--
+        Order Editing
+    -->
+    <string name="order_editing_non_editable_title">Parts of this order are not currently editable</string>
+    <string name="order_editing_non_editable_message">To edit Products or Payment Details, change the status to Pending Payment.</string>
+    <string name="order_editing_locked_content_description">locked</string>
     <!--
         Order Filters
     -->
@@ -1557,6 +1565,7 @@
     <string name="orders_empty_message_for_filtered_orders">We\'re sorry, we couldn\'t find any orders</string>
     <string name="empty_message_with_search">We\'re sorry, we couldn\'t find results for \"%s\"</string>
     <string name="reviews_empty_message">No reviews yet!</string>
+    <string name="empty_message_with_filters">We\'re sorry, no products match the selected filters"</string>
     <!--
         Settings
     -->
@@ -1654,6 +1663,8 @@
     <string name="support_system_status_report">System status report</string>
     <string name="support_system_status_report_clipboard_label">WooCommerce SSR</string>
     <string name="support_system_status_report_detail">Various system information about your site</string>
+    <string name="support_system_status_report_copy_label">Copy system status report to clipboard</string>
+    <string name="support_system_status_report_share_label">Share system status report</string>
     <string name="support_system_status_report_copied_to_clipboard">System status report copied to clipboard</string>
     <string name="support_system_status_report_error_copy_to_clipboard">Error copying SSR to clipboard</string>
     <string name="support_system_status_report_share_error">Unable to share System Status Report</string>
@@ -2046,6 +2057,8 @@
     <string name="coupon_restrictions_exclude_sale_items_hint">Turn this on if the coupon should not apply to items on sale. Per-item coupons will only work if the item is not on sale. Per-cart coupons will only work if there are items in the cart that are not on sale.</string>
     <string name="coupon_restrictions_allowed_emails">Allowed emails</string>
     <string name="coupon_restrictions_allowed_emails_placeholder">No restrictions</string>
+    <string name="coupon_restrictions_allowed_emails_hint">List of allowed billing emails to check against when an order is placed. Separate email addresses with commas. You can also use an asterisk (*) to match parts of an email. For example \"*@gmail.com\" would match all gmail addresses.</string>
+    <string name="coupon_restrictions_allowed_emails_invalid">Some email address are invalid. Please fix the entered email(s).</string>
     <string name="coupon_restrictions_exclusions_section_title">Apply this coupon to</string>
     <string name="coupon_restrictions_exclude_products">Exclude Products</string>
     <string name="coupon_restrictions_exclude_categories">Exclude Product Categories</string>
@@ -2060,12 +2073,14 @@
     <string name="product_selector_select_button_title_default">Select %d Products</string>
     <string name="product_selector_select_button_title_one">Select %d Product</string>
     <string name="product_selector_clear_button_title">Clear Selection</string>
-    <string name="product_selector_filter_button_title">Filter</string>
+    <string name="product_selector_filter_button_title_zero">Filter</string>
+    <string name="product_selector_filter_button_title_default">Filter (%d)</string>
     <string name="product_selector_arrow_content_description">Show details</string>
     <string name="product_selector_search_hint">Search Products</string>
     <string name="product_selector_loading_failed">Loading products failed</string>
     <string name="product_selector_search_failed">Searching products failed</string>
     <string name="product_selector_empty_state">No products found</string>
+    <string name="product_selector_clear_filters_button_title">Clear Filters</string>
 
     <!-- WC Shipping installation flow -->
     <string name="install_wc_shipping_flow_onboarding_screen_title">Fulfill your orders with WooCommerce Shipping</string>
@@ -2079,6 +2094,7 @@
     <string name="install_wc_shipping_flow_onboarding_screen_link">What is WooCommerce Shipping?</string>
     <string name="install_wc_shipping_flow_onboarding_screen_add_extension_button">Add Extension To Store</string>
     <string name="install_wc_shipping_flow_onboarding_screen_not_now_button">Not Now</string>
+    <string name="install_wc_shipping_extension_name">WooCommerce Shipping</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>
@@ -2484,4 +2500,7 @@
     <string name="about_automattic_back_icon_description">Back icon</string>
     <string name="about_automattic_app_icon_description">App icon</string>
     <string name="error_generic">An error occurred</string>
+    <string name="install_wc_shipping_preinstall_title">Install extension</string>
+    <string name="install_wc_shipping_installation_info">Things to know before installing</string>
+    <string name="install_wc_shipping_proceed_button">Proceed With Installation</string>
 </resources>

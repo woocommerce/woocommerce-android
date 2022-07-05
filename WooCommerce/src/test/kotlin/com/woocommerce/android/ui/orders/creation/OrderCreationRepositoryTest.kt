@@ -22,7 +22,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.OrderUpdateStore
 import java.math.BigDecimal
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@ExperimentalCoroutinesApi
 class OrderCreationRepositoryTest : BaseUnitTest() {
     companion object {
         const val DEFAULT_ERROR_MESSAGE = "error_message"

@@ -482,4 +482,40 @@ class AppPrefsTest {
             )
         ).isNull()
     }
+
+    @Test
+    fun givenIsPluginExplicitlySelectedIsFalseThenReturnFalse() {
+        AppPrefs.setIsCardReaderPluginExplicitlySelectedFlag(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            isPluginExplicitlySelected = false
+        )
+
+        assertThat(
+            AppPrefs.isCardReaderPluginExplicitlySelected(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L,
+            )
+        ).isFalse
+    }
+
+    @Test
+    fun givenIsPluginExplicitlySelectedIsTrueThenReturnTrue() {
+        AppPrefs.setIsCardReaderPluginExplicitlySelectedFlag(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            isPluginExplicitlySelected = true
+        )
+
+        assertThat(
+            AppPrefs.isCardReaderPluginExplicitlySelected(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L,
+            )
+        ).isTrue
+    }
 }

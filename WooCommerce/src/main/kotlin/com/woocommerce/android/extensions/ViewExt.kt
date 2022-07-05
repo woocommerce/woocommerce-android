@@ -20,9 +20,14 @@ import androidx.transition.ChangeBounds
 import androidx.transition.Transition
 import androidx.transition.TransitionListenerAdapter
 import androidx.transition.TransitionManager
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
+
+private const val EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS = 300L
 
 fun View.show() {
     this.visibility = View.VISIBLE
@@ -90,7 +95,7 @@ fun View.collapse(duration: Long = 300L) {
 
 fun Group.expand() {
     if (this.isVisible) return
-    val animationDuration = 300L
+    val animationDuration = EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS
     val parent = parent as ViewGroup
     val transition = ChangeBounds()
         .setDuration(animationDuration)
@@ -101,7 +106,7 @@ fun Group.expand() {
 
 fun Group.collapse() {
     if (!this.isVisible) return
-    val animationDuration = 300L
+    val animationDuration = EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS
     val parent = parent as ConstraintLayout
     val views = referencedIds.map { parent.getViewById(it) }
     val originalHeights = views.map { it.layoutParams.height }
@@ -154,7 +159,6 @@ fun ViewGroup.setEnabledRecursive(enabled: Boolean) {
  * @param handled defines what the [OnTouchListener.onTouch] returns, defaults to returning false
  */
 @SuppressLint("ClickableViewAccessibility")
-@ExperimentalCoroutinesApi
 fun View.touchEvents(
     handled: (MotionEvent) -> Boolean = { false }
 ): Flow<MotionEvent> = callbackFlow {
@@ -171,7 +175,6 @@ fun View.touchEvents(
 /**
  * Returns a Flow of events that are triggered when a scroll is started on a view.
  */
-@ExperimentalCoroutinesApi
 fun View.scrollStartEvents(): Flow<Unit> {
     return touchEvents()
         .map { it.action }

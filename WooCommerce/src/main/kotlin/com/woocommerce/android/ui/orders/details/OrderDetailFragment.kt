@@ -63,6 +63,8 @@ import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragme
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragment
 import com.woocommerce.android.ui.payments.refunds.RefundSummaryFragment
 import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel
+import com.woocommerce.android.ui.refunds.RefundSummaryFragment
+import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
@@ -251,7 +253,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                     displayUndoSnackbar(event.message, event.undoAction, event.dismissAction)
                 }
                 is OrderNavigationTarget -> navigator.navigate(this, event)
-                is InstallWcShippingFlowViewModel.InstallWcShipping -> navigateToInstallWcShippingFlow()
+                is InstallWCShippingViewModel.InstallWcShipping -> navigateToInstallWcShippingFlow()
                 else -> event.isHandled = false
             }
         }

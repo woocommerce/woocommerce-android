@@ -27,6 +27,9 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun isCardReaderWelcomeDialogShown() = AppPrefs.isCardReaderWelcomeDialogShown()
 
+    fun isCardReaderPluginExplicitlySelected(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
+        AppPrefs.isCardReaderPluginExplicitlySelected(localSiteId, remoteSiteId, selfHostedSiteId)
+
     fun getCardReaderPreferredPlugin(
         localSiteId: Int,
         remoteSiteId: Long,
@@ -56,6 +59,20 @@ class AppPrefsWrapper @Inject constructor() {
             remoteSiteId,
             selfHostedSiteId,
             data,
+        )
+    }
+
+    fun setIsCardReaderPluginExplicitlySelectedFlag(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long,
+        isPluginExplicitlySelected: Boolean = false
+    ) {
+        AppPrefs.setIsCardReaderPluginExplicitlySelectedFlag(
+            localSiteId,
+            remoteSiteId,
+            selfHostedSiteId,
+            isPluginExplicitlySelected
         )
     }
 

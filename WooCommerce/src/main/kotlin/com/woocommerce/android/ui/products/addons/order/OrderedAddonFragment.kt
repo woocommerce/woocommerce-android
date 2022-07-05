@@ -94,7 +94,7 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
         when (event) {
             is ShowSurveyView ->
                 NavGraphMainDirections
-                    .actionGlobalFeedbackSurveyFragment(SurveyType.PRODUCT)
+                    .actionGlobalFeedbackSurveyFragment(SurveyType.ADDONS)
                     .apply { findNavController().navigateSafely(this) }
         }
     }

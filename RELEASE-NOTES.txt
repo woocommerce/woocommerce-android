@@ -2,6 +2,11 @@
 9.6
 -----
 - [**] Order Details: All unpaid orders have a Collect Payment button, which shows a payment method selection screen. Choices are Cash, Card, and Payment Link. [https://github.com/woocommerce/woocommerce-android/pull/6861]
+
+9.6
+-----
+
+
 9.5
 -----
 

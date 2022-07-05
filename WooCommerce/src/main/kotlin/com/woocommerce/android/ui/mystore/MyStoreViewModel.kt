@@ -10,12 +10,19 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.domain.GetStats
-import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.*
+import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.HasOrders
+import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.IsJetPackCPEnabled
+import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.PluginNotActive
+import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.RevenueStatsError
+import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.RevenueStatsSuccess
+import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.VisitorsStatsError
+import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.VisitorsStatsSuccess
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformersResult.TopPerformersError
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformersResult.TopPerformersSuccess
@@ -26,7 +33,14 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apache.commons.text.StringEscapeUtils
 import org.greenrobot.eventbus.Subscribe
@@ -52,7 +66,8 @@ class MyStoreViewModel @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
-    private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter
+    private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
     private companion object {
         const val NUM_TOP_PERFORMERS = 5
@@ -123,7 +138,7 @@ class MyStoreViewModel @Inject constructor(
 
     fun onSwipeToRefresh() {
         usageTracksEventEmitter.interacted()
-        AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_PULLED_TO_REFRESH)
+        analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_PULLED_TO_REFRESH)
         resetForceRefresh()
         refreshTrigger.tryEmit(Unit)
     }
@@ -172,7 +187,7 @@ class MyStoreViewModel @Inject constructor(
             it.stats?.toStoreStatsUiModel(),
             selectedGranularity
         )
-        AnalyticsTracker.track(
+        analyticsTrackerWrapper.track(
             AnalyticsEvent.DASHBOARD_MAIN_STATS_LOADED,
             mapOf(AnalyticsTracker.KEY_RANGE to selectedGranularity.name.lowercase())
         )
@@ -190,7 +205,7 @@ class MyStoreViewModel @Inject constructor(
                     _visitorStatsState.value =
                         VisitorStatsViewState.JetpackCpConnected(BenefitsBannerUiModel(show = false))
                     appPrefsWrapper.recordJetpackBenefitsDismissal()
-                    AnalyticsTracker.track(
+                    analyticsTrackerWrapper.track(
                         stat = AnalyticsEvent.FEATURE_JETPACK_BENEFITS_BANNER,
                         properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "dismissed")
                     )
@@ -234,7 +249,7 @@ class MyStoreViewModel @Inject constructor(
                                 it.topPerformers.toTopPerformersUiList(),
                                 granularity
                             )
-                        AnalyticsTracker.track(
+                        analyticsTrackerWrapper.track(
                             AnalyticsEvent.DASHBOARD_TOP_PERFORMERS_LOADED,
                             mapOf(AnalyticsTracker.KEY_RANGE to granularity.name.lowercase())
                         )
@@ -255,7 +270,7 @@ class MyStoreViewModel @Inject constructor(
 
     private fun onTopPerformerSelected(productId: Long) {
         triggerEvent(MyStoreEvent.OpenTopPerformer(productId))
-        AnalyticsTracker.track(AnalyticsEvent.TOP_EARNER_PRODUCT_TAPPED)
+        analyticsTrackerWrapper.track(AnalyticsEvent.TOP_EARNER_PRODUCT_TAPPED)
         usageTracksEventEmitter.interacted()
     }
 

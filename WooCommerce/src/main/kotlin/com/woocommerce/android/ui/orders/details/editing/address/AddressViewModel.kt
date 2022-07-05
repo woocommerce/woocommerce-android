@@ -6,9 +6,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.map
 import com.woocommerce.android.R
-import com.woocommerce.android.model.*
+import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.AmbiguousLocation
+import com.woocommerce.android.model.GetLocations
+import com.woocommerce.android.model.Location
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.StateSpinnerStatus.*
+import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.StateSpinnerStatus.DISABLED
+import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.StateSpinnerStatus.HAVING_LOCATIONS
+import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.StateSpinnerStatus.RAW_VALUE
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -93,11 +99,9 @@ class AddressViewModel @Inject constructor(
                 addressSelectionStates = initialState.mapValues { initialSingleAddressState ->
                     AddressSelectionState(
                         address = initialSingleAddressState.value,
-                        stateSpinnerStatus = when {
-                            initialSingleAddressState.value.country.code.isBlank() -> DISABLED
-                            statesFor(initialSingleAddressState.value.country.code).isNotEmpty() -> HAVING_LOCATIONS
-                            else -> RAW_VALUE
-                        }
+                        stateSpinnerStatus = getStateSpinnerStatus(
+                            initialSingleAddressState.value.country.code
+                        )
                     )
                 }
             )
@@ -120,6 +124,14 @@ class AddressViewModel @Inject constructor(
         viewState = ViewState()
     }
 
+    private fun getStateSpinnerStatus(countryCode: String): StateSpinnerStatus {
+        return when {
+            countryCode.isBlank() -> DISABLED
+            statesFor(countryCode).isNotEmpty() -> HAVING_LOCATIONS
+            else -> RAW_VALUE
+        }
+    }
+
     fun onCountrySelected(type: AddressType, countryCode: LocationCode) {
         val selectedCountry = dataStore.getCountries().firstOrNull { it.code == countryCode }?.toAppModel()
             ?: Location(countryCode, countryCode)
@@ -132,11 +144,7 @@ class AddressViewModel @Inject constructor(
                             country = selectedCountry,
                             state = AmbiguousLocation.EMPTY
                         ),
-                        stateSpinnerStatus = if (statesFor(countryCode).isEmpty()) {
-                            RAW_VALUE
-                        } else {
-                            HAVING_LOCATIONS
-                        }
+                        stateSpinnerStatus = getStateSpinnerStatus(countryCode)
                     )
                 } else {
                     entry.value
@@ -174,6 +182,10 @@ class AddressViewModel @Inject constructor(
     fun onStateSpinnerClicked(type: AddressType) {
         val event = ShowStateSelector(type, statesAvailableFor(type))
         triggerEvent(event)
+    }
+
+    fun onCustomerSearchClicked() {
+        triggerEvent(SearchCustomers)
     }
 
     fun onDoneSelected(addDifferentShippingChecked: Boolean? = null) {
@@ -227,6 +239,24 @@ class AddressViewModel @Inject constructor(
         )
     }
 
+    fun onAddressesChanged(
+        billingAddress: Address,
+        shippingAddress: Address
+    ) {
+        viewState = viewState.copy(
+            addressSelectionStates = mapOf(
+                AddressType.BILLING to AddressSelectionState(
+                    billingAddress,
+                    getStateSpinnerStatus(billingAddress.country.code)
+                ),
+                AddressType.SHIPPING to AddressSelectionState(
+                    shippingAddress,
+                    getStateSpinnerStatus(shippingAddress.country.code)
+                )
+            )
+        )
+    }
+
     @Parcelize
     data class ViewState(
         val addressSelectionStates: Map<AddressType, AddressSelectionState> = emptyMap(),
@@ -264,4 +294,6 @@ class AddressViewModel @Inject constructor(
     enum class Field {
         FirstName, LastName, Company, Phone, Address1, Address2, City, State, Zip, Email
     }
+
+    object SearchCustomers : MultiLiveEvent.Event()
 }

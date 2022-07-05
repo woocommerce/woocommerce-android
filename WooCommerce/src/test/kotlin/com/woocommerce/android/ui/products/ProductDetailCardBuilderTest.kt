@@ -17,7 +17,7 @@ import org.mockito.kotlin.anyVararg
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@ExperimentalCoroutinesApi
 class ProductDetailCardBuilderTest : BaseUnitTest() {
     private lateinit var sut: ProductDetailCardBuilder
     private lateinit var productStub: Product

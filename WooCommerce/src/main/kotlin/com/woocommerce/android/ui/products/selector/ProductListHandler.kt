@@ -1,11 +1,14 @@
 package com.woocommerce.android.ui.products.selector
 
 import com.woocommerce.android.model.Product
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import javax.inject.Inject
 
 class ProductListHandler @Inject constructor(private val repository: ProductSelectorRepository) {
@@ -20,23 +23,28 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
     private val searchQuery = MutableStateFlow("")
     private val searchResults = MutableStateFlow(emptyList<Product>())
 
-    val productsFlow = searchQuery.flatMapLatest { query ->
+    private val productFilters = MutableStateFlow(mapOf<ProductFilterOption, String>())
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val productsFlow = combine(searchQuery, productFilters) { query, filters ->
         if (query.isEmpty()) {
-            repository.observeProducts()
+            repository.observeProducts(filters)
         } else {
             searchResults
         }
-    }
+    }.flatMapLatest { it }
 
     suspend fun fetchProducts(
         searchQuery: String = "",
-        forceRefresh: Boolean = false
+        forceRefresh: Boolean = false,
+        filters: Map<ProductFilterOption, String> = emptyMap()
     ): Result<Unit> = mutex.withLock {
         // Reset the offset
         offset = 0
         canLoadMore = true
 
         this.searchQuery.value = searchQuery
+        this.productFilters.value = filters
         return if (searchQuery.isEmpty()) {
             if (forceRefresh) {
                 loadProducts()
@@ -59,7 +67,7 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
     }
 
     private suspend fun loadProducts(): Result<Unit> {
-        return repository.fetchProducts(offset, PAGE_SIZE).onSuccess {
+        return repository.fetchProducts(offset, PAGE_SIZE, productFilters.value).onSuccess {
             canLoadMore = it
             offset += PAGE_SIZE
         }.map { }

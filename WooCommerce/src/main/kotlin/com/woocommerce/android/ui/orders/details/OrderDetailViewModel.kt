@@ -57,7 +57,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProdu
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.products.addons.AddonRepository
-import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel
+import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -257,7 +257,7 @@ final class OrderDetailViewModel @Inject constructor(
     }
 
     fun onGetWcShippingClicked() {
-        triggerEvent(InstallWcShippingFlowViewModel.InstallWcShipping)
+        triggerEvent(InstallWCShippingViewModel.InstallWcShipping)
     }
 
     /**

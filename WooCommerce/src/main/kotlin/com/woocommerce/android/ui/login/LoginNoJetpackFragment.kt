@@ -22,6 +22,8 @@ import com.woocommerce.android.R.layout
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentLoginNoJetpackBinding
+import com.woocommerce.android.databinding.ViewLoginNoStoresBinding
+import com.woocommerce.android.databinding.ViewLoginUserInfoBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
@@ -101,8 +103,8 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
 
         val binding = FragmentLoginNoJetpackBinding.bind(view)
         val btnBinding = binding.loginEpilogueButtonBar
-        val noStoresBinding = binding.loginNoStores
-        val userInfoBinding = binding.loginUserInfo
+        val noStoresBinding = ViewLoginNoStoresBinding.bind(view)
+        val userInfoBinding = ViewLoginUserInfoBinding.bind(view)
 
         userInfoBinding.textDisplayname.text = mInputUsername
         with(userInfoBinding.textUsername) {

@@ -264,7 +264,10 @@ sealed class CardReaderOnboardingParams : Parcelable {
     abstract val cardReaderFlowParam: CardReaderFlowParam
 
     @Parcelize
-    data class Check(override val cardReaderFlowParam: CardReaderFlowParam) : CardReaderOnboardingParams()
+    data class Check(
+        override val cardReaderFlowParam: CardReaderFlowParam,
+        val pluginType: PluginType? = null
+    ) : CardReaderOnboardingParams()
 
     @Parcelize
     data class Failed(
