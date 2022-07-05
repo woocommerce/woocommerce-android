@@ -959,7 +959,7 @@ class IssueRefundViewModel @Inject constructor(
         val isNextButtonEnabled: Boolean
             get() = grandTotalRefund > BigDecimal.ZERO
 
-        val isRefundNoticeVisible = !refundNotice.isNullOrEmpty()
+        @Suppress("PROPERTY_WONT_BE_SERIALIZED") val isRefundNoticeVisible = !refundNotice.isNullOrEmpty()
     }
 
     @Parcelize
