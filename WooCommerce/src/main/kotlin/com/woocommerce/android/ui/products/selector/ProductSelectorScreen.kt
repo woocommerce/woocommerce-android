@@ -127,7 +127,10 @@ private fun EmptyProductList(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = dimensionResource(id = dimen.major_200)),
+            .padding(
+                horizontal = dimensionResource(id = dimen.major_200),
+                vertical = dimensionResource(id = dimen.major_200)
+            ),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
