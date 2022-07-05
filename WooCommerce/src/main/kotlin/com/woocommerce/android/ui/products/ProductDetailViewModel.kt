@@ -602,6 +602,7 @@ class ProductDetailViewModel @Inject constructor(
     /**
      * Called when the back= button is clicked in a product sub detail screen
      */
+    @Suppress("ComplexMethod")
     fun onBackButtonClicked(event: ProductExitEvent) {
         var eventName: AnalyticsEvent? = null
         var hasChanges = false
