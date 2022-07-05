@@ -104,6 +104,7 @@ import kotlin.test.assertEquals
 private val DUMMY_TOTAL = BigDecimal(10.72)
 private const val DUMMY_CURRENCY_SYMBOL = "£"
 private const val DUMMY_ORDER_NUMBER = "123"
+private const val DUMMY_ORDER_ID = "999"
 
 @InternalCoroutinesApi
 @ExperimentalCoroutinesApi
@@ -443,8 +444,10 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                     url = ""
                 }
             )
-            whenever(resourceProvider.getString(R.string.card_reader_payment_description, DUMMY_ORDER_NUMBER, siteName))
-                .thenReturn(expectedResult)
+            whenever(
+                resourceProvider
+                    .getString(R.string.card_reader_payment_description, DUMMY_ORDER_NUMBER, siteName, DUMMY_ORDER_ID)
+            ).thenReturn(expectedResult)
             val captor = argumentCaptor<PaymentInfo>()
 
             viewModel.start()
