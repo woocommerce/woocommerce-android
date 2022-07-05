@@ -33,6 +33,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PAYMENT_GATEWAY
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.RefundStatusErrorType
@@ -159,6 +160,18 @@ class CardReaderTracker @Inject constructor(
         getOnboardingNotCompletedReason(state)?.let {
             track(CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mutableMapOf("reason" to it))
         }
+    }
+
+    fun trackPaymentGatewaySelected(pluginType: PluginType) {
+        val preferredPlugin = when (pluginType) {
+            WOOCOMMERCE_PAYMENTS -> "woocommerce-payments"
+            STRIPE_EXTENSION_GATEWAY -> "woocommerce-stripe-gateway"
+            null -> "unknown"
+        }
+        track(
+            AnalyticsEvent.CARD_PRESENT_PAYMENT_GATEWAY_SELECTED,
+            mutableMapOf(KEY_PAYMENT_GATEWAY to preferredPlugin)
+        )
     }
 
     fun trackSoftwareUpdateStarted(requiredUpdate: Boolean) {
