@@ -49,7 +49,6 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttribute
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttributeTerms
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
@@ -397,7 +396,7 @@ class ProductDetailViewModel @Inject constructor(
     /**
      * Called when an existing image is selected in Product detail screen
      */
-    fun onImageClicked(image: Product.Image) {
+    fun onImageClicked() {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         viewState.productDraft?.let {
             triggerEvent(ViewProductImageGallery(it.remoteId, it.images))
@@ -925,7 +924,6 @@ class ProductDetailViewModel @Inject constructor(
         backorderStatus: ProductBackorderStatus? = null,
         regularPrice: BigDecimal? = viewState.productDraft?.regularPrice,
         salePrice: BigDecimal? = viewState.productDraft?.salePrice,
-        isOnSale: Boolean? = null,
         isVirtual: Boolean? = null,
         isSaleScheduled: Boolean? = null,
         saleStartDate: Date? = null,

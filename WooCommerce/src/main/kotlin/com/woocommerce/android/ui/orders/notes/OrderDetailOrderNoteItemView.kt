@@ -23,7 +23,7 @@ class OrderDetailOrderNoteItemView @JvmOverloads constructor(
     private val binding = OrderDetailNoteItemBinding.inflate(LayoutInflater.from(ctx), this, true)
 
     @SuppressLint("SetTextI18n")
-    fun initView(note: OrderNote, showBottomPadding: Boolean) {
+    fun initView(note: OrderNote) {
         val date = DateFormat.getTimeFormat(context).format(note.dateCreated)
         val type = when {
             note.isCustomerNote -> context.getString(R.string.orderdetail_note_public)
