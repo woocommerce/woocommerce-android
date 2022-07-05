@@ -10,7 +10,7 @@ import com.google.android.material.switchmaterial.SwitchMaterial
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.model.Order
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundItem
 import java.math.BigDecimal
 
