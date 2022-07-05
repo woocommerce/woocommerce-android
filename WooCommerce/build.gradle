@@ -204,7 +204,7 @@ dependencies {
         exclude group: "com.android.support"
     }
 
-    implementation "com.automattic.tracks:experimentation:trunk-f25f5b5e77df8313f19d47d07e7411256d18df79"
+    implementation "com.automattic.tracks:experimentation:125-57901987dd27cf66d5f136a0aeaa07a88b8b527a"
     implementation 'com.automattic:Automattic-Tracks-Android:2.2.0'
 
     implementation("${gradle.ext.fluxCBinaryPath}:$fluxCVersion") {
