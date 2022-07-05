@@ -230,7 +230,14 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                 createOrderMenuItem?.isEnabled = it
             }
             new.isIdle.takeIfNotEqualTo(old?.isIdle) { enabled ->
-                binding.paymentSection.loadingProgress.isVisible = !enabled
+                when (viewModel.mode) {
+                    OrderCreationViewModel.Mode.Creation -> {
+                        binding.paymentSection.loadingProgress.isVisible = !enabled
+                    }
+                    is OrderCreationViewModel.Mode.Edit -> {
+                        binding.loadingProgress.isVisible = !enabled
+                    }
+                }
                 if (new.isEditable) {
                     binding.paymentSection.shippingButton.isEnabled = enabled
                     binding.paymentSection.feeButton.isEnabled = enabled
