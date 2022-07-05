@@ -124,9 +124,9 @@ class CardReaderOnboardingChecker @Inject constructor(
         val stripePluginInfo = wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY)
 
         if (isBothPluginsActivated(wcPayPluginInfo, stripePluginInfo)) {
-            PluginType.values().forEach { pluginType ->
-                if (!isPluginSupportedInCountry(pluginType, cardReaderConfig)) {
-                    return PluginIsNotSupportedInTheCountry(pluginType, countryCode!!)
+            PluginType.values().forEach { pluginTypeValue ->
+                if (!isPluginSupportedInCountry(pluginTypeValue, cardReaderConfig)) {
+                    return PluginIsNotSupportedInTheCountry(pluginTypeValue, countryCode!!)
                 }
             }
             if (ippSelectPaymentGateway.isEnabled()) {
