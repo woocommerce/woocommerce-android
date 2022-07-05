@@ -204,14 +204,11 @@ class CardReaderOnboardingViewModel @Inject constructor(
         }.exhaustive
     }
 
-    private fun updateUiWithSelectPaymentPlugin(selectedPlugin: PluginType = WOOCOMMERCE_PAYMENTS) {
+    private fun updateUiWithSelectPaymentPlugin() {
         launch {
             viewState.value =
                 OnboardingViewState.SelectPaymentPluginState(
-                    selectedPlugin = selectedPlugin,
-                    onWcPayOptionClicked = ::onWCPayOptionClicked,
-                    onStripeOptionClicked = ::onStripeOptionClicked,
-                    onConfirmPaymentMethodClicked = { (::refreshState)(selectedPlugin) }
+                    onConfirmPaymentMethodClicked = { (::refreshState)(it) }
                 )
         }
     }
@@ -238,14 +235,6 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     }
                 )
         }
-    }
-
-    private fun onWCPayOptionClicked() {
-        updateUiWithSelectPaymentPlugin(WOOCOMMERCE_PAYMENTS)
-    }
-
-    private fun onStripeOptionClicked() {
-        updateUiWithSelectPaymentPlugin(STRIPE_EXTENSION_GATEWAY)
     }
 
     private fun onWPAdminActionClicked() {
@@ -333,10 +322,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
         }
 
         data class SelectPaymentPluginState(
-            val selectedPlugin: PluginType,
-            val onWcPayOptionClicked: (() -> Unit),
-            val onStripeOptionClicked: (() -> Unit),
-            val onConfirmPaymentMethodClicked: (() -> Unit),
+            val onConfirmPaymentMethodClicked: ((PluginType) -> Unit),
         ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_select_payment_gateway) {
             val cardIllustration = R.drawable.ic_credit_card_give
             val headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_choose_payment_provider)
