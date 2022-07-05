@@ -208,7 +208,10 @@ class CardReaderOnboardingViewModel @Inject constructor(
         launch {
             viewState.value =
                 OnboardingViewState.SelectPaymentPluginState(
-                    onConfirmPaymentMethodClicked = { (::refreshState)(it) }
+                    onConfirmPaymentMethodClicked = { pluginType ->
+                        cardReaderTracker.trackPaymentGatewaySelected(pluginType)
+                        (::refreshState)(pluginType)
+                    }
                 )
         }
     }
