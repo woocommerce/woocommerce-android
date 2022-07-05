@@ -332,8 +332,6 @@ class CardReaderOnboardingViewModel @Inject constructor(
             val icWcPayLogo = R.drawable.ic_wcpay
             val icCheckmarkWcPay = R.drawable.ic_menu_action_mode_check
             val selectStripeButtonLabel = UiString.UiStringRes(R.string.card_reader_onboarding_choose_stripe_button)
-            val icStripeLogo = R.drawable.ic_stripe
-            val icCheckmarkStripe = R.drawable.ic_menu_action_mode_check
             val confirmPaymentMethodButtonLabel = UiString
                 .UiStringRes(R.string.card_reader_onboarding_confirm_payment_method_button)
         }
