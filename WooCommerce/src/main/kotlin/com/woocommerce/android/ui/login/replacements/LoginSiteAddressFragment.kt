@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.login.replacements
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -15,7 +14,7 @@ import androidx.annotation.LayoutRes
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.widget.Toolbar
 import com.woocommerce.android.R
-import dagger.android.support.AndroidSupportInjection
+import dagger.hilt.android.AndroidEntryPoint
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -51,6 +50,7 @@ import org.wordpress.android.util.NetworkUtils
 import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class LoginSiteAddressFragment : LoginBaseDiscoveryFragment(), TextWatcher, OnEditorCommitListener,
     LoginBaseDiscoveryListener {
     private var mSiteAddressInput: WPLoginInputRow? = null
@@ -119,11 +119,6 @@ class LoginSiteAddressFragment : LoginBaseDiscoveryFragment(), TextWatcher, OnEd
         if (mLoginListener != null) {
             mLoginListener.helpSiteAddress(mRequestedSiteAddress)
         }
-    }
-
-    override fun onAttach(context: Context) {
-        AndroidSupportInjection.inject(this)
-        super.onAttach(context)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
