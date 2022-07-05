@@ -2,10 +2,6 @@ package com.woocommerce.android.widgets.sectionedrecyclerview
 
 import android.view.View
 import androidx.annotation.LayoutRes
-import com.woocommerce.android.widgets.sectionedrecyclerview.Section.State.EMPTY
-import com.woocommerce.android.widgets.sectionedrecyclerview.Section.State.FAILED
-import com.woocommerce.android.widgets.sectionedrecyclerview.Section.State.LOADED
-import com.woocommerce.android.widgets.sectionedrecyclerview.Section.State.LOADING
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter.EmptyViewHolder
 
 /**
@@ -14,18 +10,19 @@ import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerVi
  * Original version: https://github.com/luizgrp/SectionedRecyclerViewAdapter
  */
 abstract class Section(sectionParameters: SectionParameters) {
-    var state = LOADED
+    var state = State.LOADED
         set(state) {
             when (state) {
-                LOADING -> if (loadingResourceId == null) {
+                State.LOADING -> if (loadingResourceId == null) {
                     throw IllegalStateException("Missing 'loading mState' resource id")
                 }
-                FAILED -> if (failedResourceId == null) {
+                State.FAILED -> if (failedResourceId == null) {
                     throw IllegalStateException("Missing 'failed mState' resource id")
                 }
-                EMPTY -> if (emptyResourceId == null) {
+                State.EMPTY -> if (emptyResourceId == null) {
                     throw IllegalStateException("Missing 'empty mState' resource id")
                 }
+                State.LOADED -> Unit // Do nothing
             }
 
             field = state
@@ -77,10 +74,10 @@ abstract class Section(sectionParameters: SectionParameters) {
     val sectionItemsTotal: Int
         get() {
             val contentTotal: Int = when (state) {
-                LOADING -> 1
-                LOADED -> getContentItemsTotal()
-                FAILED -> 1
-                EMPTY -> 1
+                State.LOADING -> 1
+                State.LOADED -> getContentItemsTotal()
+                State.FAILED -> 1
+                State.EMPTY -> 1
                 else -> throw IllegalStateException("Invalid mState")
             }
 
@@ -142,10 +139,10 @@ abstract class Section(sectionParameters: SectionParameters) {
      */
     fun onBindContentViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
         when (state) {
-            LOADING -> onBindLoadingViewHolder(holder)
-            LOADED -> onBindItemViewHolder(holder, position)
-            FAILED -> onBindFailedViewHolder(holder)
-            EMPTY -> onBindEmptyViewHolder(holder)
+            State.LOADING -> onBindLoadingViewHolder(holder)
+            State.LOADED -> onBindItemViewHolder(holder, position)
+            State.FAILED -> onBindFailedViewHolder(holder)
+            State.EMPTY -> onBindEmptyViewHolder(holder)
             else -> throw IllegalStateException("Invalid mState")
         }
     }

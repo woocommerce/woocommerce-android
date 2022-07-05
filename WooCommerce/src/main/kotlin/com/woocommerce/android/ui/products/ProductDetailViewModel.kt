@@ -49,14 +49,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitAttributesAdded
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttribute
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAttributeList
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloads
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductTags
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttribute
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttributeTerms
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
@@ -450,7 +443,7 @@ class ProductDetailViewModel @Inject constructor(
         launch {
             createEmptyVariation()
                 ?.let { triggerEvent(ShowSnackbar(string.variation_created_title)) }
-                .also { triggerEvent(ExitAttributesAdded) }
+                .also { triggerEvent(ProductExitEvent.ExitAttributesAdded) }
         }
     }
 
@@ -523,7 +516,9 @@ class ProductDetailViewModel @Inject constructor(
             val updatedDownloads = it.downloads - file
             updateProductDraft(downloads = updatedDownloads)
             // If the downloads list is empty now, go directly to the product details screen
-            if (updatedDownloads.isEmpty()) triggerEvent(ExitProductDownloads(shouldShowDiscardDialog = false))
+            if (updatedDownloads.isEmpty()) triggerEvent(
+                ProductExitEvent.ExitProductDownloads(shouldShowDiscardDialog = false)
+            )
         }
     }
 
@@ -612,33 +607,39 @@ class ProductDetailViewModel @Inject constructor(
         var eventName: AnalyticsEvent? = null
         var hasChanges = false
         when (event) {
-            is ExitSettings -> {
+            is ProductExitEvent.ExitSettings -> {
                 hasChanges = hasSettingsChanges()
             }
-            is ExitExternalLink -> {
+            is ProductExitEvent.ExitExternalLink -> {
                 eventName = AnalyticsEvent.EXTERNAL_PRODUCT_LINK_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasExternalLinkChanges()
             }
-            is ExitProductCategories -> {
+            is ProductExitEvent.ExitProductCategories -> {
                 eventName = AnalyticsEvent.PRODUCT_CATEGORY_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasCategoryChanges()
             }
-            is ExitProductTags -> {
+            is ProductExitEvent.ExitProductTags -> {
                 eventName = AnalyticsEvent.PRODUCT_TAG_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasTagChanges()
             }
-            is ExitProductAttributeList -> {
+            is ProductExitEvent.ExitProductAttributeList -> {
                 eventName = AnalyticsEvent.PRODUCT_VARIATION_EDIT_ATTRIBUTE_DONE_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
-            is ExitProductAddAttribute -> {
+            is ProductExitEvent.ExitProductAddAttribute -> {
                 eventName = AnalyticsEvent.PRODUCT_VARIATION_EDIT_ATTRIBUTE_OPTIONS_DONE_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
-            is ExitAttributesAdded -> {
+            is ProductExitEvent.ExitAttributesAdded -> {
                 eventName = AnalyticsEvent.PRODUCT_VARIATION_ATTRIBUTE_ADDED_BACK_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
+            is ProductExitEvent.ExitLinkedProducts -> Unit // Do nothing
+            is ProductExitEvent.ExitProductAddAttributeTerms -> Unit // Do nothing
+            is ProductExitEvent.ExitProductAddons -> Unit // Do nothing
+            is ProductExitEvent.ExitProductDownloads -> Unit // Do nothing
+            is ProductExitEvent.ExitProductDownloadsSettings -> Unit // Do nothing
+            is ProductExitEvent.ExitProductRenameAttribute -> Unit // Do nothing
         }
         eventName?.let { AnalyticsTracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
         triggerEvent(event)
@@ -1855,11 +1856,11 @@ class ProductDetailViewModel @Inject constructor(
 
                 // redirect to the product detail screen
                 productTagsViewState = productTagsViewState.copy(isProgressDialogShown = false)
-                onBackButtonClicked(ExitProductTags(shouldShowDiscardDialog = false))
+                onBackButtonClicked(ProductExitEvent.ExitProductTags(shouldShowDiscardDialog = false))
             }
         } else {
             // There are no newly added tags so redirect to the product detail screen
-            onBackButtonClicked(ExitProductTags(shouldShowDiscardDialog = false))
+            onBackButtonClicked(ProductExitEvent.ExitProductTags(shouldShowDiscardDialog = false))
         }
     }
 
