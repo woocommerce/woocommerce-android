@@ -296,6 +296,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_AMOUNT = "amount"
 
         const val KEY_PAYMENT_METHOD = "payment_method"
+        const val KEY_PAYMENT_GATEWAY = "payment_gateway"
 
         const val KEY_IS_JETPACK_CP_CONNECTED = "is_jetpack_cp_conntected"
         const val KEY_ACTIVE_JETPACK_CONNECTION_PLUGINS = "active_jetpack_connection_plugins"
