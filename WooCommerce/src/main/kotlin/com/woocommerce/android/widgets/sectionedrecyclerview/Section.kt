@@ -78,7 +78,6 @@ abstract class Section(sectionParameters: SectionParameters) {
                 State.LOADED -> getContentItemsTotal()
                 State.FAILED -> 1
                 State.EMPTY -> 1
-                else -> throw IllegalStateException("Invalid mState")
             }
 
             return contentTotal + (if (hasHeader) 1 else 0) + if (hasFooter) 1 else 0
@@ -143,7 +142,6 @@ abstract class Section(sectionParameters: SectionParameters) {
             State.LOADED -> onBindItemViewHolder(holder, position)
             State.FAILED -> onBindFailedViewHolder(holder)
             State.EMPTY -> onBindEmptyViewHolder(holder)
-            else -> throw IllegalStateException("Invalid mState")
         }
     }
 
