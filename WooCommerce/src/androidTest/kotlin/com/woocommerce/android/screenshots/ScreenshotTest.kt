@@ -25,7 +25,7 @@ import tools.fastlane.screengrab.cleanstatusbar.CleanStatusBar
 import tools.fastlane.screengrab.locale.LocaleTestRule
 
 @HiltAndroidTest
-class ScreenshotTest : TestBase() {
+class ScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
     @get:Rule(order = 0)
     val rule = HiltAndroidRule(this)
 
