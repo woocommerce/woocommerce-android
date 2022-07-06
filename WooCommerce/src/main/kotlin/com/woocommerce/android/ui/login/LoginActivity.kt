@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow.LOGIN_SITE_ADDRESS
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Source
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step.ENTER_SITE_ADDRESS
+import com.woocommerce.android.ui.login.replacements.WooLoginEmailFragment
 import com.woocommerce.android.ui.login.replacements.WooLoginSiteAddressFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
@@ -43,6 +44,7 @@ import org.wordpress.android.login.AuthOptions
 import org.wordpress.android.login.GoogleFragment.GoogleListener
 import org.wordpress.android.login.Login2FaFragment
 import org.wordpress.android.login.LoginAnalyticsListener
+import org.wordpress.android.login.LoginEmailFragment
 import org.wordpress.android.login.LoginEmailPasswordFragment
 import org.wordpress.android.login.LoginGoogleFragment
 import org.wordpress.android.login.LoginListener
@@ -632,10 +634,8 @@ class LoginActivity :
         } else {
             val loginEmailFragment = getLoginEmailFragment(
                 siteCredsLayout = false
-            ) ?: LoginEmailFragment.newInstance(siteAddress, false)
-            slideInFragment(
-                loginEmailFragment as Fragment, true, LoginEmailFragment.TAG
-            )
+            ) ?: WooLoginEmailFragment()
+            slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
         }
     }
 
