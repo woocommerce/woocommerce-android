@@ -70,19 +70,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/major_100"
         android:layout_marginEnd="@dimen/major_100"
-        android:text="@string/login_wpcom"
-        android:textAllCaps="false"
-        app:layout_constraintBottom_toTopOf="@+id/button_login_qr_code" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/button_login_qr_code"
-        style="@style/Woo.Button.Colored.White"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/major_100"
-        android:layout_marginEnd="@dimen/major_100"
         android:layout_marginBottom="@dimen/major_150"
-        android:text="@string/login_with_qr_code"
+        android:text="@string/login_wpcom"
         android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="parent" />
 
