@@ -39,4 +39,12 @@ class StatsComponent : Screen(STATS_DASHBOARD) {
 
         return MyStoreScreen()
     }
+
+    fun switchToStatsDashboardMonthTab(): MyStoreScreen {
+        selectItemWithTitleInTabLayout(R.string.this_month, R.id.app_bar_layout)
+        waitForGraphToLoad()
+
+        return MyStoreScreen()
+    }
+
 }

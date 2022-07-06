@@ -72,7 +72,7 @@ class ScreenshotTest : TestBase() {
 
         // My Store
         MyStoreScreen()
-            .stats.switchToStatsDashboardWeekTab()
+            .stats.switchToStatsDashboardMonthTab()
             .thenTakeScreenshot<MyStoreScreen>("order-dashboard")
 
         // Create Orders
