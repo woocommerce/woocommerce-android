@@ -2505,5 +2505,5 @@
     <string name="lines_incomplete_explanation">To edit all %1$s browse the order in your WooCommerce store admin</string>
     <string name="lines_all_details">the details</string>
     <string name="tests_notification_new_order_title">You have a new order! 🎉</string>
-    <string name="tests_notification_new_order_message">New order for $20 on Your WooCommerce Store</string>
+    <string name="tests_notification_new_order_message">New order for $50 on Your WooCommerce Store</string>
 </resources>
