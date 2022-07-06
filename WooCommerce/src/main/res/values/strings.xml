@@ -2423,6 +2423,7 @@
     <string name="enter_your_site_address">Enter your site address</string>
     <string name="reset_your_password">Reset your password</string>
     <string name="signup_confirmation_title">Signup confirmation</string>
+    <string name="what_is_wordpress_link">What is Wordpress.com</string>
 
     <string name="login_site_address">Site address</string>
 

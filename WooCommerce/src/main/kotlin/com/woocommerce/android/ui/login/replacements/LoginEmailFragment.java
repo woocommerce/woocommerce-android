@@ -4,7 +4,6 @@ import static android.app.Activity.RESULT_OK;
 
 import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Build;
@@ -68,8 +67,9 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import dagger.android.support.AndroidSupportInjection;
+import dagger.hilt.android.AndroidEntryPoint;
 
+@AndroidEntryPoint
 public class LoginEmailFragment extends LoginBaseFormFragment<LoginListener> implements TextWatcher,
         OnEditorCommitListener, ConnectionCallbacks, OnConnectionFailedListener {
     private static final String KEY_GOOGLE_EMAIL = "KEY_GOOGLE_EMAIL";
@@ -365,12 +365,6 @@ public class LoginEmailFragment extends LoginBaseFormFragment<LoginListener> imp
                 mLoginListener.helpEmailScreen(EditTextUtils.getText(mEmailInput.getEditText()));
             }
         }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        AndroidSupportInjection.inject(this);
-        super.onAttach(context);
     }
 
     @Override
