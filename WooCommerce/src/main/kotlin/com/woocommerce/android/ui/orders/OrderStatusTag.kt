@@ -16,7 +16,7 @@ class OrderStatusTag(private val orderStatus: OrderStatus) : ITag(orderStatus.st
     override fun getTagConfiguration(context: Context): TagConfig {
         val config = TagConfig(context).apply { tagText = orderStatus.label }
 
-        when (rawText.toLowerCase(Locale.US)) {
+        when (rawText.lowercase(Locale.US)) {
             CoreOrderStatus.PROCESSING.value -> {
                 config.bgColor = ContextCompat.getColor(context, R.color.tag_bg_processing)
             }

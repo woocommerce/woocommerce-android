@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.view.WindowManager
 import android.view.animation.Animation
@@ -50,7 +51,7 @@ class ProductImageViewerFragment :
 
     private var isConfirmationShowing = false
     private var confirmationDialog: AlertDialog? = null
-    private val fadeOutToolbarHandler = Handler()
+    private val fadeOutToolbarHandler = Handler(Looper.getMainLooper())
 
     private var remoteMediaId = 0L
     private lateinit var pagerAdapter: ImageViewerAdapter
@@ -103,6 +104,7 @@ class ProductImageViewerFragment :
         // Toolbar doesn't get restored when navigating back.
         // This seems like a bug in the fragment library.
         view.postDelayed({
+            @Suppress("DEPRECATION")
             requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
         }, 500)
     }
@@ -110,6 +112,7 @@ class ProductImageViewerFragment :
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        @Suppress("DEPRECATION")
         requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
     }
 

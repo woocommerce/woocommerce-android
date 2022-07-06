@@ -2,8 +2,8 @@ package com.woocommerce.android.ui.login
 
 import android.app.Dialog
 import android.os.Bundle
-import android.text.Html
 import android.view.ContextThemeWrapper
+import androidx.core.text.HtmlCompat
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
@@ -41,7 +41,10 @@ class LoginEmailHelpDialogFragment : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val message = Html.fromHtml(getString(R.string.login_email_help_desc, "<b>", "</b>", "<b>", "</b>"))
+        val message = HtmlCompat.fromHtml(
+            getString(R.string.login_email_help_desc, "<b>", "</b>", "<b>", "</b>"),
+            HtmlCompat.FROM_HTML_MODE_LEGACY
+        )
 
         return MaterialAlertDialogBuilder(ContextThemeWrapper(requireActivity(), style.Theme_Woo_Dialog))
             .setTitle(R.string.login_email_help_title)

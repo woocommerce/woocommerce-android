@@ -6,7 +6,9 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.media.FileUtils
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.*
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintShippingLabelInfo
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelFormatOptions
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelPaperSizes
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelViewModel.PrintShippingLabelViewState
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize
@@ -26,8 +28,7 @@ import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.API_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
-import java.util.*
-import kotlin.collections.ArrayList
+import java.util.Date
 import kotlin.test.assertNotNull
 
 @ExperimentalCoroutinesApi
