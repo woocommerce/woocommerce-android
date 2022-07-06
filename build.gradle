@@ -82,7 +82,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = '1.45.1'
+    fluxCVersion = '2454-3457772fa66619f4e33ac7bb318c49fc4540500a'
     glideVersion = '4.13.2'
     coilVersion = '2.1.0'
     constraintLayoutVersion = '1.2.0'
@@ -98,10 +98,10 @@ ext {
     appCompatVersion = '1.4.1'
     materialVersion = '1.6.1'
     hiltJetpackVersion = '1.0.0'
-    wordPressUtilsVersion = "2.3.0"
-    mediapickerVersion = 'trunk-d0db2634cf27511bec3ef9b837f9cfe27c5ab601'
-    wordPressLoginVersion = '0.13.0'
-    aboutAutomatticVersion = '0.0.4'
+    wordPressUtilsVersion = '107-a37619ac2b7703becf2554d31c09c6487c04b56f'
+    mediapickerVersion = '57-30f4f719646c29893f58f75a96dfb28d3e25bb68'
+    wordPressLoginVersion = '86-9966060c0483344c699636ee53def4bcd3603c65'
+    aboutAutomatticVersion = '36-e6c8e93e564a857b3c1dd3d2588a0114c36fad40'
 
     // Compose and its module versions need to be consistent with each other (for example 'compose-theme-adapter')
     composeVersion = "1.1.1"
