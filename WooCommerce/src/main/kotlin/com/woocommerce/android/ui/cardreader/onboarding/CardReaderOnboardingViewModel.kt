@@ -13,6 +13,7 @@ import com.woocommerce.android.extensions.formatToMMMMdd
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.cardreader.detail.CardReaderDetailViewModel
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingParams.Check
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingParams.Failed
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
@@ -205,12 +206,10 @@ class CardReaderOnboardingViewModel @Inject constructor(
     }
 
     private fun updateUiWithSelectPaymentPlugin() {
-        launch {
-            viewState.value =
-                OnboardingViewState.SelectPaymentPluginState(
-                    onConfirmPaymentMethodClicked = { (::refreshState)(it) }
-                )
-        }
+        viewState.value =
+            OnboardingViewState.SelectPaymentPluginState(
+                onConfirmPaymentMethodClicked = { (::refreshState)(it) }
+            )
     }
 
     private fun updateUiWithWcPayAndStripeActivated() {
@@ -242,7 +241,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
         if (selectedSite.get().isWPCom || selectedSite.get().isWPComAtomic) {
             triggerEvent(NavigateToUrlInWPComWebView(url))
         } else {
-            triggerEvent(NavigateToUrlInGenericWebView(url))
+            triggerEvent(CardReaderDetailViewModel.CardReaderDetailEvent.NavigateToUrlInGenericWebView(url))
         }
     }
 
@@ -261,7 +260,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
             STRIPE_EXTENSION_GATEWAY -> AppUrls.STRIPE_LEARN_MORE_ABOUT_PAYMENTS
             WOOCOMMERCE_PAYMENTS, null -> AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS
         }
-        triggerEvent(NavigateToUrlInGenericWebView(learnMoreUrl))
+        triggerEvent(CardReaderDetailViewModel.CardReaderDetailEvent.NavigateToUrlInGenericWebView(learnMoreUrl))
     }
 
     private fun onSkipPendingRequirementsClicked(storeCountryCode: String) {
