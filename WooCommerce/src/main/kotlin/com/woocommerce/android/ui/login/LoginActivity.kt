@@ -25,8 +25,8 @@ import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow.LOGIN_SITE_ADDRESS
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Source
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step.ENTER_SITE_ADDRESS
-import com.woocommerce.android.ui.login.replacements.WooLoginEmailFragment
-import com.woocommerce.android.ui.login.replacements.WooLoginSiteAddressFragment
+import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
+import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils

@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.replacements
+package com.woocommerce.android.ui.login.overrides
 
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes

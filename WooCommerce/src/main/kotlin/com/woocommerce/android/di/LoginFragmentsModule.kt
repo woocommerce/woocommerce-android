@@ -1,7 +1,7 @@
 package com.woocommerce.android.di
 
-import com.woocommerce.android.ui.login.replacements.WooLoginEmailFragment
-import com.woocommerce.android.ui.login.replacements.WooLoginSiteAddressFragment
+import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
+import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import dagger.hilt.InstallIn
