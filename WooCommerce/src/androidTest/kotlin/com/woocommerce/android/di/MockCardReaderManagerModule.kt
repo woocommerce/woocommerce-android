@@ -32,19 +32,20 @@ import javax.inject.Singleton
 )
 @Module
 class MockCardReaderManagerModule {
+    @Suppress("EmptyFunctionBlock")
     @Provides
     @Singleton
     fun provideCardReaderManager() = object : CardReaderManager {
         private val cardReader = object : CardReader {
-            override val id: String?
+            override val id: String
                 get() = "ADEE123"
             override val type: String
                 get() = "reader"
-            override val currentBatteryLevel: Float?
+            override val currentBatteryLevel: Float
                 get() = 1f
             override val firmwareVersion: String
                 get() = "1.0"
-            override val locationId: String?
+            override val locationId: String
                 get() = "US"
         }
 
@@ -72,9 +73,7 @@ class MockCardReaderManagerModule {
             return emptyFlow()
         }
 
-        override fun startConnectionToReader(cardReader: CardReader, locationId: String) {
-
-        }
+        override fun startConnectionToReader(cardReader: CardReader, locationId: String) {}
 
         override suspend fun disconnectReader(): Boolean = true
 
@@ -89,16 +88,12 @@ class MockCardReaderManagerModule {
             return emptyFlow()
         }
 
-        override fun cancelPayment(paymentData: PaymentData) {
-        }
+        override fun cancelPayment(paymentData: PaymentData) {}
 
-        override suspend fun startAsyncSoftwareUpdate() {
-        }
+        override suspend fun startAsyncSoftwareUpdate() {}
 
-        override suspend fun clearCachedCredentials() {
-        }
+        override suspend fun clearCachedCredentials() {}
 
-        override fun cancelOngoingFirmwareUpdate() {
-        }
+        override fun cancelOngoingFirmwareUpdate() {}
     }
 }
