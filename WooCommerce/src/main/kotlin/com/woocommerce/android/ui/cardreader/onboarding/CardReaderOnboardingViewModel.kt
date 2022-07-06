@@ -241,7 +241,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
         if (selectedSite.get().isWPCom || selectedSite.get().isWPComAtomic) {
             triggerEvent(NavigateToUrlInWPComWebView(url))
         } else {
-            triggerEvent(CardReaderDetailViewModel.CardReaderDetailEvent.NavigateToUrlInGenericWebView(url))
+            triggerEvent(NavigateToUrlInGenericWebView(url))
         }
     }
 
@@ -260,7 +260,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
             STRIPE_EXTENSION_GATEWAY -> AppUrls.STRIPE_LEARN_MORE_ABOUT_PAYMENTS
             WOOCOMMERCE_PAYMENTS, null -> AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS
         }
-        triggerEvent(CardReaderDetailViewModel.CardReaderDetailEvent.NavigateToUrlInGenericWebView(learnMoreUrl))
+        triggerEvent(NavigateToUrlInGenericWebView(learnMoreUrl))
     }
 
     private fun onSkipPendingRequirementsClicked(storeCountryCode: String) {
