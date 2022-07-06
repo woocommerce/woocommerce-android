@@ -200,8 +200,15 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     ::onLearnMoreClicked
                 )
             WcpayAndStripeActivated -> updateUiWithWcPayAndStripeActivated()
-            ChoosePaymentGatewayProvider -> TODO()
+            ChoosePaymentGatewayProvider -> updateUiWithSelectPaymentPlugin()
         }.exhaustive
+    }
+
+    private fun updateUiWithSelectPaymentPlugin() {
+        viewState.value =
+            OnboardingViewState.SelectPaymentPluginState(
+                onConfirmPaymentMethodClicked = { (::refreshState)(it) }
+            )
     }
 
     private fun updateUiWithWcPayAndStripeActivated() {
@@ -310,6 +317,21 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 containsHtml = true
             )
             val illustration = R.drawable.img_products_error
+        }
+
+        data class SelectPaymentPluginState(
+            val onConfirmPaymentMethodClicked: ((PluginType) -> Unit),
+        ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_select_payment_gateway) {
+            val cardIllustration = R.drawable.ic_credit_card_give
+            val headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_choose_payment_provider)
+            val choosePluginHintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_choose_plugin_hint)
+
+            val selectWcPayButtonLabel = UiString.UiStringRes(R.string.card_reader_onboarding_choose_wcpayment_button)
+            val icWcPayLogo = R.drawable.ic_wcpay
+            val icCheckmarkWcPay = R.drawable.ic_menu_action_mode_check
+            val selectStripeButtonLabel = UiString.UiStringRes(R.string.card_reader_onboarding_choose_stripe_button)
+            val confirmPaymentMethodButtonLabel = UiString
+                .UiStringRes(R.string.card_reader_onboarding_confirm_payment_method_button)
         }
 
         data class WcPayAndStripeInstalledState(
