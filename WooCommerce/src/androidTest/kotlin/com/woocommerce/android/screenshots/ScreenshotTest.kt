@@ -83,35 +83,11 @@ class ScreenshotTest : TestBase() {
             .thenTakeScreenshot<OrderCreationScreen>("add-order")
             .goBackToOrdersScreen()
 
-
         // Create Products
         TabNavComponent()
             .gotoProductsScreen()
             .tapOnCreateProduct()
             .thenTakeScreenshot<ProductListScreen>("add-product")
             .goBackToProductList()
-
-//        // More Menu
-//        TabNavComponent()
-//            .gotoMoreMenuScreen()
-//            .thenTakeScreenshot<MoreMenuScreen>("more-menu")
-//
-//        // Reviews
-//        TabNavComponent()
-//            .gotoMoreMenuScreen()
-//            .openReviewsListScreen(composeTestRule)
-//            .thenTakeScreenshot<ReviewsListScreen>("review-list")
-//            .selectReviewByIndex(4)
-//            .thenTakeScreenshot<SingleReviewScreen>("review-details")
-//            .goBackToReviewsScreen()
-//            .goBackToMoreMenuScreen()
-//
-//        // Products
-//        TabNavComponent()
-//            .gotoProductsScreen()
-//            .thenTakeScreenshot<ProductListScreen>("product-list")
-//            .selectProductByName("Akoya Pearl shades")
-//            .thenTakeScreenshot<SingleProductScreen>("product-details")
-//            .goBackToProductsScreen()
     }
 }

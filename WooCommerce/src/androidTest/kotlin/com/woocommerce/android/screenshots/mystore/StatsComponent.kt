@@ -46,5 +46,4 @@ class StatsComponent : Screen(STATS_DASHBOARD) {
 
         return MyStoreScreen()
     }
-
 }
