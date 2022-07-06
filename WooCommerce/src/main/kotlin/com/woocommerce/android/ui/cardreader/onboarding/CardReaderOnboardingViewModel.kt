@@ -13,7 +13,6 @@ import com.woocommerce.android.extensions.formatToMMMMdd
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.cardreader.CardReaderTracker
-import com.woocommerce.android.ui.cardreader.detail.CardReaderDetailViewModel
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingParams.Check
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingParams.Failed
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
