@@ -26,6 +26,8 @@ import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow.LOGIN_SITE_ADDRESS
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Source
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step.ENTER_SITE_ADDRESS
+import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
+import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -182,7 +184,7 @@ class LoginActivity :
     }
 
     private fun getLoginViaSiteAddressFragment(): LoginSiteAddressFragment? =
-        supportFragmentManager.findFragmentByTag(LoginSiteAddressFragment.TAG) as? LoginSiteAddressFragment
+        supportFragmentManager.findFragmentByTag(LoginSiteAddressFragment.TAG) as? WooLoginSiteAddressFragment
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
@@ -312,7 +314,7 @@ class LoginActivity :
 
     override fun loginViaSiteAddress() {
         unifiedLoginTracker.setFlowAndStep(LOGIN_SITE_ADDRESS, ENTER_SITE_ADDRESS)
-        val loginSiteAddressFragment = getLoginViaSiteAddressFragment() ?: LoginSiteAddressFragment()
+        val loginSiteAddressFragment = getLoginViaSiteAddressFragment() ?: WooLoginSiteAddressFragment()
         slideInFragment(loginSiteAddressFragment, true, LoginSiteAddressFragment.TAG)
     }
 
@@ -651,10 +653,8 @@ class LoginActivity :
         } else {
             val loginEmailFragment = getLoginEmailFragment(
                 siteCredsLayout = false
-            ) ?: LoginEmailFragment.newInstance(siteAddress, false)
-            slideInFragment(
-                loginEmailFragment as Fragment, true, LoginEmailFragment.TAG
-            )
+            ) ?: WooLoginEmailFragment()
+            slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
         }
     }
 

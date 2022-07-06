@@ -926,6 +926,7 @@
         -->
     <string name="card_reader_manage_card_reader">Manage Card Reader</string>
     <string name="card_reader_purchase_card_reader">Order Card Reader</string>
+    <string name="card_reader_manage_payment_provider">Change Payment Provider</string>
     <string name="card_reader_bbpos_manual_card_reader" translatable="false">BBPOS Chipper™ 2X BT</string>
     <string name="card_reader_m2_manual_card_reader" translatable="false">Stripe M2</string>
     <string name="card_reader_wisepad_3_manual_card_reader" translatable="false">WisePad 3</string>
@@ -2423,6 +2424,7 @@
     <string name="enter_your_site_address">Enter your site address</string>
     <string name="reset_your_password">Reset your password</string>
     <string name="signup_confirmation_title">Signup confirmation</string>
+    <string name="what_is_wordpress_link">What is Wordpress.com</string>
 
     <string name="login_site_address">Site address</string>
 
