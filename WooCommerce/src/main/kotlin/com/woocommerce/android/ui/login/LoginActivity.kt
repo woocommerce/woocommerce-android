@@ -25,7 +25,7 @@ import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow.LOGIN_SITE_ADDRESS
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Source
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step.ENTER_SITE_ADDRESS
-import com.woocommerce.android.ui.login.replacements.LoginSiteAddressFragment
+import com.woocommerce.android.ui.login.replacements.WooLoginSiteAddressFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -50,6 +50,7 @@ import org.wordpress.android.login.LoginListener
 import org.wordpress.android.login.LoginMagicLinkRequestFragment
 import org.wordpress.android.login.LoginMagicLinkSentFragment
 import org.wordpress.android.login.LoginMode
+import org.wordpress.android.login.LoginSiteAddressFragment
 import org.wordpress.android.login.LoginUsernamePasswordFragment
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
@@ -181,7 +182,7 @@ class LoginActivity :
     }
 
     private fun getLoginViaSiteAddressFragment(): LoginSiteAddressFragment? =
-        supportFragmentManager.findFragmentByTag(LoginSiteAddressFragment.TAG) as? LoginSiteAddressFragment
+        supportFragmentManager.findFragmentByTag(LoginSiteAddressFragment.TAG) as? WooLoginSiteAddressFragment
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
@@ -293,7 +294,7 @@ class LoginActivity :
 
     override fun loginViaSiteAddress() {
         unifiedLoginTracker.setFlowAndStep(LOGIN_SITE_ADDRESS, ENTER_SITE_ADDRESS)
-        val loginSiteAddressFragment = getLoginViaSiteAddressFragment() ?: LoginSiteAddressFragment()
+        val loginSiteAddressFragment = getLoginViaSiteAddressFragment() ?: WooLoginSiteAddressFragment()
         slideInFragment(loginSiteAddressFragment, true, LoginSiteAddressFragment.TAG)
     }
 

@@ -31,4 +31,13 @@
         android:paddingEnd="@dimen/margin_none"
         android:paddingStart="@dimen/margin_none"
         android:text="@string/login_find_your_site_adress" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/login_test_button"
+        style="@style/Widget.LoginFlow.Button.Tertiary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingEnd="@dimen/margin_none"
+        android:paddingStart="@dimen/margin_none"
+        android:text="Just a test button to check override works" />
 </LinearLayout>
