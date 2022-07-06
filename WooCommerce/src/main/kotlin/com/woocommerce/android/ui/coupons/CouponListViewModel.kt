@@ -146,19 +146,18 @@ class CouponListViewModel @Inject constructor(
                     if (it.isNullOrEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS
                 }
                 .collectLatest { query ->
-                    try {
-                        couponListHandler.fetchCoupons(searchQuery = query)
-                            .onFailure {
-                                triggerEvent(
-                                    MultiLiveEvent.Event.ShowSnackbar(
-                                        if (query == null) R.string.coupon_list_loading_failed
-                                        else R.string.coupon_list_search_failed
-                                    )
+                    // Make sure the loading state is correctly set after debounce too
+                    loadingState.value = LoadingState.Loading
+                    couponListHandler.fetchCoupons(searchQuery = query)
+                        .onFailure {
+                            triggerEvent(
+                                MultiLiveEvent.Event.ShowSnackbar(
+                                    if (query == null) R.string.coupon_list_loading_failed
+                                    else R.string.coupon_list_search_failed
                                 )
-                            }
-                    } finally {
-                        loadingState.value = LoadingState.Idle
-                    }
+                            )
+                        }
+                    loadingState.value = LoadingState.Idle
                 }
         }
     }
