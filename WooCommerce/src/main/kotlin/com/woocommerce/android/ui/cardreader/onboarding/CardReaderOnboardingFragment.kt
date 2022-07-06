@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.NavGraphMainDirections
@@ -131,18 +132,20 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         binding.selectWcPayButton.setOnClickListener {
             selectedPluginType = PluginType.WOOCOMMERCE_PAYMENTS
             binding.selectWcPayButton.strokeColor =
-                ColorStateList.valueOf(resources.getColor(R.color.woo_purple_60))
+                ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.woo_purple_60))
             binding.icCheckmarkWcPay.visibility = View.VISIBLE
             binding.icCheckmarkStripe.visibility = View.GONE
-            binding.selectStripeButton.strokeColor = ColorStateList.valueOf(resources.getColor(R.color.gray_5))
+            binding.selectStripeButton.strokeColor =
+                ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.gray_5))
         }
         binding.selectStripeButton.setOnClickListener {
             selectedPluginType = PluginType.STRIPE_EXTENSION_GATEWAY
             binding.selectStripeButton.strokeColor =
-                ColorStateList.valueOf(resources.getColor(R.color.woo_purple_60))
+                ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.woo_purple_60))
             binding.icCheckmarkWcPay.visibility = View.GONE
             binding.icCheckmarkStripe.visibility = View.VISIBLE
-            binding.selectWcPayButton.strokeColor = ColorStateList.valueOf(resources.getColor(R.color.gray_5))
+            binding.selectWcPayButton.strokeColor =
+                ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.gray_5))
         }
         binding.confirmPaymentMethod.setOnClickListener {
             state.onConfirmPaymentMethodClicked.invoke(selectedPluginType)
