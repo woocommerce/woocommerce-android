@@ -45,7 +45,6 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
             paymentMethodTitle = databaseEntity.paymentMethodTitle,
             isCashPayment = CASH_PAYMENTS.contains(databaseEntity.paymentMethod),
             pricesIncludeTax = databaseEntity.pricesIncludeTax,
-            multiShippingLinesAvailable = databaseEntity.isMultiShippingLinesAvailable(),
             billingAddress = databaseEntity.getBillingAddress().mapAddress(),
             shippingAddress = databaseEntity.getShippingAddress().mapAddress(),
             shippingMethods = databaseEntity.getShippingLineList().mapShippingMethods(),
