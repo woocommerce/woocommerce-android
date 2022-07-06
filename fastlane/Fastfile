@@ -633,6 +633,12 @@ platform :android do
     }
 
     UI.message("Taking screenshots for Dark theme...")
+    begin
+       adb(command: "shell cmd uimode night yes")
+     rescue => ex
+       # Skip any error here
+       UI.error(ex)
+    end
     screengrab(
       screenshot_options.merge(
         {
@@ -642,6 +648,12 @@ platform :android do
     )
 
     UI.message("Taking screenshots for Light theme...")
+    begin
+       adb(command: "shell cmd uimode night no")
+     rescue => ex
+       # Skip any error here
+       UI.error(ex)
+    end
     screengrab(
       screenshot_options.merge(
         {
