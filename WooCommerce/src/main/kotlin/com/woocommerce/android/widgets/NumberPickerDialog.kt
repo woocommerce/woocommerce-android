@@ -96,6 +96,7 @@ open class NumberPickerDialog : DialogFragment(), DialogInterface.OnClickListene
         super.onDismiss(dialog)
     }
 
+    @Suppress("DEPRECATION")
     open fun returnResult(selectedValue: Int) {
         val target = targetFragment
         val resultIntent = Intent()

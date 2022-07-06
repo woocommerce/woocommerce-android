@@ -2,15 +2,13 @@ package com.woocommerce.android.ui.orders.notes
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Build
-import android.text.Html
-import android.text.Spanned
 import android.text.format.DateFormat
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.text.HtmlCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderDetailNoteItemBinding
 import com.woocommerce.android.model.OrderNote
@@ -33,7 +31,7 @@ class OrderDetailOrderNoteItemView @JvmOverloads constructor(
         val header = if (note.isSystemNote) "$date ($type)" else "$date - ${note.author} ($type)"
 
         binding.orderNoteHeader.text = header
-        binding.orderNoteNote.text = getHtmlText(note.note)
+        binding.orderNoteNote.text = HtmlCompat.fromHtml(note.note, HtmlCompat.FROM_HTML_MODE_LEGACY)
 
         @DrawableRes val drawableId = when {
             note.isCustomerNote -> R.drawable.ic_note_public
@@ -41,14 +39,5 @@ class OrderDetailOrderNoteItemView @JvmOverloads constructor(
             else -> R.drawable.ic_note_private
         }
         binding.orderNoteIcon.setImageDrawable(ContextCompat.getDrawable(context, drawableId))
-    }
-
-    private fun getHtmlText(txt: String): Spanned {
-        return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            @Suppress("DEPRECATION")
-            Html.fromHtml(txt)
-        } else {
-            Html.fromHtml(txt, Html.FROM_HTML_MODE_LEGACY)
-        }
     }
 }

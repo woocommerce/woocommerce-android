@@ -2,12 +2,12 @@ package com.woocommerce.android.ui.orders.shippinglabels
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.text.HtmlCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentPrintShippingLabelInfoBinding
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.util.StringUtils
 
 class PrintShippingLabelInfoFragment : BaseFragment(R.layout.fragment_print_shipping_label_info) {
     override val activityAppBarStatus: AppBarStatus
@@ -19,15 +19,15 @@ class PrintShippingLabelInfoFragment : BaseFragment(R.layout.fragment_print_ship
         super.onViewCreated(view, savedInstanceState)
         val binding = FragmentPrintShippingLabelInfoBinding.bind(view)
         binding.printShippingLabelInfoStep1.text =
-            StringUtils.fromHtml(getString(R.string.print_shipping_label_info_step_1))
+            HtmlCompat.fromHtml(getString(R.string.print_shipping_label_info_step_1), HtmlCompat.FROM_HTML_MODE_LEGACY)
         binding.printShippingLabelInfoStep2.text =
-            StringUtils.fromHtml(getString(R.string.print_shipping_label_info_step_2))
+            HtmlCompat.fromHtml(getString(R.string.print_shipping_label_info_step_2), HtmlCompat.FROM_HTML_MODE_LEGACY)
         binding.printShippingLabelInfoStep3.text =
-            StringUtils.fromHtml(getString(R.string.print_shipping_label_info_step_3))
+            HtmlCompat.fromHtml(getString(R.string.print_shipping_label_info_step_3), HtmlCompat.FROM_HTML_MODE_LEGACY)
         binding.printShippingLabelInfoStep4.text =
-            StringUtils.fromHtml(getString(R.string.print_shipping_label_info_step_4))
+            HtmlCompat.fromHtml(getString(R.string.print_shipping_label_info_step_4), HtmlCompat.FROM_HTML_MODE_LEGACY)
         binding.printShippingLabelInfoStep5.text =
-            StringUtils.fromHtml(getString(R.string.print_shipping_label_info_step_5))
+            HtmlCompat.fromHtml(getString(R.string.print_shipping_label_info_step_5), HtmlCompat.FROM_HTML_MODE_LEGACY)
     }
 
     override fun onResume() {

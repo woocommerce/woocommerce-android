@@ -796,7 +796,7 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     private fun trackPublishing(it: Product) {
-        val properties = mapOf("product_type" to it.productType.value.toLowerCase(Locale.ROOT))
+        val properties = mapOf("product_type" to it.productType.value.lowercase(Locale.ROOT))
         val statId = if (it.status == ProductStatus.DRAFT) {
             AnalyticsEvent.ADD_PRODUCT_SAVE_AS_DRAFT_TAPPED
         } else {

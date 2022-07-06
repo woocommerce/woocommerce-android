@@ -513,7 +513,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                 } else {
                     resourceProvider.getString(
                         string.shipping_label_multi_packages_items_count,
-                        data.sumBy { it.itemsCount },
+                        data.sumOf { it.itemsCount },
                         data.size
                     )
                 }
