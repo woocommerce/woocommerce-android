@@ -3,12 +3,10 @@ package com.woocommerce.android.ui.orders.creation
 import com.woocommerce.android.extensions.areSameAs
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.model.Order
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
 
-@ExperimentalCoroutinesApi
 class AutoSyncOrder @Inject constructor(val createUpdateOrderUseCase: CreateUpdateOrder) : SyncStrategy {
     private fun areEquivalent(old: Order, new: Order): Boolean {
         // Make sure to update the prices only when items did change
