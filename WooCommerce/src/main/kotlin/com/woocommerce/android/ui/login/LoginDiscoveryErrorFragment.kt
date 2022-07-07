@@ -2,13 +2,13 @@ package com.woocommerce.android.ui.login
 
 import android.content.Context
 import android.os.Bundle
-import android.text.Html
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
@@ -92,7 +92,9 @@ class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_err
             it.setDisplayShowTitleEnabled(false)
         }
 
-        errorMessage?.let { binding.discoveryErrorMessage.text = Html.fromHtml(getString(it)) }
+        errorMessage?.let {
+            binding.discoveryErrorMessage.text = HtmlCompat.fromHtml(getString(it), HtmlCompat.FROM_HTML_MODE_LEGACY)
+        }
 
         with(binding.discoveryWordpressOptionView) {
             setOnClickListener {

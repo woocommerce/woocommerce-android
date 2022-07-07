@@ -7,6 +7,8 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.cardreader.InPersonPaymentsCanadaFeatureFlag
@@ -30,6 +32,7 @@ class CardReaderHubViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooStore: WooCommerceStore,
     private val ippSelectPaymentGateway: IppSelectPaymentGateway,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderHubFragmentArgs by savedState.navArgs()
 
@@ -114,8 +117,13 @@ class CardReaderHubViewModel @Inject constructor(
     }
 
     private fun onCardReaderPaymentProviderClicked() {
+        trackPaymentProviderClickedEvent()
         clearPluginExplicitlySelectedFlag()
         triggerEvent(CardReaderHubEvents.NavigateToCardReaderOnboardingScreen)
+    }
+
+    private fun trackPaymentProviderClickedEvent() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.SETTINGS_CARD_PRESENT_SELECT_PAYMENT_GATEWAY_TAPPED)
     }
 
     private fun clearPluginExplicitlySelectedFlag() {

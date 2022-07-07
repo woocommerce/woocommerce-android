@@ -109,16 +109,15 @@ class ProductCategorySelectorViewModel @Inject constructor(
                     if (it.isNullOrEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS
                 }
                 .collectLatest { query ->
-                    try {
-                        listHandler.fetchCategories(searchQuery = query)
-                            .onFailure {
-                                val message = if (query.isEmpty()) R.string.product_category_selector_loading_failed
-                                else R.string.product_category_selector_search_failed
-                                triggerEvent(ShowSnackbar(message))
-                            }
-                    } finally {
-                        loadingState.value = LoadingState.Idle
-                    }
+                    // Make sure the loading state is correctly set after debounce too
+                    loadingState.value = LoadingState.Loading
+                    listHandler.fetchCategories(searchQuery = query)
+                        .onFailure {
+                            val message = if (query.isEmpty()) R.string.product_category_selector_loading_failed
+                            else R.string.product_category_selector_search_failed
+                            triggerEvent(ShowSnackbar(message))
+                        }
+                    loadingState.value = LoadingState.Idle
                 }
         }
     }

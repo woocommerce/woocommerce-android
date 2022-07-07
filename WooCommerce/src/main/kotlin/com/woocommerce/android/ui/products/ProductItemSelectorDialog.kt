@@ -26,6 +26,7 @@ class ProductItemSelectorDialog : DialogFragment() {
     companion object {
         const val TAG: String = "ProductItemSelectorDialog"
 
+        @Suppress("DEPRECATION")
         fun newInstance(
             listener: Fragment,
             requestCode: Int,
@@ -56,6 +57,7 @@ class ProductItemSelectorDialog : DialogFragment() {
 
     private var listener: ProductItemSelectorDialogListener? = null
 
+    @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         listener = targetFragment as ProductItemSelectorDialogListener

@@ -11,6 +11,7 @@ import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
+import com.woocommerce.android.AppUrls.LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -69,6 +70,7 @@ class LoginActivity :
     HasAndroidInjector,
     LoginNoJetpackListener,
     LoginEmailHelpDialogFragment.Listener,
+    WooLoginEmailFragment.Listener,
     QrLoginListener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
@@ -496,6 +498,7 @@ class LoginActivity :
         viewHelpAndSupport(Origin.LOGIN_SOCIAL)
     }
 
+    @Suppress("DEPRECATION")
     override fun addGoogleLoginFragment(isSignupFromLoginEnabled: Boolean) {
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
@@ -734,5 +737,10 @@ class LoginActivity :
             // Just in case we use this method for a different scenario in the future
             TODO("Handle a new error scenario")
         }
+    }
+
+    override fun onWhatIsWordPressLinkClicked() {
+        ChromeCustomTabUtils.launchUrl(this, LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT)
+        unifiedLoginTracker.trackClick(Click.WHAT_IS_WORDPRESS_COM)
     }
 }

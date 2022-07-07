@@ -69,6 +69,7 @@ class OrderCreationViewModel @Inject constructor(
     private val orderCreationRepository: OrderCreationRepository,
     private val mapItemToProductUiModel: MapItemToProductUiModel,
     private val createOrderItem: CreateOrderItem,
+    private val determineMultipleLinesContext: DetermineMultipleLinesContext,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository
@@ -313,7 +314,8 @@ class OrderCreationViewModel @Inject constructor(
                             viewState = viewState.copy(
                                 isUpdatingOrderDraft = false,
                                 showOrderUpdateSnackbar = false,
-                                isEditable = updateStatus.order.isEditable || mode is Mode.Creation
+                                isEditable = updateStatus.order.isEditable || mode is Mode.Creation,
+                                multipleLinesContext = determineMultipleLinesContext(updateStatus.order)
                             )
                             _orderDraft.update { currentDraft ->
                                 // Keep the user's selected status
@@ -401,7 +403,8 @@ class OrderCreationViewModel @Inject constructor(
         val willUpdateOrderDraft: Boolean = false,
         val isUpdatingOrderDraft: Boolean = false,
         val showOrderUpdateSnackbar: Boolean = false,
-        val isEditable: Boolean = true
+        val isEditable: Boolean = true,
+        val multipleLinesContext: MultipleLinesContext = MultipleLinesContext.None
     ) : Parcelable {
         @IgnoredOnParcel
         val canCreateOrder: Boolean = !willUpdateOrderDraft && !isUpdatingOrderDraft && !showOrderUpdateSnackbar
@@ -416,6 +419,17 @@ class OrderCreationViewModel @Inject constructor(
 
         @Parcelize
         data class Edit(val orderId: Long) : Mode()
+    }
+
+    sealed class MultipleLinesContext : Parcelable {
+        @Parcelize
+        object None : MultipleLinesContext()
+
+        @Parcelize
+        data class Warning(
+            val header: String,
+            val explanation: String,
+        ) : MultipleLinesContext()
     }
 }
 

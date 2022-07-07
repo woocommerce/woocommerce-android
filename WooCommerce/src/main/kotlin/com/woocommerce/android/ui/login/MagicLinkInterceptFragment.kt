@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.woocommerce.android.ui.login
 
 import android.app.ProgressDialog
@@ -12,7 +14,6 @@ import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
@@ -40,7 +41,7 @@ class MagicLinkInterceptFragment : Fragment() {
     }
 
     private var authToken: String? = null
-    private var progressDialog: ProgressDialog? = null
+    @Suppress("DEPRECATION") private var progressDialog: ProgressDialog? = null
 
     private val viewModel: MagicLinkInterceptViewModel by viewModels()
 
@@ -92,39 +93,28 @@ class MagicLinkInterceptFragment : Fragment() {
     }
 
     private fun setupObservers() {
-        viewModel.isLoading.observe(
-            viewLifecycleOwner,
-            Observer {
-                showProgressDialog(it)
-            }
-        )
+        viewModel.isLoading.observe(viewLifecycleOwner) {
+            showProgressDialog(it)
+        }
 
-        viewModel.isAuthTokenUpdated.observe(
-            viewLifecycleOwner,
-            Observer { authTokenUpdated ->
-                if (authTokenUpdated) {
-                    showSitePickerScreen()
-                } else showLoginScreen()
-            }
-        )
+        viewModel.isAuthTokenUpdated.observe(viewLifecycleOwner) { authTokenUpdated ->
+            if (authTokenUpdated) {
+                showSitePickerScreen()
+            } else showLoginScreen()
+        }
 
-        viewModel.showSnackbarMessage.observe(
-            viewLifecycleOwner,
-            Observer { messageId ->
-                view?.let {
-                    Snackbar.make(it, getString(messageId), BaseTransientBottomBar.LENGTH_LONG).show()
-                }
+        viewModel.showSnackbarMessage.observe(viewLifecycleOwner) { messageId ->
+            view?.let {
+                Snackbar.make(it, getString(messageId), BaseTransientBottomBar.LENGTH_LONG).show()
             }
-        )
+        }
 
-        viewModel.showRetryOption.observe(
-            viewLifecycleOwner,
-            Observer {
-                showRetryScreen(it)
-            }
-        )
+        viewModel.showRetryOption.observe(viewLifecycleOwner) {
+            showRetryScreen(it)
+        }
     }
 
+    @Suppress("DEPRECATION")
     private fun showProgressDialog(show: Boolean) {
         if (show) {
             hideProgressDialog()
@@ -152,6 +142,7 @@ class MagicLinkInterceptFragment : Fragment() {
         activity?.finish()
     }
 
+    @Suppress("DEPRECATION")
     private fun showLoginScreen() {
         val intent = Intent(context, LoginActivity::class.java)
         LoginMode.WOO_LOGIN_MODE.putInto(intent)

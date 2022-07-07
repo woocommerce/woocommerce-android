@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.refunds
 import android.os.Bundle
 import android.view.View
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.lifecycle.Observer
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentRefundByAmountBinding
@@ -63,22 +62,16 @@ class RefundByAmountFragment : BaseFragment(R.layout.fragment_refund_by_amount) 
             }
         }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowValidationError -> binding.issueRefundRefundAmount.error = event.message
-                    is HideValidationError -> binding.issueRefundRefundAmount.error = null
-                    else -> event.isHandled = false
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowValidationError -> binding.issueRefundRefundAmount.error = event.message
+                is HideValidationError -> binding.issueRefundRefundAmount.error = null
+                else -> event.isHandled = false
             }
-        )
+        }
 
-        binding.issueRefundRefundAmount.value.filterNotNull().observe(
-            viewLifecycleOwner,
-            Observer {
-                viewModel.onManualRefundAmountChanged(it)
-            }
-        )
+        binding.issueRefundRefundAmount.value.filterNotNull().observe(viewLifecycleOwner) {
+            viewModel.onManualRefundAmountChanged(it)
+        }
     }
 }

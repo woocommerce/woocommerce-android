@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.databinding.DialogProductListSortingBinding
 import com.woocommerce.android.util.CurrencyFormatter
@@ -41,17 +40,14 @@ class ProductSortingFragment : WCBottomSheetDialogFragment() {
     }
 
     private fun setupObservers() {
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is Exit -> {
-                        dismiss()
-                    }
-                    else -> event.isHandled = false
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is Exit -> {
+                    dismiss()
                 }
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
     private fun showSortingOptions() {
