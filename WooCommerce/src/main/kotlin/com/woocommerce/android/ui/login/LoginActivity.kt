@@ -475,6 +475,7 @@ class LoginActivity :
         viewHelpAndSupport(Origin.LOGIN_SOCIAL)
     }
 
+    @Suppress("DEPRECATION")
     override fun addGoogleLoginFragment(isSignupFromLoginEnabled: Boolean) {
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()

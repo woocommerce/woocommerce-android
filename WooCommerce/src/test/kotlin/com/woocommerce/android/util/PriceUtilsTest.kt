@@ -9,7 +9,8 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import java.math.BigDecimal
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 const val SALE_DATES_PRICING_GROUP_KEY = "SALE"
 

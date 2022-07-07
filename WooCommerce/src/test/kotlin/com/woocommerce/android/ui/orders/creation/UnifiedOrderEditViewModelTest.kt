@@ -31,6 +31,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     protected lateinit var orderCreationRepository: OrderCreationRepository
     protected lateinit var orderDetailRepository: OrderDetailRepository
     protected lateinit var parameterRepository: ParameterRepository
+    private lateinit var determineMultipleLinesContext: DetermineMultipleLinesContext
 
     protected val defaultOrderValue = Order.EMPTY.copy(id = 123)
 
@@ -82,6 +83,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 stockStatus = ProductStockStatus.InStock
             )
         }
+        determineMultipleLinesContext = mock {
+            on { invoke(any()) } doReturn OrderCreationViewModel.MultipleLinesContext.None
+        }
     }
 
     protected fun createSut() {
@@ -94,6 +98,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             orderCreationRepository = orderCreationRepository,
             mapItemToProductUiModel = mapItemToProductUIModel,
             createOrderItem = createOrderItemUseCase,
+            determineMultipleLinesContext = determineMultipleLinesContext,
             parameterRepository = parameterRepository,
             autoSyncOrder = autoSyncOrder,
             autoSyncPriceModifier = autoSyncPriceModifier

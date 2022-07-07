@@ -78,7 +78,6 @@ import java.math.BigDecimal
 import java.util.Locale
 import javax.inject.Inject
 import kotlin.collections.set
-import kotlin.collections.sumBy
 import kotlin.math.min
 import org.wordpress.android.fluxc.utils.sumBy as sumByBigDecimal
 
@@ -219,11 +218,11 @@ class IssueRefundViewModel @Inject constructor(
             val refundOptions = mutableListOf<String>()
             // Inform user that multiple shipping lines can only be refunded in wp-admin.
             if (refundableShippingLineIds.size > 1) {
-                val shipping = resourceProvider.getString(R.string.multiple_shipping).toLowerCase(Locale.getDefault())
+                val shipping = resourceProvider.getString(R.string.multiple_shipping).lowercase(Locale.getDefault())
                 refundOptions.add(shipping)
             }
             return if (refundOptions.isNotEmpty()) {
-                val and = resourceProvider.getString(R.string.and).toLowerCase(Locale.getDefault())
+                val and = resourceProvider.getString(R.string.and).lowercase(Locale.getDefault())
                 val options = refundOptions.joinToString(lastSeparator = " $and ")
                 return resourceProvider.getString(R.string.order_refunds_shipping_refund_variable_notice, options)
             } else {
@@ -677,7 +676,7 @@ class IssueRefundViewModel @Inject constructor(
     private fun updateRefundItems(items: List<ProductRefundListItem>) {
         _refundItems.value = items.filter { it.maxQuantity > 0 }
 
-        val selectedItems = items.sumBy { it.quantity }
+        val selectedItems = items.sumOf { it.quantity }
         refundByItemsState = refundByItemsState.copy(
             selectedItemsHeader = resourceProvider.getString(
                 R.string.order_refunds_items_selected,

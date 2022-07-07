@@ -2502,4 +2502,7 @@
     <string name="install_wc_shipping_preinstall_title">Install extension</string>
     <string name="install_wc_shipping_installation_info">Things to know before installing</string>
     <string name="install_wc_shipping_proceed_button">Proceed With Installation</string>
+    <string name="lines_incomplete">%1$s are incomplete</string>
+    <string name="lines_incomplete_explanation">To edit all %1$s browse the order in your WooCommerce store admin</string>
+    <string name="lines_all_details">the details</string>
 </resources>

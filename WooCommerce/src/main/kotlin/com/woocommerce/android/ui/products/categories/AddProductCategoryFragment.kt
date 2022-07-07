@@ -6,7 +6,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -117,18 +116,15 @@ class AddProductCategoryFragment : BaseFragment(R.layout.fragment_add_product_ca
             new.displayProgressDialog?.takeIfNotEqualTo(old?.displayProgressDialog) { showProgressDialog(it) }
         }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    is Exit -> requireActivity().onBackPressed()
-                    is ShowDialog -> event.showDialog()
-                    is ExitWithResult<*> -> navigateBackWithResult(ARG_ADDED_CATEGORY, event.data)
-                    else -> event.isHandled = false
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is Exit -> requireActivity().onBackPressed()
+                is ShowDialog -> event.showDialog()
+                is ExitWithResult<*> -> navigateBackWithResult(ARG_ADDED_CATEGORY, event.data)
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
     private fun displayCategoryNameError(messageId: Int) {

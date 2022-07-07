@@ -6,7 +6,7 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel
 import java.math.BigDecimal
-import java.util.*
+import java.util.Date
 import java.util.concurrent.TimeUnit
 
 @Parcelize

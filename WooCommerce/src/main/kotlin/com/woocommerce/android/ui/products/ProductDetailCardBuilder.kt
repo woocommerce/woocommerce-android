@@ -375,6 +375,7 @@ class ProductDetailCardBuilder(
         }
     }
 
+    @Suppress("DEPRECATION")
     private fun Product.productTypeDisplayName(): String {
         return when (productType) {
             SIMPLE -> {

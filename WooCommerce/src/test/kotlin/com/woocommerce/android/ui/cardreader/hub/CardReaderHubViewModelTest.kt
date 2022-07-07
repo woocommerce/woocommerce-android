@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.cardreader.hub
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
@@ -38,6 +40,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
     private val wooStore: WooCommerceStore = mock()
     private val ippSelectPaymentGateway: IppSelectPaymentGateway = mock()
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     private val countryCode = "US"
     private val wcPayPluginVersion = "3.3.0"
@@ -280,6 +283,23 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given multiple plugins installed, when change payment provider clicked, then track event`() {
+        whenever(ippSelectPaymentGateway.isEnabled()).thenReturn(true)
+        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+            .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
+        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+            .thenReturn(buildWCPayPluginInfo(isActive = true))
+
+        initViewModel()
+        (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
+            .find {
+                it.label == UiString.UiStringRes(R.string.card_reader_manage_payment_provider)
+            }!!.onItemClicked.invoke()
+
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.SETTINGS_CARD_PRESENT_SELECT_PAYMENT_GATEWAY_TAPPED)
+    }
+
+    @Test
     fun `given payment flag disabled, when multiple plugins installed, then payment provider row is not shown`() {
         whenever(ippSelectPaymentGateway.isEnabled()).thenReturn(false)
         whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
@@ -317,7 +337,8 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             appPrefsWrapper,
             selectedSite,
             wooStore,
-            ippSelectPaymentGateway
+            ippSelectPaymentGateway,
+            analyticsTrackerWrapper
         )
     }
 
