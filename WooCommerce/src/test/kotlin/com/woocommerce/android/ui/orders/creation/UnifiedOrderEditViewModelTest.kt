@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.orders.creation
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus.Succeeded
+import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductStockStatus
@@ -24,11 +24,14 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     protected lateinit var viewState: OrderCreationViewModel.ViewState
     protected lateinit var savedState: SavedStateHandle
     protected lateinit var mapItemToProductUIModel: MapItemToProductUiModel
-    protected lateinit var createOrUpdateOrderUseCase: CreateOrUpdateOrderDraft
+    protected lateinit var createUpdateOrderUseCase: CreateUpdateOrder
+    protected lateinit var autoSyncPriceModifier: AutoSyncPriceModifier
+    protected lateinit var autoSyncOrder: AutoSyncOrder
     protected lateinit var createOrderItemUseCase: CreateOrderItem
     protected lateinit var orderCreationRepository: OrderCreationRepository
     protected lateinit var orderDetailRepository: OrderDetailRepository
     protected lateinit var parameterRepository: ParameterRepository
+    private lateinit var determineMultipleLinesContext: DetermineMultipleLinesContext
 
     protected val defaultOrderValue = Order.EMPTY.copy(id = 123)
 
@@ -48,7 +51,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             on { getLiveData(viewState.javaClass.name, viewState) } doReturn MutableLiveData(viewState)
             on { getLiveData(eq(Order.EMPTY.javaClass.name), any<Order>()) } doReturn MutableLiveData(emptyOrder)
         }
-        createOrUpdateOrderUseCase = mock {
+        createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(Order.EMPTY))
         }
         createOrderItemUseCase = mock {
@@ -80,18 +83,25 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 stockStatus = ProductStockStatus.InStock
             )
         }
+        determineMultipleLinesContext = mock {
+            on { invoke(any()) } doReturn OrderCreationViewModel.MultipleLinesContext.None
+        }
     }
 
     protected fun createSut() {
+        autoSyncPriceModifier = AutoSyncPriceModifier(createUpdateOrderUseCase)
+        autoSyncOrder = AutoSyncOrder(createUpdateOrderUseCase)
         sut = OrderCreationViewModel(
             savedState = savedState,
             dispatchers = coroutinesTestRule.testDispatchers,
             orderDetailRepository = orderDetailRepository,
             orderCreationRepository = orderCreationRepository,
             mapItemToProductUiModel = mapItemToProductUIModel,
-            createOrUpdateOrderDraft = createOrUpdateOrderUseCase,
             createOrderItem = createOrderItemUseCase,
-            parameterRepository = parameterRepository
+            determineMultipleLinesContext = determineMultipleLinesContext,
+            parameterRepository = parameterRepository,
+            autoSyncOrder = autoSyncOrder,
+            autoSyncPriceModifier = autoSyncPriceModifier
         )
     }
 

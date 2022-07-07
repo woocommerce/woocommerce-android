@@ -11,6 +11,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentCardReaderHubBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderFlowParam
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingParams
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -54,6 +56,13 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
                 }
                 is CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderManualsScreen -> {
                     findNavController().navigateSafely(R.id.action_cardReaderHubFragment_to_cardReaderManualsFragment)
+                }
+                is CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderOnboardingScreen -> {
+                    findNavController().navigate(
+                        CardReaderHubFragmentDirections.actionCardReaderHubFragmentToCardReaderOnboardingFragment(
+                            CardReaderOnboardingParams.Check(CardReaderFlowParam.CardReadersHub)
+                        )
+                    )
                 }
                 else -> event.isHandled = false
             }

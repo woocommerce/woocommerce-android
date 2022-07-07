@@ -65,7 +65,7 @@ class ShippingCustomsAdapter(
         return customsPackages[position].data.id.hashCode().toLong()
     }
 
-    @Suppress("MagicNumber")
+    @Suppress("MagicNumber", "DEPRECATION")
     inner class PackageCustomsViewHolder(val binding: ShippingCustomsListItemBinding) : ViewHolder(binding.root) {
         private val linesAdapter: ShippingCustomsLineAdapter by lazy {
             ShippingCustomsLineAdapter(
@@ -231,6 +231,7 @@ class ShippingCustomsLineAdapter(
         holder.bind(customsLines[position])
     }
 
+    @Suppress("DEPRECATION")
     inner class CustomsLineViewHolder(val binding: ShippingCustomsLineListItemBinding) : ViewHolder(binding.root) {
         private val context
             get() = binding.root.context

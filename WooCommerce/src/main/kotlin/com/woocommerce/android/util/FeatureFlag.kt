@@ -30,9 +30,8 @@ enum class FeatureFlag {
             WC_SHIPPING_BANNER,
             IPP_SELECT_PAYMENT_GATEWAY,
             UNIFIED_ORDER_EDITING -> PackageUtils.isDebugBuild()
-            // order creation customer search is awaiting backend changes before being enabled
             ORDER_CREATION_CUSTOMER_SEARCH -> {
-                UNIFIED_ORDER_EDITING.isEnabled() && PackageUtils.isDebugBuild()
+                UNIFIED_ORDER_EDITING.isEnabled()
             }
         }
     }

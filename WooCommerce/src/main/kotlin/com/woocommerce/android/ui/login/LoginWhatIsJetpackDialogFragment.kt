@@ -18,6 +18,7 @@ class LoginWhatIsJetpackDialogFragment : DialogFragment() {
         const val TAG = "LoginWhatIsJetpackDialogFragment"
     }
 
+    @Suppress("DEPRECATION")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         dialog?.window?.attributes?.windowAnimations = R.style.Woo_Animations_Dialog

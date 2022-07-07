@@ -92,7 +92,7 @@ ext {
     coroutinesVersion = '1.6.1'
     lifecycleVersion = '2.4.1'
     aztecVersion = 'v1.3.45'
-    flipperVersion = '0.143.0'
+    flipperVersion = '0.152.0'
     stateMachineVersion = '0.2.0'
     coreKtxVersion = '1.7.0'
     appCompatVersion = '1.4.1'
@@ -116,7 +116,7 @@ ext {
     assertjVersion = '3.11.1'
     espressoVersion = '3.4.0'
     mockitoKotlinVersion = '4.0.0'
-    mockitoVersion = '4.5.1'
+    mockitoVersion = '4.6.1'
 }
 
 // Onboarding and dev env setup tasks

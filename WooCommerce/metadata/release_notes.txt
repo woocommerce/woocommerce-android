@@ -1,2 +1,4 @@
+We keep adding new functionality to our experimental Coupon Management feature! This release includes editing and deleting coupons along with several improvements on viewing. Turn this feature on for early access in the More tab, Settings, Beta Features.
 
+We also fixed a bug that was making it hard for some of you to search orders. Thanks to everyone who reported this! Your feedback is vital to us!
 

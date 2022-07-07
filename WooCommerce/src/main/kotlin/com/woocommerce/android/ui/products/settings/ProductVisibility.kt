@@ -20,14 +20,14 @@ enum class ProductVisibility {
     }
 
     override fun toString(): String {
-        return super.toString().toLowerCase(Locale.US)
+        return super.toString().lowercase(Locale.US)
     }
 
     companion object {
         fun fromString(visibility: String): ProductVisibility? {
-            val lcVisibility = visibility.toLowerCase(Locale.US)
+            val lcVisibility = visibility.lowercase(Locale.US)
             values().forEach { value ->
-                if (value.toString().toLowerCase(Locale.US) == lcVisibility) return value
+                if (value.toString().lowercase(Locale.US) == lcVisibility) return value
             }
             return null
         }

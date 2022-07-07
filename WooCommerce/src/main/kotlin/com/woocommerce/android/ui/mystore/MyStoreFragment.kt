@@ -47,7 +47,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
@@ -56,9 +56,9 @@ import java.util.Calendar
 import javax.inject.Inject
 import kotlin.math.abs
 
-@ExperimentalCoroutinesApi
 @AndroidEntryPoint
 @Suppress("ForbiddenComment")
+@OptIn(FlowPreview::class)
 class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
     companion object {
         val TAG: String = MyStoreFragment::class.java.simpleName

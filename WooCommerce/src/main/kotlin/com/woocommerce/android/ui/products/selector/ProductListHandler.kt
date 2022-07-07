@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products.selector
 
 import com.woocommerce.android.model.Product
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
@@ -24,6 +25,7 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
 
     private val productFilters = MutableStateFlow(mapOf<ProductFilterOption, String>())
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     val productsFlow = combine(searchQuery, productFilters) { query, filters ->
         if (query.isEmpty()) {
             repository.observeProducts(filters)

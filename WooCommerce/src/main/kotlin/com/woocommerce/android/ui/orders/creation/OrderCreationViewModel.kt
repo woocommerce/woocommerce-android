@@ -28,7 +28,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
-import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus
+import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.AddProduct
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.EditCustomer
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.EditCustomerNote
@@ -68,8 +68,10 @@ class OrderCreationViewModel @Inject constructor(
     private val orderDetailRepository: OrderDetailRepository,
     private val orderCreationRepository: OrderCreationRepository,
     private val mapItemToProductUiModel: MapItemToProductUiModel,
-    private val createOrUpdateOrderDraft: CreateOrUpdateOrderDraft,
     private val createOrderItem: CreateOrderItem,
+    private val determineMultipleLinesContext: DetermineMultipleLinesContext,
+    autoSyncOrder: AutoSyncOrder,
+    autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -104,6 +106,12 @@ class OrderCreationViewModel @Inject constructor(
         }.asLiveData()
 
     private val retryOrderDraftUpdateTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+
+    private val syncStrategy =
+        when (mode) {
+            Mode.Creation -> autoSyncPriceModifier
+            is Mode.Edit -> autoSyncOrder
+        }
 
     fun getProductUIModelFromItem(item: Order.Item) = runBlocking {
         mapItemToProductUiModel(item)
@@ -293,20 +301,21 @@ class OrderCreationViewModel @Inject constructor(
      */
     private fun monitorOrderChanges() {
         viewModelScope.launch {
-            createOrUpdateOrderDraft(_orderDraft.drop(1), retryOrderDraftUpdateTrigger)
+            syncStrategy.syncOrderChanges(_orderDraft.drop(1), retryOrderDraftUpdateTrigger)
                 .collect { updateStatus ->
                     when (updateStatus) {
-                        OrderDraftUpdateStatus.PendingDebounce ->
+                        OrderUpdateStatus.PendingDebounce ->
                             viewState = viewState.copy(willUpdateOrderDraft = true, showOrderUpdateSnackbar = false)
-                        OrderDraftUpdateStatus.Ongoing ->
+                        OrderUpdateStatus.Ongoing ->
                             viewState = viewState.copy(willUpdateOrderDraft = false, isUpdatingOrderDraft = true)
-                        OrderDraftUpdateStatus.Failed ->
+                        OrderUpdateStatus.Failed ->
                             viewState = viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = true)
-                        is OrderDraftUpdateStatus.Succeeded -> {
+                        is OrderUpdateStatus.Succeeded -> {
                             viewState = viewState.copy(
                                 isUpdatingOrderDraft = false,
                                 showOrderUpdateSnackbar = false,
-                                isEditable = updateStatus.order.isEditable || mode is Mode.Creation
+                                isEditable = updateStatus.order.isEditable || mode is Mode.Creation,
+                                multipleLinesContext = determineMultipleLinesContext(updateStatus.order)
                             )
                             _orderDraft.update { currentDraft ->
                                 // Keep the user's selected status
@@ -394,7 +403,8 @@ class OrderCreationViewModel @Inject constructor(
         val willUpdateOrderDraft: Boolean = false,
         val isUpdatingOrderDraft: Boolean = false,
         val showOrderUpdateSnackbar: Boolean = false,
-        val isEditable: Boolean = true
+        val isEditable: Boolean = true,
+        val multipleLinesContext: MultipleLinesContext = MultipleLinesContext.None
     ) : Parcelable {
         @IgnoredOnParcel
         val canCreateOrder: Boolean = !willUpdateOrderDraft && !isUpdatingOrderDraft && !showOrderUpdateSnackbar
@@ -409,6 +419,17 @@ class OrderCreationViewModel @Inject constructor(
 
         @Parcelize
         data class Edit(val orderId: Long) : Mode()
+    }
+
+    sealed class MultipleLinesContext : Parcelable {
+        @Parcelize
+        object None : MultipleLinesContext()
+
+        @Parcelize
+        data class Warning(
+            val header: String,
+            val explanation: String,
+        ) : MultipleLinesContext()
     }
 }
 
