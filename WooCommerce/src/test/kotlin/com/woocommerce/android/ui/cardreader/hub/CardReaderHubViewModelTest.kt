@@ -38,8 +38,6 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock {
         on(it.get()).thenReturn(SiteModel())
     }
-    private val wooStore: WooCommerceStore = mock()
-    private val ippSelectPaymentGateway: IppSelectPaymentGateway = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     private val countryCode = "US"
@@ -210,12 +208,15 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given payment gateway flag enabled, when multiple plugins installed, then payment provider row is shown`() {
-        whenever(ippSelectPaymentGateway.isEnabled()).thenReturn(true)
-        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-            .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
-        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-            .thenReturn(buildWCPayPluginInfo(isActive = true))
+    fun `when multiple plugins installed, then payment provider row is shown`() {
+        val site = selectedSite.get()
+        whenever(
+            appPrefsWrapper.isCardReaderPluginExplicitlySelected(
+                localSiteId = site.id,
+                remoteSiteId = site.siteId,
+                selfHostedSiteId = site.selfHostedSiteId
+            )
+        ).thenReturn(true)
 
         initViewModel()
 
@@ -226,12 +227,15 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given payment gateway flag enabled, when multiple plugins installed, then payment provider icon is shown`() {
-        whenever(ippSelectPaymentGateway.isEnabled()).thenReturn(true)
-        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-            .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
-        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-            .thenReturn(buildWCPayPluginInfo(isActive = true))
+    fun `when multiple plugins installed, then payment provider icon is shown`() {
+        val site = selectedSite.get()
+        whenever(
+            appPrefsWrapper.isCardReaderPluginExplicitlySelected(
+                localSiteId = site.id,
+                remoteSiteId = site.siteId,
+                selfHostedSiteId = site.selfHostedSiteId
+            )
+        ).thenReturn(true)
 
         initViewModel()
 
@@ -243,11 +247,14 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given multiple plugins installed, when change payment provider clicked, then trigger onboarding event`() {
-        whenever(ippSelectPaymentGateway.isEnabled()).thenReturn(true)
-        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-            .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
-        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-            .thenReturn(buildWCPayPluginInfo(isActive = true))
+        val site = selectedSite.get()
+        whenever(
+            appPrefsWrapper.isCardReaderPluginExplicitlySelected(
+                localSiteId = site.id,
+                remoteSiteId = site.siteId,
+                selfHostedSiteId = site.selfHostedSiteId
+            )
+        ).thenReturn(true)
 
         initViewModel()
         (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
@@ -262,11 +269,14 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given multiple plugins installed, when payment provider clicked, then clear plugin selected flag`() {
-        whenever(ippSelectPaymentGateway.isEnabled()).thenReturn(true)
-        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-            .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
-        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-            .thenReturn(buildWCPayPluginInfo(isActive = true))
+        val site = selectedSite.get()
+        whenever(
+            appPrefsWrapper.isCardReaderPluginExplicitlySelected(
+                localSiteId = site.id,
+                remoteSiteId = site.siteId,
+                selfHostedSiteId = site.selfHostedSiteId
+            )
+        ).thenReturn(true)
 
         initViewModel()
         (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
@@ -284,11 +294,14 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given multiple plugins installed, when change payment provider clicked, then track event`() {
-        whenever(ippSelectPaymentGateway.isEnabled()).thenReturn(true)
-        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-            .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
-        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-            .thenReturn(buildWCPayPluginInfo(isActive = true))
+        val site = selectedSite.get()
+        whenever(
+            appPrefsWrapper.isCardReaderPluginExplicitlySelected(
+                localSiteId = site.id,
+                remoteSiteId = site.siteId,
+                selfHostedSiteId = site.selfHostedSiteId
+            )
+        ).thenReturn(true)
 
         initViewModel()
         (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
@@ -300,27 +313,15 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given payment flag disabled, when multiple plugins installed, then payment provider row is not shown`() {
-        whenever(ippSelectPaymentGateway.isEnabled()).thenReturn(false)
-        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-            .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
-        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-            .thenReturn(buildWCPayPluginInfo(isActive = true))
-
-        initViewModel()
-
-        assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
-            .noneMatch {
-                it.label == UiString.UiStringRes(R.string.card_reader_manage_payment_provider)
-            }
-    }
-
-    @Test
-    fun `given payment gateway flag enabled, when single plugin installed, then payment provider row is not shown`() {
-        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-            .thenReturn(buildStripeExtensionPluginInfo(isActive = false))
-        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-            .thenReturn(buildWCPayPluginInfo(isActive = true))
+    fun `when single plugin installed, then payment provider row is not shown`() {
+        val site = selectedSite.get()
+        whenever(
+            appPrefsWrapper.isCardReaderPluginExplicitlySelected(
+                localSiteId = site.id,
+                remoteSiteId = site.siteId,
+                selfHostedSiteId = site.selfHostedSiteId
+            )
+        ).thenReturn(false)
 
         initViewModel()
 
@@ -336,25 +337,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             inPersonPaymentsCanadaFeatureFlag,
             appPrefsWrapper,
             selectedSite,
-            wooStore,
-            ippSelectPaymentGateway,
             analyticsTrackerWrapper
         )
-    }
-
-    private fun buildWCPayPluginInfo(
-        isActive: Boolean = true,
-        version: String = wcPayPluginVersion
-    ) = SitePluginModel().apply {
-        this.version = version
-        this.setIsActive(isActive)
-    }
-
-    private fun buildStripeExtensionPluginInfo(
-        isActive: Boolean = true,
-        version: String = stripePluginVersion
-    ) = SitePluginModel().apply {
-        this.version = version
-        this.setIsActive(isActive)
     }
 }
