@@ -1,9 +1,17 @@
+@file:Suppress("DEPRECATION")
+
 package com.woocommerce.android.ui.orders.list
 
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
-import androidx.lifecycle.*
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.paging.PagedList
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
@@ -335,7 +343,7 @@ class OrderListViewModel @Inject constructor(
         super.onCleared()
     }
 
-    @Suppress("unused")
+    @Suppress("unused", "DEPRECATION")
     @Subscribe(threadMode = MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
         when (event.causeOfChange) {

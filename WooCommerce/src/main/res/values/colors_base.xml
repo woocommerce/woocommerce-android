@@ -110,6 +110,7 @@
     <color name="tag_bg_processing">@color/woo_celadon_5</color>
     <color name="tag_bg_failed">@color/woo_red_5</color>
     <color name="tag_bg_on_hold">@color/woo_orange_5</color>
+    <color name="tag_bg_completed">@color/woo_blue_5</color>
     <color name="tag_bg_other">@color/woo_gray_5</color>
 
     <!--

@@ -925,6 +925,7 @@
         -->
     <string name="card_reader_manage_card_reader">Manage Card Reader</string>
     <string name="card_reader_purchase_card_reader">Order Card Reader</string>
+    <string name="card_reader_manage_payment_provider">Change Payment Provider</string>
     <string name="card_reader_bbpos_manual_card_reader" translatable="false">BBPOS Chipper™ 2X BT</string>
     <string name="card_reader_m2_manual_card_reader" translatable="false">Stripe M2</string>
     <string name="card_reader_wisepad_3_manual_card_reader" translatable="false">WisePad 3</string>
@@ -2502,4 +2503,7 @@
     <string name="install_wc_shipping_preinstall_title">Install extension</string>
     <string name="install_wc_shipping_installation_info">Things to know before installing</string>
     <string name="install_wc_shipping_proceed_button">Proceed With Installation</string>
+    <string name="lines_incomplete">%1$s are incomplete</string>
+    <string name="lines_incomplete_explanation">To edit all %1$s browse the order in your WooCommerce store admin</string>
+    <string name="lines_all_details">the details</string>
 </resources>

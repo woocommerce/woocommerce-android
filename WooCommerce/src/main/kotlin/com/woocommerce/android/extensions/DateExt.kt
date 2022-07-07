@@ -7,7 +7,9 @@ import com.woocommerce.android.util.WooLog.T
 import org.apache.commons.lang3.time.DateUtils.isSameDay
 import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeUnit.MILLISECONDS
 

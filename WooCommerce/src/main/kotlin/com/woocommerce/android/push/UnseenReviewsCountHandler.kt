@@ -10,13 +10,13 @@ import org.wordpress.android.fluxc.store.NotificationStore
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@ExperimentalCoroutinesApi
 @Singleton
 class UnseenReviewsCountHandler @Inject constructor(
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
     private val notificationStore: NotificationStore,
     selectedSite: SelectedSite
 ) {
+    @OptIn(ExperimentalCoroutinesApi::class)
     private val unseenReviewsCount: SharedFlow<Int> =
         selectedSite.observe()
             .flatMapLatest { site ->

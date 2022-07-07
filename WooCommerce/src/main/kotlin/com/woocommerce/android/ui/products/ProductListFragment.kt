@@ -12,7 +12,6 @@ import androidx.core.view.ViewGroupCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -309,32 +308,26 @@ class ProductListFragment :
             }
         }
 
-        viewModel.productList.observe(
-            viewLifecycleOwner,
-            Observer {
-                showProductList(it)
-            }
-        )
+        viewModel.productList.observe(viewLifecycleOwner) {
+            showProductList(it)
+        }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    is ScrollToTop -> scrollToTop()
-                    is ShowAddProductBottomSheet -> showAddProductBottomSheet()
-                    is ShowProductFilterScreen -> showProductFilterScreen(
-                        event.stockStatusFilter,
-                        event.productTypeFilter,
-                        event.productStatusFilter,
-                        event.productCategoryFilter,
-                        event.selectedCategoryName
-                    )
-                    is ShowProductSortingBottomSheet -> showProductSortingBottomSheet()
-                    else -> event.isHandled = false
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ScrollToTop -> scrollToTop()
+                is ShowAddProductBottomSheet -> showAddProductBottomSheet()
+                is ShowProductFilterScreen -> showProductFilterScreen(
+                    event.stockStatusFilter,
+                    event.productTypeFilter,
+                    event.productStatusFilter,
+                    event.productCategoryFilter,
+                    event.selectedCategoryName
+                )
+                is ShowProductSortingBottomSheet -> showProductSortingBottomSheet()
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
     private fun setupResultHandlers() {

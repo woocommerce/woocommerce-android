@@ -15,6 +15,8 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.cardreader.CardReaderTrackingInfoKeeper
+import com.woocommerce.android.ui.cardreader.IppSelectPaymentGateway
+import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.GenericError
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.NoConnectionError
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.OnboardingCompleted
@@ -73,16 +75,22 @@ class CardReaderOnboardingChecker @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
     private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider,
+    private val ippSelectPaymentGateway: IppSelectPaymentGateway,
 ) {
-    suspend fun getOnboardingState(): CardReaderOnboardingState {
+    suspend fun getOnboardingState(pluginType: PluginType? = null): CardReaderOnboardingState {
         if (!networkStatus.isConnected()) return NoConnectionError
 
-        return fetchOnboardingState()
+        return fetchOnboardingState(pluginType)
             .also {
                 val (status, version) = when (it) {
                     is OnboardingCompleted -> CARD_READER_ONBOARDING_COMPLETED to it.version
                     is StripeAccountPendingRequirement -> CARD_READER_ONBOARDING_PENDING to it.version
-                    else -> CARD_READER_ONBOARDING_NOT_COMPLETED to null
+                    else -> {
+                        if (ippSelectPaymentGateway.isEnabled()) {
+                            updatePluginExplicitlySelectedFlag(false)
+                        }
+                        CARD_READER_ONBOARDING_NOT_COMPLETED to null
+                    }
                 }
                 updateSharedPreferences(
                     status,
@@ -103,7 +111,7 @@ class CardReaderOnboardingChecker @Inject constructor(
     }
 
     @Suppress("ReturnCount", "ComplexMethod", "LongMethod")
-    private suspend fun fetchOnboardingState(): CardReaderOnboardingState {
+    private suspend fun fetchOnboardingState(pluginType: PluginType?): CardReaderOnboardingState {
         val countryCode = getStoreCountryCode()
         cardReaderTrackingInfoKeeper.setCountry(countryCode)
         val cardReaderConfig = cardReaderCountryConfigProvider.provideCountryConfigFor(countryCode)
@@ -121,10 +129,30 @@ class CardReaderOnboardingChecker @Inject constructor(
                     return PluginIsNotSupportedInTheCountry(pluginType, countryCode!!)
                 }
             }
-            return WcpayAndStripeActivated
+            if (ippSelectPaymentGateway.isEnabled()) {
+                when {
+                    isUserComingFromChoosePaymentGatewayScreen(pluginType) -> {
+                        updateSharedPreferences(
+                            CARD_READER_ONBOARDING_NOT_COMPLETED,
+                            pluginType,
+                            null
+                        )
+                        updatePluginExplicitlySelectedFlag(true)
+                    }
+                    !isPluginExplicitlySelected() -> {
+                        return ChoosePaymentGatewayProvider
+                    }
+                }
+            } else {
+                return WcpayAndStripeActivated
+            }
+        } else {
+            if (ippSelectPaymentGateway.isEnabled()) {
+                updatePluginExplicitlySelectedFlag(false)
+            }
         }
 
-        val preferredPlugin = getPreferredPlugin(stripePluginInfo, wcPayPluginInfo)
+        val preferredPlugin = getUserSelectedPluginOrActivatedPlugin(wcPayPluginInfo, stripePluginInfo)
 
         if (!isPluginInstalled(preferredPlugin)) when (preferredPlugin.type) {
             WOOCOMMERCE_PAYMENTS -> return WcpayNotInstalled
@@ -181,6 +209,47 @@ class CardReaderOnboardingChecker @Inject constructor(
             preferredPlugin.info?.version,
             requireNotNull(countryCode)
         )
+    }
+
+    private fun isUserComingFromChoosePaymentGatewayScreen(userSelectedPlugin: PluginType?): Boolean {
+        if (userSelectedPlugin != null) {
+            return true
+        }
+        return false
+    }
+
+    private fun getUserSelectedPluginOrActivatedPlugin(
+        wcPayPluginInfo: SitePluginModel?,
+        stripePluginInfo: SitePluginModel?,
+    ): PluginWrapper {
+        return when {
+            isPluginExplicitlySelected() -> {
+                val site = selectedSite.get()
+                val pluginType = appPrefsWrapper.getCardReaderPreferredPlugin(
+                    localSiteId = site.id,
+                    remoteSiteId = site.siteId,
+                    selfHostedSiteId = site.selfHostedSiteId,
+                )
+                pluginType?.let {
+                    getUserSelectedPluginWrapper(it, wcPayPluginInfo, stripePluginInfo)
+                } ?: run {
+                    throw IllegalStateException(
+                        "Developer Error: Plugin type cannot be null when the plugin explicitly selected flag is true"
+                    )
+                }
+            }
+            else -> {
+                getPreferredPlugin(stripePluginInfo, wcPayPluginInfo)
+            }
+        }
+    }
+
+    private fun getUserSelectedPluginWrapper(
+        userSelectedPlugin: PluginType,
+        wcPayPluginInfo: SitePluginModel?,
+        stripePluginInfo: SitePluginModel?,
+    ): PluginWrapper {
+        return PluginWrapper(userSelectedPlugin, userSelectedPlugin.getPluginInfo(wcPayPluginInfo, stripePluginInfo))
     }
 
     private fun isPluginSupportedInCountry(
@@ -283,6 +352,25 @@ class CardReaderOnboardingChecker @Inject constructor(
             PersistentOnboardingData(status, preferredPlugin, version),
         )
     }
+
+    private fun updatePluginExplicitlySelectedFlag(isPluginExplicitlySelected: Boolean) {
+        val site = selectedSite.get()
+        appPrefsWrapper.setIsCardReaderPluginExplicitlySelectedFlag(
+            localSiteId = site.id,
+            remoteSiteId = site.siteId,
+            selfHostedSiteId = site.selfHostedSiteId,
+            isPluginExplicitlySelected = isPluginExplicitlySelected
+        )
+    }
+
+    private fun isPluginExplicitlySelected(): Boolean {
+        val site = selectedSite.get()
+        return appPrefsWrapper.isCardReaderPluginExplicitlySelected(
+            localSiteId = site.id,
+            remoteSiteId = site.siteId,
+            selfHostedSiteId = site.selfHostedSiteId,
+        )
+    }
 }
 
 data class PersistentOnboardingData(
@@ -305,6 +393,12 @@ enum class PluginType {
     WOOCOMMERCE_PAYMENTS,
     STRIPE_EXTENSION_GATEWAY
 }
+
+fun PluginType.getPluginInfo(wcPayPluginInfo: SitePluginModel?, stripePluginInfo: SitePluginModel?) =
+    when (this) {
+        WOOCOMMERCE_PAYMENTS -> wcPayPluginInfo
+        STRIPE_EXTENSION_GATEWAY -> stripePluginInfo
+    }
 
 private fun PluginType.toSupportedExtensionType() =
     when (this) {
@@ -367,6 +461,13 @@ sealed class CardReaderOnboardingState(
      */
     @Parcelize
     object WcpayAndStripeActivated : CardReaderOnboardingState()
+
+    /**
+     * Both plugins are installed and activated on the site. Merchant needs to choose their preferred payment
+     * provider in this state.
+     */
+    @Parcelize
+    object ChoosePaymentGatewayProvider : CardReaderOnboardingState()
 
     /**
      * This is a bit special case: WCPay is set to "dev mode" but the connected Stripe account is in live mode.
