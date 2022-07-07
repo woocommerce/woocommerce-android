@@ -12,7 +12,6 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.cardreader.InPersonPaymentsCanadaFeatureFlag
-import com.woocommerce.android.ui.cardreader.IppSelectPaymentGateway
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
@@ -20,8 +19,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import org.wordpress.android.fluxc.model.plugin.SitePluginModel
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,8 +27,6 @@ class CardReaderHubViewModel @Inject constructor(
     private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val selectedSite: SelectedSite,
-    private val wooStore: WooCommerceStore,
-    private val ippSelectPaymentGateway: IppSelectPaymentGateway,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderHubFragmentArgs by savedState.navArgs()
@@ -85,22 +80,19 @@ class CardReaderHubViewModel @Inject constructor(
     )
 
     private fun createInitialState(): CardReaderHubViewState.Content {
-        val wcPayPluginInfo = wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_PAYMENTS)
-        val stripePluginInfo = wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY)
-
-        return if (isBothPluginsActivated(wcPayPluginInfo, stripePluginInfo) && ippSelectPaymentGateway.isEnabled()) {
+        val site = selectedSite.get()
+        return if (
+            appPrefsWrapper.isCardReaderPluginExplicitlySelected(
+                localSiteId = site.id,
+                remoteSiteId = site.siteId,
+                selfHostedSiteId = site.selfHostedSiteId,
+            )
+        ) {
             CardReaderHubViewState.Content(cardReaderHubListWhenMultiplePluginsInstalled)
         } else {
             CardReaderHubViewState.Content(cardReaderHubListWhenSinglePluginInstalled)
         }
     }
-
-    private fun isBothPluginsActivated(
-        wcPayPluginInfo: SitePluginModel?,
-        stripePluginInfo: SitePluginModel?
-    ) = isPluginActivated(wcPayPluginInfo) && isPluginActivated(stripePluginInfo)
-
-    private fun isPluginActivated(pluginInfo: SitePluginModel?): Boolean = pluginInfo?.isActive == true
 
     val viewStateData: LiveData<CardReaderHubViewState> = viewState
 
