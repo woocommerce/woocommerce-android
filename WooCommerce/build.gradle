@@ -335,7 +335,7 @@ dependencies {
     }
 
     // Jetpack Compose
-    implementation 'androidx.activity:activity-compose:1.4.0'
+    implementation 'androidx.activity:activity-compose:1.5.0'
     implementation "com.google.accompanist:accompanist-swiperefresh:$composeAccompanistVersion"
     implementation "androidx.compose.material:material:$composeVersion"
     implementation "androidx.compose.animation:animation:$composeVersion"
