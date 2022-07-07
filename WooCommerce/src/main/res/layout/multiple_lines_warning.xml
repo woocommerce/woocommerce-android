@@ -18,10 +18,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawablePadding="@dimen/minor_100"
+            android:lines="1"
             android:textAppearance="@style/TextAppearance.Woo.Subtitle1"
+            app:autoSizeTextType="uniform"
             app:drawableStartCompat="@drawable/tintable_ic_info_outline_24dp"
             app:drawableTint="@color/color_primary"
-            tools:text="@string/lines_incomplete" />
+            tools:text="Fees &amp; Shipping details are incomplete" />
 
         <TextView
             android:id="@+id/explanation"

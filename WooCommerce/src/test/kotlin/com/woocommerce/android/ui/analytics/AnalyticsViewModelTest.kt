@@ -10,9 +10,14 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.anyVararg
+import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doReturnConsecutively
+import org.mockito.kotlin.mock
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 

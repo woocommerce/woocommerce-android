@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
@@ -56,24 +55,18 @@ class ProductDetailBottomSheetFragment : WCBottomSheetDialogFragment() {
     }
 
     private fun setupObservers() {
-        viewModel.productDetailBottomSheetList.observe(
-            viewLifecycleOwner,
-            Observer {
-                showProductDetailBottomSheetOptions(it)
-            }
-        )
+        viewModel.productDetailBottomSheetList.observe(viewLifecycleOwner) {
+            showProductDetailBottomSheetOptions(it)
+        }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is Exit -> {
-                        dismiss()
-                    }
-                    else -> event.isHandled = false
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is Exit -> {
+                    dismiss()
                 }
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
     private fun showProductDetailBottomSheetOptions(

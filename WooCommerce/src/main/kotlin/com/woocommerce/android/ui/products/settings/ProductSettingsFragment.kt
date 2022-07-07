@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.products.settings
 import android.os.Bundle
 import android.view.View
 import android.widget.CompoundButton
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
@@ -167,15 +166,12 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
     }
 
     private fun setupObservers() {
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ExitSettings -> findNavController().navigateUp()
-                    else -> event.isHandled = false
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ExitSettings -> findNavController().navigateUp()
+                else -> event.isHandled = false
             }
-        )
+        }
 
         updateProductView()
     }
