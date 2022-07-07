@@ -720,5 +720,6 @@ class LoginActivity :
 
     override fun onWhatIsWordPressLinkClicked() {
         ChromeCustomTabUtils.launchUrl(this, LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT)
+        unifiedLoginTracker.trackClick(Click.WHAT_IS_WORDPRESS_COM)
     }
 }
