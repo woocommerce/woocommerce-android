@@ -305,7 +305,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when state ChoosePaymentGatewayProvider, then reason=card_present_select_payment_gateway_show tracked`() =
+    fun `when state ChoosePaymentGatewayProvider, then reason=multiple_payment_providers_conflict tracked`() =
         testBlocking {
             cardReaderTracker.trackOnboardingState(
                 ChoosePaymentGatewayProvider
@@ -313,7 +313,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
-                check { assertThat(it["reason"]).isEqualTo("card_present_select_payment_gateway_show") }
+                check { assertThat(it["reason"]).isEqualTo("multiple_payment_providers_conflict") }
             )
         }
 
