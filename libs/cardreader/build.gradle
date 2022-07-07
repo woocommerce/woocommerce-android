@@ -29,7 +29,6 @@ android {
             allWarningsAsErrors = true
         }
         freeCompilerArgs += [
-                "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
                 "-Xopt-in=kotlin.RequiresOptIn"
         ]
     }
