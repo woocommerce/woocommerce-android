@@ -32,7 +32,6 @@ import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingStat
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.WcpayNotActivated
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.WcpayNotInstalled
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInGenericWebView
-import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInWPComWebView
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.NoConnectionErrorState
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.StripeAcountError.PluginInTestModeWithLiveAccountState
@@ -52,7 +51,6 @@ import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingView
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayError.WCPayUnsupportedVersionState
 import com.woocommerce.android.ui.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
-import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
@@ -204,15 +202,6 @@ class CardReaderOnboardingViewModel @Inject constructor(
             OnboardingViewState.SelectPaymentPluginState(
                 onConfirmPaymentMethodClicked = { (::refreshState)(it) }
             )
-    }
-
-    private fun onWPAdminActionClicked() {
-        val url = selectedSite.get().url + AppUrls.PLUGIN_MANAGEMENT_SUFFIX
-        if (selectedSite.get().isWPCom || selectedSite.get().isWPComAtomic) {
-            triggerEvent(NavigateToUrlInWPComWebView(url))
-        } else {
-            triggerEvent(NavigateToUrlInGenericWebView(url))
-        }
     }
 
     private fun onContactSupportClicked() {
