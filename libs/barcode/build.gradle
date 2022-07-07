@@ -37,8 +37,6 @@ dependencies {
     implementation "androidx.annotation:annotation:1.4.0"
     implementation "androidx.interpolator:interpolator:1.0.0"
     implementation "com.google.android.material:material:$materialVersion"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"
-    implementation "android.arch.lifecycle:extensions:1.1.1"
     implementation 'androidx.preference:preference-ktx:1.2.0'
 
     // Barcode model
