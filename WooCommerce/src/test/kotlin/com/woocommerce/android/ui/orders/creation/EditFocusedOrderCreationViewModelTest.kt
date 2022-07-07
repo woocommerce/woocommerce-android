@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.orders.creation
 
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus.Succeeded
+import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.Mode
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.Mode.Edit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -70,7 +70,7 @@ class EditFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest() {
 
     @Test
     fun `when isEditable is true on the edit flow the order is editable`() {
-        createOrUpdateOrderUseCase = mock {
+        createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(defaultOrderValue.copy(isEditable = true)))
         }
         createSut()
@@ -83,7 +83,7 @@ class EditFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest() {
 
     @Test
     fun `when isEditable is false on the edit flow the order is NOT editable`() {
-        createOrUpdateOrderUseCase = mock {
+        createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(defaultOrderValue.copy(isEditable = false)))
         }
         createSut()

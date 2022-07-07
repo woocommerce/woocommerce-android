@@ -4,19 +4,18 @@ import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources.NotFoundException
 import android.net.Uri
-import android.text.Html
-import android.text.Spanned
 import android.util.Patterns
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import androidx.core.text.HtmlCompat
 import com.woocommerce.android.extensions.isInteger
 import com.woocommerce.android.util.WooLog.T.UTILS
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.util.FormatUtils
 import java.io.IOException
-import java.util.*
+import java.util.Locale
 import java.util.regex.Pattern
 import kotlin.math.abs
 
@@ -246,18 +245,9 @@ object StringUtils {
      * double spaces with a single space (just in case)
      */
     fun getRawTextFromHtml(htmlStr: String) =
-        Html.fromHtml(htmlStr).toString().replace("\n", " ").replace("  ", " ")
-
-    /**
-     * Helper method for using the appropriate `Html.fromHtml()` for the build version.
-     */
-    fun fromHtml(htmlStr: String): Spanned {
-        return if (SystemVersionUtils.isAtLeastN()) {
-            Html.fromHtml(htmlStr, Html.FROM_HTML_MODE_LEGACY)
-        } else {
-            Html.fromHtml(htmlStr)
-        }
-    }
+        HtmlCompat.fromHtml(htmlStr, HtmlCompat.FROM_HTML_MODE_LEGACY).toString()
+            .replace("\n", " ")
+            .replace("  ", " ")
 
     /**
      * Returns a string for the specified locale.

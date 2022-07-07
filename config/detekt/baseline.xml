@@ -146,22 +146,16 @@
     <ID>NoWildcardImports:com.woocommerce.android.AppPrefsTest.kt:4</ID>
     <ID>NoWildcardImports:com.woocommerce.android.cardreader.internal.payments.PaymentErrorMapper.kt:12</ID>
     <ID>NoWildcardImports:com.woocommerce.android.cardreader.internal.payments.PaymentManager.kt:20</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.extensions.DateExt.kt:10</ID>
     <ID>NoWildcardImports:com.woocommerce.android.extensions.LiveDataExt.kt:3</ID>
     <ID>NoWildcardImports:com.woocommerce.android.media.ProductImagesUploadWorker.kt:13</ID>
     <ID>NoWildcardImports:com.woocommerce.android.media.ProductImagesUploadWorker.kt:14</ID>
     <ID>NoWildcardImports:com.woocommerce.android.media.ProductImagesUploadWorker.kt:4</ID>
     <ID>NoWildcardImports:com.woocommerce.android.model.FeatureFeedbackSettingsTest.kt:3</ID>
     <ID>NoWildcardImports:com.woocommerce.android.model.Notification.kt:5</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.model.OrderMapper.kt:16</ID>
     <ID>NoWildcardImports:com.woocommerce.android.model.Product.kt:16</ID>
     <ID>NoWildcardImports:com.woocommerce.android.model.Product.kt:6</ID>
     <ID>NoWildcardImports:com.woocommerce.android.model.Product.kt:7</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.model.ProductVariation.kt:17</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.model.ProductVariation.kt:6</ID>
     <ID>NoWildcardImports:com.woocommerce.android.model.Refund.kt:8</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.model.ShippingLabel.kt:9</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.model.ShippingLabelMapper.kt:4</ID>
     <ID>NoWildcardImports:com.woocommerce.android.push.NotificationChannelType.kt:7</ID>
     <ID>NoWildcardImports:com.woocommerce.android.push.NotificationMessageHandlerTest.kt:12</ID>
     <ID>NoWildcardImports:com.woocommerce.android.push.NotificationMessageHandlerTest.kt:17</ID>
@@ -172,15 +166,6 @@
     <ID>NoWildcardImports:com.woocommerce.android.screenshots.orders.SingleOrderScreen.kt:5</ID>
     <ID>NoWildcardImports:com.woocommerce.android.screenshots.util.Screen.kt:18</ID>
     <ID>NoWildcardImports:com.woocommerce.android.screenshots.util.Screen.kt:7</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.support.WooLogViewerScreen.kt:25</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.support.WooLogViewerScreen.kt:5</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.support.WooLogViewerScreen.kt:9</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.analytics.AnalyticsViewModel.kt:15</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.analytics.AnalyticsViewModel.kt:5</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.analytics.AnalyticsViewModelTest.kt:13</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.analytics.AnalyticsViewModelTest.kt:15</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCalculator.kt:6</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCalculatorTest.kt:10</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.common.UserEligibilityErrorViewModelTest.kt:10</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.common.UserEligibilityErrorViewModelTest.kt:15</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.compose.animations.SkeletonAnimation.kt:3</ID>
@@ -212,10 +197,6 @@
     <ID>NoWildcardImports:com.woocommerce.android.ui.moremenu.MoreMenu.kt:11</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.moremenu.MoreMenu.kt:17</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.moremenu.MoreMenuFragment.kt:18</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.mystore.MyStoreStatsUsageTracksEventEmitter.kt:11</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.mystore.MyStoreStatsView.kt:33</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.mystore.MyStoreStatsView.kt:52</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.mystore.MyStoreTopPerformersView.kt:22</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.mystore.MyStoreViewModel.kt:18</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.mystore.MyStoreViewModel.kt:29</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.mystore.MyStoreViewModelTest.kt:18</ID>
@@ -227,9 +208,6 @@
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.OrderListViewModelTest.kt:23</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.OrderListViewModelTest.kt:29</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.OrderListViewModelTest.kt:37</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.OrderTestUtils.kt:10</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.OrderTestUtils.kt:3</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.OrderTestUtils.kt:5</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.cardreader.ReceiptPreviewViewModelTest.kt:15</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.cardreader.ReceiptPreviewViewModelTest.kt:4</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.cardreader.payment.CardReaderPaymentErrorMapper.kt:4</ID>
@@ -271,11 +249,6 @@
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelCustomsFormFragment.kt:27</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelCustomsFormViewModelTest.kt:15</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelCustomsFormViewModelTest.kt:9</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelViewModel.kt:27</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelViewModelTest.kt:29</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelViewModelTest.kt:9</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundViewModelTest.kt:15</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundViewModelTest.kt:20</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository.kt:4</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.kt:3</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelFragment.kt:21</ID>
@@ -295,14 +268,8 @@
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentFragment.kt:16</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModelTest.kt:8</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.kt:9</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.kt:17</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.kt:27</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.kt:32</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsViewModelTest.kt:16</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.kt:11</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.kt:18</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreateCustomPackageViewModelTest.kt:9</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelPaymentMethodsAdapter.kt:17</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.kt:15</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.kt:16</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.kt:5</ID>
@@ -346,18 +313,6 @@
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailRepository.kt:26</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailRepository.kt:4</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailRepository.kt:7</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailViewModel.kt:12</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailViewModel.kt:14</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailViewModel.kt:16</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailViewModel.kt:17</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailViewModel.kt:22</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailViewModel.kt:23</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailViewModel.kt:24</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailViewModel.kt:39</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailViewModel.kt:41</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailViewModel.kt:44</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailViewModel.kt:52</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailViewModel.kt:7</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailViewModelTest.kt:15</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailViewModelTest.kt:18</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailViewModelTest.kt:29</ID>
@@ -385,16 +340,12 @@
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.addons.AddonsExt.kt:4</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.downloads.AddProductDownloadBottomSheetFragment.kt:23</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModelTest.kt:6</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.reviews.ProductReviewsFragment.kt:28</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.reviews.ProductReviewsViewModel.kt:19</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.variations.VariationDetailFragment.kt:20</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.variations.VariationDetailFragment.kt:37</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.variations.VariationDetailViewModel.kt:37</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.variations.VariationDetailViewModelTest.kt:24</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.variations.VariationListAdapter.kt:22</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.refunds.IssueRefundViewModel.kt:74</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.reviews.ReviewDetailFragment.kt:32</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.reviews.ReviewDetailFragment.kt:41</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.reviews.ReviewDetailRepository.kt:6</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.reviews.ReviewDetailViewModel.kt:9</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.reviews.ReviewDetailViewModelTest.kt:19</ID>
@@ -408,10 +359,6 @@
     <ID>NoWildcardImports:com.woocommerce.android.ui.whatsnew.FeatureAnnouncementDialogFragment.kt:5</ID>
     <ID>NoWildcardImports:com.woocommerce.android.util.CurrencyFormatterTest.kt:10</ID>
     <ID>NoWildcardImports:com.woocommerce.android.util.NumberRounding.kt:3</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.util.PriceUtils.kt:11</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.util.PriceUtilsTest.kt:12</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.util.RollingLogEntries.kt:9</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.util.StringUtils.kt:19</ID>
     <ID>NoWildcardImports:com.woocommerce.android.viewmodel.ResourceProvider.kt:4</ID>
     <ID>NoWildcardImports:com.woocommerce.android.viewmodel.ScopedViewModel.kt:3</ID>
     <ID>NoWildcardImports:com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView.kt:28</ID>
@@ -551,7 +498,6 @@
     <ID>WildcardImport:JetpackInstallViewModel.kt$import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.*</ID>
     <ID>WildcardImport:JetpackInstallViewModel.kt$import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.*</ID>
     <ID>WildcardImport:JetpackInstallViewModel.kt$import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.*</ID>
-    <ID>WildcardImport:LiveDataExt.kt$import androidx.lifecycle.*</ID>
     <ID>WildcardImport:MagicLinkInterceptRepository.kt$import com.woocommerce.android.model.RequestResult.*</ID>
     <ID>WildcardImport:MagicLinkInterceptRepository.kt$import org.wordpress.android.fluxc.store.AccountStore.*</ID>
     <ID>WildcardImport:MainActivity.kt$import com.woocommerce.android.*</ID>
@@ -564,6 +510,7 @@
     <ID>WildcardImport:MoreMenu.kt$import androidx.compose.material.*</ID>
     <ID>WildcardImport:MoreMenuFragment.kt$import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.*</ID>
     <ID>WildcardImport:MoveShippingItemViewModel.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationPackage.*</ID>
+    <ID>WildcardImport:MyStoreViewModel.kt$import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.*</ID>
     <ID>WildcardImport:MyStoreStatsView.kt$import com.woocommerce.android.extensions.*</ID>
     <ID>WildcardImport:MyStoreViewModel.kt$import kotlinx.coroutines.flow.*</ID>
     <ID>WildcardImport:Notification.kt$import com.woocommerce.android.push.*</ID>
@@ -586,7 +533,6 @@
     <ID>WildcardImport:OrderListFragment.kt$import com.woocommerce.android.extensions.*</ID>
     <ID>WildcardImport:OrderListFragment.kt$import com.woocommerce.android.model.FeatureFeedbackSettings.*</ID>
     <ID>WildcardImport:OrderListFragment.kt$import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.*</ID>
-    <ID>WildcardImport:OrderListViewModel.kt$import androidx.lifecycle.*</ID>
     <ID>WildcardImport:OrderStatusSelectorDialog.kt$import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.*</ID>
     <ID>WildcardImport:PaymentErrorMapper.kt$import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.*</ID>
     <ID>WildcardImport:PaymentManager.kt$import com.woocommerce.android.cardreader.payments.CardPaymentStatus.*</ID>
@@ -601,14 +547,12 @@
     <ID>WildcardImport:ProductDetailRepository.kt$import com.woocommerce.android.model.*</ID>
     <ID>WildcardImport:ProductDetailRepository.kt$import org.wordpress.android.fluxc.action.WCProductAction.*</ID>
     <ID>WildcardImport:ProductDetailRepository.kt$import org.wordpress.android.fluxc.store.WCProductStore.*</ID>
-    <ID>WildcardImport:ProductDetailViewModel.kt$import androidx.lifecycle.*</ID>
     <ID>WildcardImport:ProductDetailViewModel.kt$import com.woocommerce.android.analytics.AnalyticsEvent.*</ID>
     <ID>WildcardImport:ProductDetailViewModel.kt$import com.woocommerce.android.extensions.*</ID>
     <ID>WildcardImport:ProductDetailViewModel.kt$import com.woocommerce.android.media.MediaFilesRepository.UploadResult.*</ID>
     <ID>WildcardImport:ProductDetailViewModel.kt$import com.woocommerce.android.model.*</ID>
     <ID>WildcardImport:ProductDetailViewModel.kt$import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.*</ID>
     <ID>WildcardImport:ProductDetailViewModel.kt$import com.woocommerce.android.ui.products.ProductNavigationTarget.*</ID>
-    <ID>WildcardImport:ProductDetailViewModel.kt$import com.woocommerce.android.ui.products.ProductStatus.*</ID>
     <ID>WildcardImport:ProductDetailViewModel.kt$import com.woocommerce.android.viewmodel.*</ID>
     <ID>WildcardImport:ProductDetailViewModel.kt$import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*</ID>
     <ID>WildcardImport:ProductDetailViewModel.kt$import kotlinx.coroutines.flow.*</ID>
@@ -621,14 +565,10 @@
     <ID>WildcardImport:ProductListViewModel.kt$import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.*</ID>
     <ID>WildcardImport:ProductListViewModel.kt$import kotlinx.coroutines.*</ID>
     <ID>WildcardImport:ProductListViewModel.kt$import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.*</ID>
-    <ID>WildcardImport:ProductReviewsFragment.kt$import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*</ID>
     <ID>WildcardImport:ProductReviewsViewModel.kt$import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*</ID>
     <ID>WildcardImport:ProductSelectionListFragment.kt$import android.view.*</ID>
-    <ID>WildcardImport:ProductVariation.kt$import com.woocommerce.android.extensions.*</ID>
     <ID>WildcardImport:Refund.kt$import org.wordpress.android.fluxc.model.refunds.WCRefundModel.*</ID>
     <ID>WildcardImport:ResourceProvider.kt$import androidx.annotation.*</ID>
-    <ID>WildcardImport:ReviewDetailFragment.kt$import com.woocommerce.android.ui.reviews.ProductReviewStatus.*</ID>
-    <ID>WildcardImport:ReviewDetailFragment.kt$import org.wordpress.android.util.*</ID>
     <ID>WildcardImport:ReviewDetailRepository.kt$import com.woocommerce.android.model.*</ID>
     <ID>WildcardImport:ReviewDetailViewModel.kt$import com.woocommerce.android.model.RequestResult.*</ID>
     <ID>WildcardImport:ReviewListRepository.kt$import com.woocommerce.android.model.RequestResult.*</ID>
@@ -636,11 +576,6 @@
     <ID>WildcardImport:ReviewModerationHandler.kt$import com.woocommerce.android.model.ActionStatus.*</ID>
     <ID>WildcardImport:ReviewModerationHandler.kt$import kotlinx.coroutines.*</ID>
     <ID>WildcardImport:ReviewModerationHandler.kt$import kotlinx.coroutines.flow.*</ID>
-    <ID>WildcardImport:ScopedViewModel.kt$import androidx.lifecycle.*</ID>
-    <ID>WildcardImport:ShippingCarrierRatesAdapter.kt$import com.woocommerce.android.extensions.*</ID>
-    <ID>WildcardImport:ShippingCarrierRatesAdapter.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.*</ID>
-    <ID>WildcardImport:ShippingLabelAddressSuggestionFragment.kt$import com.woocommerce.android.extensions.*</ID>
-    <ID>WildcardImport:ShippingLabelAddressSuggestionFragment.kt$import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*</ID>
     <ID>WildcardImport:ShippingLabelRepository.kt$import com.woocommerce.android.model.*</ID>
     <ID>WildcardImport:ShippingLabelsStateMachine.kt$import com.woocommerce.android.model.*</ID>
     <ID>WildcardImport:ShippingLabelsStateMachine.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.*</ID>
@@ -654,7 +589,5 @@
     <ID>WildcardImport:VariationDetailViewModel.kt$import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*</ID>
     <ID>WildcardImport:VariationListAdapter.kt$import com.woocommerce.android.ui.products.ProductStockStatus.*</ID>
     <ID>WildcardImport:WCMaterialOutlinedCurrencyEditTextView.kt$import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.*</ID>
-    <ID>WildcardImport:WooLogViewerScreen.kt$import androidx.compose.foundation.layout.*</ID>
-    <ID>WildcardImport:WooLogViewerScreen.kt$import androidx.compose.material.*</ID>
   </CurrentIssues>
 </SmellBaseline>

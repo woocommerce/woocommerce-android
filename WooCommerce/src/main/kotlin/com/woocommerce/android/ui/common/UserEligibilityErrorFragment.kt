@@ -9,7 +9,6 @@ import android.view.MenuItem
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
@@ -103,30 +102,27 @@ class UserEligibilityErrorFragment : BaseFragment(layout.fragment_user_eligibili
             new.user?.takeIfNotEqualTo(old?.user) { showView(it) }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
         }
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> {
-                        uiMessageResolver.showSnack(event.message)
-                    }
-                    is Exit -> {
-                        findNavController().navigateUp()
-                    }
-                    is Logout -> {
-                        requireActivity().apply {
-                            setResult(Activity.RESULT_CANCELED)
-                            val intent = Intent(activity, LoginActivity::class.java)
-                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                            LoginMode.WOO_LOGIN_MODE.putInto(intent)
-                            startActivity(intent)
-                            finish()
-                        }
-                    }
-                    else -> event.isHandled = false
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowSnackbar -> {
+                    uiMessageResolver.showSnack(event.message)
                 }
+                is Exit -> {
+                    findNavController().navigateUp()
+                }
+                is Logout -> {
+                    requireActivity().apply {
+                        setResult(Activity.RESULT_CANCELED)
+                        val intent = Intent(activity, LoginActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                        LoginMode.WOO_LOGIN_MODE.putInto(intent)
+                        startActivity(intent)
+                        finish()
+                    }
+                }
+                else -> event.isHandled = false
             }
-        )
+        }
         viewModel.start()
     }
 

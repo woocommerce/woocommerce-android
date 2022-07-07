@@ -667,6 +667,193 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when wcpay and stripe extension installed-activated, then payment gateway screen is shown`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.ChoosePaymentGatewayProvider
+            )
+
+            val viewModel = createVM()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(
+                OnboardingViewState.SelectPaymentPluginState::class.java
+            )
+        }
+
+    @Test
+    fun `when wcpay and stripe extension active, then confirm illustration shown`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.ChoosePaymentGatewayProvider
+            )
+
+            val viewModel = createVM()
+
+            val viewStateData = viewModel.viewStateData.value as OnboardingViewState.SelectPaymentPluginState
+            assertThat(viewStateData.cardIllustration).isNotNull()
+        }
+
+    @Test
+    fun `when wcpay and stripe extension active, then confirm header shown`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.ChoosePaymentGatewayProvider
+            )
+
+            val viewModel = createVM()
+
+            val viewStateData = viewModel.viewStateData.value as OnboardingViewState.SelectPaymentPluginState
+            assertThat(viewStateData.headerLabel).isNotNull()
+        }
+
+    @Test
+    fun `when wcpay and stripe extension active, then confirm hint shown`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.ChoosePaymentGatewayProvider
+            )
+
+            val viewModel = createVM()
+
+            val viewStateData = viewModel.viewStateData.value as OnboardingViewState.SelectPaymentPluginState
+            assertThat(viewStateData.choosePluginHintLabel).isNotNull()
+        }
+
+    @Test
+    fun `when wcpay and stripe active, then wcpay button shown`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.ChoosePaymentGatewayProvider
+            )
+
+            val viewModel = createVM()
+
+            val viewStateData = viewModel.viewStateData.value as OnboardingViewState.SelectPaymentPluginState
+            assertThat(viewStateData.selectWcPayButtonLabel).isNotNull
+        }
+
+    @Test
+    fun `when wcpay and stripe active, then stripe button shown`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.ChoosePaymentGatewayProvider
+            )
+
+            val viewModel = createVM()
+
+            val viewStateData = viewModel.viewStateData.value as OnboardingViewState.SelectPaymentPluginState
+            assertThat(viewStateData.selectStripeButtonLabel).isNotNull
+        }
+
+    @Test
+    fun `when wcpay and stripe extension active, then confirm payment method button shown`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.ChoosePaymentGatewayProvider
+            )
+
+            val viewModel = createVM()
+
+            val viewStateData = viewModel.viewStateData.value as OnboardingViewState.SelectPaymentPluginState
+            assertThat(viewStateData.confirmPaymentMethodButtonLabel).isNotNull()
+        }
+
+    @Test
+    fun `when wcpay and stripe extension active, then correct labels and illustrations shown`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.ChoosePaymentGatewayProvider
+            )
+
+            val viewModel = createVM()
+
+            val state = (
+                viewModel.viewStateData.value as OnboardingViewState.SelectPaymentPluginState
+                )
+            assertThat(state.cardIllustration)
+                .describedAs("Check illustration")
+                .isEqualTo(
+                    R.drawable.ic_credit_card_give
+                )
+            assertThat(state.headerLabel)
+                .describedAs("Check header")
+                .isEqualTo(
+                    UiString.UiStringRes(
+                        R.string.card_reader_onboarding_choose_payment_provider
+                    )
+                )
+            assertThat(state.choosePluginHintLabel)
+                .describedAs("Check hint")
+                .isEqualTo(
+                    UiString.UiStringRes(
+                        R.string.card_reader_onboarding_choose_plugin_hint
+                    )
+                )
+            assertThat(state.selectWcPayButtonLabel)
+                .describedAs("Check wcpayButtonLabel")
+                .isEqualTo(
+                    UiString.UiStringRes(
+                        R.string.card_reader_onboarding_choose_wcpayment_button
+                    )
+                )
+            assertThat(state.icWcPayLogo)
+                .describedAs("Check illustration")
+                .isEqualTo(
+                    R.drawable.ic_wcpay
+                )
+            assertThat(state.icCheckmarkWcPay)
+                .describedAs("Check illustration")
+                .isEqualTo(
+                    R.drawable.ic_menu_action_mode_check
+                )
+            assertThat(state.selectStripeButtonLabel)
+                .describedAs("Check wcpayButtonLabel")
+                .isEqualTo(
+                    UiString.UiStringRes(
+                        R.string.card_reader_onboarding_choose_stripe_button
+                    )
+                )
+            assertThat(state.confirmPaymentMethodButtonLabel)
+                .describedAs("Check wcpayButtonLabel")
+                .isEqualTo(
+                    UiString.UiStringRes(
+                        R.string.card_reader_onboarding_confirm_payment_method_button
+                    )
+                )
+        }
+
+    @Test
+    fun `given wcpay and stripe extension active, when user taps wcpay and confirm button, then load screen shown `() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.ChoosePaymentGatewayProvider
+            )
+
+            val viewModel = createVM()
+
+            val viewStateData = viewModel.viewStateData.value as OnboardingViewState.SelectPaymentPluginState
+            viewStateData.onConfirmPaymentMethodClicked.invoke(WOOCOMMERCE_PAYMENTS)
+
+            assertThat(viewModel.viewStateData.value).isEqualTo(LoadingState)
+        }
+
+    @Test
+    fun `given wcpay and stripe extension active, when user taps stripe and confirm button, then load screen shown `() =
+
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.ChoosePaymentGatewayProvider
+            )
+
+            val viewModel = createVM()
+
+            val viewStateData = viewModel.viewStateData.value as OnboardingViewState.SelectPaymentPluginState
+            viewStateData.onConfirmPaymentMethodClicked.invoke(STRIPE_EXTENSION_GATEWAY)
+
+            assertThat(viewModel.viewStateData.value).isEqualTo(LoadingState)
+        }
+
+    @Test
     fun `given user is admin, when wcpay and stripe extension active, then open wpadmin button shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(

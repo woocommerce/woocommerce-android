@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.reviews
 
 import android.content.Context
 import android.graphics.Color
-import android.graphics.PorterDuff
 import android.graphics.drawable.LayerDrawable
 import android.os.Build
 import android.os.Bundle
@@ -11,6 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton.OnCheckedChangeListener
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -29,7 +30,10 @@ import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.reviews.ProductReviewStatus.*
+import com.woocommerce.android.ui.reviews.ProductReviewStatus.APPROVED
+import com.woocommerce.android.ui.reviews.ProductReviewStatus.HOLD
+import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
+import com.woocommerce.android.ui.reviews.ProductReviewStatus.TRASH
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.NavigateBackFromNotification
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
@@ -38,7 +42,11 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.util.*
+import org.wordpress.android.util.DateTimeUtils
+import org.wordpress.android.util.DisplayUtils
+import org.wordpress.android.util.HtmlUtils
+import org.wordpress.android.util.PhotonUtils
+import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -71,6 +79,7 @@ class ReviewDetailFragment :
         return inflater.inflate(R.layout.fragment_review_detail, container, false)
     }
 
+    @Suppress("DEPRECATION")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         val dimen = requireActivity().resources.getDimensionPixelSize(R.dimen.image_minor_50)
@@ -186,9 +195,9 @@ class ReviewDetailFragment :
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             val stars = binding.reviewRatingBar.progressDrawable as? LayerDrawable
-            stars?.getDrawable(2)?.setColorFilter(
+            stars?.getDrawable(2)?.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
                 ContextCompat.getColor(requireContext(), R.color.woo_yellow_30),
-                PorterDuff.Mode.SRC_ATOP
+                BlendModeCompat.SRC_ATOP
             )
         }
 
