@@ -11,6 +11,7 @@ import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
+import com.woocommerce.android.AppUrls.LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -66,7 +67,8 @@ class LoginActivity :
     PrologueFinishedListener,
     HasAndroidInjector,
     LoginNoJetpackListener,
-    LoginEmailHelpDialogFragment.Listener {
+    LoginEmailHelpDialogFragment.Listener,
+    WooLoginEmailFragment.Listener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
         private const val MAGIC_LOGIN = "magic-login"
@@ -714,5 +716,9 @@ class LoginActivity :
             // Just in case we use this method for a different scenario in the future
             TODO("Handle a new error scenario")
         }
+    }
+
+    override fun onWhatIsWordPressLinkClicked() {
+        ChromeCustomTabUtils.launchUrl(this, LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT)
     }
 }
