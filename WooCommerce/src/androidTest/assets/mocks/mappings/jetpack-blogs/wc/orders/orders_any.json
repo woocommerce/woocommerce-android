@@ -8,10 +8,10 @@
             },
             "path": {
                 "matches": "/wc/v3/orders/(.*)"
-            },            
+            },
             "query": {
                 "matches": "(.*)status\":\"any(.*)_fields\":\"id,date_created_gmt,date_modified_gmt(.*)"
-            },            
+            },
             "locale": {
                 "matches": "(.*)"
             }
@@ -22,7 +22,7 @@
         "jsonBody": {
             "data": [{
                 "id": 2789,
-                "date_created_gmt": "{{#assign 'currentYear'}}{{now format='yyyy'}}{{/assign}}{{currentYear}}-10-31T13:13:57",
+                "date_created_gmt": "{{#assign 'currentYear'}}{{fnow format='yyyy'}}{{/assign}}{{currentYear}}-10-31T13:13:57",
                 "date_modified_gmt": "{{currentYear}}-10-31T13:13:57"
             }, {
                 "id": 2788,
