@@ -27,7 +27,6 @@ import tools.fastlane.screengrab.cleanstatusbar.CleanStatusBar
 import tools.fastlane.screengrab.locale.LocaleTestRule
 import javax.inject.Inject
 
-
 @HiltAndroidTest
 class ScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
     @get:Rule(order = 0)
@@ -45,8 +44,7 @@ class ScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
     @get:Rule(order = 4)
     var activityRule = ActivityScenarioRule(MainActivity::class.java)
 
-    @Inject
-    lateinit var wooNotificationBuilder: WooNotificationBuilder
+    @Inject lateinit var wooNotificationBuilder: WooNotificationBuilder
 
     @Before
     fun setUp() {

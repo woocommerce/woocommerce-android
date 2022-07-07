@@ -16,7 +16,6 @@ import com.woocommerce.android.screenshots.util.Screen
  */
 class NotificationsScreen(private val wooNotificationBuilder: WooNotificationBuilder) :
     Screen(TabNavComponent.MY_STORE_BUTTON) {
-
     init {
         displayNotification()
         openNotificationShade()
