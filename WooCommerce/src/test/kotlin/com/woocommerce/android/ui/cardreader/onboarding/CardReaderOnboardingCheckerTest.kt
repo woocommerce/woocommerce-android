@@ -380,20 +380,6 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given wcpay and stripe are installed, when both are activated, then WCPAY_AND_STRIPE_ACTIVATED returned`() =
-        testBlocking {
-            whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
-            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-                .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
-            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-                .thenReturn(buildWCPayPluginInfo(isActive = true))
-
-            val result = checker.getOnboardingState()
-
-            assertThat(result).isEqualTo(CardReaderOnboardingState.WcpayAndStripeActivated)
-        }
-
-    @Test
     fun `given wcpay and stripe are installed in RU, when get state, then country code RU returned`() =
         testBlocking {
             val countryCode = "RU"

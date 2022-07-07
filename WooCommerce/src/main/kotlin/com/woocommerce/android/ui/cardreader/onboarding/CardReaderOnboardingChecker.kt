@@ -30,7 +30,6 @@ import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingStat
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.StripeAccountPendingRequirement
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.StripeAccountRejected
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.StripeAccountUnderReview
-import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.WcpayAndStripeActivated
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.WcpayNotActivated
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.WcpayNotInstalled
 import com.woocommerce.android.ui.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
@@ -141,8 +140,6 @@ class CardReaderOnboardingChecker @Inject constructor(
                         return ChoosePaymentGatewayProvider
                     }
                 }
-            } else {
-                return WcpayAndStripeActivated
             }
         } else {
             if (ippSelectPaymentGateway.isEnabled()) {
@@ -457,12 +454,6 @@ sealed class CardReaderOnboardingState(
      */
     @Parcelize
     data class SetupNotCompleted(override val preferredPlugin: PluginType) : CardReaderOnboardingState()
-
-    /**
-     * Both plugins are installed and activated on the site. IPP are not supported in this state.
-     */
-    @Parcelize
-    object WcpayAndStripeActivated : CardReaderOnboardingState()
 
     /**
      * Both plugins are installed and activated on the site. Merchant needs to choose their preferred payment
