@@ -70,10 +70,10 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/login_what_is_wordpress"
             style="@style/Widget.LoginFlow.Button.Tertiary"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="@dimen/margin_none"
-            android:paddingEnd="@dimen/margin_none"
+            android:layout_marginStart="@dimen/margin_extra_large"
+            android:layout_marginEnd="@dimen/margin_extra_large"
             android:text="@string/what_is_wordpress_link"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
