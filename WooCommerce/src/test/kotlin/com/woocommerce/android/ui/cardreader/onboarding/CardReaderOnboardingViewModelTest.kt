@@ -1259,6 +1259,32 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     // Tracking Begin
     @Test
+    fun `given multiple gateway, when user selects wcpay, then track selected gateway`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(CardReaderOnboardingState.ChoosePaymentGatewayProvider)
+
+            val viewModel = createVM()
+            (viewModel.viewStateData.value as OnboardingViewState.SelectPaymentPluginState)
+                .onConfirmPaymentMethodClicked.invoke(WOOCOMMERCE_PAYMENTS)
+
+            verify(tracker).trackPaymentGatewaySelected(WOOCOMMERCE_PAYMENTS)
+        }
+
+    @Test
+    fun `given multiple gateway, when user selects stripe extension, then track selected gateway`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(CardReaderOnboardingState.ChoosePaymentGatewayProvider)
+
+            val viewModel = createVM()
+            (viewModel.viewStateData.value as OnboardingViewState.SelectPaymentPluginState)
+                .onConfirmPaymentMethodClicked.invoke(STRIPE_EXTENSION_GATEWAY)
+
+            verify(tracker).trackPaymentGatewaySelected(STRIPE_EXTENSION_GATEWAY)
+        }
+
+    @Test
     fun `when learn more tapped, then event tracked`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())

@@ -205,10 +205,15 @@ class CardReaderOnboardingViewModel @Inject constructor(
     }
 
     private fun updateUiWithSelectPaymentPlugin() {
-        viewState.value =
-            OnboardingViewState.SelectPaymentPluginState(
-                onConfirmPaymentMethodClicked = { (::refreshState)(it) }
-            )
+        launch {
+            viewState.value =
+                OnboardingViewState.SelectPaymentPluginState(
+                    onConfirmPaymentMethodClicked = { pluginType ->
+                        cardReaderTracker.trackPaymentGatewaySelected(pluginType)
+                        (::refreshState)(pluginType)
+                    }
+                )
+        }
     }
 
     private fun updateUiWithWcPayAndStripeActivated() {
