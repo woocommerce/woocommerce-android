@@ -23,7 +23,7 @@
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginEnd="@dimen/major_100"
             android:text="@string/product_add_ons_details_info_notice"
-            android:drawableStart="@drawable/deprecated_ic_info_outline_24dp"
+            android:drawableStart="@drawable/ic_deprecated_info_outline_24dp"
             android:drawablePadding="@dimen/minor_100"
             android:gravity="center_vertical"
             android:visibility="visible"

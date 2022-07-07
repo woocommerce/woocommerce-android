@@ -173,7 +173,7 @@
                     android:text="@string/shipping_label_package_details_individual_package_dimensions_error"
                     android:textAppearance="?attr/textAppearanceCaption"
                     android:textColor="@color/color_error"
-                    app:drawableStartCompat="@drawable/tintable_ic_info_outline_24dp"
+                    app:drawableStartCompat="@drawable/ic_tintable_info_outline_24dp"
                     app:drawableTint="@color/color_error" />
             </LinearLayout>
 

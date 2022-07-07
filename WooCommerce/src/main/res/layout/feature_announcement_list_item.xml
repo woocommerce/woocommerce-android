@@ -21,7 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:contentDescription="@string/settings_whats_new_icon_description"
-            tools:src="@drawable/deprecated_ic_info_outline_24dp" />
+            tools:src="@drawable/ic_deprecated_info_outline_24dp" />
 
     </FrameLayout>
 

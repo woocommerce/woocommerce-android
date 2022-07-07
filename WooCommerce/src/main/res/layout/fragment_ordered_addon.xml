@@ -38,7 +38,7 @@
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginTop="@dimen/minor_10"
                 android:drawablePadding="@dimen/minor_100"
-                android:drawableStart="@drawable/deprecated_ic_info_outline_24dp"
+                android:drawableStart="@drawable/ic_deprecated_info_outline_24dp"
                 android:gravity="center_vertical"
                 android:text="@string/ordered_add_ons_details_info_notice"
                 android:visibility="gone"

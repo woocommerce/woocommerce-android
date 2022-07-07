@@ -47,7 +47,7 @@ class FeatureAnnouncementListAdapter :
 
             val placeholder = ContextCompat.getDrawable(
                 viewBinding.root.context,
-                R.drawable.deprecated_ic_info_outline_24dp
+                R.drawable.ic_deprecated_info_outline_24dp
             )
 
             when {

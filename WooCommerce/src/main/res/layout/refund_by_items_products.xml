@@ -75,7 +75,7 @@
         android:layout_marginTop="@dimen/major_100"
         android:layout_marginStart="@dimen/minor_00"
         android:layout_marginEnd="@dimen/minor_00"
-        android:drawableStart="@drawable/deprecated_ic_info_outline_24dp"
+        android:drawableStart="@drawable/ic_deprecated_info_outline_24dp"
         android:drawablePadding="@dimen/major_100"
         tools:text="@string/order_refunds_shipping_refund_variable_notice"
         android:visibility="visible"
