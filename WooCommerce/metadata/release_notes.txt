@@ -2,5 +2,5 @@ We keep adding new functionality to our experimental Coupon Management feature! 
 
 We also fixed a bug that was making it hard for some of you to search orders. Thanks to everyone who reported this! Your feedback is vital to us!'
 
-[***] In-Person Payments: Enabled ability to choose a payment gateway when multiple payment gateway is installed on a site for all!
+[***] In-Person Payments: Enabled ability to choose a payment gateway when multiple payment gateway is installed on a site for all! (https://github.com/woocommerce/woocommerce-android/pull/6887)
 
