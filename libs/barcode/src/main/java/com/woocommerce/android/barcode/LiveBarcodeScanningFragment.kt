@@ -37,7 +37,6 @@ import kotlinx.android.synthetic.main.camera_preview_overlay.promptChip
 import kotlinx.android.synthetic.main.fragment_live_barcode.preview
 import kotlinx.android.synthetic.main.top_action_bar_in_live_camera.closeButton
 import kotlinx.android.synthetic.main.top_action_bar_in_live_camera.flashButton
-import kotlinx.android.synthetic.main.top_action_bar_in_live_camera.settingsButton
 import java.io.IOException
 
 /** Demonstrates the barcode scanning workflow using camera preview.  */
@@ -52,8 +51,12 @@ class LiveBarcodeScanningFragment : Fragment(), OnClickListener {
     private var currentWorkflowState: WorkflowState? = null
     private var onCodeScanned: (rawValue: String?) -> Unit = {}
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_live_barcode, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         graphicOverlay.apply {
             setOnClickListener(this@LiveBarcodeScanningFragment)
@@ -72,22 +75,13 @@ class LiveBarcodeScanningFragment : Fragment(), OnClickListener {
         flashButton.apply {
             setOnClickListener(this@LiveBarcodeScanningFragment)
         }
-        settingsButton.apply {
-            setOnClickListener(this@LiveBarcodeScanningFragment)
-        }
-
         setUpWorkflowModel()
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_live_barcode, container, false)
     }
 
     override fun onResume() {
         super.onResume()
 
         workflowModel.markCameraFrozen()
-        settingsButton.isEnabled = true
         currentWorkflowState = WorkflowState.NOT_STARTED
         cameraSource?.setFrameProcessor(BarcodeProcessor(graphicOverlay, workflowModel))
         workflowModel.setWorkflowState(WorkflowState.DETECTING)
@@ -115,12 +109,9 @@ class LiveBarcodeScanningFragment : Fragment(), OnClickListener {
                         cameraSource?.updateFlashMode(Camera.Parameters.FLASH_MODE_OFF)
                     } else {
                         it.isSelected = true
-                        cameraSource!!.updateFlashMode(Camera.Parameters.FLASH_MODE_TORCH)
+                        cameraSource?.updateFlashMode(Camera.Parameters.FLASH_MODE_TORCH)
                     }
                 }
-            }
-            R.id.settingsButton -> {
-                settingsButton.isEnabled = false
             }
         }
     }
