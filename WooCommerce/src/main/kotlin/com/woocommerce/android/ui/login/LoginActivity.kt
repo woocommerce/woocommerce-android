@@ -28,7 +28,6 @@ import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow.LOGIN_SITE_ADDR
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Source
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step.ENTER_SITE_ADDRESS
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
-import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment.QrLoginListener
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
@@ -70,8 +69,7 @@ class LoginActivity :
     HasAndroidInjector,
     LoginNoJetpackListener,
     LoginEmailHelpDialogFragment.Listener,
-    WooLoginEmailFragment.Listener,
-    QrLoginListener {
+    WooLoginEmailFragment.Listener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
         private const val MAGIC_LOGIN = "magic-login"
@@ -237,24 +235,6 @@ class LoginActivity :
     override fun onSecondaryButtonClicked() {
         unifiedLoginTracker.trackClick(Click.CONTINUE_WITH_WORDPRESS_COM)
         startLoginViaWPCom()
-    }
-
-    override fun onQrCodeLoginClicked() {
-        val fragment =
-            supportFragmentManager.findFragmentByTag(LiveBarcodeScanningFragment.TAG) as? LiveBarcodeScanningFragment
-                ?: LiveBarcodeScanningFragment()
-        fragment.setOnBarCodeScanner { rawValue ->
-//        val intent = Intent(this, MagicLinkInterceptActivity::class.java)
-//            intent.action = Intent.ACTION_VIEW
-//            intent.data = Uri.parse(rawValue)
-//            startActivity(intent)
-
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(rawValue))
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or
-                Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-        }
-        slideInFragment(fragment, true, LiveBarcodeScanningFragment.TAG)
     }
 
     private fun showMainActivityAndFinish() {
@@ -743,4 +723,23 @@ class LoginActivity :
         ChromeCustomTabUtils.launchUrl(this, LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT)
         unifiedLoginTracker.trackClick(Click.WHAT_IS_WORDPRESS_COM)
     }
+
+    override fun onQrCodeLoginClicked() {
+        val fragment =
+            supportFragmentManager.findFragmentByTag(LiveBarcodeScanningFragment.TAG) as? LiveBarcodeScanningFragment
+                ?: LiveBarcodeScanningFragment()
+        fragment.setOnBarCodeScanner { rawValue ->
+//        val intent = Intent(this, MagicLinkInterceptActivity::class.java)
+//            intent.action = Intent.ACTION_VIEW
+//            intent.data = Uri.parse(rawValue)
+//            startActivity(intent)
+
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(rawValue))
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or
+                Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+        }
+        slideInFragment(fragment, true, LiveBarcodeScanningFragment.TAG)
+    }
+
 }
