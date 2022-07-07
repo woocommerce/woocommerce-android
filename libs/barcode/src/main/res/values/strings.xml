@@ -3,9 +3,9 @@
   <string name="cd_settings_button">Settings</string>
   <string name="cd_close_button">Back</string>
   <string name="cd_flash_button">Toggle camera flash</string>
-  <string name="prompt_point_at_a_barcode">Point your camera at a barcode</string>
+  <string name="prompt_point_at_a_barcode">Point your camera at the code</string>
   <string name="prompt_move_camera_closer">Move closer to search</string>
-  <string name="prompt_searching">Searching&#8230;</string>
+  <string name="prompt_searching">Scanning&#8230;</string>
   <string name="product_search_button">Search object</string>
 
   <!-- Strings for camera settings. -->
