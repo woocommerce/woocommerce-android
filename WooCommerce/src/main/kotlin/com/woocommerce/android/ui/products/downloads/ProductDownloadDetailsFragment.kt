@@ -7,7 +7,6 @@ import android.view.MenuItem
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
@@ -92,23 +91,20 @@ class ProductDownloadDetailsFragment :
     }
 
     private fun setupObservers(viewModel: ProductDownloadDetailsViewModel) {
-        viewModel.productDownloadDetailsViewStateData.observe(
-            owner = viewLifecycleOwner,
-            observer = { old, new ->
-                new.fileDraft.url.takeIfNotEqualTo(binding.productDownloadUrl.text) {
-                    binding.productDownloadUrl.text = it
-                }
-                new.fileDraft.name.takeIfNotEqualTo(binding.productDownloadName.text) {
-                    binding.productDownloadName.text = it
-                }
-                new.showDoneButton.takeIfNotEqualTo(old?.showDoneButton) {
-                    showDoneMenuItem(it)
-                }
-                if (new.urlErrorMessage != old?.urlErrorMessage || new.nameErrorMessage != old?.nameErrorMessage) {
-                    updateErrorMessages(new.urlErrorMessage, new.nameErrorMessage)
-                }
+        viewModel.productDownloadDetailsViewStateData.observe(viewLifecycleOwner) { old, new ->
+            new.fileDraft.url.takeIfNotEqualTo(binding.productDownloadUrl.text) {
+                binding.productDownloadUrl.text = it
             }
-        )
+            new.fileDraft.name.takeIfNotEqualTo(binding.productDownloadName.text) {
+                binding.productDownloadName.text = it
+            }
+            new.showDoneButton.takeIfNotEqualTo(old?.showDoneButton) {
+                showDoneMenuItem(it)
+            }
+            if (new.urlErrorMessage != old?.urlErrorMessage || new.nameErrorMessage != old?.nameErrorMessage) {
+                updateErrorMessages(new.urlErrorMessage, new.nameErrorMessage)
+            }
+        }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {

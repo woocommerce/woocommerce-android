@@ -243,16 +243,15 @@ class ProductSelectorViewModel @Inject constructor(
                     if (it.isEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS
                 }
                 .collectLatest { query ->
-                    try {
-                        listHandler.fetchProducts(searchQuery = query)
-                            .onFailure {
-                                val message = if (query.isEmpty()) string.product_selector_loading_failed
-                                else string.product_selector_search_failed
-                                triggerEvent(ShowSnackbar(message))
-                            }
-                    } finally {
-                        loadingState.value = IDLE
-                    }
+                    // Make sure the loading state is correctly set after debounce too
+                    loadingState.value = LOADING
+                    listHandler.fetchProducts(searchQuery = query)
+                        .onFailure {
+                            val message = if (query.isEmpty()) string.product_selector_loading_failed
+                            else string.product_selector_search_failed
+                            triggerEvent(ShowSnackbar(message))
+                        }
+                    loadingState.value = IDLE
                 }
         }
     }
@@ -270,15 +269,12 @@ class ProductSelectorViewModel @Inject constructor(
                     loadingState.value = LOADING
                 }
                 .collectLatest { filters ->
-                    try {
-                        listHandler.fetchProducts(filters = filters.filterOptions)
-                            .onFailure {
-                                val message = string.product_selector_loading_failed
-                                triggerEvent(ShowSnackbar(message))
-                            }
-                    } finally {
-                        loadingState.value = IDLE
-                    }
+                    listHandler.fetchProducts(filters = filters.filterOptions)
+                        .onFailure {
+                            val message = string.product_selector_loading_failed
+                            triggerEvent(ShowSnackbar(message))
+                        }
+                    loadingState.value = IDLE
                 }
         }
     }

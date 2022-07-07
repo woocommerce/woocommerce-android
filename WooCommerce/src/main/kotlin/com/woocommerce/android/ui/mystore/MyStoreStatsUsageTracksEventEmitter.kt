@@ -8,7 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.wordpress.android.util.DateTimeUtils
-import java.util.*
+import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
 

@@ -36,7 +36,6 @@ data class Order(
     val paymentMethodTitle: String,
     val isCashPayment: Boolean,
     val pricesIncludeTax: Boolean,
-    val multiShippingLinesAvailable: Boolean,
     val billingAddress: Address,
     val shippingAddress: Address,
     val shippingMethods: List<ShippingMethod>,
@@ -58,6 +57,12 @@ data class Order(
 
     @IgnoredOnParcel
     val isRefundAvailable = refundTotal < total && availableRefundQuantity > 0
+
+    val hasMultipleShippingLines: Boolean
+        get() = shippingLines.size > 1
+
+    val hasMultipleFeeLines: Boolean
+        get() = feesLines.size > 1
 
     @Parcelize
     data class ShippingMethod(
@@ -314,7 +319,6 @@ data class Order(
                 paymentMethodTitle = "",
                 isCashPayment = false,
                 pricesIncludeTax = false,
-                multiShippingLinesAvailable = false,
                 billingAddress = Address.EMPTY,
                 shippingAddress = Address.EMPTY,
                 shippingMethods = emptyList(),

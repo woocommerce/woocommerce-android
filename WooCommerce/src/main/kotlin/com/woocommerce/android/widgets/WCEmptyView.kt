@@ -10,7 +10,6 @@ import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.text.HtmlCompat
-import androidx.core.text.HtmlCompat.FROM_HTML_MODE_LEGACY
 import androidx.core.view.isVisible
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.WcEmptyViewBinding
@@ -199,10 +198,10 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
             title
         }
 
-        binding.emptyViewTitle.text = HtmlCompat.fromHtml(titleHtml, FROM_HTML_MODE_LEGACY)
+        binding.emptyViewTitle.text = HtmlCompat.fromHtml(titleHtml, HtmlCompat.FROM_HTML_MODE_LEGACY)
         binding.emptyViewImage.setImageDrawable(AppCompatResources.getDrawable(context, drawableId))
         if (message != null) {
-            binding.emptyViewMessage.text = HtmlCompat.fromHtml(message, FROM_HTML_MODE_LEGACY)
+            binding.emptyViewMessage.text = HtmlCompat.fromHtml(message, HtmlCompat.FROM_HTML_MODE_LEGACY)
             binding.emptyViewMessage.visibility = View.VISIBLE
         } else {
             binding.emptyViewMessage.visibility = View.GONE

@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.woocommerce.android.ui.main
 
 import android.animation.ValueAnimator
@@ -155,7 +157,7 @@ class MainActivity :
     }
 
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
-    private var progressDialog: ProgressDialog? = null
+    @Suppress("DEPRECATION") private var progressDialog: ProgressDialog? = null
 
     private val fragmentLifecycleObserver: FragmentLifecycleCallbacks = object : FragmentLifecycleCallbacks() {
         override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
@@ -283,6 +285,7 @@ class MainActivity :
         }
     }
 
+    @Suppress("DEPRECATION")
     override fun showProgressDialog(@StringRes stringId: Int) {
         hideProgressDialog()
         progressDialog = ProgressDialog.show(this, "", getString(stringId), true)
@@ -509,6 +512,7 @@ class MainActivity :
 
     private fun isDialogDestination(destination: NavDestination) = destination.navigatorName == DIALOG_NAVIGATOR_NAME
 
+    @Suppress("DEPRECATION")
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
@@ -534,6 +538,7 @@ class MainActivity :
         }
     }
 
+    @Suppress("DEPRECATION")
     override fun showLoginScreen() {
         selectedSite.reset()
         val intent = Intent(this, LoginActivity::class.java)
@@ -547,6 +552,7 @@ class MainActivity :
         navController.navigateSafely(action)
     }
 
+    @Suppress("DEPRECATION")
     override fun showSettingsScreen() {
         AnalyticsTracker.track(AnalyticsEvent.MAIN_MENU_SETTINGS_TAPPED)
         val intent = Intent(this, AppSettingsActivity::class.java)

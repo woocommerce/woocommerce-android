@@ -7,12 +7,16 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel.Step.Installation
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
@@ -31,13 +35,22 @@ class InstallWCShippingViewModel @Inject constructor(
         .map { prepareStep(it) }
         .asLiveData()
 
+    init {
+        launch {
+            // Wait for installation step
+            step.filter { it == Installation }
+                .first()
+
+            // TODO launch plugin installation
+        }
+    }
+
     private fun prepareStep(step: Step): ViewState {
         return when (step) {
             Step.Onboarding -> ViewState.Onboarding(
                 title = R.string.install_wc_shipping_flow_onboarding_screen_title,
                 subtitle = R.string.install_wc_shipping_flow_onboarding_screen_subtitle,
                 bullets = getBulletPointsForInstallingWcShippingFlow(),
-                linkUrl = WC_SHIPPING_INFO_URL,
                 onInfoLinkClicked = { onLinkClicked(WC_SHIPPING_INFO_URL) },
                 onInstallClicked = ::onInstallWcShippingClicked,
                 onDismissFlowClicked = ::onDismissWcShippingFlowClicked
@@ -47,11 +60,18 @@ class InstallWCShippingViewModel @Inject constructor(
                 siteName = selectedSite.get().let { site ->
                     site.displayName?.takeIf { it.isNotBlank() } ?: site.name.orEmpty()
                 },
+                siteUrl = selectedSite.get().url.orEmpty(),
                 onCancelClick = ::onDismissWcShippingFlowClicked,
-                onProceedClick = { /*TODO*/ },
+                onProceedClick = ::onStartInstallation,
                 onInfoClick = { onLinkClicked("https://url") } // TODO
             )
-            Step.Installation -> TODO()
+            Step.Installation -> ViewState.InstallationState.InstallationOngoing(
+                extensionsName = R.string.install_wc_shipping_extension_name,
+                siteName = selectedSite.get().let { site ->
+                    site.displayName?.takeIf { it.isNotBlank() } ?: site.name.orEmpty()
+                },
+                siteUrl = selectedSite.get().url.orEmpty()
+            )
             Step.PostInstallationSuccess -> TODO()
             is Step.PostInstallationFailure -> TODO()
         }
@@ -88,6 +108,10 @@ class InstallWCShippingViewModel @Inject constructor(
         triggerEvent(OpenLinkEvent(url))
     }
 
+    private fun onStartInstallation() {
+        step.value = Step.Installation
+    }
+
     private sealed interface Step : Parcelable {
         @Parcelize
         object Onboarding : Step
@@ -110,7 +134,6 @@ class InstallWCShippingViewModel @Inject constructor(
             @StringRes val title: Int,
             @StringRes val subtitle: Int,
             val bullets: List<InstallWCShippingOnboardingBulletUi>,
-            val linkUrl: String,
             val onInstallClicked: () -> Unit = {},
             val onDismissFlowClicked: () -> Unit = {},
             val onInfoLinkClicked: () -> Unit = {}
@@ -118,13 +141,22 @@ class InstallWCShippingViewModel @Inject constructor(
 
         sealed class InstallationState : ViewState {
             abstract val extensionsName: Int
+            abstract val siteName: String
+            abstract val siteUrl: String
 
             data class PreInstallation(
                 @StringRes override val extensionsName: Int,
-                val siteName: String,
+                override val siteName: String,
+                override val siteUrl: String,
                 val onCancelClick: () -> Unit,
                 val onProceedClick: () -> Unit,
                 val onInfoClick: () -> Unit
+            ) : InstallationState()
+
+            data class InstallationOngoing(
+                @StringRes override val extensionsName: Int,
+                override val siteName: String,
+                override val siteUrl: String,
             ) : InstallationState()
         }
     }

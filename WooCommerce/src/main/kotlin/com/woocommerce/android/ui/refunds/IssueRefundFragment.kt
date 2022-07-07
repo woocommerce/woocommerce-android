@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.woocommerce.android.ui.refunds
 
 import android.annotation.SuppressLint
@@ -9,7 +11,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -86,22 +87,19 @@ class IssueRefundFragment : BaseFragment() {
 //            }
         }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowRefundSummary -> {
-                        val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundSummaryFragment()
-                        findNavController().navigateSafely(action)
-                    }
-                    else -> event.isHandled = false
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowRefundSummary -> {
+                    val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundSummaryFragment()
+                    findNavController().navigateSafely(action)
                 }
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
     // TODO: Temporarily unused; it will be used again in a future release - do not remove
-    @Suppress("unused")
+    @Suppress("unused", "DEPRECATION")
     @SuppressLint("WrongConstant")
     private class RefundPageAdapter(
         fragmentManager: FragmentManager

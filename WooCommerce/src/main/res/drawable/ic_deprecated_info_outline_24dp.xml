@@ -1,3 +1,9 @@
+<!--
+Use tintable_ic_info_outline_24dp instead.
+Be extra careful when applying a fillColor to an icon.
+If it's a tintable icon, the fillColor should be white.
+-->
+
 <vector
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:height="24dp"

@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -89,24 +88,18 @@ class ProductFilterOptionListFragment :
             }
         }
 
-        viewModel.filterOptionListItems.observe(
-            viewLifecycleOwner,
-            Observer {
-                showProductFilterList(it)
-            }
-        )
+        viewModel.filterOptionListItems.observe(viewLifecycleOwner) {
+            showProductFilterList(it)
+        }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ExitWithResult<*> -> {
-                        navigateBackWithResult(ProductListFragment.PRODUCT_FILTER_RESULT_KEY, event.data)
-                    }
-                    else -> event.isHandled = false
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ExitWithResult<*> -> {
+                    navigateBackWithResult(ProductListFragment.PRODUCT_FILTER_RESULT_KEY, event.data)
                 }
+                else -> event.isHandled = false
             }
-        )
+        }
 
         viewModel.loadFilterOptions(arguments.selectedFilterItemPosition)
     }
