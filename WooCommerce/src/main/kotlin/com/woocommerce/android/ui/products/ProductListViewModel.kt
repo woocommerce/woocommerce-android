@@ -324,13 +324,19 @@ class ProductListViewModel @Inject constructor(
                 !isSearching()
             }
 
+        val shouldShowEmptyView = if (isSearching()) {
+            viewState.query?.isNotEmpty() == true && _productList.value?.isEmpty() == true
+        } else {
+            _productList.value?.isEmpty() == true
+        }
+
         viewState = viewState.copy(
             isSkeletonShown = false,
             isLoading = false,
             isLoadingMore = false,
             isRefreshing = false,
             canLoadMore = productRepository.canLoadMoreProducts,
-            isEmptyViewVisible = _productList.value?.isEmpty() == true,
+            isEmptyViewVisible = shouldShowEmptyView,
             isAddProductButtonVisible = shouldShowAddProductButton,
             displaySortAndFilterCard = !isSearching() &&
                 (productFilterOptions.isNotEmpty() || _productList.value?.isNotEmpty() == true)
@@ -367,22 +373,28 @@ class ProductListViewModel @Inject constructor(
         loadMore: Boolean = false,
         scrollToTop: Boolean = false
     ) {
-        if (searchQuery.isNullOrEmpty()) {
-            _productList.value = productRepository.fetchProductList(loadMore, productFilterOptions)
-        } else {
+        if (!isSearching()) {
+            val products = productRepository.fetchProductList(loadMore, productFilterOptions)
+            // don't update the product list if a search was initiated while fetching
+            if (isSearching()) {
+                WooLog.i(WooLog.T.PRODUCTS, "Search initiated while fetching products")
+            } else {
+                _productList.value = products
+            }
+        } else if (searchQuery?.isNotEmpty() == true) {
             productRepository.searchProductList(
                 searchQuery = searchQuery,
                 isSkuSearch = isSkuSearch,
                 loadMore = loadMore
-            )?.let { fetchedProducts ->
+            )?.let { products ->
                 // make sure the search query hasn't changed while the fetch was processing
                 if (searchQuery == productRepository.lastSearchQuery &&
                     isSkuSearch == productRepository.lastIsSkuSearch
                 ) {
                     if (loadMore) {
-                        _productList.value = _productList.value.orEmpty() + fetchedProducts
+                        _productList.value = _productList.value.orEmpty() + products
                     } else {
-                        _productList.value = fetchedProducts
+                        _productList.value = products
                     }
                 } else {
                     WooLog.d(WooLog.T.PRODUCTS, "Search query changed")
