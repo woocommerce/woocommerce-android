@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
@@ -52,6 +53,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         on(it.get()).thenReturn(SiteModel())
     }
     private val appPrefsWrapper: AppPrefsWrapper = mock()
+    private val cardReaderManager: CardReaderManager = mock()
     private val countryCode = "US"
     private val pluginVersion = "4.0.0"
 
@@ -838,6 +840,62 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given plugin type not null, when user selects wcpay and taps confirm button, then clear last known reader`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.ChoosePaymentGatewayProvider
+            )
+            whenever(cardReaderManager.initialized).thenReturn(true)
+
+            val viewModel = createVM()
+
+            val viewStateData = viewModel.viewStateData.value as OnboardingViewState.SelectPaymentPluginState
+            viewStateData.onConfirmPaymentMethodClicked.invoke(WOOCOMMERCE_PAYMENTS)
+
+            verify(appPrefsWrapper).removeLastConnectedCardReaderId()
+        }
+
+    @Test
+    fun `given card reader has inititialized, when user selects wcpay and confirm button, then disconnect reader`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.ChoosePaymentGatewayProvider
+            )
+            whenever(cardReaderManager.initialized).thenReturn(true)
+
+            val viewModel = createVM()
+
+            val viewStateData = viewModel.viewStateData.value as OnboardingViewState.SelectPaymentPluginState
+            viewStateData.onConfirmPaymentMethodClicked.invoke(WOOCOMMERCE_PAYMENTS)
+
+            verify(cardReaderManager).disconnectReader()
+        }
+
+    @Test
+    fun `given plugin type null, when view model init, then do not clear last known reader`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.ChoosePaymentGatewayProvider
+            )
+
+            createVM()
+
+            verify(appPrefsWrapper, never()).removeLastConnectedCardReaderId()
+        }
+
+    @Test
+    fun `given plugin type null, when view model init, then do not disconnect reader`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.ChoosePaymentGatewayProvider
+            )
+
+            createVM()
+
+            verify(cardReaderManager, never()).disconnectReader()
+        }
+
+    @Test
     fun `given wcpay and stripe extension active, when user taps stripe and confirm button, then load screen shown `() =
 
         testBlocking {
@@ -1321,5 +1379,6 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             userEligibilityFetcher,
             selectedSite,
             appPrefsWrapper,
+            cardReaderManager
         )
 }
