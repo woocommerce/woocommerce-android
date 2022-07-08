@@ -24,7 +24,6 @@ import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
-import com.woocommerce.android.barcode.InputInfo
 import com.woocommerce.android.barcode.camera.CameraReticleAnimator
 import com.woocommerce.android.barcode.camera.FrameProcessorBase
 import com.woocommerce.android.barcode.camera.GraphicOverlay
@@ -48,7 +47,6 @@ class BarcodeProcessor(
 
     @MainThread
     override fun onSuccess(
-        inputInfo: InputInfo,
         results: List<Barcode>,
         graphicOverlay: GraphicOverlay
     ) {

@@ -27,6 +27,7 @@ import com.woocommerce.android.barcode.camera.CameraSizePair
 import com.woocommerce.android.barcode.camera.GraphicOverlay
 
 /** Utility class to retrieve shared preferences.  */
+@Suppress("MagicNumber")
 object PreferenceUtils {
     fun saveStringPreference(context: Context, @StringRes prefKeyId: Int, value: String?) {
         PreferenceManager.getDefaultSharedPreferences(context)

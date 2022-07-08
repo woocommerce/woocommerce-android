@@ -23,11 +23,7 @@ import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.TaskExecutors
 import com.google.mlkit.vision.common.InputImage
-import com.woocommerce.android.barcode.CameraInputInfo
-import com.woocommerce.android.barcode.InputInfo
 import com.woocommerce.android.barcode.ScopedExecutor
-import com.woocommerce.android.barcode.addOnFailureListener
-import com.woocommerce.android.barcode.addOnSuccessListener
 import java.nio.ByteBuffer
 
 /** Abstract base class of [FrameProcessor].  */
@@ -79,7 +75,7 @@ abstract class FrameProcessorBase<T> : FrameProcessor {
         detectInImage(image)
             .addOnSuccessListener(executor) { results: T ->
                 Log.d(TAG, "Latency is: ${SystemClock.elapsedRealtime() - startMs}")
-                this@FrameProcessorBase.onSuccess(CameraInputInfo(frame, frameMetaData), results, graphicOverlay)
+                this@FrameProcessorBase.onSuccess(results, graphicOverlay)
                 processLatestFrame(graphicOverlay)
             }
             .addOnFailureListener(executor) { e -> OnFailureListener { this@FrameProcessorBase.onFailure(it) } }
@@ -93,7 +89,6 @@ abstract class FrameProcessorBase<T> : FrameProcessor {
 
     /** Be called when the detection succeeds.  */
     protected abstract fun onSuccess(
-        inputInfo: InputInfo,
         results: T,
         graphicOverlay: GraphicOverlay
     )
