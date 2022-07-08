@@ -71,7 +71,7 @@ class ShippingLabelPackagesAdapter(
         super.onBindViewHolder(holder, position, payloads)
     }
 
-    @Suppress("MagicNumber")
+    @Suppress("MagicNumber", "DEPRECATION")
     inner class ShippingLabelPackageViewHolder(
         val binding: ShippingLabelPackageDetailsListItemBinding
     ) : ViewHolder(binding.root) {

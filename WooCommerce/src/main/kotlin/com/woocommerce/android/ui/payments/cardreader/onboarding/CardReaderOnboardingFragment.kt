@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.payments.cardreader.onboarding
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
@@ -9,10 +10,10 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingBinding
-import com.woocommerce.android.databinding.FragmentCardReaderOnboardingBothPluginsActivatedBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingGenericErrorBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingLoadingBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingNetworkErrorBinding
+import com.woocommerce.android.databinding.FragmentCardReaderOnboardingSelectPaymentGatewayBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingStripeBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingUnsupportedBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingWcpayBinding
@@ -104,40 +105,44 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                 showStripeAccountError(layout, state)
             is CardReaderOnboardingViewModel.OnboardingViewState.StripeExtensionError ->
                 showStripeExtensionErrorState(layout, state)
-            is CardReaderOnboardingViewModel.OnboardingViewState.WcPayAndStripeInstalledState ->
-                showBothPluginsInstalledState(layout, state)
+            is CardReaderOnboardingViewModel.OnboardingViewState.SelectPaymentPluginState ->
+                showPaymentPluginSelectionState(layout, state)
         }.exhaustive
     }
 
-    private fun showBothPluginsInstalledState(
+    private fun showPaymentPluginSelectionState(
         view: View,
-        state: CardReaderOnboardingViewModel.OnboardingViewState.WcPayAndStripeInstalledState
+        state: CardReaderOnboardingViewModel.OnboardingViewState.SelectPaymentPluginState
     ) {
-        val binding = FragmentCardReaderOnboardingBothPluginsActivatedBinding.bind(view)
+        var selectedPluginType: PluginType = PluginType.WOOCOMMERCE_PAYMENTS
+        val binding = FragmentCardReaderOnboardingSelectPaymentGatewayBinding.bind(view)
         UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
-        UiHelpers.setTextOrHide(binding.hintLabel, state.hintLabel)
-        UiHelpers.setTextOrHide(binding.hintPluginOneLabel, state.hintPluginOneLabel)
-        UiHelpers.setTextOrHide(binding.hintPluginTwoLabel, state.hintPluginTwoLabel)
-        UiHelpers.setTextOrHide(binding.hintOrLabel, state.hintOrLabel)
-        UiHelpers.setImageOrHideInLandscape(binding.illustration, state.illustration)
+        UiHelpers.setTextOrHide(binding.hintLabel, state.choosePluginHintLabel)
+        UiHelpers.setTextOrHide(binding.selectWcPayButton, state.selectWcPayButtonLabel)
+        UiHelpers.setTextOrHide(binding.selectStripeButton, state.selectStripeButtonLabel)
+        UiHelpers.setTextOrHide(binding.confirmPaymentMethod, state.confirmPaymentMethodButtonLabel)
+        UiHelpers.setImageOrHideInLandscape(binding.cardIllustration, state.cardIllustration)
+        UiHelpers.setImageOrHideInLandscape(binding.icSelectWcPay, state.icWcPayLogo)
+        UiHelpers.setImageOrHideInLandscape(binding.icCheckmarkWcPay, state.icCheckmarkWcPay)
 
-        UiHelpers.setTextOrHide(binding.textSupport, state.contactSupportLabel)
-        UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreLabel)
-
-        UiHelpers.setTextOrHide(binding.openPluginStore, state.openWPAdminLabel)
-        UiHelpers.setTextOrHide(binding.refreshAfterUpdating, state.refreshButtonLabel)
-
-        binding.textSupport.setOnClickListener {
-            state.onContactSupportActionClicked.invoke()
+        binding.selectWcPayButton.setOnClickListener {
+            selectedPluginType = PluginType.WOOCOMMERCE_PAYMENTS
+            binding.selectWcPayButton.strokeColor =
+                ColorStateList.valueOf(resources.getColor(R.color.woo_purple_60))
+            binding.icCheckmarkWcPay.visibility = View.VISIBLE
+            binding.icCheckmarkStripe.visibility = View.GONE
+            binding.selectStripeButton.strokeColor = ColorStateList.valueOf(resources.getColor(R.color.gray_5))
         }
-        binding.learnMoreContainer.learnMore.setOnClickListener {
-            state.onLearnMoreActionClicked.invoke()
+        binding.selectStripeButton.setOnClickListener {
+            selectedPluginType = PluginType.STRIPE_EXTENSION_GATEWAY
+            binding.selectStripeButton.strokeColor =
+                ColorStateList.valueOf(resources.getColor(R.color.woo_purple_60))
+            binding.icCheckmarkWcPay.visibility = View.GONE
+            binding.icCheckmarkStripe.visibility = View.VISIBLE
+            binding.selectWcPayButton.strokeColor = ColorStateList.valueOf(resources.getColor(R.color.gray_5))
         }
-        binding.openPluginStore.setOnClickListener {
-            state.openWPAdminActionClicked?.invoke()
-        }
-        binding.refreshAfterUpdating.setOnClickListener {
-            state.onRefreshAfterUpdatingClicked.invoke()
+        binding.confirmPaymentMethod.setOnClickListener {
+            state.onConfirmPaymentMethodClicked.invoke(selectedPluginType)
         }
     }
 

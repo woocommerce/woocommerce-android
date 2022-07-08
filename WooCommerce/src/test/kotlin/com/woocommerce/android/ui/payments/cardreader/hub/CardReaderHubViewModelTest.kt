@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.payments.cardreader.hub
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
@@ -14,8 +16,12 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.ArgumentMatchers.anyInt
+import org.mockito.ArgumentMatchers.anyLong
+import org.mockito.ArgumentMatchers.eq
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 
@@ -29,8 +35,10 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock {
         on(it.get()).thenReturn(SiteModel())
     }
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     private val countryCode = "US"
+
     private val savedState = CardReaderHubFragmentArgs(
         storeCountryCode = countryCode,
         cardReaderFlowParam = CardReaderFlowParam.CardReadersHub,
@@ -99,7 +107,6 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     @Test
     fun `given ipp canada disabled, when user clicks on purchase card reader, then app opens external webview`() {
         whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(false)
-        initViewModel()
 
         (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
             .find {
@@ -117,7 +124,6 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     @Test
     fun `given ipp canada enabled, when user clicks on purchase card reader, then app opens external webview`() {
         whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(true)
-        initViewModel()
 
         (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
             .find {
@@ -196,12 +202,137 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             )
     }
 
+    @Test
+    fun `when multiple plugins installed, then payment provider row is shown`() {
+        val site = selectedSite.get()
+        whenever(
+            appPrefsWrapper.isCardReaderPluginExplicitlySelected(
+                localSiteId = site.id,
+                remoteSiteId = site.siteId,
+                selfHostedSiteId = site.selfHostedSiteId
+            )
+        ).thenReturn(true)
+
+        initViewModel()
+
+        assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
+            .anyMatch {
+                it.label == UiString.UiStringRes(R.string.card_reader_manage_payment_provider)
+            }
+    }
+
+    @Test
+    fun `when multiple plugins installed, then payment provider icon is shown`() {
+        val site = selectedSite.get()
+        whenever(
+            appPrefsWrapper.isCardReaderPluginExplicitlySelected(
+                localSiteId = site.id,
+                remoteSiteId = site.siteId,
+                selfHostedSiteId = site.selfHostedSiteId
+            )
+        ).thenReturn(true)
+
+        initViewModel()
+
+        assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
+            .anyMatch {
+                it.icon == R.drawable.ic_payment_provider
+            }
+    }
+
+    @Test
+    fun `given multiple plugins installed, when change payment provider clicked, then trigger onboarding event`() {
+        val site = selectedSite.get()
+        whenever(
+            appPrefsWrapper.isCardReaderPluginExplicitlySelected(
+                localSiteId = site.id,
+                remoteSiteId = site.siteId,
+                selfHostedSiteId = site.selfHostedSiteId
+            )
+        ).thenReturn(true)
+
+        initViewModel()
+        (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
+            .find {
+                it.label == UiString.UiStringRes(R.string.card_reader_manage_payment_provider)
+            }!!.onItemClicked.invoke()
+
+        assertThat(viewModel.event.value).isEqualTo(
+            CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderOnboardingScreen
+        )
+    }
+
+    @Test
+    fun `given multiple plugins installed, when payment provider clicked, then clear plugin selected flag`() {
+        val site = selectedSite.get()
+        whenever(
+            appPrefsWrapper.isCardReaderPluginExplicitlySelected(
+                localSiteId = site.id,
+                remoteSiteId = site.siteId,
+                selfHostedSiteId = site.selfHostedSiteId
+            )
+        ).thenReturn(true)
+
+        initViewModel()
+        (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
+            .find {
+                it.label == UiString.UiStringRes(R.string.card_reader_manage_payment_provider)
+            }!!.onItemClicked.invoke()
+
+        verify(appPrefsWrapper).setIsCardReaderPluginExplicitlySelectedFlag(
+            anyInt(),
+            anyLong(),
+            anyLong(),
+            eq(false)
+        )
+    }
+
+    @Test
+    fun `given multiple plugins installed, when change payment provider clicked, then track event`() {
+        val site = selectedSite.get()
+        whenever(
+            appPrefsWrapper.isCardReaderPluginExplicitlySelected(
+                localSiteId = site.id,
+                remoteSiteId = site.siteId,
+                selfHostedSiteId = site.selfHostedSiteId
+            )
+        ).thenReturn(true)
+
+        initViewModel()
+        (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
+            .find {
+                it.label == UiString.UiStringRes(R.string.card_reader_manage_payment_provider)
+            }!!.onItemClicked.invoke()
+
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.SETTINGS_CARD_PRESENT_SELECT_PAYMENT_GATEWAY_TAPPED)
+    }
+
+    @Test
+    fun `when single plugin installed, then payment provider row is not shown`() {
+        val site = selectedSite.get()
+        whenever(
+            appPrefsWrapper.isCardReaderPluginExplicitlySelected(
+                localSiteId = site.id,
+                remoteSiteId = site.siteId,
+                selfHostedSiteId = site.selfHostedSiteId
+            )
+        ).thenReturn(false)
+
+        initViewModel()
+
+        assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
+            .noneMatch {
+                it.label == UiString.UiStringRes(R.string.card_reader_manage_payment_provider)
+            }
+    }
+
     private fun initViewModel() {
         viewModel = CardReaderHubViewModel(
             savedState,
             inPersonPaymentsCanadaFeatureFlag,
             appPrefsWrapper,
-            selectedSite
+            selectedSite,
+            analyticsTrackerWrapper
         )
     }
 }

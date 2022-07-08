@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.woocommerce.android.ui.main
 
 import com.woocommerce.android.AppPrefsWrapper
@@ -175,7 +177,7 @@ class MainPresenter @Inject constructor(
         }
     }
 
-    @Suppress("unused")
+    @Suppress("unused", "DEPRECATION")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
         when (event.causeOfChange) {
@@ -212,6 +214,7 @@ class MainPresenter @Inject constructor(
         }
     }
 
+    @Suppress("DEPRECATION")
     fun onEventMainThread(event: SelectedSiteChangedEvent) {
         if (pendingUnfilledOrderCountCheck) {
             fetchUnfilledOrderCount()

@@ -156,6 +156,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         }
     }
 
+    @Suppress("DEPRECATION")
     override fun onAppComesFromBackground() {
         AnalyticsTracker.track(AnalyticsEvent.APPLICATION_OPENED)
 

@@ -2,10 +2,11 @@ package com.woocommerce.android.ui.orders.creation
 
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderTestUtils
-import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus
+import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
 import com.woocommerce.android.util.InlineClassesAnswer
 import com.woocommerce.android.util.advanceTimeAndRun
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -24,7 +25,8 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 
-class CreateOrUpdateOrderDraftTests : BaseUnitTest() {
+@ExperimentalCoroutinesApi
+class CreateUpdateOrderTests : BaseUnitTest() {
     private val orderCreationRepository = mock<OrderCreationRepository> {
         onBlocking { createOrUpdateDraft(any()) } doAnswer InlineClassesAnswer {
             val order = it.arguments.first() as Order
@@ -35,14 +37,14 @@ class CreateOrUpdateOrderDraftTests : BaseUnitTest() {
     private val orderDraftChanges = MutableStateFlow(order)
     private val retryTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
-    private val sut: CreateOrUpdateOrderDraft = CreateOrUpdateOrderDraft(
+    private val sut: CreateUpdateOrder = CreateUpdateOrder(
         dispatchers = coroutinesTestRule.testDispatchers,
         orderCreationRepository = orderCreationRepository
     )
 
     @Test
     fun `when there are changes, then update the draft order`() = testBlocking {
-        val updateStatuses = mutableListOf<OrderDraftUpdateStatus>()
+        val updateStatuses = mutableListOf<OrderUpdateStatus>()
         val job = sut(orderDraftChanges, retryTrigger)
             .onEach { updateStatuses.add(it) }
             .launchIn(this)
@@ -50,10 +52,10 @@ class CreateOrUpdateOrderDraftTests : BaseUnitTest() {
         advanceUntilIdle()
 
         assertThat(updateStatuses.size).isEqualTo(3)
-        assertThat(updateStatuses[0]).isEqualTo(OrderDraftUpdateStatus.PendingDebounce)
-        assertThat(updateStatuses[1]).isEqualTo(OrderDraftUpdateStatus.Ongoing)
-        assertThat(updateStatuses[2]).isInstanceOf(OrderDraftUpdateStatus.Succeeded::class.java)
-        with(updateStatuses[2] as OrderDraftUpdateStatus.Succeeded) {
+        assertThat(updateStatuses[0]).isEqualTo(OrderUpdateStatus.PendingDebounce)
+        assertThat(updateStatuses[1]).isEqualTo(OrderUpdateStatus.Ongoing)
+        assertThat(updateStatuses[2]).isInstanceOf(OrderUpdateStatus.Succeeded::class.java)
+        with(updateStatuses[2] as OrderUpdateStatus.Succeeded) {
             assertThat(order)
                 .isEqualTo(orderCreationRepository.createOrUpdateDraft(orderDraftChanges.value).getOrThrow())
         }
@@ -64,7 +66,7 @@ class CreateOrUpdateOrderDraftTests : BaseUnitTest() {
     @Test
     fun `when the update fails, then notify the observer`() = testBlocking {
         whenever(orderCreationRepository.createOrUpdateDraft(any())).doReturn(Result.failure(Exception()))
-        val updateStatuses = mutableListOf<OrderDraftUpdateStatus>()
+        val updateStatuses = mutableListOf<OrderUpdateStatus>()
         val job = sut(orderDraftChanges, retryTrigger)
             .onEach { updateStatuses.add(it) }
             .launchIn(this)
@@ -72,9 +74,9 @@ class CreateOrUpdateOrderDraftTests : BaseUnitTest() {
         advanceUntilIdle()
 
         assertThat(updateStatuses.size).isEqualTo(3)
-        assertThat(updateStatuses[0]).isEqualTo(OrderDraftUpdateStatus.PendingDebounce)
-        assertThat(updateStatuses[1]).isEqualTo(OrderDraftUpdateStatus.Ongoing)
-        assertThat(updateStatuses[2]).isInstanceOf(OrderDraftUpdateStatus.Failed::class.java)
+        assertThat(updateStatuses[0]).isEqualTo(OrderUpdateStatus.PendingDebounce)
+        assertThat(updateStatuses[1]).isEqualTo(OrderUpdateStatus.Ongoing)
+        assertThat(updateStatuses[2]).isInstanceOf(OrderUpdateStatus.Failed::class.java)
 
         job.cancel()
     }
@@ -89,7 +91,7 @@ class CreateOrUpdateOrderDraftTests : BaseUnitTest() {
         }
 
         verify(orderCreationRepository, never()).createOrUpdateDraft(any())
-        advanceTimeAndRun(CreateOrUpdateOrderDraft.DEBOUNCE_DURATION_MS)
+        advanceTimeAndRun(CreateUpdateOrder.DEBOUNCE_DURATION_MS)
         verify(orderCreationRepository, times(1)).createOrUpdateDraft(any())
 
         job.cancel()
@@ -106,7 +108,7 @@ class CreateOrUpdateOrderDraftTests : BaseUnitTest() {
                 }
             )
 
-        val updateStatuses = mutableListOf<OrderDraftUpdateStatus>()
+        val updateStatuses = mutableListOf<OrderUpdateStatus>()
         val job = sut(orderDraftChanges, retryTrigger)
             .onEach { updateStatuses.add(it) }
             .launchIn(this)
@@ -122,7 +124,7 @@ class CreateOrUpdateOrderDraftTests : BaseUnitTest() {
         advanceUntilIdle()
 
         assertThat(updateStatuses.size).isEqualTo(5)
-        assertThat(updateStatuses.last()).isInstanceOf(OrderDraftUpdateStatus.Succeeded::class.java)
+        assertThat(updateStatuses.last()).isInstanceOf(OrderUpdateStatus.Succeeded::class.java)
 
         job.cancel()
     }

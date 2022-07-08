@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.payments.cardreader
 
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_CANCELLED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS
@@ -88,6 +89,28 @@ class CardReaderTrackerTest : BaseUnitTest() {
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED),
                 any()
+            )
+        }
+
+    @Test
+    fun `when track payment gateway invoked with wcpay, then track event with proper gateway`() =
+        testBlocking {
+            cardReaderTracker.trackPaymentGatewaySelected(WOOCOMMERCE_PAYMENTS)
+
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.CARD_PRESENT_PAYMENT_GATEWAY_SELECTED),
+                check { assertThat(it[AnalyticsTracker.KEY_PAYMENT_GATEWAY]).isEqualTo("woocommerce-payments") }
+            )
+        }
+
+    @Test
+    fun `when track payment gateway invoked with stripe, then track event with proper gateway`() =
+        testBlocking {
+            cardReaderTracker.trackPaymentGatewaySelected(STRIPE_EXTENSION_GATEWAY)
+
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.CARD_PRESENT_PAYMENT_GATEWAY_SELECTED),
+                check { assertThat(it[AnalyticsTracker.KEY_PAYMENT_GATEWAY]).isEqualTo("woocommerce-stripe-gateway") }
             )
         }
 

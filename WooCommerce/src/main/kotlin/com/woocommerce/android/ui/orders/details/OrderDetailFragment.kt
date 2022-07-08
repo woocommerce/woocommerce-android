@@ -324,7 +324,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         isReceiptButtonsVisible: Boolean
     ) {
         binding.orderDetailOrderStatus.updateOrder(order)
-        binding.orderDetailShippingMethodNotice.isVisible = order.multiShippingLinesAvailable
+        binding.orderDetailShippingMethodNotice.isVisible = order.hasMultipleShippingLines
         binding.orderDetailCustomerInfo.updateCustomerInfo(
             order = order,
             isVirtualOrder = viewModel.hasVirtualProductsOnly(),

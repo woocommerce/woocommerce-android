@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
@@ -74,27 +73,21 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
             }
         }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
-                    is MultiLiveEvent.Event.ExitWithResult<*> -> {
-                        navigateBackWithResult(viewModel.getKeyForGroupedProductListType(), event.data as List<*>)
-                    }
-                    is ProductNavigationTarget -> navigator.navigate(this, event)
-                    else -> event.isHandled = false
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
+                is MultiLiveEvent.Event.ExitWithResult<*> -> {
+                    navigateBackWithResult(viewModel.getKeyForGroupedProductListType(), event.data as List<*>)
                 }
+                is ProductNavigationTarget -> navigator.navigate(this, event)
+                else -> event.isHandled = false
             }
-        )
+        }
 
-        viewModel.productList.observe(
-            viewLifecycleOwner,
-            Observer {
-                productListAdapter.submitList(it)
-            }
-        )
+        viewModel.productList.observe(viewLifecycleOwner) {
+            productListAdapter.submitList(it)
+        }
     }
 
     private fun setupResultHandlers() {

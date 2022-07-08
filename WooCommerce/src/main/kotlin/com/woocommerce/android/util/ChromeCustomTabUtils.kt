@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsClient
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsService.ACTION_CUSTOM_TABS_CONNECTION
@@ -104,9 +105,12 @@ object ChromeCustomTabUtils {
     }
 
     private fun createIntent(context: Context, tabSession: CustomTabsSession? = null): CustomTabsIntent {
-        val intent = CustomTabsIntent.Builder(tabSession)
+        val defaultColorSchemeParams = CustomTabColorSchemeParams.Builder()
             .setToolbarColor(ContextCompat.getColor(context, R.color.color_surface))
-            .addDefaultShareMenuItem()
+            .build()
+        val intent = CustomTabsIntent.Builder(tabSession)
+            .setDefaultColorSchemeParams(defaultColorSchemeParams)
+            .setShareState(CustomTabsIntent.SHARE_STATE_ON)
             .setShowTitle(true)
             .build()
         intent.intent.putExtra(Intent.EXTRA_REFERRER, Uri.parse("android-app://" + context.packageName))
