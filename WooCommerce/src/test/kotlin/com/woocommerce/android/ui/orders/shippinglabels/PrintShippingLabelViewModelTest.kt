@@ -193,7 +193,7 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
         initViewModel()
 
         var isLabelExpired: Boolean? = null
-        viewModel.viewStateData.observeForever { old, new ->
+        viewModel.viewStateData.observeForever { _, new ->
             isLabelExpired = new.isLabelExpired
         }
 
@@ -210,7 +210,7 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
         initViewModel()
 
         var isLabelExpired: Boolean? = null
-        viewModel.viewStateData.observeForever { old, new ->
+        viewModel.viewStateData.observeForever { _, new ->
             isLabelExpired = new.isLabelExpired
         }
 
@@ -227,7 +227,7 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
         initViewModel()
 
         var isLabelExpired: Boolean? = null
-        viewModel.viewStateData.observeForever { old, new ->
+        viewModel.viewStateData.observeForever { _, new ->
             isLabelExpired = new.isLabelExpired
         }
 
