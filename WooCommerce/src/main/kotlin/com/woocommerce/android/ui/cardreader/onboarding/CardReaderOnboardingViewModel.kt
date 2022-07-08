@@ -8,6 +8,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.formatToMMMMdd
 import com.woocommerce.android.model.UiString
@@ -51,6 +52,8 @@ import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingView
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayError.WCPayUnsupportedVersionState
 import com.woocommerce.android.ui.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
+import com.woocommerce.android.ui.common.UserEligibilityFetcher
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
@@ -70,6 +73,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
     private val cardReaderTracker: CardReaderTracker,
     private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
+    private val cardReaderManager: CardReaderManager,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderOnboardingFragmentArgs by savedState.navArgs()
 
@@ -88,11 +92,28 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
     private fun refreshState(pluginType: PluginType? = null) {
         launch {
+            pluginType?.let {
+                disconnectCardReader()
+            }
             viewState.value = OnboardingViewState.LoadingState
             val state = cardReaderChecker.getOnboardingState(pluginType)
             cardReaderTracker.trackOnboardingState(state)
             showOnboardingState(state)
         }
+    }
+
+    private suspend fun disconnectCardReader() {
+        if (cardReaderManager.initialized) {
+            clearLastKnowReader()
+            val disconnectionResult = cardReaderManager.disconnectReader()
+            if (!disconnectionResult) {
+                WooLog.e(WooLog.T.CARD_READER, "Onboarding: Disconnection from reader has failed")
+            }
+        }
+    }
+
+    private fun clearLastKnowReader() {
+        appPrefsWrapper.removeLastConnectedCardReaderId()
     }
 
     @Suppress("LongMethod", "ComplexMethod")
@@ -198,10 +219,15 @@ class CardReaderOnboardingViewModel @Inject constructor(
     }
 
     private fun updateUiWithSelectPaymentPlugin() {
-        viewState.value =
-            OnboardingViewState.SelectPaymentPluginState(
-                onConfirmPaymentMethodClicked = { (::refreshState)(it) }
-            )
+        launch {
+            viewState.value =
+                OnboardingViewState.SelectPaymentPluginState(
+                    onConfirmPaymentMethodClicked = { pluginType ->
+                        cardReaderTracker.trackPaymentGatewaySelected(pluginType)
+                        (::refreshState)(pluginType)
+                    }
+                )
+        }
     }
 
     private fun onContactSupportClicked() {

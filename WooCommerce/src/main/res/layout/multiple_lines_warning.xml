@@ -21,7 +21,7 @@
             android:lines="1"
             android:textAppearance="@style/TextAppearance.Woo.Subtitle1"
             app:autoSizeTextType="uniform"
-            app:drawableStartCompat="@drawable/ic_info_outline_24dp"
+            app:drawableStartCompat="@drawable/ic_tintable_info_outline_24dp"
             app:drawableTint="@color/color_primary"
             tools:text="Fees &amp; Shipping details are incomplete" />
 
