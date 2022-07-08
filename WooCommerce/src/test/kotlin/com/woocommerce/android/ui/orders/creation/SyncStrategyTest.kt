@@ -12,6 +12,7 @@ import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.mock
 import java.math.BigDecimal
 
+@ExperimentalCoroutinesApi
 abstract class SyncStrategyTest : BaseUnitTest() {
     protected val orderCreationRepository = mock<OrderCreationRepository> {
         onBlocking { createOrUpdateDraft(any()) } doAnswer InlineClassesAnswer {
@@ -23,7 +24,6 @@ abstract class SyncStrategyTest : BaseUnitTest() {
     protected val orderDraftChanges = MutableStateFlow(order)
     protected val retryTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     protected val createUpdateOrderUseCase = CreateUpdateOrder(
         dispatchers = coroutinesTestRule.testDispatchers,
         orderCreationRepository = orderCreationRepository
