@@ -75,7 +75,6 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
     @Test
     fun `given found readers with specified, when readers discovered, then all readers returned`() =
         testBlocking {
-            val dummyReaderId = "12345"
             val discoveredReaders = listOf<Reader>(
                 mock {
                     on { deviceType }.thenReturn(DeviceType.CHIPPER_2X)
@@ -100,7 +99,6 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
     @Test
     fun `given found readers with unspecified, when readers discovered, then required readers returned`() =
         testBlocking {
-            val dummyReaderId = "12345"
             val discoveredReaders = listOf<Reader>(
                 mock {
                     on { deviceType }.thenReturn(DeviceType.CHIPPER_2X)
