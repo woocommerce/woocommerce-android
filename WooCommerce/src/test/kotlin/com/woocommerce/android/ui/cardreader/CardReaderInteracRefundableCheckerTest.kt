@@ -260,7 +260,7 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when order has "woocommerce_payments" payment method, then it is refundable`() =
+    fun `when order has 'woocommerce_payments' payment method, then it is refundable`() =
         testBlocking {
             // GIVEN
             val order = getOrder(paymentMethod = "woocommerce_payments")
@@ -273,7 +273,7 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when order has "wc-booking-gateway" payment method, then it is refundable`() =
+    fun `when order has 'wc-booking-gateway' payment method, then it is refundable`() =
         testBlocking {
             // GIVEN
             val order = getOrder(paymentMethod = "wc-booking-gateway")
