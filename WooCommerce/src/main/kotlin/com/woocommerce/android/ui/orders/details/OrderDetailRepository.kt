@@ -20,6 +20,7 @@ import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.LabelItem
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WCShippingLabelStore
@@ -129,7 +130,7 @@ class OrderDetailRepository @Inject constructor(
     suspend fun addOrderShipmentTracking(
         orderId: Long,
         shipmentTrackingModel: OrderShipmentTracking
-    ): WCOrderStore.OnOrderChanged {
+    ): OnOrderChanged {
         return orderStore.addOrderShipmentTracking(
             WCOrderStore.AddOrderShipmentTrackingPayload(
                 site = selectedSite.get(),
@@ -143,7 +144,7 @@ class OrderDetailRepository @Inject constructor(
     suspend fun deleteOrderShipmentTracking(
         orderId: Long,
         shipmentTrackingModel: WCOrderShipmentTrackingModel
-    ): WCOrderStore.OnOrderChanged {
+    ): OnOrderChanged {
         return orderStore.deleteOrderShipmentTracking(
             WCOrderStore.DeleteOrderShipmentTrackingPayload(
                 selectedSite.get(), orderId, shipmentTrackingModel
