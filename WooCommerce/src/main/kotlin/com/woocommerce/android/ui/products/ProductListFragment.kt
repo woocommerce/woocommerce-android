@@ -117,7 +117,9 @@ class ProductListFragment :
 
         initAddProductFab(binding.addProductButton)
 
-        if (!viewModel.isSearching()) {
+        if (viewModel.isSearching()) {
+            binding.productsSearchTabView.isVisible = true
+        } else {
             viewModel.reloadProductsFromDb(excludeProductId = pendingTrashProductId)
         }
     }
