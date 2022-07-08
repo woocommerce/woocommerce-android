@@ -678,11 +678,11 @@ platform :android do
   lane :download_promo_strings do |options|
     # "<key in .po file>" => { desc: "<name of txt file>" }
     files = {
-      'app_store_screenshot-1': { desc: "promo_screenshot_1.txt" },
-      'app_store_screenshot-2': { desc: "promo_screenshot_2.txt" },
-      'app_store_screenshot-3': { desc: "promo_screenshot_3.txt" },
-      'app_store_screenshot-4': { desc: "promo_screenshot_4.txt" },
-      'app_store_screenshot-5': { desc: "promo_screenshot_5.txt" },
+      play_store_screenshot_1: { desc: "promo_screenshot_1.txt" },
+      play_store_screenshot_2: { desc: "promo_screenshot_2.txt" },
+      play_store_screenshot_3: { desc: "promo_screenshot_3.txt" },
+      play_store_screenshot_4: { desc: "promo_screenshot_4.txt" },
+      play_store_screenshot_5: { desc: "promo_screenshot_5.txt" },
     }
 
     locales = SUPPORTED_LOCALES
