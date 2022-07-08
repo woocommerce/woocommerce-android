@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.shippinglabels
 
 import com.woocommerce.android.R
-import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.media.FileUtils
@@ -12,8 +11,6 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabel
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelViewModel.PrintShippingLabelViewState
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize
-import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize.LABEL
-import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize.LETTER
 import com.woocommerce.android.util.Base64Decoder
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -24,9 +21,9 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_ERROR
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.API_ERROR
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import java.util.Date
 import kotlin.test.assertNotNull
@@ -110,10 +107,11 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
         viewModel.onPaperSizeOptionsSelected()
         assertNotNull(viewShippingLabelPaperSizes)
 
-        val paperSize = LETTER
+        val paperSize = ShippingLabelPaperSize.LETTER
         viewModel.onPaperSizeSelected(paperSize)
 
-        assertThat(shippingLabelPaperSizeList).containsExactly(LABEL, LETTER)
+        assertThat(shippingLabelPaperSizeList)
+            .containsExactly(ShippingLabelPaperSize.LABEL, ShippingLabelPaperSize.LETTER)
     }
 
     @Test
@@ -127,7 +125,7 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
         }
 
         viewModel.onPrintShippingLabelClicked()
-        assertThat(snackbar).isEqualTo(ShowSnackbar(string.offline_error))
+        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
     }
 
     @Test
@@ -158,7 +156,7 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
     fun `Print shipping label results in an error`() = testBlocking {
         doReturn(true).whenever(networkStatus).isConnected()
         doReturn(
-            WooResult<Boolean>(WooError(API_ERROR, NETWORK_ERROR, ""))
+            WooResult<Boolean>(WooError(WooErrorType.API_ERROR, GenericErrorType.NETWORK_ERROR, ""))
         ).whenever(repository).printShippingLabels(any(), any())
 
         initViewModel()
@@ -182,7 +180,7 @@ class PrintShippingLabelViewModelTest : BaseUnitTest() {
         viewModel.onPrintShippingLabelClicked()
         assertThat(isProgressDialogShown).containsExactly(true, false)
         assertThat(previewShippingLabelStringList).isEmpty()
-        assertThat(snackBar).isEqualTo(ShowSnackbar(string.shipping_label_preview_error))
+        assertThat(snackBar).isEqualTo(ShowSnackbar(R.string.shipping_label_preview_error))
     }
 
     @Test
