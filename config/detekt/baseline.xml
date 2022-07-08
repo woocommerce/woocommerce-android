@@ -225,10 +225,7 @@
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.details.OrderDetailFragment.kt:28</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.details.OrderDetailFragment.kt:31</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.details.OrderDetailRepository.kt:10</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.details.OrderDetailRepository.kt:22</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.details.OrderDetailRepository.kt:23</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.kt:13</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.details.editing.OrderEditingViewModelTest.kt:19</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.kt:11</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.kt:9</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.details.editing.address.AddressViewModelTest.kt:10</ID>
@@ -499,9 +496,6 @@
     <ID>WildcardImport:OrderDetailFragment.kt$import com.woocommerce.android.extensions.*</ID>
     <ID>WildcardImport:OrderDetailFragment.kt$import com.woocommerce.android.model.*</ID>
     <ID>WildcardImport:OrderDetailFragment.kt$import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.*</ID>
-    <ID>WildcardImport:OrderDetailRepository.kt$import com.woocommerce.android.model.*</ID>
-    <ID>WildcardImport:OrderDetailRepository.kt$import org.wordpress.android.fluxc.store.*</ID>
-    <ID>WildcardImport:OrderDetailRepository.kt$import org.wordpress.android.fluxc.store.WCOrderStore.*</ID>
     <ID>WildcardImport:OrderListFragment.kt$import com.woocommerce.android.*</ID>
     <ID>WildcardImport:OrderListFragment.kt$import com.woocommerce.android.extensions.*</ID>
     <ID>WildcardImport:OrderListFragment.kt$import com.woocommerce.android.model.FeatureFeedbackSettings.*</ID>

@@ -19,8 +19,11 @@ import kotlinx.coroutines.withTimeoutOrNull
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.LabelItem
-import org.wordpress.android.fluxc.store.*
-import org.wordpress.android.fluxc.store.WCOrderStore.*
+import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.store.WCRefundStore
+import org.wordpress.android.fluxc.store.WCShippingLabelStore
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 class OrderDetailRepository @Inject constructor(
@@ -66,7 +69,7 @@ class OrderDetailRepository @Inject constructor(
         return if (result?.isError == false) {
             RequestResult.SUCCESS
         } else {
-            if (result?.error?.type == OrderErrorType.PLUGIN_NOT_ACTIVE) {
+            if (result?.error?.type == WCOrderStore.OrderErrorType.PLUGIN_NOT_ACTIVE) {
                 RequestResult.API_ERROR
             } else RequestResult.ERROR
         }
@@ -96,7 +99,7 @@ class OrderDetailRepository @Inject constructor(
     suspend fun updateOrderStatus(
         orderId: Long,
         newStatus: String
-    ): Flow<UpdateOrderResult> {
+    ): Flow<WCOrderStore.UpdateOrderResult> {
         val status = withContext(dispatchers.io) {
             orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), newStatus)
                 ?: WCOrderStatusModel(statusKey = newStatus)
@@ -126,9 +129,9 @@ class OrderDetailRepository @Inject constructor(
     suspend fun addOrderShipmentTracking(
         orderId: Long,
         shipmentTrackingModel: OrderShipmentTracking
-    ): OnOrderChanged {
+    ): WCOrderStore.OnOrderChanged {
         return orderStore.addOrderShipmentTracking(
-            AddOrderShipmentTrackingPayload(
+            WCOrderStore.AddOrderShipmentTrackingPayload(
                 site = selectedSite.get(),
                 orderId = orderId,
                 tracking = shipmentTrackingModel.toDataModel(),
@@ -140,9 +143,9 @@ class OrderDetailRepository @Inject constructor(
     suspend fun deleteOrderShipmentTracking(
         orderId: Long,
         shipmentTrackingModel: WCOrderShipmentTrackingModel
-    ): OnOrderChanged {
+    ): WCOrderStore.OnOrderChanged {
         return orderStore.deleteOrderShipmentTracking(
-            DeleteOrderShipmentTrackingPayload(
+            WCOrderStore.DeleteOrderShipmentTrackingPayload(
                 selectedSite.get(), orderId, shipmentTrackingModel
             )
         )

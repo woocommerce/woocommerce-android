@@ -20,8 +20,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
-import org.wordpress.android.fluxc.store.WCOrderStore.*
-import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUpdateResult
+import org.wordpress.android.fluxc.store.WCOrderStore
 
 @ExperimentalCoroutinesApi
 class OrderEditingViewModelTest : BaseUnitTest() {
@@ -236,8 +235,8 @@ class OrderEditingViewModelTest : BaseUnitTest() {
             onBlocking {
                 updateOrderAddress(testOrder.id, addressToUpdate.toBillingAddressModel())
             } doReturn flowOf(
-                UpdateOrderResult.OptimisticUpdateResult(
-                    OnOrderChanged()
+                WCOrderStore.UpdateOrderResult.OptimisticUpdateResult(
+                    WCOrderStore.OnOrderChanged()
                 )
             )
         }
@@ -261,8 +260,10 @@ class OrderEditingViewModelTest : BaseUnitTest() {
             onBlocking {
                 updateOrderAddress(testOrder.id, addressToUpdate.toBillingAddressModel())
             } doReturn flowOf(
-                RemoteUpdateResult(
-                    OnOrderChanged(orderError = OrderError(type = OrderErrorType.INVALID_RESPONSE))
+                WCOrderStore.UpdateOrderResult.RemoteUpdateResult(
+                    WCOrderStore.OnOrderChanged(
+                        orderError = WCOrderStore.OrderError(type = WCOrderStore.OrderErrorType.INVALID_RESPONSE)
+                    )
                 )
             )
         }
@@ -283,8 +284,10 @@ class OrderEditingViewModelTest : BaseUnitTest() {
             onBlocking {
                 updateOrderAddress(testOrder.id, addressToUpdate.toBillingAddressModel())
             } doReturn flowOf(
-                RemoteUpdateResult(
-                    OnOrderChanged(orderError = OrderError(type = OrderErrorType.EMPTY_BILLING_EMAIL))
+                WCOrderStore.UpdateOrderResult.RemoteUpdateResult(
+                    WCOrderStore.OnOrderChanged(
+                        orderError = WCOrderStore.OrderError(type = WCOrderStore.OrderErrorType.EMPTY_BILLING_EMAIL)
+                    )
                 )
             )
         }
