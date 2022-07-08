@@ -1,3 +1,6 @@
+@file:Suppress("DEPRECATION", "ForbiddenComment")
+// TODO: @malinajirka Issue: https://github.com/woocommerce/woocommerce-android/issues/6899
+
 package com.woocommerce.android.ui.reviews
 
 import com.woocommerce.android.model.ActionStatus
