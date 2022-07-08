@@ -2,7 +2,7 @@
 
 9.6
 -----
-
+- [*] New "What is WordPress.com?" link in login with email screen, to provide better context of why WordPress.com account is needed during login
 
 9.5
 -----
