@@ -25,6 +25,7 @@ import com.woocommerce.android.barcode.settings.PreferenceUtils
 /** Guides user to move camera closer to confirm the detected barcode.  */
 internal class BarcodeConfirmingGraphic(overlay: GraphicOverlay, private val barcode: Barcode) :
     BarcodeGraphicBase(overlay) {
+    @SuppressWarnings("MagicNumber")
     override fun draw(canvas: Canvas) {
         super.draw(canvas)
 

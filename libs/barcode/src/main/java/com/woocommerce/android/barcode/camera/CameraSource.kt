@@ -251,6 +251,7 @@ class CameraSource(private val graphicOverlay: GraphicOverlay) {
      *
      * @param parameters the camera parameters for which to set the rotation.
      */
+    @SuppressWarnings("MagicNumber")
     private fun setRotation(camera: Camera, parameters: Parameters) {
         val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val degrees = when (val deviceRotation = windowManager.defaultDisplay.rotation) {
@@ -278,6 +279,7 @@ class CameraSource(private val graphicOverlay: GraphicOverlay) {
      *
      * @return a new preview buffer of the appropriate size for the current camera settings.
      */
+    @SuppressWarnings("MagicNumber")
     private fun createPreviewBuffer(previewSize: Size): ByteArray {
         val bitsPerPixel = ImageFormat.getBitsPerPixel(IMAGE_FORMAT)
         val sizeInBits = previewSize.height.toLong() * previewSize.width.toLong() * bitsPerPixel.toLong()
@@ -308,7 +310,7 @@ class CameraSource(private val graphicOverlay: GraphicOverlay) {
      * associated processing is done for the previous frame, detection on the mostly recently received
      * frame will immediately start on the same thread.
      */
-    private inner class FrameProcessingRunnable internal constructor() : Runnable {
+    private inner class FrameProcessingRunnable() : Runnable {
         // This lock guards all of the member variables below.
         private val lock = Object()
         private var active = true
@@ -317,7 +319,7 @@ class CameraSource(private val graphicOverlay: GraphicOverlay) {
         private var pendingFrameData: ByteBuffer? = null
 
         /** Marks the runnable as active/not active. Signals any blocked threads to continue.  */
-        internal fun setActive(active: Boolean) {
+        fun setActive(active: Boolean) {
             synchronized(lock) {
                 this.active = active
                 lock.notifyAll()
@@ -328,7 +330,7 @@ class CameraSource(private val graphicOverlay: GraphicOverlay) {
          * Sets the frame data received from the camera. This adds the previous unused frame buffer (if
          * present) back to the camera, and keeps a pending reference to the frame data for future use.
          */
-        internal fun setNextFrame(data: ByteArray, camera: Camera) {
+        fun setNextFrame(data: ByteArray, camera: Camera) {
             synchronized(lock) {
                 pendingFrameData?.let {
                     camera.addCallbackBuffer(it.array())
@@ -417,7 +419,9 @@ class CameraSource(private val graphicOverlay: GraphicOverlay) {
         private const val MAX_CAMERA_PREVIEW_WIDTH = 1300
         private const val DEFAULT_REQUESTED_CAMERA_PREVIEW_WIDTH = 640
         private const val DEFAULT_REQUESTED_CAMERA_PREVIEW_HEIGHT = 360
-        private const val REQUESTED_CAMERA_FPS = 30.0f
+
+        // The camera API uses integers scaled by a factor of 1000 instead of floating-point frame rates.
+        private const val REQUESTED_CAMERA_FPS_SCALED_TO_CAMERA_API = 30 * 1000
 
         /**
          * Selects the most suitable preview and picture size, given the display aspect ratio in landscape
@@ -493,10 +497,6 @@ class CameraSource(private val graphicOverlay: GraphicOverlay) {
          * @return the selected preview frames per second range
          */
         private fun selectPreviewFpsRange(camera: Camera): IntArray? {
-            // The camera API uses integers scaled by a factor of 1000 instead of floating-point frame
-            // rates.
-            val desiredPreviewFpsScaled = (REQUESTED_CAMERA_FPS * 1000f).toInt()
-
             // The method for selecting the best range is to minimize the sum of the differences between
             // the desired value and the upper and lower bounds of the range.  This may select a range
             // that the desired value is outside of, but this is often preferred.  For example, if the
@@ -505,8 +505,8 @@ class CameraSource(private val graphicOverlay: GraphicOverlay) {
             var selectedFpsRange: IntArray? = null
             var minDiff = Integer.MAX_VALUE
             for (range in camera.parameters.supportedPreviewFpsRange) {
-                val deltaMin = desiredPreviewFpsScaled - range[Parameters.PREVIEW_FPS_MIN_INDEX]
-                val deltaMax = desiredPreviewFpsScaled - range[Parameters.PREVIEW_FPS_MAX_INDEX]
+                val deltaMin = REQUESTED_CAMERA_FPS_SCALED_TO_CAMERA_API - range[Parameters.PREVIEW_FPS_MIN_INDEX]
+                val deltaMax = REQUESTED_CAMERA_FPS_SCALED_TO_CAMERA_API - range[Parameters.PREVIEW_FPS_MAX_INDEX]
                 val diff = abs(deltaMin) + abs(deltaMax)
                 if (diff < minDiff) {
                     selectedFpsRange = range

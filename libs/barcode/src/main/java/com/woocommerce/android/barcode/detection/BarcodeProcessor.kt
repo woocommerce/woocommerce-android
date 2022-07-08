@@ -37,6 +37,11 @@ class BarcodeProcessor(
     graphicOverlay: GraphicOverlay,
     private val workflowModel: WorkflowModel
 ) : FrameProcessorBase<List<Barcode>>() {
+    companion object {
+        private const val TAG = "BarcodeProcessor"
+        const val ANIMATION_DURATION_IN_MILLIS = 2000L
+    }
+
     private val scanner = BarcodeScanning.getClient(
         BarcodeScannerOptions.Builder().setBarcodeFormats(Barcode.FORMAT_QR_CODE).build()
     )
@@ -90,10 +95,11 @@ class BarcodeProcessor(
         graphicOverlay.invalidate()
     }
 
+    @SuppressWarnings("MagicNumber")
     private fun createLoadingAnimator(graphicOverlay: GraphicOverlay, barcode: Barcode): ValueAnimator {
         val endProgress = 1.1f
         return ValueAnimator.ofFloat(0f, endProgress).apply {
-            duration = 2000
+            duration = ANIMATION_DURATION_IN_MILLIS
             addUpdateListener {
                 if ((animatedValue as Float).compareTo(endProgress) >= 0) {
                     graphicOverlay.clear()
@@ -117,9 +123,5 @@ class BarcodeProcessor(
         } catch (e: IOException) {
             Log.e(TAG, "Failed to close barcode detector!", e)
         }
-    }
-
-    companion object {
-        private const val TAG = "BarcodeProcessor"
     }
 }

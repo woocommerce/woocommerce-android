@@ -41,7 +41,7 @@ internal class BarcodeLoadingGraphic(overlay: GraphicOverlay, private val loadin
     )
     private val lastPathPoint = PointF()
 
-    @SuppressWarnings("MagiNumber")
+    @SuppressWarnings("MagicNumber")
     override fun draw(canvas: Canvas) {
         super.draw(canvas)
 

@@ -122,13 +122,13 @@ object Utils {
                 null
             ExifInterface.ORIENTATION_FLIP_HORIZONTAL -> Matrix().apply { postScale(-1.0f, 1.0f) }
 
-            ExifInterface.ORIENTATION_ROTATE_90 -> Matrix().apply { postRotate(90f) }
+            ExifInterface.ORIENTATION_ROTATE_90 -> Matrix().apply { postRotate(ORIENTATION_ROTATE_90_DEGREES) }
             ExifInterface.ORIENTATION_TRANSPOSE -> Matrix().apply { postScale(-1.0f, 1.0f) }
-            ExifInterface.ORIENTATION_ROTATE_180 -> Matrix().apply { postRotate(180.0f) }
+            ExifInterface.ORIENTATION_ROTATE_180 -> Matrix().apply { postRotate(ORIENTATION_ROTATE_180_DEGREES) }
             ExifInterface.ORIENTATION_FLIP_VERTICAL -> Matrix().apply { postScale(1.0f, -1.0f) }
-            ExifInterface.ORIENTATION_ROTATE_270 -> Matrix().apply { postRotate(-90.0f) }
+            ExifInterface.ORIENTATION_ROTATE_270 -> Matrix().apply { postRotate(-ORIENTATION_ROTATE_90_DEGREES) }
             ExifInterface.ORIENTATION_TRANSVERSE -> Matrix().apply {
-                postRotate(-90.0f)
+                postRotate(-ORIENTATION_ROTATE_90_DEGREES)
                 postScale(-1.0f, 1.0f)
             }
             else ->
@@ -161,4 +161,7 @@ object Utils {
             ExifInterface.ORIENTATION_UNDEFINED
         }
     }
+
+    const val ORIENTATION_ROTATE_90_DEGREES = 90f
+    const val ORIENTATION_ROTATE_180_DEGREES = 180f
 }
