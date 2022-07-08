@@ -7,7 +7,6 @@ import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -32,7 +31,7 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
     @Before
     fun setUp() {
 //        doReturn(false).whenever(repository).hasSubscriptionProducts(any())
-        runBlockingTest {
+        testBlocking {
             whenever(cardReaderPaymentCurrencySupportedChecker.isCurrencySupported(any())).thenReturn(true)
         }
     }
