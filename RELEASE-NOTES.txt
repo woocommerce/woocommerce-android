@@ -2,6 +2,7 @@
 
 9.6
 -----
+- [**] In-Person Payments: Support for selecting preferred payment gateway when multiple extensions are installed on the store. [https://github.com/woocommerce/woocommerce-android/pull/6887]
 - [*] In-Person Payments: Update phrasing of IPP description [https://github.com/woocommerce/woocommerce-android/pull/6867]
 
 9.5
