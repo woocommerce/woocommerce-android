@@ -204,7 +204,6 @@
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.OrderDetailViewModelTest.kt:36</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.OrderDetailViewModelTest.kt:9</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.OrderListViewModelTest.kt:23</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.OrderListViewModelTest.kt:37</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.cardreader.ReceiptPreviewViewModelTest.kt:15</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.cardreader.ReceiptPreviewViewModelTest.kt:4</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.cardreader.payment.CardReaderPaymentErrorMapper.kt:4</ID>
