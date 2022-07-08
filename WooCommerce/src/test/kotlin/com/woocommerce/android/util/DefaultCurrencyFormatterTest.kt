@@ -83,7 +83,8 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
             currencyPosition = WCSettingsModel.CurrencyPosition.RIGHT_SPACE,
             currencyThousandSeparator = ",",
             currencyDecimalSeparator = ".",
-            currencyDecimalNumber = 2
+            currencyDecimalNumber = 2,
+            couponsEnabled = false
         )
         val secondSettings = firstSettings.copy(currencyCode = "USD")
         whenever(selectedSite.observe()).thenReturn(sitesFlow)
@@ -108,7 +109,8 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
             currencyPosition = WCSettingsModel.CurrencyPosition.RIGHT_SPACE,
             currencyThousandSeparator = ",",
             currencyDecimalSeparator = ".",
-            currencyDecimalNumber = 2
+            currencyDecimalNumber = 2,
+            couponsEnabled = false
         )
         whenever(selectedSite.observe()).thenReturn(sitesFlow)
         // First time return an error

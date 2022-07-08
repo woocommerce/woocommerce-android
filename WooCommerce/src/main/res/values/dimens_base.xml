@@ -66,6 +66,7 @@ so that's the baseline as defined in `major_100`.
     <dimen name="button_height_major_100">36sp</dimen>
 
     <!-- Smaller image sizes (ex. icons) -->
+    <dimen name="image_minor_40">18dp</dimen>
     <dimen name="image_minor_50">24dp</dimen>
     <dimen name="image_minor_60">26dp</dimen>
     <dimen name="image_minor_100">40dp</dimen>

@@ -64,8 +64,6 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
@@ -79,7 +77,6 @@ import java.text.DecimalFormat
 import javax.inject.Inject
 import kotlin.system.measureTimeMillis
 
-@ExperimentalCoroutinesApi
 @HiltViewModel
 class CreateShippingLabelViewModel @Inject constructor(
     savedState: SavedStateHandle,
@@ -516,7 +513,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                 } else {
                     resourceProvider.getString(
                         string.shipping_label_multi_packages_items_count,
-                        data.sumBy { it.itemsCount },
+                        data.sumOf { it.itemsCount },
                         data.size
                     )
                 }

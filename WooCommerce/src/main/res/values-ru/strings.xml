@@ -1,13 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-01 16:54:04+0000
+Translation-Revision-Date: 2022-06-16 11:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="install_wc_shipping_flow_onboarding_screen_not_now_button">Не сейчас</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_add_extension_button">Добавить расширение в магазин</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_link">Что такое WooCommerce Shipping?</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_discounts_bullet_desc">Воспользуйтесь пониженными тарифами на доставку. Пока доступно для служб DHL и USPS, но список расширяется!</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_discounts_bullet_title">Пониженные тарифы</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_print_bullet_desc">Получите заказ, затем просто оплатите доставку, напечатайте этикетку, упакуйте и отправьте.</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_print_bullet_title">Печатайте с телефона</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_postage_bullet_desc">Не нужно гадать, куда делись почтовые марки.</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_postage_bullet_title">Оплачивайте почтовые сборы по мере необходимости</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_subtitle">Экономьте время и деньги</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_title">Выполняйте заказы с помощью WooCommerce Shipping</string>
+    <string name="product_selector_arrow_content_description">Показать сведения</string>
+    <string name="product_selector_select_variation_label">Выбрать вариант %s</string>
+    <string name="coupon_restrictions_exclude_categories">Исключить товарные категории</string>
+    <string name="coupon_restrictions_exclude_products">Исключить товары</string>
+    <string name="coupon_restrictions_exclusions_section_title">Применить этот купон к</string>
+    <string name="coupon_restrictions_allowed_emails_placeholder">Нет ограничений</string>
+    <string name="coupon_restrictions_allowed_emails">Допустимые адреса эл. почты</string>
+    <string name="coupon_restrictions_limit_per_user_placeholder">Нет лимита</string>
+    <string name="coupon_restrictions_amount_limit_placeholder">Все подходящие</string>
+    <string name="coupon_restrictions_limit_per_coupon_placeholder">Нет лимита</string>
+    <string name="coupon_restrictions_minimum_maximum_spend_placeholder">Нет</string>
+    <string name="coupon_edit_edit_products_title">Редактировать товарные категории (%1$d)</string>
+    <string name="coupon_edit_select_categories_title">Выбрать товарные категории</string>
+    <string name="variations_bulk_update_warning_message">Пока пакетное обновление поддерживается не более чем для 100 вариантов.</string>
+    <string name="variations_bulk_update_warning_title">Превышен лимит пакетного обновления</string>
+    <string name="variations_bulk_update_regular_prices_dialog_title">Обновление обычных цен</string>
+    <string name="variations_bulk_update_sale_prices_dialog_title">Обновление акционных цен</string>
+    <string name="variations_bulk_update_sale_prices_success">Акционные цены обновлены.</string>
+    <string name="variations_bulk_update_regular_prices_success">Обычные цены обновлены.</string>
+    <string name="variations_bulk_update_error">Что-то пошло не так. Повторите попытку.</string>
+    <string name="variations_bulk_update_current_prices_mixed">Текущие цены отличаются друг от друга</string>
+    <string name="variations_bulk_update_current_price">Текущая цена: %s</string>
+    <string name="variations_bulk_update_price_info">Цена для вариантов (%d) будет обновлена</string>
+    <string name="variations_bulk_update_dialog_price_mixed">Отличающиеся</string>
+    <string name="variations_bulk_update_dialog_price_none">Нет</string>
+    <string name="variations_bulk_update_dialog_sale_price_label">Акционная цена</string>
+    <string name="variations_bulk_update_dialog_regular_price_label">Обычная цена</string>
+    <string name="variations_bulk_update_dialog_price_section_title">Цена</string>
+    <string name="variations_bulk_update_dialog_subtitle">Выберите значение для обновления</string>
+    <string name="variations_bulk_update_dialog_title">Пакетное обновление</string>
+    <string name="variations_bulk_limit_exceeded_button_ok">ОК</string>
+    <string name="variation_list_menu_bulk_update">Пакетное обновление…</string>
+    <string name="variation_loading_dialog_title">Получение вариантов…</string>
+    <string name="product_category_selector_search_failed">Не удалось найти товарные категории</string>
+    <string name="product_category_selector_loading_failed">Не удалось загрузить товарные категории</string>
+    <string name="product_category_selector_search_hint">Поиск категорий</string>
+    <string name="product_category_selector_clear_selection">Очистить выбор</string>
+    <string name="product_category_selector_check_content_description">Нажмите, чтобы снять флажок</string>
+    <string name="product_category_selector_select_button_title_one">Выбрать одну категорию</string>
+    <string name="product_category_selector_select_button_title_default">Выбрать категории (%1$d)</string>
+    <string name="product_category_selector_empty_state">Товарные категории не найдены</string>
+    <string name="product_category_selector_title">Выбрать категории</string>
+    <string name="shipping_label_install_wc_shipping_banner_dismiss_button_description">Скрыть баннер с предложением установить WC Shipping</string>
+    <string name="shipping_label_install_wc_shipping_banner_button">Установить WooCommerce Shipping</string>
+    <string name="shipping_label_install_wc_shipping_banner_description">Печатайте транспортные этикетки с телефона, используя WooCommerce Shipping.</string>
+    <string name="shipping_label_install_wc_shipping_banner_title">Нужна транспортная этикетка?</string>
+    <string name="order_creation_change_product_quantity">Измените количество товара с %d на %d</string>
+    <string name="variations_bulk_update_regular_price">Обновить обычную цену</string>
+    <string name="variations_bulk_update_sale_price">Обновить акционную цену</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Расширение WooCommerce Stripe не поддерживается в %1$s</string>
-    <string name="product_selector_filter_button_title">Фильтр</string>
+    <string name="product_selector_filter_button_title_zero">Фильтр</string>
     <string name="product_selector_clear_button_title">Очистить выбор</string>
     <string name="product_selector_select_button_title_one">Выбрать %d товар</string>
     <string name="product_selector_select_button_title_default">Выбрать товары (%d)</string>
@@ -162,8 +222,6 @@ Language: ru
     <string name="orderstatus_contentDesc_withStatus">Статус заказа: %s</string>
     <string name="no_sku">Артикула нет</string>
     <string name="count">Счётчик: %s</string>
-    <string name="plus_one">Плюс один</string>
-    <string name="minus_one">Минус один</string>
     <string name="more_menu_button_coupons">Купоны</string>
     <string name="dismiss_inbox_note">Закрыть</string>
     <string name="login_error_xml_rpc_auth_error_communicating">Возникла проблема при подключении к сайту. Получен код ошибки HTTP 401.</string>
@@ -1122,7 +1180,6 @@ Language: ru
     <string name="orderdetail_product_multiple">Товары</string>
     <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
     <string name="orderdetail_orderstatus_name">%1$s %2$s</string>
-    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
     <string name="product_type_external">Сторонний</string>
     <string name="product_type_simple">Обычный</string>
     <string name="product_status_privately_published">Опубликован как скрытый</string>

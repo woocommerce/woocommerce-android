@@ -4,10 +4,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
-import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus.Failed
-import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus.Ongoing
-import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus.PendingDebounce
-import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus.Succeeded
+import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Failed
+import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Ongoing
+import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.PendingDebounce
+import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.Mode
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.Mode.Creation
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.ViewState
@@ -39,7 +39,7 @@ class CreationFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest(
 
     @Test
     fun `when initializing the view model, then register the orderDraft flowState`() {
-        verify(createOrUpdateOrderUseCase).invoke(any(), any())
+        verify(createUpdateOrderUseCase).invoke(any(), any())
     }
 
     @Test
@@ -541,7 +541,7 @@ class CreationFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest(
 
     @Test
     fun `when OrderDraftUpdateStatus is WillStart, then adjust view state to reflect the loading preparation`() {
-        createOrUpdateOrderUseCase = mock {
+        createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(PendingDebounce)
         }
         createSut()
@@ -560,7 +560,7 @@ class CreationFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest(
 
     @Test
     fun `when OrderDraftUpdateStatus is Ongoing, then adjust view state to reflect the loading`() {
-        createOrUpdateOrderUseCase = mock {
+        createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(Ongoing)
         }
         createSut()
@@ -580,7 +580,7 @@ class CreationFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest(
     @Test
     fun `when OrderDraftUpdateStatus is Succeeded, then adjust view state to reflect the loading end`() {
         val modifiedOrderValue = defaultOrderValue.copy(id = 999)
-        createOrUpdateOrderUseCase = mock {
+        createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(modifiedOrderValue))
         }
         createSut()
@@ -607,7 +607,7 @@ class CreationFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest(
 
     @Test
     fun `when OrderDraftUpdateStatus is Failed, then adjust view state to reflect the failure`() {
-        createOrUpdateOrderUseCase = mock {
+        createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(Failed)
         }
         createSut()
@@ -701,7 +701,7 @@ class CreationFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest(
     @Test
     fun `when isEditable is true on the create flow the order is editable`() {
         // When the order is on Creation mode is always editable
-        createOrUpdateOrderUseCase = mock {
+        createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(defaultOrderValue.copy(isEditable = true)))
         }
         createSut()
@@ -715,7 +715,7 @@ class CreationFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest(
     @Test
     fun `when isEditable is false on the edit flow the order is editable`() {
         // When the order is on Creation mode is always editable
-        createOrUpdateOrderUseCase = mock {
+        createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(defaultOrderValue.copy(isEditable = false)))
         }
         createSut()

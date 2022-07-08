@@ -30,7 +30,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.MyStoreStatsBinding
-import com.woocommerce.android.extensions.*
+import com.woocommerce.android.extensions.formatDateToFriendlyDayHour
+import com.woocommerce.android.extensions.formatDateToFriendlyLongMonthDate
+import com.woocommerce.android.extensions.formatDateToFriendlyLongMonthYear
+import com.woocommerce.android.extensions.formatDateToYearMonth
+import com.woocommerce.android.extensions.formatToDateOnly
+import com.woocommerce.android.extensions.formatToMonthDateOnly
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.MyStoreFragment.Companion.DEFAULT_STATS_GRANULARITY
 import com.woocommerce.android.util.CurrencyFormatter
@@ -43,13 +48,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.DisplayUtils
 import java.text.DecimalFormat
-import java.util.*
+import java.util.Locale
 import kotlin.math.round
 
 @FlowPreview

@@ -25,8 +25,12 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
+import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.Mode
+import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.MultipleLinesContext.None
+import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.MultipleLinesContext.Warning
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigator
 import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
@@ -36,7 +40,9 @@ import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Compa
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.WCReadMoreTextView
 import dagger.hilt.android.AndroidEntryPoint
@@ -60,6 +66,14 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         )
     }
 
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Visible(
+            navigationIcon = when (viewModel.mode) {
+                Mode.Creation -> R.drawable.ic_back_24dp
+                is Mode.Edit -> null
+            }
+        )
+
     private val View?.productsAdapter
         get() = (this as? RecyclerView)
             ?.run { adapter as? OrderCreationProductsAdapter }
@@ -79,6 +93,12 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         inflater.inflate(R.menu.menu_order_creation, menu)
 
         createOrderMenuItem = menu.findItem(R.id.menu_create).apply {
+            title = resources.getString(
+                when (viewModel.mode) {
+                    Mode.Creation -> R.string.create
+                    is Mode.Edit -> R.string.done
+                }
+            )
             isEnabled = viewModel.viewStateData.liveData.value?.canCreateOrder ?: false
         }
     }
@@ -210,7 +230,14 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                 createOrderMenuItem?.isEnabled = it
             }
             new.isIdle.takeIfNotEqualTo(old?.isIdle) { enabled ->
-                binding.paymentSection.loadingProgress.isVisible = !enabled
+                when (viewModel.mode) {
+                    OrderCreationViewModel.Mode.Creation -> {
+                        binding.paymentSection.loadingProgress.isVisible = !enabled
+                    }
+                    is OrderCreationViewModel.Mode.Edit -> {
+                        binding.loadingProgress.isVisible = !enabled
+                    }
+                }
                 if (new.isEditable) {
                     binding.paymentSection.shippingButton.isEnabled = enabled
                     binding.paymentSection.feeButton.isEnabled = enabled
@@ -227,6 +254,16 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             }
             new.isEditable.takeIfNotEqualTo(old?.isEditable) { isEditable ->
                 if (isEditable) showEditableControls(binding) else hideEditableControls(binding)
+            }
+            new.multipleLinesContext.takeIfNotEqualTo(old?.multipleLinesContext) { multipleLinesContext ->
+                when (multipleLinesContext) {
+                    None -> binding.multipleLinesWarningSection.root.visibility = View.GONE
+                    is Warning -> {
+                        binding.multipleLinesWarningSection.header.text = multipleLinesContext.header
+                        binding.multipleLinesWarningSection.explanation.text = multipleLinesContext.explanation
+                        binding.multipleLinesWarningSection.root.visibility = View.VISIBLE
+                    }
+                }
             }
         }
 
@@ -409,7 +446,13 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         progressDialog = null
     }
 
-    override fun getFragmentTitle() = getString(R.string.order_creation_fragment_title)
+    override fun getFragmentTitle() = when (viewModel.mode) {
+        Mode.Creation -> getString(R.string.order_creation_fragment_title)
+        is Mode.Edit -> {
+            val orderId = (viewModel.mode as Mode.Edit).orderId.toString()
+            getString(R.string.orderdetail_orderstatus_ordernum, orderId)
+        }
+    }
 
     override fun onRequestAllowBackPress(): Boolean {
         viewModel.onBackButtonClicked()
@@ -417,24 +460,30 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     }
 
     private fun showEditableControls(binding: FragmentOrderCreationFormBinding) {
+        binding.messageNoEditableFields.visibility = View.GONE
         binding.productsSection.apply {
+            isLocked = false
             isEachAddButtonEnabled = true
             content.productsAdapter?.areProductsEditable = true
         }
         binding.paymentSection.apply {
             feeButton.isEnabled = true
             shippingButton.isEnabled = true
+            lockIcon.isVisible = false
         }
     }
 
     private fun hideEditableControls(binding: FragmentOrderCreationFormBinding) {
+        binding.messageNoEditableFields.visibility = View.VISIBLE
         binding.productsSection.apply {
+            isLocked = true
             isEachAddButtonEnabled = false
             content.productsAdapter?.areProductsEditable = false
         }
         binding.paymentSection.apply {
             feeButton.isEnabled = false
             shippingButton.isEnabled = false
+            lockIcon.isVisible = true
         }
     }
 }

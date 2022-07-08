@@ -1,0 +1,2 @@
+9.4:
+Meski tanpa fitur baru, rilis ini tetap sarat akan jerih payah kami. Dalam detail produk, beberapa ekstensi pihak ketiga menyebabkan crash pada aplikasi saat menampilkan produk yang bervariasi. Kami sudah mengatasi masalah crash ini sekaligus membuat beberapa perbaikan kecil untuk makin memperlancar pengalaman Anda dalam menggunakan aplikasi.

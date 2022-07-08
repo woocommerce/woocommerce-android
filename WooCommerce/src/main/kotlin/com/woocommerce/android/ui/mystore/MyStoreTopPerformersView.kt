@@ -19,7 +19,7 @@ import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.widgets.SkeletonView
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
-import java.util.*
+import java.util.Locale
 
 class MyStoreTopPerformersView @JvmOverloads constructor(
     ctx: Context,

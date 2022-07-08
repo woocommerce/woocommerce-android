@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.woocommerce.android.ui.login
 
 import android.app.Activity
@@ -13,7 +15,6 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
@@ -22,6 +23,8 @@ import com.woocommerce.android.R.layout
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentLoginNoJetpackBinding
+import com.woocommerce.android.databinding.ViewLoginNoStoresBinding
+import com.woocommerce.android.databinding.ViewLoginUserInfoBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
@@ -68,7 +71,7 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
     private var mInputPassword: String? = null
     private var userAvatarUrl: String? = null
 
-    private var progressDialog: ProgressDialog? = null
+    @Suppress("DEPRECATION") private var progressDialog: ProgressDialog? = null
 
     /**
      * This flag, when set to true calls the CONNECT_SITE_INFO API to verify if Jetpack is
@@ -101,8 +104,8 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
 
         val binding = FragmentLoginNoJetpackBinding.bind(view)
         val btnBinding = binding.loginEpilogueButtonBar
-        val noStoresBinding = binding.loginNoStores
-        val userInfoBinding = binding.loginUserInfo
+        val noStoresBinding = ViewLoginNoStoresBinding.bind(view)
+        val userInfoBinding = ViewLoginUserInfoBinding.bind(view)
 
         userInfoBinding.textDisplayname.text = mInputUsername
         with(userInfoBinding.textUsername) {
@@ -206,30 +209,25 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
     }
 
     private fun setupObservers() {
-        viewModel.isLoading.observe(
-            viewLifecycleOwner,
-            Observer {
-                showProgressDialog(it)
-            }
-        )
+        viewModel.isLoading.observe(viewLifecycleOwner) {
+            showProgressDialog(it)
+        }
 
-        viewModel.isJetpackAvailable.observe(
-            viewLifecycleOwner,
-            Observer { isJetpackAvailable ->
-                if (isJetpackAvailable) {
-                    AppPrefs.setLoginUserBypassedJetpackRequired(false)
-                    redirectToSiteCredentialsScreen()
-                } else {
-                    view?.let {
-                        Snackbar.make(
-                            it, getString(R.string.login_jetpack_not_found), BaseTransientBottomBar.LENGTH_LONG
-                        ).show()
-                    }
+        viewModel.isJetpackAvailable.observe(viewLifecycleOwner) { isJetpackAvailable ->
+            if (isJetpackAvailable) {
+                AppPrefs.setLoginUserBypassedJetpackRequired(false)
+                redirectToSiteCredentialsScreen()
+            } else {
+                view?.let {
+                    Snackbar.make(
+                        it, getString(R.string.login_jetpack_not_found), BaseTransientBottomBar.LENGTH_LONG
+                    ).show()
                 }
             }
-        )
+        }
     }
 
+    @Suppress("DEPRECATION")
     private fun showProgressDialog(show: Boolean) {
         if (show) {
             hideProgressDialog()
