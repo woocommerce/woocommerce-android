@@ -3,13 +3,11 @@ package com.woocommerce.android.ui.orders.creation
 import com.woocommerce.android.extensions.areSameAs
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.model.Order
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import javax.inject.Inject
 
-@ExperimentalCoroutinesApi
 class AutoSyncPriceModifier @Inject constructor(val createUpdateOrderUseCase: CreateUpdateOrder) : SyncStrategy {
     /**
      * Anything that can be modified during the Order Creation flow that can affect

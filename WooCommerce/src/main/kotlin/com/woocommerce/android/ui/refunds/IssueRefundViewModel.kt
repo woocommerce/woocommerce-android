@@ -928,6 +928,7 @@ class IssueRefundViewModel @Inject constructor(
     ) : Parcelable
 
     @Parcelize
+    @Suppress("ForbiddenComment")
     data class RefundByItemsViewState(
         val currency: String? = null,
         val productsRefund: BigDecimal = BigDecimal.ZERO,
@@ -958,7 +959,8 @@ class IssueRefundViewModel @Inject constructor(
         val isNextButtonEnabled: Boolean
             get() = grandTotalRefund > BigDecimal.ZERO
 
-        val isRefundNoticeVisible = !refundNotice.isNullOrEmpty()
+        // TODO: @Ruttkay Issue: https://github.com/woocommerce/woocommerce-android/issues/6895
+        @Suppress("PROPERTY_WONT_BE_SERIALIZED") val isRefundNoticeVisible = !refundNotice.isNullOrEmpty()
     }
 
     @Parcelize
