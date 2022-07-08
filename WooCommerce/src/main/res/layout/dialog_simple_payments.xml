@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/color_surface"
     android:paddingVertical="@dimen/major_100"
-    tools:context=".ui.orders.simplepayments.SimplePaymentsDialog">
+    tools:context="com.woocommerce.android.ui.payments.simplepayments.SimplePaymentsDialog">
 
     <ImageView
         android:id="@+id/imageClose"

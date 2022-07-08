@@ -13,16 +13,14 @@ import com.woocommerce.android.push.NotificationChannelType.NEW_ORDER
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SelectedSite.SelectedSiteChangedEvent
-import com.woocommerce.android.ui.cardreader.ClearCardReaderDataAction
+import com.woocommerce.android.ui.payments.cardreader.ClearCardReaderDataAction
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
-import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS
-import org.wordpress.android.fluxc.action.WCOrderAction.FETCH_ORDERS_COUNT
-import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
+import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
@@ -181,7 +179,7 @@ class MainPresenter @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
         when (event.causeOfChange) {
-            FETCH_ORDERS_COUNT -> {
+            WCOrderAction.FETCH_ORDERS_COUNT -> {
                 if (event.isError) {
                     WooLog.e(
                         WooLog.T.ORDERS,
@@ -191,11 +189,12 @@ class MainPresenter @Inject constructor(
                     return
                 }
             }
-            FETCH_ORDERS, UPDATE_ORDER_STATUS -> {
+            WCOrderAction.FETCH_ORDERS, WCOrderAction.UPDATE_ORDER_STATUS -> {
                 // we just fetched the order list or an order's status changed, so re-check the unfilled orders count
                 WooLog.d(WooLog.T.ORDERS, "Order status changed, re-checking unfilled orders count")
                 fetchUnfilledOrderCount()
             }
+            else -> Unit // Do nothing
         }
     }
 
@@ -214,7 +213,7 @@ class MainPresenter @Inject constructor(
         }
     }
 
-    @Suppress("DEPRECATION")
+    @Suppress("unused", "UNUSED_PARAMETER", "DEPRECATION")
     fun onEventMainThread(event: SelectedSiteChangedEvent) {
         if (pendingUnfilledOrderCountCheck) {
             fetchUnfilledOrderCount()

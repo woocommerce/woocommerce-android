@@ -13,6 +13,7 @@ repositories {
             includeGroup "org.wordpress.wellsql"
             includeGroup "org.wordpress.mediapicker"
             includeGroup "com.automattic"
+            includeGroup "com.automattic.tracks"
         }
     }
     maven {

@@ -1,0 +1,114 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/rest/v1.1/jetpack-blogs/161477129/rest-api/",
+    "queryParameters": {
+      "json": {
+        "equalTo": "true"
+      },
+      "path": {
+        "matches": "/wc/v3/orders/2787/(.*)"
+      }
+    }
+  },
+  "response": {
+    "jsonBody": {
+      "status": 200,
+      "data": {
+        "id": 2787,
+        "status": "pending",
+        "currency": "USD",
+        "prices_include_tax": false,
+        "discount_total": "0.00",
+        "shipping_total": "0.00",
+        "total": "50.00",
+        "total_tax": "0.00",
+        "order_key": "wc_order_17ufAqNauuOUR",
+        "billing": {
+          "first_name": "Marcus",
+          "last_name": "Curtis",
+          "company": "bbbbb",
+          "address_1": "74 Eastbourne Rd",
+          "address_2": "",
+          "city": "ROBOROUGH",
+          "state": "",
+          "postcode": "EX14 5HN",
+          "country": "GB",
+          "email": "dqavkgjzzddu@abbuzz.com",
+          "phone": "078 1369 7987"
+        },
+        "shipping": {
+          "first_name": "bbbbb",
+          "last_name": "bbbbb",
+          "company": "bbbbb",
+          "address_1": "74 Eastbourne Rd",
+          "address_2": "",
+          "city": "ROBOROUGH",
+          "state": "",
+          "postcode": "EX14 5HN",
+          "country": "GB",
+          "phone": "078 1369 7987"
+        },
+        "payment_method": "cod",
+        "payment_method_title": "Cash On Delivery",
+        "customer_note": "",
+        "number": "2787",
+        "meta_data": [
+          {
+            "id": 3945,
+            "key": "is_vat_exempt",
+            "value": "no"
+          }
+        ],
+        "line_items": [
+          {
+            "id": 36,
+            "name": "Akoya Pearl shades",
+            "product_id": 2129,
+            "variation_id": 0,
+            "quantity": 1,
+            "tax_class": "",
+            "subtotal": "50.00",
+            "subtotal_tax": "0.00",
+            "total": "50.00",
+            "total_tax": "0.00",
+            "taxes": [],
+            "meta_data": [],
+            "sku": "",
+            "price": 110,
+            "parent_name": null
+          }
+        ],
+        "shipping_lines": [
+          {
+            "id": 37,
+            "method_title": "Free shipping",
+            "method_id": "free_shipping",
+            "instance_id": "1",
+            "total": "0.00",
+            "total_tax": "0.00",
+            "taxes": [],
+            "meta_data": [
+              {
+                "id": 330,
+                "key": "Items",
+                "value": "Akoya Pearl shades &times; 1",
+                "display_key": "Items",
+                "display_value": "Akoya Pearl shades &times; 1"
+              }
+            ]
+          }
+        ],
+        "fee_lines": [],
+        "coupon_lines": [],
+        "refunds": [],
+        "date_created_gmt": "{{currentYear}}-10-27T01:17:42",
+        "date_modified_gmt": "{{currentYear}}-10-27T01:17:42",
+        "date_paid_gmt": null
+      }
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

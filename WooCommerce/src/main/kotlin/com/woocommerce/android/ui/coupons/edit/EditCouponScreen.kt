@@ -112,7 +112,7 @@ fun EditCouponScreen(
             onFreeShippingChanged = onFreeShippingChanged
         )
         ConditionsSection(viewState, onSelectProductsButtonClick, onSelectCategoriesButtonClick)
-        UsageRestrictionsSection(viewState, onUsageRestrictionsClick)
+        UsageRestrictionsSection(onUsageRestrictionsClick)
         WCColoredButton(
             onClick = onSaveClick,
             text = stringResource(id = R.string.coupon_edit_save_button),
@@ -252,7 +252,6 @@ private fun ConditionsSection(
 @Composable
 @Suppress("UnusedPrivateMember")
 private fun UsageRestrictionsSection(
-    viewState: ViewState,
     onUsageRestrictionsClick: () -> Unit
 ) {
     Column(

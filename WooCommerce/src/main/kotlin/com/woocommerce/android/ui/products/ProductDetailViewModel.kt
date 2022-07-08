@@ -11,18 +11,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
-import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsEvent.ADD_PRODUCT_FAILED
-import com.woocommerce.android.analytics.AnalyticsEvent.ADD_PRODUCT_PUBLISH_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.ADD_PRODUCT_SAVE_AS_DRAFT_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.ADD_PRODUCT_SUCCESS
-import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_IMAGE_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_PRODUCT_DELETED
-import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.addNewItem
 import com.woocommerce.android.extensions.clearList
@@ -49,36 +38,6 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitAttributesAdded
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttribute
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAttributeList
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloads
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductTags
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
-import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttribute
-import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttributeTerms
-import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
-import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
-import com.woocommerce.android.ui.products.ProductNavigationTarget.RenameProductAttribute
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewMediaUploadErrors
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadDetails
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadsSettings
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageGallery
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductMenuOrder
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
-import com.woocommerce.android.ui.products.ProductStatus.DRAFT
-import com.woocommerce.android.ui.products.ProductStatus.PRIVATE
-import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
-import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoryItemUiModel
@@ -257,13 +216,13 @@ class ProductDetailViewModel @Inject constructor(
         }.map { (productDraft, hasChanges) ->
             val canBeSavedAsDraft = isAddFlowEntryPoint &&
                 !isProductStoredAtSite &&
-                productDraft.status != DRAFT
+                productDraft.status != ProductStatus.DRAFT
             val isNotPublishedUnderCreation = isProductUnderCreation &&
-                productDraft.status != PUBLISH &&
-                productDraft.status != PRIVATE
+                productDraft.status != ProductStatus.PUBLISH &&
+                productDraft.status != ProductStatus.PRIVATE
             val showSaveOptionAsActionWithText = hasChanges && (isNotPublishedUnderCreation || !isProductUnderCreation)
-            val isProductPublished = productDraft.status == PUBLISH
-            val isProductPublishedOrPrivate = isProductPublished || productDraft.status == PRIVATE
+            val isProductPublished = productDraft.status == ProductStatus.PUBLISH
+            val isProductPublishedOrPrivate = isProductPublished || productDraft.status == ProductStatus.PRIVATE
             MenuButtonsState(
                 saveOption = showSaveOptionAsActionWithText,
                 saveAsDraftOption = canBeSavedAsDraft,
@@ -370,9 +329,9 @@ class ProductDetailViewModel @Inject constructor(
      * Called when the Share menu button is clicked in Product detail screen
      */
     fun onShareButtonClicked() {
-        AnalyticsTracker.track(PRODUCT_DETAIL_SHARE_BUTTON_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED)
         viewState.productDraft?.let {
-            triggerEvent(ShareProduct(it.permalink, it.name))
+            triggerEvent(ProductNavigationTarget.ShareProduct(it.permalink, it.name))
         }
     }
 
@@ -384,7 +343,7 @@ class ProductDetailViewModel @Inject constructor(
             triggerEvent(
                 ShowDialog(
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        AnalyticsTracker.track(PRODUCT_DETAIL_PRODUCT_DELETED)
+                        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_PRODUCT_DELETED)
                         viewState = viewState.copy(isConfirmingTrash = false)
                         viewState.productDraft?.let { product ->
                             triggerEvent(ExitWithResult(product.remoteId))
@@ -393,9 +352,9 @@ class ProductDetailViewModel @Inject constructor(
                     negativeBtnAction = DialogInterface.OnClickListener { _, _ ->
                         viewState = viewState.copy(isConfirmingTrash = false)
                     },
-                    messageId = string.product_confirm_trash,
-                    positiveButtonId = string.product_trash_yes,
-                    negativeButtonId = string.cancel
+                    messageId = R.string.product_confirm_trash,
+                    positiveButtonId = R.string.product_trash_yes,
+                    negativeButtonId = R.string.cancel
                 )
             )
         }
@@ -404,10 +363,10 @@ class ProductDetailViewModel @Inject constructor(
     /**
      * Called when an existing image is selected in Product detail screen
      */
-    fun onImageClicked(image: Product.Image) {
-        AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
+    fun onImageClicked() {
+        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_IMAGE_TAPPED)
         viewState.productDraft?.let {
-            triggerEvent(ViewProductImageGallery(it.remoteId, it.images))
+            triggerEvent(ProductNavigationTarget.ViewProductImageGallery(it.remoteId, it.images))
         }
     }
 
@@ -415,21 +374,21 @@ class ProductDetailViewModel @Inject constructor(
      * Called when the add image icon is clicked in Product detail screen
      */
     fun onAddImageButtonClicked() {
-        AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_IMAGE_TAPPED)
         viewState.productDraft?.let {
-            triggerEvent(ViewProductImageGallery(it.remoteId, it.images, true))
+            triggerEvent(ProductNavigationTarget.ViewProductImageGallery(it.remoteId, it.images, true))
         }
     }
 
     fun onAddFirstVariationClicked() {
         val target = viewState.productDraft
             ?.takeIf { it.variationEnabledAttributes.isNotEmpty() }
-            ?.let { ViewProductVariations(it.remoteId) }
-            ?: AddProductAttribute(isVariationCreation = true)
+            ?.let { ProductNavigationTarget.ViewProductVariations(it.remoteId) }
+            ?: ProductNavigationTarget.AddProductAttribute(isVariationCreation = true)
 
         onEditProductCardClicked(
             target,
-            PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
+            AnalyticsEvent.PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
         )
     }
 
@@ -449,8 +408,8 @@ class ProductDetailViewModel @Inject constructor(
     fun onGenerateVariationClicked() {
         launch {
             createEmptyVariation()
-                ?.let { triggerEvent(ShowSnackbar(string.variation_created_title)) }
-                .also { triggerEvent(ExitAttributesAdded) }
+                ?.let { triggerEvent(ShowSnackbar(R.string.variation_created_title)) }
+                .also { triggerEvent(ProductExitEvent.ExitAttributesAdded) }
         }
     }
 
@@ -481,7 +440,7 @@ class ProductDetailViewModel @Inject constructor(
 
     fun onProductDownloadClicked(file: ProductFile) {
         triggerEvent(
-            ViewProductDownloadDetails(
+            ProductNavigationTarget.ViewProductDownloadDetails(
                 true,
                 file
             )
@@ -523,7 +482,9 @@ class ProductDetailViewModel @Inject constructor(
             val updatedDownloads = it.downloads - file
             updateProductDraft(downloads = updatedDownloads)
             // If the downloads list is empty now, go directly to the product details screen
-            if (updatedDownloads.isEmpty()) triggerEvent(ExitProductDownloads(shouldShowDiscardDialog = false))
+            if (updatedDownloads.isEmpty()) triggerEvent(
+                ProductExitEvent.ExitProductDownloads(shouldShowDiscardDialog = false)
+            )
         }
     }
 
@@ -544,11 +505,11 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun onDownloadsSettingsClicked() {
-        triggerEvent(ViewProductDownloadsSettings)
+        triggerEvent(ProductNavigationTarget.ViewProductDownloadsSettings)
     }
 
     fun onAddDownloadableFileClicked() {
-        triggerEvent(AddProductDownloadableFile)
+        triggerEvent(ProductNavigationTarget.AddProductDownloadableFile)
     }
 
     fun onVariationAmountReceived(variationAmount: Int) {
@@ -570,7 +531,9 @@ class ProductDetailViewModel @Inject constructor(
                 }
                 .collect {
                     when (it) {
-                        is UploadFailure -> triggerEvent(ShowSnackbar(string.product_downloadable_files_upload_failed))
+                        is UploadFailure -> triggerEvent(
+                            ShowSnackbar(R.string.product_downloadable_files_upload_failed)
+                        )
                         is UploadProgress -> {
                             // TODO
                         }
@@ -582,7 +545,7 @@ class ProductDetailViewModel @Inject constructor(
 
     fun showAddProductDownload(url: String) {
         triggerEvent(
-            ViewProductDownloadDetails(
+            ProductNavigationTarget.ViewProductDownloadDetails(
                 isEditing = false,
                 file = ProductFile(id = null, url = url, name = "")
             )
@@ -608,37 +571,44 @@ class ProductDetailViewModel @Inject constructor(
     /**
      * Called when the back= button is clicked in a product sub detail screen
      */
+    @Suppress("ComplexMethod")
     fun onBackButtonClicked(event: ProductExitEvent) {
         var eventName: AnalyticsEvent? = null
         var hasChanges = false
         when (event) {
-            is ExitSettings -> {
+            is ProductExitEvent.ExitSettings -> {
                 hasChanges = hasSettingsChanges()
             }
-            is ExitExternalLink -> {
+            is ProductExitEvent.ExitExternalLink -> {
                 eventName = AnalyticsEvent.EXTERNAL_PRODUCT_LINK_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasExternalLinkChanges()
             }
-            is ExitProductCategories -> {
+            is ProductExitEvent.ExitProductCategories -> {
                 eventName = AnalyticsEvent.PRODUCT_CATEGORY_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasCategoryChanges()
             }
-            is ExitProductTags -> {
+            is ProductExitEvent.ExitProductTags -> {
                 eventName = AnalyticsEvent.PRODUCT_TAG_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasTagChanges()
             }
-            is ExitProductAttributeList -> {
+            is ProductExitEvent.ExitProductAttributeList -> {
                 eventName = AnalyticsEvent.PRODUCT_VARIATION_EDIT_ATTRIBUTE_DONE_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
-            is ExitProductAddAttribute -> {
+            is ProductExitEvent.ExitProductAddAttribute -> {
                 eventName = AnalyticsEvent.PRODUCT_VARIATION_EDIT_ATTRIBUTE_OPTIONS_DONE_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
-            is ExitAttributesAdded -> {
+            is ProductExitEvent.ExitAttributesAdded -> {
                 eventName = AnalyticsEvent.PRODUCT_VARIATION_ATTRIBUTE_ADDED_BACK_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
+            is ProductExitEvent.ExitLinkedProducts -> Unit // Do nothing
+            is ProductExitEvent.ExitProductAddAttributeTerms -> Unit // Do nothing
+            is ProductExitEvent.ExitProductAddons -> Unit // Do nothing
+            is ProductExitEvent.ExitProductDownloads -> Unit // Do nothing
+            is ProductExitEvent.ExitProductDownloadsSettings -> Unit // Do nothing
+            is ProductExitEvent.ExitProductRenameAttribute -> Unit // Do nothing
         }
         eventName?.let { AnalyticsTracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
         triggerEvent(event)
@@ -649,7 +619,7 @@ class ProductDetailViewModel @Inject constructor(
      * changes have been made to the [Product] model locally that still need to be saved to the backend.
      */
     fun onBackButtonClickedProductDetail(): Boolean {
-        val isProductDetailUpdated = _hasChanges.value ?: false
+        val isProductDetailUpdated = _hasChanges.value
         // Consider a non created product with ongoing uploads same as product with non saved changes
         val isUploadingImagesForNonCreatedProduct = isProductUnderCreation && isUploadingImages()
 
@@ -659,7 +629,7 @@ class ProductDetailViewModel @Inject constructor(
             val positiveAction = DialogInterface.OnClickListener { _, _ ->
                 // Make sure to cancel any remaining image uploads
                 mediaFileUploadHandler.cancelUpload(getRemoteProductId())
-                triggerEvent(ExitProduct)
+                triggerEvent(ProductNavigationTarget.ExitProduct)
             }
 
             // if the user is adding a product and this is product detail, include a "Save as draft" neutral
@@ -667,9 +637,9 @@ class ProductDetailViewModel @Inject constructor(
             val (neutralAction, neutralBtnId) = if (isProductUnderCreation) {
                 Pair(
                     DialogInterface.OnClickListener { _, _ ->
-                        startPublishProduct(productStatus = DRAFT, exitWhenDone = true)
+                        startPublishProduct(productStatus = ProductStatus.DRAFT, exitWhenDone = true)
                     },
-                    string.product_detail_save_as_draft
+                    R.string.product_detail_save_as_draft
                 )
             } else {
                 Pair(null, null)
@@ -682,14 +652,14 @@ class ProductDetailViewModel @Inject constructor(
                 DialogInterface.OnClickListener { _, _ -> observeImageUploadEvents() }
             } else null
 
-            val message = if (isUploadingImagesForNonCreatedProduct) string.discard_images_message
-            else string.discard_message
+            val message = if (isUploadingImagesForNonCreatedProduct) R.string.discard_images_message
+            else R.string.discard_message
 
             triggerEvent(
                 ShowDialog(
                     messageId = message,
-                    positiveButtonId = string.discard,
-                    negativeButtonId = string.keep_editing,
+                    positiveButtonId = R.string.discard,
+                    negativeButtonId = R.string.keep_editing,
                     positiveBtnAction = positiveAction,
                     neutralBtnAction = neutralAction,
                     neutralButtonId = neutralBtnId,
@@ -698,8 +668,8 @@ class ProductDetailViewModel @Inject constructor(
             )
             return false
         } else if (isUploadingImages()) {
-            triggerEvent(ShowSnackbar(message = string.product_detail_background_image_upload))
-            triggerEvent(ExitProduct)
+            triggerEvent(ShowSnackbar(message = R.string.product_detail_background_image_upload))
+            triggerEvent(ProductNavigationTarget.ExitProduct)
             return false
         } else {
             return true
@@ -708,14 +678,14 @@ class ProductDetailViewModel @Inject constructor(
 
     fun onSaveButtonClicked() {
         when (isProductUnderCreation) {
-            true -> startPublishProduct(productStatus = viewState.productDraft?.status ?: PUBLISH)
+            true -> startPublishProduct(productStatus = viewState.productDraft?.status ?: ProductStatus.PUBLISH)
             else -> startUpdateProduct(isPublish = false)
         }
     }
 
     fun onPublishButtonClicked() {
         when (isProductUnderCreation) {
-            true -> startPublishProduct(productStatus = PUBLISH)
+            true -> startPublishProduct(productStatus = ProductStatus.PUBLISH)
             else -> startUpdateProduct(isPublish = true)
         }
     }
@@ -724,7 +694,7 @@ class ProductDetailViewModel @Inject constructor(
      * Called when the "Save as draft" button is clicked in Product detail screen
      */
     fun onSaveAsDraftButtonClicked() {
-        startPublishProduct(productStatus = DRAFT)
+        startPublishProduct(productStatus = ProductStatus.DRAFT)
     }
 
     /**
@@ -744,20 +714,20 @@ class ProductDetailViewModel @Inject constructor(
         viewState.productDraft
             ?.takeIf {
                 isProductStoredAtSite.not() and
-                    (it.type == VARIABLE.value) and
-                    (it.status == DRAFT)
+                    (it.type == ProductType.VARIABLE.value) and
+                    (it.status == ProductStatus.DRAFT)
             }
             ?.takeIf { addProduct(it).first }
             ?.let {
-                AnalyticsTracker.track(ADD_PRODUCT_SUCCESS)
+                AnalyticsTracker.track(AnalyticsEvent.ADD_PRODUCT_SUCCESS)
             }
-            ?: AnalyticsTracker.track(ADD_PRODUCT_FAILED)
+            ?: AnalyticsTracker.track(AnalyticsEvent.ADD_PRODUCT_FAILED)
     }
 
     private fun startUpdateProduct(isPublish: Boolean) {
-        AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
         viewState.productDraft?.let {
-            val product = if (isPublish) it.copy(status = PUBLISH) else it
+            val product = if (isPublish) it.copy(status = ProductStatus.PUBLISH) else it
             viewState = viewState.copy(isProgressDialogShown = true)
             launch { updateProduct(isPublish, product) }
         }
@@ -776,19 +746,19 @@ class ProductDetailViewModel @Inject constructor(
                 val snackbarMessage = pickAddProductRequestSnackbarText(isSuccess, productStatus)
                 triggerEvent(ShowSnackbar(snackbarMessage))
                 if (isSuccess) {
-                    AnalyticsTracker.track(ADD_PRODUCT_SUCCESS)
+                    AnalyticsTracker.track(AnalyticsEvent.ADD_PRODUCT_SUCCESS)
                     if (product.remoteId != newProductId) {
                         // Assign the current uploads to the new product id
                         mediaFileUploadHandler.assignUploadsToCreatedProduct(newProductId)
                     }
                     if (exitWhenDone) {
-                        triggerEvent(ExitProduct)
+                        triggerEvent(ProductNavigationTarget.ExitProduct)
                     } else if (product.remoteId != newProductId) {
                         // Restart observing image uploads using the new product id
                         observeImageUploadEvents()
                     }
                 } else {
-                    AnalyticsTracker.track(ADD_PRODUCT_FAILED)
+                    AnalyticsTracker.track(AnalyticsEvent.ADD_PRODUCT_FAILED)
                 }
             }
         }
@@ -805,29 +775,33 @@ class ProductDetailViewModel @Inject constructor(
      * so we also should handle the Snackbar text prompt to follow this rule
      */
     private fun pickProductUpdateSuccessText(isProductPublishedOrSaved: Boolean) =
-        if (isProductPublishedOrSaved) string.product_detail_publish_product_success
-        else string.product_detail_save_product_success
+        if (isProductPublishedOrSaved) R.string.product_detail_publish_product_success
+        else R.string.product_detail_save_product_success
 
     private fun pickAddProductRequestSnackbarText(
         productWasAdded: Boolean,
         requestedProductStatus: ProductStatus
     ): Int {
-        val isDraftStatus = requestedProductStatus == DRAFT
-        val isPublishStatus = requestedProductStatus == PUBLISH
+        val isDraftStatus = requestedProductStatus == ProductStatus.DRAFT
+        val isPublishStatus = requestedProductStatus == ProductStatus.PUBLISH
         val failedAddingProduct = !productWasAdded
         return when {
-            productWasAdded && isDraftStatus -> string.product_detail_publish_product_draft_success
-            productWasAdded && isPublishStatus -> string.product_detail_publish_product_success
-            failedAddingProduct && isDraftStatus -> string.product_detail_publish_product_draft_error
-            failedAddingProduct && isPublishStatus -> string.product_detail_publish_product_error
-            productWasAdded -> string.product_detail_save_product_success
-            else -> string.product_detail_save_product_error
+            productWasAdded && isDraftStatus -> R.string.product_detail_publish_product_draft_success
+            productWasAdded && isPublishStatus -> R.string.product_detail_publish_product_success
+            failedAddingProduct && isDraftStatus -> R.string.product_detail_publish_product_draft_error
+            failedAddingProduct && isPublishStatus -> R.string.product_detail_publish_product_error
+            productWasAdded -> R.string.product_detail_save_product_success
+            else -> R.string.product_detail_save_product_error
         }
     }
 
     private fun trackPublishing(it: Product) {
         val properties = mapOf("product_type" to it.productType.value.lowercase(Locale.ROOT))
-        val statId = if (it.status == DRAFT) ADD_PRODUCT_SAVE_AS_DRAFT_TAPPED else ADD_PRODUCT_PUBLISH_TAPPED
+        val statId = if (it.status == ProductStatus.DRAFT) {
+            AnalyticsEvent.ADD_PRODUCT_SAVE_AS_DRAFT_TAPPED
+        } else {
+            AnalyticsEvent.ADD_PRODUCT_PUBLISH_TAPPED
+        }
         AnalyticsTracker.track(statId, properties)
     }
 
@@ -845,7 +819,7 @@ class ProductDetailViewModel @Inject constructor(
      */
     fun onSettingsButtonClicked() {
         viewState.productDraft?.let {
-            triggerEvent(ViewProductSettings(it.remoteId))
+            triggerEvent(ProductNavigationTarget.ViewProductSettings(it.remoteId))
         }
     }
 
@@ -854,7 +828,7 @@ class ProductDetailViewModel @Inject constructor(
      */
     fun onSettingsStatusButtonClicked() {
         viewState.productDraft?.let {
-            triggerEvent(ViewProductStatus(it.status))
+            triggerEvent(ProductNavigationTarget.ViewProductStatus(it.status))
         }
     }
 
@@ -863,7 +837,7 @@ class ProductDetailViewModel @Inject constructor(
      */
     fun onSettingsCatalogVisibilityButtonClicked() {
         viewState.productDraft?.let {
-            triggerEvent(ViewProductCatalogVisibility(it.catalogVisibility, it.isFeatured))
+            triggerEvent(ProductNavigationTarget.ViewProductCatalogVisibility(it.catalogVisibility, it.isFeatured))
         }
     }
 
@@ -873,7 +847,7 @@ class ProductDetailViewModel @Inject constructor(
     fun onSettingsVisibilityButtonClicked() {
         val visibility = getProductVisibility()
         val password = viewState.draftPassword ?: viewState.storedPassword
-        triggerEvent(ViewProductVisibility(visibility, password))
+        triggerEvent(ProductNavigationTarget.ViewProductVisibility(visibility, password))
     }
 
     /**
@@ -881,7 +855,7 @@ class ProductDetailViewModel @Inject constructor(
      */
     fun onSettingsSlugButtonClicked() {
         viewState.productDraft?.let {
-            triggerEvent(ViewProductSlug(it.slug))
+            triggerEvent(ProductNavigationTarget.ViewProductSlug(it.slug))
         }
     }
 
@@ -890,12 +864,12 @@ class ProductDetailViewModel @Inject constructor(
      */
     fun onSettingsMenuOrderButtonClicked() {
         viewState.productDraft?.let {
-            triggerEvent(ViewProductMenuOrder(it.menuOrder))
+            triggerEvent(ProductNavigationTarget.ViewProductMenuOrder(it.menuOrder))
         }
     }
 
     fun onViewProductOnStoreLinkClicked() {
-        AnalyticsTracker.track(PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED)
         viewState.productDraft?.permalink?.let { url ->
             triggerEvent(LaunchUrlInChromeTab(url))
         }
@@ -924,7 +898,6 @@ class ProductDetailViewModel @Inject constructor(
         backorderStatus: ProductBackorderStatus? = null,
         regularPrice: BigDecimal? = viewState.productDraft?.regularPrice,
         salePrice: BigDecimal? = viewState.productDraft?.salePrice,
-        isOnSale: Boolean? = null,
         isVirtual: Boolean? = null,
         isSaleScheduled: Boolean? = null,
         saleStartDate: Date? = null,
@@ -1171,9 +1144,9 @@ class ProductDetailViewModel @Inject constructor(
                 updateProductState(fetchedProduct)
             } else {
                 if (productRepository.lastFetchProductErrorType == ProductErrorType.INVALID_PRODUCT_ID) {
-                    triggerEvent(ShowSnackbar(string.product_detail_fetch_product_invalid_id_error))
+                    triggerEvent(ShowSnackbar(R.string.product_detail_fetch_product_invalid_id_error))
                 } else {
-                    triggerEvent(ShowSnackbar(string.product_detail_fetch_product_error))
+                    triggerEvent(ShowSnackbar(R.string.product_detail_fetch_product_error))
                 }
                 triggerEvent(Exit)
             }
@@ -1289,14 +1262,14 @@ class ProductDetailViewModel @Inject constructor(
         // first make sure an attribute with the new name doesn't already exist in the draft
         productDraftAttributes.forEach {
             if (it.name.equals(newAttributeName, ignoreCase = true)) {
-                triggerEvent(ShowSnackbar(string.product_attribute_name_already_exists))
+                triggerEvent(ShowSnackbar(R.string.product_attribute_name_already_exists))
                 return false
             }
         }
 
         val oldAttribute = getDraftAttribute(attributeId, oldAttributeName)
         if (oldAttribute == null) {
-            triggerEvent(ShowSnackbar(string.product_attribute_error_renaming))
+            triggerEvent(ShowSnackbar(R.string.product_attribute_error_renaming))
             return false
         }
 
@@ -1338,7 +1311,7 @@ class ProductDetailViewModel @Inject constructor(
             // make sure this term doesn't already exist in this attribute
             thisAttribute.terms.forEach {
                 if (it.equals(termName, ignoreCase = true)) {
-                    triggerEvent(ShowSnackbar(string.product_term_name_already_exists))
+                    triggerEvent(ShowSnackbar(R.string.product_term_name_already_exists))
                     return
                 }
             }
@@ -1432,7 +1405,7 @@ class ProductDetailViewModel @Inject constructor(
                     trackWithProductId(AnalyticsEvent.PRODUCT_ATTRIBUTE_UPDATED)
                     val result = productRepository.updateProductAttributes(getRemoteProductId(), attributes)
                     if (!result) {
-                        triggerEvent(ShowSnackbar(string.product_attributes_error_saving))
+                        triggerEvent(ShowSnackbar(R.string.product_attributes_error_saving))
                         trackWithProductId(AnalyticsEvent.PRODUCT_ATTRIBUTE_UPDATE_FAILED)
                     } else {
                         trackWithProductId(AnalyticsEvent.PRODUCT_ATTRIBUTE_UPDATE_SUCCESS)
@@ -1454,7 +1427,14 @@ class ProductDetailViewModel @Inject constructor(
      */
     fun onAttributeListItemClick(attributeId: Long, attributeName: String, isVariationCreation: Boolean) {
         enableLocalAttributeForVariations(attributeId)
-        triggerEvent(AddProductAttributeTerms(attributeId, attributeName, isNewAttribute = false, isVariationCreation))
+        triggerEvent(
+            ProductNavigationTarget.AddProductAttributeTerms(
+                attributeId,
+                attributeName,
+                isNewAttribute = false,
+                isVariationCreation
+            )
+        )
     }
 
     /**
@@ -1462,7 +1442,7 @@ class ProductDetailViewModel @Inject constructor(
      */
     fun onAddAttributeButtonClick() {
         trackWithProductId(AnalyticsEvent.PRODUCT_ATTRIBUTE_ADD_BUTTON_TAPPED)
-        triggerEvent(AddProductAttribute())
+        triggerEvent(ProductNavigationTarget.AddProductAttribute())
     }
 
     /**
@@ -1470,7 +1450,7 @@ class ProductDetailViewModel @Inject constructor(
      */
     fun onRenameAttributeButtonClick(attributeName: String) {
         trackWithProductId(AnalyticsEvent.PRODUCT_ATTRIBUTE_RENAME_BUTTON_TAPPED)
-        triggerEvent(RenameProductAttribute(attributeName))
+        triggerEvent(ProductNavigationTarget.RenameProductAttribute(attributeName))
     }
 
     fun hasAttributeChanges() = storedProduct.value?.hasAttributeChanges(viewState.productDraft) ?: false
@@ -1513,7 +1493,7 @@ class ProductDetailViewModel @Inject constructor(
      */
     fun addLocalAttribute(attributeName: String, isVariationCreation: Boolean) {
         if (containsAttributeName(attributeName)) {
-            triggerEvent(ShowSnackbar(string.product_attribute_name_already_exists))
+            triggerEvent(ShowSnackbar(R.string.product_attribute_name_already_exists))
             return
         }
 
@@ -1538,7 +1518,14 @@ class ProductDetailViewModel @Inject constructor(
         updateProductDraft(attributes = attributes)
 
         // take the user to the add attribute terms screen
-        triggerEvent(AddProductAttributeTerms(0L, attributeName, isNewAttribute = true, isVariationCreation))
+        triggerEvent(
+            ProductNavigationTarget.AddProductAttributeTerms(
+                0L,
+                attributeName,
+                isNewAttribute = true,
+                isVariationCreation
+            )
+        )
     }
 
     /**
@@ -1573,7 +1560,7 @@ class ProductDetailViewModel @Inject constructor(
                     viewState = viewState.copy(storedPassword = password)
                     triggerEvent(ShowSnackbar(successMsg))
                 } else {
-                    triggerEvent(ShowSnackbar(string.product_detail_update_product_password_error))
+                    triggerEvent(ShowSnackbar(R.string.product_detail_update_product_password_error))
                 }
             } else {
                 triggerEvent(ShowSnackbar(successMsg))
@@ -1583,7 +1570,7 @@ class ProductDetailViewModel @Inject constructor(
             )
             loadRemoteProduct(product.remoteId)
         } else {
-            triggerEvent(ShowSnackbar(string.product_detail_update_product_error))
+            triggerEvent(ShowSnackbar(R.string.product_detail_update_product_error))
         }
 
         viewState = viewState.copy(isProgressDialogShown = false)
@@ -1667,7 +1654,9 @@ class ProductDetailViewModel @Inject constructor(
                     } else {
                         val errorMsg = resources.getMediaUploadErrorMessage(errorList.size)
                         triggerEvent(
-                            ShowActionSnackbar(errorMsg) { triggerEvent(ViewMediaUploadErrors(getRemoteProductId())) }
+                            ShowActionSnackbar(errorMsg) {
+                                triggerEvent(ProductNavigationTarget.ViewMediaUploadErrors(getRemoteProductId()))
+                            }
                         )
                     }
                 }
@@ -1707,7 +1696,7 @@ class ProductDetailViewModel @Inject constructor(
 
     fun onAddCategoryButtonClicked() {
         AnalyticsTracker.track(AnalyticsEvent.PRODUCT_CATEGORY_SETTINGS_ADD_BUTTON_TAPPED)
-        triggerEvent(AddProductCategory)
+        triggerEvent(ProductNavigationTarget.AddProductCategory)
     }
 
     fun onProductCategoryAdded(category: ProductCategory) {
@@ -1793,7 +1782,7 @@ class ProductDetailViewModel @Inject constructor(
                 isEmptyViewVisible = _productCategories.value?.isEmpty() == true
             )
         } else {
-            triggerEvent(ShowSnackbar(string.offline_error))
+            triggerEvent(ShowSnackbar(R.string.offline_error))
         }
 
         productCategoriesViewState = productCategoriesViewState.copy(
@@ -1846,7 +1835,7 @@ class ProductDetailViewModel @Inject constructor(
                 val addedTags = productTagsRepository.addProductTags(tags.map { it.name })
                 // if there are some tags that could not be added, display an error message
                 if (addedTags.size < tags.size) {
-                    triggerEvent(ShowSnackbar(string.product_add_tag_error))
+                    triggerEvent(ShowSnackbar(R.string.product_add_tag_error))
                 }
 
                 // add the newly added tags to the product
@@ -1855,11 +1844,11 @@ class ProductDetailViewModel @Inject constructor(
 
                 // redirect to the product detail screen
                 productTagsViewState = productTagsViewState.copy(isProgressDialogShown = false)
-                onBackButtonClicked(ExitProductTags(shouldShowDiscardDialog = false))
+                onBackButtonClicked(ProductExitEvent.ExitProductTags(shouldShowDiscardDialog = false))
             }
         } else {
             // There are no newly added tags so redirect to the product detail screen
-            onBackButtonClicked(ExitProductTags(shouldShowDiscardDialog = false))
+            onBackButtonClicked(ProductExitEvent.ExitProductTags(shouldShowDiscardDialog = false))
         }
     }
 
@@ -2031,7 +2020,7 @@ class ProductDetailViewModel @Inject constructor(
                     searchQuery.isNullOrEmpty()
             )
         } else {
-            triggerEvent(ShowSnackbar(string.offline_error))
+            triggerEvent(ShowSnackbar(R.string.offline_error))
         }
 
         productTagsViewState = productTagsViewState.copy(
