@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.prefs
 
-import com.woocommerce.android.ui.cardreader.ClearCardReaderDataAction
+import com.woocommerce.android.ui.payments.cardreader.ClearCardReaderDataAction
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode

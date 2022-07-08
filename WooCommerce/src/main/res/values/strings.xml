@@ -446,8 +446,10 @@
     <string name="orderdetail_product_qty">QTY</string>
     <string name="orderdetail_payment_summary_completed">%1$s via %2$s</string>
     <string name="orderdetail_payment_summary_onhold">Awaiting payment via %s</string>
+    <string name="orderdetail_payment_summary_onhold_plain">Awaiting payment</string>
     <string name="orderdetail_payment_paid_by_customer">Paid</string>
     <string name="orderdetail_refunded">Refunded</string>
+    <string name="orderdetail_refunded_line_with_info">Refunded: %1$s</string>
     <string name="orderdetail_refunded_products">Refunded products</string>
     <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="orderdetail_net">Net Payment</string>
@@ -1035,6 +1037,7 @@
     <string name="card_reader_connect_multiple_readers_found_header">Several readers found</string>
     <string name="card_reader_connect_to_reader">Connect to reader</string>
     <string name="card_reader_connect_connect_button">Connect</string>
+    <string name="card_reader_connect_keep_searching_button">Keep Searching</string>
     <string name="card_reader_connect_connecting_header">Connecting to reader</string>
     <string name="card_reader_connect_connecting_hint" translatable="false">@string/please_wait</string>
     <string name="card_reader_connect_failed_header">We couldn\’t connect your reader</string>

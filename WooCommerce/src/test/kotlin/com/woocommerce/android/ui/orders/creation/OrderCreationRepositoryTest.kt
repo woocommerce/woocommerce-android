@@ -84,8 +84,11 @@ class OrderCreationRepositoryTest : BaseUnitTest() {
         sut.createSimplePaymentOrder(BigDecimal.ONE)
 
         verify(trackerWrapper).track(
-            AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_FAILED,
-            mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_AMOUNT)
+            AnalyticsEvent.PAYMENTS_FLOW_FAILED,
+            mapOf(
+                AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_AMOUNT,
+                AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW
+            )
         )
     }
 }
