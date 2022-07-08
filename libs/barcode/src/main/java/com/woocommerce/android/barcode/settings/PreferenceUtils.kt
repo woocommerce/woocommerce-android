@@ -18,8 +18,8 @@ package com.woocommerce.android.barcode.settings
 
 import android.content.Context
 import android.graphics.RectF
-import android.preference.PreferenceManager
 import androidx.annotation.StringRes
+import androidx.preference.PreferenceManager
 import com.google.android.gms.common.images.Size
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.woocommerce.android.barcode.R
@@ -80,7 +80,7 @@ object PreferenceUtils {
                 Size.parseSize(sharedPreferences.getString(previewSizePrefKey, null) ?: ""),
                 Size.parseSize(sharedPreferences.getString(pictureSizePrefKey, null) ?: "")
             )
-        } catch (e: Exception) {
+        } catch (e: NumberFormatException) {
             null
         }
     }
