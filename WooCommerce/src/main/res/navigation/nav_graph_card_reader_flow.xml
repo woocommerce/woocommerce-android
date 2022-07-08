@@ -74,7 +74,7 @@
         <action
             android:id="@+id/action_cardReaderHubFragment_to_cardReaderOnboardingFragment"
             app:destination="@id/cardReaderOnboardingFragment"
-            app:popUpTo="@+id/cardReaderStatusCheckerDialogFragment"
+            app:popUpTo="@+id/cardReaderHubFragment"
             app:popUpToInclusive="true"/>
     </fragment>
     <fragment

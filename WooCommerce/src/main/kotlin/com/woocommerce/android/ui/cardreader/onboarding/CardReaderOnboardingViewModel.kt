@@ -8,6 +8,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.formatToMMMMdd
 import com.woocommerce.android.model.UiString
@@ -29,11 +30,9 @@ import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingStat
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.StripeAccountPendingRequirement
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.StripeAccountRejected
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.StripeAccountUnderReview
-import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.WcpayAndStripeActivated
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.WcpayNotActivated
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.WcpayNotInstalled
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInGenericWebView
-import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInWPComWebView
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.NoConnectionErrorState
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.StripeAcountError.PluginInTestModeWithLiveAccountState
@@ -51,17 +50,15 @@ import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingView
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayError.WCPayNotInstalledState
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayError.WCPayNotSetupState
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayError.WCPayUnsupportedVersionState
-import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WcPayAndStripeInstalledState
 import com.woocommerce.android.ui.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
-import com.woocommerce.android.ui.common.UserEligibilityFetcher
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.model.user.WCUserRole.ADMINISTRATOR
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
@@ -73,9 +70,9 @@ class CardReaderOnboardingViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val cardReaderChecker: CardReaderOnboardingChecker,
     private val cardReaderTracker: CardReaderTracker,
-    private val userEligibilityFetcher: UserEligibilityFetcher,
     private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
+    private val cardReaderManager: CardReaderManager,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderOnboardingFragmentArgs by savedState.navArgs()
 
@@ -94,11 +91,28 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
     private fun refreshState(pluginType: PluginType? = null) {
         launch {
+            pluginType?.let {
+                disconnectCardReader()
+            }
             viewState.value = OnboardingViewState.LoadingState
             val state = cardReaderChecker.getOnboardingState(pluginType)
             cardReaderTracker.trackOnboardingState(state)
             showOnboardingState(state)
         }
+    }
+
+    private suspend fun disconnectCardReader() {
+        if (cardReaderManager.initialized) {
+            clearLastKnowReader()
+            val disconnectionResult = cardReaderManager.disconnectReader()
+            if (!disconnectionResult) {
+                WooLog.e(WooLog.T.CARD_READER, "Onboarding: Disconnection from reader has failed")
+            }
+        }
+    }
+
+    private fun clearLastKnowReader() {
+        appPrefsWrapper.removeLastConnectedCardReaderId()
     }
 
     @Suppress("LongMethod", "ComplexMethod")
@@ -199,48 +213,19 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     ::onContactSupportClicked,
                     ::onLearnMoreClicked
                 )
-            WcpayAndStripeActivated -> updateUiWithWcPayAndStripeActivated()
             ChoosePaymentGatewayProvider -> updateUiWithSelectPaymentPlugin()
         }.exhaustive
     }
 
     private fun updateUiWithSelectPaymentPlugin() {
-        viewState.value =
-            OnboardingViewState.SelectPaymentPluginState(
-                onConfirmPaymentMethodClicked = { (::refreshState)(it) }
-            )
-    }
-
-    private fun updateUiWithWcPayAndStripeActivated() {
         launch {
-            val userInfo = userEligibilityFetcher.fetchUserInfo()
-            val canManagePlugins = userInfo?.getUserRoles()?.contains(ADMINISTRATOR) ?: false
-
             viewState.value =
-                WcPayAndStripeInstalledState(
-                    hintLabel = if (canManagePlugins) {
-                        UiString.UiStringRes(R.string.card_reader_onboarding_both_plugins_activated_hint_admin)
-                    } else {
-                        UiString.UiStringRes(R.string.card_reader_onboarding_both_plugins_activated_hint_store_owner)
-                    },
-                    onContactSupportActionClicked = ::onContactSupportClicked,
-                    onLearnMoreActionClicked = ::onLearnMoreClicked,
-                    onRefreshAfterUpdatingClicked = ::refreshState,
-                    openWPAdminActionClicked = if (canManagePlugins) {
-                        { onWPAdminActionClicked() }
-                    } else {
-                        null
+                OnboardingViewState.SelectPaymentPluginState(
+                    onConfirmPaymentMethodClicked = { pluginType ->
+                        cardReaderTracker.trackPaymentGatewaySelected(pluginType)
+                        (::refreshState)(pluginType)
                     }
                 )
-        }
-    }
-
-    private fun onWPAdminActionClicked() {
-        val url = selectedSite.get().url + AppUrls.PLUGIN_MANAGEMENT_SUFFIX
-        if (selectedSite.get().isWPCom || selectedSite.get().isWPComAtomic) {
-            triggerEvent(NavigateToUrlInWPComWebView(url))
-        } else {
-            triggerEvent(NavigateToUrlInGenericWebView(url))
         }
     }
 
@@ -332,40 +317,6 @@ class CardReaderOnboardingViewModel @Inject constructor(
             val selectStripeButtonLabel = UiString.UiStringRes(R.string.card_reader_onboarding_choose_stripe_button)
             val confirmPaymentMethodButtonLabel = UiString
                 .UiStringRes(R.string.card_reader_onboarding_confirm_payment_method_button)
-        }
-
-        data class WcPayAndStripeInstalledState(
-            val hintLabel: UiString,
-            val onContactSupportActionClicked: (() -> Unit),
-            val onLearnMoreActionClicked: (() -> Unit),
-            val onRefreshAfterUpdatingClicked: (() -> Unit),
-            val openWPAdminActionClicked: (() -> Unit)? = null
-        ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_both_plugins_activated) {
-            val headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_both_plugins_activated_header)
-
-            val hintPluginOneLabel =
-                UiString.UiStringRes(R.string.card_reader_onboarding_both_plugins_activated_hint_plugin_one)
-            val hintPluginTwoLabel =
-                UiString.UiStringRes(R.string.card_reader_onboarding_both_plugins_activated_hint_plugin_two)
-            val hintOrLabel: UiString = UiString.UiStringRes(R.string.exclusive_or)
-
-            val illustration = R.drawable.img_products_error
-            val contactSupportLabel = UiString.UiStringRes(
-                stringRes = R.string.card_reader_onboarding_contact_support,
-                containsHtml = true
-            )
-            val learnMoreLabel = UiString.UiStringRes(
-                stringRes = R.string.card_reader_onboarding_learn_more,
-                containsHtml = true
-            )
-
-            val refreshButtonLabel = UiString
-                .UiStringRes(R.string.card_reader_onboarding_both_plugins_activated_refresh_button)
-
-            val openWPAdminLabel =
-                openWPAdminActionClicked?.let {
-                    UiString.UiStringRes(R.string.card_reader_onboarding_both_plugins_activated_open_store_admin_label)
-                }
         }
 
         class NoConnectionErrorState(

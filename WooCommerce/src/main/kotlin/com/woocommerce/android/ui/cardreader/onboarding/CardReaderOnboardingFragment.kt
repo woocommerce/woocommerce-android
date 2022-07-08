@@ -11,7 +11,6 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingBinding
-import com.woocommerce.android.databinding.FragmentCardReaderOnboardingBothPluginsActivatedBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingGenericErrorBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingLoadingBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingNetworkErrorBinding
@@ -107,8 +106,6 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                 showStripeAccountError(layout, state)
             is CardReaderOnboardingViewModel.OnboardingViewState.StripeExtensionError ->
                 showStripeExtensionErrorState(layout, state)
-            is CardReaderOnboardingViewModel.OnboardingViewState.WcPayAndStripeInstalledState ->
-                showBothPluginsInstalledState(layout, state)
             is CardReaderOnboardingViewModel.OnboardingViewState.SelectPaymentPluginState ->
                 showPaymentPluginSelectionState(layout, state)
         }.exhaustive
@@ -149,38 +146,6 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         }
         binding.confirmPaymentMethod.setOnClickListener {
             state.onConfirmPaymentMethodClicked.invoke(selectedPluginType)
-        }
-    }
-
-    private fun showBothPluginsInstalledState(
-        view: View,
-        state: CardReaderOnboardingViewModel.OnboardingViewState.WcPayAndStripeInstalledState
-    ) {
-        val binding = FragmentCardReaderOnboardingBothPluginsActivatedBinding.bind(view)
-        UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
-        UiHelpers.setTextOrHide(binding.hintLabel, state.hintLabel)
-        UiHelpers.setTextOrHide(binding.hintPluginOneLabel, state.hintPluginOneLabel)
-        UiHelpers.setTextOrHide(binding.hintPluginTwoLabel, state.hintPluginTwoLabel)
-        UiHelpers.setTextOrHide(binding.hintOrLabel, state.hintOrLabel)
-        UiHelpers.setImageOrHideInLandscape(binding.illustration, state.illustration)
-
-        UiHelpers.setTextOrHide(binding.textSupport, state.contactSupportLabel)
-        UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreLabel)
-
-        UiHelpers.setTextOrHide(binding.openPluginStore, state.openWPAdminLabel)
-        UiHelpers.setTextOrHide(binding.refreshAfterUpdating, state.refreshButtonLabel)
-
-        binding.textSupport.setOnClickListener {
-            state.onContactSupportActionClicked.invoke()
-        }
-        binding.learnMoreContainer.learnMore.setOnClickListener {
-            state.onLearnMoreActionClicked.invoke()
-        }
-        binding.openPluginStore.setOnClickListener {
-            state.openWPAdminActionClicked?.invoke()
-        }
-        binding.refreshAfterUpdating.setOnClickListener {
-            state.onRefreshAfterUpdatingClicked.invoke()
         }
     }
 

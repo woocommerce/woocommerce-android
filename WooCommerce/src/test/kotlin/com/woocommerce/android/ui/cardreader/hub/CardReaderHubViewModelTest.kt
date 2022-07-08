@@ -3,11 +3,12 @@ package com.woocommerce.android.ui.cardreader.hub
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.cardreader.InPersonPaymentsCanadaFeatureFlag
-import com.woocommerce.android.ui.cardreader.IppSelectPaymentGateway
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
@@ -23,8 +24,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.plugin.SitePluginModel
-import org.wordpress.android.fluxc.store.WooCommerceStore
 
 class CardReaderHubViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: CardReaderHubViewModel
@@ -36,12 +35,9 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock {
         on(it.get()).thenReturn(SiteModel())
     }
-    private val wooStore: WooCommerceStore = mock()
-    private val ippSelectPaymentGateway: IppSelectPaymentGateway = mock()
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     private val countryCode = "US"
-    private val wcPayPluginVersion = "3.3.0"
-    private val stripePluginVersion = "6.6.0"
 
     private val savedState = CardReaderHubFragmentArgs(
         storeCountryCode = countryCode,
@@ -207,12 +203,15 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given payment gateway flag enabled, when multiple plugins installed, then payment provider row is shown`() {
-        whenever(ippSelectPaymentGateway.isEnabled()).thenReturn(true)
-        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-            .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
-        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-            .thenReturn(buildWCPayPluginInfo(isActive = true))
+    fun `when multiple plugins installed, then payment provider row is shown`() {
+        val site = selectedSite.get()
+        whenever(
+            appPrefsWrapper.isCardReaderPluginExplicitlySelected(
+                localSiteId = site.id,
+                remoteSiteId = site.siteId,
+                selfHostedSiteId = site.selfHostedSiteId
+            )
+        ).thenReturn(true)
 
         initViewModel()
 
@@ -223,12 +222,15 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given payment gateway flag enabled, when multiple plugins installed, then payment provider icon is shown`() {
-        whenever(ippSelectPaymentGateway.isEnabled()).thenReturn(true)
-        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-            .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
-        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-            .thenReturn(buildWCPayPluginInfo(isActive = true))
+    fun `when multiple plugins installed, then payment provider icon is shown`() {
+        val site = selectedSite.get()
+        whenever(
+            appPrefsWrapper.isCardReaderPluginExplicitlySelected(
+                localSiteId = site.id,
+                remoteSiteId = site.siteId,
+                selfHostedSiteId = site.selfHostedSiteId
+            )
+        ).thenReturn(true)
 
         initViewModel()
 
@@ -240,11 +242,14 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given multiple plugins installed, when change payment provider clicked, then trigger onboarding event`() {
-        whenever(ippSelectPaymentGateway.isEnabled()).thenReturn(true)
-        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-            .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
-        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-            .thenReturn(buildWCPayPluginInfo(isActive = true))
+        val site = selectedSite.get()
+        whenever(
+            appPrefsWrapper.isCardReaderPluginExplicitlySelected(
+                localSiteId = site.id,
+                remoteSiteId = site.siteId,
+                selfHostedSiteId = site.selfHostedSiteId
+            )
+        ).thenReturn(true)
 
         initViewModel()
         (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
@@ -259,11 +264,14 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given multiple plugins installed, when payment provider clicked, then clear plugin selected flag`() {
-        whenever(ippSelectPaymentGateway.isEnabled()).thenReturn(true)
-        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-            .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
-        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-            .thenReturn(buildWCPayPluginInfo(isActive = true))
+        val site = selectedSite.get()
+        whenever(
+            appPrefsWrapper.isCardReaderPluginExplicitlySelected(
+                localSiteId = site.id,
+                remoteSiteId = site.siteId,
+                selfHostedSiteId = site.selfHostedSiteId
+            )
+        ).thenReturn(true)
 
         initViewModel()
         (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
@@ -280,27 +288,35 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given payment flag disabled, when multiple plugins installed, then payment provider row is not shown`() {
-        whenever(ippSelectPaymentGateway.isEnabled()).thenReturn(false)
-        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-            .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
-        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-            .thenReturn(buildWCPayPluginInfo(isActive = true))
+    fun `given multiple plugins installed, when change payment provider clicked, then track event`() {
+        val site = selectedSite.get()
+        whenever(
+            appPrefsWrapper.isCardReaderPluginExplicitlySelected(
+                localSiteId = site.id,
+                remoteSiteId = site.siteId,
+                selfHostedSiteId = site.selfHostedSiteId
+            )
+        ).thenReturn(true)
 
         initViewModel()
-
-        assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
-            .noneMatch {
+        (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
+            .find {
                 it.label == UiString.UiStringRes(R.string.card_reader_manage_payment_provider)
-            }
+            }!!.onItemClicked.invoke()
+
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.SETTINGS_CARD_PRESENT_SELECT_PAYMENT_GATEWAY_TAPPED)
     }
 
     @Test
-    fun `given payment gateway flag enabled, when single plugin installed, then payment provider row is not shown`() {
-        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-            .thenReturn(buildStripeExtensionPluginInfo(isActive = false))
-        whenever(wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-            .thenReturn(buildWCPayPluginInfo(isActive = true))
+    fun `when single plugin installed, then payment provider row is not shown`() {
+        val site = selectedSite.get()
+        whenever(
+            appPrefsWrapper.isCardReaderPluginExplicitlySelected(
+                localSiteId = site.id,
+                remoteSiteId = site.siteId,
+                selfHostedSiteId = site.selfHostedSiteId
+            )
+        ).thenReturn(false)
 
         initViewModel()
 
@@ -316,24 +332,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             inPersonPaymentsCanadaFeatureFlag,
             appPrefsWrapper,
             selectedSite,
-            wooStore,
-            ippSelectPaymentGateway
+            analyticsTrackerWrapper
         )
-    }
-
-    private fun buildWCPayPluginInfo(
-        isActive: Boolean = true,
-        version: String = wcPayPluginVersion
-    ) = SitePluginModel().apply {
-        this.version = version
-        this.setIsActive(isActive)
-    }
-
-    private fun buildStripeExtensionPluginInfo(
-        isActive: Boolean = true,
-        version: String = stripePluginVersion
-    ) = SitePluginModel().apply {
-        this.version = version
-        this.setIsActive(isActive)
     }
 }
