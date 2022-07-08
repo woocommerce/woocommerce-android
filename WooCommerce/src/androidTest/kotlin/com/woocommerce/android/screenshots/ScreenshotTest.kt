@@ -7,8 +7,10 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.helpers.InitializationRule
 import com.woocommerce.android.helpers.TestBase
+import com.woocommerce.android.push.WooNotificationBuilder
 import com.woocommerce.android.screenshots.login.WelcomeScreen
 import com.woocommerce.android.screenshots.mystore.MyStoreScreen
+import com.woocommerce.android.screenshots.notifications.NotificationsScreen
 import com.woocommerce.android.screenshots.orders.CardReaderPaymentScreen
 import com.woocommerce.android.screenshots.orders.OrderCreationScreen
 import com.woocommerce.android.screenshots.products.ProductListScreen
@@ -23,6 +25,7 @@ import tools.fastlane.screengrab.Screengrab
 import tools.fastlane.screengrab.UiAutomatorScreenshotStrategy
 import tools.fastlane.screengrab.cleanstatusbar.CleanStatusBar
 import tools.fastlane.screengrab.locale.LocaleTestRule
+import javax.inject.Inject
 
 @HiltAndroidTest
 class ScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
@@ -41,9 +44,12 @@ class ScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
     @get:Rule(order = 4)
     var activityRule = ActivityScenarioRule(MainActivity::class.java)
 
+    @Inject lateinit var wooNotificationBuilder: WooNotificationBuilder
+
     @Before
     fun setUp() {
         CleanStatusBar.enableWithDefaults()
+        rule.inject()
     }
 
     @After
@@ -94,6 +100,7 @@ class ScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
 
         // Capture In-Person Payment
         AppPrefs.setCardReaderWelcomeDialogShown() // Skip card reader welcome screen
+        AppPrefs.setShowCardReaderConnectedTutorial(false) // Skip card reader tutorial
         TabNavComponent()
             .gotoOrdersScreen()
             .selectOrder(2)
@@ -101,5 +108,9 @@ class ScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
             .thenTakeScreenshot<CardReaderPaymentScreen>("in-person-payments")
             .goBackToOrderDetails()
             .goBackToOrdersScreen()
+
+        NotificationsScreen(wooNotificationBuilder)
+            .thenTakeScreenshot<NotificationsScreen>("push-notifications")
+            .goBackToApp()
     }
 }
