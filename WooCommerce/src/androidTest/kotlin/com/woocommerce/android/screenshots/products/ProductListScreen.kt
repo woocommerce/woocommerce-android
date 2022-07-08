@@ -25,6 +25,24 @@ class ProductListScreen : Screen {
         return SingleProductScreen()
     }
 
+    fun tapOnCreateProduct(): ProductListScreen {
+        clickOn(R.id.addProductButton)
+        return this
+    }
+
+    fun goBackToProductList(): ProductListScreen {
+        while (!isElementDisplayed(R.id.productsRecycler)) {
+            pressBack()
+        }
+
+        return this
+    }
+
+    fun openSearchPane(): ProductListScreen {
+        clickOn(R.id.menu_search)
+        return this
+    }
+
     fun assertProductCard(product: ProductData): ProductListScreen {
         Espresso.onView(
             Matchers.allOf(

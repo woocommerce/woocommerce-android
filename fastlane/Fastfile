@@ -156,14 +156,10 @@ platform :android do
       play_store_desc: File.join(METADATA_DIR_PATH, 'full_description.txt'),
       play_store_app_title: File.join(METADATA_DIR_PATH, 'title.txt'),
       play_store_screenshot_1: File.join(METADATA_DIR_PATH, 'promo_screenshot_1.txt'),
-      play_store_screenshot_1_b: File.join(METADATA_DIR_PATH, 'promo_screenshot_1_b.txt'),
       play_store_screenshot_2: File.join(METADATA_DIR_PATH, 'promo_screenshot_2.txt'),
       play_store_screenshot_3: File.join(METADATA_DIR_PATH, 'promo_screenshot_3.txt'),
       play_store_screenshot_4: File.join(METADATA_DIR_PATH, 'promo_screenshot_4.txt'),
       play_store_screenshot_5: File.join(METADATA_DIR_PATH, 'promo_screenshot_5.txt'),
-      play_store_screenshot_6: File.join(METADATA_DIR_PATH, 'promo_screenshot_6.txt'),
-      play_store_screenshot_7: File.join(METADATA_DIR_PATH, 'promo_screenshot_7.txt'),
-      play_store_screenshot_8: File.join(METADATA_DIR_PATH, 'promo_screenshot_8.txt')
     }
 
     po_path = File.join(METADATA_DIR_PATH, 'PlayStoreStrings.pot')
@@ -637,6 +633,12 @@ platform :android do
     }
 
     UI.message("Taking screenshots for Dark theme...")
+    begin
+       adb(command: "shell cmd uimode night yes")
+     rescue => ex
+       # Skip any error here
+       UI.error(ex)
+    end
     screengrab(
       screenshot_options.merge(
         {
@@ -646,6 +648,12 @@ platform :android do
     )
 
     UI.message("Taking screenshots for Light theme...")
+    begin
+       adb(command: "shell cmd uimode night no")
+     rescue => ex
+       # Skip any error here
+       UI.error(ex)
+    end
     screengrab(
       screenshot_options.merge(
         {
@@ -671,14 +679,10 @@ platform :android do
     # "<key in .po file>" => { desc: "<name of txt file>" }
     files = {
       'app_store_screenshot-1': { desc: "promo_screenshot_1.txt" },
-      'app_store_screenshot-1_b': { desc: "promo_screenshot_1_b.txt" },
       'app_store_screenshot-2': { desc: "promo_screenshot_2.txt" },
       'app_store_screenshot-3': { desc: "promo_screenshot_3.txt" },
       'app_store_screenshot-4': { desc: "promo_screenshot_4.txt" },
       'app_store_screenshot-5': { desc: "promo_screenshot_5.txt" },
-      'app_store_screenshot-6': { desc: "promo_screenshot_6.txt" },
-      'app_store_screenshot-7': { desc: "promo_screenshot_7.txt" },
-      'app_store_screenshot-8': { desc: "promo_screenshot_8.txt" },
     }
 
     locales = SUPPORTED_LOCALES
@@ -697,14 +701,10 @@ platform :android do
 
     [
       "promo_screenshot_1.txt",
-      "promo_screenshot_1_b.txt",
       "promo_screenshot_2.txt",
       "promo_screenshot_3.txt",
       "promo_screenshot_4.txt",
       "promo_screenshot_5.txt",
-      "promo_screenshot_6.txt",
-      "promo_screenshot_7.txt",
-      "promo_screenshot_8.txt",
     ].each do |filename|
       source = File.join(METADATA_DIR_PATH, filename)
       destination = File.join(en_us_path, filename)

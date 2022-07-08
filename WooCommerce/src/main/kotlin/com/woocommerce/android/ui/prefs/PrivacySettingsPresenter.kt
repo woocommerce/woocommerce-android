@@ -9,10 +9,10 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.AccountAction.PUSH_SETTINGS
+import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.store.AccountStore
-import org.wordpress.android.fluxc.store.AccountStore.AccountErrorType.SETTINGS_POST_ERROR
+import org.wordpress.android.fluxc.store.AccountStore.AccountErrorType
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.AccountStore.PushAccountSettingsPayload
 import javax.inject.Inject
@@ -71,7 +71,7 @@ class PrivacySettingsPresenter @Inject constructor(
     fun onAccountChanged(event: OnAccountChanged) {
         if (event.isError) {
             when (event.error.type) {
-                SETTINGS_POST_ERROR -> {
+                AccountErrorType.SETTINGS_POST_ERROR -> {
                     AnalyticsTracker.track(
                         SETTING_CHANGE_FAILED,
                         this::class.java.simpleName,
@@ -83,9 +83,10 @@ class PrivacySettingsPresenter @Inject constructor(
             }
         } else {
             when (event.causeOfChange) {
-                PUSH_SETTINGS -> {
+                AccountAction.PUSH_SETTINGS -> {
                     AnalyticsTracker.track(SETTING_CHANGE_SUCCESS)
                 }
+                else -> Unit // Do nothing
             }
         }
     }

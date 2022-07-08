@@ -21,15 +21,7 @@ import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-class CardReaderModule {
-    @Provides
-    @Singleton
-    fun provideCardReaderManager(
-        application: Application,
-        cardReaderStore: CardReaderStore,
-        logWrapper: LogWrapper
-    ) = CardReaderManagerFactory.createCardReaderManager(application, cardReaderStore, logWrapper)
-
+class InPersonPaymentsModule {
     @Provides
     fun provideInPersonPaymentsStore(
         selectedSite: SelectedSite,
@@ -84,4 +76,16 @@ class CardReaderModule {
     @Provides
     @Reusable
     fun provideCardReaderConfigFactory() = CardReaderConfigFactory()
+}
+
+@InstallIn(SingletonComponent::class)
+@Module
+class CardReaderManagerModule {
+    @Provides
+    @Singleton
+    fun provideCardReaderManager(
+        application: Application,
+        cardReaderStore: CardReaderStore,
+        logWrapper: LogWrapper
+    ) = CardReaderManagerFactory.createCardReaderManager(application, cardReaderStore, logWrapper)
 }

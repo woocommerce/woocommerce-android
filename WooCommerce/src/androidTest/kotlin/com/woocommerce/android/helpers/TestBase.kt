@@ -20,7 +20,7 @@ import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 
-open class TestBase {
+open class TestBase(failOnUnmatchedWireMockRequests: Boolean = true) {
     protected lateinit var appContext: Application
 
     companion object {
@@ -37,7 +37,8 @@ open class TestBase {
         options().port(wireMockPort)
             .fileSource(AssetFileSource(getInstrumentation().context.assets))
             .extensions(ResponseTemplateTransformer(true, "fnow", UnlocalizedDateHelper()))
-            .notifier(AndroidNotifier())
+            .notifier(AndroidNotifier()),
+        failOnUnmatchedWireMockRequests
     )
 }
 

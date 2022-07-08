@@ -55,11 +55,11 @@ fun String.formatDateToWeeksInYear(locale: Locale = Locale.getDefault()): String
  * i.e. 2018-08-08 07 is formatted to Wednesday, Aug 08›7am
  */
 @Throws(IllegalArgumentException::class)
-fun String.formatDateToFriendlyDayHour(locale: Locale = Locale.getDefault()): String {
+fun String.formatDateToFriendlyDayHour(locale: Locale = Locale.getDefault()): String? {
     return try {
         val originalFormat = SimpleDateFormat("yyyy-MM-dd HH", locale)
         val date = originalFormat.parse(this)
-        date.formatToEEEEMMMddhha(locale)
+        date?.formatToEEEEMMMddhha(locale)
     } catch (e: Exception) {
         throw IllegalArgumentException("Date string argument is not of format yyyy-MM-dd HH: $this")
     }

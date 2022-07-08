@@ -47,7 +47,7 @@ class AppSettingsPresenter @Inject constructor(
         return accountStore.account?.displayName ?: ""
     }
 
-    @Suppress("unused")
+    @Suppress("unused", "UNUSED_PARAMETER")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onDeviceUnregistered(event: OnDeviceUnregistered) {
         // Now that we've unregistered the device, we can logout
