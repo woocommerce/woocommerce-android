@@ -158,7 +158,6 @@
     <ID>NoWildcardImports:com.woocommerce.android.model.Refund.kt:8</ID>
     <ID>NoWildcardImports:com.woocommerce.android.push.NotificationChannelType.kt:7</ID>
     <ID>NoWildcardImports:com.woocommerce.android.push.NotificationMessageHandlerTest.kt:12</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.push.NotificationMessageHandlerTest.kt:17</ID>
     <ID>NoWildcardImports:com.woocommerce.android.push.NotificationRegistrationHandlerTest.kt:7</ID>
     <ID>NoWildcardImports:com.woocommerce.android.push.UnseenReviewsCountHandler.kt:7</ID>
     <ID>NoWildcardImports:com.woocommerce.android.screenshots.orders.OrderCreationScreen.kt:6</ID>
@@ -167,7 +166,6 @@
     <ID>NoWildcardImports:com.woocommerce.android.screenshots.util.Screen.kt:18</ID>
     <ID>NoWildcardImports:com.woocommerce.android.screenshots.util.Screen.kt:7</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.common.UserEligibilityErrorViewModelTest.kt:10</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.common.UserEligibilityErrorViewModelTest.kt:15</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.compose.animations.SkeletonAnimation.kt:3</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.compose.component.InfiniteListHandler.kt:4</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.compose.theme.Theme.kt:4</ID>
@@ -206,7 +204,6 @@
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.OrderDetailViewModelTest.kt:36</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.OrderDetailViewModelTest.kt:9</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.OrderListViewModelTest.kt:23</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.OrderListViewModelTest.kt:29</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.OrderListViewModelTest.kt:37</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.cardreader.ReceiptPreviewViewModelTest.kt:15</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.cardreader.ReceiptPreviewViewModelTest.kt:4</ID>
@@ -223,7 +220,6 @@
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.creation.OrderCreationViewModelTest.kt:11</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.creation.OrderCreationViewModelTest.kt:9</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigator.kt:6</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.creation.products.OrderCreationProductSelectionViewModelTest.kt:20</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.creation.variations.OrderCreationVariationSelectionViewModel.kt:13</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.details.OrderDetailFragment.kt:27</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.details.OrderDetailFragment.kt:28</ID>
@@ -232,12 +228,10 @@
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.details.OrderDetailRepository.kt:22</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.details.OrderDetailRepository.kt:23</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.kt:13</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.details.editing.OrderEditingViewModelTest.kt:18</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.details.editing.OrderEditingViewModelTest.kt:19</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.kt:11</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.kt:9</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.details.editing.address.AddressViewModelTest.kt:10</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.details.editing.address.AddressViewModelTest.kt:19</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.filters.OrderFilterCategoriesViewModelTest.kt:6</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.list.OrderListFragment.kt:21</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.list.OrderListFragment.kt:25</ID>
@@ -247,7 +241,6 @@
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.notes.AddOrderNoteViewModel.kt:14</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.notes.AddOrderNoteViewModelTest.kt:20</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelCustomsFormFragment.kt:27</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelCustomsFormViewModelTest.kt:15</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelCustomsFormViewModelTest.kt:9</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository.kt:4</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.kt:3</ID>
@@ -260,15 +253,12 @@
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.kt:50</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressViewModel.kt:15</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressViewModel.kt:9</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressViewModelTest.kt:24</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressViewModelTest.kt:8</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.kt:20</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.kt:9</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModelTest.kt:20</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentFragment.kt:16</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModelTest.kt:8</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.kt:9</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsViewModelTest.kt:16</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreateCustomPackageViewModelTest.kt:9</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.kt:15</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.kt:16</ID>
@@ -277,8 +267,6 @@
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachineTest.kt:6</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachineTest.kt:8</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachineTest.kt:9</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.tracking.AddOrderTrackingProviderListViewModelTest.kt:16</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.tracking.OrderShipmentProvidersRepositoryTest.kt:11</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.prefs.AboutConfigBuilder.kt:5</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.prefs.AppSettingsPresenterTest.kt:9</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.prefs.MainSettingsFragment.kt:17</ID>
@@ -320,13 +308,9 @@
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductListViewModel.kt:14</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductListViewModel.kt:21</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductListViewModel.kt:30</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductListViewModelTest.kt:21</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductPricingViewModelTest.kt:21</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductSelectionListFragment.kt:4</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductSelectionListViewModelTest.kt:15</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductShippingViewModelTest.kt:9</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductTestUtils.kt:3</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.VariationListViewModelTest.kt:17</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.addons.AddonTestFixtures.kt:8</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.addons.AddonsExt.kt:4</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.downloads.AddProductDownloadBottomSheetFragment.kt:23</ID>
@@ -339,10 +323,8 @@
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.variations.VariationListAdapter.kt:22</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.reviews.ReviewDetailRepository.kt:6</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.reviews.ReviewDetailViewModel.kt:9</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.reviews.ReviewDetailViewModelTest.kt:19</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.reviews.ReviewListRepository.kt:10</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.reviews.ReviewListRepository.kt:32</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.reviews.ReviewListViewModelTest.kt:20</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.reviews.ReviewModerationHandler.kt:14</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.reviews.ReviewModerationHandler.kt:15</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.reviews.ReviewModerationHandler.kt:7</ID>
