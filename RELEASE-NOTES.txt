@@ -2,7 +2,7 @@
 
 9.6
 -----
-
+- [**] In-Person Payments: Support for selecting preferred payment gateway when multiple are installed on the store. [https://github.com/woocommerce/woocommerce-android/pull/6887]
 
 9.5
 -----
