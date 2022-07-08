@@ -4,6 +4,7 @@ import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.HOLD
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -30,6 +31,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ER
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCProductStore
 
+@ExperimentalCoroutinesApi
 class ReviewModerationHandlerTests {
     private val selectedSite: SelectedSite = mock() {
         on { get() } doReturn SiteModel()

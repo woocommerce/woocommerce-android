@@ -5,10 +5,12 @@ import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.Refun
 import com.woocommerce.android.ui.cardreader.payment.CardReaderInteracRefundErrorMapper
 import com.woocommerce.android.ui.cardreader.payment.InteracRefundFlowError
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 
+@ExperimentalCoroutinesApi
 class CardReaderInteracRefundErrorMapperTest : BaseUnitTest() {
     private lateinit var cardReaderInteracRefundErrorMapper: CardReaderInteracRefundErrorMapper
 

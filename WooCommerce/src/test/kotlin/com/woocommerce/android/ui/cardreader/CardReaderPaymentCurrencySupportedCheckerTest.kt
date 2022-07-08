@@ -6,6 +6,7 @@ import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUns
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.cardreader.payment.CardReaderPaymentCurrencySupportedChecker
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -15,6 +16,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+@ExperimentalCoroutinesApi
 class CardReaderPaymentCurrencySupportedCheckerTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val wooStore: WooCommerceStore = mock()

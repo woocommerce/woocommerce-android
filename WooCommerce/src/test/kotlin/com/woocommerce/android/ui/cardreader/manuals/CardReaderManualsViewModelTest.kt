@@ -5,12 +5,14 @@ import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.cardreader.InPersonPaymentsCanadaFeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
+@ExperimentalCoroutinesApi
 class CardReaderManualsViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: CardReaderManualsViewModel
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()

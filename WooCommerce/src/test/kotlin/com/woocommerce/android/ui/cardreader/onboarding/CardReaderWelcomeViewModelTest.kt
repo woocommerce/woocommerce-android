@@ -4,12 +4,14 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderWelcomeViewModel.CardReaderWelcomeDialogEvent.NavigateToOnboardingFlow
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 
+@ExperimentalCoroutinesApi
 class CardReaderWelcomeViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: CardReaderWelcomeViewModel
     private val appPrefsWrapper: AppPrefsWrapper = mock()
