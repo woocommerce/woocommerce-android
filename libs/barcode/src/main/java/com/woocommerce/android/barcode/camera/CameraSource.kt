@@ -394,19 +394,14 @@ class CameraSource(private val graphicOverlay: GraphicOverlay) {
                     pendingFrameData = null
                 }
 
-                try {
-                    synchronized(processorLock) {
-                        val frameMetadata = FrameMetadata(previewSize!!.width, previewSize!!.height, rotationDegrees)
-                        data?.let {
-                            frameProcessor?.process(it, frameMetadata, graphicOverlay)
-                        }
-                    }
-                } catch (t: Exception) {
-                    Log.e(TAG, "Exception thrown from receiver.", t)
-                } finally {
+                synchronized(processorLock) {
+                    val frameMetadata = FrameMetadata(previewSize!!.width, previewSize!!.height, rotationDegrees)
                     data?.let {
-                        camera?.addCallbackBuffer(it.array())
+                        frameProcessor?.process(it, frameMetadata, graphicOverlay)
                     }
+                }
+                data?.let {
+                    camera?.addCallbackBuffer(it.array())
                 }
             }
         }
