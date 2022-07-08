@@ -91,13 +91,6 @@ class ScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
             .thenTakeScreenshot<OrderCreationScreen>("add-order")
             .goBackToOrdersScreen()
 
-        // Create Products
-        TabNavComponent()
-            .gotoProductsScreen()
-            .tapOnCreateProduct()
-            .thenTakeScreenshot<ProductListScreen>("add-product")
-            .goBackToProductList()
-
         // Capture In-Person Payment
         AppPrefs.setCardReaderWelcomeDialogShown() // Skip card reader welcome screen
         AppPrefs.setShowCardReaderConnectedTutorial(false) // Skip card reader tutorial
@@ -108,6 +101,13 @@ class ScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
             .thenTakeScreenshot<CardReaderPaymentScreen>("in-person-payments")
             .goBackToOrderDetails()
             .goBackToOrdersScreen()
+
+        // Create Products
+        TabNavComponent()
+            .gotoProductsScreen()
+            .tapOnCreateProduct()
+            .thenTakeScreenshot<ProductListScreen>("add-product")
+            .goBackToProductList()
 
         NotificationsScreen(wooNotificationBuilder)
             .thenTakeScreenshot<NotificationsScreen>("push-notifications")
