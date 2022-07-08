@@ -82,6 +82,8 @@ class ProductListViewModel @Inject constructor(
 
     fun isSearching() = viewState.isSearchActive == true
 
+    fun isSkuSearch() = isSearching() && viewState.isSkuSearch
+
     private fun isLoading() = viewState.isLoading == true
 
     fun getSearchQuery() = viewState.query

@@ -119,6 +119,7 @@ class ProductListFragment :
 
         if (viewModel.isSearching()) {
             binding.productsSearchTabView.isVisible = true
+            binding.productsSearchTabView.show(this, viewModel.isSkuSearch())
         } else {
             viewModel.reloadProductsFromDb(excludeProductId = pendingTrashProductId)
         }
@@ -137,6 +138,7 @@ class ProductListFragment :
         disableSearchListeners()
         searchView = null
         _productAdapter = null
+        binding.productsSearchTabView.hide()
         super.onDestroyView()
         _binding = null
     }

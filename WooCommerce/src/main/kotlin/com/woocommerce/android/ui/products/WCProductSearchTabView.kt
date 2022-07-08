@@ -38,7 +38,14 @@ class WCProductSearchTabView @JvmOverloads constructor(
         binding.tabLayout.addOnTabSelectedListener(this)
     }
 
-    fun show(searchTypeListener: ProductSearchTypeChangedListener? = null) {
+    fun show(
+        searchTypeListener: ProductSearchTypeChangedListener? = null,
+        isSkuSearch: Boolean = false
+    ) {
+        if (isSkuSearch) {
+            binding.tabLayout.selectTab(binding.tabLayout.getTabAt(TAB_SKU))
+        }
+
         listener = searchTypeListener
         if (!isVisible) {
             WooAnimUtils.fadeIn(this)
