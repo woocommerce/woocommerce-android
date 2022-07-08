@@ -249,6 +249,7 @@
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.kt:50</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressViewModel.kt:15</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressViewModel.kt:9</ID>
+    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressViewModelTest.kt:8</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.kt:20</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.kt:9</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModelTest.kt:20</ID>
@@ -495,6 +496,7 @@
     <ID>WildcardImport:OrderDetailFragment.kt$import com.woocommerce.android.extensions.*</ID>
     <ID>WildcardImport:OrderDetailFragment.kt$import com.woocommerce.android.model.*</ID>
     <ID>WildcardImport:OrderDetailFragment.kt$import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.*</ID>
+    <ID>WildcardImport:OrderDetailRepository.kt$import com.woocommerce.android.model.*</ID>
     <ID>WildcardImport:OrderListFragment.kt$import com.woocommerce.android.*</ID>
     <ID>WildcardImport:OrderListFragment.kt$import com.woocommerce.android.extensions.*</ID>
     <ID>WildcardImport:OrderListFragment.kt$import com.woocommerce.android.model.FeatureFeedbackSettings.*</ID>
