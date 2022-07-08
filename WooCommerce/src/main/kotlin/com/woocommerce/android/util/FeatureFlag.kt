@@ -12,7 +12,6 @@ enum class FeatureFlag {
     IN_PERSON_PAYMENTS_CANADA, // Keeping the flag for a few sprints so we can quickly disable the feature if needed
     MORE_MENU_INBOX,
     COUPONS_M2,
-    IPP_SELECT_PAYMENT_GATEWAY,
     WC_SHIPPING_BANNER,
     UNIFIED_ORDER_EDITING,
     ORDER_CREATION_CUSTOMER_SEARCH;
@@ -23,7 +22,6 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
             JETPACK_CP,
-            IPP_SELECT_PAYMENT_GATEWAY,
             IN_PERSON_PAYMENTS_CANADA -> true
             ANALYTICS_HUB,
             MORE_MENU_INBOX,

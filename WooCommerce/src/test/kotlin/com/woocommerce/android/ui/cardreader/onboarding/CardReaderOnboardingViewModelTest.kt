@@ -20,35 +20,23 @@ import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingView
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.UnsupportedErrorState
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayError
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayError.WCPayNotInstalledState
-import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WcPayAndStripeInstalledState
 import com.woocommerce.android.ui.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
-import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
-import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.user.WCUserModel
-import org.wordpress.android.fluxc.model.user.WCUserRole
-
-private const val DUMMY_SITE_URL = "dummy-site.url"
 
 @ExperimentalCoroutinesApi
 class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     private val onboardingChecker: CardReaderOnboardingChecker = mock()
     private val tracker: CardReaderTracker = mock()
-    private val userEligibilityFetcher: UserEligibilityFetcher = mock {
-        val model = mock<WCUserModel>()
-        whenever(model.getUserRoles()).thenReturn(arrayListOf(WCUserRole.ADMINISTRATOR))
-        onBlocking { it.fetchUserInfo() } doReturn model
-    }
     private val selectedSite: SelectedSite = mock {
         on(it.get()).thenReturn(SiteModel())
     }
@@ -655,20 +643,6 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when wcpay and stripe extension installed-activated, then wcpay and stripe extension activated state shown`() =
-        testBlocking {
-            whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.WcpayAndStripeActivated
-            )
-
-            val viewModel = createVM()
-
-            assertThat(viewModel.viewStateData.value).isInstanceOf(
-                WcPayAndStripeInstalledState::class.java
-            )
-        }
-
-    @Test
     fun `when wcpay and stripe extension installed-activated, then payment gateway screen is shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
@@ -912,37 +886,10 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given user is admin, when wcpay and stripe extension active, then open wpadmin button shown`() =
-        testBlocking {
-            whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.WcpayAndStripeActivated
-            )
-
-            val viewModel = createVM()
-
-            val viewStateData = viewModel.viewStateData.value as WcPayAndStripeInstalledState
-            assertThat(viewStateData.openWPAdminActionClicked != null).isTrue
-            assertThat(viewStateData.openWPAdminLabel).isNotNull
-        }
-
-    @Test
-    fun `when wcpay and stripe extension active, then refresh screen button shown`() =
-        testBlocking {
-            whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.WcpayAndStripeActivated
-            )
-
-            val viewModel = createVM()
-
-            val viewStateData = viewModel.viewStateData.value as WcPayAndStripeInstalledState
-            assertThat(viewStateData.refreshButtonLabel).isNotNull
-        }
-
-    @Test
     fun `when refresh clicked, then loading screen shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.WcpayAndStripeActivated
+                CardReaderOnboardingState.WcpayNotActivated
             )
             val viewModel = createVM()
             val receivedViewStates = mutableListOf<OnboardingViewState>()
@@ -950,118 +897,10 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 receivedViewStates.add(it)
             }
 
-            (viewModel.viewStateData.value as WcPayAndStripeInstalledState)
-                .onRefreshAfterUpdatingClicked.invoke()
+            (viewModel.viewStateData.value as WCPayError.WCPayNotActivatedState)
+                .refreshButtonAction.invoke()
 
             assertThat(receivedViewStates[1]).isEqualTo(LoadingState)
-        }
-
-    @Test
-    fun `given site is self-hosted, when user taps on Go To Plugin Admin, then generic webview shown`() =
-        testBlocking {
-            whenever(selectedSite.get())
-                .thenReturn(
-                    SiteModel()
-                        .apply {
-                            setIsWPComAtomic(false)
-                            setIsWPCom(false)
-                        }
-                )
-            whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.WcpayAndStripeActivated
-            )
-            val viewModel = createVM()
-
-            (viewModel.viewStateData.value as WcPayAndStripeInstalledState)
-                .openWPAdminActionClicked!!.invoke()
-
-            assertThat(viewModel.event.value).isInstanceOf(
-                OnboardingEvent.NavigateToUrlInGenericWebView::class.java
-            )
-        }
-
-    @Test
-    fun `given site is wpcom, when user taps on Go To Plugin Admin, then wpcom webview shown`() =
-        testBlocking {
-            whenever(selectedSite.get()).thenReturn(
-                SiteModel()
-                    .apply {
-                        setIsWPCom(true)
-                    }
-            )
-            whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.WcpayAndStripeActivated
-            )
-            val viewModel = createVM()
-
-            (viewModel.viewStateData.value as WcPayAndStripeInstalledState)
-                .openWPAdminActionClicked!!.invoke()
-
-            assertThat(viewModel.event.value).isInstanceOf(
-                OnboardingEvent.NavigateToUrlInWPComWebView::class.java
-            )
-        }
-
-    @Test
-    fun `given site is atomic, when user taps on Go To Plugin Admin, then wpcom webview shown`() =
-        testBlocking {
-            whenever(selectedSite.get()).thenReturn(
-                SiteModel().apply {
-                    setIsWPComAtomic(true)
-                }
-            )
-            whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.WcpayAndStripeActivated
-            )
-            val viewModel = createVM()
-
-            (viewModel.viewStateData.value as WcPayAndStripeInstalledState)
-                .openWPAdminActionClicked!!.invoke()
-
-            assertThat(viewModel.event.value).isInstanceOf(
-                OnboardingEvent.NavigateToUrlInWPComWebView::class.java
-            )
-        }
-
-    @Test
-    fun `when user taps on Go To Plugin Admin, then app navigates to Plugin Admin url`() =
-        testBlocking {
-            whenever(selectedSite.get()).thenReturn(
-                SiteModel().apply {
-                    url = DUMMY_SITE_URL
-                }
-            )
-
-            whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.WcpayAndStripeActivated
-            )
-            val viewModel = createVM()
-
-            (viewModel.viewStateData.value as WcPayAndStripeInstalledState)
-                .openWPAdminActionClicked!!.invoke()
-
-            val event = viewModel.event.value as OnboardingEvent.NavigateToUrlInGenericWebView
-            assertThat(event.url).isEqualTo(DUMMY_SITE_URL + AppUrls.PLUGIN_MANAGEMENT_SUFFIX)
-        }
-
-    @Test
-    fun `given user is NOT admin, when wcpay and stripe extension active, then open wpadmin button NOT shown`() =
-        testBlocking {
-            whenever(userEligibilityFetcher.fetchUserInfo()).thenAnswer {
-                val model = mock<WCUserModel>()
-                whenever(model.getUserRoles())
-                    .thenReturn(arrayListOf(WCUserRole.SHOP_MANAGER))
-                model
-            }
-            whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.WcpayAndStripeActivated
-            )
-
-            val viewModel = createVM()
-
-            val viewStateData = viewModel.viewStateData.value as WcPayAndStripeInstalledState
-            assertThat(viewStateData.openWPAdminLabel).isNull()
-            assertThat(viewStateData.openWPAdminActionClicked == null).isTrue
         }
 
     @Test
@@ -1376,7 +1215,6 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             savedState,
             onboardingChecker,
             tracker,
-            userEligibilityFetcher,
             selectedSite,
             appPrefsWrapper,
             cardReaderManager

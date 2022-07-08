@@ -15,7 +15,6 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.cardreader.CardReaderTrackingInfoKeeper
-import com.woocommerce.android.ui.cardreader.IppSelectPaymentGateway
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.GenericError
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.NoConnectionError
@@ -30,7 +29,6 @@ import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingStat
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.StripeAccountPendingRequirement
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.StripeAccountRejected
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.StripeAccountUnderReview
-import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.WcpayAndStripeActivated
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.WcpayNotActivated
 import com.woocommerce.android.ui.cardreader.onboarding.CardReaderOnboardingState.WcpayNotInstalled
 import com.woocommerce.android.ui.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
@@ -75,7 +73,6 @@ class CardReaderOnboardingChecker @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
     private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider,
-    private val ippSelectPaymentGateway: IppSelectPaymentGateway,
 ) {
     suspend fun getOnboardingState(pluginType: PluginType? = null): CardReaderOnboardingState {
         if (!networkStatus.isConnected()) return NoConnectionError
@@ -86,9 +83,7 @@ class CardReaderOnboardingChecker @Inject constructor(
                     is OnboardingCompleted -> CARD_READER_ONBOARDING_COMPLETED to it.version
                     is StripeAccountPendingRequirement -> CARD_READER_ONBOARDING_PENDING to it.version
                     else -> {
-                        if (ippSelectPaymentGateway.isEnabled()) {
-                            updatePluginExplicitlySelectedFlag(false)
-                        }
+                        updatePluginExplicitlySelectedFlag(false)
                         CARD_READER_ONBOARDING_NOT_COMPLETED to null
                     }
                 }
@@ -127,27 +122,21 @@ class CardReaderOnboardingChecker @Inject constructor(
             isBothPluginsActivated(wcPayPluginInfo, stripePluginInfo) &&
             isBothPluginsSupportedInTheCountry(cardReaderConfig)
         ) {
-            if (ippSelectPaymentGateway.isEnabled()) {
-                when {
-                    isUserComingFromChoosePaymentGatewayScreen(pluginType) -> {
-                        updateSharedPreferences(
-                            CARD_READER_ONBOARDING_NOT_COMPLETED,
-                            pluginType,
-                            null
-                        )
-                        updatePluginExplicitlySelectedFlag(true)
-                    }
-                    !isPluginExplicitlySelected() -> {
-                        return ChoosePaymentGatewayProvider
-                    }
+            when {
+                isUserComingFromChoosePaymentGatewayScreen(pluginType) -> {
+                    updateSharedPreferences(
+                        CARD_READER_ONBOARDING_NOT_COMPLETED,
+                        pluginType,
+                        null
+                    )
+                    updatePluginExplicitlySelectedFlag(true)
                 }
-            } else {
-                return WcpayAndStripeActivated
+                !isPluginExplicitlySelected() -> {
+                    return ChoosePaymentGatewayProvider
+                }
             }
         } else {
-            if (ippSelectPaymentGateway.isEnabled()) {
-                updatePluginExplicitlySelectedFlag(false)
-            }
+            updatePluginExplicitlySelectedFlag(false)
         }
 
         val preferredPlugin = getUserSelectedPluginOrActivatedPlugin(wcPayPluginInfo, stripePluginInfo)
@@ -457,12 +446,6 @@ sealed class CardReaderOnboardingState(
      */
     @Parcelize
     data class SetupNotCompleted(override val preferredPlugin: PluginType) : CardReaderOnboardingState()
-
-    /**
-     * Both plugins are installed and activated on the site. IPP are not supported in this state.
-     */
-    @Parcelize
-    object WcpayAndStripeActivated : CardReaderOnboardingState()
 
     /**
      * Both plugins are installed and activated on the site. Merchant needs to choose their preferred payment
