@@ -3,7 +3,10 @@ package com.woocommerce.android.screenshots.orders
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import com.woocommerce.android.R
 import com.woocommerce.android.screenshots.util.Screen
 
@@ -38,5 +41,16 @@ class OrderCreationScreen : Screen {
     fun assertNewOrderScreenWithProduct(productName: String): OrderCreationScreen {
         Espresso.onView(withText(productName)).check(matches(isDisplayed()))
         return assertNewOrderScreen()
+    }
+
+    fun goBackToOrdersScreen(): OrderListScreen {
+        pressBack()
+
+        val discard = getTranslatedString(R.string.discard)
+        if (isElementDisplayed(discard)) {
+            clickButtonInDialogWithTitle(discard)
+        }
+
+        return OrderListScreen()
     }
 }
