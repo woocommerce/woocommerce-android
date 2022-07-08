@@ -128,6 +128,7 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    @Suppress("UNCHECKED_CAST")
     fun `add note successfully`() = testBlocking {
         val note = "note"
         val isCustomerNote = false

@@ -110,6 +110,7 @@ class AddOrderTrackingProviderListViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    @Suppress("UNCHECKED_CAST")
     fun `handle carrier selection`() = testBlocking {
         doReturn(testShipmentProvider).whenever(shipmentProvidersRepository)
             .fetchOrderShipmentProviders(ORDER_ID)
