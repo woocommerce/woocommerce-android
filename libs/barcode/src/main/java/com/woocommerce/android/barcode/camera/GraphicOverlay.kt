@@ -23,7 +23,7 @@ import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
 import com.woocommerce.android.barcode.Utils
-import java.util.ArrayList
+import com.woocommerce.android.barcode.camera.GraphicOverlay.Graphic
 
 /**
  * A view which renders a series of custom graphics to be overlaid on top of an associated preview
@@ -36,7 +36,8 @@ import java.util.ArrayList
  * to the full view size, and also mirrored in the case of the front-facing camera.
  *
  *
- * Associated [Graphic] items should use [.translateX] and [ ][.translateY] to convert to view coordinate from the preview's coordinate.
+ * Associated [Graphic] items should use [.translateX] and [ ][.translateY] to convert to view coordinate from
+ * the preview's coordinate.
  */
 class GraphicOverlay(context: Context, attrs: AttributeSet) : View(context, attrs) {
     private val lock = Any()

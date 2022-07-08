@@ -23,8 +23,8 @@ import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.widget.FrameLayout
 import com.google.android.gms.common.images.Size
-import com.woocommerce.android.barcode.Utils
 import com.woocommerce.android.barcode.R
+import com.woocommerce.android.barcode.Utils
 import java.io.IOException
 
 /** Preview the camera image in the screen.  */
@@ -137,8 +137,7 @@ class CameraSourcePreview(context: Context, attrs: AttributeSet) : FrameLayout(c
             surfaceAvailable = false
         }
 
-        override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-        }
+        override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) = Unit
     }
 
     companion object {

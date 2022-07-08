@@ -38,13 +38,12 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.exifinterface.media.ExifInterface
-import com.woocommerce.android.barcode.camera.CameraSizePair
 import com.google.mlkit.vision.common.InputImage
+import com.woocommerce.android.barcode.camera.CameraSizePair
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.nio.ByteBuffer
-import java.util.ArrayList
 import kotlin.math.abs
 
 /** Utility class to provide helper methods.  */
@@ -202,6 +201,7 @@ object Utils {
         }
     }
 
+    @SuppressWarnings("ComplexMethod", "")
     private fun maybeTransformBitmap(resolver: ContentResolver, uri: Uri, bitmap: Bitmap?): Bitmap? {
         val matrix: Matrix? = when (getExifOrientationTag(resolver, uri)) {
             ExifInterface.ORIENTATION_UNDEFINED, ExifInterface.ORIENTATION_NORMAL ->

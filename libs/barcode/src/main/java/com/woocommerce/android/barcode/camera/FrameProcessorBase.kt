@@ -22,12 +22,12 @@ import androidx.annotation.GuardedBy
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.TaskExecutors
-import com.woocommerce.android.barcode.addOnFailureListener
-import com.woocommerce.android.barcode.addOnSuccessListener
-import com.woocommerce.android.barcode.InputInfo
-import com.woocommerce.android.barcode.ScopedExecutor
 import com.google.mlkit.vision.common.InputImage
 import com.woocommerce.android.barcode.CameraInputInfo
+import com.woocommerce.android.barcode.InputInfo
+import com.woocommerce.android.barcode.ScopedExecutor
+import com.woocommerce.android.barcode.addOnFailureListener
+import com.woocommerce.android.barcode.addOnSuccessListener
 import java.nio.ByteBuffer
 
 /** Abstract base class of [FrameProcessor].  */

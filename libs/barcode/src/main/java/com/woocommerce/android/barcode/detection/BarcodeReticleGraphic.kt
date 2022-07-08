@@ -21,9 +21,9 @@ import android.graphics.Paint
 import android.graphics.Paint.Style
 import android.graphics.RectF
 import androidx.core.content.ContextCompat
-import com.woocommerce.android.barcode.camera.GraphicOverlay
-import com.woocommerce.android.barcode.camera.CameraReticleAnimator
 import com.woocommerce.android.barcode.R
+import com.woocommerce.android.barcode.camera.CameraReticleAnimator
+import com.woocommerce.android.barcode.camera.GraphicOverlay
 
 /**
  * A camera reticle that locates at the center of canvas to indicate the system is active but has

@@ -26,9 +26,9 @@ import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.WindowManager
 import com.google.android.gms.common.images.Size
+import com.woocommerce.android.barcode.R
 import com.woocommerce.android.barcode.Utils
 import com.woocommerce.android.barcode.settings.PreferenceUtils
-import com.woocommerce.android.barcode.R
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.util.IdentityHashMap
@@ -430,7 +430,8 @@ class CameraSource(private val graphicOverlay: GraphicOverlay) {
          *
          *
          * It's firstly trying to pick the one that has closest aspect ratio to display view with its
-         * width be in the specified range [[.MIN_CAMERA_PREVIEW_WIDTH], [ ][.MAX_CAMERA_PREVIEW_WIDTH]]. If there're multiple candidates, choose the one having longest
+         * width be in the specified range [[.MIN_CAMERA_PREVIEW_WIDTH], [ ][.MAX_CAMERA_PREVIEW_WIDTH]].
+         * If there're multiple candidates, choose the one having longest
          * width.
          *
          *
@@ -479,7 +480,7 @@ class CameraSource(private val graphicOverlay: GraphicOverlay) {
                     val size = sizePair.preview
                     val diff =
                         abs(size.width - DEFAULT_REQUESTED_CAMERA_PREVIEW_WIDTH) +
-                                abs(size.height - DEFAULT_REQUESTED_CAMERA_PREVIEW_HEIGHT)
+                            abs(size.height - DEFAULT_REQUESTED_CAMERA_PREVIEW_HEIGHT)
                     if (diff < minDiff) {
                         selectedPair = sizePair
                         minDiff = diff

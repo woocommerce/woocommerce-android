@@ -25,10 +25,10 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.graphics.RectF
 import androidx.core.content.ContextCompat
+import com.woocommerce.android.barcode.R
 import com.woocommerce.android.barcode.camera.GraphicOverlay
 import com.woocommerce.android.barcode.camera.GraphicOverlay.Graphic
 import com.woocommerce.android.barcode.settings.PreferenceUtils
-import com.woocommerce.android.barcode.R
 
 internal abstract class BarcodeGraphicBase(overlay: GraphicOverlay) : Graphic(overlay) {
     private val boxPaint: Paint = Paint().apply {

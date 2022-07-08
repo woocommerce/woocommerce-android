@@ -16,7 +16,7 @@
 
 package com.woocommerce.android.barcode
 
-import android.animation.AnimatorInflater
+import android.animation.AnimatorInflater.loadAnimator
 import android.animation.AnimatorSet
 import android.hardware.Camera
 import android.os.Bundle
@@ -27,7 +27,6 @@ import android.view.View.OnClickListener
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import com.woocommerce.android.barcode.camera.CameraSource
 import com.woocommerce.android.barcode.camera.WorkflowModel
 import com.woocommerce.android.barcode.camera.WorkflowModel.WorkflowState
@@ -62,13 +61,10 @@ class LiveBarcodeScanningFragment : Fragment(), OnClickListener {
             setOnClickListener(this@LiveBarcodeScanningFragment)
             cameraSource = CameraSource(this)
         }
-
-        promptChipAnimator = (AnimatorInflater.loadAnimator(
-            requireContext(),
-            R.animator.bottom_prompt_chip_enter
-        ) as AnimatorSet).apply {
-            setTarget(promptChip)
-        }
+        promptChipAnimator = (loadAnimator(context, R.animator.bottom_prompt_chip_enter) as AnimatorSet)
+            .apply {
+                setTarget(promptChip)
+            }
 
         closeButton.setOnClickListener(this)
 
@@ -145,12 +141,11 @@ class LiveBarcodeScanningFragment : Fragment(), OnClickListener {
     }
 
     private fun setUpWorkflowModel() {
-
         // Observes the workflow state changes, if happens, update the overlay view indicators and
         // camera preview state.
-        workflowModel.workflowState.observe(viewLifecycleOwner, Observer { workflowState ->
+        workflowModel.workflowState.observe(viewLifecycleOwner) { workflowState ->
             if (workflowState == null || currentWorkflowState == workflowState) {
-                return@Observer
+                return@observe
             }
 
             currentWorkflowState = workflowState
@@ -185,7 +180,7 @@ class LiveBarcodeScanningFragment : Fragment(), OnClickListener {
             promptChipAnimator?.let {
                 if (shouldPlayPromptChipEnteringAnimation && !it.isRunning) it.start()
             }
-        })
+        }
 
         workflowModel.detectedBarcode.observe(viewLifecycleOwner) { barcode ->
             if (barcode != null) {

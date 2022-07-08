@@ -55,7 +55,7 @@ object PreferenceUtils {
         val overlayWidth = overlay.width.toFloat()
         val overlayHeight = overlay.height.toFloat()
         val boxWidth = overlayWidth * getIntPref(context, R.string.pref_key_barcode_reticle_width, 80) / 100
-        val boxHeight = overlayHeight * getIntPref(context, R.string.pref_key_barcode_reticle_height, 35) / 100
+        val boxHeight = overlayHeight * getIntPref(context, R.string.pref_key_barcode_reticle_height, 50) / 100
         val cx = overlayWidth / 2
         val cy = overlayHeight / 2
         return RectF(cx - boxWidth / 2, cy - boxHeight / 2, cx + boxWidth / 2, cy + boxHeight / 2)

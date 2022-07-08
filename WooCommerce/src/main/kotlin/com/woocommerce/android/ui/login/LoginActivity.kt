@@ -741,5 +741,4 @@ class LoginActivity :
         }
         slideInFragment(fragment, true, LiveBarcodeScanningFragment.TAG)
     }
-
 }
