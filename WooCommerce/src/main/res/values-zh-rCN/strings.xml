@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-16 13:54:04+0000
+Translation-Revision-Date: 2022-06-30 09:54:14+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="install_wc_shipping_proceed_button">继续安装</string>
+    <string name="install_wc_shipping_installation_info">安装前须知</string>
+    <string name="install_wc_shipping_preinstall_title">安装扩展程序</string>
+    <string name="install_wc_shipping_extension_name">WooCommerce Shipping</string>
+    <string name="product_selector_clear_filters_button_title">清除过滤器</string>
+    <string name="product_selector_empty_state">未找到产品</string>
+    <string name="product_selector_search_failed">搜索产品失败</string>
+    <string name="product_selector_loading_failed">加载产品失败</string>
+    <string name="product_selector_search_hint">搜索产品</string>
+    <string name="product_selector_filter_button_title_default">过滤器 (%d)</string>
+    <string name="coupon_restrictions_allowed_emails_invalid">一些电子邮箱地址无效。 请纠正输入的电子邮件。</string>
+    <string name="coupon_restrictions_allowed_emails_hint">下单时允许核对的账单电子邮件列表。 用逗号分隔电子邮件地址。 您也可以使用星号 (*) 来匹配电子邮件地址的部分内容。 例如，“*@gmail.com”将匹配所有 Gmail 地址。</string>
+    <string name="empty_message_with_filters">很抱歉，没有与所筛选条件匹配的产品”</string>
+    <string name="card_reader_onboarding_confirm_payment_method_button">确认付款方式</string>
+    <string name="card_reader_onboarding_choose_stripe_button">Stripe</string>
+    <string name="card_reader_onboarding_choose_wcpayment_button">WooCommerce Payments</string>
+    <string name="card_reader_onboarding_choose_plugin_hint">可以通过这些付款提供商中的任何一个对现场付款进行处理。 您想使用哪个提供商？</string>
+    <string name="card_reader_onboarding_choose_payment_provider">选择您的付款提供商</string>
+    <string name="order_editing_locked_content_description">已锁定</string>
+    <string name="order_editing_non_editable_message">要编辑产品或付款详细信息，请将状态更改为“待付款”。</string>
+    <string name="order_editing_non_editable_title">此订单的部分内容当前不可编辑</string>
+    <string name="order_creation_customer_search_hint">搜索客户</string>
+    <string name="order_creation_customer_search_empty">未找到客户</string>
     <string name="install_wc_shipping_flow_onboarding_screen_not_now_button">不用了</string>
     <string name="install_wc_shipping_flow_onboarding_screen_add_extension_button">将扩展添加到商店</string>
     <string name="install_wc_shipping_flow_onboarding_screen_link">什么是 WooCommerce Shipping？</string>
@@ -193,7 +216,7 @@ Language: zh_CN
     <string name="coupon_details_minimum_spend">最低花费金额：%s</string>
     <string name="coupon_details_heading">优惠券汇总</string>
     <string name="coupon_list_view_coupon">查看优惠券汇总</string>
-    <string name="coupon_list_wip_message_enabled">我们一直致力于不断改进，让您能够从设备上也可以查看并编辑优惠券！</string>
+    <string name="coupon_list_wip_message_enabled">我们一直致力于不断改进，让您能够从设备上也可以查看优惠券！</string>
     <string name="coupon_list_wip_title">查看并编辑优惠券</string>
     <string name="coupon_list_empty_heading">没有找到优惠券</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s，不包括 %2s</string>
