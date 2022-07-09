@@ -47,6 +47,8 @@ GLOTPRESS_APP_STRINGS_PROJECT_URL = 'https://translate.wordpress.com/projects/wo
 # URL of the GlotPress project containing the Play Store metadata (title, keywords, release notes, …)
 GLOTPRESS_PLAYSTORE_METADATA_PROJECT_URL = 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/release-notes/'
 
+APP_PACKAGE_NAME = 'com.woocommerce.android'
+
 ########################################################################
 # Environment
 ########################################################################
@@ -360,7 +362,7 @@ platform :android do
   UI.error("Unable to find a build artifact at #{aab_file_path}") unless File.exist? aab_file_path
 
   upload_to_play_store(
-    package_name: 'com.woocommerce.android',
+    package_name: APP_PACKAGE_NAME,
     aab: aab_file_path,
     track: 'production',
     release_status: 'draft',
@@ -401,7 +403,7 @@ platform :android do
     UI.error("Unable to find a build artifact at #{aab_file_path}") unless File.exist? aab_file_path
 
     upload_to_play_store(
-      package_name: 'com.woocommerce.android',
+      package_name: APP_PACKAGE_NAME,
       aab: aab_file_path,
       track: 'beta',
       release_status: 'draft',
@@ -638,10 +640,10 @@ platform :android do
 
     screenshot_options = {
       output_directory: RAW_SCREENSHOTS_DIR,
-      app_package_name: "com.woocommerce.android",
+      app_package_name: APP_PACKAGE_NAME,
       app_apk_path: "WooCommerce/build/outputs/apk/vanilla/debug/WooCommerce-vanilla-debug.apk",
       tests_apk_path: "WooCommerce/build/outputs/apk/androidTest/vanilla/debug/WooCommerce-vanilla-debug-androidTest.apk",
-      use_tests_in_classes: "com.woocommerce.android.screenshots.ScreenshotTest",
+      use_tests_in_classes: "#{APP_PACKAGE_NAME}.screenshots.ScreenshotTest",
       reinstall_app: false,
       # By default, don't clear previous because we differentiate between light
       # and dark mode
@@ -650,7 +652,7 @@ platform :android do
       use_adb_root: true,
       locales: locales,
       use_timestamp_suffix: false,
-      test_instrumentation_runner: "com.woocommerce.android.WooCommerceTestRunner",
+      test_instrumentation_runner: "#{APP_PACKAGE_NAME}.WooCommerceTestRunner",
       # Don't care about the .html summary
       skip_open_summary: true
     }
