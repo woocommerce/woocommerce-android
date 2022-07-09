@@ -16,8 +16,8 @@ end
 PROJECT_ROOT_FOLDER = File.dirname(File.expand_path(__dir__))
 BUILD_PRODUCTS_PATH = File.join(PROJECT_ROOT_FOLDER, 'artifacts')
 INSTALLABLE_BUILD_DOMAIN = 'https://d2twmm2nzpx3bg.cloudfront.net'
-METADATA_DIR_PATH = File.join(PROJECT_ROOT_FOLDER, 'WooCommerce', 'metadata')
-RELEASE_NOTES_PATH = File.join(METADATA_DIR_PATH, 'release_notes.txt')
+APP_METADATA_DIR_PATH = File.join(PROJECT_ROOT_FOLDER, 'WooCommerce', 'metadata')
+RELEASE_NOTES_PATH = File.join(APP_METADATA_DIR_PATH, 'release_notes.txt')
 MAIN_STRINGS_PATH = File.join('WooCommerce', 'src', 'main', 'res', 'values', 'strings.xml')
 RAW_SCREENSHOTS_DIR = File.join(Dir.pwd, 'screenshots', 'raw')
 RAW_SCREENSHOTS_PROCESSING_DIR = File.join(Dir.pwd, 'screenshots', 'raw_tmp')
@@ -152,17 +152,17 @@ platform :android do
 
     files = {
       release_note: RELEASE_NOTES_PATH,
-      play_store_promo: File.join(METADATA_DIR_PATH, 'short_description.txt'),
-      play_store_desc: File.join(METADATA_DIR_PATH, 'full_description.txt'),
-      play_store_app_title: File.join(METADATA_DIR_PATH, 'title.txt'),
-      play_store_screenshot_1: File.join(METADATA_DIR_PATH, 'promo_screenshot_1.txt'),
-      play_store_screenshot_2: File.join(METADATA_DIR_PATH, 'promo_screenshot_2.txt'),
-      play_store_screenshot_3: File.join(METADATA_DIR_PATH, 'promo_screenshot_3.txt'),
-      play_store_screenshot_4: File.join(METADATA_DIR_PATH, 'promo_screenshot_4.txt'),
-      play_store_screenshot_5: File.join(METADATA_DIR_PATH, 'promo_screenshot_5.txt'),
+      play_store_promo: File.join(APP_METADATA_DIR_PATH, 'short_description.txt'),
+      play_store_desc: File.join(APP_METADATA_DIR_PATH, 'full_description.txt'),
+      play_store_app_title: File.join(APP_METADATA_DIR_PATH, 'title.txt'),
+      play_store_screenshot_1: File.join(APP_METADATA_DIR_PATH, 'promo_screenshot_1.txt'),
+      play_store_screenshot_2: File.join(APP_METADATA_DIR_PATH, 'promo_screenshot_2.txt'),
+      play_store_screenshot_3: File.join(APP_METADATA_DIR_PATH, 'promo_screenshot_3.txt'),
+      play_store_screenshot_4: File.join(APP_METADATA_DIR_PATH, 'promo_screenshot_4.txt'),
+      play_store_screenshot_5: File.join(APP_METADATA_DIR_PATH, 'promo_screenshot_5.txt'),
     }
 
-    po_path = File.join(METADATA_DIR_PATH, 'PlayStoreStrings.pot')
+    po_path = File.join(APP_METADATA_DIR_PATH, 'PlayStoreStrings.pot')
 
     an_update_metadata_source(
       po_file_path: po_path,
@@ -501,9 +501,9 @@ platform :android do
     }
 
     delete_old_changelogs(build: options[:build_number])
-    # Notice that this is a different path from `METADATA_DIR_PATH`.
+    # Notice that this is a different path from `APP_METADATA_DIR_PATH`.
     # This is the path for the Fastlane metadata, i.e. the ones for the Play Store, hence the `Dir.pwd`.
-    # `METADATA_DIR_PATH` is the path of the metadata the app uses at runtime.
+    # `APP_METADATA_DIR_PATH` is the path of the metadata the app uses at runtime.
     download_path = File.join(Dir.pwd, 'metadata', 'android')
     gp_downloadmetadata(
       project_url: GLOTPRESS_PLAYSTORE_METADATA_PROJECT_URL,
@@ -706,7 +706,7 @@ platform :android do
       "promo_screenshot_4.txt",
       "promo_screenshot_5.txt",
     ].each do |filename|
-      source = File.join(METADATA_DIR_PATH, filename)
+      source = File.join(APP_METADATA_DIR_PATH, filename)
       destination = File.join(en_us_path, filename)
       FileUtils.cp(source, destination)
     end
@@ -766,7 +766,7 @@ platform :android do
     # Run screenshots generator tool
     promo_screenshots(
       orig_folder: RAW_SCREENSHOTS_PROCESSING_DIR,
-      metadata_folder: METADATA_DIR_PATH,
+      metadata_folder: APP_METADATA_DIR_PATH,
       output_folder: PROMO_SCREENSHOTS_DIR,
       force: options[:force],
     )
