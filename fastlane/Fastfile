@@ -19,6 +19,8 @@ INSTALLABLE_BUILD_DOMAIN = 'https://d2twmm2nzpx3bg.cloudfront.net'
 APP_METADATA_DIR_PATH = File.join(PROJECT_ROOT_FOLDER, 'WooCommerce', 'metadata')
 RELEASE_NOTES_PATH = File.join(APP_METADATA_DIR_PATH, 'release_notes.txt')
 MAIN_STRINGS_PATH = File.join('WooCommerce', 'src', 'main', 'res', 'values', 'strings.xml')
+# The metadata for the Play Store live in the Fastlane folder, hence the `Dir.pwd`
+PLAY_STORE_METADATA_DIR_PATH = File.join(Dir.pwd, 'metadata', 'android')
 RAW_SCREENSHOTS_DIR = File.join(Dir.pwd, 'screenshots', 'raw')
 RAW_SCREENSHOTS_PROCESSING_DIR = File.join(Dir.pwd, 'screenshots', 'raw_tmp')
 PROMO_SCREENSHOTS_DIR = File.join(Dir.pwd, "screenshots", "promo_screenshots")
@@ -501,10 +503,7 @@ platform :android do
     }
 
     delete_old_changelogs(build: options[:build_number])
-    # Notice that this is a different path from `APP_METADATA_DIR_PATH`.
-    # This is the path for the Fastlane metadata, i.e. the ones for the Play Store, hence the `Dir.pwd`.
-    # `APP_METADATA_DIR_PATH` is the path of the metadata the app uses at runtime.
-    download_path = File.join(Dir.pwd, 'metadata', 'android')
+    download_path = PLAY_STORE_METADATA_DIR_PATH
     gp_downloadmetadata(
       project_url: GLOTPRESS_PLAYSTORE_METADATA_PROJECT_URL,
       target_files: files,
