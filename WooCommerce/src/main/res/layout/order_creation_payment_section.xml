@@ -42,7 +42,8 @@
                 android:layout_width="@dimen/major_200"
                 android:layout_height="@dimen/major_200"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                android:visibility="gone"/>
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 

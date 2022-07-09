@@ -64,8 +64,6 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
@@ -79,7 +77,6 @@ import java.text.DecimalFormat
 import javax.inject.Inject
 import kotlin.system.measureTimeMillis
 
-@ExperimentalCoroutinesApi
 @HiltViewModel
 class CreateShippingLabelViewModel @Inject constructor(
     savedState: SavedStateHandle,
@@ -454,9 +451,9 @@ class CreateShippingLabelViewModel @Inject constructor(
         val amount = data.stepsState.carrierStep.data.sumByBigDecimal { it.price }
         trackPurchaseInitiated(amount, fulfillOrder)
 
-        var result: WooResult<List<ShippingLabel>>
+        var wooResult: WooResult<List<ShippingLabel>>
         val duration = measureTimeMillis {
-            result = shippingLabelRepository.purchaseLabels(
+            wooResult = shippingLabelRepository.purchaseLabels(
                 orderId = data.order.id,
                 origin = data.stepsState.originAddressStep.data,
                 destination = data.stepsState.shippingAddressStep.data,
@@ -466,7 +463,7 @@ class CreateShippingLabelViewModel @Inject constructor(
             )
         } / 1000.0
 
-        return if (result.isError) {
+        return if (wooResult.isError) {
             AnalyticsTracker.track(
                 AnalyticsEvent.SHIPPING_LABEL_PURCHASE_FLOW,
                 mapOf(
@@ -480,13 +477,13 @@ class CreateShippingLabelViewModel @Inject constructor(
                 orderDetailRepository.updateOrderStatus(
                     orderId = data.order.id,
                     newStatus = CoreOrderStatus.COMPLETED.value
-                ).collect { result ->
-                    when (result) {
+                ).collect { updateOrderResult ->
+                    when (updateOrderResult) {
                         is OptimisticUpdateResult -> {
                             // noop
                         }
                         is RemoteUpdateResult -> {
-                            if (result.event.isError) {
+                            if (updateOrderResult.event.isError) {
                                 AnalyticsTracker.track(AnalyticsEvent.SHIPPING_LABEL_ORDER_FULFILL_FAILED)
                                 triggerEvent(ShowSnackbar(string.shipping_label_create_purchase_fulfill_error))
                             } else {
@@ -504,7 +501,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                     KEY_TOTAL_DURATION to duration
                 )
             )
-            PurchaseSuccess(result.model!!)
+            PurchaseSuccess(wooResult.model!!)
         }
     }
 
@@ -516,7 +513,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                 } else {
                     resourceProvider.getString(
                         string.shipping_label_multi_packages_items_count,
-                        data.sumBy { it.itemsCount },
+                        data.sumOf { it.itemsCount },
                         data.size
                     )
                 }

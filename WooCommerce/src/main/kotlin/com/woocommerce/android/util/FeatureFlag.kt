@@ -12,7 +12,6 @@ enum class FeatureFlag {
     IN_PERSON_PAYMENTS_CANADA, // Keeping the flag for a few sprints so we can quickly disable the feature if needed
     MORE_MENU_INBOX,
     COUPONS_M2,
-    IPP_SELECT_PAYMENT_GATEWAY,
     WC_SHIPPING_BANNER,
     UNIFIED_ORDER_EDITING,
     ORDER_CREATION_CUSTOMER_SEARCH;
@@ -28,11 +27,9 @@ enum class FeatureFlag {
             ANALYTICS_HUB,
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
-            IPP_SELECT_PAYMENT_GATEWAY,
             UNIFIED_ORDER_EDITING -> PackageUtils.isDebugBuild()
-            // order creation customer search is awaiting backend changes before being enabled
             ORDER_CREATION_CUSTOMER_SEARCH -> {
-                UNIFIED_ORDER_EDITING.isEnabled() && PackageUtils.isDebugBuild()
+                UNIFIED_ORDER_EDITING.isEnabled()
             }
         }
     }

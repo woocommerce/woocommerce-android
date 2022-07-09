@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products.categories.selector
 
 import androidx.annotation.VisibleForTesting
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -25,6 +26,7 @@ class ProductCategoryListHandler @Inject constructor(
     private val searchQuery = MutableStateFlow("")
     private val searchResults = MutableStateFlow(emptyList<ProductCategoryTreeItem>())
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     val categories: Flow<List<ProductCategoryTreeItem>> = searchQuery.flatMapLatest { query ->
         if (query.isEmpty()) {
             repository.observeCategories()

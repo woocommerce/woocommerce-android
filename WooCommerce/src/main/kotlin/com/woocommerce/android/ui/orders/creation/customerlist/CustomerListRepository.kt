@@ -44,7 +44,8 @@ class CustomerListRepository @Inject constructor(
     ): List<WCCustomerModel>? =
         customerStore.fetchCustomers(
             site = selectedSite.get(),
-            searchQuery = searchQuery
+            searchQuery = searchQuery,
+            role = "all"
         ).takeUnless { it.isError }?.model
 
     fun getCustomerByRemoteId(remoteId: Long): WCCustomerModel? =

@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.orders.creation
 
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus.Succeeded
+import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.Mode
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.Mode.Edit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -41,7 +41,7 @@ class EditFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest() {
     }
 
     @Test
-    fun `when hitting the back button with no changes, then trigger Exit with no dialog`() {
+    fun `when hitting the back button, then close the screen`() {
         orderDetailRepository.stub {
             onBlocking { getOrderById(defaultOrderValue.id) }.doReturn(defaultOrderValue)
         }
@@ -54,29 +54,6 @@ class EditFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest() {
         sut.onBackButtonClicked()
 
         assertThat(lastReceivedEvent).isEqualTo(Exit)
-    }
-
-    @Test
-    fun `when hitting the back button with changes done, then trigger discard warning dialog`() {
-        var lastReceivedEvent: Event? = null
-        sut.event.observeForever {
-            lastReceivedEvent = it
-        }
-
-        var addedProductItem: Order.Item? = null
-        sut.orderDraft.observeForever { order ->
-            addedProductItem = order.items.find { it.productId == 123L }
-        }
-
-        sut.onProductSelected(123)
-
-        assertThat(addedProductItem).isNotNull
-        val addedProductItemId = addedProductItem!!.itemId
-
-        sut.onIncreaseProductsQuantity(addedProductItemId)
-        sut.onBackButtonClicked()
-
-        assertThat(lastReceivedEvent).isInstanceOf(Event.ShowDialog::class.java)
     }
 
     @Test
@@ -93,7 +70,7 @@ class EditFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest() {
 
     @Test
     fun `when isEditable is true on the edit flow the order is editable`() {
-        createOrUpdateOrderUseCase = mock {
+        createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(defaultOrderValue.copy(isEditable = true)))
         }
         createSut()
@@ -106,7 +83,7 @@ class EditFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest() {
 
     @Test
     fun `when isEditable is false on the edit flow the order is NOT editable`() {
-        createOrUpdateOrderUseCase = mock {
+        createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(defaultOrderValue.copy(isEditable = false)))
         }
         createSut()

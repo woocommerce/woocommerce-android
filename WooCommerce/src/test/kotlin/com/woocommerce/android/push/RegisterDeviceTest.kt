@@ -17,7 +17,7 @@ import org.wordpress.android.fluxc.store.GetDeviceRegistrationStatus
 import org.wordpress.android.fluxc.store.GetDeviceRegistrationStatus.Status.REGISTERED
 import org.wordpress.android.fluxc.store.GetDeviceRegistrationStatus.Status.UNREGISTERED
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@ExperimentalCoroutinesApi
 class RegisterDeviceTest : BaseUnitTest() {
     lateinit var sut: RegisterDevice
 

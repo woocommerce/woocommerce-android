@@ -55,7 +55,7 @@ class CouponDetailsViewModelTest : BaseUnitTest() {
             Result.success(Unit)
     }
     private val wooCommerceStore: WooCommerceStore = mock {
-        on { getSiteSettings(any()) } doReturn WCSettingsModel(0, "USD", LEFT, "", "", 2)
+        on { getSiteSettings(any()) } doReturn WCSettingsModel(0, "USD", LEFT, "", "", 2, couponsEnabled = false)
     }
     private val currencyFormatter: CurrencyFormatter = mock {
         on { formatCurrency(any<BigDecimal>(), any(), any()) } doAnswer { it.arguments[0].toString() }

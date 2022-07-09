@@ -1,7 +1,7 @@
 package com.woocommerce.android.model
 
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel
-import java.util.*
+import java.util.Date
 import javax.inject.Inject
 
 class ShippingLabelMapper @Inject constructor(private val addressMapper: ShippingLabelAddressMapper) {

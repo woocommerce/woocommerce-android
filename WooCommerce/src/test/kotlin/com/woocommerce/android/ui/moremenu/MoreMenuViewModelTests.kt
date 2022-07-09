@@ -18,8 +18,8 @@ import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 
+@ExperimentalCoroutinesApi
 class MoreMenuViewModelTests : BaseUnitTest() {
-    @OptIn(ExperimentalCoroutinesApi::class)
     private val unseenReviewsCountHandler: UnseenReviewsCountHandler = mock {
         on { observeUnseenCount() } doReturn flowOf(0)
     }

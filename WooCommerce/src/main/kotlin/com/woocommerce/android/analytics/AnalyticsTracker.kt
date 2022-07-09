@@ -11,6 +11,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.json.JSONObject
 import org.wordpress.android.fluxc.model.SiteModel
+import java.util.Locale
 import java.util.UUID
 
 class AnalyticsTracker private constructor(private val context: Context) {
@@ -62,7 +63,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
             return
         }
 
-        val eventName = stat.name.toLowerCase()
+        val eventName = stat.name.lowercase(Locale.getDefault())
 
         val user = username ?: getAnonID() ?: generateNewAnonID()
 
@@ -244,6 +245,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_STATE_ON = "on"
         const val VALUE_STATE_OFF = "off"
 
+        const val VALUE_SIMPLE_PAYMENTS_FLOW = "simple_payment"
         const val VALUE_SIMPLE_PAYMENTS_FEEDBACK = "simple_payments"
         const val VALUE_SIMPLE_PAYMENTS_COLLECT_CARD = "card"
         const val VALUE_SIMPLE_PAYMENTS_COLLECT_CASH = "cash"
@@ -251,6 +253,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_SIMPLE_PAYMENTS_SOURCE_AMOUNT = "amount"
         const val VALUE_SIMPLE_PAYMENTS_SOURCE_SUMMARY = "summary"
         const val VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD = "payment_method"
+
+        const val VALUE_ORDER_PAYMENTS_FLOW = "order_payment"
 
         // -- Downloadable Files
         const val KEY_DOWNLOADABLE_FILE_ACTION = "action"
@@ -296,6 +300,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_AMOUNT = "amount"
 
         const val KEY_PAYMENT_METHOD = "payment_method"
+        const val KEY_PAYMENT_GATEWAY = "payment_gateway"
 
         const val KEY_IS_JETPACK_CP_CONNECTED = "is_jetpack_cp_conntected"
         const val KEY_ACTIVE_JETPACK_CONNECTION_PLUGINS = "active_jetpack_connection_plugins"

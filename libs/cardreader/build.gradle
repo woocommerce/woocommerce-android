@@ -25,8 +25,11 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+        kotlinOptions {
+            allWarningsAsErrors = true
+        }
         freeCompilerArgs += [
-                "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
+                "-Xopt-in=kotlin.RequiresOptIn"
         ]
     }
 }

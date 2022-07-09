@@ -446,8 +446,10 @@
     <string name="orderdetail_product_qty">QTY</string>
     <string name="orderdetail_payment_summary_completed">%1$s via %2$s</string>
     <string name="orderdetail_payment_summary_onhold">Awaiting payment via %s</string>
+    <string name="orderdetail_payment_summary_onhold_plain">Awaiting payment</string>
     <string name="orderdetail_payment_paid_by_customer">Paid</string>
     <string name="orderdetail_refunded">Refunded</string>
+    <string name="orderdetail_refunded_line_with_info">Refunded: %1$s</string>
     <string name="orderdetail_refunded_products">Refunded products</string>
     <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="orderdetail_net">Net Payment</string>
@@ -925,6 +927,7 @@
         -->
     <string name="card_reader_manage_card_reader">Manage Card Reader</string>
     <string name="card_reader_purchase_card_reader">Order Card Reader</string>
+    <string name="card_reader_manage_payment_provider">Change Payment Provider</string>
     <string name="card_reader_bbpos_manual_card_reader" translatable="false">BBPOS Chipper™ 2X BT</string>
     <string name="card_reader_m2_manual_card_reader" translatable="false">Stripe M2</string>
     <string name="card_reader_wisepad_3_manual_card_reader" translatable="false">WisePad 3</string>
@@ -1013,7 +1016,7 @@
     <string name="card_reader_payment_send_receipt">Send receipt</string>
     <string name="card_reader_payment_save_for_later">Save receipt and continue</string>
 
-    <string name="card_reader_payment_description">In-Person Payment for Order %s for %s</string>
+    <string name="card_reader_payment_description_v2">In-Person Payment for Order #%s for %s blog_id %s.</string>
     <string name="card_reader_payment_receipt_email_subject">Your receipt from %s</string>
     <string name="card_reader_payment_receipt_email_content">Thank you for your purchase! Click the link below for your payment receipt.\n\n%s</string>
     <string name="card_reader_payment_email_client_not_found">Can\'t detect your email client app</string>
@@ -1034,6 +1037,7 @@
     <string name="card_reader_connect_multiple_readers_found_header">Several readers found</string>
     <string name="card_reader_connect_to_reader">Connect to reader</string>
     <string name="card_reader_connect_connect_button">Connect</string>
+    <string name="card_reader_connect_keep_searching_button">Keep Searching</string>
     <string name="card_reader_connect_connecting_header">Connecting to reader</string>
     <string name="card_reader_connect_connecting_hint" translatable="false">@string/please_wait</string>
     <string name="card_reader_connect_failed_header">We couldn\’t connect your reader</string>
@@ -1660,6 +1664,8 @@
     <string name="support_system_status_report">System status report</string>
     <string name="support_system_status_report_clipboard_label">WooCommerce SSR</string>
     <string name="support_system_status_report_detail">Various system information about your site</string>
+    <string name="support_system_status_report_copy_label">Copy system status report to clipboard</string>
+    <string name="support_system_status_report_share_label">Share system status report</string>
     <string name="support_system_status_report_copied_to_clipboard">System status report copied to clipboard</string>
     <string name="support_system_status_report_error_copy_to_clipboard">Error copying SSR to clipboard</string>
     <string name="support_system_status_report_share_error">Unable to share System Status Report</string>
@@ -2498,4 +2504,9 @@
     <string name="install_wc_shipping_preinstall_title">Install extension</string>
     <string name="install_wc_shipping_installation_info">Things to know before installing</string>
     <string name="install_wc_shipping_proceed_button">Proceed With Installation</string>
+    <string name="lines_incomplete">%1$s are incomplete</string>
+    <string name="lines_incomplete_explanation">To edit all %1$s browse the order in your WooCommerce store admin</string>
+    <string name="lines_all_details">the details</string>
+    <string name="tests_notification_new_order_title">You have a new order! 🎉</string>
+    <string name="tests_notification_new_order_message">New order for $50 on Your WooCommerce Store</string>
 </resources>

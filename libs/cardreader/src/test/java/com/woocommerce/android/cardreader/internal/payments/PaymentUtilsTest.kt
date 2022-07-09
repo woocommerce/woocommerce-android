@@ -3,6 +3,7 @@ package com.woocommerce.android.cardreader.internal.payments
 import com.woocommerce.android.cardreader.internal.CardReaderBaseUnitTest
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForCanada
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUSA
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.math.BigDecimal
@@ -10,6 +11,7 @@ import java.math.BigDecimal
 private const val NONE_USD_CURRENCY = "CZK"
 private const val USD_CURRENCY = "USD"
 
+@ExperimentalCoroutinesApi
 class PaymentUtilsTest : CardReaderBaseUnitTest() {
     private val paymentUtils = PaymentUtils()
 

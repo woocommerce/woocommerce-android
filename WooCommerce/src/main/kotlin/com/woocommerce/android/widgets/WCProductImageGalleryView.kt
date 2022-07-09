@@ -116,6 +116,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
         // cancel pending Glide request when a view is recycled
         val glideRequests = GlideApp.with(this)
+        @Suppress("DEPRECATION")
         setRecyclerListener { holder ->
             glideRequests.clear((holder as ImageViewHolder).viewBinding.productImage)
         }
@@ -386,6 +387,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             return@OnTouchListener false
         }
 
+        @Suppress("DEPRECATION")
         private val onClickListener = OnClickListener {
             if (adapterPosition > NO_POSITION) {
                 onImageClicked(adapterPosition)
