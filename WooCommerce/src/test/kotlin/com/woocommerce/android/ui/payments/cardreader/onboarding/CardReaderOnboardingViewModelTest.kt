@@ -464,21 +464,6 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given wcpay and stripe activated, when init, then track onboarding state is called`() =
-        testBlocking {
-            createVM(
-                CardReaderOnboardingFragmentArgs(
-                    CardReaderOnboardingParams.Failed(
-                        cardReaderFlowParam = mock(),
-                        onboardingState = WcpayAndStripeActivated,
-                    )
-                ).initSavedStateHandle()
-            )
-
-            verify(tracker).trackOnboardingState(WcpayAndStripeActivated)
-        }
-
-    @Test
     fun `given country not supported incoming, when view model init, then country not supported state shown`() =
         testBlocking {
             val viewModel = createVM(
