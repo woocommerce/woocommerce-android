@@ -415,6 +415,30 @@ platform :android do
     create_gh_release(version: version, prerelease: true) if options[:create_release]
   end
 
+    # Updates the metadata in the Play Store (Main store listing) from the content of `fastlane/{metadata|jetpack_metadata}/android/*/*.txt` files
+  #
+  desc 'Uploads the localized metadata to the PlayStore.'
+  lane :upload_playstore_localized_metadata do
+    package_name = '🥔'
+    metadata_dir = # this is used at line 531, too
+    version_code = android_get_release_version['code']
+
+    upload_to_play_store(
+      package_name: package_name,
+      track: 'production',
+      version_code: version_code, # Apparently required by fastlane… even if the "Main Store Listing" isn't be attached to a specific build ¯\_(ツ)_/¯
+      metadata_path: metadata_dir,
+      skip_upload_apk: true,
+      skip_upload_aab: true,
+      skip_upload_metadata: false,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      json_key: UPLOAD_TO_PLAY_STORE_JSON_KEY
+    )
+  end
+
+
   #####################################################################################
   # trigger_release_build
   # -----------------------------------------------------------------------------------
