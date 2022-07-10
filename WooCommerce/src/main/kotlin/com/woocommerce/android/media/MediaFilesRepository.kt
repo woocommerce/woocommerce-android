@@ -64,15 +64,15 @@ class MediaFilesRepository @Inject constructor(
             WooLog.d(T.MEDIA, "MediaFilesRepository > Dispatching request to upload ${localMediaModel.filePath}")
             val listener = OnMediaUploadListener(this)
             dispatcher.register(listener)
-            val payload = MediaStore.UploadMediaPayload(selectedSite.get(), localMediaModel, stripLocation)
-            dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(payload))
+            val uploadPayload = MediaStore.UploadMediaPayload(selectedSite.get(), localMediaModel, stripLocation)
+            dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(uploadPayload))
 
             awaitClose {
                 dispatcher.unregister(listener)
                 // Cancel upload if the collection was cancelled before completion
                 if (!isClosedForSend) {
-                    val payload = MediaStore.CancelMediaPayload(selectedSite.get(), localMediaModel, true)
-                    dispatcher.dispatch(MediaActionBuilder.newCancelMediaUploadAction(payload))
+                    val cancelPayload = MediaStore.CancelMediaPayload(selectedSite.get(), localMediaModel, true)
+                    dispatcher.dispatch(MediaActionBuilder.newCancelMediaUploadAction(cancelPayload))
                 }
             }
         }.onEach {

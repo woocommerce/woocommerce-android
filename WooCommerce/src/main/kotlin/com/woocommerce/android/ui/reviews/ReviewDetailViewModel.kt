@@ -6,7 +6,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.ProductReview
-import com.woocommerce.android.model.RequestResult.*
+import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.NavigateBackFromNotification
 import com.woocommerce.android.ui.reviews.domain.MarkReviewAsSeen
@@ -98,7 +98,7 @@ class ReviewDetailViewModel @Inject constructor(
         if (networkStatus.isConnected()) {
             launch {
                 when (repository.fetchProductReview(remoteReviewId)) {
-                    SUCCESS, NO_ACTION_NEEDED -> {
+                    RequestResult.SUCCESS, RequestResult.NO_ACTION_NEEDED -> {
                         repository.getCachedProductReview(remoteReviewId)?.let { review ->
                             viewState = viewState.copy(
                                 productReview = review,
@@ -106,7 +106,9 @@ class ReviewDetailViewModel @Inject constructor(
                             )
                         }
                     }
-                    ERROR -> triggerEvent(ShowSnackbar(R.string.wc_load_review_error))
+                    RequestResult.ERROR -> triggerEvent(ShowSnackbar(R.string.wc_load_review_error))
+                    RequestResult.API_ERROR -> Unit // Do nothing
+                    RequestResult.RETRY -> Unit // Do nothing
                 }
             }
         } else {

@@ -31,7 +31,7 @@
     }
   ],
   "entries": [
-    // Your Store in Your Pocket
+    // Track sales and bestselling products
     {
       "device": "Pixel 3",
       "filename": "Pixel 3-01.png",
@@ -39,13 +39,37 @@
       "screenshot": "images/phoneScreenshots/1-order-dashboard-dark.png",
       "text": "playstoreres/metadata/{locale}/promo_screenshot_1.txt"
     },
-    // View and manage orders
+    // Create orders on the fly
     {
       "device": "Pixel 3",
       "filename": "Pixel 3-02.png",
-      "background": "#674399",
-      "screenshot": "images/phoneScreenshots/2-order-list-dark.png",
+      "background": "#C9356E",
+      "screenshot": "images/phoneScreenshots/2-add-order-light.png",
       "text": "playstoreres/metadata/{locale}/promo_screenshot_2.txt"
+    },
+    // Take payments in person
+    {
+      "device": "Pixel 3",
+      "filename": "Pixel 3-03.png",
+      "background": "#674399",
+      "screenshot": "images/phoneScreenshots/3-in-person-payments-dark.png",
+      "text": "playstoreres/metadata/{locale}/promo_screenshot_3.txt"
+    },
+    // Add and edit products with a touch
+    {
+      "device": "Pixel 3",
+      "filename": "Pixel 3-04.png",
+      "background": "#C9356E",
+      "screenshot": "images/phoneScreenshots/4-add-product-light.png",
+      "text": "playstoreres/metadata/{locale}/promo_screenshot_4.txt"
+    },
+    // Get notified of every sale
+    {
+      "device": "Pixel 3",
+      "filename": "Pixel 3-05.png",
+      "background": "#674399",
+      "screenshot": "images/phoneScreenshots/5-push-notifications-dark.png",
+      "text": "playstoreres/metadata/{locale}/promo_screenshot_5.txt"
     }
   ]
 }

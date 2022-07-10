@@ -24,6 +24,7 @@ class CouponRestrictionsViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: CouponRestrictionsFragmentArgs by savedState.navArgs()
 
+    @Suppress("USELESS_CAST")
     private val restrictionsDraft = savedStateHandle.getStateFlow(
         viewModelScope,
         // Casting below added to work around IDE bug of not recognizing the nested class type.

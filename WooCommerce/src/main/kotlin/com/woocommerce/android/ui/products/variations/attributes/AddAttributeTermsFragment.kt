@@ -94,7 +94,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
                     attribute.terms.find {
                         it == termName
                     }
-                }?.let { term ->
+                }?.let {
                     globalTermsAdapter.addTerm(termName)
                 }
 

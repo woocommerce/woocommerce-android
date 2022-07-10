@@ -111,7 +111,7 @@ class ShippingLabelRepository @Inject constructor(
             orderId = order.id,
             origin = origin.toShippingLabelModel(),
             destination = destination.toShippingLabelModel(),
-            packages = packages.mapIndexed { i, box ->
+            packages = packages.mapIndexed { _, box ->
                 val pack = requireNotNull(box.selectedPackage)
                 WCShippingLabelModel.ShippingLabelPackage(
                     id = box.packageId,
@@ -189,7 +189,7 @@ class ShippingLabelRepository @Inject constructor(
         rates: List<ShippingRate>,
         customsPackages: List<CustomsPackage>?
     ): WooResult<List<ShippingLabel>> {
-        val packagesData = packages.mapIndexed { i, labelPackage ->
+        val packagesData = packages.mapIndexed { _, labelPackage ->
             val rate = rates.first { it.packageId == labelPackage.packageId }
             WCShippingLabelPackageData(
                 id = labelPackage.packageId,

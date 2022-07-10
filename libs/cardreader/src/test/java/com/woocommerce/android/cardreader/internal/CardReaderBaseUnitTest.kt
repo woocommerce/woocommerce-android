@@ -9,14 +9,13 @@ import org.junit.Rule
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
 
+@ExperimentalCoroutinesApi
 @Suppress("UnnecessaryAbstractClass")
 @RunWith(MockitoJUnitRunner::class)
 abstract class CardReaderBaseUnitTest(testDispatcher: TestDispatcher = UnconfinedTestDispatcher()) {
-    @ExperimentalCoroutinesApi
     @Rule @JvmField
     val coroutinesTestRule = CardReaderCoroutineTestRule(testDispatcher)
 
-    @ExperimentalCoroutinesApi
     protected fun testBlocking(block: suspend TestScope.() -> Unit) =
         runTest(coroutinesTestRule.testDispatcher) {
             block()
