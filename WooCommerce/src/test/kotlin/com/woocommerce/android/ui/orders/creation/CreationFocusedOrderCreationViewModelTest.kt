@@ -432,45 +432,90 @@ class CreationFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest(
 
     @Test
     fun `when editing a fee, then reuse the existent one with different value`() {
+        // given
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(
+                Succeeded(
+                    Order.EMPTY.copy(
+                        feesLines = listOf(
+                            Order.FeeLine.EMPTY.copy(id = 1, total = BigDecimal(1)),
+                            Order.FeeLine.EMPTY.copy(id = 2, total = BigDecimal(2)),
+                            Order.FeeLine.EMPTY.copy(id = 3, total = BigDecimal(3)),
+                        )
+                    )
+                )
+            )
+        }
+        createSut()
         var orderDraft: Order? = null
         sut.orderDraft.observeForever {
             orderDraft = it
         }
-
         val newFeeTotal = BigDecimal(123.5)
 
+        // when
         sut.onFeeEdited(BigDecimal(1))
         sut.onFeeEdited(BigDecimal(2))
         sut.onFeeEdited(BigDecimal(3))
         sut.onFeeEdited(newFeeTotal)
 
-        orderDraft?.feesLines
-            ?.takeIf { it.size == 1 }
-            ?.let {
-                val currentFee = it.first()
-                assertThat(currentFee.total).isEqualTo(newFeeTotal)
-                assertThat(currentFee.name).isNotNull
-            } ?: fail("Expected a fee lines list with a single fee with 123.5 as total")
+        // then
+        assertThat(orderDraft?.feesLines)
+            .hasSize(3)
+            .first().satisfies { firstFee ->
+                assertThat(firstFee.total).isEqualTo(newFeeTotal)
+            }
     }
 
     @Test
-    fun `when removing a fee, then mark the existent one with null name`() {
+    fun `when removing a fee, do not remove the rest of fees`() {
+        // given
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(
+                Succeeded(
+                    Order.EMPTY.copy(
+                        feesLines = listOf(
+                            Order.FeeLine.EMPTY.copy(id = 1, total = BigDecimal(1)),
+                            Order.FeeLine.EMPTY.copy(id = 2, total = BigDecimal(2)),
+                            Order.FeeLine.EMPTY.copy(id = 3, total = BigDecimal(3)),
+                        )
+                    )
+                )
+            )
+        }
+        createSut()
         var orderDraft: Order? = null
         sut.orderDraft.observeForever {
             orderDraft = it
         }
 
-        val newFeeTotal = BigDecimal(123.5)
-        sut.onFeeEdited(newFeeTotal)
+        // when
         sut.onFeeRemoved()
 
-        orderDraft?.feesLines
-            ?.takeIf { it.size == 1 }
-            ?.let {
-                val currentFee = it.first()
-                assertThat(currentFee.total).isEqualTo(newFeeTotal)
-                assertThat(currentFee.name).isNull()
-            } ?: fail("Expected a fee lines list with a single fee with 123.5 as total")
+        // then
+        assertThat(orderDraft?.feesLines)
+            .hasSize(3)
+            .extracting("name")
+            .containsOnlyOnce(null)
+            .first().matches {
+                it == null
+            }
+    }
+
+    @Test
+    fun `when editing fees on order without fees, add one`() {
+        // given
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        assert(orderDraft?.feesLines?.isEmpty() == true)
+
+        // when
+        sut.onFeeEdited(BigDecimal(1))
+
+        // then
+        assertThat(orderDraft?.feesLines).hasSize(1)
     }
 
     @Test
@@ -541,10 +586,15 @@ class CreationFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest(
         }
 
         // when
-        sut.onShippingEdited(BigDecimal(1), "1")
+        val newValue = BigDecimal(321)
+        sut.onShippingEdited(newValue, "1")
 
         // then
-        assertThat(orderDraft?.shippingLines).hasSize(3)
+        assertThat(orderDraft?.shippingLines)
+            .hasSize(3)
+            .first().satisfies { firstFee ->
+                assertThat(firstFee.total).isEqualTo(newValue)
+            }
     }
 
     @Test
