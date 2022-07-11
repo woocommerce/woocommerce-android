@@ -105,7 +105,7 @@ class OrderTest {
             items = listOf(
                 mock { on { quantity }.thenReturn(1F) },
             ),
-            feesLines = listOf(mock())
+            feesLines = listOf(Order.FeeLine.EMPTY)
         )
 
         // WHEN

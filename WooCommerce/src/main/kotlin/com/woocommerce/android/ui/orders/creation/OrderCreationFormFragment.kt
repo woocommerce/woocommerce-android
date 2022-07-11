@@ -296,10 +296,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     private fun OrderCreationPaymentSectionBinding.bindFeesSubSection(newOrderData: Order) {
         feeButton.setOnClickListener { viewModel.onFeeButtonClicked() }
 
-        val currentFeeTotal = newOrderData.feesLines
-            .firstOrNull { it.name != null }
-            ?.total
-            ?: BigDecimal.ZERO
+        val currentFeeTotal = newOrderData.feesTotal
 
         val hasFee = currentFeeTotal.isNotEqualTo(BigDecimal.ZERO)
 

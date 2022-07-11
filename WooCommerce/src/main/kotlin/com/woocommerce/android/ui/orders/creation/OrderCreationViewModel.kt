@@ -393,20 +393,37 @@ class OrderCreationViewModel @Inject constructor(
             mapOf(KEY_FLOW to VALUE_FLOW_CREATION)
         )
 
-        val newFee = _orderDraft.value.feesLines.firstOrNull { it.name != null }
-            ?: Order.FeeLine.EMPTY
-
         _orderDraft.update { draft ->
-            listOf(newFee.copy(name = ORDER_CUSTOM_FEE_NAME, total = feeValue))
-                .let { draft.copy(feesLines = it) }
+            val fees: List<Order.FeeLine> = draft.feesLines.mapIndexed { index, feeLine ->
+                if (index == 0) {
+                    feeLine.copy(total = feeValue)
+                } else {
+                    feeLine
+                }
+            }.ifEmpty {
+                listOf(
+                    Order.FeeLine.EMPTY.copy(
+                        name = ORDER_CUSTOM_FEE_NAME,
+                        total = feeValue
+                    )
+                )
+            }
+
+            draft.copy(feesLines = fees)
         }
     }
 
     fun onFeeRemoved() {
         _orderDraft.update { draft ->
-            draft.feesLines
-                .map { it.copy(name = null) }
-                .let { draft.copy(feesLines = it) }
+            draft.copy(
+                feesLines = draft.feesLines.mapIndexed { index, feeLine ->
+                    if (index == 0) {
+                        feeLine.copy(name = null)
+                    } else {
+                        feeLine
+                    }
+                }
+            )
         }
     }
 
