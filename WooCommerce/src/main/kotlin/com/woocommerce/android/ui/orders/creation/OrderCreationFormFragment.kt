@@ -20,6 +20,7 @@ import com.woocommerce.android.databinding.OrderCreationPaymentSectionBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
@@ -273,18 +274,18 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     private fun bindPaymentSection(paymentSection: OrderCreationPaymentSectionBinding, newOrderData: Order) {
         paymentSection.bindFeesSubSection(newOrderData)
 
-        val currentShipping = newOrderData.shippingLines.firstOrNull { it.methodId != null }
+        val firstShipping = newOrderData.shippingLines.firstOrNull { it.methodId != null }
         paymentSection.shippingButton.setText(
-            if (currentShipping != null) R.string.order_creation_edit_shipping
+            if (firstShipping != null) R.string.order_creation_edit_shipping
             else R.string.order_creation_add_shipping
         )
         paymentSection.shippingButton.setIconResource(
-            if (currentShipping != null) 0
+            if (firstShipping != null) 0
             else R.drawable.ic_add
         )
-        paymentSection.shippingValue.isVisible = currentShipping != null
-        currentShipping?.let {
-            paymentSection.shippingValue.text = bigDecimalFormatter(it.total)
+        paymentSection.shippingValue.isVisible = firstShipping != null
+        newOrderData.shippingLines.sumByBigDecimal { it.total }.let {
+            paymentSection.shippingValue.text = bigDecimalFormatter(it)
         }
 
         paymentSection.productsTotalValue.text = bigDecimalFormatter(newOrderData.productsTotal)

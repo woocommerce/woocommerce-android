@@ -519,24 +519,77 @@ class CreationFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest(
     }
 
     @Test
-    fun `when removing a shipping fee, then mark the existent one with null methodId`() {
+    fun `when editing a shipping fee, do not remove the rest of the shipping fees`() {
+        // given
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(
+                Succeeded(
+                    Order.EMPTY.copy(
+                        shippingLines = listOf(
+                            Order.ShippingLine("first", "first", BigDecimal(1)),
+                            Order.ShippingLine("second", "second", BigDecimal(2)),
+                            Order.ShippingLine("third", "third", BigDecimal(3)),
+                        )
+                    )
+                )
+            )
+        }
+        createSut()
         var orderDraft: Order? = null
         sut.orderDraft.observeForever {
             orderDraft = it
         }
 
-        val newShippingFeeTotal = BigDecimal(123.5)
-        sut.onShippingEdited(newShippingFeeTotal, "4")
+        // when
+        sut.onShippingEdited(BigDecimal(1), "1")
+
+        // then
+        assertThat(orderDraft?.shippingLines).hasSize(3)
+    }
+
+    @Test
+    fun `when order has no shipping fees, add one`() {
+        // given
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        assert(orderDraft?.shippingLines?.isEmpty() == true)
+
+        // when
+        sut.onShippingEdited(BigDecimal(1), "1")
+
+        // then
+        assertThat(orderDraft?.shippingLines).hasSize(1)
+    }
+
+    @Test
+    fun `when removing a shipping fee, then mark the first one with null methodId`() {
+        // given
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(
+                Succeeded(
+                    Order.EMPTY.copy(
+                        shippingLines = listOf(
+                            Order.ShippingLine("first", "first", BigDecimal(1)),
+                            Order.ShippingLine("second", "second", BigDecimal(2)),
+                            Order.ShippingLine("third", "third", BigDecimal(3)),
+                        )
+                    )
+                )
+            )
+        }
+        createSut()
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+
+        // when
         sut.onShippingRemoved()
 
-        orderDraft?.shippingLines
-            ?.takeIf { it.size == 1 }
-            ?.let {
-                val shippingFee = it.first()
-                assertThat(shippingFee.total).isEqualTo(newShippingFeeTotal)
-                assertThat(shippingFee.methodTitle).isEqualTo("4")
-                assertThat(shippingFee.methodId).isNull()
-            } ?: fail("Expected a shipping lines list with a single shipping fee with 123.5 as total")
+        // then
+        assertThat(orderDraft?.shippingLines?.first()?.methodId).isNull()
     }
 
     @Test
