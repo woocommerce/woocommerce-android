@@ -6,7 +6,6 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -109,22 +108,16 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
     }
 
     private fun setupObservers() {
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            { event ->
-                when (event) {
-                    is ExitProductAttributeList -> findNavController().navigateUp()
-                    else -> event.isHandled = false
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ExitProductAttributeList -> findNavController().navigateUp()
+                else -> event.isHandled = false
             }
-        )
+        }
 
-        viewModel.attributeList.observe(
-            viewLifecycleOwner,
-            Observer {
-                showAttributes(it)
-            }
-        )
+        viewModel.attributeList.observe(viewLifecycleOwner) {
+            showAttributes(it)
+        }
 
         viewModel.attributeListViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isCreatingVariationDialogShown?.takeIfNotEqualTo(old?.isCreatingVariationDialogShown) {

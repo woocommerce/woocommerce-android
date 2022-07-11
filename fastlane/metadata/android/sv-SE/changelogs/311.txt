@@ -1,0 +1,5 @@
+9.5:
+Vi fortsätter att lägga till ny funktionalitet till vår experimentella funktion för rabattkodshantering. Den här versionen inkluderar redigering och borttagning av rabattkoder samt flertalet visningsförbättringar. Aktivera den här funktionen via fliken Mer, Inställningar, Betafunktioner för att få tidig åtkomst.
+
+Vi har också åtgärdat ett fel som gjorde det svårt för vissa av er att söka efter beställningar. Tack till alla som har rapporterat det här felet. Er feedback är jätteviktig för oss.
+

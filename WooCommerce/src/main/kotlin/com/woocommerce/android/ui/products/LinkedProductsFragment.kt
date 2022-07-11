@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.products
 
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -51,15 +50,12 @@ class LinkedProductsFragment : BaseProductFragment(R.layout.fragment_linked_prod
     }
 
     private fun setupObservers() {
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ExitLinkedProducts -> findNavController().navigateUp()
-                    else -> event.isHandled = false
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ExitLinkedProducts -> findNavController().navigateUp()
+                else -> event.isHandled = false
             }
-        )
+        }
 
         handleResult<List<Long>>(UPSELLS.resultKey) {
             viewModel.updateProductDraft(upsellProductIds = it)

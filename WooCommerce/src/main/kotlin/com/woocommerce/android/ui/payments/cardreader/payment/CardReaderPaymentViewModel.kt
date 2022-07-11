@@ -655,9 +655,10 @@ class CardReaderPaymentViewModel
 
     private fun Order.getPaymentDescription(): String =
         resourceProvider.getString(
-            R.string.card_reader_payment_description,
+            R.string.card_reader_payment_description_v2,
             this.number,
-            selectedSite.get().name.orEmpty()
+            selectedSite.get().name.orEmpty(),
+            selectedSite.get().remoteId().value
         )
 
     private fun Order.getAmountLabel(): String = currencyFormatter

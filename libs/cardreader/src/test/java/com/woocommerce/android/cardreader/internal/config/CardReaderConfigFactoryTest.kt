@@ -1,10 +1,12 @@
 package com.woocommerce.android.cardreader.internal.config
 
 import com.woocommerce.android.cardreader.internal.CardReaderBaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 
+@ExperimentalCoroutinesApi
 class CardReaderConfigFactoryTest : CardReaderBaseUnitTest() {
     private lateinit var cardReaderConfigFactory: CardReaderConfigFactory
 

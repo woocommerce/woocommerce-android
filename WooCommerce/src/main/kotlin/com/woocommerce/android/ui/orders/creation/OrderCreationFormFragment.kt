@@ -20,6 +20,7 @@ import com.woocommerce.android.databinding.OrderCreationPaymentSectionBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
@@ -28,6 +29,9 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
+import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.Mode
+import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.MultipleLinesContext.None
+import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.MultipleLinesContext.Warning
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigator
 import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
@@ -66,8 +70,8 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Visible(
             navigationIcon = when (viewModel.mode) {
-                OrderCreationViewModel.Mode.Creation -> R.drawable.ic_back_24dp
-                is OrderCreationViewModel.Mode.Edit -> null
+                Mode.Creation -> R.drawable.ic_back_24dp
+                is Mode.Edit -> null
             }
         )
 
@@ -92,8 +96,8 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         createOrderMenuItem = menu.findItem(R.id.menu_create).apply {
             title = resources.getString(
                 when (viewModel.mode) {
-                    OrderCreationViewModel.Mode.Creation -> R.string.create
-                    is OrderCreationViewModel.Mode.Edit -> R.string.done
+                    Mode.Creation -> R.string.create
+                    is Mode.Edit -> R.string.done
                 }
             )
             isEnabled = viewModel.viewStateData.liveData.value?.canCreateOrder ?: false
@@ -252,6 +256,16 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             new.isEditable.takeIfNotEqualTo(old?.isEditable) { isEditable ->
                 if (isEditable) showEditableControls(binding) else hideEditableControls(binding)
             }
+            new.multipleLinesContext.takeIfNotEqualTo(old?.multipleLinesContext) { multipleLinesContext ->
+                when (multipleLinesContext) {
+                    None -> binding.multipleLinesWarningSection.root.visibility = View.GONE
+                    is Warning -> {
+                        binding.multipleLinesWarningSection.header.text = multipleLinesContext.header
+                        binding.multipleLinesWarningSection.explanation.text = multipleLinesContext.explanation
+                        binding.multipleLinesWarningSection.root.visibility = View.VISIBLE
+                    }
+                }
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner, ::handleViewModelEvents)
@@ -260,18 +274,18 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     private fun bindPaymentSection(paymentSection: OrderCreationPaymentSectionBinding, newOrderData: Order) {
         paymentSection.bindFeesSubSection(newOrderData)
 
-        val currentShipping = newOrderData.shippingLines.firstOrNull { it.methodId != null }
+        val firstShipping = newOrderData.shippingLines.firstOrNull { it.methodId != null }
         paymentSection.shippingButton.setText(
-            if (currentShipping != null) R.string.order_creation_edit_shipping
+            if (firstShipping != null) R.string.order_creation_edit_shipping
             else R.string.order_creation_add_shipping
         )
         paymentSection.shippingButton.setIconResource(
-            if (currentShipping != null) 0
+            if (firstShipping != null) 0
             else R.drawable.ic_add
         )
-        paymentSection.shippingValue.isVisible = currentShipping != null
-        currentShipping?.let {
-            paymentSection.shippingValue.text = bigDecimalFormatter(it.total)
+        paymentSection.shippingValue.isVisible = firstShipping != null
+        newOrderData.shippingLines.sumByBigDecimal { it.total }.let {
+            paymentSection.shippingValue.text = bigDecimalFormatter(it)
         }
 
         paymentSection.productsTotalValue.text = bigDecimalFormatter(newOrderData.productsTotal)
@@ -434,9 +448,9 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     }
 
     override fun getFragmentTitle() = when (viewModel.mode) {
-        OrderCreationViewModel.Mode.Creation -> getString(R.string.order_creation_fragment_title)
-        is OrderCreationViewModel.Mode.Edit -> {
-            val orderId = (viewModel.mode as OrderCreationViewModel.Mode.Edit).orderId.toString()
+        Mode.Creation -> getString(R.string.order_creation_fragment_title)
+        is Mode.Edit -> {
+            val orderId = (viewModel.mode as Mode.Edit).orderId.toString()
             getString(R.string.orderdetail_orderstatus_ordernum, orderId)
         }
     }

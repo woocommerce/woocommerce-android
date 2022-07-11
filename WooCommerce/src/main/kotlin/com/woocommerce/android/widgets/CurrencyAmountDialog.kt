@@ -6,11 +6,11 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.text.TextUtils
 import android.view.View
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.Observer
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.filterNotNull
@@ -67,15 +67,12 @@ open class CurrencyAmountDialog : DialogFragment(), DialogInterface.OnClickListe
         builder.setNegativeButton(R.string.cancel, this)
         builder.setView(view)
 
-        currencyEditTextLayout.value.filterNotNull().observe(
-            this,
-            Observer {
-                currentValue = if (it > maxValue) maxValue else it
-                isAmountValid(it)
-            }
-        )
+        currencyEditTextLayout.value.filterNotNull().observe(this) {
+            currentValue = if (it > maxValue) maxValue else it
+            isAmountValid(it)
+        }
 
-        Handler().postDelayed(
+        Handler(Looper.getMainLooper()).postDelayed(
             {
                 currencyEditTextLayout.requestFocus()
                 ActivityUtils.showKeyboard(currencyEditTextLayout)
@@ -122,6 +119,7 @@ open class CurrencyAmountDialog : DialogFragment(), DialogInterface.OnClickListe
         super.onDismiss(dialog)
     }
 
+    @Suppress("DEPRECATION")
     open fun returnResult(enteredAmount: BigDecimal) {
         val target = targetFragment
         val resultIntent = Intent()

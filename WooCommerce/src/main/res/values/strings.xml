@@ -927,6 +927,7 @@
         -->
     <string name="card_reader_manage_card_reader">Manage Card Reader</string>
     <string name="card_reader_purchase_card_reader">Order Card Reader</string>
+    <string name="card_reader_manage_payment_provider">Change Payment Provider</string>
     <string name="card_reader_bbpos_manual_card_reader" translatable="false">BBPOS Chipper™ 2X BT</string>
     <string name="card_reader_m2_manual_card_reader" translatable="false">Stripe M2</string>
     <string name="card_reader_wisepad_3_manual_card_reader" translatable="false">WisePad 3</string>
@@ -1015,7 +1016,7 @@
     <string name="card_reader_payment_send_receipt">Send receipt</string>
     <string name="card_reader_payment_save_for_later">Save receipt and continue</string>
 
-    <string name="card_reader_payment_description">In-Person Payment for Order %s for %s</string>
+    <string name="card_reader_payment_description_v2">In-Person Payment for Order #%s for %s blog_id %s.</string>
     <string name="card_reader_payment_receipt_email_subject">Your receipt from %s</string>
     <string name="card_reader_payment_receipt_email_content">Thank you for your purchase! Click the link below for your payment receipt.\n\n%s</string>
     <string name="card_reader_payment_email_client_not_found">Can\'t detect your email client app</string>
@@ -1971,7 +1972,7 @@
     <string name="coupon_list_item_label_included_and_excluded">%1s excl. %2s</string>
     <string name="coupon_list_empty_heading">No coupons found</string>
     <string name="coupon_list_wip_title">View and edit coupons</string>
-    <string name="coupon_list_wip_message_enabled">We’ve been working on making it possible to view coupons on your device!</string>
+    <string name="coupon_list_wip_message_enabled">We’ve been working on making it possible to view and edit coupons from your device!</string>
     <string name="coupon_list_view_coupon">View coupon summary</string>
     <string name="coupon_list_loading_failed">Fetching coupons failed</string>
     <string name="coupon_list_search_failed">Searching coupons failed</string>
@@ -2425,6 +2426,7 @@
     <string name="enter_your_site_address">Enter your site address</string>
     <string name="reset_your_password">Reset your password</string>
     <string name="signup_confirmation_title">Signup confirmation</string>
+    <string name="what_is_wordpress_link"><u>What is WordPress.com?</u></string>
 
     <string name="login_site_address">Site address</string>
 
@@ -2503,4 +2505,9 @@
     <string name="install_wc_shipping_preinstall_title">Install extension</string>
     <string name="install_wc_shipping_installation_info">Things to know before installing</string>
     <string name="install_wc_shipping_proceed_button">Proceed With Installation</string>
+    <string name="lines_incomplete">%1$s are incomplete</string>
+    <string name="lines_incomplete_explanation">To edit all %1$s browse the order in your WooCommerce store admin</string>
+    <string name="lines_all_details">the details</string>
+    <string name="tests_notification_new_order_title">You have a new order! 🎉</string>
+    <string name="tests_notification_new_order_message">New order for $50 on Your WooCommerce Store</string>
 </resources>

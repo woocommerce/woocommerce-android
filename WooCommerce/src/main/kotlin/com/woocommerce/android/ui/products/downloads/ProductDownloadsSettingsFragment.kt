@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.products.downloads
 
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -36,15 +35,12 @@ class ProductDownloadsSettingsFragment : BaseProductFragment(R.layout.fragment_p
     }
 
     fun setupObservers(viewModel: ProductDetailViewModel) {
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            { event ->
-                when (event) {
-                    is ExitProductDownloadsSettings -> findNavController().navigateUp()
-                    else -> event.isHandled = false
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ExitProductDownloadsSettings -> findNavController().navigateUp()
+                else -> event.isHandled = false
             }
-        )
+        }
 
         initFromProductDraft()
         setupListeners()

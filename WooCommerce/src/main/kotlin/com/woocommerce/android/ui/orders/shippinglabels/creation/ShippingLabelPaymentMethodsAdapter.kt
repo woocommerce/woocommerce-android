@@ -14,7 +14,7 @@ import com.woocommerce.android.model.PaymentMethod
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.PaymentMethodUiModel
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelPaymentMethodsAdapter.PaymentMethodViewHolder
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
 
 class ShippingLabelPaymentMethodsAdapter(
     private val onPaymentMethodSelected: (PaymentMethod) -> Unit

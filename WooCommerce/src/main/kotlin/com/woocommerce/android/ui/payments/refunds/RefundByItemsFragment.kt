@@ -8,7 +8,6 @@ import android.view.View
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
@@ -135,7 +134,7 @@ class RefundByItemsFragment :
                     currencyFormatter.buildBigDecimalFormatter(new.currency)
                 )
             }
-            new.isNextButtonEnabled?.takeIfNotEqualTo(old?.isNextButtonEnabled) {
+            new.isNextButtonEnabled.takeIfNotEqualTo(old?.isNextButtonEnabled) {
                 binding.issueRefundBtnNextFromItems.isEnabled = it
             }
             new.formattedProductsRefund?.takeIfNotEqualTo(old?.formattedProductsRefund) {
@@ -213,60 +212,48 @@ class RefundByItemsFragment :
             }
         }
 
-        viewModel.refundItems.observe(
-            viewLifecycleOwner,
-            Observer { list ->
-                val adapter = productsBinding.issueRefundProducts.adapter as RefundProductListAdapter
-                adapter.update(list)
-            }
-        )
+        viewModel.refundItems.observe(viewLifecycleOwner) { list ->
+            val adapter = productsBinding.issueRefundProducts.adapter as RefundProductListAdapter
+            adapter.update(list)
+        }
 
-        viewModel.refundShippingLines.observe(
-            viewLifecycleOwner,
-            Observer { list ->
-                val adapter = shippingLinesBinding.issueRefundShippingLines.adapter as RefundShippingListAdapter
-                adapter.update(list)
-            }
-        )
+        viewModel.refundShippingLines.observe(viewLifecycleOwner) { list ->
+            val adapter = shippingLinesBinding.issueRefundShippingLines.adapter as RefundShippingListAdapter
+            adapter.update(list)
+        }
 
-        viewModel.refundFeeLines.observe(
-            viewLifecycleOwner,
-            { list ->
-                val adapter = feeLinesBinding.issueRefundFeeLines.adapter as RefundFeeListAdapter
-                adapter.update(list)
-            }
-        )
+        viewModel.refundFeeLines.observe(viewLifecycleOwner) { list ->
+            val adapter = feeLinesBinding.issueRefundFeeLines.adapter as RefundFeeListAdapter
+            adapter.update(list)
+        }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowNumberPicker -> {
-                        val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundItemsPickerDialog(
-                            title = getString(R.string.order_refunds_select_quantity),
-                            uniqueId = event.refundItem.orderItem.itemId,
-                            maxValue = event.refundItem.availableRefundQuantity,
-                            currentValue = event.refundItem.quantity
-                        )
-                        findNavController().navigateSafely(action)
-                    }
-                    is ShowRefundAmountDialog -> {
-                        val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundAmountDialog(
-                            title = getString(R.string.order_refunds_products_refund),
-                            maxValue = event.maxRefund,
-                            currentValue = event.refundAmount,
-                            minValue = BigDecimal.ZERO,
-                            message = event.message
-                        )
-                        findNavController().navigateSafely(action)
-                    }
-                    is OpenUrl -> {
-                        ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
-                    }
-                    else -> event.isHandled = false
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowNumberPicker -> {
+                    val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundItemsPickerDialog(
+                        title = getString(R.string.order_refunds_select_quantity),
+                        uniqueId = event.refundItem.orderItem.itemId,
+                        maxValue = event.refundItem.availableRefundQuantity,
+                        currentValue = event.refundItem.quantity
+                    )
+                    findNavController().navigateSafely(action)
                 }
+                is ShowRefundAmountDialog -> {
+                    val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundAmountDialog(
+                        title = getString(R.string.order_refunds_products_refund),
+                        maxValue = event.maxRefund,
+                        currentValue = event.refundAmount,
+                        minValue = BigDecimal.ZERO,
+                        message = event.message
+                    )
+                    findNavController().navigateSafely(action)
+                }
+                is OpenUrl -> {
+                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+                }
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
     private fun updateRefundNoticeView(refundNoticeText: String) {

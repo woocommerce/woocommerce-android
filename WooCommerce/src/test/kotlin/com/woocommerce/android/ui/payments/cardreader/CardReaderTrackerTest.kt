@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.payments.cardreader
 
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_CANCELLED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS
@@ -24,6 +25,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -88,6 +90,28 @@ class CardReaderTrackerTest : BaseUnitTest() {
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED),
                 any()
+            )
+        }
+
+    @Test
+    fun `when track payment gateway invoked with wcpay, then track event with proper gateway`() =
+        testBlocking {
+            cardReaderTracker.trackPaymentGatewaySelected(WOOCOMMERCE_PAYMENTS)
+
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.CARD_PRESENT_PAYMENT_GATEWAY_SELECTED),
+                check { assertThat(it[AnalyticsTracker.KEY_PAYMENT_GATEWAY]).isEqualTo("woocommerce-payments") }
+            )
+        }
+
+    @Test
+    fun `when track payment gateway invoked with stripe, then track event with proper gateway`() =
+        testBlocking {
+            cardReaderTracker.trackPaymentGatewaySelected(STRIPE_EXTENSION_GATEWAY)
+
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.CARD_PRESENT_PAYMENT_GATEWAY_SELECTED),
+                check { assertThat(it[AnalyticsTracker.KEY_PAYMENT_GATEWAY]).isEqualTo("woocommerce-stripe-gateway") }
             )
         }
 
@@ -300,6 +324,19 @@ class CardReaderTrackerTest : BaseUnitTest() {
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
                 check { assertThat(it["reason"]).isEqualTo("account_rejected") }
+            )
+        }
+
+    @Test
+    fun `when state ChoosePaymentGatewayProvider, then reason=multiple_payment_providers_conflict tracked`() =
+        testBlocking {
+            cardReaderTracker.trackOnboardingState(
+                ChoosePaymentGatewayProvider
+            )
+
+            verify(trackerWrapper).track(
+                eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
+                check { assertThat(it["reason"]).isEqualTo("multiple_payment_providers_conflict") }
             )
         }
 

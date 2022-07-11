@@ -337,8 +337,8 @@ private fun InteractiveDatePickerPreview() {
                 )
             }
 
-            if (date != null) {
-                Text(text = "Selected date: ${SimpleDateFormat.getDateInstance().format(date)}")
+            date?.let {
+                Text(text = "Selected date: ${SimpleDateFormat.getDateInstance().format(it)}")
             }
         }
     }

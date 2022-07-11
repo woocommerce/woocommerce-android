@@ -30,7 +30,7 @@ object PackageUtils {
     }
 
     fun isBetaBuild(context: Context): Boolean {
-        val versionName = getVersionName(context).toLowerCase(Locale.ROOT)
+        val versionName = getVersionName(context).lowercase(Locale.ROOT)
         return (versionName.contains("beta") || versionName.contains("rc"))
     }
 

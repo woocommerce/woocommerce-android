@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-16 09:54:20+0000
+Translation-Revision-Date: 2022-06-30 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="install_wc_shipping_proceed_button">Lanjutkan Penginstalan</string>
+    <string name="install_wc_shipping_installation_info">Hal yang harus diketahui sebelum menginstal</string>
+    <string name="install_wc_shipping_preinstall_title">Instal ekstensi</string>
+    <string name="install_wc_shipping_extension_name">Pengiriman WooCommerce</string>
+    <string name="product_selector_clear_filters_button_title">Hapus Penyaring</string>
+    <string name="product_selector_empty_state">Tidak ada produk yang ditemukan</string>
+    <string name="product_selector_search_failed">Gagal mencari produk</string>
+    <string name="product_selector_loading_failed">Gagal memuat produk</string>
+    <string name="product_selector_search_hint">Mencari Produk</string>
+    <string name="product_selector_filter_button_title_default">Penyaring (%d)</string>
+    <string name="coupon_restrictions_allowed_emails_invalid">Beberapa alamat email tidak valid. Harap perbaiki alamat email.</string>
+    <string name="coupon_restrictions_allowed_emails_hint">Daftar email penagihan yang diizinkan untuk pencocokan saat pesanan dilakukan. Pisahkan alamat email dengan koma. Anda juga dapat menggunakan tanda bintang (*) untuk mencocokkan bagian-bagian dari email. Misalnya \"*@gmail.com\" akan cocok dengan semua alamat gmail.</string>
+    <string name="empty_message_with_filters">Maaf, tidak ada produk yang cocok dengan penyaring yang dipilih\"</string>
+    <string name="card_reader_onboarding_confirm_payment_method_button">Konfirmasi Metode Pembayaran</string>
+    <string name="card_reader_onboarding_choose_stripe_button">Stripe</string>
+    <string name="card_reader_onboarding_choose_wcpayment_button">Pembayaran WooCommerce</string>
+    <string name="card_reader_onboarding_choose_plugin_hint">Pembayaran Langsung dapat diproses melalui penyedia pembayaran berikut. Penyedia mana yang ingin Anda gunakan?</string>
+    <string name="card_reader_onboarding_choose_payment_provider">Pilih Penyedia Pembayaran Anda</string>
+    <string name="order_editing_locked_content_description">terkunci</string>
+    <string name="order_editing_non_editable_message">Untuk mengedit Detail Produk atau Pembayaran, ganti status ke Pembayaran Tertunda.</string>
+    <string name="order_editing_non_editable_title">Beberapa bagian dalam pesanan ini tidak dapat diedit</string>
+    <string name="order_creation_customer_search_hint">Cari pelanggan</string>
+    <string name="order_creation_customer_search_empty">Tidak ada pelanggan ditemukan</string>
     <string name="install_wc_shipping_flow_onboarding_screen_not_now_button">Lain Kali</string>
     <string name="install_wc_shipping_flow_onboarding_screen_add_extension_button">Tambahkan Ekstensi Ke Toko</string>
     <string name="install_wc_shipping_flow_onboarding_screen_link">Apa itu WooCommerce Shipping?</string>
@@ -193,7 +216,7 @@ Language: id
     <string name="coupon_details_minimum_spend">Belanja minimum%s</string>
     <string name="coupon_details_heading">Ringkasan Kupon</string>
     <string name="coupon_list_view_coupon">Lihat ringkasan kupon</string>
-    <string name="coupon_list_wip_message_enabled">Kini Anda dapat melihat dan mengedit kupon dengan perangkat Anda!</string>
+    <string name="coupon_list_wip_message_enabled">Kini Anda dapat melihat dan mengedit kupon di perangkat Anda!</string>
     <string name="coupon_list_wip_title">Lihat dan edit kupon</string>
     <string name="coupon_list_empty_heading">Tidak ada kupon ditemukan</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s excl. %2s</string>

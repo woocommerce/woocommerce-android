@@ -89,7 +89,7 @@ class RefundDetailViewModel @Inject constructor(
         val groupedRefunds = refunds.flatMap { it.items }.groupBy { it.orderItemId }
         val refundedProducts = groupedRefunds.keys.mapNotNull { id ->
             order.items.firstOrNull { it.itemId == id }?.let { item ->
-                groupedRefunds[id]?.sumBy { it.quantity }?.let { quantity ->
+                groupedRefunds[id]?.sumOf { it.quantity }?.let { quantity ->
                     ProductRefundListItem(item, quantity = quantity)
                 }
             }

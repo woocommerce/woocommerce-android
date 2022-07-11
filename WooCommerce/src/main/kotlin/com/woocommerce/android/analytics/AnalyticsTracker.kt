@@ -11,6 +11,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.json.JSONObject
 import org.wordpress.android.fluxc.model.SiteModel
+import java.util.Locale
 import java.util.UUID
 
 class AnalyticsTracker private constructor(private val context: Context) {
@@ -62,7 +63,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
             return
         }
 
-        val eventName = stat.name.toLowerCase()
+        val eventName = stat.name.lowercase(Locale.getDefault())
 
         val user = username ?: getAnonID() ?: generateNewAnonID()
 
@@ -299,6 +300,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_AMOUNT = "amount"
 
         const val KEY_PAYMENT_METHOD = "payment_method"
+        const val KEY_PAYMENT_GATEWAY = "payment_gateway"
 
         const val KEY_IS_JETPACK_CP_CONNECTED = "is_jetpack_cp_conntected"
         const val KEY_ACTIVE_JETPACK_CONNECTION_PLUGINS = "active_jetpack_connection_plugins"
@@ -331,7 +333,15 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_COUPON_ACTION_LOADED = "loaded"
         const val KEY_COUPON_ACTION_COPIED = "copied_code"
         const val KEY_COUPON_ACTION_SHARED = "shared_code"
+        const val KEY_COUPON_ACTION_EDITED = "tapped_edit"
         const val KEY_COUPON_ACTION_DELETED = "tapped_delete"
+        const val KEY_COUPON_DISCOUNT_TYPE_UPDATED = "discount_type_updated"
+        const val KEY_COUPON_CODE_UPDATED = "coupon_code_updated"
+        const val KEY_COUPON_AMOUNT_UPDATED = "amount_updated"
+        const val KEY_COUPON_DESCRIPTION_UPDATED = "description_updated"
+        const val KEY_COUPON_ALLOWED_PRODUCTS_OR_CATEGORIES_UPDATED = "allowed_products_or_categories_updated"
+        const val KEY_COUPON_EXPIRY_DATE_UPDATED = "expiry_date_updated"
+        const val KEY_COUPON_USAGE_RESTRICTIONS_UPDATED = "usage_restrictions_updated"
 
         var sendUsageStats: Boolean = true
             set(value) {

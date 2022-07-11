@@ -82,7 +82,7 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
                 binding.refundSummaryBtnRefund.isEnabled = new.isFormEnabled
                 binding.refundSummaryReason.isEnabled = new.isFormEnabled
             }
-            new.isSubmitButtonEnabled?.takeIfNotEqualTo(old?.isSubmitButtonEnabled) {
+            new.isSubmitButtonEnabled.takeIfNotEqualTo(old?.isSubmitButtonEnabled) {
                 binding.refundSummaryBtnRefund.isEnabled = new.isSubmitButtonEnabled
             }
             new.refundAmount?.takeIfNotEqualTo(old?.refundAmount) {

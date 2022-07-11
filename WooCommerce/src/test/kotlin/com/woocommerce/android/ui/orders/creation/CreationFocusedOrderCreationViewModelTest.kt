@@ -4,10 +4,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
-import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus.Failed
-import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus.Ongoing
-import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus.PendingDebounce
-import com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.OrderDraftUpdateStatus.Succeeded
+import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Failed
+import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Ongoing
+import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.PendingDebounce
+import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.Mode
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.Mode.Creation
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.ViewState
@@ -39,7 +39,7 @@ class CreationFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest(
 
     @Test
     fun `when initializing the view model, then register the orderDraft flowState`() {
-        verify(createOrUpdateOrderUseCase).invoke(any(), any())
+        verify(createUpdateOrderUseCase).invoke(any(), any())
     }
 
     @Test
@@ -519,29 +519,82 @@ class CreationFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest(
     }
 
     @Test
-    fun `when removing a shipping fee, then mark the existent one with null methodId`() {
+    fun `when editing a shipping fee, do not remove the rest of the shipping fees`() {
+        // given
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(
+                Succeeded(
+                    Order.EMPTY.copy(
+                        shippingLines = listOf(
+                            Order.ShippingLine("first", "first", BigDecimal(1)),
+                            Order.ShippingLine("second", "second", BigDecimal(2)),
+                            Order.ShippingLine("third", "third", BigDecimal(3)),
+                        )
+                    )
+                )
+            )
+        }
+        createSut()
         var orderDraft: Order? = null
         sut.orderDraft.observeForever {
             orderDraft = it
         }
 
-        val newShippingFeeTotal = BigDecimal(123.5)
-        sut.onShippingEdited(newShippingFeeTotal, "4")
+        // when
+        sut.onShippingEdited(BigDecimal(1), "1")
+
+        // then
+        assertThat(orderDraft?.shippingLines).hasSize(3)
+    }
+
+    @Test
+    fun `when order has no shipping fees, add one`() {
+        // given
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        assert(orderDraft?.shippingLines?.isEmpty() == true)
+
+        // when
+        sut.onShippingEdited(BigDecimal(1), "1")
+
+        // then
+        assertThat(orderDraft?.shippingLines).hasSize(1)
+    }
+
+    @Test
+    fun `when removing a shipping fee, then mark the first one with null methodId`() {
+        // given
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(
+                Succeeded(
+                    Order.EMPTY.copy(
+                        shippingLines = listOf(
+                            Order.ShippingLine("first", "first", BigDecimal(1)),
+                            Order.ShippingLine("second", "second", BigDecimal(2)),
+                            Order.ShippingLine("third", "third", BigDecimal(3)),
+                        )
+                    )
+                )
+            )
+        }
+        createSut()
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+
+        // when
         sut.onShippingRemoved()
 
-        orderDraft?.shippingLines
-            ?.takeIf { it.size == 1 }
-            ?.let {
-                val shippingFee = it.first()
-                assertThat(shippingFee.total).isEqualTo(newShippingFeeTotal)
-                assertThat(shippingFee.methodTitle).isEqualTo("4")
-                assertThat(shippingFee.methodId).isNull()
-            } ?: fail("Expected a shipping lines list with a single shipping fee with 123.5 as total")
+        // then
+        assertThat(orderDraft?.shippingLines?.first()?.methodId).isNull()
     }
 
     @Test
     fun `when OrderDraftUpdateStatus is WillStart, then adjust view state to reflect the loading preparation`() {
-        createOrUpdateOrderUseCase = mock {
+        createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(PendingDebounce)
         }
         createSut()
@@ -560,7 +613,7 @@ class CreationFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest(
 
     @Test
     fun `when OrderDraftUpdateStatus is Ongoing, then adjust view state to reflect the loading`() {
-        createOrUpdateOrderUseCase = mock {
+        createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(Ongoing)
         }
         createSut()
@@ -580,7 +633,7 @@ class CreationFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest(
     @Test
     fun `when OrderDraftUpdateStatus is Succeeded, then adjust view state to reflect the loading end`() {
         val modifiedOrderValue = defaultOrderValue.copy(id = 999)
-        createOrUpdateOrderUseCase = mock {
+        createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(modifiedOrderValue))
         }
         createSut()
@@ -607,7 +660,7 @@ class CreationFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest(
 
     @Test
     fun `when OrderDraftUpdateStatus is Failed, then adjust view state to reflect the failure`() {
-        createOrUpdateOrderUseCase = mock {
+        createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(Failed)
         }
         createSut()
@@ -701,7 +754,7 @@ class CreationFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest(
     @Test
     fun `when isEditable is true on the create flow the order is editable`() {
         // When the order is on Creation mode is always editable
-        createOrUpdateOrderUseCase = mock {
+        createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(defaultOrderValue.copy(isEditable = true)))
         }
         createSut()
@@ -715,7 +768,7 @@ class CreationFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest(
     @Test
     fun `when isEditable is false on the edit flow the order is editable`() {
         // When the order is on Creation mode is always editable
-        createOrUpdateOrderUseCase = mock {
+        createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(defaultOrderValue.copy(isEditable = false)))
         }
         createSut()

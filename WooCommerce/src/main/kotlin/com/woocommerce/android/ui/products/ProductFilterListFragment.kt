@@ -6,7 +6,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -106,25 +105,19 @@ class ProductFilterListFragment :
             new.screenTitle.takeIfNotEqualTo(old?.screenTitle) { requireActivity().title = it }
             new.displayClearButton?.takeIfNotEqualTo(old?.displayClearButton) { showClearAllAction(it) }
         }
-        viewModel.filterListItems.observe(
-            viewLifecycleOwner,
-            Observer {
-                showProductFilterList(it)
-            }
-        )
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is Exit -> findNavController().navigateUp()
-                    is ShowDialog -> event.showDialog()
-                    is ExitWithResult<*> -> {
-                        navigateBackWithResult(ProductListFragment.PRODUCT_FILTER_RESULT_KEY, event.data)
-                    }
-                    else -> event.isHandled = false
+        viewModel.filterListItems.observe(viewLifecycleOwner) {
+            showProductFilterList(it)
+        }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is Exit -> findNavController().navigateUp()
+                is ShowDialog -> event.showDialog()
+                is ExitWithResult<*> -> {
+                    navigateBackWithResult(ProductListFragment.PRODUCT_FILTER_RESULT_KEY, event.data)
                 }
+                else -> event.isHandled = false
             }
-        )
+        }
 
         viewModel.loadFilters()
     }
