@@ -1,0 +1,5 @@
+9.5:
+Deneysel Kupon Yönetimi özelliğimize yeni işlevler eklemeye devam ediyoruz! Bu sürümde, kuponların düzenlenmesi, silinmesi ve ayrıca görüntülemeyle ilgili çeşitli iyileştirmeler yapılmıştır. Erken erişim için, Diğer sekmesi, Ayarlar, Beta Özellikleri bölümünden bu özelliği etkinleştirin.
+
+Ayrıca bazen sipariş aramayı zorlaştıran bir hatayı da düzelttik. Bu hatayı bildiren herkese teşekkürler! Görüşleriniz bizim için çok önemli!
+

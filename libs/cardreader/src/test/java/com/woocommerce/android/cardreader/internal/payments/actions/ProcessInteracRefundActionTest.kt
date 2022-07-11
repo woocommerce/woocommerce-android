@@ -2,12 +2,12 @@ package com.woocommerce.android.cardreader.internal.payments.actions
 
 import com.stripe.stripeterminal.external.callable.Cancelable
 import com.stripe.stripeterminal.external.callable.RefundCallback
+import com.woocommerce.android.cardreader.internal.CardReaderBaseUnitTest
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessInteracRefundAction.ProcessRefundStatus
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -19,7 +19,7 @@ import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
-class ProcessInteracRefundActionTest {
+class ProcessInteracRefundActionTest : CardReaderBaseUnitTest() {
     private lateinit var action: ProcessInteracRefundAction
     private val terminal: TerminalWrapper = mock()
 
@@ -29,7 +29,7 @@ class ProcessInteracRefundActionTest {
     }
 
     @Test
-    fun `when processing interac refund succeeds, then Success is emitted`() = runBlockingTest {
+    fun `when processing interac refund succeeds, then Success is emitted`() = testBlocking {
         whenever(terminal.processRefund(any())).thenAnswer {
             (it.arguments[0] as RefundCallback).onSuccess(mock())
             mock<Cancelable>()
@@ -41,7 +41,7 @@ class ProcessInteracRefundActionTest {
     }
 
     @Test
-    fun `when processing interac refund fails, then Failure is emitted`() = runBlockingTest {
+    fun `when processing interac refund fails, then Failure is emitted`() = testBlocking {
         whenever(terminal.processRefund(any())).thenAnswer {
             (it.arguments[0] as RefundCallback).onFailure(mock())
             mock<Cancelable>()
@@ -53,7 +53,7 @@ class ProcessInteracRefundActionTest {
     }
 
     @Test
-    fun `when processing interac refund succeeds, then flow is terminated`() = runBlockingTest {
+    fun `when processing interac refund succeeds, then flow is terminated`() = testBlocking {
         whenever(terminal.processRefund(any())).thenAnswer {
             (it.arguments[0] as RefundCallback).onSuccess(mock())
             mock<Cancelable>()
@@ -65,7 +65,7 @@ class ProcessInteracRefundActionTest {
     }
 
     @Test
-    fun `when processing interac refund fails, then flow is terminated`() = runBlockingTest {
+    fun `when processing interac refund fails, then flow is terminated`() = testBlocking {
         whenever(terminal.processRefund(any())).thenAnswer {
             (it.arguments[0] as RefundCallback).onFailure(mock())
             mock<Cancelable>()

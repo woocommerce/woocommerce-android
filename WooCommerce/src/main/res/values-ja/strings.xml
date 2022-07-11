@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-16 09:54:20+0000
+Translation-Revision-Date: 2022-06-30 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="install_wc_shipping_proceed_button">インストールを進める</string>
+    <string name="install_wc_shipping_installation_info">インストール前に</string>
+    <string name="install_wc_shipping_preinstall_title">拡張機能をインストール</string>
+    <string name="install_wc_shipping_extension_name">WooCommerce の送料</string>
+    <string name="product_selector_clear_filters_button_title">フィルターをクリア</string>
+    <string name="product_selector_empty_state">商品が見つかりません</string>
+    <string name="product_selector_search_failed">商品を検索できませんでした</string>
+    <string name="product_selector_loading_failed">商品を読み込めませんでした</string>
+    <string name="product_selector_search_hint">商品を検索</string>
+    <string name="product_selector_filter_button_title_default">フィルター (%d)</string>
+    <string name="coupon_restrictions_allowed_emails_invalid">一部のメールアドレスが無効です。 入力したメールアドレスを修正してください。</string>
+    <string name="coupon_restrictions_allowed_emails_hint">注文が行われたときの照合が許可されている請求先メールアドレスのリスト。 コンマでメールアドレスを区切ってください。 メールの一部を対応させるのにアスタリスク (*) を使用することもできます。 たとえば、「*@gmail.com」はすべての gmail アドレスに対応します。</string>
+    <string name="empty_message_with_filters">選択したフィルターに一致する商品はありません。</string>
+    <string name="card_reader_onboarding_confirm_payment_method_button">決済方法を確認</string>
+    <string name="card_reader_onboarding_choose_stripe_button">Stripe</string>
+    <string name="card_reader_onboarding_choose_wcpayment_button">WooCommerce Payments</string>
+    <string name="card_reader_onboarding_choose_plugin_hint">オフラインでの支払いはこのいずれかの決済サービス業者が処理できます。 どの決済サービス業者をご利用になりますか ?</string>
+    <string name="card_reader_onboarding_choose_payment_provider">決済サービス業者を選択</string>
+    <string name="order_editing_locked_content_description">ロック中</string>
+    <string name="order_editing_non_editable_message">「商品」または「支払いの詳細」を編集するには、ステータスを「支払い待ち」に変更します。</string>
+    <string name="order_editing_non_editable_title">この注文の一部は現在編集できません</string>
+    <string name="order_creation_customer_search_hint">お客様検索</string>
+    <string name="order_creation_customer_search_empty">お客様が見つかりません</string>
     <string name="install_wc_shipping_flow_onboarding_screen_not_now_button">後で</string>
     <string name="install_wc_shipping_flow_onboarding_screen_add_extension_button">ストアに拡張機能を追加</string>
     <string name="install_wc_shipping_flow_onboarding_screen_link">WooCommerce Shipping とは</string>
@@ -193,7 +216,7 @@ Language: ja_JP
     <string name="coupon_details_minimum_spend">%sの利用最小額</string>
     <string name="coupon_details_heading">クーポンの概要</string>
     <string name="coupon_list_view_coupon">クーポンの概要を表示</string>
-    <string name="coupon_list_wip_message_enabled">デバイスからクーポンを表示、編集できる機能を開発中です !</string>
+    <string name="coupon_list_wip_message_enabled">デバイスでクーポンを表示できる機能を開発中です !</string>
     <string name="coupon_list_wip_title">クーポンを表示して編集する</string>
     <string name="coupon_list_empty_heading">クーポンが見つかりません</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s (%2s を除く)</string>

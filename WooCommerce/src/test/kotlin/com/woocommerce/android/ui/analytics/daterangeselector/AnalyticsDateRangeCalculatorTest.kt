@@ -7,7 +7,8 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import java.util.*
+import java.util.Calendar
+import java.util.Date
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 

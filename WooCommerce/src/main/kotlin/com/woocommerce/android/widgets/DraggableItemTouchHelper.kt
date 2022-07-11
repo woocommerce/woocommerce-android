@@ -10,6 +10,7 @@ class DraggableItemTouchHelper(
     private val onMove: (from: Int, to: Int) -> Unit
 ) : ItemTouchHelper(
     object : ItemTouchHelper.SimpleCallback(dragDirs, 0) {
+        @Suppress("DEPRECATION")
         override fun onMove(
             recyclerView: RecyclerView,
             viewHolder: ViewHolder,

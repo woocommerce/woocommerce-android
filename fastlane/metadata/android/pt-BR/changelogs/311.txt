@@ -1,0 +1,5 @@
+9.5:
+Estamos sempre adicionando novos recursos à nossa funcionalidade experimental de gerenciamento de cupons. Esta versão inclui opções de edição e exclusão de cupons, além de diversas melhorias na visualização. Ative esta funcionalidade na guia Mais > Configurações > Funcionalidades Beta para receber acesso antecipado.
+
+Solucionamos um bug que estava dificultando a pesquisa de pedidos para alguns de vocês. Agradecemos a todos que relataram esse erro. O feedback de vocês é essencial para nós.
+
