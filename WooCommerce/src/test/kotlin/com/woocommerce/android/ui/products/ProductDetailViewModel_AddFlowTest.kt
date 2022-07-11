@@ -3,8 +3,6 @@ package com.woocommerce.android.ui.products
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
-import com.woocommerce.android.R.drawable
-import com.woocommerce.android.R.string
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
@@ -13,13 +11,13 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ProductDetailViewModel.MenuButtonsState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
-import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
-import com.woocommerce.android.ui.products.models.ProductProperty.*
+import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
+import com.woocommerce.android.ui.products.models.ProductProperty.Editable
+import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
+import com.woocommerce.android.ui.products.models.ProductProperty.RatingBar
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
-import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
-import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.ui.products.variations.VariationRepository
@@ -30,11 +28,22 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onSubscription
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.clearInvocations
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
@@ -99,7 +108,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
     private val expectedCards = listOf(
         ProductPropertyCard(
-            type = PRIMARY,
+            type = ProductPropertyCard.Type.PRIMARY,
             properties = listOf(
                 Editable(R.string.product_detail_title_hint, ""),
                 ComplexProperty(
@@ -110,7 +119,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             )
         ),
         ProductPropertyCard(
-            type = SECONDARY,
+            type = ProductPropertyCard.Type.SECONDARY,
             properties = listOf(
                 PropertyGroup(
                     R.string.product_price,
@@ -119,20 +128,20 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                     showTitle = false
                 ),
                 RatingBar(
-                    string.product_reviews,
-                    resources.getString(string.product_ratings_count_zero),
+                    R.string.product_reviews,
+                    resources.getString(R.string.product_ratings_count_zero),
                     0F,
-                    drawable.ic_reviews
+                    R.drawable.ic_reviews
                 ),
                 PropertyGroup(
-                    string.product_inventory,
+                    R.string.product_inventory,
                     mapOf(
                         Pair(
-                            resources.getString(string.product_stock_status),
-                            resources.getString(string.product_stock_status_instock)
+                            resources.getString(R.string.product_stock_status),
+                            resources.getString(R.string.product_stock_status_instock)
                         )
                     ),
-                    drawable.ic_gridicons_list_checkmark,
+                    R.drawable.ic_gridicons_list_checkmark,
                     true
                 ),
                 ComplexProperty(
@@ -341,7 +350,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
         // this will force the viewModel to consider the product as changed, so when we click the back button
         // below it will show the discard dialog
-        viewModel.updateProductDraft(productStatus = DRAFT)
+        viewModel.updateProductDraft(productStatus = ProductStatus.DRAFT)
 
         var saveAsDraftShown = false
         viewModel.event.observeForever {
@@ -359,7 +368,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         doReturn(false).whenever(viewModel).isProductUnderCreation
 
         viewModel.start()
-        viewModel.updateProductDraft(productStatus = DRAFT)
+        viewModel.updateProductDraft(productStatus = ProductStatus.DRAFT)
 
         var saveAsDraftShown = false
         viewModel.event.observeForever {
@@ -472,9 +481,9 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         viewModel.productDetailViewStateData.observeForever { _, new -> viewState = new }
 
         viewModel.start()
-        viewModel.updateProductDraft(productStatus = DRAFT)
+        viewModel.updateProductDraft(productStatus = ProductStatus.DRAFT)
         viewModel.onSaveButtonClicked()
 
-        assertThat(viewState?.productDraft?.status).isEqualTo(DRAFT)
+        assertThat(viewState?.productDraft?.status).isEqualTo(ProductStatus.DRAFT)
     }
 }

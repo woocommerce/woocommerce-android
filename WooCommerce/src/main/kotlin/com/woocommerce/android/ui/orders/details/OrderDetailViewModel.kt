@@ -8,7 +8,6 @@ import androidx.lifecycle.SavedStateHandle
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
-import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_DETAIL_CREATE_SHIPPING_LABEL_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_DETAIL_PULLED_TO_REFRESH
@@ -39,8 +38,6 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.ProductImageMap.OnProductFetchedListener
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.cardreader.CardReaderTracker
-import com.woocommerce.android.ui.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
@@ -48,7 +45,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderPaymentFlow
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartPaymentFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabelCreationFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderFulfillInfo
@@ -57,7 +54,8 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderedAddons
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintCustomsForm
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstructions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
-import com.woocommerce.android.ui.orders.simplepayments.TakePaymentViewModel
+import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -232,18 +230,13 @@ final class OrderDetailViewModel @Inject constructor(
         triggerEvent(IssueOrderRefund(remoteOrderId = order.id))
     }
 
-    fun onSharePaymentUrlClicked() {
-        trackerWrapper.track(AnalyticsEvent.ORDER_DETAIL_PAYMENT_LINK_SHARED)
-        triggerEvent(TakePaymentViewModel.SharePaymentUrl(selectedSite.get().name, order.paymentUrl))
-    }
-
     fun onEditClicked() {
         triggerEvent(OrderNavigationTarget.EditOrder(order.id))
     }
 
     fun onAcceptCardPresentPaymentClicked() {
         cardReaderTracker.trackCollectPaymentTapped()
-        triggerEvent(StartCardReaderPaymentFlow(orderId = order.id))
+        triggerEvent(StartPaymentFlow(orderId = order.id))
     }
 
     fun onSeeReceiptClicked() {
@@ -455,11 +448,13 @@ final class OrderDetailViewModel @Inject constructor(
             launch {
                 orderDetailRepository.updateOrderStatus(order.id, newStatus)
                     .collect { result ->
+                        reloadOrderDetails()
                         when (result) {
-                            is OptimisticUpdateResult -> reloadOrderDetails()
+                            is OptimisticUpdateResult -> {
+                                // no-op. We reload order details in any case
+                            }
                             is RemoteUpdateResult -> {
                                 if (result.event.isError) {
-                                    reloadOrderDetails()
                                     triggerEvent(ShowSnackbar(string.order_error_update_general))
                                     trackerWrapper.track(
                                         ORDER_STATUS_CHANGE_FAILED,
@@ -515,7 +510,6 @@ final class OrderDetailViewModel @Inject constructor(
             toolbarTitle = resourceProvider.getString(
                 string.orderdetail_orderstatus_ordernum, order.number
             ),
-            isSharePaymentLinkVisible = order.paymentUrl.isNotEmpty() && order.status == Order.Status.Pending
         )
     }
 
@@ -706,7 +700,6 @@ final class OrderDetailViewModel @Inject constructor(
         val isProductListVisible: Boolean? = null,
         val areShippingLabelsVisible: Boolean? = null,
         val isProductListMenuVisible: Boolean? = null,
-        val isSharePaymentLinkVisible: Boolean? = null,
         val wcShippingBannerVisible: Boolean? = null
     ) : Parcelable {
         val isMarkOrderCompleteButtonVisible: Boolean?

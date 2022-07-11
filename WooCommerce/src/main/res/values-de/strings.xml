@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-15 10:54:04+0000
+Translation-Revision-Date: 2022-06-30 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="install_wc_shipping_proceed_button">Mit Installation fortfahren</string>
+    <string name="install_wc_shipping_installation_info">Was du vor der Installation wissen solltest</string>
+    <string name="install_wc_shipping_preinstall_title">Erweiterung installieren</string>
+    <string name="install_wc_shipping_extension_name">WooCommerce Shipping</string>
+    <string name="product_selector_clear_filters_button_title">Filter löschen</string>
+    <string name="product_selector_empty_state">Keine Produkte gefunden</string>
+    <string name="product_selector_search_failed">Die Suche nach den Produkten ist fehlgeschlagen</string>
+    <string name="product_selector_loading_failed">Das Laden der Produkte ist fehlgeschlagen</string>
+    <string name="product_selector_search_hint">Produkte suchen</string>
+    <string name="product_selector_filter_button_title_default">Filter (%d)</string>
+    <string name="coupon_restrictions_allowed_emails_invalid">Einige E-Mail-Adressen sind ungültig. Bitte korrigiere die eingegebene(n) E-Mail-Adresse(n).</string>
+    <string name="coupon_restrictions_allowed_emails_hint">Liste aller zulässigen Abrechnungs-E-Mail-Adressen, die verglichen werden sollen, wenn eine Bestellung aufgegeben wird. Trenne E-Mail-Adressen mit Kommas. Du kannst auch ein Sternchen (*) als Platzhalter verwenden. Bei „*@gmail.com“ würden z. B. alle Gmail-Adressen verglichen.</string>
+    <string name="empty_message_with_filters">Leider entsprechen keine Produkte den ausgewählten Filtern</string>
+    <string name="card_reader_onboarding_confirm_payment_method_button">Zahlungsmethode bestätigen</string>
+    <string name="card_reader_onboarding_choose_stripe_button">Stripe</string>
+    <string name="card_reader_onboarding_choose_wcpayment_button">WooCommerce Payments</string>
+    <string name="card_reader_onboarding_choose_plugin_hint">Persönliche Zahlungen können über einen dieser Zahlungsanbieter verarbeitet werden. Welchen Anbieter möchtest du verwenden?</string>
+    <string name="card_reader_onboarding_choose_payment_provider">Wähle deinen Zahlungsanbieter aus</string>
+    <string name="order_editing_locked_content_description">gesperrt</string>
+    <string name="order_editing_non_editable_message">Um Produkte oder Zahlungsdetails zu bearbeiten, ändere den Status zu „Zahlung ausstehend“.</string>
+    <string name="order_editing_non_editable_title">Teile dieser Bestellung können derzeit nicht bearbeitet werden</string>
+    <string name="order_creation_customer_search_hint">Suche nach Kunden</string>
+    <string name="order_creation_customer_search_empty">Keine Kunden gefunden</string>
     <string name="install_wc_shipping_flow_onboarding_screen_not_now_button">Nicht jetzt</string>
     <string name="install_wc_shipping_flow_onboarding_screen_add_extension_button">Erweiterung zum Shop hinzufügen</string>
     <string name="install_wc_shipping_flow_onboarding_screen_link">Was ist WooCommerce Shipping?</string>
@@ -67,7 +90,7 @@ Language: de
     <string name="variations_bulk_update_regular_price">Regulären Preis aktualisieren</string>
     <string name="variations_bulk_update_sale_price">Verkaufspreis aktualisieren</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Die WooCommerce Stripe-Erweiterung wird in %1$s nicht unterstützt</string>
-    <string name="product_selector_filter_button_title_zero">Filtern</string>
+    <string name="product_selector_filter_button_title_zero">Filter</string>
     <string name="product_selector_clear_button_title">Auswahl löschen</string>
     <string name="product_selector_select_button_title_one">%d Produkt auswählen</string>
     <string name="product_selector_select_button_title_default">%d Produkte auswählen</string>
@@ -193,7 +216,7 @@ Language: de
     <string name="coupon_details_minimum_spend">Mindestbestellwert: %s</string>
     <string name="coupon_details_heading">Gutscheinübersicht</string>
     <string name="coupon_list_view_coupon">Gutscheinübersicht anzeigen</string>
-    <string name="coupon_list_wip_message_enabled">Wir haben daran gearbeitet, das Anzeigen und Bearbeiten von Gutscheinen von deinem Gerät aus zu ermöglichen!</string>
+    <string name="coupon_list_wip_message_enabled">Wir haben daran gearbeitet, das Anzeigen von Gutscheinen auf deinem Gerät zu ermöglichen!</string>
     <string name="coupon_list_wip_title">Gutscheine anzeigen und bearbeiten</string>
     <string name="coupon_list_empty_heading">Keine Gutscheine gefunden</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s außer %2s</string>

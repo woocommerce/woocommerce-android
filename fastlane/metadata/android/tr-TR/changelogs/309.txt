@@ -1,2 +1,0 @@
-9.4:
-Bu sürümde yeni özellikler bulunmasa da, yine de işin içine çok fazla sevgi katıyoruz! Ürün ayrıntılarında, değişken ürünleri görüntülerken bazı üçüncü taraf uzantıları uygulamanın kilitlenmesine neden oluyordu. Bu kilitlenme durumunu düzelttik ve deneyiminizi daha sorunsuz hale getiren için birkaç küçük iyileştirme yaptık.

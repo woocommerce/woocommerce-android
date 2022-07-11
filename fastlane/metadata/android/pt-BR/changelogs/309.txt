@@ -1,2 +1,0 @@
-9.4:
-Ainda que esta versão não tenha nenhuma funcionalidade nova, nós a fizemos com muito amor. Nos detalhes do produto, algumas extensões de terceiros estavam causando o travamento do aplicativo ao visualizar produtos variáveis. Corrigimos essa falha e fizemos algumas pequenas melhorias para tornar sua experiência mais suave.
