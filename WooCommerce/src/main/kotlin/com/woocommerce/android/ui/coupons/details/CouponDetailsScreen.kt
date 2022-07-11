@@ -112,7 +112,7 @@ fun CouponDetailsScreen(
                         Text(stringResource(id = R.string.coupon_details_menu_share))
                     }
 
-                    if (FeatureFlag.COUPONS_M2.isEnabled()) {
+                    if (FeatureFlag.COUPONS_M2.isEnabled() && state.couponSummary?.isEditable == true) {
                         DropdownMenuItem(onClick = {
                             showMenu = false
                             onEditButtonClick()

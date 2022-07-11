@@ -14,6 +14,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.util.WooLog.T.ORDERS
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
@@ -82,10 +83,13 @@ class OrderCreationRepository @Inject constructor(
 
         return when {
             result.isError -> {
-                WooLog.e(WooLog.T.ORDERS, "${result.error.type.name}: ${result.error.message}")
+                WooLog.e(ORDERS, "${result.error.type.name}: ${result.error.message}")
                 analyticsTrackerWrapper.track(
-                    AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_FAILED,
-                    mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_AMOUNT)
+                    AnalyticsEvent.PAYMENTS_FLOW_FAILED,
+                    mapOf(
+                        AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_AMOUNT,
+                        AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW
+                    )
                 )
                 Result.failure(WooException(result.error))
             }

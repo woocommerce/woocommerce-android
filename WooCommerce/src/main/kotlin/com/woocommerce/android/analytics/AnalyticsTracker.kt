@@ -245,6 +245,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_STATE_ON = "on"
         const val VALUE_STATE_OFF = "off"
 
+        const val VALUE_SIMPLE_PAYMENTS_FLOW = "simple_payment"
         const val VALUE_SIMPLE_PAYMENTS_FEEDBACK = "simple_payments"
         const val VALUE_SIMPLE_PAYMENTS_COLLECT_CARD = "card"
         const val VALUE_SIMPLE_PAYMENTS_COLLECT_CASH = "cash"
@@ -252,6 +253,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_SIMPLE_PAYMENTS_SOURCE_AMOUNT = "amount"
         const val VALUE_SIMPLE_PAYMENTS_SOURCE_SUMMARY = "summary"
         const val VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD = "payment_method"
+
+        const val VALUE_ORDER_PAYMENTS_FLOW = "order_payment"
 
         // -- Downloadable Files
         const val KEY_DOWNLOADABLE_FILE_ACTION = "action"
@@ -330,7 +333,15 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_COUPON_ACTION_LOADED = "loaded"
         const val KEY_COUPON_ACTION_COPIED = "copied_code"
         const val KEY_COUPON_ACTION_SHARED = "shared_code"
+        const val KEY_COUPON_ACTION_EDITED = "tapped_edit"
         const val KEY_COUPON_ACTION_DELETED = "tapped_delete"
+        const val KEY_COUPON_DISCOUNT_TYPE_UPDATED = "discount_type_updated"
+        const val KEY_COUPON_CODE_UPDATED = "coupon_code_updated"
+        const val KEY_COUPON_AMOUNT_UPDATED = "amount_updated"
+        const val KEY_COUPON_DESCRIPTION_UPDATED = "description_updated"
+        const val KEY_COUPON_ALLOWED_PRODUCTS_OR_CATEGORIES_UPDATED = "allowed_products_or_categories_updated"
+        const val KEY_COUPON_EXPIRY_DATE_UPDATED = "expiry_date_updated"
+        const val KEY_COUPON_USAGE_RESTRICTIONS_UPDATED = "usage_restrictions_updated"
 
         var sendUsageStats: Boolean = true
             set(value) {

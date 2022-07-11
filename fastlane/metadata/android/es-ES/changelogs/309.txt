@@ -1,2 +1,0 @@
-9.4:
-Aunque esta versión no tiene ninguna función nueva, hemos puesto mucho empeño en desarrollarla. En los detalles del producto, algunas extensiones de terceros provocaban que la aplicación se bloqueara al consultar productos variables. Hemos corregido este error y hemos hecho unas cuantas minimejoras para que la experiencia sea más fluida.

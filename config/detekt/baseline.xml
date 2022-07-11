@@ -313,15 +313,6 @@
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailRepository.kt:26</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailRepository.kt:4</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailRepository.kt:7</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailViewModelTest.kt:15</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailViewModelTest.kt:18</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailViewModelTest.kt:29</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailViewModelTest.kt:32</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailViewModelTest.kt:36</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailViewModelTest.kt:43</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailViewModel_AddFlowTest.kt:19</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailViewModel_AddFlowTest.kt:33</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailViewModel_AddFlowTest.kt:37</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductImagesViewModel.kt:25</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductInventoryViewModelTest.kt:14</ID>
     <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductListFragment.kt:35</ID>
@@ -547,14 +538,6 @@
     <ID>WildcardImport:ProductDetailRepository.kt$import com.woocommerce.android.model.*</ID>
     <ID>WildcardImport:ProductDetailRepository.kt$import org.wordpress.android.fluxc.action.WCProductAction.*</ID>
     <ID>WildcardImport:ProductDetailRepository.kt$import org.wordpress.android.fluxc.store.WCProductStore.*</ID>
-    <ID>WildcardImport:ProductDetailViewModel.kt$import com.woocommerce.android.analytics.AnalyticsEvent.*</ID>
-    <ID>WildcardImport:ProductDetailViewModel.kt$import com.woocommerce.android.extensions.*</ID>
-    <ID>WildcardImport:ProductDetailViewModel.kt$import com.woocommerce.android.media.MediaFilesRepository.UploadResult.*</ID>
-    <ID>WildcardImport:ProductDetailViewModel.kt$import com.woocommerce.android.model.*</ID>
-    <ID>WildcardImport:ProductDetailViewModel.kt$import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.*</ID>
-    <ID>WildcardImport:ProductDetailViewModel.kt$import com.woocommerce.android.ui.products.ProductNavigationTarget.*</ID>
-    <ID>WildcardImport:ProductDetailViewModel.kt$import com.woocommerce.android.viewmodel.*</ID>
-    <ID>WildcardImport:ProductDetailViewModel.kt$import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*</ID>
     <ID>WildcardImport:ProductDetailViewModel.kt$import kotlinx.coroutines.flow.*</ID>
     <ID>WildcardImport:ProductImagesUploadWorker.kt$import com.woocommerce.android.media.MediaFilesRepository.UploadResult.*</ID>
     <ID>WildcardImport:ProductImagesUploadWorker.kt$import kotlinx.coroutines.*</ID>

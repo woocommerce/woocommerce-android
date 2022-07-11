@@ -170,7 +170,7 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
     }
 
     @Test
-    fun `when statement descriptor "", then PaymentIntent setStatementDescriptor NOT invoked`() = testBlocking {
+    fun `when statement descriptor empty, then PaymentIntent setStatementDescriptor NOT invoked`() = testBlocking {
         val expected = ""
 
         action.createPaymentIntent(createPaymentInfo(statementDescriptor = expected)).toList()

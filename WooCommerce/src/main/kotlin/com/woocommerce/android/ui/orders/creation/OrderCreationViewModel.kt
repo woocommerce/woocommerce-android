@@ -358,19 +358,32 @@ class OrderCreationViewModel @Inject constructor(
         )
 
         _orderDraft.update { draft ->
-            val shipping = draft.shippingLines.firstOrNull()?.copy(total = amount, methodTitle = name)
-                ?: ShippingLine(methodId = "other", total = amount, methodTitle = name)
-            draft.copy(shippingLines = listOf(shipping))
+            val shipping: List<ShippingLine> = draft.shippingLines.mapIndexed { index, shippingLine ->
+                if (index == 0) {
+                    shippingLine.copy(total = amount, methodTitle = name)
+                } else {
+                    shippingLine
+                }
+            }.ifEmpty {
+                listOf(ShippingLine(methodId = "other", total = amount, methodTitle = name))
+            }
+
+            draft.copy(shippingLines = shipping)
         }
     }
 
     fun onShippingRemoved() {
         _orderDraft.update { draft ->
-            // We are iterating over all shipping lines, but on the current feature, we support only one shipping item
-            val shippingLines = draft.shippingLines.map {
-                it.copy(methodId = null)
-            }
-            draft.copy(shippingLines = shippingLines)
+            draft.copy(
+                shippingLines = draft.shippingLines.mapIndexed { index, shippingLine ->
+                    if (index == 0) {
+                        // Setting methodId to null will remove the shipping line in core
+                        shippingLine.copy(methodId = null)
+                    } else {
+                        shippingLine
+                    }
+                }
+            )
         }
     }
 

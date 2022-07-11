@@ -165,7 +165,7 @@ class UnifiedLoginTracker
         NOT_WORDPRESS_SITE("not_wordpress_site");
 
         companion object {
-            private val valueMap = Step.values().associateBy(Step::value)
+            private val valueMap = values().associateBy(Step::value)
 
             fun fromValue(value: String) = valueMap[value]
         }
@@ -194,7 +194,8 @@ class UnifiedLoginTracker
         HELP_FINDING_CONNECTED_EMAIL("help_finding_connected_email"),
         REFRESH_APP("refresh_app"),
         HELP_TROUBLESHOOTING_TIPS("help_troubleshooting_tips"),
-        TRY_AGAIN("try_again")
+        TRY_AGAIN("try_again"),
+        WHAT_IS_WORDPRESS_COM("what_is_wordpress_com")
     }
 
     companion object {

@@ -1,0 +1,5 @@
+9.5:
+We blijven nieuwe functionaliteit toevoegen aan onze experimentele functie Couponbeheer! Deze release omvat het bewerken en verwijderen van coupons en verschillende verbeteringen voor de weergave. Schakel deze functie in voor vroege toegang in het tabblad Meer, Instellingen, Bèta-functies.
+
+Daarnaast hebben we een bug verholpen waardoor het voor een aantal mensen lastig was om bestellingen te doorzoeken. Bedankt dat jullie deze bugs hebben gemeld. Jullie feedback is essentieel voor ons!
+

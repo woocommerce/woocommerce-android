@@ -1,0 +1,5 @@
+9.5:
+Continuiamo ad aggiungere nuove funzionalità alla nostra funzionalità sperimentale di gestione dei codici promozionali! Questa versione include la modifica e l'eliminazione dei codici promozionali insieme a numerosi miglioramenti alla visualizzazione. Attiva questa funzionalità per l'accesso anticipato nella scheda Altro, Impostazioni, Funzionalità sperimentali.
+
+Abbiamo anche risolto un bug che rendeva difficile per alcuni utenti la ricerca degli ordini. Grazie a tutti coloro che hanno segnalato questo problema. Il tuo feedback è di vitale importanza per noi.
+

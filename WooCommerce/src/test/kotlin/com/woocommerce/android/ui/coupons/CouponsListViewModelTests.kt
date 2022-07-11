@@ -64,7 +64,7 @@ class CouponsListViewModelTests : BaseUnitTest() {
             selectedSite = mock {
                 on { get() } doReturn SiteModel()
             },
-            analyticsTrackerWrapper = analyticsTrackerWrapper,
+            analyticsTrackerWrapper = analyticsTrackerWrapper
         )
     }
 
