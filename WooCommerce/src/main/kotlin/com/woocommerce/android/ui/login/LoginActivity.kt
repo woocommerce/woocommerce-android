@@ -409,13 +409,8 @@ class LoginActivity :
             // hide the keyboard
             org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
 
-            // Show the 'Jetpack required' fragment
-            val jetpackReqFragment = LoginJetpackRequiredFragment.newInstance(siteAddressClean)
-            slideInFragment(
-                fragment = jetpackReqFragment as Fragment,
-                shouldAddToBackStack = true,
-                tag = LoginJetpackRequiredFragment.TAG
-            )
+            // Let user log in via site credentials first before showing Jetpack missing screen.
+            loginViaSiteCredentials(inputSiteAddress)
         }
     }
 

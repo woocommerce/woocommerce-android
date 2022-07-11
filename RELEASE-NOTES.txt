@@ -1,4 +1,8 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+9.7
+-----
+- [*] Login: Improved login flow when a WordPress site exists but has no Jetpack plugin installed. [https://github.com/woocommerce/woocommerce-android/pull/6910/]
+
 9.6
 -----
 - [*] New "What is WordPress.com?" link in login with email screen, to provide better context of why WordPress.com account is needed during login [https://github.com/woocommerce/woocommerce-android/pull/6891]
