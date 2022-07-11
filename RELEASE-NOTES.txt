@@ -2,6 +2,7 @@
 
 9.6
 -----
+- [*] Login: Improved login flow when a WordPress site exists but has no Jetpack plugin installed.
 
 
 9.5
