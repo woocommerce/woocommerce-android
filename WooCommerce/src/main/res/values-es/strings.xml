@@ -1,14 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-16 09:54:19+0000
+Translation-Revision-Date: 2022-06-30 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="install_wc_shipping_proceed_button">Continuar con esta instalación</string>
+    <string name="install_wc_shipping_installation_info">Cosas que saber antes de la instalación</string>
+    <string name="install_wc_shipping_preinstall_title">Instalar extensión</string>
+    <string name="install_wc_shipping_extension_name">WooCommerce Envíos</string>
+    <string name="product_selector_clear_filters_button_title">Vaciar filtros</string>
+    <string name="product_selector_empty_state">No se han encontrado productos</string>
+    <string name="product_selector_search_failed">Se ha producido un error en la búsqueda de productos</string>
+    <string name="product_selector_loading_failed">Se ha producido un error en la carga de productos</string>
+    <string name="product_selector_search_hint">Buscar productos</string>
+    <string name="product_selector_filter_button_title_default">Filtro (%d)</string>
+    <string name="coupon_restrictions_allowed_emails_invalid">Algunas direcciones de correo electrónico no son válidas. Corrige las direcciones introducidas.</string>
+    <string name="coupon_restrictions_allowed_emails_hint">Lista de correos electrónicos de facturación permitidos que puedes consultar cuando se realiza un pedido. Separa las direcciones de correo electrónico con comas. También puedes utilizar un asterisco (*) para que coincidan partes de un correo electrónico. Por ejemplo, \"*@gmail.com\" coincidiría con todas las direcciones de Gmail.</string>
+    <string name="empty_message_with_filters">Lo sentimos, no hay productos que coincidan con los filtros seleccionados</string>
+    <string name="card_reader_onboarding_confirm_payment_method_button">Confirmar método de pago</string>
+    <string name="card_reader_onboarding_choose_stripe_button">Stripe</string>
+    <string name="card_reader_onboarding_choose_wcpayment_button">WooCommerce Payments</string>
+    <string name="card_reader_onboarding_choose_plugin_hint">Los pagos en persona se pueden procesar a través de cualquiera de estos proveedores de pago. ¿Qué proveedor te gustaría utilizar?</string>
+    <string name="card_reader_onboarding_choose_payment_provider">Elige tu proveedor de pagos</string>
+    <string name="order_editing_locked_content_description">bloqueado</string>
+    <string name="order_editing_non_editable_message">Para editar Productos o Datos de pago, cambia el estado a Pago pendiente.</string>
+    <string name="order_editing_non_editable_title">Hay partes de este pedido que no se pueden editar actualmente</string>
+    <string name="order_creation_customer_search_hint">Buscar clientes</string>
+    <string name="order_creation_customer_search_empty">No se han encontrado clientes</string>
     <string name="install_wc_shipping_flow_onboarding_screen_not_now_button">No ahora</string>
     <string name="install_wc_shipping_flow_onboarding_screen_add_extension_button">Añadir extensión a la tienda</string>
-    <string name="install_wc_shipping_flow_onboarding_screen_link">¿Qué es Woocommerce Shipping?</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_link">¿Qué es WooCommerce Shipping?</string>
     <string name="install_wc_shipping_flow_onboarding_screen_discounts_bullet_desc">Accede a tarifas de envío con descuento. Actualmente está disponible con DHL y USPS, y pronto habrá más.</string>
     <string name="install_wc_shipping_flow_onboarding_screen_discounts_bullet_title">Tarifas con descuento</string>
     <string name="install_wc_shipping_flow_onboarding_screen_print_bullet_desc">Recoge un pedido; luego, solo tienes que pagar, imprimir, empaquetar y enviar.</string>
@@ -193,7 +216,7 @@ Language: es
     <string name="coupon_details_minimum_spend">Gasto mínimo de %s</string>
     <string name="coupon_details_heading">Resumen del cupón</string>
     <string name="coupon_list_view_coupon">Ver el resumen del cupón</string>
-    <string name="coupon_list_wip_message_enabled">Estamos trabajando para que sea posible ver y editar cupones desde tu dispositivo.</string>
+    <string name="coupon_list_wip_message_enabled">Hemos estado trabajando para que puedas visualizar cupones en tu dispositivo.</string>
     <string name="coupon_list_wip_title">Ver y editar cupones</string>
     <string name="coupon_list_empty_heading">No se han encontrado cupones</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s excepto %2s</string>

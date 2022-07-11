@@ -11,6 +11,7 @@ import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
+import com.woocommerce.android.AppUrls.LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -25,6 +26,8 @@ import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow.LOGIN_SITE_ADDRESS
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Source
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step.ENTER_SITE_ADDRESS
+import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
+import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -52,7 +55,6 @@ import org.wordpress.android.login.LoginMode
 import org.wordpress.android.login.LoginSiteAddressFragment
 import org.wordpress.android.login.LoginUsernamePasswordFragment
 import org.wordpress.android.util.ToastUtils
-import java.util.ArrayList
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
 
@@ -65,7 +67,8 @@ class LoginActivity :
     PrologueFinishedListener,
     HasAndroidInjector,
     LoginNoJetpackListener,
-    LoginEmailHelpDialogFragment.Listener {
+    LoginEmailHelpDialogFragment.Listener,
+    WooLoginEmailFragment.Listener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
         private const val MAGIC_LOGIN = "magic-login"
@@ -182,7 +185,7 @@ class LoginActivity :
     }
 
     private fun getLoginViaSiteAddressFragment(): LoginSiteAddressFragment? =
-        supportFragmentManager.findFragmentByTag(LoginSiteAddressFragment.TAG) as? LoginSiteAddressFragment
+        supportFragmentManager.findFragmentByTag(LoginSiteAddressFragment.TAG) as? WooLoginSiteAddressFragment
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
@@ -294,7 +297,7 @@ class LoginActivity :
 
     override fun loginViaSiteAddress() {
         unifiedLoginTracker.setFlowAndStep(LOGIN_SITE_ADDRESS, ENTER_SITE_ADDRESS)
-        val loginSiteAddressFragment = getLoginViaSiteAddressFragment() ?: LoginSiteAddressFragment()
+        val loginSiteAddressFragment = getLoginViaSiteAddressFragment() ?: WooLoginSiteAddressFragment()
         slideInFragment(loginSiteAddressFragment, true, LoginSiteAddressFragment.TAG)
     }
 
@@ -406,13 +409,8 @@ class LoginActivity :
             // hide the keyboard
             org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
 
-            // Show the 'Jetpack required' fragment
-            val jetpackReqFragment = LoginJetpackRequiredFragment.newInstance(siteAddressClean)
-            slideInFragment(
-                fragment = jetpackReqFragment as Fragment,
-                shouldAddToBackStack = true,
-                tag = LoginJetpackRequiredFragment.TAG
-            )
+            // Let user log in via site credentials first before showing Jetpack missing screen.
+            loginViaSiteCredentials(inputSiteAddress)
         }
     }
 
@@ -634,10 +632,8 @@ class LoginActivity :
         } else {
             val loginEmailFragment = getLoginEmailFragment(
                 siteCredsLayout = false
-            ) ?: LoginEmailFragment.newInstance(siteAddress, false)
-            slideInFragment(
-                loginEmailFragment as Fragment, true, LoginEmailFragment.TAG
-            )
+            ) ?: WooLoginEmailFragment()
+            slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
         }
     }
 
@@ -715,5 +711,10 @@ class LoginActivity :
             // Just in case we use this method for a different scenario in the future
             TODO("Handle a new error scenario")
         }
+    }
+
+    override fun onWhatIsWordPressLinkClicked() {
+        ChromeCustomTabUtils.launchUrl(this, LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT)
+        unifiedLoginTracker.trackClick(Click.WHAT_IS_WORDPRESS_COM)
     }
 }

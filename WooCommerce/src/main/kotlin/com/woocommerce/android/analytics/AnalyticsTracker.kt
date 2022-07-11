@@ -333,7 +333,15 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_COUPON_ACTION_LOADED = "loaded"
         const val KEY_COUPON_ACTION_COPIED = "copied_code"
         const val KEY_COUPON_ACTION_SHARED = "shared_code"
+        const val KEY_COUPON_ACTION_EDITED = "tapped_edit"
         const val KEY_COUPON_ACTION_DELETED = "tapped_delete"
+        const val KEY_COUPON_DISCOUNT_TYPE_UPDATED = "discount_type_updated"
+        const val KEY_COUPON_CODE_UPDATED = "coupon_code_updated"
+        const val KEY_COUPON_AMOUNT_UPDATED = "amount_updated"
+        const val KEY_COUPON_DESCRIPTION_UPDATED = "description_updated"
+        const val KEY_COUPON_ALLOWED_PRODUCTS_OR_CATEGORIES_UPDATED = "allowed_products_or_categories_updated"
+        const val KEY_COUPON_EXPIRY_DATE_UPDATED = "expiry_date_updated"
+        const val KEY_COUPON_USAGE_RESTRICTIONS_UPDATED = "usage_restrictions_updated"
 
         var sendUsageStats: Boolean = true
             set(value) {
