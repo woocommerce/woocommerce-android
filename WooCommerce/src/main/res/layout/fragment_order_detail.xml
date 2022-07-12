@@ -59,6 +59,20 @@
                     android:visibility="gone"
                     tools:visibility="visible" />
 
+                <!-- Custom fields button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/customFieldsButton"
+                    style="@style/Woo.Button.Outlined"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|center_vertical"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginTop="@dimen/minor_100"
+                    android:layout_marginEnd="@dimen/major_100"
+                    android:text="@string/orderdetail_view_custom_fields"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
                 <!-- Refunds Info -->
                 <com.woocommerce.android.ui.orders.details.views.OrderDetailRefundsView
                     android:id="@+id/orderDetail_refundsInfo"

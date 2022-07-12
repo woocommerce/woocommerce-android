@@ -146,6 +146,9 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             scrollUpChild = binding.scrollView
             setOnRefreshListener { viewModel.onRefreshRequested() }
         }
+        binding.customFieldsButton.setOnClickListener {
+            viewModel.onCustomFieldsButtonClicked()
+        }
 
         ViewCompat.setTransitionName(
             binding.scrollView,
@@ -219,6 +222,9 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             new.refreshedProductId?.takeIfNotEqualTo(old?.refreshedProductId) { refreshProduct(it) }
             new.wcShippingBannerVisible?.takeIfNotEqualTo(old?.wcShippingBannerVisible) {
                 showInstallWcShippingBanner(it)
+            }
+            new.isCustomFieldsButtonShown?.takeIfNotEqualTo(old?.isCustomFieldsButtonShown) {
+                binding.customFieldsButton.isVisible = it
             }
         }
 

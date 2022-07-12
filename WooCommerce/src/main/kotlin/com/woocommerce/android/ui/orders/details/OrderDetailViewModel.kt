@@ -59,6 +59,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentC
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -168,6 +169,7 @@ final class OrderDetailViewModel @Inject constructor(
         updateOrderState()
         loadOrderNotes()
         displayProductAndShippingDetails()
+        checkOrderMetaData()
     }
 
     private suspend fun fetchOrder(showSkeleton: Boolean) {
@@ -200,6 +202,20 @@ final class OrderDetailViewModel @Inject constructor(
     private fun checkIfFetchNeeded(order: Order?): Boolean {
         val refunds = orderDetailRepository.getOrderRefunds(navArgs.orderId)
         return order?.refundTotal.isNotEqualTo(refunds.sumBy { it.amount })
+    }
+
+    private fun checkOrderMetaData() {
+        if (FeatureFlag.ORDER_METADATA.isEnabled()) {
+            launch {
+                viewState = viewState.copy(
+                    isCustomFieldsButtonShown = orderDetailRepository.orderHasMetadata(navArgs.orderId)
+                )
+            }
+        }
+    }
+
+    fun onCustomFieldsButtonClicked() {
+        triggerEvent(OrderNavigationTarget.ViewCustomFields(navArgs.orderId))
     }
 
     fun onRefreshRequested() {
@@ -700,7 +716,8 @@ final class OrderDetailViewModel @Inject constructor(
         val isProductListVisible: Boolean? = null,
         val areShippingLabelsVisible: Boolean? = null,
         val isProductListMenuVisible: Boolean? = null,
-        val wcShippingBannerVisible: Boolean? = null
+        val wcShippingBannerVisible: Boolean? = null,
+        val isCustomFieldsButtonShown: Boolean? = null
     ) : Parcelable {
         val isMarkOrderCompleteButtonVisible: Boolean?
             get() = if (orderStatus != null) orderStatus.statusKey == CoreOrderStatus.PROCESSING.value else null

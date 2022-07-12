@@ -184,6 +184,9 @@ class OrderNavigator @Inject constructor() {
                         OrderCreationViewModel.Mode.Edit(target.orderId)
                     ).let { fragment.findNavController().navigateSafely(it) }
             }
+            is OrderNavigationTarget.ViewCustomFields -> {
+
+            }
         }
     }
 }
