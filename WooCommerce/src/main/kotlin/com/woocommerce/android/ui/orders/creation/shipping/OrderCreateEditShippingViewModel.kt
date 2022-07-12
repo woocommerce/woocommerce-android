@@ -12,7 +12,7 @@ import java.math.BigDecimal
 import javax.inject.Inject
 
 @HiltViewModel
-class OrderCreationShippingViewModel @Inject constructor(
+class OrderCreateEditShippingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: OrderCreationShippingFragmentArgs by savedStateHandle.navArgs()
