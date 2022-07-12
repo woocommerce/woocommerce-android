@@ -91,9 +91,9 @@
         tools:layout="@layout/fragment_order_create_edit_customer_note" />
     <fragment
         android:id="@+id/orderCreationProductSelectionFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.products.OrderCreationProductSelectionFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.products.OrderCreateEditProductSelectionFragment"
         android:label="OrderCreationProductSelectionFragment"
-        tools:layout="@layout/fragment_order_creation_product_selection">
+        tools:layout="@layout/fragment_order_create_edit_product_selection">
         <action
             android:id="@+id/action_orderCreationProductSelectionFragment_to_orderCreationVariationSelectionFragment"
             app:destination="@id/orderCreationVariationSelectionFragment"
@@ -144,7 +144,7 @@
         android:id="@+id/orderCreationVariationSelectionFragment"
         android:name="com.woocommerce.android.ui.orders.creation.variations.OrderCreationVariationSelectionFragment"
         android:label="OrderCreationVariationSelectionFragment"
-        tools:layout="@layout/fragment_order_creation_product_selection">
+        tools:layout="@layout/fragment_order_create_edit_product_selection">
         <argument
             android:name="productId"
             app:argType="long" />

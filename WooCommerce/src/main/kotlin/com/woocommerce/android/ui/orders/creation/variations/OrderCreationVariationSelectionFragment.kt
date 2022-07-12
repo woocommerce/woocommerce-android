@@ -7,7 +7,7 @@ import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
-import com.woocommerce.android.databinding.FragmentOrderCreationProductSelectionBinding
+import com.woocommerce.android.databinding.FragmentOrderCreateEditProductSelectionBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
@@ -19,7 +19,7 @@ import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class OrderCreationVariationSelectionFragment : BaseFragment(R.layout.fragment_order_creation_product_selection) {
+class OrderCreationVariationSelectionFragment : BaseFragment(R.layout.fragment_order_create_edit_product_selection) {
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
     private val viewModel by viewModels<OrderCreationVariationSelectionViewModel>()
 
@@ -33,14 +33,14 @@ class OrderCreationVariationSelectionFragment : BaseFragment(R.layout.fragment_o
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val binding = FragmentOrderCreationProductSelectionBinding.bind(view)
+        val binding = FragmentOrderCreateEditProductSelectionBinding.bind(view)
         with(binding) {
             productsList.layoutManager = LinearLayoutManager(requireContext())
         }
         setupObservers(binding)
     }
 
-    private fun setupObservers(binding: FragmentOrderCreationProductSelectionBinding) {
+    private fun setupObservers(binding: FragmentOrderCreateEditProductSelectionBinding) {
         viewModel.viewState.observe(viewLifecycleOwner) { state ->
             screenTitle = state.parentProduct?.name ?: getString(R.string.order_creation_variations_screen_title)
 
@@ -52,7 +52,7 @@ class OrderCreationVariationSelectionFragment : BaseFragment(R.layout.fragment_o
         }
     }
 
-    private fun FragmentOrderCreationProductSelectionBinding.bindVariationsList(
+    private fun FragmentOrderCreateEditProductSelectionBinding.bindVariationsList(
         variationsList: List<ProductVariation>,
         parentProduct: Product?
     ) {
@@ -75,7 +75,7 @@ class OrderCreationVariationSelectionFragment : BaseFragment(R.layout.fragment_o
         (productsList.adapter as VariationListAdapter).submitList(variationsList)
     }
 
-    private fun FragmentOrderCreationProductSelectionBinding.showSkeleton(
+    private fun FragmentOrderCreateEditProductSelectionBinding.showSkeleton(
         show: Boolean
     ) {
         if (show) {

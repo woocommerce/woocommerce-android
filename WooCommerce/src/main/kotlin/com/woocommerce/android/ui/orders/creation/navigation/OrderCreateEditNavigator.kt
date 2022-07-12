@@ -3,8 +3,15 @@ package com.woocommerce.android.ui.orders.creation.navigation
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditFormFragmentDirections
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.*
-import com.woocommerce.android.ui.orders.creation.products.OrderCreationProductSelectionFragmentDirections
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.AddProduct
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomer
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomerNote
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditFee
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditShipping
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductVariations
+import com.woocommerce.android.ui.orders.creation.products.OrderCreateEditProductSelectionFragmentDirections
 
 object OrderCreateEditNavigator {
     fun navigate(fragment: Fragment, target: OrderCreateEditNavigationTarget) {
@@ -26,7 +33,7 @@ object OrderCreateEditNavigator {
                 OrderCreateEditFormFragmentDirections
                     .actionOrderCreationFragmentToOrderCreationProductDetailsFragment(target.item)
             is ShowProductVariations ->
-                OrderCreationProductSelectionFragmentDirections
+                OrderCreateEditProductSelectionFragmentDirections
                     .actionOrderCreationProductSelectionFragmentToOrderCreationVariationSelectionFragment(
                         target.productId
                     )
