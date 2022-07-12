@@ -769,7 +769,7 @@ platform :android do
     # Run screenshots generator tool
     promo_screenshots(
       orig_folder: RAW_SCREENSHOTS_PROCESSING_DIR,
-      metadata_folder: ORIGINALS_METADATA_DIR_PATH,
+      metadata_folder: SCREENSHOTS_METADATA_DIR_PATH,
       output_folder: PROMO_SCREENSHOTS_DIR,
       force: options[:force],
     )
