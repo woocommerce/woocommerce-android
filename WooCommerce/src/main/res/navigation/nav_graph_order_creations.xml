@@ -6,9 +6,9 @@
     app:startDestination="@id/orderCreationFragment">
     <fragment
         android:id="@+id/orderCreationFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.OrderCreationFormFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.OrderCreateEditFormFragment"
         android:label="orderCreationFragment"
-        tools:layout="@layout/fragment_order_creation_form">
+        tools:layout="@layout/fragment_order_create_edit_form">
         <action
             android:id="@+id/action_orderCreationFragment_to_orderStatusSelectorDialog"
             app:destination="@id/orderStatusSelectorDialog"

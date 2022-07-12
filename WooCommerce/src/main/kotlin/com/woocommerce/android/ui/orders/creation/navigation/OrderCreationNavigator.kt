@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.orders.creation.navigation
 
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.ui.orders.creation.OrderCreationFormFragmentDirections
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditFormFragmentDirections
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.*
 import com.woocommerce.android.ui.orders.creation.products.OrderCreationProductSelectionFragmentDirections
 
@@ -12,18 +12,18 @@ object OrderCreationNavigator {
 
         val action = when (target) {
             is EditCustomer ->
-                OrderCreationFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerFragment()
+                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerFragment()
             is EditCustomerNote ->
-                OrderCreationFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerNoteFragment()
+                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerNoteFragment()
             is AddProduct ->
-                OrderCreationFormFragmentDirections.actionOrderCreationFragmentToOrderCreationProductSelectionFragment()
+                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationProductSelectionFragment()
             is EditFee ->
-                OrderCreationFormFragmentDirections.actionOrderCreationFragmentToOrderCreationEditFeeFragment(
+                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationEditFeeFragment(
                     orderSubTotal = target.orderSubTotal,
                     currentFeeValue = target.currentFeeValue
                 )
             is ShowProductDetails ->
-                OrderCreationFormFragmentDirections
+                OrderCreateEditFormFragmentDirections
                     .actionOrderCreationFragmentToOrderCreationProductDetailsFragment(target.item)
             is ShowProductVariations ->
                 OrderCreationProductSelectionFragmentDirections
@@ -31,10 +31,10 @@ object OrderCreationNavigator {
                         target.productId
                     )
             is ShowCreatedOrder ->
-                OrderCreationFormFragmentDirections
+                OrderCreateEditFormFragmentDirections
                     .actionOrderCreationFragmentToOrderDetailFragment(target.orderId)
             is EditShipping ->
-                OrderCreationFormFragmentDirections
+                OrderCreateEditFormFragmentDirections
                     .actionOrderCreationFragmentToOrderCreationShippingFragment(target.currentShippingLine)
         }
 
