@@ -8,7 +8,7 @@ import androidx.lifecycle.map
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.extensions.differsFrom
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.ShowProductVariations
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductVariations
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.viewmodel.LiveDataDelegate

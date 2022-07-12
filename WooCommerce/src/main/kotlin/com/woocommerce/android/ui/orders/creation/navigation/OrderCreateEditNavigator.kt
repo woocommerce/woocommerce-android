@@ -3,11 +3,11 @@ package com.woocommerce.android.ui.orders.creation.navigation
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditFormFragmentDirections
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.*
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.*
 import com.woocommerce.android.ui.orders.creation.products.OrderCreationProductSelectionFragmentDirections
 
 object OrderCreateEditNavigator {
-    fun navigate(fragment: Fragment, target: OrderCreationNavigationTarget) {
+    fun navigate(fragment: Fragment, target: OrderCreateEditNavigationTarget) {
         val navController = fragment.findNavController()
 
         val action = when (target) {
