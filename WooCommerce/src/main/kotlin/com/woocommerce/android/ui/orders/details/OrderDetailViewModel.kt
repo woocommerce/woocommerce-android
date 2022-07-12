@@ -217,7 +217,7 @@ final class OrderDetailViewModel @Inject constructor(
     }
 
     fun onCustomFieldsButtonClicked() {
-        triggerEvent(OrderNavigationTarget.ViewCustomFields(navArgs.orderId))
+        triggerEvent(OrderNavigationTarget.ViewCustomFields)
     }
 
     fun getOrderMetadata(): List<OrderMetaDataEntity> = runBlocking {

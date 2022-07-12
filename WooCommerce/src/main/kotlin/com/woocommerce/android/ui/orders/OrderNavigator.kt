@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProdu
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShipmentTrackingProviders
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelFormatOptions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelPaperSizes
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCustomFields
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragmentDirections
@@ -184,8 +185,9 @@ class OrderNavigator @Inject constructor() {
                         OrderCreationViewModel.Mode.Edit(target.orderId)
                     ).let { fragment.findNavController().navigateSafely(it) }
             }
-            is OrderNavigationTarget.ViewCustomFields -> {
-                // TODO nbradbury
+            is ViewCustomFields -> {
+                val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToCustomOrderFieldsFragment()
+                fragment.findNavController().navigateSafely(action)
             }
         }
     }

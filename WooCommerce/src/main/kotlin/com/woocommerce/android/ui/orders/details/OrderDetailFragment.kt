@@ -224,7 +224,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                 showInstallWcShippingBanner(it)
             }
             new.isCustomFieldsButtonShown?.takeIfNotEqualTo(old?.isCustomFieldsButtonShown) {
-                binding.customFieldsButton.isVisible = it
+                binding.customFieldsCard.isVisible = it
             }
         }
 
