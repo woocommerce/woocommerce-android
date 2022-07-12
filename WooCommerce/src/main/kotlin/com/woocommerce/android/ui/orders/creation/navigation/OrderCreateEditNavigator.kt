@@ -23,7 +23,8 @@ object OrderCreateEditNavigator {
             is EditCustomerNote ->
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerNoteFragment()
             is AddProduct ->
-                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationProductSelectionFragment()
+                OrderCreateEditFormFragmentDirections
+                    .actionOrderCreationFragmentToOrderCreationProductSelectionFragment()
             is EditFee ->
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationEditFeeFragment(
                     orderSubTotal = target.orderSubTotal,

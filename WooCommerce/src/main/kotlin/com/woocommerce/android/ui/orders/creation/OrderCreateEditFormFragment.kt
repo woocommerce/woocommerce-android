@@ -70,7 +70,7 @@ class OrderCreateEditFormFragment : BaseFragment(R.layout.fragment_order_create_
         get() = AppBarStatus.Visible(
             navigationIcon = when (viewModel.mode) {
                 OrderCreateEditViewModel.Mode.Creation -> R.drawable.ic_back_24dp
-                is  OrderCreateEditViewModel.Mode.Edit -> null
+                is OrderCreateEditViewModel.Mode.Edit -> null
             }
         )
 
@@ -96,7 +96,7 @@ class OrderCreateEditFormFragment : BaseFragment(R.layout.fragment_order_create_
             title = resources.getString(
                 when (viewModel.mode) {
                     OrderCreateEditViewModel.Mode.Creation -> R.string.create
-                    is  OrderCreateEditViewModel.Mode.Edit -> R.string.done
+                    is OrderCreateEditViewModel.Mode.Edit -> R.string.done
                 }
             )
             isEnabled = viewModel.viewStateData.liveData.value?.canCreateOrder ?: false
@@ -445,8 +445,8 @@ class OrderCreateEditFormFragment : BaseFragment(R.layout.fragment_order_create_
 
     override fun getFragmentTitle() = when (viewModel.mode) {
         OrderCreateEditViewModel.Mode.Creation -> getString(R.string.order_creation_fragment_title)
-        is  OrderCreateEditViewModel.Mode.Edit -> {
-            val orderId = (viewModel.mode as  OrderCreateEditViewModel.Mode.Edit).orderId.toString()
+        is OrderCreateEditViewModel.Mode.Edit -> {
+            val orderId = (viewModel.mode as OrderCreateEditViewModel.Mode.Edit).orderId.toString()
             getString(R.string.orderdetail_orderstatus_ordernum, orderId)
         }
     }
