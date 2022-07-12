@@ -20,8 +20,8 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductVariations
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigator
-import com.woocommerce.android.ui.orders.creation.products.OrderCreationProductSelectionViewModel.AddProduct
-import com.woocommerce.android.ui.orders.creation.products.OrderCreationProductSelectionViewModel.ViewState
+import com.woocommerce.android.ui.orders.creation.products.OrderCreateEditProductSelectionViewModel.AddProduct
+import com.woocommerce.android.ui.orders.creation.products.OrderCreateEditProductSelectionViewModel.ViewState
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.ProductListAdapter
 import com.woocommerce.android.util.CurrencyFormatter
@@ -38,7 +38,7 @@ class OrderCreationProductSelectionFragment :
     SearchView.OnQueryTextListener,
     OnActionExpandListener {
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
-    private val productListViewModel by viewModels<OrderCreationProductSelectionViewModel>()
+    private val productListViewModel by viewModels<OrderCreateEditProductSelectionViewModel>()
 
     private val skeletonView = SkeletonView()
     private var searchMenuItem: MenuItem? = null

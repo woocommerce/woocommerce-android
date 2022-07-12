@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.orders.creation.products
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductVariations
-import com.woocommerce.android.ui.orders.creation.products.OrderCreationProductSelectionViewModel.AddProduct
+import com.woocommerce.android.ui.orders.creation.products.OrderCreateEditProductSelectionViewModel.AddProduct
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.ui.products.ProductTestUtils.generateProduct
@@ -25,8 +25,8 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
-class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
-    private lateinit var sut: OrderCreationProductSelectionViewModel
+class OrderCreateEditProductSelectionViewModelTest : BaseUnitTest() {
+    private lateinit var sut: OrderCreateEditProductSelectionViewModel
     private lateinit var productListRepository: ProductListRepository
     private lateinit var searchResult: List<Product>
     private lateinit var fullProductList: List<Product>
@@ -259,7 +259,7 @@ class OrderCreationProductSelectionViewModelTest : BaseUnitTest() {
     }
 
     private fun startSut() {
-        sut = OrderCreationProductSelectionViewModel(
+        sut = OrderCreateEditProductSelectionViewModel(
             SavedStateHandle(),
             productListRepository
         )
