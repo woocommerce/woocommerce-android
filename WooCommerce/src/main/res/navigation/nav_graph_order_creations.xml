@@ -86,9 +86,9 @@
     </dialog>
     <fragment
         android:id="@+id/orderCreationCustomerNoteFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.notes.OrderCreationCustomerNoteFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.notes.OrderCreateEditCustomerNoteFragment"
         android:label="OrderCreationCustomerNoteFragment"
-        tools:layout="@layout/fragment_edit_customer_order_note" />
+        tools:layout="@layout/fragment_order_create_edit_customer_note" />
     <fragment
         android:id="@+id/orderCreationProductSelectionFragment"
         android:name="com.woocommerce.android.ui.orders.creation.products.OrderCreationProductSelectionFragment"

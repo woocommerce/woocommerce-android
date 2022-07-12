@@ -4,19 +4,19 @@ import android.os.Bundle
 import android.view.View
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.databinding.FragmentEditCustomerOrderNoteBinding
+import com.woocommerce.android.databinding.FragmentOrderCreateEditCustomerNoteBinding
 import com.woocommerce.android.ui.main.AppBarStatus
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 
 @AndroidEntryPoint
 class CustomerOrderNoteEditingFragment :
-    BaseOrderEditingFragment(R.layout.fragment_edit_customer_order_note) {
+    BaseOrderEditingFragment(R.layout.fragment_order_create_edit_customer_note) {
     companion object {
         const val TAG = "EditCustomerOrderNoteFragment"
     }
 
-    private var _binding: FragmentEditCustomerOrderNoteBinding? = null
+    private var _binding: FragmentOrderCreateEditCustomerNoteBinding? = null
     private val binding get() = _binding!!
 
     override val analyticsValue: String = AnalyticsTracker.ORDER_EDIT_CUSTOMER_NOTE
@@ -29,7 +29,7 @@ class CustomerOrderNoteEditingFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        _binding = FragmentEditCustomerOrderNoteBinding.bind(view)
+        _binding = FragmentOrderCreateEditCustomerNoteBinding.bind(view)
 
         if (savedInstanceState == null) {
             binding.customerOrderNoteEditor.setText(sharedViewModel.order.customerNote)

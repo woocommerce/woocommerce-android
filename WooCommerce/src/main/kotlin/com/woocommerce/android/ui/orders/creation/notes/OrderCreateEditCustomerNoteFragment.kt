@@ -9,15 +9,15 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
-import com.woocommerce.android.databinding.FragmentEditCustomerOrderNoteBinding
+import com.woocommerce.android.databinding.FragmentOrderCreateEditCustomerNoteBinding
 import com.woocommerce.android.extensions.showKeyboardWithDelay
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 
-class OrderCreationCustomerNoteFragment : BaseFragment(R.layout.fragment_edit_customer_order_note) {
+class OrderCreateEditCustomerNoteFragment : BaseFragment(R.layout.fragment_order_create_edit_customer_note) {
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
 
-    private var _binding: FragmentEditCustomerOrderNoteBinding? = null
+    private var _binding: FragmentOrderCreateEditCustomerNoteBinding? = null
     val binding
         get() = _binding!!
 
@@ -27,7 +27,7 @@ class OrderCreationCustomerNoteFragment : BaseFragment(R.layout.fragment_edit_cu
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
 
-        _binding = FragmentEditCustomerOrderNoteBinding.bind(view)
+        _binding = FragmentOrderCreateEditCustomerNoteBinding.bind(view)
         if (savedInstanceState == null) {
             binding.customerOrderNoteEditor.setText(sharedViewModel.currentDraft.customerNote)
             binding.customerOrderNoteEditor.showKeyboardWithDelay()
