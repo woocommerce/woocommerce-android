@@ -161,9 +161,9 @@
     </fragment>
     <fragment
         android:id="@+id/orderCreationFeeFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.fees.OrderCreationFeeFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.fees.OrderCreateEditFeeFragment"
         android:label="OrderCreationFeeFragment"
-        tools:layout="@layout/fragment_order_creation_fee" >
+        tools:layout="@layout/fragment_order_create_edit_fee" >
         <argument
             android:name="orderSubTotal"
             app:argType="java.math.BigDecimal" />
