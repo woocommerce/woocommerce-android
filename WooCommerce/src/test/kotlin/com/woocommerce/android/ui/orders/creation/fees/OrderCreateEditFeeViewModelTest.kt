@@ -2,8 +2,8 @@ package com.woocommerce.android.ui.orders.creation.fees
 
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.initSavedStateHandle
-import com.woocommerce.android.ui.orders.creation.fees.OrderCreationFeeViewModel.RemoveFee
-import com.woocommerce.android.ui.orders.creation.fees.OrderCreationFeeViewModel.UpdateFee
+import com.woocommerce.android.ui.orders.creation.fees.OrderCreateEditFeeViewModel.RemoveFee
+import com.woocommerce.android.ui.orders.creation.fees.OrderCreateEditFeeViewModel.UpdateFee
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -17,19 +17,19 @@ import java.math.RoundingMode.HALF_UP
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
-class OrderCreationFeeViewModelTest : BaseUnitTest() {
+class OrderCreateEditFeeViewModelTest : BaseUnitTest() {
     companion object {
         private val DEFAULT_ORDER_SUB_TOTAL = BigDecimal(2000)
         private val DEFAULT_FEE_VALUE = BigDecimal(250)
     }
-    private lateinit var sut: OrderCreationFeeViewModel
+    private lateinit var sut: OrderCreateEditFeeViewModel
     private var savedState = OrderCreateEditFeeFragmentArgs(DEFAULT_ORDER_SUB_TOTAL).initSavedStateHandle()
 
     @Before
     fun setUp() = initSut()
 
     private fun initSut() {
-        sut = OrderCreationFeeViewModel(savedState)
+        sut = OrderCreateEditFeeViewModel(savedState)
     }
 
     @Test

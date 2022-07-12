@@ -21,8 +21,8 @@ import com.woocommerce.android.extensions.showKeyboardWithDelay
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
-import com.woocommerce.android.ui.orders.creation.fees.OrderCreationFeeViewModel.RemoveFee
-import com.woocommerce.android.ui.orders.creation.fees.OrderCreationFeeViewModel.UpdateFee
+import com.woocommerce.android.ui.orders.creation.fees.OrderCreateEditFeeViewModel.RemoveFee
+import com.woocommerce.android.ui.orders.creation.fees.OrderCreateEditFeeViewModel.UpdateFee
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.internal.format
@@ -34,7 +34,7 @@ import javax.inject.Inject
 class OrderCreateEditFeeFragment :
     BaseFragment(R.layout.fragment_order_create_edit_fee) {
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
-    private val editFeeViewModel by viewModels<OrderCreationFeeViewModel>()
+    private val editFeeViewModel by viewModels<OrderCreateEditFeeViewModel>()
 
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 

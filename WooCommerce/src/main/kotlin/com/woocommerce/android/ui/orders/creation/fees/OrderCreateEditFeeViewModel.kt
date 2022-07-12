@@ -14,7 +14,7 @@ import java.math.RoundingMode
 import javax.inject.Inject
 
 @HiltViewModel
-class OrderCreationFeeViewModel @Inject constructor(
+class OrderCreateEditFeeViewModel @Inject constructor(
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     companion object {
