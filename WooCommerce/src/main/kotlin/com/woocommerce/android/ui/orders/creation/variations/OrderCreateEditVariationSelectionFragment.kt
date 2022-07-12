@@ -21,7 +21,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class OrderCreateEditVariationSelectionFragment : BaseFragment(R.layout.fragment_order_create_edit_product_selection) {
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
-    private val viewModel by viewModels<OrderCreationVariationSelectionViewModel>()
+    private val viewModel by viewModels<OrderCreateEditVariationSelectionViewModel>()
 
     private val skeletonView = SkeletonView()
 

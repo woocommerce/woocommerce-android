@@ -15,7 +15,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class OrderCreationVariationSelectionViewModel @Inject constructor(
+class OrderCreateEditVariationSelectionViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val variationRepository: VariationRepository,
     private val productRepository: ProductDetailRepository,
