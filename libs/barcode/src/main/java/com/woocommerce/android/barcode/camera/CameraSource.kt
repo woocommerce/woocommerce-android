@@ -310,7 +310,7 @@ class CameraSource(private val graphicOverlay: GraphicOverlay) {
      * associated processing is done for the previous frame, detection on the mostly recently received
      * frame will immediately start on the same thread.
      */
-    private inner class FrameProcessingRunnable() : Runnable {
+    private inner class FrameProcessingRunnable : Runnable {
         // This lock guards all of the member variables below.
         private val lock = Object()
         private var active = true

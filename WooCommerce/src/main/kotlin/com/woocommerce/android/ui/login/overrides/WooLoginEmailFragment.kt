@@ -25,7 +25,6 @@ class WooLoginEmailFragment : LoginEmailFragment() {
             } else showCameraPermissionDeniedDialog()
         }
 
-
     private lateinit var whatIsWordPressLinkClickListener: Listener
 
     @LayoutRes
