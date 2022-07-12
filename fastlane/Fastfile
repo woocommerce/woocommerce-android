@@ -21,6 +21,10 @@ RELEASE_NOTES_PATH = File.join(ORIGINALS_METADATA_DIR_PATH, 'release_notes.txt')
 MAIN_STRINGS_PATH = File.join('WooCommerce', 'src', 'main', 'res', 'values', 'strings.xml')
 # The metadata for the Play Store live in the Fastlane folder, hence the `Dir.pwd`
 PLAY_STORE_METADATA_DIR_PATH = File.join(Dir.pwd, 'metadata', 'android')
+# Currently, the strings to use for the screenshots live in yet another metadata folder.
+# This is suboptimal and could lead to confusion.
+# See suggestions for how to improve at: https://github.com/woocommerce/woocommerce-android/pull/6907#discussion_r918144990
+SCREENSHOTS_METADATA_DIR_PATH = File.join(Dir.pwd, 'playstoreres', 'metadata')
 RAW_SCREENSHOTS_DIR = File.join(Dir.pwd, 'screenshots', 'raw')
 RAW_SCREENSHOTS_PROCESSING_DIR = File.join(Dir.pwd, 'screenshots', 'raw_tmp')
 PROMO_SCREENSHOTS_DIR = File.join(Dir.pwd, "screenshots", "promo_screenshots")
@@ -692,10 +696,10 @@ platform :android do
                         target_files: files,
                         locales: locales,
                         source_locale: "en-US",
-                        download_path: File.join(Dir.pwd, "/playstoreres/metadata"))
+                        download_path: SCREENSHOTS_METADATA_DIR_PATH)
 
     # Copy metadata (screenshot-related) txt files into `en-US`
-    en_us_path = File.join(Dir.pwd, "/playstoreres/metadata", "en-US")
+    en_us_path = File.join(SCREENSHOTS_METADATA_DIR_PATH, 'en-US')
     FileUtils.mkdir_p(en_us_path)
 
     [
