@@ -76,7 +76,7 @@ class OrderCreateEditFormFragment : BaseFragment(R.layout.fragment_order_create_
 
     private val View?.productsAdapter
         get() = (this as? RecyclerView)
-            ?.run { adapter as? OrderCreationProductsAdapter }
+            ?.run { adapter as? OrderCreateEditProductsAdapter }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -337,7 +337,7 @@ class OrderCreateEditFormFragment : BaseFragment(R.layout.fragment_order_create_
                 }
                 productsSection.content = RecyclerView(requireContext()).apply {
                     layoutManager = LinearLayoutManager(requireContext())
-                    adapter = OrderCreationProductsAdapter(
+                    adapter = OrderCreateEditProductsAdapter(
                         onProductClicked = viewModel::onProductClicked,
                         currencyFormatter = currencyFormatter,
                         currencyCode = viewModel.currentDraft.currency,
