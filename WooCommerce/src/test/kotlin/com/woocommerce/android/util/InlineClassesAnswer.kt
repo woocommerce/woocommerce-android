@@ -12,6 +12,7 @@ import org.mockito.stubbing.Answer
  * check https://github.com/mockito/mockito/pull/2280
  */
 class InlineClassesAnswer<T : Any>(private val defaultAnswer: Answer<T>) : Answer<T> {
+    @Suppress("UNCHECKED_CAST")
     override fun answer(invocation: InvocationOnMock?): T {
         return KotlinInlineClassUtil.unboxUnderlyingValueIfNeeded(invocation, defaultAnswer.answer(invocation)) as T
     }

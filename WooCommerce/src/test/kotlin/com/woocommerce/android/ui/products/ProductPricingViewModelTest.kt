@@ -18,7 +18,12 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.clearInvocations
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCSettingsModel
 import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.LEFT

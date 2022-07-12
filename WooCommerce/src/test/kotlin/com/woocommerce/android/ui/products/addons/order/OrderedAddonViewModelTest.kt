@@ -272,7 +272,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
 
             var timesCalled = 0
             var viewModelStarted = false
-            viewModelUnderTest.viewStateLiveData.observeForever { old, new ->
+            viewModelUnderTest.viewStateLiveData.observeForever { _, new ->
                 if (viewModelStarted) {
                     when (timesCalled) {
                         0 -> assertThat(new.isSkeletonShown).isTrue
@@ -297,7 +297,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
 
             var timesCalled = 0
             var viewModelStarted = false
-            viewModelUnderTest.viewStateLiveData.observeForever { old, new ->
+            viewModelUnderTest.viewStateLiveData.observeForever { _, new ->
                 if (viewModelStarted) {
                     when (timesCalled) {
                         0 -> assertThat(new.isSkeletonShown).isTrue
@@ -322,7 +322,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
 
             var timesCalled = 0
             var viewModelStarted = false
-            viewModelUnderTest.viewStateLiveData.observeForever { old, new ->
+            viewModelUnderTest.viewStateLiveData.observeForever { _, new ->
                 if (viewModelStarted) {
                     when (timesCalled) {
                         0 -> assertThat(new.isLoadingFailure).isFalse
@@ -349,7 +349,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
 
             var timesCalled = 0
             var viewModelStarted = false
-            viewModelUnderTest.viewStateLiveData.observeForever { old, new ->
+            viewModelUnderTest.viewStateLiveData.observeForever { _, new ->
                 if (viewModelStarted) {
                     when (timesCalled) {
                         0 -> assertThat(new.isLoadingFailure).isFalse
@@ -376,7 +376,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
 
             var timesCalled = 0
             var viewModelStarted = false
-            viewModelUnderTest.viewStateLiveData.observeForever { old, new ->
+            viewModelUnderTest.viewStateLiveData.observeForever { _, new ->
                 if (viewModelStarted) {
                     when (timesCalled) {
                         0 -> assertThat(new.isLoadingFailure).isFalse

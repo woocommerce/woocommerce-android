@@ -17,7 +17,14 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argThat
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
@@ -128,6 +135,7 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    @Suppress("UNCHECKED_CAST")
     fun `add note successfully`() = testBlocking {
         val note = "note"
         val isCustomerNote = false

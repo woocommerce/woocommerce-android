@@ -560,7 +560,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         }
 
         var isTrashDialogShown = false
-        viewModel.productDetailViewStateData.observeForever { old, new ->
+        viewModel.productDetailViewStateData.observeForever { _, new ->
             new.isConfirmingTrash.takeIfNotEqualTo(false) {
                 isTrashDialogShown = true
             }

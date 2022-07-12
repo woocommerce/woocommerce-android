@@ -5,10 +5,12 @@ import com.woocommerce.android.ui.orders.creation.shipping.OrderCreationShipping
 import com.woocommerce.android.ui.orders.creation.shipping.OrderCreationShippingViewModel.UpdateShipping
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.math.BigDecimal
 
+@ExperimentalCoroutinesApi
 class OrderCreationShippingViewModelTest : BaseUnitTest() {
     lateinit var viewModel: OrderCreationShippingViewModel
 

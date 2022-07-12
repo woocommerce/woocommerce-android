@@ -12,11 +12,13 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ResourceProvider
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.data.Index
 import org.junit.Test
 import org.mockito.kotlin.mock
 
+@ExperimentalCoroutinesApi
 class ProductImagesViewModelTest : BaseUnitTest() {
     lateinit var viewModel: ProductImagesViewModel
 

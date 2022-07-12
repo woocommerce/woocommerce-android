@@ -6,11 +6,13 @@ import com.woocommerce.android.ui.searchfilter.SearchFilterViewState.Empty
 import com.woocommerce.android.ui.searchfilter.SearchFilterViewState.Loaded
 import com.woocommerce.android.ui.searchfilter.SearchFilterViewState.Search
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 
+@ExperimentalCoroutinesApi
 class SearchFilterViewModelTest : BaseUnitTest() {
     private val viewStateObserver: Observer<SearchFilterViewState> = mock()
 

@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.orders.creation.fees.OrderCreationFeeViewModel
 import com.woocommerce.android.ui.orders.creation.fees.OrderCreationFeeViewModel.UpdateFee
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.Before
@@ -15,6 +16,7 @@ import java.math.MathContext
 import java.math.RoundingMode.HALF_UP
 import kotlin.test.assertTrue
 
+@ExperimentalCoroutinesApi
 class OrderCreationFeeViewModelTest : BaseUnitTest() {
     companion object {
         private val DEFAULT_ORDER_SUB_TOTAL = BigDecimal(2000)

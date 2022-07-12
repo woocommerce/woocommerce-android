@@ -5,11 +5,13 @@ import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.Refund.Item
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
+@ExperimentalCoroutinesApi
 class OrderDetailRefundsLineBuilderTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock {
         on {

@@ -3,7 +3,7 @@ package com.woocommerce.android.util
 import com.woocommerce.android.util.locale.LocaleProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.TestScope
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -22,7 +22,7 @@ class CurrencyFormatterTest : BaseUnitTest() {
             wcStore = mock(),
             selectedSite = mock(),
             localeProvider = localeProvider,
-            appCoroutineScope = TestCoroutineScope(coroutinesTestRule.testDispatcher),
+            appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher),
             dispatchers = coroutinesTestRule.testDispatchers
         )
         whenever(localeProvider.provideLocale()).thenReturn(Locale.US)
