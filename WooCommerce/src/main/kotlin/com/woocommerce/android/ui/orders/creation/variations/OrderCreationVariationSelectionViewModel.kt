@@ -21,7 +21,7 @@ class OrderCreationVariationSelectionViewModel @Inject constructor(
     private val productRepository: ProductDetailRepository,
     private val dispatchers: CoroutineDispatchers
 ) : ScopedViewModel(savedStateHandle) {
-    private val navArgs: OrderCreationVariationSelectionFragmentArgs by savedStateHandle.navArgs()
+    private val navArgs: OrderCreateEditVariationSelectionFragmentArgs by savedStateHandle.navArgs()
 
     private val loadMoreTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 

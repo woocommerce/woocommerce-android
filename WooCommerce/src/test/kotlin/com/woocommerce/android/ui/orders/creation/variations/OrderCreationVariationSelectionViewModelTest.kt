@@ -33,7 +33,7 @@ class OrderCreationVariationSelectionViewModelTest : BaseUnitTest() {
         onBlocking { fetchProductVariations(PRODUCT_ID) } doReturn
             ProductTestUtils.generateProductVariationList(PRODUCT_ID)
     }
-    private val savedState = OrderCreationVariationSelectionFragmentArgs(PRODUCT_ID).initSavedStateHandle()
+    private val savedState = OrderCreateEditVariationSelectionFragmentArgs(PRODUCT_ID).initSavedStateHandle()
 
     private lateinit var viewModel: OrderCreationVariationSelectionViewModel
 

@@ -142,7 +142,7 @@
     </fragment>
     <fragment
         android:id="@+id/orderCreationVariationSelectionFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.variations.OrderCreationVariationSelectionFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.variations.OrderCreateEditVariationSelectionFragment"
         android:label="OrderCreationVariationSelectionFragment"
         tools:layout="@layout/fragment_order_create_edit_product_selection">
         <argument
