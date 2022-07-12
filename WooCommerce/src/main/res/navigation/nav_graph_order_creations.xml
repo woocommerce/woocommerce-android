@@ -71,7 +71,7 @@
         </action>
         <argument
             android:name="mode"
-            app:argType="com.woocommerce.android.ui.orders.creation.OrderCreationViewModel$Mode" />
+            app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$Mode" />
     </fragment>
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
