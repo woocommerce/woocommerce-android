@@ -105,6 +105,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
         verify(tracker).track(
             AnalyticsEvent.ORDER_PRODUCT_ADD,
+            mapOf(AnalyticsTracker.KEY_FLOW to tracksFlow),
         )
     }
 
