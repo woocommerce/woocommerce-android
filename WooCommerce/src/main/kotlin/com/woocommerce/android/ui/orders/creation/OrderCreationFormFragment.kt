@@ -9,6 +9,7 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -29,9 +30,6 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
-import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.Mode
-import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.MultipleLinesContext.None
-import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.MultipleLinesContext.Warning
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigator
 import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
@@ -47,15 +45,32 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.WCReadMoreTextView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.math.BigDecimal
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @AndroidEntryPoint
 class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_form), BackPressListener {
-    private val viewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
 
-    @Inject lateinit var currencyFormatter: CurrencyFormatter
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
+    private val createViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
+    private val editViewModel by hiltNavGraphViewModels<OrderEditViewModel>(R.id.nav_graph_order_creations)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel =  when (args.mode) {
+            OrderCreateEditViewModel.Mode.Creation -> createViewModel
+            is OrderCreateEditViewModel.Mode.Edit -> editViewModel
+        }
+    }
+
+    private val args: OrderCreationFormFragmentArgs by navArgs()
+    private lateinit var viewModel: OrderCreateEditViewModel
+
+    @Inject
+    lateinit var currencyFormatter: CurrencyFormatter
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
     private var createOrderMenuItem: MenuItem? = null
     private var progressDialog: CustomProgressDialog? = null
@@ -69,9 +84,9 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Visible(
-            navigationIcon = when (viewModel.mode) {
-                Mode.Creation -> R.drawable.ic_back_24dp
-                is Mode.Edit -> null
+            navigationIcon = when (args.mode) {
+                OrderCreateEditViewModel.Mode.Creation -> R.drawable.ic_back_24dp
+                is OrderCreateEditViewModel.Mode.Edit -> null
             }
         )
 
@@ -95,9 +110,9 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
 
         createOrderMenuItem = menu.findItem(R.id.menu_create).apply {
             title = resources.getString(
-                when (viewModel.mode) {
-                    Mode.Creation -> R.string.create
-                    is Mode.Edit -> R.string.done
+                when (args.mode) {
+                    OrderCreateEditViewModel.Mode.Creation -> R.string.create
+                    is OrderCreateEditViewModel.Mode.Edit -> R.string.done
                 }
             )
             isEnabled = viewModel.viewStateData.liveData.value?.canCreateOrder ?: false
@@ -107,7 +122,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_create -> {
-                viewModel.onCreateOrderClicked(viewModel.currentDraft)
+                viewModel.onSaveOrderClicked()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -231,11 +246,11 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                 createOrderMenuItem?.isEnabled = it
             }
             new.isIdle.takeIfNotEqualTo(old?.isIdle) { enabled ->
-                when (viewModel.mode) {
-                    OrderCreationViewModel.Mode.Creation -> {
+                when (args.mode) {
+                    OrderCreateEditViewModel.Mode.Creation -> {
                         binding.paymentSection.loadingProgress.isVisible = !enabled
                     }
-                    is OrderCreationViewModel.Mode.Edit -> {
+                    is OrderCreateEditViewModel.Mode.Edit -> {
                         binding.loadingProgress.isVisible = !enabled
                     }
                 }
@@ -258,8 +273,9 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             }
             new.multipleLinesContext.takeIfNotEqualTo(old?.multipleLinesContext) { multipleLinesContext ->
                 when (multipleLinesContext) {
-                    None -> binding.multipleLinesWarningSection.root.visibility = View.GONE
-                    is Warning -> {
+                    OrderCreateEditViewModel.MultipleLinesContext.None -> binding.multipleLinesWarningSection.root.visibility =
+                        View.GONE
+                    is OrderCreateEditViewModel.MultipleLinesContext.Warning -> {
                         binding.multipleLinesWarningSection.header.text = multipleLinesContext.header
                         binding.multipleLinesWarningSection.explanation.text = multipleLinesContext.explanation
                         binding.multipleLinesWarningSection.root.visibility = View.VISIBLE
@@ -296,7 +312,10 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     private fun OrderCreationPaymentSectionBinding.bindFeesSubSection(newOrderData: Order) {
         feeButton.setOnClickListener { viewModel.onFeeButtonClicked() }
 
-        val currentFeeTotal = newOrderData.feesTotal
+        val currentFeeTotal = newOrderData.feesLines
+            .firstOrNull { it.name != null }
+            ?.total
+            ?: BigDecimal.ZERO
 
         val hasFee = currentFeeTotal.isNotEqualTo(BigDecimal.ZERO)
 
@@ -444,10 +463,10 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         progressDialog = null
     }
 
-    override fun getFragmentTitle() = when (viewModel.mode) {
-        Mode.Creation -> getString(R.string.order_creation_fragment_title)
-        is Mode.Edit -> {
-            val orderId = (viewModel.mode as Mode.Edit).orderId.toString()
+    override fun getFragmentTitle() = when (args.mode) {
+        OrderCreateEditViewModel.Mode.Creation -> getString(R.string.order_creation_fragment_title)
+        is OrderCreateEditViewModel.Mode.Edit -> {
+            val orderId = (args.mode as OrderCreateEditViewModel.Mode.Edit).orderId.toString()
             getString(R.string.orderdetail_orderstatus_ordernum, orderId)
         }
     }
