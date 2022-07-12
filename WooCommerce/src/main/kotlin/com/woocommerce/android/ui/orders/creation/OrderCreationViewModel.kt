@@ -7,7 +7,15 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R.string
 import com.woocommerce.android.WooException
-import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATE_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_FAILED
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CUSTOMER_ADD
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_FEE_ADD
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_NOTE_ADD
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_PRODUCT_ADD
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_SHIPPING_METHOD_ADD
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_STATUS_CHANGE
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_CONTEXT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
@@ -18,10 +26,16 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_CUST
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_DIFFERENT_SHIPPING_DETAILS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_FEES
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_SHIPPING_METHOD
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ID
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PARENT_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_COUNT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TO
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TYPE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.OrderNoteType.CUSTOMER
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_CREATION
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.runWithContext
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
@@ -70,6 +84,7 @@ class OrderCreationViewModel @Inject constructor(
     private val mapItemToProductUiModel: MapItemToProductUiModel,
     private val createOrderItem: CreateOrderItem,
     private val determineMultipleLinesContext: DetermineMultipleLinesContext,
+    private val tracker: AnalyticsTrackerWrapper,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository
@@ -136,7 +151,20 @@ class OrderCreationViewModel @Inject constructor(
             }
     }
 
-    fun onCustomerNoteEdited(newNote: String) = _orderDraft.update { it.copy(customerNote = newNote) }
+    fun onCustomerNoteEdited(newNote: String) {
+        _orderDraft.value.let { order ->
+            tracker.track(
+                ORDER_NOTE_ADD,
+                mapOf(
+                    KEY_PARENT_ID to order.id,
+                    KEY_STATUS to order.status,
+                    KEY_TYPE to CUSTOMER,
+                    KEY_FLOW to flow,
+                )
+            )
+        }
+        _orderDraft.update { it.copy(customerNote = newNote) }
+    }
 
     fun onIncreaseProductsQuantity(id: Long) = _orderDraft.update { it.adjustProductQuantity(id, +1) }
 
@@ -149,12 +177,13 @@ class OrderCreationViewModel @Inject constructor(
     }
 
     fun onOrderStatusChanged(status: Order.Status) {
-        AnalyticsTracker.track(
-            AnalyticsEvent.ORDER_STATUS_CHANGE,
+        tracker.track(
+            ORDER_STATUS_CHANGE,
             mapOf(
+                KEY_ID to _orderDraft.value.id,
                 KEY_FROM to _orderDraft.value.status.value,
                 KEY_TO to status.value,
-                KEY_FLOW to VALUE_FLOW_CREATION
+                KEY_FLOW to flow
             )
         )
         _orderDraft.update { it.copy(status = status) }
@@ -165,9 +194,9 @@ class OrderCreationViewModel @Inject constructor(
     }
 
     fun onProductSelected(remoteProductId: Long, variationId: Long? = null) {
-        AnalyticsTracker.track(
-            AnalyticsEvent.ORDER_PRODUCT_ADD,
-            mapOf(KEY_FLOW to VALUE_FLOW_CREATION)
+        tracker.track(
+            ORDER_PRODUCT_ADD,
+            mapOf(KEY_FLOW to flow)
         )
 
         viewModelScope.launch {
@@ -177,12 +206,17 @@ class OrderCreationViewModel @Inject constructor(
         }
     }
 
+    private val flow = when (mode) {
+        Mode.Creation -> VALUE_FLOW_CREATION
+        is Mode.Edit -> VALUE_FLOW_EDITING
+    }
+
     fun onCustomerAddressEdited(billingAddress: Address, shippingAddress: Address) {
         val hasDifferentShippingDetails = _orderDraft.value.shippingAddress != _orderDraft.value.billingAddress
-        AnalyticsTracker.track(
-            AnalyticsEvent.ORDER_CUSTOMER_ADD,
+        tracker.track(
+            ORDER_CUSTOMER_ADD,
             mapOf(
-                KEY_FLOW to VALUE_FLOW_CREATION,
+                KEY_FLOW to flow,
                 KEY_HAS_DIFFERENT_SHIPPING_DETAILS to hasDifferentShippingDetails
             )
         )
@@ -254,7 +288,7 @@ class OrderCreationViewModel @Inject constructor(
                 viewState = viewState.copy(isProgressDialogShown = true)
                 orderCreationRepository.placeOrder(order).fold(
                     onSuccess = {
-                        AnalyticsTracker.track(AnalyticsEvent.ORDER_CREATION_SUCCESS)
+                        AnalyticsTracker.track(ORDER_CREATION_SUCCESS)
                         triggerEvent(ShowSnackbar(string.order_creation_success_snackbar))
                         triggerEvent(ShowCreatedOrder(it.id))
                     },
@@ -329,7 +363,7 @@ class OrderCreationViewModel @Inject constructor(
 
     private fun trackOrderCreationFailure(it: Throwable) {
         AnalyticsTracker.track(
-            AnalyticsEvent.ORDER_CREATION_FAILED,
+            ORDER_CREATION_FAILED,
             mapOf(
                 KEY_ERROR_CONTEXT to this::class.java.simpleName,
                 KEY_ERROR_TYPE to (it as? WooException)?.error?.type?.name,
@@ -340,7 +374,7 @@ class OrderCreationViewModel @Inject constructor(
 
     private fun trackCreateOrderButtonClick() {
         AnalyticsTracker.track(
-            AnalyticsEvent.ORDER_CREATE_BUTTON_TAPPED,
+            ORDER_CREATE_BUTTON_TAPPED,
             mapOf(
                 KEY_STATUS to _orderDraft.value.status,
                 KEY_PRODUCT_COUNT to products.value?.count(),
@@ -352,9 +386,9 @@ class OrderCreationViewModel @Inject constructor(
     }
 
     fun onShippingEdited(amount: BigDecimal, name: String) {
-        AnalyticsTracker.track(
-            AnalyticsEvent.ORDER_SHIPPING_METHOD_ADD,
-            mapOf(KEY_FLOW to VALUE_FLOW_CREATION)
+        tracker.track(
+            ORDER_SHIPPING_METHOD_ADD,
+            mapOf(KEY_FLOW to flow)
         )
 
         _orderDraft.update { draft ->
@@ -388,9 +422,9 @@ class OrderCreationViewModel @Inject constructor(
     }
 
     fun onFeeEdited(feeValue: BigDecimal) {
-        AnalyticsTracker.track(
-            AnalyticsEvent.ORDER_FEE_ADD,
-            mapOf(KEY_FLOW to VALUE_FLOW_CREATION)
+        tracker.track(
+            ORDER_FEE_ADD,
+            mapOf(KEY_FLOW to flow)
         )
 
         _orderDraft.update { draft ->
