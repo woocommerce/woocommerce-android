@@ -104,7 +104,7 @@
     </fragment>
     <fragment
         android:id="@+id/orderCreationCustomerFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.OrderCreationCustomerAddFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.OrderCreateEditCustomerAddFragment"
         android:label="OrderCreationCustomerFragment"
         tools:layout="@layout/fragment_base_edit_address">
         <action

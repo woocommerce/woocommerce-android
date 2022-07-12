@@ -10,7 +10,7 @@ import androidx.core.view.isVisible
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
-import com.woocommerce.android.databinding.FragmentCreationEditCustomerAddressBinding
+import com.woocommerce.android.databinding.FragmentOrderCreateEditCustomerAddressBinding
 import com.woocommerce.android.databinding.LayoutAddressFormBinding
 import com.woocommerce.android.databinding.LayoutAddressSwitchBinding
 import com.woocommerce.android.extensions.handleResult
@@ -37,7 +37,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation_edit_customer_address) {
+class OrderCreateEditCustomerAddFragment : BaseFragment(R.layout.fragment_order_create_edit_customer_address) {
     private companion object {
         const val SELECT_BILLING_COUNTRY_REQUEST = "select_billing_country_request"
         const val SELECT_BILLING_STATE_REQUEST = "select_billing_state_request"
@@ -49,7 +49,7 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
     private val addressViewModel by hiltNavGraphViewModels<AddressViewModel>(R.id.nav_graph_order_creations)
 
-    private var fragmentViewBinding: FragmentCreationEditCustomerAddressBinding? = null
+    private var fragmentViewBinding: FragmentOrderCreateEditCustomerAddressBinding? = null
     private var shippingBinding: LayoutAddressFormBinding? = null
     private var billingBinding: LayoutAddressFormBinding? = null
     private var showShippingAddressFormSwitch: LayoutAddressSwitchBinding? = null
@@ -154,7 +154,7 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
 
         showShippingAddressFormSwitch = LayoutAddressSwitchBinding.inflate(layoutInflater)
 
-        fragmentViewBinding = FragmentCreationEditCustomerAddressBinding.bind(view)
+        fragmentViewBinding = FragmentOrderCreateEditCustomerAddressBinding.bind(view)
         fragmentViewBinding?.container.apply {
             if (this != null) {
                 addView(billingBinding?.root)
@@ -224,7 +224,7 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
     }
 
     private fun showCountrySearchScreen(addressType: AddressType, countries: List<Location>) {
-        val action = OrderCreationCustomerAddFragmentDirections.actionSearchFilterFragment(
+        val action = OrderCreateEditCustomerAddFragmentDirections.actionSearchFilterFragment(
             items = countries.map {
                 SearchFilterItem(
                     name = it.name,
@@ -309,7 +309,7 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
 
     private fun showCustomerSearchScreen() {
         findNavController().navigateSafely(
-            OrderCreationCustomerAddFragmentDirections.actionGlobalCustomerListFragment()
+            OrderCreateEditCustomerAddFragmentDirections.actionGlobalCustomerListFragment()
         )
     }
 }
