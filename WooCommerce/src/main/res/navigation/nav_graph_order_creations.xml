@@ -133,9 +133,9 @@
     </fragment>
     <fragment
         android:id="@+id/orderCreationProductDetailsFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.products.OrderCreationProductDetailsFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.products.OrderCreateEditProductDetailsFragment"
         android:label="OrderCreationProductDetailsFragment"
-        tools:layout="@layout/fragment_order_creation_product_details">
+        tools:layout="@layout/fragment_order_create_edit_product_details">
         <argument
             android:name="item"
             app:argType="com.woocommerce.android.model.Order$Item" />
