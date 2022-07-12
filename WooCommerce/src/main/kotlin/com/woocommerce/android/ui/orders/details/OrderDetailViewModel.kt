@@ -72,8 +72,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
+import org.wordpress.android.fluxc.persistence.entity.OrderMetaDataEntity
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.OptimisticUpdateResult
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUpdateResult
@@ -216,6 +218,10 @@ final class OrderDetailViewModel @Inject constructor(
 
     fun onCustomFieldsButtonClicked() {
         triggerEvent(OrderNavigationTarget.ViewCustomFields(navArgs.orderId))
+    }
+
+    fun getOrderMetadata(): List<OrderMetaDataEntity> = runBlocking {
+        orderDetailRepository.getOrderMetadata(navArgs.orderId)
     }
 
     fun onRefreshRequested() {

@@ -260,7 +260,9 @@ class OrderDetailRepository @Inject constructor(
         )?.isEligible ?: false
     }
 
-    suspend fun orderHasMetadata(orderId: Long) = true // orderStore.hasOrderMetadata(orderId, selectedSite.get())
+    suspend fun orderHasMetadata(orderId: Long) = orderStore.hasOrderMetadata(orderId, selectedSite.get())
+
+    suspend fun getOrderMetadata(orderId: Long) = orderStore.getOrderMetadata(orderId, selectedSite.get())
 
     companion object {
         const val PRODUCT_SUBSCRIPTION_TYPE = "subscription"

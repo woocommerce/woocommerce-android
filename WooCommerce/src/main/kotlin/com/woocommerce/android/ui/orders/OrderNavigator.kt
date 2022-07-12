@@ -185,7 +185,7 @@ class OrderNavigator @Inject constructor() {
                     ).let { fragment.findNavController().navigateSafely(it) }
             }
             is OrderNavigationTarget.ViewCustomFields -> {
-
+                // TODO nbradbury
             }
         }
     }
