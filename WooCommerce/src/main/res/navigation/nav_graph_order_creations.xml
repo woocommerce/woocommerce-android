@@ -151,9 +151,9 @@
     </fragment>
     <fragment
         android:id="@+id/orderCreationShippingFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.shipping.OrderCreationShippingFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.shipping.OrderCreateEditShippingFragment"
         android:label="OrderCreationShippingFragment"
-        tools:layout="@layout/fragment_order_creation_shipping" >
+        tools:layout="@layout/fragment_order_create_edit_shipping" >
         <argument
             android:name="currentShippingLine"
             app:nullable="true"

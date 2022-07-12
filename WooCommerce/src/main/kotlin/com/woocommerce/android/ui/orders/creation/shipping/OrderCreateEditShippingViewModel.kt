@@ -15,7 +15,7 @@ import javax.inject.Inject
 class OrderCreateEditShippingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
-    private val navArgs: OrderCreationShippingFragmentArgs by savedStateHandle.navArgs()
+    private val navArgs: OrderCreateEditShippingFragmentArgs by savedStateHandle.navArgs()
 
     val viewStateData = LiveDataDelegate(
         savedState = savedStateHandle,

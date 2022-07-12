@@ -15,10 +15,10 @@ class OrderCreateEditShippingViewModelTest : BaseUnitTest() {
     lateinit var viewModel: OrderCreateEditShippingViewModel
 
     private val creationArgs
-        get() = OrderCreationShippingFragmentArgs(null)
+        get() = OrderCreateEditShippingFragmentArgs(null)
 
     private val editArgs
-        get() = OrderCreationShippingFragmentArgs(
+        get() = OrderCreateEditShippingFragmentArgs(
             ShippingLine(
                 methodId = "other",
                 total = BigDecimal.TEN,
@@ -26,7 +26,7 @@ class OrderCreateEditShippingViewModelTest : BaseUnitTest() {
             )
         )
 
-    fun setup(args: OrderCreationShippingFragmentArgs) {
+    fun setup(args: OrderCreateEditShippingFragmentArgs) {
         viewModel = OrderCreateEditShippingViewModel(
             savedStateHandle = args.toSavedStateHandle()
         )
