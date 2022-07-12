@@ -323,7 +323,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
     @Test
     fun `when creating the order fails, then trigger Snackbar with fail message`() {
-        orderCreationRepository = mock {
+        orderCreateEditRepository = mock {
             onBlocking { placeOrder(defaultOrderValue) } doReturn Result.failure(Throwable())
         }
         createSut()

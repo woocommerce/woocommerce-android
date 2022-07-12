@@ -10,7 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STATE_
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STATE_ON
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.orders.creation.OrderCreationRepository
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -33,7 +33,7 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val simplePaymentsRepository: SimplePaymentsRepository,
     private val networkStatus: NetworkStatus,
-    private val orderCreationRepository: OrderCreationRepository
+    private val orderCreateEditRepository: OrderCreateEditRepository
 ) : ScopedViewModel(savedState) {
     val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     internal var viewState by viewStateLiveData
@@ -178,7 +178,7 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
 
     fun deleteDraftOrder(order: Order) {
         launch(Dispatchers.IO) {
-            orderCreationRepository.deleteDraftOrder(order)
+            orderCreateEditRepository.deleteDraftOrder(order)
         }
     }
 

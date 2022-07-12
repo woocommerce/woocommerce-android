@@ -66,7 +66,7 @@ class OrderCreateEditViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val dispatchers: CoroutineDispatchers,
     private val orderDetailRepository: OrderDetailRepository,
-    private val orderCreationRepository: OrderCreationRepository,
+    private val orderCreateEditRepository: OrderCreateEditRepository,
     private val mapItemToProductUiModel: MapItemToProductUiModel,
     private val createOrderItem: CreateOrderItem,
     private val determineMultipleLinesContext: DetermineMultipleLinesContext,
@@ -252,7 +252,7 @@ class OrderCreateEditViewModel @Inject constructor(
         when (mode) {
             Mode.Creation -> viewModelScope.launch {
                 viewState = viewState.copy(isProgressDialogShown = true)
-                orderCreationRepository.placeOrder(order).fold(
+                orderCreateEditRepository.placeOrder(order).fold(
                     onSuccess = {
                         AnalyticsTracker.track(AnalyticsEvent.ORDER_CREATION_SUCCESS)
                         triggerEvent(ShowSnackbar(string.order_creation_success_snackbar))
@@ -282,7 +282,7 @@ class OrderCreateEditViewModel @Inject constructor(
                             positiveBtnAction = { _, _ ->
                                 val draft = _orderDraft.value
                                 if (draft.id != 0L) {
-                                    launch { orderCreationRepository.deleteDraftOrder(draft) }
+                                    launch { orderCreateEditRepository.deleteDraftOrder(draft) }
                                 }
                                 triggerEvent(Exit)
                             }

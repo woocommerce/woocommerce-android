@@ -28,7 +28,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     protected lateinit var autoSyncPriceModifier: AutoSyncPriceModifier
     protected lateinit var autoSyncOrder: AutoSyncOrder
     protected lateinit var createOrderItemUseCase: CreateOrderItem
-    protected lateinit var orderCreationRepository: OrderCreationRepository
+    protected lateinit var orderCreateEditRepository: OrderCreateEditRepository
     protected lateinit var orderDetailRepository: OrderDetailRepository
     protected lateinit var parameterRepository: ParameterRepository
     private lateinit var determineMultipleLinesContext: DetermineMultipleLinesContext
@@ -68,7 +68,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                     gmtOffset = 0F
                 )
         }
-        orderCreationRepository = mock {
+        orderCreateEditRepository = mock {
             onBlocking { placeOrder(defaultOrderValue) } doReturn Result.success(defaultOrderValue)
         }
         orderDetailRepository = mock {
@@ -95,7 +95,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             savedState = savedState,
             dispatchers = coroutinesTestRule.testDispatchers,
             orderDetailRepository = orderDetailRepository,
-            orderCreationRepository = orderCreationRepository,
+            orderCreateEditRepository = orderCreateEditRepository,
             mapItemToProductUiModel = mapItemToProductUIModel,
             createOrderItem = createOrderItemUseCase,
             determineMultipleLinesContext = determineMultipleLinesContext,
