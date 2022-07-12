@@ -1,5 +1,3 @@
-- [*] New "What is WordPress.com?" link in login with email screen, to provide better context of why WordPress.com account is needed during login [https://github.com/woocommerce/woocommerce-android/pull/6891]
-- [**] Order Details: All unpaid orders have a Collect Payment button, which shows a payment method selection screen. Choices are Cash, Card, and Payment Link. [https://github.com/woocommerce/woocommerce-android/pull/6861]
-- [**] In-Person Payments: Support for selecting preferred payment gateway when multiple extensions are installed on the store. [https://github.com/woocommerce/woocommerce-android/pull/6887]
-- [*] In-Person Payments: Update phrasing of IPP description [https://github.com/woocommerce/woocommerce-android/pull/6867]
+This release includes the option to collect payments for all unpaid orders via cash, card or payment links. You can also select a preferred payment gateway when multiple extensions are installed on the store.
 
+We’ve also made a few other minor improvements. Thank you all again for your amazing feedback. Keep it coming!
