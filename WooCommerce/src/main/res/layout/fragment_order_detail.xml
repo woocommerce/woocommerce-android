@@ -57,11 +57,12 @@
                     android:clipToPadding="false"
                     android:contentDescription="@string/products"
                     android:visibility="gone"
-                    tools:visibility="gone" />
+                    tools:visibility="visible" />
 
                 <!-- Custom fields button -->
                 <FrameLayout
                     style="@style/Woo.Card"
+                    android:background="@color/color_on_primary"
                     android:id="@+id/customFieldsCard"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

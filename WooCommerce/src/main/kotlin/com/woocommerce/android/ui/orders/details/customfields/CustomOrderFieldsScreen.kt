@@ -70,12 +70,12 @@ private fun CustomFieldListItem(metadata: OrderMetaDataEntity) {
                     .align(Alignment.CenterVertically)
             ) {
                 Text(
-                    text = metadata.displayKey ?: metadata.key,
+                    text = metadata.key,
                     style = MaterialTheme.typography.subtitle1,
                     color = MaterialTheme.colors.onSurface
                 )
                 Text(
-                    text = metadata.displayValue ?: metadata.value,
+                    text = metadata.value,
                     style = MaterialTheme.typography.body2,
                     color = MaterialTheme.colors.onSurface
                 )
