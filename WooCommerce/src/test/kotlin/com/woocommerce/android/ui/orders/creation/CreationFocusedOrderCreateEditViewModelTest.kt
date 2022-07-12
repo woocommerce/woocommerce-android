@@ -8,9 +8,9 @@ import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateS
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Ongoing
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.PendingDebounce
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
-import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.Mode
-import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.Mode.Creation
-import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.ViewState
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode.Creation
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.ViewState
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.AddProduct
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.EditCustomer
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.EditCustomerNote
@@ -34,7 +34,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
-class CreationFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest() {
+class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() {
     override val mode: Mode = Creation
 
     @Test

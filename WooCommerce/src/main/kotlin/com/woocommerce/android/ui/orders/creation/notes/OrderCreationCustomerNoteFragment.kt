@@ -12,10 +12,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentEditCustomerOrderNoteBinding
 import com.woocommerce.android.extensions.showKeyboardWithDelay
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 
 class OrderCreationCustomerNoteFragment : BaseFragment(R.layout.fragment_edit_customer_order_note) {
-    private val sharedViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
+    private val sharedViewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
 
     private var _binding: FragmentEditCustomerOrderNoteBinding? = null
     val binding

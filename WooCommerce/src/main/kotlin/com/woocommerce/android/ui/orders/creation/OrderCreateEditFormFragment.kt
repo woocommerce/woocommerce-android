@@ -29,8 +29,8 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
-import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.MultipleLinesContext.None
-import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.MultipleLinesContext.Warning
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.MultipleLinesContext.None
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.MultipleLinesContext.Warning
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigator
 import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
@@ -51,7 +51,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class OrderCreateEditFormFragment : BaseFragment(R.layout.fragment_order_create_edit_form), BackPressListener {
-    private val viewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
+    private val viewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
 
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
@@ -69,8 +69,8 @@ class OrderCreateEditFormFragment : BaseFragment(R.layout.fragment_order_create_
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Visible(
             navigationIcon = when (viewModel.mode) {
-                OrderCreationViewModel.Mode.Creation -> R.drawable.ic_back_24dp
-                is  OrderCreationViewModel.Mode.Edit -> null
+                OrderCreateEditViewModel.Mode.Creation -> R.drawable.ic_back_24dp
+                is  OrderCreateEditViewModel.Mode.Edit -> null
             }
         )
 
@@ -95,8 +95,8 @@ class OrderCreateEditFormFragment : BaseFragment(R.layout.fragment_order_create_
         createOrderMenuItem = menu.findItem(R.id.menu_create).apply {
             title = resources.getString(
                 when (viewModel.mode) {
-                    OrderCreationViewModel.Mode.Creation -> R.string.create
-                    is  OrderCreationViewModel.Mode.Edit -> R.string.done
+                    OrderCreateEditViewModel.Mode.Creation -> R.string.create
+                    is  OrderCreateEditViewModel.Mode.Edit -> R.string.done
                 }
             )
             isEnabled = viewModel.viewStateData.liveData.value?.canCreateOrder ?: false
@@ -231,10 +231,10 @@ class OrderCreateEditFormFragment : BaseFragment(R.layout.fragment_order_create_
             }
             new.isIdle.takeIfNotEqualTo(old?.isIdle) { enabled ->
                 when (viewModel.mode) {
-                    OrderCreationViewModel.Mode.Creation -> {
+                    OrderCreateEditViewModel.Mode.Creation -> {
                         binding.paymentSection.loadingProgress.isVisible = !enabled
                     }
-                    is OrderCreationViewModel.Mode.Edit -> {
+                    is OrderCreateEditViewModel.Mode.Edit -> {
                         binding.loadingProgress.isVisible = !enabled
                     }
                 }
@@ -444,9 +444,9 @@ class OrderCreateEditFormFragment : BaseFragment(R.layout.fragment_order_create_
     }
 
     override fun getFragmentTitle() = when (viewModel.mode) {
-        OrderCreationViewModel.Mode.Creation -> getString(R.string.order_creation_fragment_title)
-        is  OrderCreationViewModel.Mode.Edit -> {
-            val orderId = (viewModel.mode as  OrderCreationViewModel.Mode.Edit).orderId.toString()
+        OrderCreateEditViewModel.Mode.Creation -> getString(R.string.order_creation_fragment_title)
+        is  OrderCreateEditViewModel.Mode.Edit -> {
+            val orderId = (viewModel.mode as  OrderCreateEditViewModel.Mode.Edit).orderId.toString()
             getString(R.string.orderdetail_orderstatus_ordernum, orderId)
         }
     }

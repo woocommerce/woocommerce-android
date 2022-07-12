@@ -10,14 +10,14 @@ import com.woocommerce.android.databinding.FragmentOrderCreationProductDetailsBi
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class OrderCreationProductDetailsFragment : BaseFragment(R.layout.fragment_order_creation_product_details) {
-    private val sharedViewModel: OrderCreationViewModel by hiltNavGraphViewModels(R.id.nav_graph_order_creations)
+    private val sharedViewModel: OrderCreateEditViewModel by hiltNavGraphViewModels(R.id.nav_graph_order_creations)
     private val navArgs: OrderCreationProductDetailsFragmentArgs by navArgs()
 
     @Inject lateinit var currencyFormatter: CurrencyFormatter

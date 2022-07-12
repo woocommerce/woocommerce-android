@@ -62,7 +62,7 @@ import java.math.BigDecimal
 import javax.inject.Inject
 
 @HiltViewModel
-class OrderCreationViewModel @Inject constructor(
+class OrderCreateEditViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val dispatchers: CoroutineDispatchers,
     private val orderDetailRepository: OrderDetailRepository,

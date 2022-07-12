@@ -17,7 +17,7 @@ import com.woocommerce.android.databinding.FragmentOrderCreationProductSelection
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.ShowProductVariations
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigator
 import com.woocommerce.android.ui.orders.creation.products.OrderCreationProductSelectionViewModel.AddProduct
@@ -37,7 +37,7 @@ class OrderCreationProductSelectionFragment :
     OnLoadMoreListener,
     SearchView.OnQueryTextListener,
     OnActionExpandListener {
-    private val sharedViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
+    private val sharedViewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
     private val productListViewModel by viewModels<OrderCreationProductSelectionViewModel>()
 
     private val skeletonView = SkeletonView()

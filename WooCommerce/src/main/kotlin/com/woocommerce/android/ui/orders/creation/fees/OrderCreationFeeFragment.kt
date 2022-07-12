@@ -20,7 +20,7 @@ import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.extensions.showKeyboardWithDelay
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.creation.fees.OrderCreationFeeViewModel.RemoveFee
 import com.woocommerce.android.ui.orders.creation.fees.OrderCreationFeeViewModel.UpdateFee
 import com.woocommerce.android.util.CurrencyFormatter
@@ -33,7 +33,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class OrderCreationFeeFragment :
     BaseFragment(R.layout.fragment_order_creation_fee) {
-    private val sharedViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
+    private val sharedViewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
     private val editFeeViewModel by viewModels<OrderCreationFeeViewModel>()
 
     @Inject lateinit var currencyFormatter: CurrencyFormatter

@@ -46,7 +46,7 @@ class OrderCreationCustomerAddFragment : BaseFragment(R.layout.fragment_creation
         private const val SEARCH_ID = Int.MAX_VALUE
     }
 
-    private val sharedViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
+    private val sharedViewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
     private val addressViewModel by hiltNavGraphViewModels<AddressViewModel>(R.id.nav_graph_order_creations)
 
     private var fragmentViewBinding: FragmentCreationEditCustomerAddressBinding? = null

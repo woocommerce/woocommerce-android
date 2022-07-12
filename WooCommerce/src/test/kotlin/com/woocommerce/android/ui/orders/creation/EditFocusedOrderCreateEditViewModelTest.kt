@@ -2,8 +2,8 @@ package com.woocommerce.android.ui.orders.creation
 
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
-import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.Mode
-import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.Mode.Edit
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode.Edit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,7 +20,7 @@ import org.mockito.kotlin.stub
 @ExperimentalCoroutinesApi
 // Remove Silent runner when feature is completed
 @RunWith(MockitoJUnitRunner.Silent::class)
-class EditFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest() {
+class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() {
     override val mode: Mode = Edit(defaultOrderValue.id)
 
     @Test
@@ -74,7 +74,7 @@ class EditFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest() {
             onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(defaultOrderValue.copy(isEditable = true)))
         }
         createSut()
-        var lastReceivedState: OrderCreationViewModel.ViewState? = null
+        var lastReceivedState: OrderCreateEditViewModel.ViewState? = null
         sut.viewStateData.liveData.observeForever {
             lastReceivedState = it
         }
@@ -87,7 +87,7 @@ class EditFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest() {
             onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(defaultOrderValue.copy(isEditable = false)))
         }
         createSut()
-        var lastReceivedState: OrderCreationViewModel.ViewState? = null
+        var lastReceivedState: OrderCreateEditViewModel.ViewState? = null
         sut.viewStateData.liveData.observeForever {
             lastReceivedState = it
         }

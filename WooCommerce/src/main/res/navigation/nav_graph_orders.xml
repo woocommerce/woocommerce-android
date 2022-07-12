@@ -241,7 +241,7 @@
             app:popExitAnim="@anim/activity_fade_out" >
             <argument
                 android:name="mode"
-                app:argType="com.woocommerce.android.ui.orders.creation.OrderCreationViewModel$Mode" />
+                app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$Mode" />
         </action>
 
         <action

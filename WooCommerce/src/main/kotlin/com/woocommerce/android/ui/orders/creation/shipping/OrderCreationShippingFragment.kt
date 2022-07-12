@@ -16,7 +16,7 @@ import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.extensions.showKeyboardWithDelay
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.creation.shipping.OrderCreationShippingViewModel.RemoveShipping
 import com.woocommerce.android.ui.orders.creation.shipping.OrderCreationShippingViewModel.UpdateShipping
 import com.woocommerce.android.util.CurrencyFormatter
@@ -26,7 +26,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class OrderCreationShippingFragment : BaseFragment(R.layout.fragment_order_creation_shipping) {
     private val viewModel: OrderCreationShippingViewModel by viewModels()
-    private val sharedViewModel: OrderCreationViewModel by hiltNavGraphViewModels(R.id.nav_graph_order_creations)
+    private val sharedViewModel: OrderCreateEditViewModel by hiltNavGraphViewModels(R.id.nav_graph_order_creations)
 
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
