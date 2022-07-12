@@ -32,7 +32,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSe
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.MultipleLinesContext.None
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.MultipleLinesContext.Warning
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigator
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigator
 import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
 import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView.AddButton
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
@@ -395,7 +395,7 @@ class OrderCreateEditFormFragment : BaseFragment(R.layout.fragment_order_create_
 
     private fun handleViewModelEvents(event: Event) {
         when (event) {
-            is OrderCreationNavigationTarget -> OrderCreationNavigator.navigate(this, event)
+            is OrderCreationNavigationTarget -> OrderCreateEditNavigator.navigate(this, event)
             is ViewOrderStatusSelector ->
                 OrderCreateEditFormFragmentDirections
                     .actionOrderCreationFragmentToOrderStatusSelectorDialog(

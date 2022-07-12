@@ -6,7 +6,7 @@ import com.woocommerce.android.ui.orders.creation.OrderCreateEditFormFragmentDir
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.*
 import com.woocommerce.android.ui.orders.creation.products.OrderCreationProductSelectionFragmentDirections
 
-object OrderCreationNavigator {
+object OrderCreateEditNavigator {
     fun navigate(fragment: Fragment, target: OrderCreationNavigationTarget) {
         val navController = fragment.findNavController()
 
