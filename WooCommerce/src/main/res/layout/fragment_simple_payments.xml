@@ -190,7 +190,7 @@
                 android:background="@color/divider_color" />
 
             <!-- Customer provided note -->
-            <com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
+            <com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView
                 android:id="@+id/notes_section"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

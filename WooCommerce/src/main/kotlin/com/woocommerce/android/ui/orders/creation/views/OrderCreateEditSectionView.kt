@@ -16,7 +16,7 @@ import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderCreationSectionBinding
 
-class OrderCreationSectionView @JvmOverloads constructor(
+class OrderCreateEditSectionView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.materialCardViewStyle
@@ -54,11 +54,11 @@ class OrderCreationSectionView @JvmOverloads constructor(
 
     init {
         attrs?.let {
-            context.obtainStyledAttributes(attrs, R.styleable.OrderCreationSectionView, defStyleAttr, 0)
+            context.obtainStyledAttributes(attrs, R.styleable.OrderCreateEditSectionView, defStyleAttr, 0)
                 .use { a ->
-                    header = a.getString(R.styleable.OrderCreationSectionView_header).orEmpty()
-                    keepAddButtons = a.getBoolean(R.styleable.OrderCreationSectionView_keepAddButtons, keepAddButtons)
-                    hasEditButton = a.getBoolean(R.styleable.OrderCreationSectionView_hasEditButton, hasEditButton)
+                    header = a.getString(R.styleable.OrderCreateEditSectionView_header).orEmpty()
+                    keepAddButtons = a.getBoolean(R.styleable.OrderCreateEditSectionView_keepAddButtons, keepAddButtons)
+                    hasEditButton = a.getBoolean(R.styleable.OrderCreateEditSectionView_hasEditButton, hasEditButton)
                 }
         }
     }

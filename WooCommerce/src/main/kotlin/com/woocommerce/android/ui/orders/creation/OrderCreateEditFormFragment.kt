@@ -33,8 +33,8 @@ import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Multi
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.MultipleLinesContext.Warning
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigator
-import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
-import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView.AddButton
+import com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView
+import com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView.AddButton
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Companion.KEY_ORDER_STATUS_RESULT
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
@@ -311,7 +311,7 @@ class OrderCreateEditFormFragment : BaseFragment(R.layout.fragment_order_create_
         }
     }
 
-    private fun bindNotesSection(notesSection: OrderCreationSectionView, customerNote: String) {
+    private fun bindNotesSection(notesSection: OrderCreateEditSectionView, customerNote: String) {
         customerNote.takeIf { it.isNotBlank() }
             ?.let { noteText ->
                 WCReadMoreTextView(requireContext()).also {
@@ -324,7 +324,7 @@ class OrderCreateEditFormFragment : BaseFragment(R.layout.fragment_order_create_
             }
     }
 
-    private fun bindProductsSection(productsSection: OrderCreationSectionView, products: List<ProductUIModel>?) {
+    private fun bindProductsSection(productsSection: OrderCreateEditSectionView, products: List<ProductUIModel>?) {
         productsSection.setContentHorizontalPadding(R.dimen.minor_00)
         if (products.isNullOrEmpty()) {
             productsSection.content = null
@@ -353,7 +353,7 @@ class OrderCreateEditFormFragment : BaseFragment(R.layout.fragment_order_create_
     }
 
     @SuppressLint("SetTextI18n")
-    private fun bindCustomerAddressSection(customerAddressSection: OrderCreationSectionView, order: Order) {
+    private fun bindCustomerAddressSection(customerAddressSection: OrderCreateEditSectionView, order: Order) {
         customerAddressSection.setContentHorizontalPadding(R.dimen.minor_00)
         order.takeIf { it.billingAddress != Address.EMPTY }
             ?.let {

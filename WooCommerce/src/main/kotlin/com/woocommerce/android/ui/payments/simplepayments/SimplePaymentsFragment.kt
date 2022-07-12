@@ -19,7 +19,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
+import com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView
 import com.woocommerce.android.ui.orders.taxes.OrderTaxesAdapter
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.SIMPLE
@@ -62,7 +62,7 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments), 
 
         binding.notesSection.setAddButtons(
             listOf(
-                OrderCreationSectionView.AddButton(
+                OrderCreateEditSectionView.AddButton(
                     text = getString(R.string.order_creation_add_customer_note),
                     onClickListener = {
                         viewModel.onCustomerNoteClicked()
@@ -153,7 +153,7 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments), 
         }
     }
 
-    private fun bindNotesSection(notesSection: OrderCreationSectionView, customerNote: String) {
+    private fun bindNotesSection(notesSection: OrderCreateEditSectionView, customerNote: String) {
         customerNote.takeIf { it.isNotBlank() }
             ?.let {
                 val textView = MaterialTextView(requireContext())
