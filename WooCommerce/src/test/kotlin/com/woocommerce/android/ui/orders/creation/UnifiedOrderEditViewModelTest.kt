@@ -20,8 +20,8 @@ import org.mockito.kotlin.spy
 
 @ExperimentalCoroutinesApi
 abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
-    protected lateinit var sut: OrderCreationViewModel
-    protected lateinit var viewState: OrderCreationViewModel.ViewState
+    protected lateinit var sut: OrderCreateEditViewModel
+    protected lateinit var viewState: OrderCreateEditViewModel.ViewState
     protected lateinit var savedState: SavedStateHandle
     protected lateinit var mapItemToProductUIModel: MapItemToProductUiModel
     protected lateinit var createUpdateOrderUseCase: CreateUpdateOrder
@@ -41,13 +41,13 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         createSut()
     }
 
-    protected abstract val mode: OrderCreationViewModel.Mode
+    protected abstract val mode: OrderCreateEditViewModel.Mode
 
     private fun initMocks() {
         val defaultOrderItem = createOrderItem()
         val emptyOrder = Order.EMPTY
-        viewState = OrderCreationViewModel.ViewState()
-        savedState = spy(OrderCreationFormFragmentArgs(mode).toSavedStateHandle()) {
+        viewState = OrderCreateEditViewModel.ViewState()
+        savedState = spy(OrderCreateEditFormFragmentArgs(mode).toSavedStateHandle()) {
             on { getLiveData(viewState.javaClass.name, viewState) } doReturn MutableLiveData(viewState)
             on { getLiveData(eq(Order.EMPTY.javaClass.name), any<Order>()) } doReturn MutableLiveData(emptyOrder)
         }
@@ -84,14 +84,14 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             )
         }
         determineMultipleLinesContext = mock {
-            on { invoke(any()) } doReturn OrderCreationViewModel.MultipleLinesContext.None
+            on { invoke(any()) } doReturn OrderCreateEditViewModel.MultipleLinesContext.None
         }
     }
 
     protected fun createSut() {
         autoSyncPriceModifier = AutoSyncPriceModifier(createUpdateOrderUseCase)
         autoSyncOrder = AutoSyncOrder(createUpdateOrderUseCase)
-        sut = OrderCreationViewModel(
+        sut = OrderCreateEditViewModel(
             savedState = savedState,
             dispatchers = coroutinesTestRule.testDispatchers,
             orderDetailRepository = orderDetailRepository,
