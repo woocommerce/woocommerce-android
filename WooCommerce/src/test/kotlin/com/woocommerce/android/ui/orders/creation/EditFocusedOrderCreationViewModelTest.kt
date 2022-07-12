@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.creation
 
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.Mode
@@ -22,6 +23,7 @@ import org.mockito.kotlin.stub
 @RunWith(MockitoJUnitRunner.Silent::class)
 class EditFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest() {
     override val mode: Mode = Edit(defaultOrderValue.id)
+    override val tracksFlow: String = VALUE_FLOW_EDITING
 
     @Test
     fun `should load order from repository`() = testBlocking {

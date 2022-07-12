@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.creation
 
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_CREATION
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
@@ -36,6 +37,7 @@ import java.math.BigDecimal
 @ExperimentalCoroutinesApi
 class CreationFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest() {
     override val mode: Mode = Creation
+    override val tracksFlow: String = VALUE_FLOW_CREATION
 
     @Test
     fun `when initializing the view model, then register the orderDraft flowState`() {
