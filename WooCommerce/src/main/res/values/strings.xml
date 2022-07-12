@@ -2511,5 +2511,11 @@
     <string name="lines_all_details">the details</string>
     <string name="tests_notification_new_order_title">You have a new order! 🎉</string>
     <string name="tests_notification_new_order_message">New order for $50 on Your WooCommerce Store</string>
-    <string name="title_barcode">Camera Barcode Scanner</string>
+
+    <!-- Qr code login -->
+    <string name="qr_code_login_scanner_title">Camera Barcode Scanner</string>
+    <string name="qr_code_login_camera_permission_denied_title">Camera Permission Denied</string>
+    <string name="qr_code_login_camera_permission_denied_message">Camera permission is needed to scan the QR code and login. Please, edit the camera permission to use this feature.</string>
+    <string name="qr_code_login_edit_camera_permission">Edit permissions</string>
+
 </resources>
