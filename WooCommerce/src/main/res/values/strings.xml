@@ -923,6 +923,16 @@
     <string name="order_shipment_tracking_progress_message">Please wait</string>
 
     <!--
+            Card Reader Upsell Banner
+        -->
+
+    <string name="card_reader_upsell_card_reader_banner_dismiss">Dismiss</string>
+    <string name="card_reader_upsell_card_reader_banner_new">NEW</string>
+    <string name="card_reader_upsell_card_reader_banner_title">Accept payment easily</string>
+    <string name="card_reader_upsell_card_reader_banner_description">Get ready to accept payment via card reader</string>
+    <string name="card_reader_upsell_card_reader_banner_cta">Purchase Card Reader</string>
+
+    <!--
             Card Reader Hub
         -->
     <string name="card_reader_manage_card_reader">Manage Card Reader</string>
