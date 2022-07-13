@@ -145,13 +145,12 @@ final class OrderDetailViewModel @Inject constructor(
 
     fun start() {
         launch {
-            val orderInDb = orderDetailRepository.getOrderById(navArgs.orderId)
-            orderInDb?.let {
-                order = orderInDb
+            orderDetailRepository.getOrderById(navArgs.orderId)?.let {
+                order = it
                 displayOrderDetails()
                 fetchAndDisplayOrderDetails()
-            }
-            fetchOrder(showSkeleton = orderInDb == null)
+                fetchOrder(showSkeleton = false)
+            } ?: fetchOrder(showSkeleton = true)
         }
     }
 
