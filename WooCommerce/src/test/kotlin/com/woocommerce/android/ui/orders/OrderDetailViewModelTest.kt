@@ -63,6 +63,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult
 import org.wordpress.android.fluxc.utils.DateUtils
 import java.math.BigDecimal
+import java.util.Date
 import java.util.concurrent.CancellationException
 
 @ExperimentalCoroutinesApi
@@ -1080,6 +1081,37 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                     AnalyticsTracker.KEY_STATUS to order.status
                 )
             )
+        }
+
+    @Test
+    fun `when order status complete, then hide mark order complete button`() =
+        testBlocking {
+            doReturn(orderStatus).whenever(orderDetailRepository).getOrderStatus(CoreOrderStatus.COMPLETED.value)
+            var isMarkOrderCompleteButtonVisible: Boolean? = null
+            viewModel.viewStateData.observeForever { _, new ->
+                isMarkOrderCompleteButtonVisible = new.isMarkOrderCompleteButtonVisible
+            }
+
+            viewModel.start()
+
+            assertThat(isMarkOrderCompleteButtonVisible).isFalse()
+        }
+
+    @Test
+    fun `when order is paid, order complete button should be hidden`() =
+        testBlocking {
+            // Given
+            val orderStub = order.copy(datePaid = Date())
+            doReturn(orderStub).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(orderStub).whenever(orderDetailRepository).fetchOrderById(any())
+
+            // When
+            viewModel.start()
+
+            // Then
+            val isMarkOrderCompleteButtonVisible =
+                viewModel.viewStateData.liveData.value?.isMarkOrderCompleteButtonVisible
+            isMarkOrderCompleteButtonVisible.let { assertThat(it).isFalse }
         }
 
     @Test
