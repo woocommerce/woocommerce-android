@@ -18,11 +18,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.persistence.entity.OrderMetaDataEntity
+
+private const val VALUE_MAX_LINES = 5
 
 @Composable
 fun CustomOrderFieldsScreen(viewModel: OrderDetailViewModel) {
@@ -77,7 +80,9 @@ private fun CustomFieldListItem(metadata: OrderMetaDataEntity) {
                 Text(
                     text = metadata.value,
                     style = MaterialTheme.typography.body2,
-                    color = MaterialTheme.colors.onSurface
+                    color = MaterialTheme.colors.onSurface,
+                    maxLines = VALUE_MAX_LINES,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }
