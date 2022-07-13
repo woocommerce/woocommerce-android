@@ -14,7 +14,7 @@ import java.math.RoundingMode
 import javax.inject.Inject
 
 @HiltViewModel
-class OrderCreationFeeViewModel @Inject constructor(
+class OrderCreateEditFeeViewModel @Inject constructor(
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -22,7 +22,7 @@ class OrderCreationFeeViewModel @Inject constructor(
         private val PERCENTAGE_BASE = BigDecimal(100)
     }
 
-    private val navArgs: OrderCreationFeeFragmentArgs by savedState.navArgs()
+    private val navArgs: OrderCreateEditFeeFragmentArgs by savedState.navArgs()
     private val orderSubtotal = navArgs.orderSubTotal
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())

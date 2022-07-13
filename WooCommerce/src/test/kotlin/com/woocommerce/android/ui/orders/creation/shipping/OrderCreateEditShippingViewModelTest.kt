@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.orders.creation.shipping
 
 import com.woocommerce.android.model.Order.ShippingLine
-import com.woocommerce.android.ui.orders.creation.shipping.OrderCreationShippingViewModel.RemoveShipping
-import com.woocommerce.android.ui.orders.creation.shipping.OrderCreationShippingViewModel.UpdateShipping
+import com.woocommerce.android.ui.orders.creation.shipping.OrderCreateEditShippingViewModel.RemoveShipping
+import com.woocommerce.android.ui.orders.creation.shipping.OrderCreateEditShippingViewModel.UpdateShipping
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -11,14 +11,14 @@ import org.junit.Test
 import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
-class OrderCreationShippingViewModelTest : BaseUnitTest() {
-    lateinit var viewModel: OrderCreationShippingViewModel
+class OrderCreateEditShippingViewModelTest : BaseUnitTest() {
+    lateinit var viewModel: OrderCreateEditShippingViewModel
 
     private val creationArgs
-        get() = OrderCreationShippingFragmentArgs(null)
+        get() = OrderCreateEditShippingFragmentArgs(null)
 
     private val editArgs
-        get() = OrderCreationShippingFragmentArgs(
+        get() = OrderCreateEditShippingFragmentArgs(
             ShippingLine(
                 methodId = "other",
                 total = BigDecimal.TEN,
@@ -26,8 +26,8 @@ class OrderCreationShippingViewModelTest : BaseUnitTest() {
             )
         )
 
-    fun setup(args: OrderCreationShippingFragmentArgs) {
-        viewModel = OrderCreationShippingViewModel(
+    fun setup(args: OrderCreateEditShippingFragmentArgs) {
+        viewModel = OrderCreateEditShippingViewModel(
             savedStateHandle = args.toSavedStateHandle()
         )
     }
