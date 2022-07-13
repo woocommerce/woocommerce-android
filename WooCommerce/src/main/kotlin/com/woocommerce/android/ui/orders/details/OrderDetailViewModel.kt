@@ -195,12 +195,6 @@ final class OrderDetailViewModel @Inject constructor(
         }
     }
 
-    // if local order data and refunds are out of sync, it needs to be fetched
-    private fun checkIfFetchNeeded(order: Order?): Boolean {
-        val refunds = orderDetailRepository.getOrderRefunds(navArgs.orderId)
-        return order?.refundTotal.isNotEqualTo(refunds.sumBy { it.amount })
-    }
-
     private fun checkOrderMetaData() {
         if (FeatureFlag.ORDER_METADATA.isEnabled()) {
             launch {
