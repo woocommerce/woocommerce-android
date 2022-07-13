@@ -1102,7 +1102,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             // When
             viewModel.start()
 
-            //Then
+            // Then
             assertThat(isMarkOrderCompleteButtonVisible).isTrue
         }
 
@@ -1125,7 +1125,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             // When
             viewModel.start()
 
-            //Then
+            // Then
             assertThat(isMarkOrderCompleteButtonVisible).isFalse
         }
 
