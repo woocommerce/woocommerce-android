@@ -121,19 +121,33 @@ class OrderCreateEditViewModel @Inject constructor(
         get() = _orderDraft.value
 
     init {
-        _orderDraft.update {
-            it.copy(currency = parameterRepository.getParameters(PARAMETERS_KEY, savedState).currencyCode.orEmpty())
-        }
-        monitorOrderChanges()
-
-        if (mode is Mode.Edit)
-            viewModelScope.launch {
-                orderDetailRepository.getOrderById(mode.orderId).let {
-                    if (it != null) {
-                        _orderDraft.value = it
+        when (mode) {
+            Mode.Creation -> {
+                _orderDraft.update {
+                    it.copy(
+                        currency = parameterRepository.getParameters(
+                            PARAMETERS_KEY,
+                            savedState
+                        ).currencyCode.orEmpty()
+                    )
+                }
+                monitorOrderChanges()
+            }
+            is Mode.Edit -> {
+                viewModelScope.launch {
+                    orderDetailRepository.getOrderById(mode.orderId)?.let { order ->
+                        _orderDraft.value = order
+                        viewState = viewState.copy(
+                            isUpdatingOrderDraft = false,
+                            showOrderUpdateSnackbar = false,
+                            isEditable = order.isEditable,
+                            multipleLinesContext = determineMultipleLinesContext(order)
+                        )
+                        monitorOrderChanges()
                     }
                 }
             }
+        }
     }
 
     fun onCustomerNoteEdited(newNote: String) = _orderDraft.update { it.copy(customerNote = newNote) }
