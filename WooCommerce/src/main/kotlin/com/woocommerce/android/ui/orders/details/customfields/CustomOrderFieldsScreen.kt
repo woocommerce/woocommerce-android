@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -72,18 +73,22 @@ private fun CustomFieldListItem(metadata: OrderMetaDataEntity) {
                     .padding(horizontal = dimensionResource(id = R.dimen.major_100))
                     .align(Alignment.CenterVertically)
             ) {
-                Text(
-                    text = metadata.key,
-                    style = MaterialTheme.typography.subtitle1,
-                    color = MaterialTheme.colors.onSurface
-                )
-                Text(
-                    text = metadata.value,
-                    style = MaterialTheme.typography.body2,
-                    color = MaterialTheme.colors.onSurface,
-                    maxLines = VALUE_MAX_LINES,
-                    overflow = TextOverflow.Ellipsis
-                )
+                SelectionContainer {
+                    Text(
+                        text = metadata.key,
+                        style = MaterialTheme.typography.subtitle1,
+                        color = MaterialTheme.colors.onSurface
+                    )
+                }
+                SelectionContainer {
+                    Text(
+                        text = metadata.value,
+                        style = MaterialTheme.typography.body2,
+                        color = MaterialTheme.colors.onSurface,
+                        maxLines = VALUE_MAX_LINES,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
         }
     }
