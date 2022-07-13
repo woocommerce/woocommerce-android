@@ -704,7 +704,7 @@ final class OrderDetailViewModel @Inject constructor(
 
     ) : Parcelable {
         val isMarkOrderCompleteButtonVisible: Boolean?
-            get() = if (orderStatus != null) orderStatus.statusKey == CoreOrderStatus.PROCESSING.value else null
+            get() = if (orderStatus != null) orderInfo?.order?.isOrderPaid else null
 
         val isCreateShippingLabelBannerVisible: Boolean
             get() = isCreateShippingLabelButtonVisible == true && isProductListVisible == true
