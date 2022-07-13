@@ -14,7 +14,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
-import com.woocommerce.android.util.WooLog.T.ORDERS
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
@@ -29,7 +28,7 @@ import javax.inject.Inject
 import org.wordpress.android.fluxc.model.order.FeeLine as WCFeeLine
 import org.wordpress.android.fluxc.model.order.ShippingLine as WCShippingLine
 
-class OrderCreationRepository @Inject constructor(
+class OrderCreateEditRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val orderStore: WCOrderStore,
     private val orderUpdateStore: OrderUpdateStore,
@@ -83,7 +82,7 @@ class OrderCreationRepository @Inject constructor(
 
         return when {
             result.isError -> {
-                WooLog.e(ORDERS, "${result.error.type.name}: ${result.error.message}")
+                WooLog.e(T.ORDERS, "${result.error.type.name}: ${result.error.message}")
                 analyticsTrackerWrapper.track(
                     AnalyticsEvent.PAYMENTS_FLOW_FAILED,
                     mapOf(
@@ -142,7 +141,7 @@ class OrderCreationRepository @Inject constructor(
     private fun trackOrderSyncFailed(errorType: String?, errorDescription: String?) {
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.ORDER_SYNC_FAILED,
-            errorContext = this@OrderCreationRepository.javaClass.simpleName,
+            errorContext = this@OrderCreateEditRepository.javaClass.simpleName,
             errorType = errorType,
             errorDescription = errorDescription
         )

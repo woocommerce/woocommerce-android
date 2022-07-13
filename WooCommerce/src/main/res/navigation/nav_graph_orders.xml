@@ -244,7 +244,7 @@
             app:popExitAnim="@anim/activity_fade_out" >
             <argument
                 android:name="mode"
-                app:argType="com.woocommerce.android.ui.orders.creation.OrderCreationViewModel$Mode" />
+                app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$Mode" />
         </action>
 
         <action
@@ -521,7 +521,7 @@
         android:id="@+id/editCustomerOrderNoteFragment"
         android:name="com.woocommerce.android.ui.orders.details.editing.CustomerOrderNoteEditingFragment"
         android:label="EditCustomerOrderNoteFragment"
-        tools:layout="@layout/fragment_edit_customer_order_note" />
+        tools:layout="@layout/fragment_order_create_edit_customer_note" />
     <fragment
         android:id="@+id/shippingAddressEditingFragment"
         android:name="com.woocommerce.android.ui.orders.details.editing.address.ShippingAddressEditingFragment"

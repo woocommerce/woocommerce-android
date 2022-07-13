@@ -13,15 +13,15 @@ import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
-import com.woocommerce.android.databinding.FragmentOrderCreationProductSelectionBinding
+import com.woocommerce.android.databinding.FragmentOrderCreateEditProductSelectionBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.ShowProductVariations
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigator
-import com.woocommerce.android.ui.orders.creation.products.OrderCreationProductSelectionViewModel.AddProduct
-import com.woocommerce.android.ui.orders.creation.products.OrderCreationProductSelectionViewModel.ViewState
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductVariations
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigator
+import com.woocommerce.android.ui.orders.creation.products.OrderCreateEditProductSelectionViewModel.AddProduct
+import com.woocommerce.android.ui.orders.creation.products.OrderCreateEditProductSelectionViewModel.ViewState
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.ProductListAdapter
 import com.woocommerce.android.util.CurrencyFormatter
@@ -32,13 +32,13 @@ import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class OrderCreationProductSelectionFragment :
-    BaseFragment(R.layout.fragment_order_creation_product_selection),
+class OrderCreateEditProductSelectionFragment :
+    BaseFragment(R.layout.fragment_order_create_edit_product_selection),
     OnLoadMoreListener,
     SearchView.OnQueryTextListener,
     OnActionExpandListener {
-    private val sharedViewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
-    private val productListViewModel by viewModels<OrderCreationProductSelectionViewModel>()
+    private val sharedViewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
+    private val productListViewModel by viewModels<OrderCreateEditProductSelectionViewModel>()
 
     private val skeletonView = SkeletonView()
     private var searchMenuItem: MenuItem? = null
@@ -48,7 +48,7 @@ class OrderCreationProductSelectionFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        with(FragmentOrderCreationProductSelectionBinding.bind(view)) {
+        with(FragmentOrderCreateEditProductSelectionBinding.bind(view)) {
             productsList.layoutManager = LinearLayoutManager(requireActivity())
             setupObserversWith(this)
         }
@@ -62,7 +62,7 @@ class OrderCreationProductSelectionFragment :
         super.onDestroyView()
     }
 
-    private fun setupObserversWith(binding: FragmentOrderCreationProductSelectionBinding) {
+    private fun setupObserversWith(binding: FragmentOrderCreateEditProductSelectionBinding) {
         productListViewModel.productListData.observe(viewLifecycleOwner) {
             binding.loadProductsAdapterWith(it)
         }
@@ -75,19 +75,19 @@ class OrderCreationProductSelectionFragment :
                     sharedViewModel.onProductSelected(event.productId)
                     findNavController().navigateUp()
                 }
-                is ShowProductVariations -> OrderCreationNavigator.navigate(this, event)
+                is ShowProductVariations -> OrderCreateEditNavigator.navigate(this, event)
             }
         }
     }
 
-    private fun FragmentOrderCreationProductSelectionBinding.loadProductsAdapterWith(
+    private fun FragmentOrderCreateEditProductSelectionBinding.loadProductsAdapterWith(
         products: List<Product>
     ) {
         val adapter = productsList.adapter
             .let { it as? ProductListAdapter }
             ?: ProductListAdapter(
                 clickListener = { id, _ -> productListViewModel.onProductSelected(id) },
-                loadMoreListener = this@OrderCreationProductSelectionFragment,
+                loadMoreListener = this@OrderCreateEditProductSelectionFragment,
                 currencyFormatter = currencyFormatter
             ).also { productsList.adapter = it }
         adapter.submitList(products)
@@ -98,7 +98,7 @@ class OrderCreationProductSelectionFragment :
     }
 
     private fun onViewStateChanged(
-        binding: FragmentOrderCreationProductSelectionBinding,
+        binding: FragmentOrderCreateEditProductSelectionBinding,
         old: ViewState?,
         new: ViewState
     ) {
@@ -111,7 +111,7 @@ class OrderCreationProductSelectionFragment :
     }
 
     private fun showSkeleton(
-        binding: FragmentOrderCreationProductSelectionBinding,
+        binding: FragmentOrderCreateEditProductSelectionBinding,
         show: Boolean
     ) {
         if (show) {
@@ -122,7 +122,7 @@ class OrderCreationProductSelectionFragment :
     }
 
     private fun showEmptyView(
-        binding: FragmentOrderCreationProductSelectionBinding,
+        binding: FragmentOrderCreateEditProductSelectionBinding,
         show: Boolean
     ) {
         if (show) {

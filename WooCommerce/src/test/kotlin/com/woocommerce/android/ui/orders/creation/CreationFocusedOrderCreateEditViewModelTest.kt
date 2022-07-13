@@ -8,16 +8,16 @@ import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateS
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Ongoing
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.PendingDebounce
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
-import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.Mode
-import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.Mode.Creation
-import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.ViewState
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.AddProduct
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.EditCustomer
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.EditCustomerNote
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.EditFee
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.EditShipping
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.ShowCreatedOrder
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.ShowProductDetails
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode.Creation
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.ViewState
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.AddProduct
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomer
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomerNote
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditFee
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditShipping
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -34,7 +34,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
-class CreationFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest() {
+class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() {
     override val mode: Mode = Creation
 
     @Test
@@ -323,7 +323,7 @@ class CreationFocusedOrderCreationViewModelTest : UnifiedOrderEditViewModelTest(
 
     @Test
     fun `when creating the order fails, then trigger Snackbar with fail message`() {
-        orderCreationRepository = mock {
+        orderCreateEditRepository = mock {
             onBlocking { placeOrder(defaultOrderValue) } doReturn Result.failure(Throwable())
         }
         createSut()
