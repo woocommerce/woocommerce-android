@@ -1086,14 +1086,17 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `when order status complete, then hide mark order complete button`() =
         testBlocking {
+            // Given
             doReturn(orderStatus).whenever(orderDetailRepository).getOrderStatus(CoreOrderStatus.COMPLETED.value)
             var isMarkOrderCompleteButtonVisible: Boolean? = null
             viewModel.viewStateData.observeForever { _, new ->
                 isMarkOrderCompleteButtonVisible = new.isMarkOrderCompleteButtonVisible
             }
 
+            // When
             viewModel.start()
 
+            // Then
             assertThat(isMarkOrderCompleteButtonVisible).isFalse()
         }
 
