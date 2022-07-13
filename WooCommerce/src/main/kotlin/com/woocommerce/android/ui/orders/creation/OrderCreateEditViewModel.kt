@@ -315,7 +315,8 @@ class OrderCreateEditViewModel @Inject constructor(
      */
     private fun monitorOrderChanges() {
         viewModelScope.launch {
-            syncStrategy.syncOrderChanges(_orderDraft.drop(1), retryOrderDraftUpdateTrigger)
+            val changes = if (mode is Mode.Edit) _orderDraft.drop(1) else _orderDraft
+            syncStrategy.syncOrderChanges(changes, retryOrderDraftUpdateTrigger)
                 .collect { updateStatus ->
                     when (updateStatus) {
                         OrderUpdateStatus.PendingDebounce ->
