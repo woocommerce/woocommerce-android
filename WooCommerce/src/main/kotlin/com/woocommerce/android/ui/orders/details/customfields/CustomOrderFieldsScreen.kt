@@ -115,8 +115,8 @@ private fun CustomFieldsPreview() {
             orderId = 0,
             key = "key_one",
             value = "value_one",
-            displayKey = "display_key_one",
-            displayValue = "display_value_one"
+            displayKey = null,
+            displayValue = null
         )
     )
 
