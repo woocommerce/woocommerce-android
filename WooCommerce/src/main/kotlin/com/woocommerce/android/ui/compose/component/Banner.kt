@@ -166,9 +166,9 @@ fun PaymentScreenBannerPreview() {
         Banner(
             onCtaClick = {},
             onDismissClick = {},
-            title = "Accept payment easily.",
-            subtitle = "Get ready to accept payment via card reader.",
-            ctaLabel = "Purchase Card Reader"
+            title = stringResource(id = R.string.card_reader_upsell_card_reader_banner_title),
+            subtitle = stringResource(id = R.string.card_reader_upsell_card_reader_banner_description),
+            ctaLabel = stringResource(id = R.string.card_reader_upsell_card_reader_banner_cta)
         )
     }
 }
