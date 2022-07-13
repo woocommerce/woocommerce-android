@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
-import com.woocommerce.android.databinding.FragmentOrderCreationFormBinding
+import com.woocommerce.android.databinding.FragmentOrderCreateEditFormBinding
 import com.woocommerce.android.databinding.LayoutOrderCreationCustomerInfoBinding
 import com.woocommerce.android.databinding.OrderCreationPaymentSectionBinding
 import com.woocommerce.android.extensions.handleDialogResult
@@ -29,13 +29,12 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
-import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.Mode
-import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.MultipleLinesContext.None
-import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.MultipleLinesContext.Warning
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigator
-import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView
-import com.woocommerce.android.ui.orders.creation.views.OrderCreationSectionView.AddButton
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.MultipleLinesContext.None
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.MultipleLinesContext.Warning
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigator
+import com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView
+import com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView.AddButton
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Companion.KEY_ORDER_STATUS_RESULT
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
@@ -51,8 +50,8 @@ import java.math.BigDecimal
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_form), BackPressListener {
-    private val viewModel by hiltNavGraphViewModels<OrderCreationViewModel>(R.id.nav_graph_order_creations)
+class OrderCreateEditFormFragment : BaseFragment(R.layout.fragment_order_create_edit_form), BackPressListener {
+    private val viewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
 
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
@@ -70,19 +69,19 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Visible(
             navigationIcon = when (viewModel.mode) {
-                Mode.Creation -> R.drawable.ic_back_24dp
-                is Mode.Edit -> null
+                OrderCreateEditViewModel.Mode.Creation -> R.drawable.ic_back_24dp
+                is OrderCreateEditViewModel.Mode.Edit -> null
             }
         )
 
     private val View?.productsAdapter
         get() = (this as? RecyclerView)
-            ?.run { adapter as? OrderCreationProductsAdapter }
+            ?.run { adapter as? OrderCreateEditProductsAdapter }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
-        with(FragmentOrderCreationFormBinding.bind(view)) {
+        with(FragmentOrderCreateEditFormBinding.bind(view)) {
             setupObserversWith(this)
             setupHandleResults()
             initView()
@@ -96,8 +95,8 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         createOrderMenuItem = menu.findItem(R.id.menu_create).apply {
             title = resources.getString(
                 when (viewModel.mode) {
-                    Mode.Creation -> R.string.create
-                    is Mode.Edit -> R.string.done
+                    OrderCreateEditViewModel.Mode.Creation -> R.string.create
+                    is OrderCreateEditViewModel.Mode.Edit -> R.string.done
                 }
             )
             isEnabled = viewModel.viewStateData.liveData.value?.canCreateOrder ?: false
@@ -120,7 +119,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         orderUpdateFailureSnackBar?.dismiss()
     }
 
-    private fun FragmentOrderCreationFormBinding.initView() {
+    private fun FragmentOrderCreateEditFormBinding.initView() {
         initOrderStatusView()
         initNotesSection()
         initCustomerSection()
@@ -128,7 +127,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         initPaymentSection()
     }
 
-    private fun FragmentOrderCreationFormBinding.initOrderStatusView() {
+    private fun FragmentOrderCreateEditFormBinding.initOrderStatusView() {
         orderStatusView.initView(
             mode = OrderDetailOrderStatusView.Mode.OrderCreation,
             editOrderStatusClickListener = {
@@ -139,7 +138,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         )
     }
 
-    private fun FragmentOrderCreationFormBinding.initNotesSection() {
+    private fun FragmentOrderCreateEditFormBinding.initNotesSection() {
         notesSection.setEditButtonContentDescription(
             contentDescription = getString(R.string.order_creation_customer_note_edit_content_description)
         )
@@ -161,7 +160,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         )
     }
 
-    private fun FragmentOrderCreationFormBinding.initCustomerSection() {
+    private fun FragmentOrderCreateEditFormBinding.initCustomerSection() {
         customerSection.setAddButtons(
             listOf(
                 AddButton(
@@ -180,7 +179,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         )
     }
 
-    private fun FragmentOrderCreationFormBinding.initProductsSection() {
+    private fun FragmentOrderCreateEditFormBinding.initProductsSection() {
         productsSection.setAddButtons(
             listOf(
                 AddButton(
@@ -193,7 +192,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         )
     }
 
-    private fun FragmentOrderCreationFormBinding.initPaymentSection() {
+    private fun FragmentOrderCreateEditFormBinding.initPaymentSection() {
         paymentSection.shippingButton.setOnClickListener {
             viewModel.onShippingButtonClicked()
         }
@@ -207,7 +206,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         }
     }
 
-    private fun setupObserversWith(binding: FragmentOrderCreationFormBinding) {
+    private fun setupObserversWith(binding: FragmentOrderCreateEditFormBinding) {
         viewModel.orderDraft.observe(viewLifecycleOwner) { newOrderData ->
             binding.orderStatusView.updateOrder(newOrderData)
             bindNotesSection(binding.notesSection, newOrderData.customerNote)
@@ -232,10 +231,10 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             }
             new.isIdle.takeIfNotEqualTo(old?.isIdle) { enabled ->
                 when (viewModel.mode) {
-                    OrderCreationViewModel.Mode.Creation -> {
+                    OrderCreateEditViewModel.Mode.Creation -> {
                         binding.paymentSection.loadingProgress.isVisible = !enabled
                     }
-                    is OrderCreationViewModel.Mode.Edit -> {
+                    is OrderCreateEditViewModel.Mode.Edit -> {
                         binding.loadingProgress.isVisible = !enabled
                     }
                 }
@@ -296,10 +295,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     private fun OrderCreationPaymentSectionBinding.bindFeesSubSection(newOrderData: Order) {
         feeButton.setOnClickListener { viewModel.onFeeButtonClicked() }
 
-        val currentFeeTotal = newOrderData.feesLines
-            .firstOrNull { it.name != null }
-            ?.total
-            ?: BigDecimal.ZERO
+        val currentFeeTotal = newOrderData.feesTotal
 
         val hasFee = currentFeeTotal.isNotEqualTo(BigDecimal.ZERO)
 
@@ -315,7 +311,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         }
     }
 
-    private fun bindNotesSection(notesSection: OrderCreationSectionView, customerNote: String) {
+    private fun bindNotesSection(notesSection: OrderCreateEditSectionView, customerNote: String) {
         customerNote.takeIf { it.isNotBlank() }
             ?.let { noteText ->
                 WCReadMoreTextView(requireContext()).also {
@@ -328,7 +324,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
             }
     }
 
-    private fun bindProductsSection(productsSection: OrderCreationSectionView, products: List<ProductUIModel>?) {
+    private fun bindProductsSection(productsSection: OrderCreateEditSectionView, products: List<ProductUIModel>?) {
         productsSection.setContentHorizontalPadding(R.dimen.minor_00)
         if (products.isNullOrEmpty()) {
             productsSection.content = null
@@ -341,7 +337,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
                 }
                 productsSection.content = RecyclerView(requireContext()).apply {
                     layoutManager = LinearLayoutManager(requireContext())
-                    adapter = OrderCreationProductsAdapter(
+                    adapter = OrderCreateEditProductsAdapter(
                         onProductClicked = viewModel::onProductClicked,
                         currencyFormatter = currencyFormatter,
                         currencyCode = viewModel.currentDraft.currency,
@@ -357,7 +353,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     }
 
     @SuppressLint("SetTextI18n")
-    private fun bindCustomerAddressSection(customerAddressSection: OrderCreationSectionView, order: Order) {
+    private fun bindCustomerAddressSection(customerAddressSection: OrderCreateEditSectionView, order: Order) {
         customerAddressSection.setContentHorizontalPadding(R.dimen.minor_00)
         order.takeIf { it.billingAddress != Address.EMPTY }
             ?.let {
@@ -399,9 +395,9 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
 
     private fun handleViewModelEvents(event: Event) {
         when (event) {
-            is OrderCreationNavigationTarget -> OrderCreationNavigator.navigate(this, event)
+            is OrderCreateEditNavigationTarget -> OrderCreateEditNavigator.navigate(this, event)
             is ViewOrderStatusSelector ->
-                OrderCreationFormFragmentDirections
+                OrderCreateEditFormFragmentDirections
                     .actionOrderCreationFragmentToOrderStatusSelectorDialog(
                         currentStatus = event.currentStatus,
                         orderStatusList = event.orderStatusList
@@ -448,9 +444,9 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
     }
 
     override fun getFragmentTitle() = when (viewModel.mode) {
-        Mode.Creation -> getString(R.string.order_creation_fragment_title)
-        is Mode.Edit -> {
-            val orderId = (viewModel.mode as Mode.Edit).orderId.toString()
+        OrderCreateEditViewModel.Mode.Creation -> getString(R.string.order_creation_fragment_title)
+        is OrderCreateEditViewModel.Mode.Edit -> {
+            val orderId = (viewModel.mode as OrderCreateEditViewModel.Mode.Edit).orderId.toString()
             getString(R.string.orderdetail_orderstatus_ordernum, orderId)
         }
     }
@@ -460,7 +456,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         return false
     }
 
-    private fun showEditableControls(binding: FragmentOrderCreationFormBinding) {
+    private fun showEditableControls(binding: FragmentOrderCreateEditFormBinding) {
         binding.messageNoEditableFields.visibility = View.GONE
         binding.productsSection.apply {
             isLocked = false
@@ -474,7 +470,7 @@ class OrderCreationFormFragment : BaseFragment(R.layout.fragment_order_creation_
         }
     }
 
-    private fun hideEditableControls(binding: FragmentOrderCreationFormBinding) {
+    private fun hideEditableControls(binding: FragmentOrderCreateEditFormBinding) {
         binding.messageNoEditableFields.visibility = View.VISIBLE
         binding.productsSection.apply {
             isLocked = true

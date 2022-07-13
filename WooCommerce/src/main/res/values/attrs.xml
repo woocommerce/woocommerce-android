@@ -201,7 +201,7 @@
     </declare-styleable>
 
 
-    <declare-styleable name="OrderCreationSectionView">
+    <declare-styleable name="OrderCreateEditSectionView">
         <attr name="header" format="string" />
         <attr name="keepAddButtons" format="boolean" />
         <attr name="hasEditButton" format="boolean" />

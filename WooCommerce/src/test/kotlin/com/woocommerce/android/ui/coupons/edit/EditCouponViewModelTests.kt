@@ -19,6 +19,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -39,6 +40,7 @@ import java.util.concurrent.TimeUnit.DAYS
 
 private const val COUPON_ID = 1L
 
+@ExperimentalCoroutinesApi
 class EditCouponViewModelTests : BaseUnitTest() {
     private lateinit var viewModel: EditCouponViewModel
 

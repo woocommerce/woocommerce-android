@@ -8,7 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.orders.creation.OrderCreationRepository
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -24,7 +24,7 @@ import javax.inject.Inject
 class SimplePaymentsDialogViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val networkStatus: NetworkStatus,
-    private val orderCreationRepository: OrderCreationRepository,
+    private val orderCreateEditRepository: OrderCreateEditRepository,
     private val analyticsTracker: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
     val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
@@ -59,7 +59,7 @@ class SimplePaymentsDialogViewModel @Inject constructor(
         viewState = viewState.copy(isProgressShowing = true, isDoneButtonEnabled = false)
 
         launch(Dispatchers.IO) {
-            val result = orderCreationRepository.createSimplePaymentOrder(viewState.currentPrice)
+            val result = orderCreateEditRepository.createSimplePaymentOrder(viewState.currentPrice)
             withContext(Dispatchers.Main) {
                 viewState = viewState.copy(isProgressShowing = false, isDoneButtonEnabled = true)
                 result.fold(

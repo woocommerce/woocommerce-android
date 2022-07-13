@@ -2,7 +2,6 @@ package com.woocommerce.android.model
 
 import com.woocommerce.android.extensions.CASH_PAYMENTS
 import com.woocommerce.android.extensions.fastStripHtml
-import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.model.Order.Item
 import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.fluxc.model.OrderEntity
@@ -35,8 +34,6 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
             shippingTotal = databaseEntity.shippingTotal.toBigDecimalOrNull() ?: BigDecimal.ZERO,
             discountTotal = databaseEntity.discountTotal.toBigDecimalOrNull() ?: BigDecimal.ZERO,
             refundTotal = -(databaseEntity.refundTotal), // WCOrderModel.refundTotal is NEGATIVE
-            feesTotal = databaseEntity.getFeeLineList()
-                .sumByBigDecimal { it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO },
             currency = databaseEntity.currency,
             orderKey = databaseEntity.orderKey,
             customerNote = databaseEntity.customerNote,

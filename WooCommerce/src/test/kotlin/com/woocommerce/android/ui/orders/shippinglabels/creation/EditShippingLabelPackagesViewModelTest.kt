@@ -17,7 +17,11 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import java.math.BigDecimal
 

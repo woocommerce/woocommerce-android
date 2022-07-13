@@ -4,6 +4,7 @@ import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -15,6 +16,7 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
+@ExperimentalCoroutinesApi
 class ProductCategoryListHandlerTests : BaseUnitTest() {
     private lateinit var listHandler: ProductCategoryListHandler
 

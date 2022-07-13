@@ -6,9 +6,9 @@
     app:startDestination="@id/orderCreationFragment">
     <fragment
         android:id="@+id/orderCreationFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.OrderCreationFormFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.OrderCreateEditFormFragment"
         android:label="orderCreationFragment"
-        tools:layout="@layout/fragment_order_creation_form">
+        tools:layout="@layout/fragment_order_create_edit_form">
         <action
             android:id="@+id/action_orderCreationFragment_to_orderStatusSelectorDialog"
             app:destination="@id/orderStatusSelectorDialog"
@@ -71,7 +71,7 @@
         </action>
         <argument
             android:name="mode"
-            app:argType="com.woocommerce.android.ui.orders.creation.OrderCreationViewModel$Mode" />
+            app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$Mode" />
     </fragment>
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
@@ -86,14 +86,14 @@
     </dialog>
     <fragment
         android:id="@+id/orderCreationCustomerNoteFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.notes.OrderCreationCustomerNoteFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.notes.OrderCreateEditCustomerNoteFragment"
         android:label="OrderCreationCustomerNoteFragment"
-        tools:layout="@layout/fragment_edit_customer_order_note" />
+        tools:layout="@layout/fragment_order_create_edit_customer_note" />
     <fragment
         android:id="@+id/orderCreationProductSelectionFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.products.OrderCreationProductSelectionFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.products.OrderCreateEditProductSelectionFragment"
         android:label="OrderCreationProductSelectionFragment"
-        tools:layout="@layout/fragment_order_creation_product_selection">
+        tools:layout="@layout/fragment_order_create_edit_product_selection">
         <action
             android:id="@+id/action_orderCreationProductSelectionFragment_to_orderCreationVariationSelectionFragment"
             app:destination="@id/orderCreationVariationSelectionFragment"
@@ -104,7 +104,7 @@
     </fragment>
     <fragment
         android:id="@+id/orderCreationCustomerFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.OrderCreationCustomerAddFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.OrderCreateEditCustomerAddFragment"
         android:label="OrderCreationCustomerFragment"
         tools:layout="@layout/fragment_base_edit_address">
         <action
@@ -133,27 +133,27 @@
     </fragment>
     <fragment
         android:id="@+id/orderCreationProductDetailsFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.products.OrderCreationProductDetailsFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.products.OrderCreateEditProductDetailsFragment"
         android:label="OrderCreationProductDetailsFragment"
-        tools:layout="@layout/fragment_order_creation_product_details">
+        tools:layout="@layout/fragment_order_create_edit_product_details">
         <argument
             android:name="item"
             app:argType="com.woocommerce.android.model.Order$Item" />
     </fragment>
     <fragment
         android:id="@+id/orderCreationVariationSelectionFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.variations.OrderCreationVariationSelectionFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.variations.OrderCreateEditVariationSelectionFragment"
         android:label="OrderCreationVariationSelectionFragment"
-        tools:layout="@layout/fragment_order_creation_product_selection">
+        tools:layout="@layout/fragment_order_create_edit_product_selection">
         <argument
             android:name="productId"
             app:argType="long" />
     </fragment>
     <fragment
         android:id="@+id/orderCreationShippingFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.shipping.OrderCreationShippingFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.shipping.OrderCreateEditShippingFragment"
         android:label="OrderCreationShippingFragment"
-        tools:layout="@layout/fragment_order_creation_shipping" >
+        tools:layout="@layout/fragment_order_create_edit_shipping" >
         <argument
             android:name="currentShippingLine"
             app:nullable="true"
@@ -161,9 +161,9 @@
     </fragment>
     <fragment
         android:id="@+id/orderCreationFeeFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.fees.OrderCreationFeeFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.fees.OrderCreateEditFeeFragment"
         android:label="OrderCreationFeeFragment"
-        tools:layout="@layout/fragment_order_creation_fee" >
+        tools:layout="@layout/fragment_order_create_edit_fee" >
         <argument
             android:name="orderSubTotal"
             app:argType="java.math.BigDecimal" />

@@ -23,12 +23,12 @@ import org.wordpress.android.fluxc.store.OrderUpdateStore
 import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
-class OrderCreationRepositoryTest : BaseUnitTest() {
+class OrderCreateEditRepositoryTest : BaseUnitTest() {
     companion object {
         const val DEFAULT_ERROR_MESSAGE = "error_message"
     }
 
-    private lateinit var sut: OrderCreationRepository
+    private lateinit var sut: OrderCreateEditRepository
     private lateinit var trackerWrapper: AnalyticsTrackerWrapper
     private lateinit var orderUpdateStore: OrderUpdateStore
     private lateinit var selectedSite: SelectedSite
@@ -55,7 +55,7 @@ class OrderCreationRepositoryTest : BaseUnitTest() {
             )
         }
 
-        sut = OrderCreationRepository(
+        sut = OrderCreateEditRepository(
             selectedSite = selectedSite,
             orderStore = mock(),
             orderUpdateStore = orderUpdateStore,

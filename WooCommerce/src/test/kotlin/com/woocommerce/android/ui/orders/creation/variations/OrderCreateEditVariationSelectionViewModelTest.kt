@@ -20,7 +20,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
-class OrderCreationVariationSelectionViewModelTest : BaseUnitTest() {
+class OrderCreateEditVariationSelectionViewModelTest : BaseUnitTest() {
     companion object {
         private const val PRODUCT_ID = 1L
     }
@@ -33,13 +33,13 @@ class OrderCreationVariationSelectionViewModelTest : BaseUnitTest() {
         onBlocking { fetchProductVariations(PRODUCT_ID) } doReturn
             ProductTestUtils.generateProductVariationList(PRODUCT_ID)
     }
-    private val savedState = OrderCreationVariationSelectionFragmentArgs(PRODUCT_ID).initSavedStateHandle()
+    private val savedState = OrderCreateEditVariationSelectionFragmentArgs(PRODUCT_ID).initSavedStateHandle()
 
-    private lateinit var viewModel: OrderCreationVariationSelectionViewModel
+    private lateinit var viewModel: OrderCreateEditVariationSelectionViewModel
 
     @Before
     fun setup() {
-        viewModel = OrderCreationVariationSelectionViewModel(
+        viewModel = OrderCreateEditVariationSelectionViewModel(
             savedStateHandle = savedState,
             productRepository = productDetailRepository,
             variationRepository = variationsRepository,

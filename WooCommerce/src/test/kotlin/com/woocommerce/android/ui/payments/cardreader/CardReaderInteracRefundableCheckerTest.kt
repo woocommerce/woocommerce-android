@@ -7,7 +7,6 @@ import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderInteracR
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCurrencySupportedChecker
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -32,7 +31,7 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
     @Before
     fun setUp() {
 //        doReturn(false).whenever(repository).hasSubscriptionProducts(any())
-        runBlockingTest {
+        testBlocking {
             whenever(cardReaderPaymentCurrencySupportedChecker.isCurrencySupported(any())).thenReturn(true)
         }
     }
@@ -261,7 +260,7 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when order has "woocommerce_payments" payment method, then it is refundable`() =
+    fun `when order has 'woocommerce_payments' payment method, then it is refundable`() =
         testBlocking {
             // GIVEN
             val order = getOrder(paymentMethod = "woocommerce_payments")
@@ -274,7 +273,7 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when order has "wc-booking-gateway" payment method, then it is refundable`() =
+    fun `when order has 'wc-booking-gateway' payment method, then it is refundable`() =
         testBlocking {
             // GIVEN
             val order = getOrder(paymentMethod = "wc-booking-gateway")

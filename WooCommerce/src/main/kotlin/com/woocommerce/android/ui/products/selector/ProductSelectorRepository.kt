@@ -54,7 +54,12 @@ class ProductSelectorRepository @Inject constructor(
         pageSize: Int,
         filterOptions: Map<ProductFilterOption, String>
     ): Result<Boolean> {
-        return productStore.fetchProducts(selectedSite.get(), offset, pageSize, filterOptions = filterOptions)
+        return productStore.fetchProducts(
+            site = selectedSite.get(),
+            offset = offset,
+            pageSize = pageSize,
+            filterOptions = filterOptions
+        )
             .let { result ->
                 if (result.isError) {
                     WooLog.w(

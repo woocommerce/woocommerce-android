@@ -10,10 +10,10 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderCreationProductItemBinding
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.ui.orders.creation.OrderCreationProductsAdapter.ProductViewHolder
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditProductsAdapter.ProductViewHolder
 import com.woocommerce.android.util.CurrencyFormatter
 
-class OrderCreationProductsAdapter(
+class OrderCreateEditProductsAdapter(
     private val onProductClicked: (Order.Item) -> Unit,
     private val currencyFormatter: CurrencyFormatter,
     private val currencyCode: String?,

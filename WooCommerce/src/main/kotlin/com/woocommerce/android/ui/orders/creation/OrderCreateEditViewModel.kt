@@ -29,13 +29,13 @@ import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.AddProduct
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.EditCustomer
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.EditCustomerNote
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.EditFee
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.EditShipping
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.ShowCreatedOrder
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.ShowProductDetails
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.AddProduct
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomer
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomerNote
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditFee
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditShipping
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductStockStatus
@@ -62,11 +62,11 @@ import java.math.BigDecimal
 import javax.inject.Inject
 
 @HiltViewModel
-class OrderCreationViewModel @Inject constructor(
+class OrderCreateEditViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val dispatchers: CoroutineDispatchers,
     private val orderDetailRepository: OrderDetailRepository,
-    private val orderCreationRepository: OrderCreationRepository,
+    private val orderCreateEditRepository: OrderCreateEditRepository,
     private val mapItemToProductUiModel: MapItemToProductUiModel,
     private val createOrderItem: CreateOrderItem,
     private val determineMultipleLinesContext: DetermineMultipleLinesContext,
@@ -82,7 +82,7 @@ class OrderCreationViewModel @Inject constructor(
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
-    private val args: OrderCreationFormFragmentArgs by savedState.navArgs()
+    private val args: OrderCreateEditFormFragmentArgs by savedState.navArgs()
     val mode: Mode = args.mode
 
     private val _orderDraft = savedState.getStateFlow(viewModelScope, Order.EMPTY)
@@ -252,7 +252,7 @@ class OrderCreationViewModel @Inject constructor(
         when (mode) {
             Mode.Creation -> viewModelScope.launch {
                 viewState = viewState.copy(isProgressDialogShown = true)
-                orderCreationRepository.placeOrder(order).fold(
+                orderCreateEditRepository.placeOrder(order).fold(
                     onSuccess = {
                         AnalyticsTracker.track(AnalyticsEvent.ORDER_CREATION_SUCCESS)
                         triggerEvent(ShowSnackbar(string.order_creation_success_snackbar))
@@ -282,7 +282,7 @@ class OrderCreationViewModel @Inject constructor(
                             positiveBtnAction = { _, _ ->
                                 val draft = _orderDraft.value
                                 if (draft.id != 0L) {
-                                    launch { orderCreationRepository.deleteDraftOrder(draft) }
+                                    launch { orderCreateEditRepository.deleteDraftOrder(draft) }
                                 }
                                 triggerEvent(Exit)
                             }
@@ -393,20 +393,37 @@ class OrderCreationViewModel @Inject constructor(
             mapOf(KEY_FLOW to VALUE_FLOW_CREATION)
         )
 
-        val newFee = _orderDraft.value.feesLines.firstOrNull { it.name != null }
-            ?: Order.FeeLine.EMPTY
-
         _orderDraft.update { draft ->
-            listOf(newFee.copy(name = ORDER_CUSTOM_FEE_NAME, total = feeValue))
-                .let { draft.copy(feesLines = it) }
+            val fees: List<Order.FeeLine> = draft.feesLines.mapIndexed { index, feeLine ->
+                if (index == 0) {
+                    feeLine.copy(total = feeValue)
+                } else {
+                    feeLine
+                }
+            }.ifEmpty {
+                listOf(
+                    Order.FeeLine.EMPTY.copy(
+                        name = ORDER_CUSTOM_FEE_NAME,
+                        total = feeValue
+                    )
+                )
+            }
+
+            draft.copy(feesLines = fees)
         }
     }
 
     fun onFeeRemoved() {
         _orderDraft.update { draft ->
-            draft.feesLines
-                .map { it.copy(name = null) }
-                .let { draft.copy(feesLines = it) }
+            draft.copy(
+                feesLines = draft.feesLines.mapIndexed { index, feeLine ->
+                    if (index == 0) {
+                        feeLine.copy(name = null)
+                    } else {
+                        feeLine
+                    }
+                }
+            )
         }
     }
 

@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.woocommerce.android.helpers
 
 import android.app.Application

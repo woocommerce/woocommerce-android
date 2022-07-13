@@ -64,9 +64,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "9.5"
+            versionName "9.6-rc-1"
         }
-        versionCode 311
+        versionCode 312
 
         minSdkVersion 21
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
@@ -98,6 +98,9 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+        kotlinOptions {
+            allWarningsAsErrors = true
+        }
     }
 
     kotlinOptions {

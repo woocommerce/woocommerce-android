@@ -178,12 +178,12 @@ open class Screen {
         }
     }
 
-    fun selectItemWithTitleInTabLayout(stringID: Int, tabLayout: Int, elementParentId: Int) {
+    fun selectItemWithTitleInTabLayout(stringID: Int, tabLayoutId: Int, elementParentId: Int) {
         val string = getTranslatedString(stringID)
         val tabLayout = onView(
             allOf(
                 isDescendantOfA(withId(elementParentId)),
-                withId(tabLayout)
+                withId(tabLayoutId)
             )
         )
 
@@ -220,7 +220,7 @@ open class Screen {
                 for (i in 0 until tabLayout.tabCount) {
                     val tab = tabLayout.getTabAt(i)
                     if (tab?.text == string) {
-                        tab?.select()
+                        tab.select()
                     }
                 }
             }

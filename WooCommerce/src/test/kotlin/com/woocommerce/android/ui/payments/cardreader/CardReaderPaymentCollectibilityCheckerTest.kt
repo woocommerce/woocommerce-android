@@ -287,7 +287,7 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when order has "woocommerce_payments" payment method, then it is collectable`() =
+    fun `when order has 'woocommerce_payments' payment method, then it is collectable`() =
         testBlocking {
             // GIVEN
             val order = getOrder(paymentMethod = "woocommerce_payments")
@@ -300,7 +300,7 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when order has "wc-booking-gateway" payment method, then it is collectable`() =
+    fun `when order has 'wc-booking-gateway' payment method, then it is collectable`() =
         testBlocking {
             // GIVEN
             val order = getOrder(paymentMethod = "wc-booking-gateway")
@@ -313,7 +313,7 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given "stripe" payment method, when check order is collectable, then returns true`() =
+    fun `given 'stripe' payment method, when check order is collectable, then returns true`() =
         testBlocking {
             // GIVEN
             val order = getOrder(paymentMethod = "stripe")
