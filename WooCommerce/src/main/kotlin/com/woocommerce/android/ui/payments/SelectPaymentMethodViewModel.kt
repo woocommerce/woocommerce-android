@@ -256,6 +256,14 @@ class SelectPaymentMethodViewModel @Inject constructor(
             ORDER -> AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW
         }
 
+    fun onCtaClicked() {
+        // TODO
+    }
+
+    fun onDismissClicked() {
+        // TODO
+    }
+
     sealed class TakePaymentViewState {
         object Loading : TakePaymentViewState()
         data class Success(
