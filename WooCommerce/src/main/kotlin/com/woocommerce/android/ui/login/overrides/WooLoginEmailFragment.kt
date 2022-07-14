@@ -57,7 +57,10 @@ class WooLoginEmailFragment : LoginEmailFragment() {
             messageId = R.string.qr_code_login_camera_permission_denied_message,
             positiveButtonId = R.string.qr_code_login_edit_camera_permission,
             negativeButtonId = R.string.cancel,
-            posBtnAction = { _, _ -> WooPermissionUtils.showAppSettings(requireContext()) },
+            posBtnAction = { dialog, _ ->
+                WooPermissionUtils.showAppSettings(requireContext())
+                dialog.dismiss()
+            },
             negBtnAction = { dialog, _ -> dialog.dismiss() },
         )
     }
