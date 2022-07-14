@@ -94,26 +94,22 @@ private fun CustomFieldListItem(metadata: OrderMetaDataEntity) {
 @Preview
 @Composable
 private fun CustomFieldsPreview() {
-    val metadataList = listOf(
-        OrderMetaDataEntity(
-            id = 0,
-            localSiteId = LocalOrRemoteId.LocalId(0),
-            orderId = 0,
-            key = "key_zero",
-            value = "value_zero",
-            displayKey = null,
-            displayValue = null
-        ),
-        OrderMetaDataEntity(
-            id = 1,
-            localSiteId = LocalOrRemoteId.LocalId(0),
-            orderId = 0,
-            key = "key_one",
-            value = "value_one",
-            displayKey = null,
-            displayValue = null
+    CustomFieldsScreen(
+        listOf(
+            OrderMetaDataEntity(
+                id = 0,
+                localSiteId = LocalOrRemoteId.LocalId(0),
+                orderId = 0,
+                key = "key_zero",
+                value = "value_zero"
+            ),
+            OrderMetaDataEntity(
+                id = 1,
+                localSiteId = LocalOrRemoteId.LocalId(0),
+                orderId = 0,
+                key = "key_one",
+                value = "value_one"
+            )
         )
     )
-
-    CustomFieldsScreen(metadataList)
 }
