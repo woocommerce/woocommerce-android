@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.font.FontWeight.Companion.W700
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
@@ -84,8 +83,7 @@ private fun CustomFieldListItem(metadata: OrderMetaDataEntity) {
                     Text(
                         text = metadata.value,
                         style = MaterialTheme.typography.body2,
-                        color = MaterialTheme.colors.onSurface,
-                        overflow = TextOverflow.Ellipsis
+                        color = MaterialTheme.colors.onSurface
                     )
                 }
             }
