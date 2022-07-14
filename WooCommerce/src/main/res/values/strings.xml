@@ -393,6 +393,7 @@
     <string name="order_editing_non_editable_title">Parts of this order are not currently editable</string>
     <string name="order_editing_non_editable_message">To edit Products or Payment Details, change the status to Pending Payment.</string>
     <string name="order_editing_locked_content_description">locked</string>
+    <string name="order_editing_sync_failed">Unable to save changes</string>
     <!--
         Order Filters
     -->

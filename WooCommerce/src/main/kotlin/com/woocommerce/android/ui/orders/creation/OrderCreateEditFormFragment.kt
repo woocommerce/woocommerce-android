@@ -420,8 +420,12 @@ class OrderCreateEditFormFragment : BaseFragment(R.layout.fragment_order_create_
     @Suppress("MagicNumber")
     private fun showOrHideErrorSnackBar(show: Boolean) {
         if (show) {
+            val message = when (viewModel.mode) {
+                OrderCreateEditViewModel.Mode.Creation -> getString(R.string.order_creation_price_calculation_failed)
+                is OrderCreateEditViewModel.Mode.Edit -> getString(R.string.order_editing_sync_failed)
+            }
             val orderUpdateFailureSnackBar = orderUpdateFailureSnackBar ?: uiMessageResolver.getIndefiniteActionSnack(
-                message = getString(R.string.order_creation_price_calculation_failed),
+                message = message,
                 actionText = getString(R.string.retry),
                 actionListener = { viewModel.onRetryPaymentsClicked() }
             ).also {
