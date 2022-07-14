@@ -348,7 +348,10 @@ class OrderCreateEditFormFragment : BaseFragment(R.layout.fragment_order_create_
                     isNestedScrollingEnabled = false
                 }
             }
-            productsSection.content.productsAdapter?.submitList(products)
+            productsSection.content.productsAdapter?.apply {
+                submitList(products)
+                areProductsEditable = viewModel.currentDraft.isEditable
+            }
         }
     }
 

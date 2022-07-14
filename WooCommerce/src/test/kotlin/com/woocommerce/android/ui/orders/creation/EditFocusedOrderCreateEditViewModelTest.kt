@@ -28,6 +28,9 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         orderDetailRepository.stub {
             onBlocking { getOrderById(defaultOrderValue.id) }.doReturn(defaultOrderValue)
         }
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(defaultOrderValue))
+        }
 
         createSut()
 
@@ -70,8 +73,12 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
 
     @Test
     fun `when isEditable is true on the edit flow the order is editable`() {
+        val order = defaultOrderValue.copy(isEditable = true)
+        orderDetailRepository.stub {
+            onBlocking { getOrderById(defaultOrderValue.id) }.doReturn(order)
+        }
         createUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(defaultOrderValue.copy(isEditable = true)))
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(order))
         }
         createSut()
         var lastReceivedState: OrderCreateEditViewModel.ViewState? = null
@@ -83,8 +90,12 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
 
     @Test
     fun `when isEditable is false on the edit flow the order is NOT editable`() {
+        val order = defaultOrderValue.copy(isEditable = false)
+        orderDetailRepository.stub {
+            onBlocking { getOrderById(defaultOrderValue.id) }.doReturn(order)
+        }
         createUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(defaultOrderValue.copy(isEditable = false)))
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(order))
         }
         createSut()
         var lastReceivedState: OrderCreateEditViewModel.ViewState? = null
