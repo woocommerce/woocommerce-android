@@ -187,16 +187,13 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         doReturn(nonRefundedOrder).whenever(orderDetailRepository).getOrderById(any())
 
-        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
 
-        doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
         doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
 
         doReturn(emptyList<Refund>()).whenever(orderDetailRepository).getOrderRefunds(any())
 
         doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
-        doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any())
         doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
         var orderData: ViewState? = null
