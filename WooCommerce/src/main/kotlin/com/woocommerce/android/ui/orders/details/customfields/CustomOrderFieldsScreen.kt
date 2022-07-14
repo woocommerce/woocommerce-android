@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.details.customfields
 
+import android.webkit.URLUtil
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,10 +20,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight.Companion.W700
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.text.HtmlCompat
 import com.woocommerce.android.R
+import com.woocommerce.android.compose.utils.toAnnotatedString
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
+import com.woocommerce.android.util.HtmlHelper
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.persistence.entity.OrderMetaDataEntity
 
@@ -80,15 +86,62 @@ private fun CustomFieldListItem(metadata: OrderMetaDataEntity) {
                     )
                 }
                 SelectionContainer {
-                    Text(
-                        text = metadata.value,
-                        style = MaterialTheme.typography.body2,
-                        color = MaterialTheme.colors.onSurface
-                    )
+                    if (HtmlHelper.isHtml(metadata.value)) {
+                        htmlTextValueItem(metadata.value)
+                    } else if (URLUtil.isValidUrl(metadata.value)) {
+                        urlTextValueItem(metadata.value)
+                    } else {
+                        textValueItem(metadata.value)
+                    }
                 }
             }
         }
     }
+}
+
+@Composable
+private fun textValueItem(value: String) {
+    Text(
+        text = HtmlCompat.fromHtml(
+            value,
+            HtmlCompat.FROM_HTML_MODE_LEGACY
+        ).toAnnotatedString(),
+        style = MaterialTheme.typography.body2,
+        color = MaterialTheme.colors.onSurface
+    )
+}
+
+@Composable
+private fun htmlTextValueItem(value: String) {
+    Text(
+        text = HtmlCompat.fromHtml(
+            value,
+            HtmlCompat.FROM_HTML_MODE_LEGACY
+        ).toAnnotatedString(),
+        style = MaterialTheme.typography.body2,
+        color = MaterialTheme.colors.onSurface
+    )
+}
+
+@Composable
+private fun urlTextValueItem(value: String) {
+    val text = with(AnnotatedString.Builder()) {
+        append(value)
+        addStringAnnotation(
+            tag = value,
+            annotation = value,
+            start = 0,
+            end = value.length - 1
+        )
+        toAnnotatedString()
+    }
+
+    Text(
+        text = text,
+        style = MaterialTheme.typography.body2,
+        color = MaterialTheme.colors.onSurface,
+        textDecoration = TextDecoration.Underline
+    )
 }
 
 @Preview
@@ -100,15 +153,22 @@ private fun CustomFieldsPreview() {
                 id = 0,
                 localSiteId = LocalOrRemoteId.LocalId(0),
                 orderId = 0,
-                key = "key_zero",
-                value = "value_zero"
+                key = "text key",
+                value = "text value"
             ),
             OrderMetaDataEntity(
                 id = 1,
                 localSiteId = LocalOrRemoteId.LocalId(0),
                 orderId = 0,
-                key = "key_one",
-                value = "value_one"
+                key = "html key",
+                value = "<strong>This</strong> is an <em>html</em> value"
+            ),
+            OrderMetaDataEntity(
+                id = 2,
+                localSiteId = LocalOrRemoteId.LocalId(0),
+                orderId = 0,
+                key = "url key",
+                value = "https://automattic.com/"
             )
         )
     )
