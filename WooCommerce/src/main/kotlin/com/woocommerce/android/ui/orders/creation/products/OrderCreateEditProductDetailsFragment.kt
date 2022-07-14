@@ -6,19 +6,19 @@ import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
-import com.woocommerce.android.databinding.FragmentOrderCreationProductDetailsBinding
+import com.woocommerce.android.databinding.FragmentOrderCreateEditProductDetailsBinding
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class OrderCreationProductDetailsFragment : BaseFragment(R.layout.fragment_order_creation_product_details) {
-    private val sharedViewModel: OrderCreationViewModel by hiltNavGraphViewModels(R.id.nav_graph_order_creations)
-    private val navArgs: OrderCreationProductDetailsFragmentArgs by navArgs()
+class OrderCreateEditProductDetailsFragment : BaseFragment(R.layout.fragment_order_create_edit_product_details) {
+    private val sharedViewModel: OrderCreateEditViewModel by hiltNavGraphViewModels(R.id.nav_graph_order_creations)
+    private val navArgs: OrderCreateEditProductDetailsFragmentArgs by navArgs()
 
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
@@ -31,7 +31,7 @@ class OrderCreationProductDetailsFragment : BaseFragment(R.layout.fragment_order
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val binding = FragmentOrderCreationProductDetailsBinding.bind(view)
+        val binding = FragmentOrderCreateEditProductDetailsBinding.bind(view)
         val item = navArgs.item
         val uiModel = sharedViewModel.getProductUIModelFromItem(item)
 

@@ -194,9 +194,9 @@ class ProductSelectionListViewModel @Inject constructor(
                 )
             } else {
                 productRepository.searchProductList(
-                    searchQuery,
-                    loadMore,
-                    excludedProductIds
+                    searchQuery = searchQuery,
+                    loadMore = loadMore,
+                    excludedProductIds = excludedProductIds
                 )?.let { fetchedProducts ->
                     // make sure the search query hasn't changed while the fetch was processing
                     if (searchQuery == productRepository.lastSearchQuery) {
