@@ -57,4 +57,5 @@ sealed class OrderNavigationTarget : Event() {
     data class ViewOrderedAddons(val remoteOrderID: Long, val orderItemID: Long, val addonsProductID: Long) :
         OrderNavigationTarget()
     data class EditOrder(val orderId: Long) : OrderNavigationTarget()
+    object ViewCustomFields : OrderNavigationTarget()
 }
