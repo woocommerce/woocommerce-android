@@ -180,7 +180,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given simple payment flow, when on cash payment clicked, then show dialog event emitted` () =
+    fun `given simple payment flow, when on cash payment clicked, then show dialog event emitted`() =
         testBlocking {
             // Given
             val orderId = 1L
@@ -194,7 +194,9 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             assertThat(events.last()).isInstanceOf(ShowDialog::class.java)
             assertThat((events.last() as ShowDialog).titleId).isEqualTo(R.string.simple_payments_cash_dlg_title)
             assertThat((events.last() as ShowDialog).messageId).isEqualTo(R.string.simple_payments_cash_dlg_message)
-            assertThat((events.last() as ShowDialog).positiveButtonId).isEqualTo(R.string.simple_payments_cash_dlg_button)
+            assertThat((events.last() as ShowDialog).positiveButtonId).isEqualTo(
+                R.string.simple_payments_cash_dlg_button
+            )
             assertThat((events.last() as ShowDialog).negativeButtonId).isEqualTo(R.string.cancel)
         }
 
