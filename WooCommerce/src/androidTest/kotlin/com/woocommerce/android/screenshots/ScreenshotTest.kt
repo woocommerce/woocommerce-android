@@ -52,8 +52,10 @@ class ScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
     fun setUp() {
         try {
             CleanStatusBar.enableWithDefaults()
-        } catch (e: TimeoutException) {
-            Log.w("ScreenshotTest", e)
+        } catch (e: RuntimeException) {
+            if (e.cause is TimeoutException) {
+                Log.w("ScreenshotTest", e)
+            } else throw e
         }
         rule.inject()
     }
