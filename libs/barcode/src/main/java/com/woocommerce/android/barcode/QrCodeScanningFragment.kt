@@ -39,7 +39,7 @@ import kotlinx.android.synthetic.main.top_action_bar_in_live_camera.flashButton
 import java.io.IOException
 
 /** Demonstrates the barcode scanning workflow using camera preview.  */
-class LiveBarcodeScanningFragment : Fragment(), OnClickListener {
+class QrCodeScanningFragment : Fragment(), OnClickListener {
     companion object {
         const val TAG = "code_scanner_fragment"
     }
@@ -58,7 +58,7 @@ class LiveBarcodeScanningFragment : Fragment(), OnClickListener {
         super.onViewCreated(view, savedInstanceState)
 
         graphicOverlay.apply {
-            setOnClickListener(this@LiveBarcodeScanningFragment)
+            setOnClickListener(this@QrCodeScanningFragment)
             cameraSource = CameraSource(this)
         }
         promptChipAnimator = (loadAnimator(context, R.animator.bottom_prompt_chip_enter) as AnimatorSet)
@@ -69,7 +69,7 @@ class LiveBarcodeScanningFragment : Fragment(), OnClickListener {
         closeButton.setOnClickListener(this)
 
         flashButton.apply {
-            setOnClickListener(this@LiveBarcodeScanningFragment)
+            setOnClickListener(this@QrCodeScanningFragment)
         }
         setUpWorkflowModel()
     }

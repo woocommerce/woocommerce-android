@@ -15,7 +15,7 @@ import com.woocommerce.android.AppUrls.LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_AC
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.barcode.LiveBarcodeScanningFragment
+import com.woocommerce.android.barcode.QrCodeScanningFragment
 import com.woocommerce.android.databinding.ActivityLoginBinding
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
@@ -726,8 +726,8 @@ class LoginActivity :
 
     override fun onQrCodeLoginClicked() {
         val fragment =
-            supportFragmentManager.findFragmentByTag(LiveBarcodeScanningFragment.TAG) as? LiveBarcodeScanningFragment
-                ?: LiveBarcodeScanningFragment()
+            supportFragmentManager.findFragmentByTag(QrCodeScanningFragment.TAG) as? QrCodeScanningFragment
+                ?: QrCodeScanningFragment()
         fragment.setOnBarCodeScanner { rawValue ->
 //        val intent = Intent(this, MagicLinkInterceptActivity::class.java)
 //            intent.action = Intent.ACTION_VIEW
@@ -739,6 +739,6 @@ class LoginActivity :
                 Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
         }
-        slideInFragment(fragment, true, LiveBarcodeScanningFragment.TAG)
+        slideInFragment(fragment, true, QrCodeScanningFragment.TAG)
     }
 }
