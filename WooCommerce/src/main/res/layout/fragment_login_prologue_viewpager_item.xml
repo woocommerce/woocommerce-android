@@ -16,12 +16,23 @@
         tools:src="@drawable/img_prologue_analytics" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/textView"
-        style="@style/Woo.TextView.Body1"
+        android:id="@+id/prologueTitle"
+        style="@style/Woo.TextView.Headline5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:gravity="center"
+        android:textStyle="bold"
         tools:layout_width="200dp"
+        tools:text="@string/login_prologue_label_analytics" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/prologueSubtitle"
+        style="@style/Woo.TextView.Subtitle2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:textStyle="bold"
         tools:text="@string/login_prologue_label_analytics" />
 </LinearLayout>
