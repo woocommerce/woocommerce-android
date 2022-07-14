@@ -67,7 +67,6 @@ class LoginPrologueCarouselFragment : Fragment(R.layout.fragment_login_prologue_
         }
     }
 
-
     override fun onDetach() {
         super.onDetach()
         prologueCarouselListener = null
