@@ -162,7 +162,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when on cash payment clicked, then show dialog event emitted`() = testBlocking {
+    fun `given order payment flow, when on cash payment clicked, then show dialog event emitted`() = testBlocking {
         // GIVEN
         val orderId = 1L
         val viewModel = initViewModel(Payment(orderId, ORDER))
@@ -174,10 +174,29 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         val events = viewModel.event.captureValues()
         assertThat(events.last()).isInstanceOf(ShowDialog::class.java)
         assertThat((events.last() as ShowDialog).titleId).isEqualTo(R.string.simple_payments_cash_dlg_title)
-        assertThat((events.last() as ShowDialog).messageId).isEqualTo(R.string.simple_payments_cash_dlg_message)
+        assertThat((events.last() as ShowDialog).messageId).isEqualTo(R.string.existing_order_cash_dlg_message)
         assertThat((events.last() as ShowDialog).positiveButtonId).isEqualTo(R.string.simple_payments_cash_dlg_button)
         assertThat((events.last() as ShowDialog).negativeButtonId).isEqualTo(R.string.cancel)
     }
+
+    @Test
+    fun `given simple payment flow, when on cash payment clicked, then show dialog event emitted` () =
+        testBlocking {
+            // Given
+            val orderId = 1L
+            val viewModel = initViewModel(Payment(orderId, SIMPLE))
+
+            // When
+            viewModel.onCashPaymentClicked()
+
+            // Then
+            val events = viewModel.event.captureValues()
+            assertThat(events.last()).isInstanceOf(ShowDialog::class.java)
+            assertThat((events.last() as ShowDialog).titleId).isEqualTo(R.string.simple_payments_cash_dlg_title)
+            assertThat((events.last() as ShowDialog).messageId).isEqualTo(R.string.simple_payments_cash_dlg_message)
+            assertThat((events.last() as ShowDialog).positiveButtonId).isEqualTo(R.string.simple_payments_cash_dlg_button)
+            assertThat((events.last() as ShowDialog).negativeButtonId).isEqualTo(R.string.cancel)
+        }
 
     @Test
     fun `given order payment flow, when on cash payment clicked, then collect tracked with order payment flow`() =
