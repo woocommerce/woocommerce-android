@@ -7,7 +7,6 @@ import androidx.fragment.app.Fragment
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.databinding.FragmentLoginPrologueBinding
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
@@ -47,6 +46,7 @@ class LoginPrologueFragment : Fragment(R.layout.fragment_login_prologue) {
         }
 
         binding.newToWooButton.setOnClickListener {
+            AnalyticsTracker.track(AnalyticsEvent.LOGIN_NEW_TO_WOO_BUTTON_TAPPED)
             prologueFinishedListener?.onNewToWooButtonClicked()
         }
 
