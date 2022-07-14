@@ -131,20 +131,10 @@ class OrderCreateEditRepository @Inject constructor(
 
         return when {
             result.isError -> {
-                trackOrderSyncFailed(result.error.type.name, result.error.message)
                 Result.failure(WooException(result.error))
             }
             else -> Result.success(orderMapper.toAppModel(result.model!!))
         }
-    }
-
-    private fun trackOrderSyncFailed(errorType: String?, errorDescription: String?) {
-        analyticsTrackerWrapper.track(
-            stat = AnalyticsEvent.ORDER_SYNC_FAILED,
-            errorContext = this@OrderCreateEditRepository.javaClass.simpleName,
-            errorType = errorType,
-            errorDescription = errorDescription
-        )
     }
 
     suspend fun deleteDraftOrder(order: Order) {

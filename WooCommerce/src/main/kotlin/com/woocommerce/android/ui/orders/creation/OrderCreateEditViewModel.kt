@@ -7,6 +7,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R.string
 import com.woocommerce.android.WooException
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_SUCCESS
@@ -357,8 +358,10 @@ class OrderCreateEditViewModel @Inject constructor(
                             viewState = viewState.copy(willUpdateOrderDraft = true, showOrderUpdateSnackbar = false)
                         OrderUpdateStatus.Ongoing ->
                             viewState = viewState.copy(willUpdateOrderDraft = false, isUpdatingOrderDraft = true)
-                        OrderUpdateStatus.Failed ->
+                        is OrderUpdateStatus.Failed -> {
+                            trackOrderSyncFailed(updateStatus.throwable)
                             viewState = viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = true)
+                        }
                         is OrderUpdateStatus.Succeeded -> {
                             viewState = viewState.copy(
                                 isUpdatingOrderDraft = false,
@@ -397,6 +400,16 @@ class OrderCreateEditViewModel @Inject constructor(
                 KEY_HAS_FEES to _orderDraft.value.feesLines.isNotEmpty(),
                 KEY_HAS_SHIPPING_METHOD to _orderDraft.value.shippingLines.isNotEmpty()
             )
+        )
+    }
+
+    private fun trackOrderSyncFailed(throwable: Throwable) {
+        AnalyticsTracker.track(
+            stat = AnalyticsEvent.ORDER_SYNC_FAILED,
+            mapOf(KEY_FLOW to flow),
+            errorContext = this::class.java.simpleName,
+            errorType = (throwable as? WooException)?.error?.type?.name,
+            errorDescription = (throwable as? WooException)?.error?.message
         )
     }
 
