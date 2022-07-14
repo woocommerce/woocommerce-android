@@ -223,6 +223,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val ORDER_EDIT_SHIPPING_ADDRESS = "shipping_address"
         const val ORDER_EDIT_BILLING_ADDRESS = "billing_address"
 
+        enum class OrderNoteType(val value: String) {
+            CUSTOMER("customer"),
+            PRIVATE("private"),
+            SYSTEM("system")
+        }
+
         const val KEY_FEEDBACK_ACTION = "action"
         const val KEY_FEEDBACK_CONTEXT = "context"
         const val VALUE_FEEDBACK_GENERAL_CONTEXT = "general"

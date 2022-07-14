@@ -83,6 +83,7 @@ class AddOrderNoteViewModel @Inject constructor(
                 triggerEvent(ShowSnackbar(R.string.add_order_note_error))
                 return@launch
             }
+            // Fix: add type of the note. Look at documentation for more details
             AnalyticsTracker.track(AnalyticsEvent.ORDER_NOTE_ADD, mapOf(AnalyticsTracker.KEY_PARENT_ID to order.id))
 
             addOrderNoteViewState = addOrderNoteViewState.copy(isProgressDialogShown = true)
