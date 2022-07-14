@@ -199,6 +199,7 @@
     <string name="login_prologue_label_orders">Manage your store orders on the go</string>
     <string name="login_prologue_label_products">Edit and add new products from anywhere</string>
     <string name="login_prologue_label_reviews">Monitor and approve your product reviews</string>
+    <string name="login_prologue_new_to_woo">New to WooCommerce</string>
 
     <string name="login_pick_store">Select store to connect</string>
     <string name="login_connected_store">Connected store</string>

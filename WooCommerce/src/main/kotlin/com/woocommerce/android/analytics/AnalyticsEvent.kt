@@ -98,6 +98,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     UNIFIED_LOGIN_STEP(siteless = true),
     UNIFIED_LOGIN_FAILURE(siteless = true),
     UNIFIED_LOGIN_INTERACTION(siteless = true),
+    LOGIN_NEW_TO_WOO_BUTTON_TAPPED(siteless = true),
 
     // -- Site Picker
     SITE_PICKER_STORES_SHOWN(siteless = true),

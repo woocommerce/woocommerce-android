@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentLoginPrologueBinding
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
@@ -25,6 +26,7 @@ class LoginPrologueFragment : Fragment(R.layout.fragment_login_prologue) {
     interface PrologueFinishedListener {
         fun onPrimaryButtonClicked()
         fun onSecondaryButtonClicked()
+        fun onNewToWooButtonClicked()
     }
 
     @Inject lateinit var unifiedLoginTracker: UnifiedLoginTracker
@@ -41,6 +43,11 @@ class LoginPrologueFragment : Fragment(R.layout.fragment_login_prologue) {
         binding.buttonLoginWpcom.setOnClickListener {
             // Login with WordPress.com account
             prologueFinishedListener?.onSecondaryButtonClicked()
+        }
+
+        binding.newToWooButton.setOnClickListener {
+            AnalyticsTracker.track(AnalyticsEvent.LOGIN_NEW_TO_WOO_BUTTON_TAPPED)
+            prologueFinishedListener?.onNewToWooButtonClicked()
         }
 
         binding.viewPager.adapter = LoginPrologueAdapter(this)
