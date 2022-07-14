@@ -100,7 +100,7 @@
                 "fee_lines": [],
                 "coupon_lines": [],
                 "refunds": [],
-                "date_created_gmt": "{{#assign 'currentYear'}}{{now format='yyyy'}}{{/assign}}{{currentYear}}-10-31T13:13:57",
+                "date_created_gmt": "{{#assign 'currentYear'}}{{fnow format='yyyy'}}{{/assign}}{{currentYear}}-10-31T13:13:57",
                 "date_modified_gmt": "{{currentYear}}-10-31T13:13:57",
                 "date_paid_gmt": null
             }, {
@@ -1170,7 +1170,7 @@
                 "fee_lines": [],
                 "coupon_lines": [],
                 "refunds": [],
-                "date_created_gmt": "{{#assign 'currentYear'}}{{now format='yyyy'}}{{/assign}}{{currentYear}}-01-31T11:26:08",
+                "date_created_gmt": "{{#assign 'currentYear'}}{{fnow format='yyyy'}}{{/assign}}{{currentYear}}-01-31T11:26:08",
                 "date_modified_gmt": "{{currentYear}}-02-03T15:34:32",
                 "date_paid_gmt": "{{currentYear}}-01-28T11:26:54"
             }, {
