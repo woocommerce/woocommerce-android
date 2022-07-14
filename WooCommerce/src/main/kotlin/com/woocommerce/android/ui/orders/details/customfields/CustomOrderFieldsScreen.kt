@@ -27,8 +27,6 @@ import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.persistence.entity.OrderMetaDataEntity
 
-private const val VALUE_MAX_LINES = 5
-
 @Composable
 fun CustomOrderFieldsScreen(viewModel: OrderDetailViewModel) {
     CustomFieldsScreen(
@@ -87,7 +85,6 @@ private fun CustomFieldListItem(metadata: OrderMetaDataEntity) {
                         text = metadata.value,
                         style = MaterialTheme.typography.body2,
                         color = MaterialTheme.colors.onSurface,
-                        maxLines = VALUE_MAX_LINES,
                         overflow = TextOverflow.Ellipsis
                     )
                 }
