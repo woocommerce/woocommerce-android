@@ -29,6 +29,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.compose.utils.toAnnotatedString
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
 import com.woocommerce.android.util.HtmlHelper
+import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.persistence.entity.OrderMetaDataEntity
 
@@ -89,6 +90,8 @@ private fun CustomFieldListItem(metadata: OrderMetaDataEntity) {
                     if (HtmlHelper.isHtml(metadata.value)) {
                         htmlTextValueItem(metadata.value)
                     } else if (URLUtil.isValidUrl(metadata.value)) {
+                        urlTextValueItem(metadata.value)
+                    } else if (StringUtils.isValidEmail(metadata.value)) {
                         urlTextValueItem(metadata.value)
                     } else {
                         textValueItem(metadata.value)
@@ -169,6 +172,13 @@ private fun CustomFieldsPreview() {
                 orderId = 0,
                 key = "url key",
                 value = "https://automattic.com/"
+            ),
+            OrderMetaDataEntity(
+                id = 3,
+                localSiteId = LocalOrRemoteId.LocalId(0),
+                orderId = 0,
+                key = "email key",
+                value = "example@example.com"
             )
         )
     )
