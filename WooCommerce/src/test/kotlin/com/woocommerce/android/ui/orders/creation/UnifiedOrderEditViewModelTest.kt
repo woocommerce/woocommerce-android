@@ -2,12 +2,14 @@ package com.woocommerce.android.ui.orders.creation
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
+import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Failed
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductStockStatus
@@ -23,6 +25,9 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
+import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
@@ -169,6 +174,28 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 AnalyticsTracker.KEY_TO to Order.Status.Cancelled.value,
                 AnalyticsTracker.KEY_FLOW to tracksFlow
             )
+        )
+    }
+
+    @Test
+    fun `when fail customer address edited, send tracks event`() {
+        val wooError = WooError(
+            type = WooErrorType.GENERIC_ERROR,
+            original = BaseRequest.GenericErrorType.TIMEOUT,
+            message = "fail"
+        )
+        val throwable = WooException(error = wooError)
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Failed(throwable))
+        }
+        createSut()
+
+        verify(tracker).track(
+            stat = AnalyticsEvent.ORDER_SYNC_FAILED,
+            properties = mapOf(AnalyticsTracker.KEY_FLOW to tracksFlow),
+            errorContext = sut::class.java.simpleName,
+            errorType = wooError.type.name,
+            errorDescription = wooError.message
         )
     }
 
