@@ -6,8 +6,6 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_ORDER_PAYMENTS_COLLECT_CASH
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_ORDER_PAYMENTS_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_COLLECT_CARD
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_COLLECT_CASH
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_COLLECT_LINK
@@ -93,51 +91,24 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     fun onCashPaymentClicked() {
-        when (cardReaderPaymentFlowParam.paymentType) {
-
-            SIMPLE -> {
-                analyticsTrackerWrapper.track(
-                    AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
-                    mapOf(
-                        AnalyticsTracker.KEY_PAYMENT_METHOD to VALUE_SIMPLE_PAYMENTS_COLLECT_CASH,
-                        cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
-                    )
-                )
-
-                triggerEvent(
-                    MultiLiveEvent.Event.ShowDialog(
-                        titleId = R.string.simple_payments_cash_dlg_title,
-                        messageId = R.string.simple_payments_cash_dlg_message,
-                        positiveButtonId = R.string.simple_payments_cash_dlg_button,
-                        positiveBtnAction = { _, _ ->
-                            onCashPaymentConfirmed()
-                        },
-                        negativeButtonId = R.string.cancel
-                    )
-                )
-            }
-            ORDER -> {
-                analyticsTrackerWrapper.track(
-                    AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
-                    mapOf(
-                        AnalyticsTracker.KEY_PAYMENT_METHOD to VALUE_ORDER_PAYMENTS_COLLECT_CASH,
-                        cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
-                    )
-                )
-
-                triggerEvent(
-                    MultiLiveEvent.Event.ShowDialog(
-                        titleId = R.string.simple_payments_cash_dlg_title,
-                        messageId = R.string.existing_order_cash_dlg_message,
-                        positiveButtonId = R.string.simple_payments_cash_dlg_button,
-                        positiveBtnAction = { _, _ ->
-                            onCashPaymentConfirmed()
-                        },
-                        negativeButtonId = R.string.cancel
-                    )
-                )
-            }
-        }
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
+            mapOf(
+                AnalyticsTracker.KEY_PAYMENT_METHOD to VALUE_SIMPLE_PAYMENTS_COLLECT_CASH,
+                cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
+            )
+        )
+        triggerEvent(
+            MultiLiveEvent.Event.ShowDialog(
+                titleId = R.string.simple_payments_cash_dlg_title,
+                messageId = R.string.simple_payments_cash_dlg_message,
+                positiveButtonId = R.string.simple_payments_cash_dlg_button,
+                positiveBtnAction = { _, _ ->
+                    onCashPaymentConfirmed()
+                },
+                negativeButtonId = R.string.cancel
+            )
+        )
     }
 
     /**
