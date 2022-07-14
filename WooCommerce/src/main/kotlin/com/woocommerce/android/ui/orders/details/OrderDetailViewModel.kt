@@ -23,7 +23,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent.SHIPPING_LABEL_ORDER_IS_
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
@@ -79,7 +78,6 @@ import org.wordpress.android.fluxc.persistence.entity.OrderMetaDataEntity
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.OptimisticUpdateResult
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUpdateResult
-import org.wordpress.android.fluxc.utils.sumBy
 import javax.inject.Inject
 
 @HiltViewModel
@@ -145,17 +143,11 @@ final class OrderDetailViewModel @Inject constructor(
 
     fun start() {
         launch {
-            val orderInDb = orderDetailRepository.getOrderById(navArgs.orderId)
-            val needToFetch = orderInDb == null || checkIfFetchNeeded(orderInDb)
-            if (needToFetch) {
-                fetchOrder(true)
-            } else {
-                orderInDb?.let {
-                    order = orderInDb
-                    displayOrderDetails()
-                    fetchAndDisplayOrderDetails()
-                }
-            }
+            orderDetailRepository.getOrderById(navArgs.orderId)?.let {
+                order = it
+                displayOrderDetails()
+                fetchOrder(showSkeleton = false)
+            } ?: fetchOrder(showSkeleton = true)
         }
     }
 
@@ -198,12 +190,6 @@ final class OrderDetailViewModel @Inject constructor(
                 isRefreshing = false
             )
         }
-    }
-
-    // if local order data and refunds are out of sync, it needs to be fetched
-    private fun checkIfFetchNeeded(order: Order?): Boolean {
-        val refunds = orderDetailRepository.getOrderRefunds(navArgs.orderId)
-        return order?.refundTotal.isNotEqualTo(refunds.sumBy { it.amount })
     }
 
     private fun checkOrderMetaData() {
