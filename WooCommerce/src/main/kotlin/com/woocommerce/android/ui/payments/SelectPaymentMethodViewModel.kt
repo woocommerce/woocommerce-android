@@ -93,7 +93,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
 
     fun onCashPaymentClicked() {
         when (cardReaderPaymentFlowParam.paymentType) {
-
             SIMPLE -> {
                 analyticsTrackerWrapper.track(
                     AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
