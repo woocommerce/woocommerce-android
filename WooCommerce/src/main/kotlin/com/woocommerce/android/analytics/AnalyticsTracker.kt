@@ -223,6 +223,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val ORDER_EDIT_SHIPPING_ADDRESS = "shipping_address"
         const val ORDER_EDIT_BILLING_ADDRESS = "billing_address"
 
+        const val KEY_HAS_MULTIPLE_SHIPPING_LINES = "has_multiple_shipping_lines"
+        const val KEY_HAS_MULTIPLE_FEE_LINES = "has_multiple_fee_lines"
+
         enum class OrderNoteType(val value: String) {
             CUSTOMER("customer"),
             PRIVATE("private"),
