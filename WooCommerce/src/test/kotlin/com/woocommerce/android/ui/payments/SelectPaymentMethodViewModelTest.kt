@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.payments
 
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -12,6 +13,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderHubFlow
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderRefundFlow
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.OpenPurchaseCardReaderLink
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Loading
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Success
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
@@ -27,6 +29,7 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
@@ -81,6 +84,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
+    private val store: WooCommerceStore = mock()
 
     @Test
     fun `given hub flow, when view model init, then navigate to hub flow emitted`() = testBlocking {
@@ -549,6 +553,57 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
 
     //region Card Reader Upsell
     @Test
+    fun `given upsell banner, when purchase reader clicked, then trigger proper event`() {
+        runTest {
+            // GIVEN
+            whenever(store.getStoreCountryCode(any())).thenReturn("US")
+            val viewModel = initViewModel(Payment(1L, ORDER))
+
+            // WHEN
+            viewModel.onCtaClicked()
+
+            // Then
+            assertThat(
+                viewModel.event.value
+            ).isInstanceOf(OpenPurchaseCardReaderLink::class.java)
+        }
+    }
+
+    @Test
+    fun `given upsell banner and store in the US, when purchase reader clicked, then verify url is proper`() {
+        runTest {
+            // GIVEN
+            whenever(store.getStoreCountryCode(any())).thenReturn("US")
+            val viewModel = initViewModel(Payment(1L, ORDER))
+
+            // WHEN
+            viewModel.onCtaClicked()
+
+            // Then
+            assertThat(
+                viewModel.event.value
+            ).isEqualTo(OpenPurchaseCardReaderLink("${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"))
+        }
+    }
+
+    @Test
+    fun `given upsell banner and store in the Canada, when purchase reader clicked, then verify url is proper`() {
+        runTest {
+            // GIVEN
+            whenever(store.getStoreCountryCode(any())).thenReturn("CA")
+            val viewModel = initViewModel(Payment(1L, ORDER))
+
+            // WHEN
+            viewModel.onCtaClicked()
+
+            // Then
+            assertThat(
+                viewModel.event.value
+            ).isEqualTo(OpenPurchaseCardReaderLink("${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}CA"))
+        }
+    }
+
+    @Test
     fun `given upsell banner, when banner is dismissed, then trigger DismissCardReaderUpsellBanner event`() {
         // GIVEN
         val viewModel = initViewModel(Payment(1L, ORDER))
@@ -798,7 +853,8 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             orderMapper,
             analyticsTrackerWrapper,
             cardPaymentCollectibilityChecker,
-            appPrefsWrapper
+            appPrefsWrapper,
+            store,
         )
     }
 }
