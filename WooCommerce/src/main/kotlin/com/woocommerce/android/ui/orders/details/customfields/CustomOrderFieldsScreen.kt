@@ -33,10 +33,7 @@ import org.wordpress.android.fluxc.persistence.entity.OrderMetaDataEntity
 private var clickListener: CustomOrderFieldClickListener? = null
 
 @Composable
-fun CustomOrderFieldsScreen(
-    viewModel: OrderDetailViewModel,
-    listener: CustomOrderFieldClickListener ?= null
-) {
+fun CustomOrderFieldsScreen(viewModel: OrderDetailViewModel, listener: CustomOrderFieldClickListener? = null) {
     clickListener = listener
     CustomFieldsScreen(
         viewModel.getOrderMetadata()

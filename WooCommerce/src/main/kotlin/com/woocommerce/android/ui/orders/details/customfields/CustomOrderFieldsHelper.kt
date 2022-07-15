@@ -44,6 +44,11 @@ object CustomOrderFieldsHelper {
         }
     }
 
+    private fun showUrl(context: Context, url: String) {
+        ChromeCustomTabUtils.launchUrl(context, url)
+    }
+
+    @Suppress("SwallowedException")
     private fun sendEmail(context: Context, emailAddr: String) {
         val intent = Intent(Intent.ACTION_SENDTO)
         intent.data = Uri.parse("mailto:$emailAddr")
@@ -54,10 +59,7 @@ object CustomOrderFieldsHelper {
         }
     }
 
-    private fun showUrl(context: Context, url: String) {
-        ChromeCustomTabUtils.launchUrl(context, url)
-    }
-
+    @Suppress("SwallowedException")
     private fun dialPhone(context: Context, phone: String) {
         val intent = Intent(Intent.ACTION_DIAL)
         intent.data = Uri.parse("tel:$phone")
@@ -68,4 +70,3 @@ object CustomOrderFieldsHelper {
         }
     }
 }
-
