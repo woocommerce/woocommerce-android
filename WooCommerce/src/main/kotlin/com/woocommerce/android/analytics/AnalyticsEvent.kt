@@ -185,6 +185,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     ORDER_DETAIL_EDIT_FLOW_COMPLETED,
     ORDER_DETAIL_EDIT_FLOW_FAILED,
     ORDER_DETAIL_EDIT_FLOW_CANCELED,
+    ORDER_EDIT_BUTTON_TAPPED,
 
     // -- Order Creation
     ORDER_ADD_NEW,
