@@ -231,6 +231,9 @@
                 app:argType="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam"
                 app:nullable="false" />
         </action>
+        <action
+            android:id="@+id/action_orderDetailFragment_to_customOrderFieldsFragment"
+            app:destination="@id/customOrderFieldsFragment" />
 
         <action
             android:id="@+id/action_orderDetailFragment_to_orderCreationFragment"
@@ -529,6 +532,9 @@
         android:name="com.woocommerce.android.ui.orders.details.editing.address.BillingAddressEditingFragment"
         android:label="BillingAddressEditingFragment"
         tools:layout="@layout/fragment_base_edit_address" />
+    <fragment
+        android:id="@+id/customOrderFieldsFragment"
+        android:name="com.woocommerce.android.ui.orders.details.customfields.CustomOrderFieldsFragment" />
     <action
         android:id="@+id/action_global_item_selector_dialog"
         app:destination="@id/itemSelectorDialog" />

@@ -331,6 +331,7 @@
     <string name="simple_payments_choose_method">Choose your payment method</string>
     <string name="simple_payments_cash_dlg_title">Mark as paid?</string>
     <string name="simple_payments_cash_dlg_message">This will create your order and mark it as paid if you received payment outside of WooCommerce</string>
+    <string name="existing_order_cash_dlg_message">This will mark this order as paid if you received payment outside of WooCommerce</string>
     <string name="simple_payments_cash_dlg_button">Mark as paid</string>
     <string name="simple_payments_share_payment_link">Share payment link</string>
     <string name="simple_payments_share_payment_dialog_title">Checkout - %s</string>
@@ -503,6 +504,8 @@
     <string name="orderdetail_shipping_label_m3_wip_message">You can now create shipping labels for all physical orders directly from your device with the free WooCommerce Shipping plugin. Tap on "Create shipping label" to try our beta feature!</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Create shipping label</string>
     <string name="orderdetail_shipping_label_notice">Learn more about creating labels with your mobile device</string>
+    <string name="orderdetail_custom_fields">Custom fields</string>
+    <string name="orderdetail_view_custom_fields">View custom fields</string>
     <string name="receipt_preview_print_menu_item">Print</string>
     <string name="receipt_preview_send_menu_item">Send</string>
     <string name="order_mark_complete">Mark order complete</string>
