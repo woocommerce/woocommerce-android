@@ -757,7 +757,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
 
         viewModel.onDismissClicked()
 
-        assertThat(viewModel.shouldUpsellCardReaderDismissDialogShow.value).isTrue
+        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isTrue
     }
 
     @Test
@@ -766,7 +766,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
 
         viewModel.onRemindLaterClicked(0L)
 
-        assertThat(viewModel.shouldUpsellCardReaderDismissDialogShow.value).isFalse
+        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
     }
 
     @Test
@@ -775,14 +775,14 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
 
         viewModel.onDontShowAgainClicked()
 
-        assertThat(viewModel.shouldUpsellCardReaderDismissDialogShow.value).isFalse
+        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
     }
 
     @Test
     fun `given view model init, then update dialogShow state to false`() {
         val viewModel = initViewModel(Payment(1L, ORDER))
 
-        assertThat(viewModel.shouldUpsellCardReaderDismissDialogShow.value).isFalse
+        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
     }
     //endregion
 

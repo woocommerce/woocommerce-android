@@ -21,7 +21,7 @@ import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel
 
 @Composable
 fun BannerDismissDialog(viewModel: SelectPaymentMethodViewModel) {
-    val showDialog by viewModel.shouldUpsellCardReaderDismissDialogShow.observeAsState(true)
+    val showDialog by viewModel.shouldShowUpsellCardReaderDismissDialog.observeAsState(true)
     BannerDismissDialog(
         onRemindLaterClick = viewModel::onRemindLaterClicked,
         onDontShowAgainClick = viewModel::onDontShowAgainClicked,

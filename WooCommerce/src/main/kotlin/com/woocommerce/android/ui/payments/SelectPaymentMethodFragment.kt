@@ -60,7 +60,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
         _binding = FragmentTakePaymentBinding.inflate(inflater, container, false)
 
         val view = binding.root
-        if (viewModel.shouldUpsellCardReaderDismissDialogShow.value == true) {
+        if (viewModel.shouldShowUpsellCardReaderDismissDialog.value == true) {
             applyBannerDismissDialogComposeUI()
         } else {
             applyBannerComposeUI()

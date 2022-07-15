@@ -54,7 +54,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
 ) : ScopedViewModel(savedState) {
     private val navArgs: SelectPaymentMethodFragmentArgs by savedState.navArgs()
-    val shouldUpsellCardReaderDismissDialogShow: MutableLiveData<Boolean> = MutableLiveData(false)
+    val shouldShowUpsellCardReaderDismissDialog: MutableLiveData<Boolean> = MutableLiveData(false)
 
     private val viewState = MutableLiveData<TakePaymentViewState>(Loading)
     val viewStateData: LiveData<TakePaymentViewState> = viewState
@@ -265,18 +265,18 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     fun onDismissClicked() {
-        shouldUpsellCardReaderDismissDialogShow.value = true
+        shouldShowUpsellCardReaderDismissDialog.value = true
         triggerEvent(DismissCardReaderUpsellBanner)
     }
 
     fun onRemindLaterClicked(currentTimeInMillis: Long) {
-        shouldUpsellCardReaderDismissDialogShow.value = false
+        shouldShowUpsellCardReaderDismissDialog.value = false
         storeRemindLaterTimeStamp(currentTimeInMillis)
         triggerEvent(DismissCardReaderUpsellBannerViaRemindMeLater)
     }
 
     fun onDontShowAgainClicked() {
-        shouldUpsellCardReaderDismissDialogShow.value = false
+        shouldShowUpsellCardReaderDismissDialog.value = false
         storeDismissBannerForever()
         triggerEvent(DismissCardReaderUpsellBannerViaDontShowAgain)
     }
