@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -18,6 +19,7 @@ import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBanner
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBannerViaDontShowAgain
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBannerViaRemindMeLater
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.OpenPurchaseCardReaderLink
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.observeForTesting
@@ -31,6 +33,7 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SEARCH_RESULTS
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
@@ -50,6 +53,7 @@ import org.wordpress.android.fluxc.model.list.PagedListWrapper
 import org.wordpress.android.fluxc.store.ListStore
 import org.wordpress.android.fluxc.store.WCOrderFetcher
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
@@ -75,6 +79,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters = mock()
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
+    private val store: WooCommerceStore = mock()
 
     @Before
     fun setup() = testBlocking {
@@ -107,7 +112,8 @@ class OrderListViewModelTest : BaseUnitTest() {
             resourceProvider = resourceProvider,
             appPrefsWrapper = appPrefsWrapper,
             getWCOrderListDescriptorWithFilters = getWCOrderListDescriptorWithFilters,
-            getSelectedOrderFiltersCount = getSelectedOrderFiltersCount
+            getSelectedOrderFiltersCount = getSelectedOrderFiltersCount,
+            store = store,
         )
     }
 
@@ -428,6 +434,48 @@ class OrderListViewModelTest : BaseUnitTest() {
     }
 
     //region Card Reader Upsell
+    @Test
+    fun `given upsell banner, when purchase reader clicked, then trigger proper event`() {
+        runTest {
+            // WHEN
+            whenever(store.getStoreCountryCode(any())).thenReturn("US")
+            viewModel.onCtaClicked()
+
+            // Then
+            Assertions.assertThat(
+                viewModel.event.value
+            ).isInstanceOf(OpenPurchaseCardReaderLink::class.java)
+        }
+    }
+
+    @Test
+    fun `given upsell banner and store in the US, when purchase reader clicked, then verify url is proper`() {
+        runTest {
+            // WHEN
+            whenever(store.getStoreCountryCode(any())).thenReturn("US")
+            viewModel.onCtaClicked()
+
+            // Then
+            Assertions.assertThat(
+                viewModel.event.value
+            ).isEqualTo(OpenPurchaseCardReaderLink("${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"))
+        }
+    }
+
+    @Test
+    fun `given upsell banner and store in the Canada, when purchase reader clicked, then verify url is proper`() {
+        runTest {
+            // WHEN
+            whenever(store.getStoreCountryCode(any())).thenReturn("CA")
+            viewModel.onCtaClicked()
+
+            // Then
+            Assertions.assertThat(
+                viewModel.event.value
+            ).isEqualTo(OpenPurchaseCardReaderLink("${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}CA"))
+        }
+    }
+
     @Test
     fun `given upsell banner, when banner is dismissed, then trigger DismissCardReaderUpsellBanner event`() {
         // WHEN

@@ -14,6 +14,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.paging.PagedList
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -39,6 +40,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -53,6 +55,7 @@ import org.wordpress.android.fluxc.store.WCOrderFetcher
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderSummariesFetched
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -75,6 +78,7 @@ class OrderListViewModel @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters,
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount,
+    private val store: WooCommerceStore,
 ) : ScopedViewModel(savedState), LifecycleOwner {
     protected val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
@@ -424,8 +428,25 @@ class OrderListViewModel @Inject constructor(
         } ?: false
     }
 
+    private suspend fun getStoreCountryCode(): String? {
+        return withContext(dispatchers.io) {
+            store.getStoreCountryCode(selectedSite.get()) ?: null.also {
+                WooLog.e(WooLog.T.CARD_READER, "Store's country code not found.")
+            }
+        }
+    }
+
     fun onCtaClicked() {
-        // TODO
+        launch {
+            val countryCode = getStoreCountryCode()
+            withContext(dispatchers.main) {
+                triggerEvent(
+                    OrderListEvent.OpenPurchaseCardReaderLink(
+                        "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}$countryCode"
+                    )
+                )
+            }
+        }
     }
 
     fun onDismissClicked() {
@@ -506,6 +527,7 @@ class OrderListViewModel @Inject constructor(
         object DismissCardReaderUpsellBanner : OrderListEvent()
         object DismissCardReaderUpsellBannerViaRemindMeLater : OrderListEvent()
         object DismissCardReaderUpsellBannerViaDontShowAgain : OrderListEvent()
+        data class OpenPurchaseCardReaderLink(val url: String) : OrderListEvent()
     }
 
     @Parcelize
