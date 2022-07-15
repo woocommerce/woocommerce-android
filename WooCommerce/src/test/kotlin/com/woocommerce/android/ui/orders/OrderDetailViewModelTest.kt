@@ -1130,6 +1130,30 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when order status complete, then hide mark order complete button`() =
+        testBlocking {
+            // Given
+            val orderStatusStub = Order.Status.fromDataModel(CoreOrderStatus.COMPLETED)
+            val orderStub = order.copy(datePaid = Date(), status = orderStatusStub!!)
+
+            doReturn(orderStub).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(orderStub).whenever(orderDetailRepository).fetchOrderById(any())
+            doReturn(orderStatus.copy(statusKey = CoreOrderStatus.COMPLETED.value)).whenever(
+                orderDetailRepository
+            ).getOrderStatus(any())
+            var isMarkOrderCompleteButtonVisible: Boolean? = null
+            viewModel.viewStateData.observeForever { _, new ->
+                isMarkOrderCompleteButtonVisible = new.isMarkOrderCompleteButtonVisible
+            }
+
+            // When
+            viewModel.start()
+
+            // Then
+            assertThat(isMarkOrderCompleteButtonVisible).isFalse()
+        }
+
+    @Test
     fun `when user presses collect payment button, then start card reader payment flow`() =
         testBlocking {
             // Given
