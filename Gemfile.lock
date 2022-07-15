@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/wordpress-mobile/release-toolkit
-  revision: 913578aee11acfb9b51d7aa65843089be2d9792a
+  revision: 75a8d41cc6be0ff4376062c16e731b5b42c49ce9
   branch: add/firebase-tests
   specs:
     fastlane-plugin-wpmreleasetoolkit (4.2.0)
