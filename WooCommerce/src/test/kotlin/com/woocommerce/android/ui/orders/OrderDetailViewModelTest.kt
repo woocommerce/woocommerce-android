@@ -1418,4 +1418,27 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             // Then
             verify(analyticsTraWrapper).track(AnalyticsEvent.PRODUCT_ADDONS_ORDER_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED)
         }
+
+    @Test
+    fun `when user taps order edit button, then event tracked`() =
+        testBlocking {
+            // Given
+            doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
+            doReturn(false).whenever(orderDetailRepository).fetchOrderNotes(any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+            viewModel.start()
+
+            // When
+            viewModel.onEditClicked()
+
+            // Then
+            verify(analyticsTraWrapper).track(
+                AnalyticsEvent.ORDER_EDIT_BUTTON_TAPPED,
+                mapOf(
+                    AnalyticsTracker.KEY_HAS_MULTIPLE_FEE_LINES to (order.feesLines.size > 1),
+                    AnalyticsTracker.KEY_HAS_MULTIPLE_SHIPPING_LINES to (order.shippingLines.size > 1)
+                )
+            )
+        }
 }
