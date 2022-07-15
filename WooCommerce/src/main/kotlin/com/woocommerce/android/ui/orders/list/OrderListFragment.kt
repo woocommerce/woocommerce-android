@@ -128,7 +128,6 @@ class OrderListFragment :
         reenterTransition = fadeThroughTransition
     }
 
-
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_order_list_fragment, menu)
 
@@ -296,7 +295,7 @@ class OrderListFragment :
         binding.orderListView.scrollToTop()
     }
 
-    @Suppress("LongMethod")
+    @Suppress("LongMethod", "ComplexMethod")
     private fun initObservers() {
         // setup observers
         viewModel.orderStatusOptions.observe(viewLifecycleOwner) {
