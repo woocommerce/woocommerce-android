@@ -1,6 +1,8 @@
 package com.woocommerce.android
 
 import android.app.Application
+import androidx.hilt.work.HiltWorkerFactory
+import androidx.work.Configuration
 import com.android.volley.VolleyLog
 import com.yarolegovich.wellsql.WellSql
 import dagger.Lazy
@@ -9,10 +11,12 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import javax.inject.Inject
 
-open class WooCommerce : Application(), HasAndroidInjector {
+open class WooCommerce : Application(), HasAndroidInjector, Configuration.Provider {
     @Inject lateinit var androidInjector: DispatchingAndroidInjector<Any>
+
     // inject it lazily to avoid creating it before initializing WellSql
     @Inject lateinit var appInitializer: Lazy<AppInitializer>
+    @Inject lateinit var workerFactory: HiltWorkerFactory
 
     override fun onCreate() {
         super.onCreate()
@@ -27,6 +31,12 @@ open class WooCommerce : Application(), HasAndroidInjector {
         WellSql.init(wellSqlConfig)
 
         appInitializer.get().init(this)
+    }
+
+    override fun getWorkManagerConfiguration(): Configuration {
+        return Configuration.Builder()
+            .setWorkerFactory(workerFactory)
+            .build()
     }
 
     override fun androidInjector(): AndroidInjector<Any> = androidInjector
