@@ -121,7 +121,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         isProductListVisible = true,
         areShippingLabelsVisible = false,
         isProductListMenuVisible = false,
-        wcShippingBannerVisible = false
+        wcShippingBannerVisible = false,
+        isRefreshing = false,
+        isOrderDetailSkeletonShown = false
     )
 
     @Before
@@ -185,16 +187,13 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         doReturn(nonRefundedOrder).whenever(orderDetailRepository).getOrderById(any())
 
-        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
 
-        doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
         doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
 
         doReturn(emptyList<Refund>()).whenever(orderDetailRepository).getOrderRefunds(any())
 
         doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
-        doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any())
         doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
         var orderData: ViewState? = null
@@ -806,7 +805,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
         viewModel.onNewShipmentTrackingAdded(shipmentTracking)
 
-        verify(orderDetailRepository, times(2)).getOrderShipmentTrackings(any())
+        // (1) when order is loaded (2) after order is fetched (3) after shipment tracking is added
+        verify(orderDetailRepository, times(3)).getOrderShipmentTrackings(any())
         assertThat(orderShipmentTrackings).isEqualTo(addedShipmentTrackings)
     }
 
