@@ -182,14 +182,14 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     @Test
     fun `given simple payment flow, when on cash payment clicked, then show dialog event emitted`() =
         testBlocking {
-            // Given
+            // GIVEN
             val orderId = 1L
             val viewModel = initViewModel(Payment(orderId, SIMPLE))
 
-            // When
+            // WHEN
             viewModel.onCashPaymentClicked()
 
-            // Then
+            // THEN
             val events = viewModel.event.captureValues()
             assertThat(events.last()).isInstanceOf(ShowDialog::class.java)
             assertThat((events.last() as ShowDialog).titleId).isEqualTo(R.string.simple_payments_cash_dlg_title)
