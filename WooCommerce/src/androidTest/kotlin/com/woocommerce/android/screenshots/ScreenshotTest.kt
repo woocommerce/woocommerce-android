@@ -106,7 +106,9 @@ class ScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
             .gotoOrdersScreen()
             .selectOrder(2)
             .tapOnCollectPayment()
+            .chooseCardPayment()
             .thenTakeScreenshot<CardReaderPaymentScreen>("in-person-payments")
+            .goBackToPaymentSelection()
             .goBackToOrderDetails()
             .goBackToOrdersScreen()
 
