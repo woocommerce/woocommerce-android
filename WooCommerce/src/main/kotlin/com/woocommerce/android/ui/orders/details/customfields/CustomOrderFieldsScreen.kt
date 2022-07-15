@@ -1,5 +1,8 @@
 package com.woocommerce.android.ui.orders.details.customfields
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
 import android.webkit.URLUtil
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -11,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -18,16 +22,17 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight.Companion.W700
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.text.HtmlCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.compose.utils.toAnnotatedString
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.HtmlHelper
 import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
@@ -92,7 +97,7 @@ private fun CustomFieldListItem(metadata: OrderMetaDataEntity) {
                     } else if (URLUtil.isValidUrl(metadata.value)) {
                         urlTextValueItem(metadata.value)
                     } else if (StringUtils.isValidEmail(metadata.value)) {
-                        urlTextValueItem(metadata.value)
+                        emailTextValueItem(metadata.value)
                     } else {
                         textValueItem(metadata.value)
                     }
@@ -116,13 +121,25 @@ private fun textValueItem(value: String) {
 
 @Composable
 private fun htmlTextValueItem(value: String) {
-    Text(
-        text = HtmlCompat.fromHtml(
-            value,
-            HtmlCompat.FROM_HTML_MODE_LEGACY
-        ).toAnnotatedString(),
+    val context = LocalContext.current
+    val annotatedText = HtmlCompat.fromHtml(
+        value,
+        HtmlCompat.FROM_HTML_MODE_LEGACY
+    ).toAnnotatedString()
+
+    ClickableText(
+        text = annotatedText,
         style = MaterialTheme.typography.body2,
-        color = MaterialTheme.colors.onSurface
+        onClick = { offset ->
+            annotatedText.getStringAnnotations(
+                tag = "policy",
+                start = offset,
+                end = offset
+            ).firstOrNull()?.let {
+                val url = it.item
+                ChromeCustomTabUtils.launchUrl(context, url)
+            }
+        }
     )
 }
 
@@ -138,12 +155,43 @@ private fun urlTextValueItem(value: String) {
         )
         toAnnotatedString()
     }
+    val context = LocalContext.current
 
-    Text(
+    ClickableText(
         text = text,
         style = MaterialTheme.typography.body2,
-        color = MaterialTheme.colors.onSurface,
-        textDecoration = TextDecoration.Underline
+        onClick = {
+            ChromeCustomTabUtils.launchUrl(context, value)
+        }
+    )
+}
+
+@Composable
+private fun emailTextValueItem(value: String) {
+    val text = with(AnnotatedString.Builder()) {
+        append(value)
+        addStringAnnotation(
+            tag = value,
+            annotation = value,
+            start = 0,
+            end = value.length - 1
+        )
+        toAnnotatedString()
+    }
+    val context = LocalContext.current
+
+    ClickableText(
+        text = text,
+        style = MaterialTheme.typography.body2,
+        onClick = {
+            val intent = Intent(Intent.ACTION_SENDTO)
+            intent.data = Uri.parse("mailto:$value")
+            try {
+                context.startActivity(intent)
+            } catch (e: ActivityNotFoundException) {
+                // TODO nbradbury
+            }
+        }
     )
 }
 
