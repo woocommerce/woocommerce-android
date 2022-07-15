@@ -11,7 +11,6 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
-import com.woocommerce.android.model.Order.Status
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Product
@@ -912,7 +911,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `re-fetch order when payment flow completes`() = testBlocking {
         viewModel.start()
-        val orderAfterPayment = order.copy(status = Status.fromDataModel(CoreOrderStatus.COMPLETED)!!)
+        val orderAfterPayment = order.copy(status = Order.Status.fromDataModel(CoreOrderStatus.COMPLETED)!!)
         doReturn(orderAfterPayment).whenever(orderDetailRepository).getOrderById(any())
         doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
