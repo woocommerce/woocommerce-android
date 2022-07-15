@@ -99,6 +99,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
     protected abstract val tracksFlow: String
 
+    protected abstract fun initMocksForAnalyticsWithOrder(order: Order)
+
     @Test
     fun `when product selected, send tracks event`() {
         sut.onProductSelected(123)
