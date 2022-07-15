@@ -41,7 +41,7 @@ class OrdersUITest : TestBase() {
         TabNavComponent().gotoOrdersScreen()
     }
 
-    @Test
+//    @Test
     fun createOrderTest() {
         val productName = OrderSelectProductScreen.SIMPLE_PRODUCT_NAME
         OrderListScreen()

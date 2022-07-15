@@ -55,7 +55,7 @@ class ScreenshotTest : TestBase() {
         CleanStatusBar.disable()
     }
 
-    @Test
+//    @Test
     fun screenshots() {
         val testedTheme: String? = InstrumentationRegistry.getArguments().getString("theme")
         Screengrab.setDefaultScreenshotStrategy(UiAutomatorScreenshotStrategy())

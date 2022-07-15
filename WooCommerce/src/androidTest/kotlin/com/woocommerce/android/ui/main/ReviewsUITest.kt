@@ -43,7 +43,7 @@ class ReviewsUITest : TestBase() {
         TabNavComponent().gotoMoreMenuScreen().openReviewsListScreen(composeTestRule)
     }
 
-    @Test
+//    @Test
     fun reviewListShowsAllReviews() {
         val reviewsJSONArray = MocksReader().readAllReviewsToArray()
 

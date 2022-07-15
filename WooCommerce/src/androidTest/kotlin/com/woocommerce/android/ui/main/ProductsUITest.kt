@@ -44,7 +44,7 @@ class ProductsUITest : TestBase() {
         TabNavComponent().gotoProductsScreen()
     }
 
-    @Test
+//    @Test
     fun productListShowsAllProducts() {
         val productsJSONArray = MocksReader().readAllProductsToArray()
 
