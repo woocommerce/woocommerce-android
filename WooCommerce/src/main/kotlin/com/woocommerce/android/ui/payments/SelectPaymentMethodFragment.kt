@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaym
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Success
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectDialogFragment
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragment
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -204,6 +205,9 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
                 }
                 SelectPaymentMethodViewModel.DismissCardReaderUpsellBannerViaDontShowAgain -> {
                     binding.paymentsUpsellCardReaderDismissView.visibility = View.GONE
+                }
+                is SelectPaymentMethodViewModel.OpenPurchaseCardReaderLink -> {
+                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 }
             }
         }
