@@ -82,7 +82,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUp
 import javax.inject.Inject
 
 @HiltViewModel
-final class OrderDetailViewModel @Inject constructor(
+class OrderDetailViewModel @Inject constructor(
     private val coroutineDispatchers: CoroutineDispatchers,
     savedState: SavedStateHandle,
     private val appPrefs: AppPrefs,
@@ -99,7 +99,7 @@ final class OrderDetailViewModel @Inject constructor(
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
-    final var order: Order
+    var order: Order
         get() = requireNotNull(viewState.orderInfo?.order)
         set(value) {
             viewState = viewState.copy(
@@ -115,7 +115,7 @@ final class OrderDetailViewModel @Inject constructor(
     // and add the deleted tracking number back to the list
     private var deletedOrderShipmentTrackingSet = mutableSetOf<String>()
 
-    final val viewStateData = LiveDataDelegate(savedState, ViewState())
+    val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
     private val _orderNotes = MutableLiveData<List<OrderNote>>()
