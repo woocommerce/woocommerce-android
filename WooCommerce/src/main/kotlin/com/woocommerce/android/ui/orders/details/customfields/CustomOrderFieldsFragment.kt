@@ -26,7 +26,7 @@ class CustomOrderFieldsFragment : BaseFragment(), CustomOrderFieldClickListener 
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    CustomOrderFieldsScreen(viewModel)
+                    CustomOrderFieldsScreen(viewModel, this@CustomOrderFieldsFragment)
                 }
             }
         }

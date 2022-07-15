@@ -32,7 +32,7 @@ object CustomOrderFieldsHelper {
             CustomOrderFieldType.EMAIL -> sendEmail(context, value)
             CustomOrderFieldType.URL -> showUrl(context, value)
             CustomOrderFieldType.TEXT -> {
-                // do nothing
+                // no action
             }
         }
     }

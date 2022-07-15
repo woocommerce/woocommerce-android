@@ -93,10 +93,10 @@ private fun CustomFieldListItem(metadata: OrderMetaDataEntity) {
                     )
                 }
                 SelectionContainer {
-                    when (CustomOrderFieldType.fromMetadataValue(metadata.value)) {
-                        CustomOrderFieldType.URL -> urlTextValueItem(metadata.value)
-                        CustomOrderFieldType.EMAIL -> emailTextValueItem(metadata.value)
-                        CustomOrderFieldType.TEXT -> textValueItem(metadata.value)
+                    if (CustomOrderFieldType.fromMetadataValue(metadata.value) == CustomOrderFieldType.TEXT) {
+                        textValueItem(metadata.value)
+                    } else {
+                        clickableTextValueItem(metadata.value)
                     }
                 }
             }
@@ -114,7 +114,7 @@ private fun textValueItem(value: String) {
 }
 
 @Composable
-private fun urlTextValueItem(value: String) {
+private fun clickableTextValueItem(value: String) {
     val text = with(AnnotatedString.Builder()) {
         append(value)
         addStringAnnotation(
@@ -128,29 +128,9 @@ private fun urlTextValueItem(value: String) {
 
     ClickableText(
         text = text,
-        style = MaterialTheme.typography.body2,
-        onClick = {
-            clickListener?.onCustomOrderFieldClicked(value)
-        }
-    )
-}
-
-@Composable
-private fun emailTextValueItem(value: String) {
-    val text = with(AnnotatedString.Builder()) {
-        append(value)
-        addStringAnnotation(
-            tag = value,
-            annotation = value,
-            start = 0,
-            end = value.length - 1
-        )
-        toAnnotatedString()
-    }
-
-    ClickableText(
-        text = text,
-        style = MaterialTheme.typography.body2,
+        style = MaterialTheme.typography.body2.copy(
+            color = colorResource(R.color.color_primary)
+        ),
         onClick = {
             clickListener?.onCustomOrderFieldClicked(value)
         }
