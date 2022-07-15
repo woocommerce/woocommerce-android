@@ -26,7 +26,7 @@ object CustomOrderFieldsHelper {
                 return when {
                     URLUtil.isValidUrl(value) -> URL
                     StringUtils.isValidEmail(value) -> EMAIL
-                    value.startsWith("tel:") -> PHONE
+                    value.startsWith("tel://") -> PHONE
                     else -> TEXT
                 }
             }
