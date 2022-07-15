@@ -336,6 +336,9 @@ class OrderListFragment :
                 DismissCardReaderUpsellBannerViaDontShowAgain -> {
                     binding.paymentsUpsellCardReaderDismissView.visibility = View.GONE
                 }
+                is OrderListViewModel.OrderListEvent.OpenPurchaseCardReaderLink -> {
+                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+                }
                 else -> event.isHandled = false
             }
         }
