@@ -178,7 +178,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when fail customer address edited, send tracks event`() {
+    fun `when order sync fails, send tracks event`() {
         val wooError = WooError(
             type = WooErrorType.GENERIC_ERROR,
             original = BaseRequest.GenericErrorType.TIMEOUT,
