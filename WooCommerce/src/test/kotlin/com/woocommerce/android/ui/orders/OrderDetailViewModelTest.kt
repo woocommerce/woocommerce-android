@@ -1084,10 +1084,33 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when order is paid, order complete button should be hidden`() =
+    fun `given order is paid, when status is processing order complete button should be visible`() =
         testBlocking {
             // Given
             val orderStatusStub = Order.Status.fromDataModel(CoreOrderStatus.PROCESSING)
+            val orderStub = order.copy(datePaid = Date(), status = orderStatusStub!!)
+
+            doReturn(orderStatus).whenever(orderDetailRepository).getOrderStatus(any())
+            doReturn(orderStub).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(orderStub).whenever(orderDetailRepository).fetchOrderById(any())
+
+            var isMarkOrderCompleteButtonVisible: Boolean? = null
+            viewModel.viewStateData.observeForever { _, new ->
+                isMarkOrderCompleteButtonVisible = new.isMarkOrderCompleteButtonVisible
+            }
+
+            // When
+            viewModel.start()
+
+            // Then
+            assertThat(isMarkOrderCompleteButtonVisible).isTrue
+        }
+
+    @Test
+    fun `given order is paid, when status is on hold order complete button should be visible`() =
+        testBlocking {
+            // Given
+            val orderStatusStub = Order.Status.fromDataModel(CoreOrderStatus.ON_HOLD)
             val orderStub = order.copy(datePaid = Date(), status = orderStatusStub!!)
 
             doReturn(orderStatus).whenever(orderDetailRepository).getOrderStatus(any())
