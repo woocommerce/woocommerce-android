@@ -68,6 +68,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -1643,6 +1644,7 @@ class ProductDetailViewModel @Inject constructor(
             draftChanges
                 .distinctUntilChanged { old, new -> old?.remoteId == new?.remoteId }
                 .map { getRemoteProductId() }
+                .filter { productId -> productId != DEFAULT_ADD_NEW_PRODUCT_ID || isAddFlowEntryPoint }
                 .collectLatest { productId ->
                     mediaFileUploadHandler.observeCurrentUploads(productId)
                         .map { list -> list.map { it.toUri() } }
