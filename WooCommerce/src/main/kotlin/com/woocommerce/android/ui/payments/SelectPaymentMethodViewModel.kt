@@ -92,50 +92,28 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     fun onCashPaymentClicked() {
-        when (cardReaderPaymentFlowParam.paymentType) {
-            SIMPLE -> {
-                analyticsTrackerWrapper.track(
-                    AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
-                    mapOf(
-                        AnalyticsTracker.KEY_PAYMENT_METHOD to VALUE_SIMPLE_PAYMENTS_COLLECT_CASH,
-                        cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
-                    )
-                )
-
-                triggerEvent(
-                    MultiLiveEvent.Event.ShowDialog(
-                        titleId = R.string.simple_payments_cash_dlg_title,
-                        messageId = R.string.simple_payments_cash_dlg_message,
-                        positiveButtonId = R.string.simple_payments_cash_dlg_button,
-                        positiveBtnAction = { _, _ ->
-                            onCashPaymentConfirmed()
-                        },
-                        negativeButtonId = R.string.cancel
-                    )
-                )
-            }
-            ORDER -> {
-                analyticsTrackerWrapper.track(
-                    AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
-                    mapOf(
-                        AnalyticsTracker.KEY_PAYMENT_METHOD to VALUE_ORDER_PAYMENTS_COLLECT_CASH,
-                        cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
-                    )
-                )
-
-                triggerEvent(
-                    MultiLiveEvent.Event.ShowDialog(
-                        titleId = R.string.simple_payments_cash_dlg_title,
-                        messageId = R.string.existing_order_cash_dlg_message,
-                        positiveButtonId = R.string.simple_payments_cash_dlg_button,
-                        positiveBtnAction = { _, _ ->
-                            onCashPaymentConfirmed()
-                        },
-                        negativeButtonId = R.string.cancel
-                    )
-                )
-            }
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
+            mapOf(
+                AnalyticsTracker.KEY_PAYMENT_METHOD to VALUE_SIMPLE_PAYMENTS_COLLECT_CASH,
+                cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
+            )
+        )
+        val messageIdForPaymentType = when (cardReaderPaymentFlowParam.paymentType) {
+            SIMPLE -> R.string.simple_payments_cash_dlg_message
+            ORDER -> R.string.existing_order_cash_dlg_message
         }
+        triggerEvent(
+            MultiLiveEvent.Event.ShowDialog(
+                titleId = R.string.simple_payments_cash_dlg_title,
+                messageId = messageIdForPaymentType,
+                positiveButtonId = R.string.simple_payments_cash_dlg_button,
+                positiveBtnAction = { _, _ ->
+                    onCashPaymentConfirmed()
+                },
+                negativeButtonId = R.string.cancel
+            )
+        )
     }
 
     /**
