@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.payments
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -35,6 +36,7 @@ import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
@@ -49,8 +51,10 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val orderMapper: OrderMapper,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val cardPaymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
+    private val appPrefsWrapper: AppPrefsWrapper,
 ) : ScopedViewModel(savedState) {
     private val navArgs: SelectPaymentMethodFragmentArgs by savedState.navArgs()
+    val shouldUpsellCardReaderDismissDialogShow: MutableLiveData<Boolean> = MutableLiveData(false)
 
     private val viewState = MutableLiveData<TakePaymentViewState>(Loading)
     val viewStateData: LiveData<TakePaymentViewState> = viewState
@@ -261,7 +265,75 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     fun onDismissClicked() {
-        // TODO
+        shouldUpsellCardReaderDismissDialogShow.value = true
+        triggerEvent(DismissCardReaderUpsellBanner)
+    }
+
+    fun onRemindLaterClicked(currentTimeInMillis: Long) {
+        shouldUpsellCardReaderDismissDialogShow.value = false
+        storeRemindLaterTimeStamp(currentTimeInMillis)
+        triggerEvent(DismissCardReaderUpsellBannerViaRemindMeLater)
+    }
+
+    fun onDontShowAgainClicked() {
+        shouldUpsellCardReaderDismissDialogShow.value = false
+        storeDismissBannerForever()
+        triggerEvent(DismissCardReaderUpsellBannerViaDontShowAgain)
+    }
+
+    private fun storeRemindLaterTimeStamp(currentTimeInMillis: Long) {
+        val site = selectedSite.get()
+        appPrefsWrapper.setCardReaderUpsellBannerRemindMeLater(
+            lastDialogDismissedInMillis = currentTimeInMillis,
+            localSiteId = site.id,
+            remoteSiteId = site.siteId,
+            selfHostedSiteId = site.selfHostedSiteId
+        )
+    }
+
+    private fun storeDismissBannerForever() {
+        val site = selectedSite.get()
+        appPrefsWrapper.setCardReaderUpsellBannerDismissed(
+            isDismissed = true,
+            localSiteId = site.id,
+            remoteSiteId = site.siteId,
+            selfHostedSiteId = site.selfHostedSiteId
+        )
+    }
+
+    private fun isCardReaderUpsellBannerDismissedForever(): Boolean {
+        val site = selectedSite.get()
+        return appPrefsWrapper.isCardReaderUpsellBannerDismissedForever(
+            localSiteId = site.id,
+            remoteSiteId = site.siteId,
+            selfHostedSiteId = site.selfHostedSiteId
+        )
+    }
+
+    private fun getCardReaderUpsellBannerLastDismissed(): Long {
+        val site = selectedSite.get()
+        return appPrefsWrapper.getCardReaderUpsellBannerLastDismissed(
+            localSiteId = site.id,
+            remoteSiteId = site.siteId,
+            selfHostedSiteId = site.selfHostedSiteId
+        )
+    }
+
+    fun isLastDialogDismissedMoreThan14DaysAgo(currentTimeInMillis: Long): Boolean {
+        val timeDifference = currentTimeInMillis - getCardReaderUpsellBannerLastDismissed()
+        return TimeUnit.MILLISECONDS.toDays(timeDifference) > CARD_READER_UPSELL_BANNER_REMIND_THRESHOLD_IN_DAYS
+    }
+
+    private fun hasTheMerchantDismissedBannerViaRemindMeLater(): Boolean {
+        return getCardReaderUpsellBannerLastDismissed() != 0L
+    }
+
+    fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long): Boolean {
+        return !isCardReaderUpsellBannerDismissedForever() &&
+            (
+                !hasTheMerchantDismissedBannerViaRemindMeLater() || hasTheMerchantDismissedBannerViaRemindMeLater() &&
+                    isLastDialogDismissedMoreThan14DaysAgo(currentTimeInMillis)
+                )
     }
 
     sealed class TakePaymentViewState {
@@ -272,6 +344,10 @@ class SelectPaymentMethodViewModel @Inject constructor(
             val isPaymentCollectableWithCardReader: Boolean,
         ) : TakePaymentViewState()
     }
+
+    object DismissCardReaderUpsellBanner : MultiLiveEvent.Event()
+    object DismissCardReaderUpsellBannerViaRemindMeLater : MultiLiveEvent.Event()
+    object DismissCardReaderUpsellBannerViaDontShowAgain : MultiLiveEvent.Event()
 
     data class SharePaymentUrl(
         val storeName: String,
@@ -292,5 +368,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
 
     companion object {
         private const val DELAY_MS = 1L
+        private const val CARD_READER_UPSELL_BANNER_REMIND_THRESHOLD_IN_DAYS = 14
     }
 }
