@@ -8,8 +8,8 @@ class CardReaderPaymentScreen : Screen(HEADER) {
         private const val HEADER = R.id.header_label
     }
 
-    fun goBackToOrderDetails(): SingleOrderScreen {
+    fun goBackToPaymentSelection(): PaymentSelectionScreen {
         pressBack()
-        return SingleOrderScreen()
+        return PaymentSelectionScreen()
     }
 }

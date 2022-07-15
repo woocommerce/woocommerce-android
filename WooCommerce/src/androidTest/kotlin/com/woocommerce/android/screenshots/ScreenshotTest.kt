@@ -1,5 +1,6 @@
 package com.woocommerce.android.screenshots
 
+import android.util.Log
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
@@ -25,6 +26,7 @@ import tools.fastlane.screengrab.Screengrab
 import tools.fastlane.screengrab.UiAutomatorScreenshotStrategy
 import tools.fastlane.screengrab.cleanstatusbar.CleanStatusBar
 import tools.fastlane.screengrab.locale.LocaleTestRule
+import java.util.concurrent.TimeoutException
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -48,7 +50,13 @@ class ScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
 
     @Before
     fun setUp() {
-        CleanStatusBar.enableWithDefaults()
+        try {
+            CleanStatusBar.enableWithDefaults()
+        } catch (e: RuntimeException) {
+            if (e.cause is TimeoutException) {
+                Log.w("ScreenshotTest", e)
+            } else throw e
+        }
         rule.inject()
     }
 
@@ -98,7 +106,9 @@ class ScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
             .gotoOrdersScreen()
             .selectOrder(2)
             .tapOnCollectPayment()
+            .chooseCardPayment()
             .thenTakeScreenshot<CardReaderPaymentScreen>("in-person-payments")
+            .goBackToPaymentSelection()
             .goBackToOrderDetails()
             .goBackToOrdersScreen()
 
