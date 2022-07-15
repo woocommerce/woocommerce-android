@@ -32,6 +32,20 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/simplePaymentsWIPcard" />
 
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/paymentsComposeView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/minor_100"
+            app:layout_constraintTop_toBottomOf="@id/order_filters_card" />
+
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/paymentsUpsellCardReaderDismissView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/major_150"
+            app:layout_constraintTop_toBottomOf="@id/order_filters_card" />
+
         <com.woocommerce.android.ui.orders.list.OrderListView
             android:id="@+id/order_list_view"
             android:layout_width="match_parent"
@@ -39,7 +53,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/order_filters_card"
+            app:layout_constraintTop_toBottomOf="@+id/paymentsComposeView"
             tools:visibility="gone" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
