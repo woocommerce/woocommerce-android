@@ -25,20 +25,17 @@ import androidx.compose.ui.text.font.FontWeight.Companion.W700
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
+import com.woocommerce.android.ui.orders.details.customfields.CustomOrderFieldsHelper.CustomOrderFieldClickListener
 import com.woocommerce.android.ui.orders.details.customfields.CustomOrderFieldsHelper.CustomOrderFieldType
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.persistence.entity.OrderMetaDataEntity
-
-interface CustomOrderFieldClickListener {
-    fun onCustomOrderFieldClicked(value: String)
-}
 
 private var clickListener: CustomOrderFieldClickListener? = null
 
 @Composable
 fun CustomOrderFieldsScreen(
     viewModel: OrderDetailViewModel,
-    listener: CustomOrderFieldClickListener?= null
+    listener: CustomOrderFieldClickListener ?= null
 ) {
     clickListener = listener
     CustomFieldsScreen(

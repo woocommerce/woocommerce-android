@@ -11,6 +11,10 @@ import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.util.ToastUtils
 
 object CustomOrderFieldsHelper {
+    interface CustomOrderFieldClickListener {
+        fun onCustomOrderFieldClicked(value: String)
+    }
+
     enum class CustomOrderFieldType {
         TEXT,
         URL,
@@ -64,5 +68,4 @@ object CustomOrderFieldsHelper {
         }
     }
 }
-
 
