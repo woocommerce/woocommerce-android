@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.details
 
+import android.content.Context
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
@@ -53,6 +54,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderedAddons
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintCustomsForm
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstructions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
+import com.woocommerce.android.ui.orders.details.customfields.CustomOrderFieldsHelper
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.products.addons.AddonRepository
@@ -202,12 +204,18 @@ final class OrderDetailViewModel @Inject constructor(
         }
     }
 
+    /**
+     * User clicked the button to view custom fields
+     */
     fun onCustomFieldsButtonClicked() {
         triggerEvent(OrderNavigationTarget.ViewCustomFields)
     }
 
-    fun onCustomFieldClicked(value: String) {
-
+    /**
+     * User tapped an actionable custom field
+     */
+    fun onCustomFieldClicked(context: Context, value: String) {
+        CustomOrderFieldsHelper.handleMetadataValue(context, value)
     }
 
     fun getOrderMetadata(): List<OrderMetaDataEntity> = runBlocking {

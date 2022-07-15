@@ -14,7 +14,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CustomOrderFieldsFragment : BaseFragment() {
+class CustomOrderFieldsFragment : BaseFragment(), CustomOrderFieldClickListener {
     private val viewModel by hiltNavGraphViewModels<OrderDetailViewModel>(R.id.nav_graph_orders)
 
     override fun onCreateView(
@@ -33,4 +33,8 @@ class CustomOrderFieldsFragment : BaseFragment() {
     }
 
     override fun getFragmentTitle() = getString(R.string.orderdetail_custom_fields)
+
+    override fun onCustomOrderFieldClicked(value: String) {
+        viewModel.onCustomFieldClicked(requireActivity(), value)
+    }
 }

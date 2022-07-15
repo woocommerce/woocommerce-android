@@ -1,9 +1,5 @@
 package com.woocommerce.android.ui.orders.details.customfields
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
-import android.net.Uri
-import android.webkit.URLUtil
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,24 +18,29 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight.Companion.W700
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.text.HtmlCompat
 import com.woocommerce.android.R
-import com.woocommerce.android.compose.utils.toAnnotatedString
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
-import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.HtmlHelper
-import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.ui.orders.details.customfields.CustomOrderFieldsHelper.CustomOrderFieldType
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.persistence.entity.OrderMetaDataEntity
 
+interface CustomOrderFieldClickListener {
+    fun onCustomOrderFieldClicked(value: String)
+}
+
+private var clickListener: CustomOrderFieldClickListener? = null
+
 @Composable
-fun CustomOrderFieldsScreen(viewModel: OrderDetailViewModel) {
+fun CustomOrderFieldsScreen(
+    viewModel: OrderDetailViewModel,
+    listener: CustomOrderFieldClickListener?= null
+) {
+    clickListener = listener
     CustomFieldsScreen(
         viewModel.getOrderMetadata()
     )
@@ -92,14 +93,10 @@ private fun CustomFieldListItem(metadata: OrderMetaDataEntity) {
                     )
                 }
                 SelectionContainer {
-                    if (HtmlHelper.isHtml(metadata.value)) {
-                        htmlTextValueItem(metadata.value)
-                    } else if (URLUtil.isValidUrl(metadata.value)) {
-                        urlTextValueItem(metadata.value)
-                    } else if (StringUtils.isValidEmail(metadata.value)) {
-                        emailTextValueItem(metadata.value)
-                    } else {
-                        textValueItem(metadata.value)
+                    when (CustomOrderFieldType.fromMetadataValue(metadata.value)) {
+                        CustomOrderFieldType.URL -> urlTextValueItem(metadata.value)
+                        CustomOrderFieldType.EMAIL -> emailTextValueItem(metadata.value)
+                        CustomOrderFieldType.TEXT -> textValueItem(metadata.value)
                     }
                 }
             }
@@ -110,36 +107,9 @@ private fun CustomFieldListItem(metadata: OrderMetaDataEntity) {
 @Composable
 private fun textValueItem(value: String) {
     Text(
-        text = HtmlCompat.fromHtml(
-            value,
-            HtmlCompat.FROM_HTML_MODE_LEGACY
-        ).toAnnotatedString(),
+        text = value,
         style = MaterialTheme.typography.body2,
         color = MaterialTheme.colors.onSurface
-    )
-}
-
-@Composable
-private fun htmlTextValueItem(value: String) {
-    val context = LocalContext.current
-    val annotatedText = HtmlCompat.fromHtml(
-        value,
-        HtmlCompat.FROM_HTML_MODE_LEGACY
-    ).toAnnotatedString()
-
-    ClickableText(
-        text = annotatedText,
-        style = MaterialTheme.typography.body2,
-        onClick = { offset ->
-            annotatedText.getStringAnnotations(
-                tag = "policy",
-                start = offset,
-                end = offset
-            ).firstOrNull()?.let {
-                val url = it.item
-                ChromeCustomTabUtils.launchUrl(context, url)
-            }
-        }
     )
 }
 
@@ -155,13 +125,12 @@ private fun urlTextValueItem(value: String) {
         )
         toAnnotatedString()
     }
-    val context = LocalContext.current
 
     ClickableText(
         text = text,
         style = MaterialTheme.typography.body2,
         onClick = {
-            ChromeCustomTabUtils.launchUrl(context, value)
+            clickListener?.onCustomOrderFieldClicked(value)
         }
     )
 }
@@ -178,19 +147,12 @@ private fun emailTextValueItem(value: String) {
         )
         toAnnotatedString()
     }
-    val context = LocalContext.current
 
     ClickableText(
         text = text,
         style = MaterialTheme.typography.body2,
         onClick = {
-            val intent = Intent(Intent.ACTION_SENDTO)
-            intent.data = Uri.parse("mailto:$value")
-            try {
-                context.startActivity(intent)
-            } catch (e: ActivityNotFoundException) {
-                // TODO nbradbury
-            }
+            clickListener?.onCustomOrderFieldClicked(value)
         }
     )
 }
@@ -201,18 +163,11 @@ private fun CustomFieldsPreview() {
     CustomFieldsScreen(
         listOf(
             OrderMetaDataEntity(
-                id = 0,
+                id = 1,
                 localSiteId = LocalOrRemoteId.LocalId(0),
                 orderId = 0,
                 key = "text key",
                 value = "text value"
-            ),
-            OrderMetaDataEntity(
-                id = 1,
-                localSiteId = LocalOrRemoteId.LocalId(0),
-                orderId = 0,
-                key = "html key",
-                value = "<strong>This</strong> is an <em>html</em> value"
             ),
             OrderMetaDataEntity(
                 id = 2,
