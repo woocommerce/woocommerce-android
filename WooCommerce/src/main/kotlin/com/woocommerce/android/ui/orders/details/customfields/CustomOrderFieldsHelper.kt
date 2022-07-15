@@ -14,13 +14,15 @@ object CustomOrderFieldsHelper {
     enum class CustomOrderFieldType {
         TEXT,
         URL,
-        EMAIL;
+        EMAIL,
+        PHONE;
 
         companion object {
             fun fromMetadataValue(value: String): CustomOrderFieldType {
                 return when {
                     URLUtil.isValidUrl(value) -> URL
                     StringUtils.isValidEmail(value) -> EMAIL
+                    value.startsWith("tel:") -> PHONE
                     else -> TEXT
                 }
             }
@@ -31,6 +33,7 @@ object CustomOrderFieldsHelper {
         when (CustomOrderFieldType.fromMetadataValue(value)) {
             CustomOrderFieldType.EMAIL -> sendEmail(context, value)
             CustomOrderFieldType.URL -> showUrl(context, value)
+            CustomOrderFieldType.PHONE -> dialPhone(context, value)
             CustomOrderFieldType.TEXT -> {
                 // no action
             }
@@ -49,6 +52,16 @@ object CustomOrderFieldsHelper {
 
     private fun showUrl(context: Context, url: String) {
         ChromeCustomTabUtils.launchUrl(context, url)
+    }
+
+    private fun dialPhone(context: Context, phone: String) {
+        val intent = Intent(Intent.ACTION_DIAL)
+        intent.data = Uri.parse("tel:$phone")
+        try {
+            context.startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            ToastUtils.showToast(context, R.string.error_no_phone_app)
+        }
     }
 }
 
