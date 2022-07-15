@@ -1154,6 +1154,98 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given order is not paid, when status is on hold, order complete button should be hidden`() =
+        testBlocking {
+            // Given
+            val orderStatusStub = Order.Status.fromDataModel(CoreOrderStatus.ON_HOLD)
+            val orderStub = order.copy(datePaid = null, status = orderStatusStub!!)
+
+            doReturn(orderStatus).whenever(orderDetailRepository).getOrderStatus(any())
+            doReturn(orderStub).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(orderStub).whenever(orderDetailRepository).fetchOrderById(any())
+
+            var isMarkOrderCompleteButtonVisible: Boolean? = null
+            viewModel.viewStateData.observeForever { _, new ->
+                isMarkOrderCompleteButtonVisible = new.isMarkOrderCompleteButtonVisible
+            }
+
+            // When
+            viewModel.start()
+
+            // Then
+            assertThat(isMarkOrderCompleteButtonVisible).isFalse()
+        }
+
+    @Test
+    fun `given order is not paid, when status is on failed, order complete button should be hidden`() =
+        testBlocking {
+            // Given
+            val orderStatusStub = Order.Status.fromDataModel(CoreOrderStatus.FAILED)
+            val orderStub = order.copy(datePaid = null, status = orderStatusStub!!)
+
+            doReturn(orderStatus).whenever(orderDetailRepository).getOrderStatus(any())
+            doReturn(orderStub).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(orderStub).whenever(orderDetailRepository).fetchOrderById(any())
+
+            var isMarkOrderCompleteButtonVisible: Boolean? = null
+            viewModel.viewStateData.observeForever { _, new ->
+                isMarkOrderCompleteButtonVisible = new.isMarkOrderCompleteButtonVisible
+            }
+
+            // When
+            viewModel.start()
+
+            // Then
+            assertThat(isMarkOrderCompleteButtonVisible).isFalse()
+        }
+
+    @Test
+    fun `given order is not paid, when status is cacelled, order complete button should be hidden`() =
+        testBlocking {
+            // Given
+            val orderStatusStub = Order.Status.fromDataModel(CoreOrderStatus.CANCELLED)
+            val orderStub = order.copy(datePaid = null, status = orderStatusStub!!)
+
+            doReturn(orderStatus).whenever(orderDetailRepository).getOrderStatus(any())
+            doReturn(orderStub).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(orderStub).whenever(orderDetailRepository).fetchOrderById(any())
+
+            var isMarkOrderCompleteButtonVisible: Boolean? = null
+            viewModel.viewStateData.observeForever { _, new ->
+                isMarkOrderCompleteButtonVisible = new.isMarkOrderCompleteButtonVisible
+            }
+
+            // When
+            viewModel.start()
+
+            // Then
+            assertThat(isMarkOrderCompleteButtonVisible).isFalse()
+        }
+
+    @Test
+    fun `given order is not paid, when status is pending, order complete button should be hidden`() =
+        testBlocking {
+            // Given
+            val orderStatusStub = Order.Status.fromDataModel(CoreOrderStatus.PENDING)
+            val orderStub = order.copy(datePaid = null, status = orderStatusStub!!)
+
+            doReturn(orderStatus).whenever(orderDetailRepository).getOrderStatus(any())
+            doReturn(orderStub).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(orderStub).whenever(orderDetailRepository).fetchOrderById(any())
+
+            var isMarkOrderCompleteButtonVisible: Boolean? = null
+            viewModel.viewStateData.observeForever { _, new ->
+                isMarkOrderCompleteButtonVisible = new.isMarkOrderCompleteButtonVisible
+            }
+
+            // When
+            viewModel.start()
+
+            // Then
+            assertThat(isMarkOrderCompleteButtonVisible).isFalse()
+        }
+
+    @Test
     fun `when user presses collect payment button, then start card reader payment flow`() =
         testBlocking {
             // Given
