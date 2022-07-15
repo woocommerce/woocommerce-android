@@ -17,10 +17,21 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel
 
 @Composable
 fun BannerDismissDialog(viewModel: SelectPaymentMethodViewModel) {
+    val showDialog by viewModel.shouldShowUpsellCardReaderDismissDialog.observeAsState(true)
+    BannerDismissDialog(
+        onRemindLaterClick = viewModel::onRemindLaterClicked,
+        onDontShowAgainClick = viewModel::onDontShowAgainClicked,
+        showDialog,
+    )
+}
+
+@Composable
+fun OrderListBannerDismissDialog(viewModel: OrderListViewModel) {
     val showDialog by viewModel.shouldShowUpsellCardReaderDismissDialog.observeAsState(true)
     BannerDismissDialog(
         onRemindLaterClick = viewModel::onRemindLaterClicked,

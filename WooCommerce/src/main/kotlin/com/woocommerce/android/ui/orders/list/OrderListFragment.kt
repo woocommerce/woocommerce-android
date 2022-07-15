@@ -3,13 +3,17 @@ package com.woocommerce.android.ui.orders.list
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.MenuItem.OnActionExpandListener
 import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
 import androidx.core.view.ViewGroupCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
@@ -18,23 +22,37 @@ import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.transition.MaterialFadeThrough
-import com.woocommerce.android.*
+import com.woocommerce.android.AppConstants
+import com.woocommerce.android.AppUrls
+import com.woocommerce.android.FeedbackPrefs
+import com.woocommerce.android.NavGraphMainDirections
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentOrderListBinding
-import com.woocommerce.android.extensions.*
+import com.woocommerce.android.extensions.handleDialogResult
+import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
-import com.woocommerce.android.model.FeatureFeedbackSettings.*
-import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.*
+import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS_AND_ORDER_CREATION
+import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.compose.component.OrderListBannerDismissDialog
+import com.woocommerce.android.ui.compose.component.OrderListScreenBanner
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
 import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.Companion.KEY_ORDER_CREATION_ACTION_RESULT
 import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.OrderCreationAction
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBanner
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBannerViaDontShowAgain
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBannerViaRemindMeLater
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -110,6 +128,7 @@ class OrderListFragment :
         reenterTransition = fadeThroughTransition
     }
 
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_order_list_fragment, menu)
 
@@ -126,13 +145,29 @@ class OrderListFragment :
         super.onPrepareOptionsMenu(menu)
     }
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        setHasOptionsMenu(true)
+        _binding = FragmentOrderListBinding.inflate(inflater, container, false)
+
+        val view = binding.root
+        if (viewModel.shouldShowUpsellCardReaderDismissDialog.value == true) {
+            applyBannerDismissDialogComposeUI()
+        } else {
+            applyBannerComposeUI()
+        }
+        return view
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         postponeEnterTransition()
 
         setHasOptionsMenu(true)
 
-        _binding = FragmentOrderListBinding.bind(view)
         view.doOnPreDraw { startPostponedEnterTransition() }
 
         binding.orderListView.init(currencyFormatter = currencyFormatter, orderListListener = this)
@@ -179,6 +214,35 @@ class OrderListFragment :
         searchMenuItem = null
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun applyBannerComposeUI() {
+        binding.paymentsComposeView.apply {
+            // Dispose of the Composition when the view's LifecycleOwner is destroyed
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                WooThemeWithBackground {
+                    OrderListScreenBanner(
+                        viewModel = viewModel,
+                        title = stringResource(id = R.string.card_reader_upsell_card_reader_banner_title),
+                        subtitle = stringResource(id = R.string.card_reader_upsell_card_reader_banner_description),
+                        ctaLabel = stringResource(id = R.string.card_reader_upsell_card_reader_banner_cta)
+                    )
+                }
+            }
+        }
+    }
+
+    private fun applyBannerDismissDialogComposeUI() {
+        binding.paymentsUpsellCardReaderDismissView.apply {
+            // Dispose of the Composition when the view's LifecycleOwner is destroyed
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                WooThemeWithBackground {
+                    OrderListBannerDismissDialog(viewModel)
+                }
+            }
+        }
     }
 
     /**
@@ -263,6 +327,16 @@ class OrderListFragment :
                     binding.orderRefreshLayout.isRefreshing = false
                 }
                 is ShowOrderFilters -> showOrderFilters()
+                DismissCardReaderUpsellBanner -> {
+                    binding.paymentsComposeView.visibility = View.GONE
+                    applyBannerDismissDialogComposeUI()
+                }
+                DismissCardReaderUpsellBannerViaRemindMeLater -> {
+                    binding.paymentsUpsellCardReaderDismissView.visibility = View.GONE
+                }
+                DismissCardReaderUpsellBannerViaDontShowAgain -> {
+                    binding.paymentsUpsellCardReaderDismissView.visibility = View.GONE
+                }
                 else -> event.isHandled = false
             }
         }

@@ -53,6 +53,7 @@ import org.wordpress.android.fluxc.store.WCOrderFetcher
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderSummariesFetched
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 private const val EMPTY_VIEW_THROTTLE = 250L
@@ -115,6 +116,8 @@ class OrderListViewModel @Inject constructor(
         )
     }
     val emptyViewType: LiveData<EmptyViewType?> = _emptyViewType
+
+    val shouldShowUpsellCardReaderDismissDialog: MutableLiveData<Boolean> = MutableLiveData(false)
 
     var isSearching = false
     var searchQuery = ""
@@ -421,9 +424,88 @@ class OrderListViewModel @Inject constructor(
         } ?: false
     }
 
+    fun onCtaClicked() {
+        // TODO
+    }
+
+    fun onDismissClicked() {
+        shouldShowUpsellCardReaderDismissDialog.value = true
+        triggerEvent(OrderListEvent.DismissCardReaderUpsellBanner)
+    }
+
+    fun onRemindLaterClicked(currentTimeInMillis: Long) {
+        shouldShowUpsellCardReaderDismissDialog.value = false
+        storeRemindLaterTimeStamp(currentTimeInMillis)
+        triggerEvent(OrderListEvent.DismissCardReaderUpsellBannerViaRemindMeLater)
+    }
+
+    fun onDontShowAgainClicked() {
+        shouldShowUpsellCardReaderDismissDialog.value = false
+        storeDismissBannerForever()
+        triggerEvent(OrderListEvent.DismissCardReaderUpsellBannerViaDontShowAgain)
+    }
+
+    private fun storeRemindLaterTimeStamp(currentTimeInMillis: Long) {
+        val site = selectedSite.get()
+        appPrefsWrapper.setCardReaderUpsellBannerRemindMeLater(
+            lastDialogDismissedInMillis = currentTimeInMillis,
+            localSiteId = site.id,
+            remoteSiteId = site.siteId,
+            selfHostedSiteId = site.selfHostedSiteId
+        )
+    }
+
+    private fun storeDismissBannerForever() {
+        val site = selectedSite.get()
+        appPrefsWrapper.setCardReaderUpsellBannerDismissed(
+            isDismissed = true,
+            localSiteId = site.id,
+            remoteSiteId = site.siteId,
+            selfHostedSiteId = site.selfHostedSiteId
+        )
+    }
+
+    private fun isCardReaderUpsellBannerDismissedForever(): Boolean {
+        val site = selectedSite.get()
+        return appPrefsWrapper.isCardReaderUpsellBannerDismissedForever(
+            localSiteId = site.id,
+            remoteSiteId = site.siteId,
+            selfHostedSiteId = site.selfHostedSiteId
+        )
+    }
+
+    private fun getCardReaderUpsellBannerLastDismissed(): Long {
+        val site = selectedSite.get()
+        return appPrefsWrapper.getCardReaderUpsellBannerLastDismissed(
+            localSiteId = site.id,
+            remoteSiteId = site.siteId,
+            selfHostedSiteId = site.selfHostedSiteId
+        )
+    }
+
+    fun isLastDialogDismissedMoreThan14DaysAgo(currentTimeInMillis: Long): Boolean {
+        val timeDifference = currentTimeInMillis - getCardReaderUpsellBannerLastDismissed()
+        return TimeUnit.MILLISECONDS.toDays(timeDifference) > CARD_READER_UPSELL_BANNER_REMIND_THRESHOLD_IN_DAYS
+    }
+
+    private fun hasTheMerchantDismissedBannerViaRemindMeLater(): Boolean {
+        return getCardReaderUpsellBannerLastDismissed() != 0L
+    }
+
+    fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long): Boolean {
+        return !isCardReaderUpsellBannerDismissedForever() &&
+            (
+                !hasTheMerchantDismissedBannerViaRemindMeLater() || hasTheMerchantDismissedBannerViaRemindMeLater() &&
+                    isLastDialogDismissedMoreThan14DaysAgo(currentTimeInMillis)
+                )
+    }
+
     sealed class OrderListEvent : Event() {
         data class ShowErrorSnack(@StringRes val messageRes: Int) : OrderListEvent()
         object ShowOrderFilters : OrderListEvent()
+        object DismissCardReaderUpsellBanner : OrderListEvent()
+        object DismissCardReaderUpsellBannerViaRemindMeLater : OrderListEvent()
+        object DismissCardReaderUpsellBannerViaDontShowAgain : OrderListEvent()
     }
 
     @Parcelize
@@ -432,4 +514,8 @@ class OrderListViewModel @Inject constructor(
         val arePaymentGatewaysFetched: Boolean = false,
         val filterCount: Int = 0
     ) : Parcelable
+
+    companion object {
+        private const val CARD_READER_UPSELL_BANNER_REMIND_THRESHOLD_IN_DAYS = 14
+    }
 }

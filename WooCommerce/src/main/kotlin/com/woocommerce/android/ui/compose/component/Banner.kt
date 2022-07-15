@@ -33,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Success
 
@@ -51,6 +52,24 @@ fun PaymentsScreenBanner(
         (selectPaymentState as Success).isPaymentCollectableWithCardReader &&
         viewModel.canShowCardReaderUpsellBanner(System.currentTimeMillis())
     ) {
+        Banner(
+            onCtaClick = viewModel::onCtaClicked,
+            onDismissClick = viewModel::onDismissClicked,
+            title = title,
+            subtitle = subtitle,
+            ctaLabel = ctaLabel,
+        )
+    }
+}
+
+@Composable
+fun OrderListScreenBanner(
+    viewModel: OrderListViewModel,
+    title: String,
+    subtitle: String,
+    ctaLabel: String,
+) {
+    if (viewModel.canShowCardReaderUpsellBanner(System.currentTimeMillis())) {
         Banner(
             onCtaClick = viewModel::onCtaClicked,
             onDismissClick = viewModel::onDismissClicked,
