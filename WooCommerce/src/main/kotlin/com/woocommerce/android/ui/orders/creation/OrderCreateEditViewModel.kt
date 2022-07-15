@@ -235,8 +235,8 @@ class OrderCreateEditViewModel @Inject constructor(
             )
         )
 
-        _orderDraft.update {
-            it.copy(
+        _orderDraft.update { order ->
+            order.copy(
                 billingAddress = billingAddress,
                 shippingAddress = shippingAddress.takeIf { it != Address.EMPTY } ?: billingAddress
             )
