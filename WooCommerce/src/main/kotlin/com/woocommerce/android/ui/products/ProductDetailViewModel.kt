@@ -67,6 +67,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -1639,7 +1640,9 @@ class ProductDetailViewModel @Inject constructor(
     private fun observeImageUploadEvents() {
         imageUploadsJob?.cancel()
         imageUploadsJob = launch {
-            draftChanges.map { getRemoteProductId() }
+            draftChanges
+                .distinctUntilChanged { old, new -> old?.remoteId == new?.remoteId }
+                .map { getRemoteProductId() }
                 .collectLatest { productId ->
                     mediaFileUploadHandler.observeCurrentUploads(productId)
                         .map { list -> list.map { it.toUri() } }
