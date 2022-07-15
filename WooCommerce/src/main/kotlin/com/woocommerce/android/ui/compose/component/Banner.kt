@@ -35,9 +35,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Success
-import java.time.Instant
-import java.time.ZoneOffset
-import java.time.ZonedDateTime
 
 @Composable
 fun PaymentsScreenBanner(

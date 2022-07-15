@@ -14,6 +14,8 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_ONBOARDING_
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_PREFERRED_PLUGIN
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_PREFERRED_PLUGIN_VERSION
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_STATEMENT_DESCRIPTOR
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_FOREVER
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.DATABASE_DOWNGRADED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.IMAGE_OPTIMIZE_ENABLED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.IS_COUPONS_ENABLED
@@ -309,7 +311,7 @@ object AppPrefs {
         remoteSiteId: Long,
         selfHostedSiteId: Long
     ) = PrefKeyString(
-        "${DeletablePrefKey.CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_FOREVER}:$localSiteId:$remoteSiteId:$selfHostedSiteId"
+        "$CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_FOREVER:$localSiteId:$remoteSiteId:$selfHostedSiteId"
     )
 
     private fun getCardReaderUpsellDismissedRemindMeLaterKey(
@@ -317,7 +319,7 @@ object AppPrefs {
         remoteSiteId: Long,
         selfHostedSiteId: Long
     ) = PrefKeyString(
-        "${DeletablePrefKey.CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER}:$localSiteId:$remoteSiteId:$selfHostedSiteId"
+        "$CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER:$localSiteId:$remoteSiteId:$selfHostedSiteId"
     )
 
     /**
