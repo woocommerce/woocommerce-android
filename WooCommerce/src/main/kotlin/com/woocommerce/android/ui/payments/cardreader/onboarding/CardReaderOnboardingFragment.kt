@@ -122,9 +122,9 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         UiHelpers.setTextOrHide(binding.selectWcPayButton, state.selectWcPayButtonLabel)
         UiHelpers.setTextOrHide(binding.selectStripeButton, state.selectStripeButtonLabel)
         UiHelpers.setTextOrHide(binding.confirmPaymentMethod, state.confirmPaymentMethodButtonLabel)
-        UiHelpers.setImageOrHideInLandscape(binding.cardIllustration, state.cardIllustration)
-        UiHelpers.setImageOrHideInLandscape(binding.icSelectWcPay, state.icWcPayLogo)
-        UiHelpers.setImageOrHideInLandscape(binding.icCheckmarkWcPay, state.icCheckmarkWcPay)
+        binding.cardIllustration.setImageResource(state.cardIllustration)
+        binding.icSelectWcPay.setImageResource(state.icWcPayLogo)
+        binding.icCheckmarkWcPay.setImageResource(state.icCheckmarkWcPay)
 
         binding.selectWcPayButton.setOnClickListener {
             selectedPluginType = PluginType.WOOCOMMERCE_PAYMENTS
