@@ -934,7 +934,7 @@
     <string name="card_reader_upsell_card_reader_banner_payments">In-Person Payments</string>
     <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">No worries! You can always get started with In-Person Payments in Settings.</string>
     <string name="card_reader_upsell_card_reader_banner_remind_me_later">REMIND ME LATER</string>
-    <string name="card_reader_upsell_card_reader_banner_dont_show_again">DON\'t SHOW AGAIN</string>
+    <string name="card_reader_upsell_card_reader_banner_dont_show_again">DON\'T SHOW AGAIN</string>
 
     <!--
             Card Reader Hub
