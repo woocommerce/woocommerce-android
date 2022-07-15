@@ -21,6 +21,7 @@ import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.compose.component.BannerDismissDialog
 import com.woocommerce.android.ui.compose.component.PaymentsScreenBanner
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dialog.WooDialog
@@ -59,6 +60,21 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
         _binding = FragmentTakePaymentBinding.inflate(inflater, container, false)
 
         val view = binding.root
+        if (viewModel.shouldUpsellCardReaderDismissDialogShow.value == true) {
+            applyBannerDismissDialogComposeUI()
+        } else {
+            applyBannerComposeUI()
+        }
+        return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setUpObservers(binding)
+        setupResultHandlers()
+    }
+
+    private fun applyBannerComposeUI() {
         binding.paymentsComposeView.apply {
             // Dispose of the Composition when the view's LifecycleOwner is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -73,13 +89,18 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
                 }
             }
         }
-        return view
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setUpObservers(binding)
-        setupResultHandlers()
+    private fun applyBannerDismissDialogComposeUI() {
+        binding.paymentsUpsellCardReaderDismissView.apply {
+            // Dispose of the Composition when the view's LifecycleOwner is destroyed
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                WooThemeWithBackground {
+                    BannerDismissDialog(viewModel)
+                }
+            }
+        }
     }
 
     private fun setUpObservers(binding: FragmentTakePaymentBinding) {
@@ -173,6 +194,16 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
                             event.cardReaderFlowParam
                         )
                     findNavController().navigate(action)
+                }
+                SelectPaymentMethodViewModel.DismissCardReaderUpsellBanner -> {
+                    binding.paymentsComposeView.visibility = View.GONE
+                    applyBannerDismissDialogComposeUI()
+                }
+                SelectPaymentMethodViewModel.DismissCardReaderUpsellBannerViaRemindMeLater -> {
+                    binding.paymentsUpsellCardReaderDismissView.visibility = View.GONE
+                }
+                SelectPaymentMethodViewModel.DismissCardReaderUpsellBannerViaDontShowAgain -> {
+                    binding.paymentsUpsellCardReaderDismissView.visibility = View.GONE
                 }
             }
         }

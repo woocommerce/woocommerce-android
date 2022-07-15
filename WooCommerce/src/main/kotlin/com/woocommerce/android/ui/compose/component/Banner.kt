@@ -35,6 +35,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Success
+import java.time.Instant
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
 
 @Composable
 fun PaymentsScreenBanner(
@@ -47,7 +50,9 @@ fun PaymentsScreenBanner(
         SelectPaymentMethodViewModel.TakePaymentViewState.Loading
     )
     if (
-        selectPaymentState is Success && (selectPaymentState as Success).isPaymentCollectableWithCardReader
+        selectPaymentState is Success &&
+        (selectPaymentState as Success).isPaymentCollectableWithCardReader &&
+        viewModel.canShowCardReaderUpsellBanner(System.currentTimeMillis())
     ) {
         Banner(
             onCtaClick = viewModel::onCtaClicked,
