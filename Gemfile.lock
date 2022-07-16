@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/wordpress-mobile/release-toolkit
-  revision: 6db329606e1aacca45a86b47cbfe742277d7e3f9
+  revision: a660c60c169eceef3dac04e0b2066c217cdf0a97
   branch: add/firebase-tests
   specs:
     fastlane-plugin-wpmreleasetoolkit (4.2.0)
@@ -25,7 +25,7 @@ GEM
   specs:
     CFPropertyList (3.0.5)
       rexml
-    activesupport (5.2.8)
+    activesupport (5.2.8.1)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 0.7, < 2)
       minitest (~> 5.1)
@@ -156,7 +156,7 @@ GEM
       google-apis-core (>= 0.7, < 2.a)
     google-apis-playcustomapp_v1 (0.7.0)
       google-apis-core (>= 0.4, < 2.a)
-    google-apis-storage_v1 (0.17.0)
+    google-apis-storage_v1 (0.18.0)
       google-apis-core (>= 0.7, < 2.a)
     google-cloud-core (1.6.0)
       google-cloud-env (~> 1.0)
@@ -183,7 +183,7 @@ GEM
     http-cookie (1.0.4)
       domain_name (~> 0.5)
     httpclient (2.8.3)
-    i18n (1.10.0)
+    i18n (1.12.0)
       concurrent-ruby (~> 1.0)
     jmespath (1.6.1)
     json (2.6.1)
@@ -200,13 +200,13 @@ GEM
     multipart-post (2.0.0)
     nanaimo (0.3.0)
     naturally (2.2.1)
-    nokogiri (1.13.6)
+    nokogiri (1.13.7)
       mini_portile2 (~> 2.8.0)
       racc (~> 1.4)
     octokit (4.25.1)
       faraday (>= 1, < 3)
       sawyer (~> 0.9)
-    oj (3.13.15)
+    oj (3.13.17)
     optimist (3.0.1)
     options (2.3.2)
     optparse (0.1.1)
@@ -284,4 +284,4 @@ DEPENDENCIES
   rmagick (~> 4.1)
 
 BUNDLED WITH
-   2.3.16
+   2.3.9
