@@ -45,6 +45,8 @@ GLOTPRESS_APP_STRINGS_PROJECT_URL = 'https://translate.wordpress.com/projects/wo
 # URL of the GlotPress project containing the Play Store metadata (title, keywords, release notes, …)
 GLOTPRESS_PLAYSTORE_METADATA_PROJECT_URL = 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/release-notes/'
 
+GOOGLE_FIREBASE_SECRETS_PATH = File.join(PROJECT_ROOT_FOLDER, '.configure-files', 'firebase.secrets.json')
+
 ########################################################################
 # Environment
 ########################################################################
@@ -823,18 +825,16 @@ platform :android do
   #####################################################################################
   desc "Build the application and instrumented tests, then run the tests in Firebase Test Lab"
   lane :build_and_instrumented_test do | options |
-
     gradle(tasks: ['assembleVanillaDebug', 'assembleVanillaDebugAndroidTest'])
-
-    firebase_key_file = File.join(PROJECT_ROOT_FOLDER, '.configure-files', 'firebase.secrets.json')
 
     # Run the instrumented tests in Firebase Test Lab
     firebase_login(
-      key_file: firebase_key_file
+      key_file: GOOGLE_FIREBASE_SECRETS_PATH
     )
 
     android_firebase_test(
-      key_file: firebase_key_file,
+      project_id: firebase_secret(name: 'project_id'),
+      key_file: GOOGLE_FIREBASE_SECRETS_PATH,
       model: 'Nexus5',
       version: 23,
       test_apk_path: lane_context[SharedValues::GRADLE_ALL_APK_OUTPUT_PATHS].first,
@@ -907,6 +907,13 @@ platform :android do
 
   def is_beta_version(version)
     version['name'].include? "-rc-"
+  end
+
+  def firebase_secret(name:)
+    UI.user_error!('Unable to locale Firebase Secrets File – did you run `configure apply`?') unless File.file? GOOGLE_FIREBASE_SECRETS_PATH
+    key_file_secrets = JSON.parse(File.read(GOOGLE_FIREBASE_SECRETS_PATH))
+    UI.user_error!("Unable to find key `#{name}` in #{GOOGLE_FIREBASE_SECRETS_PATH}") if key_file_secrets[name].nil?
+    key_file_secrets[name]
   end
 
   # This function is Buildkite-specific
