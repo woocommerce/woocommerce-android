@@ -826,9 +826,15 @@ platform :android do
 
     gradle(tasks: ['assembleVanillaDebug', 'assembleVanillaDebugAndroidTest'])
 
+    firebase_key_file = File.join(PROJECT_ROOT_FOLDER, '.configure-files', 'firebase.secrets.json')
+
     # Run the instrumented tests in Firebase Test Lab
+    firebase_login(
+      key_file: firebase_key_file
+    )
+
     android_firebase_test(
-      key_file: File.join(PROJECT_ROOT_FOLDER, '.configure-files', 'firebase.secrets.json'),
+      key_file: firebase_key_file,
       model: 'Nexus5',
       version: 23,
       test_apk_path: lane_context[SharedValues::GRADLE_ALL_APK_OUTPUT_PATHS].first,
