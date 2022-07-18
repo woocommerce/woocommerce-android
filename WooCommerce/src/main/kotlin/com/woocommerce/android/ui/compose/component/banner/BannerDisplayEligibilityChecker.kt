@@ -68,7 +68,7 @@ class BannerDisplayEligibilityChecker @Inject constructor(
         )
     }
 
-    fun getCardReaderUpsellBannerLastDismissed(): Long {
+    private fun getCardReaderUpsellBannerLastDismissed(): Long {
         val site = selectedSite.get()
         return appPrefsWrapper.getCardReaderUpsellBannerLastDismissed(
             localSiteId = site.id,
