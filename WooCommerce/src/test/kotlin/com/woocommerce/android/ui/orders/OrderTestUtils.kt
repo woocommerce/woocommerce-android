@@ -309,18 +309,19 @@ object OrderTestUtils {
 
     fun generateTestOrderItems(
         count: Int = 1,
-        productId: Long = -1
+        productId: Long = -1,
+        quantity: Float = 1F
     ): List<Item> {
         val list = mutableListOf<Item>()
         for (i in 1..count) {
             list.add(
-                Order.Item(
+                Item(
                     itemId = i.toLong(),
                     productId = productId.takeIf { it != -1L } ?: i.toLong(),
                     name = "A test",
                     price = BigDecimal("10"),
                     sku = "",
-                    quantity = 1f,
+                    quantity = quantity,
                     subtotal = BigDecimal("10"),
                     totalTax = BigDecimal.ZERO,
                     total = BigDecimal("10"),
