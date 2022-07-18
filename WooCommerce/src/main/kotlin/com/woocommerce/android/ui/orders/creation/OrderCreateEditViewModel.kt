@@ -424,7 +424,7 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun trackOrderSyncFailed(throwable: Throwable) {
-        AnalyticsTracker.track(
+        tracker.track(
             stat = AnalyticsEvent.ORDER_SYNC_FAILED,
             properties = mapOf(KEY_FLOW to flow),
             errorContext = this::class.java.simpleName,
