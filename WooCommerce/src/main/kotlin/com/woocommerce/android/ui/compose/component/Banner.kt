@@ -36,6 +36,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Success
+import com.woocommerce.android.ui.prefs.MainSettingsContract
 
 @Composable
 fun PaymentsScreenBanner(
@@ -73,6 +74,24 @@ fun OrderListScreenBanner(
         Banner(
             onCtaClick = viewModel::onCtaClicked,
             onDismissClick = viewModel::onDismissClicked,
+            title = title,
+            subtitle = subtitle,
+            ctaLabel = ctaLabel,
+        )
+    }
+}
+
+@Composable
+fun SettingsScreenBanner(
+    presenter: MainSettingsContract.Presenter,
+    title: String,
+    subtitle: String,
+    ctaLabel: String,
+) {
+    if (presenter.canShowCardReaderUpsellBanner(System.currentTimeMillis())) {
+        Banner(
+            onCtaClick = presenter::onCtaClicked,
+            onDismissClick = presenter::onDismissClicked,
             title = title,
             subtitle = subtitle,
             ctaLabel = ctaLabel,
