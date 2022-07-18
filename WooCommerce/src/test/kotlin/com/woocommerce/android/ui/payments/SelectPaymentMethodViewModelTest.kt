@@ -81,7 +81,6 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         onBlocking { isCollectable(order) }.thenReturn(false)
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
-    private val store: WooCommerceStore = mock()
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker = mock()
 
     @Test
