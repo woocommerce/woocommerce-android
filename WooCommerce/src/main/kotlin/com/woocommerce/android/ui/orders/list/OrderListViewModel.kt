@@ -3,6 +3,7 @@
 package com.woocommerce.android.ui.orders.list
 
 import android.os.Parcelable
+import android.view.View
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.Lifecycle
@@ -25,6 +26,7 @@ import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChange
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
@@ -63,7 +65,8 @@ typealias PagedOrdersList = PagedList<OrderListItemUIType>
 class OrderListViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val dispatchers: CoroutineDispatchers,
-    protected val orderListRepository: OrderListRepository,
+    private val orderListRepository: OrderListRepository,
+    private val orderDetailRepository: OrderDetailRepository,
     private val orderStore: WCOrderStore,
     private val listStore: ListStore,
     private val networkStatus: NetworkStatus,
@@ -423,6 +426,7 @@ class OrderListViewModel @Inject constructor(
 
     sealed class OrderListEvent : Event() {
         data class ShowErrorSnack(@StringRes val messageRes: Int) : OrderListEvent()
+        data class ShowOrderDetail(val orderId: Long, val sharedView: View?) : OrderListEvent()
         object ShowOrderFilters : OrderListEvent()
     }
 
