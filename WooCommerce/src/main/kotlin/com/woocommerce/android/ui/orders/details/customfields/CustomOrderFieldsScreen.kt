@@ -166,6 +166,13 @@ private fun CustomFieldsPreview() {
                 orderId = 0,
                 key = "email key",
                 value = "example@example.com"
+            ),
+            OrderMetaDataEntity(
+                id = 4,
+                localSiteId = LocalOrRemoteId.LocalId(0),
+                orderId = 0,
+                key = "phone key",
+                value = "tel://1234567890"
             )
         )
     )
