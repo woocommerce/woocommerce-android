@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.details.customfields
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -12,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -142,7 +142,6 @@ private fun clickableTextValueItem(value: String) {
     )
 }
 
-@Preview
 @Composable
 private fun CustomFieldsPreview() {
     CustomFieldsScreen(
