@@ -216,7 +216,7 @@ class OrderListFragment :
     }
 
     private fun applyBannerComposeUI() {
-        binding.paymentsComposeView.apply {
+        binding.upsellCardReaderComposeView.paymentsComposeView.apply {
             // Dispose of the Composition when the view's LifecycleOwner is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
@@ -233,7 +233,7 @@ class OrderListFragment :
     }
 
     private fun applyBannerDismissDialogComposeUI() {
-        binding.paymentsUpsellCardReaderDismissView.apply {
+        binding.upsellCardReaderComposeView.paymentsUpsellCardReaderDismissView.apply {
             // Dispose of the Composition when the view's LifecycleOwner is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
@@ -327,14 +327,14 @@ class OrderListFragment :
                 }
                 is ShowOrderFilters -> showOrderFilters()
                 DismissCardReaderUpsellBanner -> {
-                    binding.paymentsComposeView.visibility = View.GONE
+                    binding.upsellCardReaderComposeView.paymentsComposeView.visibility = View.GONE
                     applyBannerDismissDialogComposeUI()
                 }
                 DismissCardReaderUpsellBannerViaRemindMeLater -> {
-                    binding.paymentsUpsellCardReaderDismissView.visibility = View.GONE
+                    binding.upsellCardReaderComposeView.paymentsUpsellCardReaderDismissView.visibility = View.GONE
                 }
                 DismissCardReaderUpsellBannerViaDontShowAgain -> {
-                    binding.paymentsUpsellCardReaderDismissView.visibility = View.GONE
+                    binding.upsellCardReaderComposeView.paymentsUpsellCardReaderDismissView.visibility = View.GONE
                 }
                 is OrderListViewModel.OrderListEvent.OpenPurchaseCardReaderLink -> {
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)

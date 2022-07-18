@@ -12,15 +12,11 @@
 
         <View style="@style/Woo.Divider" />
 
-        <androidx.compose.ui.platform.ComposeView
-            android:id="@+id/paymentsComposeView"
+        <include
+            android:id="@+id/upsellCardReaderComposeView"
+            layout="@layout/fragment_card_reader_upsell_banner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
-
-        <androidx.compose.ui.platform.ComposeView
-            android:id="@+id/paymentsUpsellCardReaderDismissView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
 
         <View style="@style/Woo.Divider" />
 

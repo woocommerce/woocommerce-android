@@ -252,16 +252,16 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     }
 
     override fun dismissUpsellCardReaderBanner() {
-        binding.paymentsComposeView.visibility = View.GONE
+        binding.upsellCardReaderComposeView.paymentsComposeView.visibility = View.GONE
         applyBannerDismissDialogComposeUI()
     }
 
     override fun dismissUpsellCardReaderBannerViaRemindLater() {
-        binding.paymentsUpsellCardReaderDismissView.visibility = View.GONE
+        binding.upsellCardReaderComposeView.paymentsUpsellCardReaderDismissView.visibility = View.GONE
     }
 
     override fun dismissUpsellCardReaderBannerViaDontShowAgain() {
-        binding.paymentsUpsellCardReaderDismissView.visibility = View.GONE
+        binding.upsellCardReaderComposeView.paymentsUpsellCardReaderDismissView.visibility = View.GONE
     }
 
     override fun openPurchaseCardReaderLink(url: String) {
@@ -289,7 +289,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     }
 
     private fun applyBannerComposeUI() {
-        binding.paymentsComposeView.apply {
+        binding.upsellCardReaderComposeView.paymentsComposeView.apply {
             // Dispose of the Composition when the view's LifecycleOwner is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
@@ -306,7 +306,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     }
 
     private fun applyBannerDismissDialogComposeUI() {
-        binding.paymentsUpsellCardReaderDismissView.apply {
+        binding.upsellCardReaderComposeView.paymentsUpsellCardReaderDismissView.apply {
             // Dispose of the Composition when the view's LifecycleOwner is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
