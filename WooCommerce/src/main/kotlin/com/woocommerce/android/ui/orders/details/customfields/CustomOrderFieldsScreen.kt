@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.orders.details.customfields
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,7 +17,9 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -120,14 +124,21 @@ private fun clickableTextValueItem(value: String) {
         toAnnotatedString()
     }
 
-    ClickableText(
+    Text(
         text = text,
         style = MaterialTheme.typography.body2.copy(
             color = colorResource(R.color.color_text_link)
         ),
-        onClick = {
-            clickListener?.onCustomOrderFieldClicked(value)
-        }
+        modifier = Modifier.clickable(
+            indication = rememberRipple(
+                bounded = true,
+                color = colorResource(id = R.color.color_ripple_overlay)
+            ),
+            interactionSource = remember { MutableInteractionSource() },
+            onClick = {
+                clickListener?.onCustomOrderFieldClicked(value)
+            }
+        )
     )
 }
 
