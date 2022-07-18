@@ -1,8 +1,8 @@
 package com.woocommerce.android
 
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
-import com.woocommerce.android.ui.cardreader.onboarding.PersistentOnboardingData
-import com.woocommerce.android.ui.cardreader.onboarding.PluginType
+import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
+import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -26,6 +26,9 @@ class AppPrefsWrapper @Inject constructor() {
         AppPrefs.isCardReaderOnboardingCompleted(localSiteId, remoteSiteId, selfHostedSiteId)
 
     fun isCardReaderWelcomeDialogShown() = AppPrefs.isCardReaderWelcomeDialogShown()
+
+    fun isCardReaderPluginExplicitlySelected(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
+        AppPrefs.isCardReaderPluginExplicitlySelected(localSiteId, remoteSiteId, selfHostedSiteId)
 
     fun getCardReaderPreferredPlugin(
         localSiteId: Int,
@@ -56,6 +59,20 @@ class AppPrefsWrapper @Inject constructor() {
             remoteSiteId,
             selfHostedSiteId,
             data,
+        )
+    }
+
+    fun setIsCardReaderPluginExplicitlySelectedFlag(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long,
+        isPluginExplicitlySelected: Boolean = false
+    ) {
+        AppPrefs.setIsCardReaderPluginExplicitlySelectedFlag(
+            localSiteId,
+            remoteSiteId,
+            selfHostedSiteId,
+            isPluginExplicitlySelected
         )
     }
 

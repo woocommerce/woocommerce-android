@@ -46,6 +46,7 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
      */
     fun getItemDetails() =
         object : ItemDetailsLookup.ItemDetails<Long>() {
+            @Suppress("DEPRECATION")
             override fun getPosition() = adapterPosition
             override fun getSelectionKey() = itemId
             override fun inSelectionHotspot(e: MotionEvent) = true

@@ -1,7 +1,15 @@
 package com.woocommerce.android.ui.orders.shippinglabels
 
-import com.woocommerce.android.annotations.OpenClassOnDebug
-import com.woocommerce.android.model.*
+import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.CustomsPackage
+import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.ShippingAccountSettings
+import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.ShippingLabelMapper
+import com.woocommerce.android.model.ShippingLabelPackage
+import com.woocommerce.android.model.ShippingPackage
+import com.woocommerce.android.model.ShippingRate
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -19,7 +27,6 @@ import org.wordpress.android.fluxc.store.WCShippingLabelStore
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@OpenClassOnDebug
 @Singleton
 class ShippingLabelRepository @Inject constructor(
     private val shippingLabelStore: WCShippingLabelStore,
@@ -104,7 +111,7 @@ class ShippingLabelRepository @Inject constructor(
             orderId = order.id,
             origin = origin.toShippingLabelModel(),
             destination = destination.toShippingLabelModel(),
-            packages = packages.mapIndexed { i, box ->
+            packages = packages.mapIndexed { _, box ->
                 val pack = requireNotNull(box.selectedPackage)
                 WCShippingLabelModel.ShippingLabelPackage(
                     id = box.packageId,
@@ -182,7 +189,7 @@ class ShippingLabelRepository @Inject constructor(
         rates: List<ShippingRate>,
         customsPackages: List<CustomsPackage>?
     ): WooResult<List<ShippingLabel>> {
-        val packagesData = packages.mapIndexed { i, labelPackage ->
+        val packagesData = packages.mapIndexed { _, labelPackage ->
             val rate = rates.first { it.packageId == labelPackage.packageId }
             WCShippingLabelPackageData(
                 id = labelPackage.packageId,

@@ -42,7 +42,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.component.WCSearchView
+import com.woocommerce.android.ui.compose.component.WCSearchField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.categories.selector.ProductCategorySelectorViewModel.CategoryUiModel
@@ -76,7 +76,7 @@ fun ProductCategorySelectorScreen(
             .fillMaxSize()
             .background(MaterialTheme.colors.surface)
     ) {
-        WCSearchView(
+        WCSearchField(
             value = viewState.searchQuery,
             onValueChange = onSearchQueryChanged,
             hint = stringResource(id = R.string.product_category_selector_search_hint),

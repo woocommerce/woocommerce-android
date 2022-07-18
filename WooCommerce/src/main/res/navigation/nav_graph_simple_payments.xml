@@ -5,7 +5,7 @@
     app:startDestination="@id/simplePaymentsDialog">
     <dialog
         android:id="@+id/simplePaymentsDialog"
-        android:name="com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsDialog"
+        android:name="com.woocommerce.android.ui.payments.simplepayments.SimplePaymentsDialog"
         android:label="SimplePaymentsDialog">
         <action
             android:id="@+id/action_simplePaymentDialog_to_simplePaymentFragment"
@@ -17,7 +17,7 @@
     </dialog>
     <fragment
         android:id="@+id/simplePaymentsFragment"
-        android:name="com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsFragment"
+        android:name="com.woocommerce.android.ui.payments.simplepayments.SimplePaymentsFragment"
         android:label="SimplePaymentsFragment">
         <argument
             android:name="order"
@@ -31,38 +31,26 @@
             app:popEnterAnim="@anim/default_pop_enter_anim"
             app:popExitAnim="@anim/default_pop_exit_anim" />
         <action
-            android:id="@+id/action_simplePaymentsFragment_to_takePaymentFragment"
-            app:destination="@id/takePaymentFragment"
+            android:id="@+id/action_simplePaymentsFragment_to_paymentFlow"
+            app:destination="@id/paymentFlow"
             app:enterAnim="@anim/default_enter_anim"
             app:exitAnim="@anim/default_exit_anim"
             app:popEnterAnim="@anim/default_pop_enter_anim"
-            app:popExitAnim="@anim/default_pop_exit_anim" />
+            app:popExitAnim="@anim/default_pop_exit_anim" >
+            <argument
+                android:name="cardReaderFlowParam"
+                app:argType="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam"
+                app:nullable="false" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/simplePaymentsCustomerNoteFragment"
-        android:name="com.woocommerce.android.ui.orders.simplepayments.SimplePaymentsCustomerNoteFragment"
+        android:name="com.woocommerce.android.ui.payments.simplepayments.SimplePaymentsCustomerNoteFragment"
         android:label="SimplePaymentsCustomerNoteFragment">
         <argument
             android:name="customerNote"
             android:defaultValue='""'
             app:argType="string" />
     </fragment>
-    <fragment
-        android:id="@+id/takePaymentFragment"
-        android:name="com.woocommerce.android.ui.orders.simplepayments.TakePaymentFragment"
-        android:label="TakePaymentFragment">
-        <argument
-            android:name="order"
-            app:argType="com.woocommerce.android.model.Order"
-            app:nullable="false" />
-        <action
-            android:id="@+id/action_takePaymentFragment_to_cardReaderFlow"
-            app:destination="@id/cardReaderFlow">
-            <argument
-                android:name="cardReaderFlowParam"
-                app:argType="com.woocommerce.android.ui.cardreader.onboarding.CardReaderFlowParam"
-                app:nullable="false" />
-        </action>
-    </fragment>
-    <include app:graph="@navigation/nav_graph_card_reader_flow" />
+    <include app:graph="@navigation/nav_graph_payment_flow" />
 </navigation>

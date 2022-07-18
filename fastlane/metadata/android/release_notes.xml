@@ -1,102 +1,119 @@
 <ar>
-9.3:
-رحبي بالمدفوعات الشخصية يا كندا! يسعدنا أن نعلن أن المدفوعات الشخصية متاحة الآن للتجار الكنديين الذي يستخدمون WooCommerce Payments في الوقت الحالي.
+9.5:
+نواصل إضافة وظائف جديدة إلى ميزة إدارة القسائم التجريبية الخاصة بنا! يتضمن هذا الإصدار تحرير القسائم وحذفها إلى جانب العديد من التحسينات على طريقة العرض. قم بتشغيل هذه الميزة للوصول المبكر إلى علامة تبويب المزيد والإعدادات والميزات التجريبية.
 
-يحتوي كذلك هذا الإصدار على بعض التحسينات الصغيرة. شكرًا لكم جميعًا مرة أخرى على ملحوظاتكم الرائعة. استمروا!
+قمنا كذلك بإصلاح خطأ كان يُصعب على بعض منكم البحث عن طلبات. شكرًا إلى كل شخص قام بالإبلاغ عن هذا! ملاحظاتك مهمة جدًا بالنسبة إلينا!
+
 </ar>
 <de-DE>
-9.3:
-Kanada, begrüße die persönlichen Zahlungen! Wir freuen uns sehr, bekanntgeben zu dürfen, dass persönliche Zahlungen ab sofort kanadischen Verkäufern zur Verfügung stehen, die derzeit WooCommerce Payments nutzen.
+9.5:
+Wir fügen weiterhin neue Funktionen zu unserer experimentellen Gutscheinmanagement-Funktion hinzu!  Diese Version enthält Optionen zum Bearbeiten und Löschen von Gutscheinen sowie mehrere Verbesserungen bei der Anzeige. Aktiviere diese Funktion über den Tab „Mehr“ > „Einstellungen“ > „Betafunktionen“, um frühzeitigen Zugriff zu erhalten.
 
-Diese Version enthält auch einige kleinere Verbesserungen. Danke an alle für euer hervorragendes Feedback. Weiter so!
+Darüber hinaus haben wir ein Problem behoben, das die Suche nach Bestellungen teilweise erschwert hat. Vielen Dank an alle, die dieses Problem gemeldet haben! Euer Feedback ist enorm wichtig für uns!
+
 </de-DE>
 <es-ES>
-9,3:
-Canadá, da la bienvenida a los pagos en persona. Estamos encantados de anunciar que los pagos en persona se encuentran ahora disponibles para los vendedores de Canadá que usan actualmente WooCommerce Payments.
+9.5:
+Seguimos añadiendo nuevas funcionalidades a nuestra función experimental Gestión de cupones. Esta versión incluye la edición y eliminación de cupones, así como varias mejoras en la visualización. Para obtener acceso anticipado, activa esta función en la pestaña Más, Ajustes, Funciones beta.
 
-Esta versión también incluye varias pequeñas mejoras. Gracias de nuevo por tus increíbles comentarios. ¡Sigue así!
+También hemos corregido un error que dificultaba la búsqueda de pedidos a algunos usuarios. Gracias a todos los que nos habéis informado de este problema. Valoramos mucho tu opinión.
+
 </es-ES>
 <fr-FR>
-Version 9.3 :
-Les paiements en personne sont désormais disponibles au Canada ! Nous sommes ravis d’annoncer que les paiements en personne sont maintenant disponibles pour les marchands canadiens qui utilisent actuellement WooCommerce Payments.
+9.5 :
+Nous ajoutons continuellement de nouvelles fonctions à notre fonctionnalité expérimentale de gestion des codes promo ! Cette version comprend la modification et la suppression de codes promo ainsi que plusieurs améliorations de l’affichage. Activez cette fonctionnalité sous l’onglet Plus > Réglages > Fonctionnalités bêta pour bénéficier d’un accès en avant-première.
 
-Cette version comprend également quelques améliorations mineures. Encore merci pour vos super retours. Continuez à nous les envoyer !
+Nous avons également corrigé un bug qui gênait la recherche des commandes chez certains utilisateurs. Merci aux internautes qui nous ont signalé le problème ! Votre avis compte beaucoup à nos yeux !
+
 </fr-FR>
 <iw-IL>
-9.3:
-נמצאים בקנדה? הכירו את 'תשלומים באופן אישי'! אנחנו שמחים להודיע שהאפשרות 'תשלומים באופן אישי' זמינה כעת לסוחרים קנדיים שמשתמשים עכשיו ב-WooCommerce Payments.
+9.5:
+אנחנו ממשיכים להוסיף פונקציונליות לאפשרות 'ניהול קופונים' הניסיונית שלנו! בגרסה הזאת הוספנו עריכה ומחיקה של קופונים לצד כמה שיפורים בצפייה. כדי לקבל גישה מוקדמת, ניתן להפעיל את האפשרות הזאת בלשונית 'עוד' > 'הגדרות' > 'אפשרויות בטא'.
 
-הגרסה הזאת כוללת גם כמה שיפורים קטנים. אנחנו שוב רוצים להודות לכולם על המשוב החשוב. תמיד נשמח לשמוע מה דעתכם!
+בנוסף, תיקנו באג שסיבך את חיפוש ההזמנות אצל משתמשים מסוימים. תודה לכל מי שדיווח על הבאג הזה! המשוב שלכם חשוב לנו!
+
 </iw-IL>
 <id>
-9.3:
-Untuk penduduk Kanada, selamat menggunakan pembayaran langsung! Dengan gembira kami umumkan bahwa pembayaran langsung kini tersedia bagi para penjual di Kanada yang menggunakan WooCommerce Payments.
+9.5:
+Kami terus menambahkan fungsi baru untuk fitur uji coba Pengelolaan Kupon! Rilis ini mencakup pengeditan dan penghapusan kupon dan beberapa perbaikan pada pratinjau. Untuk mendapatkan akses dini, aktifkan fitur ini di tab Lainnya, Pengaturan, Fitur Beta.
 
-Rilis ini juga memberikan sejumlah perbaikan kecil. Sekali lagi kami ucapkan terima kasih atas feedback Anda yang luar biasa. Terus kirimkan feedback Anda!
+Kami juga memperbaiki bug yang membuat Anda kesulitan mencari pesanan. Terima kasih untuk semua yang telah melaporkan bug ini! Feedback Anda sangat penting bagi kami!
+
 </id>
 <it-IT>
-9.3:
-Canada, saluta i pagamenti di persona. Siamo eccitati nell'annunciare che i pagamenti di persona sono ora disponibili per i rivenditori canadesi che attualmente usano WooCommerce Payments.
+9.5:
+Continuiamo ad aggiungere nuove funzionalità alla nostra funzionalità sperimentale di gestione dei codici promozionali! Questa versione include la modifica e l'eliminazione dei codici promozionali insieme a numerosi miglioramenti alla visualizzazione. Attiva questa funzionalità per l'accesso anticipato nella scheda Altro, Impostazioni, Funzionalità sperimentali.
 
-Questo rilascio contiene anche alcuni piccoli miglioramenti. Grazie a tutti ancora per il meraviglioso feedback. Continuate a inviarlo.
+Abbiamo anche risolto un bug che rendeva difficile per alcuni utenti la ricerca degli ordini. Grazie a tutti coloro che hanno segnalato questo problema. Il tuo feedback è di vitale importanza per noi.
+
 </it-IT>
 <ja-JP>
-9.3:
-カナダでオフラインでの支払いが可能になりました この度、WooCommerce Payments を現在ご利用中のカナダのマーチャントが対面でのお支払いを選択できるようになりました。
+9.5:
+試験的なクーポン管理機能に新しい機能を継続的に追加しています。 このリリースでは、クーポンの編集と削除に加え、表示の改善を行いました。 この機能をオンにして「詳細」タブ、「設定」、「ベータ版の機能」をいち早く利用しましょう。
 
-今回のリリースでは、いくつかの細かな改善も行っています。 皆さまからのフィードバックが改善の励みになります。 今後ともよろしくお願いいたします。
+一部のユーザーの注文検索を困難にするバグの修正も行いました。 ご報告いただいた皆さま、ありがとうございました。 皆さまからのフィードバックは、当社にとって不可欠です。
+
 </ja-JP>
 <ko-KR>
-9.3:
-캐나다에서 대면 결제가 가능합니다! 이제는 현재 우커머스 결제를 이용하는 캐나다 판매자가 대면 결제를 이용할 수 있습니다.
+9.5:
+실험적인 쿠폰 관리 기능에 새로운 기능을 계속 추가하고 있습니다! 이 릴리스에는 쿠폰 편집 및 삭제와 함께 여러 가지 보기 개선 사항이 포함됩니다. 이 기능을 사용하면 자세히 탭, 설정, 베타 기능에 앞서 접근할 수 있습니다.
 
-이 릴리스에는 몇 가지 사소한 개선 사항도 포함되어 있습니다. 놀라운 피드백을 제공해 주셔서 정말로 감사합니다. 계속 보내주세요!
+가끔 주문이 잘 검색되지 않던 버그도 수정했습니다. 이 버그를 신고해 주신 모든 분께 감사합니다! 여러분의 피드백은 필수불가결합니다!
+
 </ko-KR>
 <nl-NL>
-9.3:
-Canada, zeg hallo tegen fysieke betalingen! We zijn blij te kunnen vertellen dat fysieke betalingen nu beschikbaar zijn voor Canadese verkopers die nu WooCommerce Payments gebruiken.
+9.5:
+We blijven nieuwe functionaliteit toevoegen aan onze experimentele functie Couponbeheer! Deze release omvat het bewerken en verwijderen van coupons en verschillende verbeteringen voor de weergave. Schakel deze functie in voor vroege toegang in het tabblad Meer, Instellingen, Bèta-functies.
 
-Deze release bevat ook een aantal kleine verbeteringen. Wederom bedankt voor jullie geweldige feedback. Blijf zo doorgaan!
+Daarnaast hebben we een bug verholpen waardoor het voor een aantal mensen lastig was om bestellingen te doorzoeken. Bedankt dat jullie deze bugs hebben gemeld. Jullie feedback is essentieel voor ons!
+
 </nl-NL>
 <pt-BR>
-9.3:
-Canadá, diga "oi" aos pagamentos presenciais! Temos o prazer de anunciar que os pagamentos presenciais agora estão disponíveis para vendedores canadenses que usem o WooCommerce Payments.
+9.5:
+Estamos sempre adicionando novos recursos à nossa funcionalidade experimental de gerenciamento de cupons. Esta versão inclui opções de edição e exclusão de cupons, além de diversas melhorias na visualização. Ative esta funcionalidade na guia Mais > Configurações > Funcionalidades Beta para receber acesso antecipado.
 
-Esta versão também inclui algumas pequenas melhorias. Obrigado a todos pelos incríveis feedbacks. Continuem mandando!
+Solucionamos um bug que estava dificultando a pesquisa de pedidos para alguns de vocês. Agradecemos a todos que relataram esse erro. O feedback de vocês é essencial para nós.
+
 </pt-BR>
 <ru-RU>
-9.3:
-Канада, приветствуй очные платежи! Мы счастливы объявить о том, что теперь очные платежи доступны продавцам из Канады, которые используют WooCommerce Payments.
+9.5:
+Мы по-прежнему добавляем новый функционал в экспериментальную функцию управления купонами! В этой версии добавлено редактирование и удаление купонов, а также улучшены некоторые возможности просмотра. Чтобы получить ранний доступ, активируйте функцию на вкладке "Дополнительно" > "Настройки" > "Бета-функции".
 
-Мы также внесли в этот выпуск некоторые улучшения. Ещё раз спасибо за ваши ценные отзывы. Ждём их снова!
+Также исправлена ошибка, из-за которой некоторые пользователи не могли искать заказы. Благодарим всех, кто сообщил нам об этой ошибке! Ваши отзывы очень важны!
+
 </ru-RU>
 <sv-SE>
-9.3:
-Kanada, säg hej till personliga betalningar. Vi är glada att kunna meddela att personliga betalningar nu är tillgängliga för kanadensiska handlare som använder WooCommerce Payments.
+9.5:
+Vi fortsätter att lägga till ny funktionalitet till vår experimentella funktion för rabattkodshantering. Den här versionen inkluderar redigering och borttagning av rabattkoder samt flertalet visningsförbättringar. Aktivera den här funktionen via fliken Mer, Inställningar, Betafunktioner för att få tidig åtkomst.
 
-Den här versionen innehåller även ett antal mindre förbättringar. Tack ännu en gång för all fantastisk feedback. Fortsätt så.
+Vi har också åtgärdat ett fel som gjorde det svårt för vissa av er att söka efter beställningar. Tack till alla som har rapporterat det här felet. Er feedback är jätteviktig för oss.
+
 </sv-SE>
 <tr-TR>
-9.3:
-Kanadalılar, şahsen ödemelere merhaba deyin! Şu anda WooCommerce Payments'ı kullanan Kanadalı satıcıların artık şahsen ödemeleri de kabul edebileceğini duyurmaktan heyecan duyuyoruz.
+9.5:
+Deneysel Kupon Yönetimi özelliğimize yeni işlevler eklemeye devam ediyoruz! Bu sürümde, kuponların düzenlenmesi, silinmesi ve ayrıca görüntülemeyle ilgili çeşitli iyileştirmeler yapılmıştır. Erken erişim için, Diğer sekmesi, Ayarlar, Beta Özellikleri bölümünden bu özelliği etkinleştirin.
 
-Bu sürümde ayrıca birkaç küçük iyileştirme de var. Harika geri bildirimleriniz için herkese tekrar teşekkür ederim. Devam edin!
+Ayrıca bazen sipariş aramayı zorlaştıran bir hatayı da düzelttik. Bu hatayı bildiren herkese teşekkürler! Görüşleriniz bizim için çok önemli!
+
 </tr-TR>
 <zh-CN>
-9.3：
-我们在加拿大推出现场付款了！ 我们很高兴地宣布，目前使用 WooCommerce Payments 的加拿大商家现在可以使用现场付款了。
+9.5：
+我们不断为测试版优惠券管理功能添加新功能。 此版本包括编辑和删除优惠券以及关于查看的几项改进。 在“更多”选项卡、“设置”和“测试版功能”中开启此功能，抢先体验。
 
-此版本还包含一些小的改进。 再次感谢大家的宝贵的反馈。 请继续提供反馈！
+我们还修复了一个导致部分用户难以搜索订单的错误。 感谢向我们反馈此错误的所有人！ 您的反馈对我们很重要！
+
 </zh-CN>
 <zh-TW>
-9.3：
-好消息，親自收款功能上線了！ 我們很高興宣布，目前使用 WooCommerce Payments 的加拿大商家現在可以使用親自收款功能了。
+9.5：
+我們持續在實驗性「優惠券管理」功能中增添新功能！ 此版本包含了編輯和刪除優惠券功能以及一些檢視功能的改善。 開啟此功能即可搶先在「更多」分頁、「設定」及測試版功能中使用。
 
-此版本也包含幾項微幅改善。 再次感謝各位寶貴的意見。 未來請繼續多多指教！
+我們也修正了會導致部分使用者難以搜尋訂單的錯誤。 感謝回報此問題的所有人！ 你的意見反應對我們至關重要！
+
 </zh-TW>
 <en-US>
-9.3:
-Canada, say hello to in-person payments! We are thrilled to announce that in-person payments are now available to Canadian merchants currently using WooCommerce Payments.
+9.5:
+We keep adding new functionality to our experimental Coupon Management feature! This release includes editing and deleting coupons along with several improvements on viewing. Turn this feature on for early access in the More tab, Settings, Beta Features.
 
-This release also contains a few minor improvements. Thank you all again for your amazing feedback. Keep it coming!
+We also fixed a bug that was making it hard for some of you to search orders. Thanks to everyone who reported this! Your feedback is vital to us!
+
 </en-US>

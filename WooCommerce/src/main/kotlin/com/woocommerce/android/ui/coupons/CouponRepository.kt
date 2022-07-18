@@ -3,12 +3,14 @@ package com.woocommerce.android.ui.coupons
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.CouponPerformanceReport
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
@@ -19,7 +21,8 @@ import javax.inject.Inject
 class CouponRepository @Inject constructor(
     private val store: CouponStore,
     private val selectedSite: SelectedSite,
-    private val dateUtils: DateUtils
+    private val dateUtils: DateUtils,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) {
     suspend fun fetchCoupons(
         page: Int,
@@ -28,7 +31,7 @@ class CouponRepository @Inject constructor(
         return store.fetchCoupons(selectedSite.get(), page, pageSize)
             .let { result ->
                 if (result.isError) {
-                    AnalyticsTracker.track(
+                    analyticsTrackerWrapper.track(
                         AnalyticsEvent.COUPONS_LOAD_FAILED,
                         mapOf(
                             AnalyticsTracker.KEY_ERROR_CONTEXT to result.error::class.java.simpleName,
@@ -43,7 +46,7 @@ class CouponRepository @Inject constructor(
                     )
                     Result.failure(WooException(result.error))
                 } else {
-                    AnalyticsTracker.track(
+                    analyticsTrackerWrapper.track(
                         AnalyticsEvent.COUPONS_LOADED,
                         mapOf(Pair(AnalyticsTracker.KEY_IS_LOADING_MORE, page > 1))
                     )
@@ -81,6 +84,7 @@ class CouponRepository @Inject constructor(
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun observeCoupons(): Flow<List<Coupon>> = store.observeCoupons(selectedSite.get()).map {
         it.map { couponDataModel -> couponDataModel.toAppModel() }
     }

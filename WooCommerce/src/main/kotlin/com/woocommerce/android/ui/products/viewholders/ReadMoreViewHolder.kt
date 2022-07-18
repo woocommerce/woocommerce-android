@@ -10,9 +10,10 @@ class ReadMoreViewHolder(
     parent: ViewGroup
 ) : ProductPropertyViewHolder(parent, R.layout.product_property_read_more_view) {
     fun bind(item: ReadMore) {
+        val context = itemView.context
         val propertyView = itemView as WCProductPropertyReadMoreView
         propertyView.show(
-            itemView.context.getString(item.caption),
+            context.getString(item.caption),
             HtmlUtils.fastStripHtml(item.content),
             item.maxLines
         )

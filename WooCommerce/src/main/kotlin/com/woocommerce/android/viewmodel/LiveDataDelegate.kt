@@ -4,7 +4,6 @@ import android.os.Parcelable
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import java.lang.IllegalStateException
 import kotlin.reflect.KProperty
@@ -40,14 +39,11 @@ class LiveDataDelegate<T : Parcelable>(
         }
 
         previousValue = null
-        _liveData.observe(
-            owner,
-            Observer {
-                onChange(previousValue, it)
-                observer(previousValue, it)
-                previousValue = it
-            }
-        )
+        _liveData.observe(owner) {
+            onChange(previousValue, it)
+            observer(previousValue, it)
+            previousValue = it
+        }
     }
 
     fun observeForever(observer: (T?, T) -> Unit) {

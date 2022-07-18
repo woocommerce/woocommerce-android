@@ -22,8 +22,6 @@ import com.woocommerce.android.ui.products.models.ProductProperty.Editable
 import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
 import com.woocommerce.android.ui.products.models.ProductProperty.RatingBar
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
-import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
-import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.ui.products.variations.VariationRepository
@@ -128,14 +126,14 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     private val expectedCards = listOf(
         ProductPropertyCard(
-            type = PRIMARY,
+            type = ProductPropertyCard.Type.PRIMARY,
             properties = listOf(
                 Editable(R.string.product_detail_title_hint, product.name),
                 ComplexProperty(R.string.product_description, product.description)
             )
         ),
         ProductPropertyCard(
-            type = SECONDARY,
+            type = ProductPropertyCard.Type.SECONDARY,
             properties = listOf(
                 PropertyGroup(
                     R.string.product_price,
@@ -562,7 +560,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         }
 
         var isTrashDialogShown = false
-        viewModel.productDetailViewStateData.observeForever { old, new ->
+        viewModel.productDetailViewStateData.observeForever { _, new ->
             new.isConfirmingTrash.takeIfNotEqualTo(false) {
                 isTrashDialogShown = true
             }

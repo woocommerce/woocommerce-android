@@ -1,0 +1,5 @@
+9.5 :
+Nous ajoutons continuellement de nouvelles fonctions à notre fonctionnalité expérimentale de gestion des codes promo ! Cette version comprend la modification et la suppression de codes promo ainsi que plusieurs améliorations de l’affichage. Activez cette fonctionnalité sous l’onglet Plus > Réglages > Fonctionnalités bêta pour bénéficier d’un accès en avant-première.
+
+Nous avons également corrigé un bug qui gênait la recherche des commandes chez certains utilisateurs. Merci aux internautes qui nous ont signalé le problème ! Votre avis compte beaucoup à nos yeux !
+

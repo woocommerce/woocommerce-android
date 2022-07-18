@@ -2,7 +2,6 @@ package com.woocommerce.android.model
 
 import com.woocommerce.android.extensions.CASH_PAYMENTS
 import com.woocommerce.android.extensions.fastStripHtml
-import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.model.Order.Item
 import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.fluxc.model.OrderEntity
@@ -13,7 +12,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderMappingConst
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderMappingConst.SHIPPING_PHONE_KEY
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
-import java.util.*
+import java.util.Date
 import javax.inject.Inject
 import org.wordpress.android.fluxc.model.order.FeeLine as WCFeeLine
 import org.wordpress.android.fluxc.model.order.LineItem as WCLineItem
@@ -35,8 +34,6 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
             shippingTotal = databaseEntity.shippingTotal.toBigDecimalOrNull() ?: BigDecimal.ZERO,
             discountTotal = databaseEntity.discountTotal.toBigDecimalOrNull() ?: BigDecimal.ZERO,
             refundTotal = -(databaseEntity.refundTotal), // WCOrderModel.refundTotal is NEGATIVE
-            feesTotal = databaseEntity.getFeeLineList()
-                .sumByBigDecimal { it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO },
             currency = databaseEntity.currency,
             orderKey = databaseEntity.orderKey,
             customerNote = databaseEntity.customerNote,
@@ -45,7 +42,6 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
             paymentMethodTitle = databaseEntity.paymentMethodTitle,
             isCashPayment = CASH_PAYMENTS.contains(databaseEntity.paymentMethod),
             pricesIncludeTax = databaseEntity.pricesIncludeTax,
-            multiShippingLinesAvailable = databaseEntity.isMultiShippingLinesAvailable(),
             billingAddress = databaseEntity.getBillingAddress().mapAddress(),
             shippingAddress = databaseEntity.getShippingAddress().mapAddress(),
             shippingMethods = databaseEntity.getShippingLineList().mapShippingMethods(),

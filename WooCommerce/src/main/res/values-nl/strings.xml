@@ -1,13 +1,96 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-03 16:54:04+0000
+Translation-Revision-Date: 2022-07-04 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="install_wc_shipping_proceed_button">Ga verder met installatie</string>
+    <string name="install_wc_shipping_installation_info">Onthoud deze dingen voordat je begint met installeren</string>
+    <string name="install_wc_shipping_preinstall_title">Extensie installeren</string>
+    <string name="install_wc_shipping_extension_name">WooCommerce Shipping</string>
+    <string name="product_selector_clear_filters_button_title">Filters wissen</string>
+    <string name="product_selector_empty_state">Geen producten gevonden</string>
+    <string name="product_selector_search_failed">Zoeken naar producten mislukt</string>
+    <string name="product_selector_loading_failed">Laden van producten mislukt</string>
+    <string name="product_selector_search_hint">Producten zoeken</string>
+    <string name="product_selector_filter_button_title_default">Filter (%d)</string>
+    <string name="coupon_restrictions_allowed_emails_invalid">Enkele e-mailadressen zijn ongeldig. Corrigeer de ingevoerde e-mail(s).</string>
+    <string name="coupon_restrictions_allowed_emails_hint">Lijst met toegestane factuure-mails waarmee vergeleken moet worden bij het plaatsen van een bestelling. E-mailadressen scheiden met komma\'s. Je kunt ook een asterisk (*) gebruiken om delen van een e-mailadres overeen te laten komen. Met \'*@gmail.com\' worden bijvoorbeeld alle Gmail-adressen afgestemd.</string>
+    <string name="empty_message_with_filters">Er zijn helaas geen producten die voldoen aan de geselecteerde filters\"</string>
+    <string name="card_reader_onboarding_confirm_payment_method_button">Betaalmethode bevestigen</string>
+    <string name="card_reader_onboarding_choose_stripe_button">Stripe</string>
+    <string name="card_reader_onboarding_choose_wcpayment_button">WooCommerce Payments</string>
+    <string name="card_reader_onboarding_choose_plugin_hint">Fysieke betalingen kunnen worden verwerkt via een van deze betaalproviders. Welke provider wil je gebruiken?</string>
+    <string name="card_reader_onboarding_choose_payment_provider">Kies je betaalprovider</string>
+    <string name="order_editing_locked_content_description">vergrendeld</string>
+    <string name="order_editing_non_editable_message">Om Producten of Betaalgegevens te bewerken wijzig je de status naar Betaling in behandeling.</string>
+    <string name="order_editing_non_editable_title">Een aantal delen van deze bestelling kunnen momenteel niet worden bewerkt</string>
+    <string name="order_creation_customer_search_hint">Klanten zoeken</string>
+    <string name="order_creation_customer_search_empty">Geen klanten gevonden</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_not_now_button">Niet nu</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_add_extension_button">Extensie toevoegen aan winkel</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_link">Wat is WooCommerce Shipping?</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_discounts_bullet_desc">Profiteer van korting op verzendkosten. Momenteel beschikbaar met DHL en USPS, binnenkort meer pakketdiensten beschikbaar!</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_discounts_bullet_title">Korting op kosten</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_print_bullet_desc">Je hoeft de bestelling alleen maar op te halen. Vervolgens is het een kwestie van betalen, afdrukken, inpakken en verzenden.</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_print_bullet_title">Afdrukken vanaf je telefoon</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_postage_bullet_desc">Maak je geen zorgen om een stempelboekje.</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_postage_bullet_title">Koop posttarief wanneer je het nodig hebt</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_subtitle">Bespaar tijd en geld</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_title">Verwerk je bestellingen met WooCommerce Shipping</string>
+    <string name="product_selector_arrow_content_description">Toon details</string>
+    <string name="product_selector_select_variation_label">Selecteer variatie %s</string>
+    <string name="coupon_restrictions_exclude_categories">Uitsluiten van productcategorieën</string>
+    <string name="coupon_restrictions_exclude_products">Uitgesloten producten</string>
+    <string name="coupon_restrictions_exclusions_section_title">Deze coupon toepassen op</string>
+    <string name="coupon_restrictions_allowed_emails_placeholder">Geen beperkingen</string>
+    <string name="coupon_restrictions_allowed_emails">Toegestane e-mails</string>
+    <string name="coupon_restrictions_limit_per_user_placeholder">onbeperkt</string>
+    <string name="coupon_restrictions_amount_limit_placeholder">Alle die voldoen</string>
+    <string name="coupon_restrictions_limit_per_coupon_placeholder">onbeperkt</string>
+    <string name="coupon_restrictions_minimum_maximum_spend_placeholder">Geen</string>
+    <string name="coupon_edit_edit_products_title">Productcategorieën bewerken (%1$d)</string>
+    <string name="coupon_edit_select_categories_title">Productcategorieën selecteren</string>
+    <string name="variations_bulk_update_warning_message">Bulkupdate wordt momenteel ondersteund voor maximaal 100 variaties</string>
+    <string name="variations_bulk_update_warning_title">Limiet bulkupdate overschreden</string>
+    <string name="variations_bulk_update_regular_prices_dialog_title">Reguliere prijzen aan het bijwerken</string>
+    <string name="variations_bulk_update_sale_prices_dialog_title">Verkoopprijzen aan het bijwerken</string>
+    <string name="variations_bulk_update_sale_prices_success">Verkoopprijzen bijgewerkt.</string>
+    <string name="variations_bulk_update_regular_prices_success">Reguliere prijzen bijgewerkt.</string>
+    <string name="variations_bulk_update_error">Er is iets fout gegaan. Probeer het nog eens.</string>
+    <string name="variations_bulk_update_current_prices_mixed">Huidige prijzen verschillen.</string>
+    <string name="variations_bulk_update_current_price">Huidige prijs is %@. %s</string>
+    <string name="variations_bulk_update_price_info">De prijs wordt bijgewerkt voor %d variaties.</string>
+    <string name="variations_bulk_update_dialog_price_mixed">Gecombineerd</string>
+    <string name="variations_bulk_update_dialog_price_none">Geen</string>
+    <string name="variations_bulk_update_dialog_sale_price_label">Prijs tijdens de sale: %@</string>
+    <string name="variations_bulk_update_dialog_regular_price_label">Reguliere prijs</string>
+    <string name="variations_bulk_update_dialog_price_section_title">Prijs</string>
+    <string name="variations_bulk_update_dialog_subtitle">Kies een waarde om bij te werken</string>
+    <string name="variations_bulk_update_dialog_title">Bulkupdate</string>
+    <string name="variations_bulk_limit_exceeded_button_ok">OK</string>
+    <string name="variation_list_menu_bulk_update">Bulkupdate…</string>
+    <string name="variation_loading_dialog_title">Variaties ophalen…</string>
+    <string name="product_category_selector_search_failed">Zoeken naar productcategorieën mislukt</string>
+    <string name="product_category_selector_loading_failed">Laden van productcategorieën mislukt</string>
+    <string name="product_category_selector_search_hint">Categorieën doorzoeken</string>
+    <string name="product_category_selector_clear_selection">Selectie wissen</string>
+    <string name="product_category_selector_check_content_description">Klik om uit te vinken</string>
+    <string name="product_category_selector_select_button_title_one">Selecteer één categorie</string>
+    <string name="product_category_selector_select_button_title_default">Selecteer %1$d categorieën</string>
+    <string name="product_category_selector_empty_state">Geen productcategorieën gevonden</string>
+    <string name="product_category_selector_title">Categorieën selecteren</string>
+    <string name="shipping_label_install_wc_shipping_banner_dismiss_button_description">Verwijder banner om WC Shipping te installeren</string>
+    <string name="shipping_label_install_wc_shipping_banner_button">Aan de slag met WooCommerce Shipping</string>
+    <string name="shipping_label_install_wc_shipping_banner_description">Druk labels af vanaf je telefoon met WooCommerce Shipping.</string>
+    <string name="shipping_label_install_wc_shipping_banner_title">Verzendlabel nodig?</string>
+    <string name="order_creation_change_product_quantity">Verander de producthoeveelheid van %d naar %d</string>
+    <string name="variations_bulk_update_regular_price">Reguliere prijs bijwerken</string>
+    <string name="variations_bulk_update_sale_price">Verkoopprijs bijgewerkt</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Er is geen ondersteuning voor de WooCommerce Stripe-extensie in %1$s</string>
-    <string name="product_selector_filter_button_title">Filteren</string>
+    <string name="product_selector_filter_button_title_zero">Filteren</string>
     <string name="product_selector_clear_button_title">Selectie wissen</string>
     <string name="product_selector_select_button_title_one">%d product selecteren</string>
     <string name="product_selector_select_button_title_default">%d producten selecteren</string>
@@ -133,7 +216,7 @@ Language: nl
     <string name="coupon_details_minimum_spend">Minimale besteding van %s</string>
     <string name="coupon_details_heading">Couponoverzicht</string>
     <string name="coupon_list_view_coupon">Couponoverzicht weergeven</string>
-    <string name="coupon_list_wip_message_enabled">We hebben hard gewerkt zodat jij coupons vanuit je apparaat kunt bekijken en bewerken!</string>
+    <string name="coupon_list_wip_message_enabled">We hebben hard gewerkt zodat jij coupons vanaf je apparaat kunt bekijken!</string>
     <string name="coupon_list_wip_title">Coupons bekijken en bewerken</string>
     <string name="coupon_list_empty_heading">Geen coupons gevonden</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s excl. %2s</string>
@@ -162,8 +245,6 @@ Language: nl
     <string name="orderstatus_contentDesc_withStatus">Bestelstatus: %s</string>
     <string name="no_sku">Geen SKU</string>
     <string name="count">Aantal: %s</string>
-    <string name="plus_one">Plus een</string>
-    <string name="minus_one">Min een</string>
     <string name="more_menu_button_coupons">Coupons</string>
     <string name="dismiss_inbox_note">Sluiten</string>
     <string name="login_error_xml_rpc_auth_error_communicating">Er is een probleem opgetreden bij het communiceren met de site. Er werd een HTTP-foutcode 401 gegeven.</string>
@@ -1122,7 +1203,6 @@ Language: nl
     <string name="orderdetail_product_multiple">Producten</string>
     <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
     <string name="orderdetail_orderstatus_name">%1$s %2$s</string>
-    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
     <string name="product_type_external">Extern</string>
     <string name="product_type_simple">Simpel</string>
     <string name="product_status_privately_published">Gepubliceerd als privé</string>

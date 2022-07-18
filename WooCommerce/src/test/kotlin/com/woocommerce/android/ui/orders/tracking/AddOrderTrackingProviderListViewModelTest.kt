@@ -13,7 +13,11 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
 class AddOrderTrackingProviderListViewModelTest : BaseUnitTest() {
@@ -110,6 +114,7 @@ class AddOrderTrackingProviderListViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    @Suppress("UNCHECKED_CAST")
     fun `handle carrier selection`() = testBlocking {
         doReturn(testShipmentProvider).whenever(shipmentProvidersRepository)
             .fetchOrderShipmentProviders(ORDER_ID)

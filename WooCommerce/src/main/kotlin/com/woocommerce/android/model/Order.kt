@@ -1,6 +1,7 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
+import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.ui.products.ProductHelper
@@ -27,7 +28,6 @@ data class Order(
     val shippingTotal: BigDecimal,
     val discountTotal: BigDecimal,
     val refundTotal: BigDecimal,
-    val feesTotal: BigDecimal,
     val currency: String,
     val orderKey: String,
     val customerNote: String,
@@ -36,7 +36,6 @@ data class Order(
     val paymentMethodTitle: String,
     val isCashPayment: Boolean,
     val pricesIncludeTax: Boolean,
-    val multiShippingLinesAvailable: Boolean,
     val billingAddress: Address,
     val shippingAddress: Address,
     val shippingMethods: List<ShippingMethod>,
@@ -52,12 +51,24 @@ data class Order(
     @IgnoredOnParcel
     val isOrderPaid = datePaid != null
 
+    @IgnoredOnParcel
+    val isOrderFullyRefunded = refundTotal >= total
+
     // Allow refunding only integer quantities
     @IgnoredOnParcel
-    val availableRefundQuantity = items.sumByFloat { it.quantity }.toInt() + feesLines.count()
+    val quantityOfItemsWhichPossibleToRefund = items.sumByFloat { it.quantity }.toInt() + feesLines.count()
 
     @IgnoredOnParcel
-    val isRefundAvailable = refundTotal < total && availableRefundQuantity > 0
+    val isRefundAvailable = !isOrderFullyRefunded && quantityOfItemsWhichPossibleToRefund > 0 && isOrderPaid
+
+    val hasMultipleShippingLines: Boolean
+        get() = shippingLines.size > 1
+
+    val hasMultipleFeeLines: Boolean
+        get() = feesLines.size > 1
+
+    @IgnoredOnParcel
+    val feesTotal = feesLines.sumByBigDecimal(FeeLine::total)
 
     @Parcelize
     data class ShippingMethod(
@@ -305,7 +316,6 @@ data class Order(
                 shippingTotal = BigDecimal(0),
                 discountTotal = BigDecimal(0),
                 refundTotal = BigDecimal(0),
-                feesTotal = BigDecimal(0),
                 currency = "",
                 orderKey = "",
                 customerNote = "",
@@ -314,7 +324,6 @@ data class Order(
                 paymentMethodTitle = "",
                 isCashPayment = false,
                 pricesIncludeTax = false,
-                multiShippingLinesAvailable = false,
                 billingAddress = Address.EMPTY,
                 shippingAddress = Address.EMPTY,
                 shippingMethods = emptyList(),

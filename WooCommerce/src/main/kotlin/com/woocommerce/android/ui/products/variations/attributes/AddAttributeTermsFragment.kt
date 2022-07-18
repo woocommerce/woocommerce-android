@@ -8,7 +8,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.core.view.isVisible
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -95,7 +94,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
                     attribute.terms.find {
                         it == termName
                     }
-                }?.let { term ->
+                }?.let {
                     globalTermsAdapter.addTerm(termName)
                 }
 
@@ -311,12 +310,9 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     private fun setupObservers() {
-        viewModel.attributeTermsList.observe(
-            viewLifecycleOwner,
-            Observer {
-                showGlobalAttributeTerms(it)
-            }
-        )
+        viewModel.attributeTermsList.observe(viewLifecycleOwner) {
+            showGlobalAttributeTerms(it)
+        }
 
         viewModel.globalAttributeTermsViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) {
@@ -324,15 +320,12 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             }
         }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ExitProductAddAttributeTerms -> findNavController().navigateUp()
-                    else -> event.isHandled = false
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ExitProductAddAttributeTerms -> findNavController().navigateUp()
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
     private fun setupResultHandlers() {

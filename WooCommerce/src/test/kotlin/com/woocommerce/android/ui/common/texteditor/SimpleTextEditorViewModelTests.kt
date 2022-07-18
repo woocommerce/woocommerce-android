@@ -6,9 +6,11 @@ import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
+@ExperimentalCoroutinesApi
 class SimpleTextEditorViewModelTests : BaseUnitTest() {
     private lateinit var viewModel: SimpleTextEditorViewModel
 

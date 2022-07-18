@@ -8,7 +8,7 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
-import java.util.*
+import java.util.Date
 
 object PriceUtils {
     @Suppress("LongParameterList")

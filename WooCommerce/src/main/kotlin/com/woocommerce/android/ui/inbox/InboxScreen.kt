@@ -37,6 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import androidx.core.text.HtmlCompat
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -46,7 +47,6 @@ import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.inbox.InboxViewModel.InboxNoteActionUi
 import com.woocommerce.android.ui.inbox.InboxViewModel.InboxNoteUi
 import com.woocommerce.android.ui.inbox.InboxViewModel.InboxState
-import com.woocommerce.android.util.StringUtils
 
 @Composable
 fun InboxScreen(viewModel: InboxViewModel) {
@@ -159,7 +159,7 @@ fun InboxNoteRow(note: InboxNoteUi) {
                 style = MaterialTheme.typography.subtitle1
             )
             Text(
-                text = StringUtils.fromHtml(note.description).toAnnotatedString(),
+                text = HtmlCompat.fromHtml(note.description, HtmlCompat.FROM_HTML_MODE_LEGACY).toAnnotatedString(),
                 style = MaterialTheme.typography.body2
             )
         }
