@@ -400,7 +400,7 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun trackOrderCreationFailure(it: Throwable) {
-        AnalyticsTracker.track(
+        tracker.track(
             ORDER_CREATION_FAILED,
             mapOf(
                 KEY_ERROR_CONTEXT to this::class.java.simpleName,
