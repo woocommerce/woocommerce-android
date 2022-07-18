@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.details.customfields
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -27,6 +28,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight.Companion.W700
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
 import com.woocommerce.android.ui.orders.details.customfields.CustomOrderFieldsHelper.CustomOrderFieldClickListener
 import com.woocommerce.android.ui.orders.details.customfields.CustomOrderFieldsHelper.CustomOrderFieldType
@@ -142,38 +144,41 @@ private fun clickableTextValueItem(value: String) {
 }
 
 @Preview
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun CustomFieldsPreview() {
-    CustomFieldsScreen(
-        listOf(
-            OrderMetaDataEntity(
-                id = 1,
-                localSiteId = LocalOrRemoteId.LocalId(0),
-                orderId = 0,
-                key = "text key",
-                value = "text value"
-            ),
-            OrderMetaDataEntity(
-                id = 2,
-                localSiteId = LocalOrRemoteId.LocalId(0),
-                orderId = 0,
-                key = "url key",
-                value = "https://automattic.com/"
-            ),
-            OrderMetaDataEntity(
-                id = 3,
-                localSiteId = LocalOrRemoteId.LocalId(0),
-                orderId = 0,
-                key = "email key",
-                value = "example@example.com"
-            ),
-            OrderMetaDataEntity(
-                id = 4,
-                localSiteId = LocalOrRemoteId.LocalId(0),
-                orderId = 0,
-                key = "phone key",
-                value = "tel://1234567890"
+    WooThemeWithBackground {
+        CustomFieldsScreen(
+            listOf(
+                OrderMetaDataEntity(
+                    id = 1,
+                    localSiteId = LocalOrRemoteId.LocalId(0),
+                    orderId = 0,
+                    key = "text key",
+                    value = "text value"
+                ),
+                OrderMetaDataEntity(
+                    id = 2,
+                    localSiteId = LocalOrRemoteId.LocalId(0),
+                    orderId = 0,
+                    key = "url key",
+                    value = "https://automattic.com/"
+                ),
+                OrderMetaDataEntity(
+                    id = 3,
+                    localSiteId = LocalOrRemoteId.LocalId(0),
+                    orderId = 0,
+                    key = "email key",
+                    value = "example@example.com"
+                ),
+                OrderMetaDataEntity(
+                    id = 4,
+                    localSiteId = LocalOrRemoteId.LocalId(0),
+                    orderId = 0,
+                    key = "phone key",
+                    value = "tel://1234567890"
+                )
             )
         )
-    )
+    }
 }
