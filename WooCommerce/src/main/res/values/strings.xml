@@ -331,6 +331,7 @@
     <string name="simple_payments_choose_method">Choose your payment method</string>
     <string name="simple_payments_cash_dlg_title">Mark as paid?</string>
     <string name="simple_payments_cash_dlg_message">This will create your order and mark it as paid if you received payment outside of WooCommerce</string>
+    <string name="existing_order_cash_dlg_message">This will mark this order as paid if you received payment outside of WooCommerce</string>
     <string name="simple_payments_cash_dlg_button">Mark as paid</string>
     <string name="simple_payments_share_payment_link">Share payment link</string>
     <string name="simple_payments_share_payment_dialog_title">Checkout - %s</string>
@@ -374,7 +375,6 @@
     <string name="order_creation_failure_snackbar">Order creation failed</string>
     <string name="order_creation_success_snackbar">Order created</string>
     <string name="order_creation_payment_tax">Taxes</string>
-    <string name="order_creation_price_calculation_failed">Couldn’t update pricing</string>
     <string name="order_creation_shipping_name">Name</string>
     <string name="order_creation_shipping_title_add">Add Shipping</string>
     <string name="order_creation_add_shipping">Add shipping</string>
@@ -393,6 +393,7 @@
     <string name="order_editing_non_editable_title">Parts of this order are not currently editable</string>
     <string name="order_editing_non_editable_message">To edit Products or Payment Details, change the status to Pending Payment.</string>
     <string name="order_editing_locked_content_description">locked</string>
+    <string name="order_sync_failed">Unable to save changes</string>
     <!--
         Order Filters
     -->
@@ -503,6 +504,8 @@
     <string name="orderdetail_shipping_label_m3_wip_message">You can now create shipping labels for all physical orders directly from your device with the free WooCommerce Shipping plugin. Tap on "Create shipping label" to try our beta feature!</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Create shipping label</string>
     <string name="orderdetail_shipping_label_notice">Learn more about creating labels with your mobile device</string>
+    <string name="orderdetail_custom_fields">Custom fields</string>
+    <string name="orderdetail_view_custom_fields">View custom fields</string>
     <string name="receipt_preview_print_menu_item">Print</string>
     <string name="receipt_preview_send_menu_item">Send</string>
     <string name="order_mark_complete">Mark order complete</string>
@@ -1332,6 +1335,8 @@
     <string name="product_list_filters_show_products">Show products</string>
     <string name="product_list_filters_list_item">Selected filter option</string>
     <string name="product_search_hint">Search products</string>
+    <string name="product_search_all">All products</string>
+    <string name="product_search_sku">SKU</string>
     <string name="product_list_sorting_list_item">Selected sorting option</string>
     <string name="product_limited_editing_title">Limited editing available</string>
     <string name="product_limited_editing_message">We\'ve added editing functionality to simple products. Keep an eye out for more options soon!</string>
@@ -1972,7 +1977,7 @@
     <string name="coupon_list_item_label_included_and_excluded">%1s excl. %2s</string>
     <string name="coupon_list_empty_heading">No coupons found</string>
     <string name="coupon_list_wip_title">View and edit coupons</string>
-    <string name="coupon_list_wip_message_enabled">We’ve been working on making it possible to view coupons on your device!</string>
+    <string name="coupon_list_wip_message_enabled">We’ve been working on making it possible to view and edit coupons from your device!</string>
     <string name="coupon_list_view_coupon">View coupon summary</string>
     <string name="coupon_list_loading_failed">Fetching coupons failed</string>
     <string name="coupon_list_search_failed">Searching coupons failed</string>
@@ -2426,6 +2431,7 @@
     <string name="enter_your_site_address">Enter your site address</string>
     <string name="reset_your_password">Reset your password</string>
     <string name="signup_confirmation_title">Signup confirmation</string>
+    <string name="what_is_wordpress_link"><u>What is WordPress.com?</u></string>
 
     <string name="login_site_address">Site address</string>
 

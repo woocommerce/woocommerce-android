@@ -16,9 +16,15 @@ end
 PROJECT_ROOT_FOLDER = File.dirname(File.expand_path(__dir__))
 BUILD_PRODUCTS_PATH = File.join(PROJECT_ROOT_FOLDER, 'artifacts')
 INSTALLABLE_BUILD_DOMAIN = 'https://d2twmm2nzpx3bg.cloudfront.net'
-METADATA_DIR_PATH = File.join(PROJECT_ROOT_FOLDER, 'WooCommerce', 'metadata')
-RELEASE_NOTES_PATH = File.join(METADATA_DIR_PATH, 'release_notes.txt')
+ORIGINALS_METADATA_DIR_PATH = File.join(PROJECT_ROOT_FOLDER, 'WooCommerce', 'metadata')
+RELEASE_NOTES_PATH = File.join(ORIGINALS_METADATA_DIR_PATH, 'release_notes.txt')
 MAIN_STRINGS_PATH = File.join('WooCommerce', 'src', 'main', 'res', 'values', 'strings.xml')
+# The metadata for the Play Store live in the Fastlane folder, hence the `Dir.pwd`
+PLAY_STORE_METADATA_DIR_PATH = File.join(Dir.pwd, 'metadata', 'android')
+# Currently, the strings to use for the screenshots live in yet another metadata folder.
+# This is suboptimal and could lead to confusion.
+# See suggestions for how to improve at: https://github.com/woocommerce/woocommerce-android/pull/6907#discussion_r918144990
+SCREENSHOTS_METADATA_DIR_PATH = File.join(Dir.pwd, 'playstoreres', 'metadata')
 RAW_SCREENSHOTS_DIR = File.join(Dir.pwd, 'screenshots', 'raw')
 RAW_SCREENSHOTS_PROCESSING_DIR = File.join(Dir.pwd, 'screenshots', 'raw_tmp')
 PROMO_SCREENSHOTS_DIR = File.join(Dir.pwd, "screenshots", "promo_screenshots")
@@ -44,6 +50,9 @@ REMOTE_LIBRARIES_STRINGS_PATHS = [
 GLOTPRESS_APP_STRINGS_PROJECT_URL = 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/'
 # URL of the GlotPress project containing the Play Store metadata (title, keywords, release notes, …)
 GLOTPRESS_PLAYSTORE_METADATA_PROJECT_URL = 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/release-notes/'
+
+APP_PACKAGE_NAME = 'com.woocommerce.android'
+GOOGLE_FIREBASE_SECRETS_PATH = File.join(PROJECT_ROOT_FOLDER, '.configure-files', 'firebase.secrets.json')
 
 ########################################################################
 # Environment
@@ -152,17 +161,17 @@ platform :android do
 
     files = {
       release_note: RELEASE_NOTES_PATH,
-      play_store_promo: File.join(METADATA_DIR_PATH, 'short_description.txt'),
-      play_store_desc: File.join(METADATA_DIR_PATH, 'full_description.txt'),
-      play_store_app_title: File.join(METADATA_DIR_PATH, 'title.txt'),
-      play_store_screenshot_1: File.join(METADATA_DIR_PATH, 'promo_screenshot_1.txt'),
-      play_store_screenshot_2: File.join(METADATA_DIR_PATH, 'promo_screenshot_2.txt'),
-      play_store_screenshot_3: File.join(METADATA_DIR_PATH, 'promo_screenshot_3.txt'),
-      play_store_screenshot_4: File.join(METADATA_DIR_PATH, 'promo_screenshot_4.txt'),
-      play_store_screenshot_5: File.join(METADATA_DIR_PATH, 'promo_screenshot_5.txt'),
+      play_store_promo: File.join(ORIGINALS_METADATA_DIR_PATH, 'short_description.txt'),
+      play_store_desc: File.join(ORIGINALS_METADATA_DIR_PATH, 'full_description.txt'),
+      play_store_app_title: File.join(ORIGINALS_METADATA_DIR_PATH, 'title.txt'),
+      play_store_screenshot_1: File.join(ORIGINALS_METADATA_DIR_PATH, 'promo_screenshot_1.txt'),
+      play_store_screenshot_2: File.join(ORIGINALS_METADATA_DIR_PATH, 'promo_screenshot_2.txt'),
+      play_store_screenshot_3: File.join(ORIGINALS_METADATA_DIR_PATH, 'promo_screenshot_3.txt'),
+      play_store_screenshot_4: File.join(ORIGINALS_METADATA_DIR_PATH, 'promo_screenshot_4.txt'),
+      play_store_screenshot_5: File.join(ORIGINALS_METADATA_DIR_PATH, 'promo_screenshot_5.txt'),
     }
 
-    po_path = File.join(METADATA_DIR_PATH, 'PlayStoreStrings.pot')
+    po_path = File.join(ORIGINALS_METADATA_DIR_PATH, 'PlayStoreStrings.pot')
 
     an_update_metadata_source(
       po_file_path: po_path,
@@ -358,7 +367,7 @@ platform :android do
   UI.error("Unable to find a build artifact at #{aab_file_path}") unless File.exist? aab_file_path
 
   upload_to_play_store(
-    package_name: 'com.woocommerce.android',
+    package_name: APP_PACKAGE_NAME,
     aab: aab_file_path,
     track: 'production',
     release_status: 'draft',
@@ -399,7 +408,7 @@ platform :android do
     UI.error("Unable to find a build artifact at #{aab_file_path}") unless File.exist? aab_file_path
 
     upload_to_play_store(
-      package_name: 'com.woocommerce.android',
+      package_name: APP_PACKAGE_NAME,
       aab: aab_file_path,
       track: 'beta',
       release_status: 'draft',
@@ -501,10 +510,7 @@ platform :android do
     }
 
     delete_old_changelogs(build: options[:build_number])
-    # Notice that this is a different path from `METADATA_DIR_PATH`.
-    # This is the path for the Fastlane metadata, i.e. the ones for the Play Store, hence the `Dir.pwd`.
-    # `METADATA_DIR_PATH` is the path of the metadata the app uses at runtime.
-    download_path = File.join(Dir.pwd, 'metadata', 'android')
+    download_path = PLAY_STORE_METADATA_DIR_PATH
     gp_downloadmetadata(
       project_url: GLOTPRESS_PLAYSTORE_METADATA_PROJECT_URL,
       target_files: files,
@@ -615,10 +621,10 @@ platform :android do
 
     screenshot_options = {
       output_directory: RAW_SCREENSHOTS_DIR,
-      app_package_name: "com.woocommerce.android",
+      app_package_name: APP_PACKAGE_NAME,
       app_apk_path: "WooCommerce/build/outputs/apk/vanilla/debug/WooCommerce-vanilla-debug.apk",
       tests_apk_path: "WooCommerce/build/outputs/apk/androidTest/vanilla/debug/WooCommerce-vanilla-debug-androidTest.apk",
-      use_tests_in_classes: "com.woocommerce.android.screenshots.ScreenshotTest",
+      use_tests_in_classes: "#{APP_PACKAGE_NAME}.screenshots.ScreenshotTest",
       reinstall_app: false,
       # By default, don't clear previous because we differentiate between light
       # and dark mode
@@ -627,7 +633,7 @@ platform :android do
       use_adb_root: true,
       locales: locales,
       use_timestamp_suffix: false,
-      test_instrumentation_runner: "com.woocommerce.android.WooCommerceTestRunner",
+      test_instrumentation_runner: "#{APP_PACKAGE_NAME}.WooCommerceTestRunner",
       # Don't care about the .html summary
       skip_open_summary: true
     }
@@ -693,10 +699,10 @@ platform :android do
                         target_files: files,
                         locales: locales,
                         source_locale: "en-US",
-                        download_path: File.join(Dir.pwd, "/playstoreres/metadata"))
+                        download_path: SCREENSHOTS_METADATA_DIR_PATH)
 
     # Copy metadata (screenshot-related) txt files into `en-US`
-    en_us_path = File.join(Dir.pwd, "/playstoreres/metadata", "en-US")
+    en_us_path = File.join(SCREENSHOTS_METADATA_DIR_PATH, 'en-US')
     FileUtils.mkdir_p(en_us_path)
 
     [
@@ -706,10 +712,41 @@ platform :android do
       "promo_screenshot_4.txt",
       "promo_screenshot_5.txt",
     ].each do |filename|
-      source = File.join(METADATA_DIR_PATH, filename)
+      source = File.join(ORIGINALS_METADATA_DIR_PATH, filename)
       destination = File.join(en_us_path, filename)
       FileUtils.cp(source, destination)
     end
+  end
+
+  #####################################################################################
+  # build_and_instrumented_test
+  # -----------------------------------------------------------------------------------
+  # Run instrumented tests in Google Firebase Test Lab
+  # -----------------------------------------------------------------------------------
+  # Usage:
+  # bundle exec fastlane build_and_instrumented_test
+  #
+  #####################################################################################
+  desc "Build the application and instrumented tests, then run the tests in Firebase Test Lab"
+  lane :build_and_instrumented_test do | options |
+    gradle(tasks: ['assembleVanillaDebug', 'assembleVanillaDebugAndroidTest'])
+
+    # Run the instrumented tests in Firebase Test Lab
+    firebase_login(
+      key_file: GOOGLE_FIREBASE_SECRETS_PATH
+    )
+
+    apk_dir = File.join(PROJECT_ROOT_FOLDER, 'WooCommerce', 'build', 'outputs', 'apk')
+
+    android_firebase_test(
+      project_id: firebase_secret(name: 'project_id'),
+      key_file: GOOGLE_FIREBASE_SECRETS_PATH,
+      model: 'Nexus5',
+      version: 23,
+      test_apk_path: File.join(apk_dir, 'androidTest', 'vanilla', 'debug', 'WooCommerce-vanilla-debug-androidTest.apk'),
+      apk_path: File.join(apk_dir, 'vanilla', 'debug', 'WooCommerce-vanilla-debug.apk'),
+      results_output_dir: File.join(PROJECT_ROOT_FOLDER, 'build', 'instrumented-tests')
+     )
   end
 
   #####################################################################################
@@ -766,7 +803,7 @@ platform :android do
     # Run screenshots generator tool
     promo_screenshots(
       orig_folder: RAW_SCREENSHOTS_PROCESSING_DIR,
-      metadata_folder: METADATA_DIR_PATH,
+      metadata_folder: SCREENSHOTS_METADATA_DIR_PATH,
       output_folder: PROMO_SCREENSHOTS_DIR,
       force: options[:force],
     )
@@ -877,6 +914,13 @@ platform :android do
   def is_beta_version(version)
     version['name'].include? "-rc-"
   end
+
+  def firebase_secret(name:)
+     UI.user_error!('Unable to locale Firebase Secrets File – did you run `configure apply`?') unless File.file? GOOGLE_FIREBASE_SECRETS_PATH
+     key_file_secrets = JSON.parse(File.read(GOOGLE_FIREBASE_SECRETS_PATH))
+     UI.user_error!("Unable to find key `#{name}` in #{GOOGLE_FIREBASE_SECRETS_PATH}") if key_file_secrets[name].nil?
+     key_file_secrets[name]
+   end
 
   # This function is Buildkite-specific
   def generate_installable_build_number

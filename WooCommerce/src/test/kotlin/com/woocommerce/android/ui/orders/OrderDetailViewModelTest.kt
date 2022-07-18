@@ -63,6 +63,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult
 import org.wordpress.android.fluxc.utils.DateUtils
 import java.math.BigDecimal
+import java.util.Date
 import java.util.concurrent.CancellationException
 
 @ExperimentalCoroutinesApi
@@ -121,7 +122,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         isProductListVisible = true,
         areShippingLabelsVisible = false,
         isProductListMenuVisible = false,
-        wcShippingBannerVisible = false
+        wcShippingBannerVisible = false,
+        isRefreshing = false,
+        isOrderDetailSkeletonShown = false
     )
 
     @Before
@@ -185,16 +188,13 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         doReturn(nonRefundedOrder).whenever(orderDetailRepository).getOrderById(any())
 
-        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
 
-        doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
         doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
 
         doReturn(emptyList<Refund>()).whenever(orderDetailRepository).getOrderRefunds(any())
 
         doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
-        doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any())
         doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
         var orderData: ViewState? = null
@@ -806,7 +806,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
         viewModel.onNewShipmentTrackingAdded(shipmentTracking)
 
-        verify(orderDetailRepository, times(2)).getOrderShipmentTrackings(any())
+        // (1) when order is loaded (2) after order is fetched (3) after shipment tracking is added
+        verify(orderDetailRepository, times(3)).getOrderShipmentTrackings(any())
         assertThat(orderShipmentTrackings).isEqualTo(addedShipmentTrackings)
     }
 
@@ -1080,6 +1081,191 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                     AnalyticsTracker.KEY_STATUS to order.status
                 )
             )
+        }
+
+    @Test
+    fun `given order is paid, when status is processing order complete button should be visible`() =
+        testBlocking {
+            // Given
+            val orderStatusStub = Order.Status.fromDataModel(CoreOrderStatus.PROCESSING)
+            val orderStub = order.copy(datePaid = Date(), status = orderStatusStub!!)
+
+            doReturn(orderStatus).whenever(orderDetailRepository).getOrderStatus(any())
+            doReturn(orderStub).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(orderStub).whenever(orderDetailRepository).fetchOrderById(any())
+
+            var isMarkOrderCompleteButtonVisible: Boolean? = null
+            viewModel.viewStateData.observeForever { _, new ->
+                isMarkOrderCompleteButtonVisible = new.isMarkOrderCompleteButtonVisible
+            }
+
+            // When
+            viewModel.start()
+
+            // Then
+            assertThat(isMarkOrderCompleteButtonVisible).isTrue
+        }
+
+    @Test
+    fun `given order is paid, when status is on hold order complete button should be visible`() =
+        testBlocking {
+            // Given
+            val orderStatusStub = Order.Status.fromDataModel(CoreOrderStatus.ON_HOLD)
+            val orderStub = order.copy(datePaid = Date(), status = orderStatusStub!!)
+
+            doReturn(orderStatus).whenever(orderDetailRepository).getOrderStatus(any())
+            doReturn(orderStub).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(orderStub).whenever(orderDetailRepository).fetchOrderById(any())
+
+            var isMarkOrderCompleteButtonVisible: Boolean? = null
+            viewModel.viewStateData.observeForever { _, new ->
+                isMarkOrderCompleteButtonVisible = new.isMarkOrderCompleteButtonVisible
+            }
+
+            // When
+            viewModel.start()
+
+            // Then
+            assertThat(isMarkOrderCompleteButtonVisible).isTrue
+        }
+
+    @Test
+    fun `when order is not paid, order complete button should be hidden`() =
+        testBlocking {
+            // Given
+            val orderStatusStub = Order.Status.fromDataModel(CoreOrderStatus.PROCESSING)
+            val orderStub = order.copy(datePaid = null, status = orderStatusStub!!)
+
+            doReturn(orderStatus).whenever(orderDetailRepository).getOrderStatus(any())
+            doReturn(orderStub).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(orderStub).whenever(orderDetailRepository).fetchOrderById(any())
+
+            var isMarkOrderCompleteButtonVisible: Boolean? = null
+            viewModel.viewStateData.observeForever { _, new ->
+                isMarkOrderCompleteButtonVisible = new.isMarkOrderCompleteButtonVisible
+            }
+
+            // When
+            viewModel.start()
+
+            // Then
+            assertThat(isMarkOrderCompleteButtonVisible).isFalse
+        }
+
+    @Test
+    fun `when order status complete, then hide mark order complete button`() =
+        testBlocking {
+            // Given
+            val orderStatusStub = Order.Status.fromDataModel(CoreOrderStatus.COMPLETED)
+            val orderStub = order.copy(datePaid = Date(), status = orderStatusStub!!)
+
+            doReturn(orderStub).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(orderStub).whenever(orderDetailRepository).fetchOrderById(any())
+            doReturn(orderStatus.copy(statusKey = CoreOrderStatus.COMPLETED.value)).whenever(
+                orderDetailRepository
+            ).getOrderStatus(any())
+            var isMarkOrderCompleteButtonVisible: Boolean? = null
+            viewModel.viewStateData.observeForever { _, new ->
+                isMarkOrderCompleteButtonVisible = new.isMarkOrderCompleteButtonVisible
+            }
+
+            // When
+            viewModel.start()
+
+            // Then
+            assertThat(isMarkOrderCompleteButtonVisible).isFalse()
+        }
+
+    @Test
+    fun `given order is not paid, when status is on hold, order complete button should be hidden`() =
+        testBlocking {
+            // Given
+            val orderStatusStub = Order.Status.fromDataModel(CoreOrderStatus.ON_HOLD)
+            val orderStub = order.copy(datePaid = null, status = orderStatusStub!!)
+
+            doReturn(orderStatus).whenever(orderDetailRepository).getOrderStatus(any())
+            doReturn(orderStub).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(orderStub).whenever(orderDetailRepository).fetchOrderById(any())
+
+            var isMarkOrderCompleteButtonVisible: Boolean? = null
+            viewModel.viewStateData.observeForever { _, new ->
+                isMarkOrderCompleteButtonVisible = new.isMarkOrderCompleteButtonVisible
+            }
+
+            // When
+            viewModel.start()
+
+            // Then
+            assertThat(isMarkOrderCompleteButtonVisible).isFalse()
+        }
+
+    @Test
+    fun `given order is not paid, when status is on failed, order complete button should be hidden`() =
+        testBlocking {
+            // Given
+            val orderStatusStub = Order.Status.fromDataModel(CoreOrderStatus.FAILED)
+            val orderStub = order.copy(datePaid = null, status = orderStatusStub!!)
+
+            doReturn(orderStatus).whenever(orderDetailRepository).getOrderStatus(any())
+            doReturn(orderStub).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(orderStub).whenever(orderDetailRepository).fetchOrderById(any())
+
+            var isMarkOrderCompleteButtonVisible: Boolean? = null
+            viewModel.viewStateData.observeForever { _, new ->
+                isMarkOrderCompleteButtonVisible = new.isMarkOrderCompleteButtonVisible
+            }
+
+            // When
+            viewModel.start()
+
+            // Then
+            assertThat(isMarkOrderCompleteButtonVisible).isFalse()
+        }
+
+    @Test
+    fun `given order is not paid, when status is cacelled, order complete button should be hidden`() =
+        testBlocking {
+            // Given
+            val orderStatusStub = Order.Status.fromDataModel(CoreOrderStatus.CANCELLED)
+            val orderStub = order.copy(datePaid = null, status = orderStatusStub!!)
+
+            doReturn(orderStatus).whenever(orderDetailRepository).getOrderStatus(any())
+            doReturn(orderStub).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(orderStub).whenever(orderDetailRepository).fetchOrderById(any())
+
+            var isMarkOrderCompleteButtonVisible: Boolean? = null
+            viewModel.viewStateData.observeForever { _, new ->
+                isMarkOrderCompleteButtonVisible = new.isMarkOrderCompleteButtonVisible
+            }
+
+            // When
+            viewModel.start()
+
+            // Then
+            assertThat(isMarkOrderCompleteButtonVisible).isFalse()
+        }
+
+    @Test
+    fun `given order is not paid, when status is pending, order complete button should be hidden`() =
+        testBlocking {
+            // Given
+            val orderStatusStub = Order.Status.fromDataModel(CoreOrderStatus.PENDING)
+            val orderStub = order.copy(datePaid = null, status = orderStatusStub!!)
+
+            doReturn(orderStatus).whenever(orderDetailRepository).getOrderStatus(any())
+            doReturn(orderStub).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(orderStub).whenever(orderDetailRepository).fetchOrderById(any())
+
+            var isMarkOrderCompleteButtonVisible: Boolean? = null
+            viewModel.viewStateData.observeForever { _, new ->
+                isMarkOrderCompleteButtonVisible = new.isMarkOrderCompleteButtonVisible
+            }
+
+            // When
+            viewModel.start()
+
+            // Then
+            assertThat(isMarkOrderCompleteButtonVisible).isFalse()
         }
 
     @Test

@@ -23,7 +23,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent.SHIPPING_LABEL_ORDER_IS_
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
@@ -59,6 +58,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentC
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -71,12 +71,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
+import org.wordpress.android.fluxc.persistence.entity.OrderMetaDataEntity
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.OptimisticUpdateResult
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUpdateResult
-import org.wordpress.android.fluxc.utils.sumBy
 import javax.inject.Inject
 
 @HiltViewModel
@@ -142,17 +143,11 @@ final class OrderDetailViewModel @Inject constructor(
 
     fun start() {
         launch {
-            val orderInDb = orderDetailRepository.getOrderById(navArgs.orderId)
-            val needToFetch = orderInDb == null || checkIfFetchNeeded(orderInDb)
-            if (needToFetch) {
-                fetchOrder(true)
-            } else {
-                orderInDb?.let {
-                    order = orderInDb
-                    displayOrderDetails()
-                    fetchAndDisplayOrderDetails()
-                }
-            }
+            orderDetailRepository.getOrderById(navArgs.orderId)?.let {
+                order = it
+                displayOrderDetails()
+                fetchOrder(showSkeleton = false)
+            } ?: fetchOrder(showSkeleton = true)
         }
     }
 
@@ -168,6 +163,7 @@ final class OrderDetailViewModel @Inject constructor(
         updateOrderState()
         loadOrderNotes()
         displayProductAndShippingDetails()
+        checkOrderMetaData()
     }
 
     private suspend fun fetchOrder(showSkeleton: Boolean) {
@@ -196,10 +192,22 @@ final class OrderDetailViewModel @Inject constructor(
         }
     }
 
-    // if local order data and refunds are out of sync, it needs to be fetched
-    private fun checkIfFetchNeeded(order: Order?): Boolean {
-        val refunds = orderDetailRepository.getOrderRefunds(navArgs.orderId)
-        return order?.refundTotal.isNotEqualTo(refunds.sumBy { it.amount })
+    private fun checkOrderMetaData() {
+        if (FeatureFlag.ORDER_METADATA.isEnabled()) {
+            launch {
+                viewState = viewState.copy(
+                    isCustomFieldsButtonShown = orderDetailRepository.orderHasMetadata(navArgs.orderId)
+                )
+            }
+        }
+    }
+
+    fun onCustomFieldsButtonClicked() {
+        triggerEvent(OrderNavigationTarget.ViewCustomFields)
+    }
+
+    fun getOrderMetadata(): List<OrderMetaDataEntity> = runBlocking {
+        orderDetailRepository.getOrderMetadata(navArgs.orderId)
     }
 
     fun onRefreshRequested() {
@@ -700,10 +708,12 @@ final class OrderDetailViewModel @Inject constructor(
         val isProductListVisible: Boolean? = null,
         val areShippingLabelsVisible: Boolean? = null,
         val isProductListMenuVisible: Boolean? = null,
-        val wcShippingBannerVisible: Boolean? = null
+        val wcShippingBannerVisible: Boolean? = null,
+        val isCustomFieldsButtonShown: Boolean? = null
     ) : Parcelable {
         val isMarkOrderCompleteButtonVisible: Boolean?
-            get() = if (orderStatus != null) orderStatus.statusKey == CoreOrderStatus.PROCESSING.value else null
+            get() = if (orderStatus != null && (orderStatus.statusKey != CoreOrderStatus.COMPLETED.value))
+                orderInfo?.order?.isOrderPaid else false
 
         val isCreateShippingLabelBannerVisible: Boolean
             get() = isCreateShippingLabelButtonVisible == true && isProductListVisible == true

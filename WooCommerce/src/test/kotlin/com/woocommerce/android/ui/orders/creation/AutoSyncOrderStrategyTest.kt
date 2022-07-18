@@ -19,7 +19,7 @@ class AutoSyncOrderStrategyTest : SyncStrategyTest() {
         val change = order.copy(customerNote = "testing")
         orderDraftChanges.value = change
         advanceUntilIdle()
-        verify(orderCreationRepository, times(1)).createOrUpdateDraft(change)
+        verify(orderCreateEditRepository, times(1)).createOrUpdateDraft(change)
         job.cancel()
     }
 
@@ -30,7 +30,7 @@ class AutoSyncOrderStrategyTest : SyncStrategyTest() {
         val change = order.copy(items = OrderTestUtils.generateTestOrderItems())
         orderDraftChanges.value = change
         advanceUntilIdle()
-        verify(orderCreationRepository, times(1)).createOrUpdateDraft(change)
+        verify(orderCreateEditRepository, times(1)).createOrUpdateDraft(change)
         job.cancel()
     }
 
@@ -41,7 +41,7 @@ class AutoSyncOrderStrategyTest : SyncStrategyTest() {
         val change = order.copy(number = "12354")
         orderDraftChanges.value = change
         advanceUntilIdle()
-        verify(orderCreationRepository, times(0)).createOrUpdateDraft(change)
+        verify(orderCreateEditRepository, times(0)).createOrUpdateDraft(change)
         job.cancel()
     }
 }

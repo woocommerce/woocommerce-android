@@ -1,0 +1,5 @@
+9.5:
+Kami terus menambahkan fungsi baru untuk fitur uji coba Pengelolaan Kupon! Rilis ini mencakup pengeditan dan penghapusan kupon dan beberapa perbaikan pada pratinjau. Untuk mendapatkan akses dini, aktifkan fitur ini di tab Lainnya, Pengaturan, Fitur Beta.
+
+Kami juga memperbaiki bug yang membuat Anda kesulitan mencari pesanan. Terima kasih untuk semua yang telah melaporkan bug ini! Feedback Anda sangat penting bagi kami!
+

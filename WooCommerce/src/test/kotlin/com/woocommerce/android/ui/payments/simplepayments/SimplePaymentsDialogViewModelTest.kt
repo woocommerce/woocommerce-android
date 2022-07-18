@@ -5,20 +5,20 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.orders.creation.OrderCreationRepository
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 
 class SimplePaymentsDialogViewModelTest {
     private val networkStatus: NetworkStatus = mock()
-    private val orderCreationRepository: OrderCreationRepository = mock()
+    private val orderCreateEditRepository: OrderCreateEditRepository = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
 
     private val viewModel = SimplePaymentsDialogViewModel(
         SavedStateHandle(),
         networkStatus,
-        orderCreationRepository,
+        orderCreateEditRepository,
         analyticsTracker,
     )
 

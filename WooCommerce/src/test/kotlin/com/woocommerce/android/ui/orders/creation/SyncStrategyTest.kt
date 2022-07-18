@@ -14,7 +14,7 @@ import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
 abstract class SyncStrategyTest : BaseUnitTest() {
-    protected val orderCreationRepository = mock<OrderCreationRepository> {
+    protected val orderCreateEditRepository = mock<OrderCreateEditRepository> {
         onBlocking { createOrUpdateDraft(any()) } doAnswer InlineClassesAnswer {
             val order = it.arguments.first() as Order
             Result.success(order.copy(total = order.total + BigDecimal.TEN))
@@ -26,6 +26,6 @@ abstract class SyncStrategyTest : BaseUnitTest() {
 
     protected val createUpdateOrderUseCase = CreateUpdateOrder(
         dispatchers = coroutinesTestRule.testDispatchers,
-        orderCreationRepository = orderCreationRepository
+        orderCreateEditRepository = orderCreateEditRepository
     )
 }

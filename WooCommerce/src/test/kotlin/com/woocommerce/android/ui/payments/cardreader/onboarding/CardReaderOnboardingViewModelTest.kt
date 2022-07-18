@@ -10,7 +10,21 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.GenericError
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.NoConnectionError
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.PluginIsNotSupportedInTheCountry
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.PluginUnsupportedVersion
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.SetupNotCompleted
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.StoreCountryNotSupported
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.StripeAccountCountryNotSupported
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.StripeAccountOverdueRequirement
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.StripeAccountPendingRequirement
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.StripeAccountRejected
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.StripeAccountUnderReview
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.WcpayNotActivated
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.WcpayNotInstalled
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingEvent
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState
@@ -112,6 +126,344 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given country not supported incoming, when view model init, then track onboarding state is called`() =
+        testBlocking {
+            createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = CardReaderOnboardingState.StoreCountryNotSupported(""),
+                    )
+                ).initSavedStateHandle()
+            )
+
+            verify(tracker).trackOnboardingState(CardReaderOnboardingState.StoreCountryNotSupported(""))
+        }
+
+    @Test
+    fun `given stripe is not supported in country, when init, then track onboarding state is called`() =
+        testBlocking {
+            createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = PluginIsNotSupportedInTheCountry(
+                            STRIPE_EXTENSION_GATEWAY,
+                            ""
+                        ),
+                    )
+                ).initSavedStateHandle()
+            )
+
+            verify(tracker).trackOnboardingState(
+                PluginIsNotSupportedInTheCountry(
+                    STRIPE_EXTENSION_GATEWAY,
+                    ""
+                )
+            )
+        }
+
+    @Test
+    fun `given wcpay is not supported in country, when init, then track onboarding state is called`() =
+        testBlocking {
+            createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = PluginIsNotSupportedInTheCountry(
+                            WOOCOMMERCE_PAYMENTS,
+                            ""
+                        ),
+                    )
+                ).initSavedStateHandle()
+            )
+
+            verify(tracker).trackOnboardingState(
+                PluginIsNotSupportedInTheCountry(
+                    WOOCOMMERCE_PAYMENTS,
+                    ""
+                )
+            )
+        }
+
+    @Test
+    fun `given wcpay is installed, when init, then track onboarding state is called`() =
+        testBlocking {
+            createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = WcpayNotInstalled,
+                    )
+                ).initSavedStateHandle()
+            )
+
+            verify(tracker).trackOnboardingState(
+                WcpayNotInstalled
+            )
+        }
+
+    @Test
+    fun `given wcpay unsupported version, when init, then track onboarding state is called`() =
+        testBlocking {
+            createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = PluginUnsupportedVersion(WOOCOMMERCE_PAYMENTS),
+                    )
+                ).initSavedStateHandle()
+            )
+
+            verify(tracker).trackOnboardingState(
+                PluginUnsupportedVersion(WOOCOMMERCE_PAYMENTS)
+            )
+        }
+
+    @Test
+    fun `given stripe unsupported version, when init, then track onboarding state is called`() =
+        testBlocking {
+            createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = PluginUnsupportedVersion(STRIPE_EXTENSION_GATEWAY),
+                    )
+                ).initSavedStateHandle()
+            )
+
+            verify(tracker).trackOnboardingState(
+                PluginUnsupportedVersion(STRIPE_EXTENSION_GATEWAY)
+            )
+        }
+
+    @Test
+    fun `given wcpay not activated, when init, then track onboarding state is called`() =
+        testBlocking {
+            createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = WcpayNotActivated,
+                    )
+                ).initSavedStateHandle()
+            )
+
+            verify(tracker).trackOnboardingState(
+                WcpayNotActivated
+            )
+        }
+
+    @Test
+    fun `given wcpay setup not completed, when init, then track onboarding state is called`() =
+        testBlocking {
+            createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = SetupNotCompleted(WOOCOMMERCE_PAYMENTS),
+                    )
+                ).initSavedStateHandle()
+            )
+
+            verify(tracker).trackOnboardingState(
+                SetupNotCompleted(WOOCOMMERCE_PAYMENTS)
+            )
+        }
+
+    @Test
+    fun `given stripe setup not completed, when init, then track onboarding state is called`() =
+        testBlocking {
+            createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = SetupNotCompleted(STRIPE_EXTENSION_GATEWAY),
+                    )
+                ).initSavedStateHandle()
+            )
+
+            verify(tracker).trackOnboardingState(
+                SetupNotCompleted(STRIPE_EXTENSION_GATEWAY)
+            )
+        }
+
+    @Test
+    fun `given wcpay in test mode with live account, when init, then track onboarding state is called`() =
+        testBlocking {
+            createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = PluginInTestModeWithLiveStripeAccount(
+                            WOOCOMMERCE_PAYMENTS
+                        ),
+                    )
+                ).initSavedStateHandle()
+            )
+
+            verify(tracker).trackOnboardingState(
+                PluginInTestModeWithLiveStripeAccount(
+                    WOOCOMMERCE_PAYMENTS
+                )
+            )
+        }
+
+    @Test
+    fun `given stripe in test mode with live account, when init, then track onboarding state is called`() =
+        testBlocking {
+            createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = PluginInTestModeWithLiveStripeAccount(
+                            STRIPE_EXTENSION_GATEWAY
+                        ),
+                    )
+                ).initSavedStateHandle()
+            )
+
+            verify(tracker).trackOnboardingState(
+                PluginInTestModeWithLiveStripeAccount(
+                    STRIPE_EXTENSION_GATEWAY
+                )
+            )
+        }
+
+    @Test
+    fun `given stripe account under review, when init, then track onboarding state is called`() =
+        testBlocking {
+            createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = StripeAccountUnderReview(STRIPE_EXTENSION_GATEWAY),
+                    )
+                ).initSavedStateHandle()
+            )
+
+            verify(tracker).trackOnboardingState(
+                StripeAccountUnderReview(STRIPE_EXTENSION_GATEWAY)
+            )
+        }
+
+    @Test
+    fun `given stripe account pending requirement, when init, then track onboarding state is called`() =
+        testBlocking {
+            createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = StripeAccountPendingRequirement(
+                            null,
+                            STRIPE_EXTENSION_GATEWAY,
+                            null,
+                            "US"
+                        ),
+                    )
+                ).initSavedStateHandle()
+            )
+
+            verify(tracker).trackOnboardingState(
+                StripeAccountPendingRequirement(
+                    null,
+                    STRIPE_EXTENSION_GATEWAY,
+                    null,
+                    "US"
+                )
+            )
+        }
+
+    @Test
+    fun `given stripe account overdue requirement, when init, then track onboarding state is called`() =
+        testBlocking {
+            createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = StripeAccountOverdueRequirement(
+                            STRIPE_EXTENSION_GATEWAY
+                        ),
+                    )
+                ).initSavedStateHandle()
+            )
+
+            verify(tracker).trackOnboardingState(
+                StripeAccountOverdueRequirement(
+                    STRIPE_EXTENSION_GATEWAY
+                ),
+            )
+        }
+
+    @Test
+    fun `given stripe account rejected, when init, then track onboarding state is called`() =
+        testBlocking {
+            createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = StripeAccountRejected(
+                            STRIPE_EXTENSION_GATEWAY
+                        ),
+                    )
+                ).initSavedStateHandle()
+            )
+
+            verify(tracker).trackOnboardingState(
+                StripeAccountRejected(
+                    STRIPE_EXTENSION_GATEWAY
+                ),
+            )
+        }
+
+    @Test
+    fun `given generic error, when init, then track onboarding state is called`() =
+        testBlocking {
+            createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = GenericError,
+                    )
+                ).initSavedStateHandle()
+            )
+
+            verify(tracker).trackOnboardingState(GenericError)
+        }
+
+    @Test
+    fun `given no connection error, when init, then track onboarding state is called`() =
+        testBlocking {
+            createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = NoConnectionError,
+                    )
+                ).initSavedStateHandle()
+            )
+
+            verify(tracker).trackOnboardingState(NoConnectionError)
+        }
+
+    @Test
+    fun `given stripe account country not supported, when init, then track onboarding state is called`() =
+        testBlocking {
+            createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = StripeAccountCountryNotSupported(WOOCOMMERCE_PAYMENTS, "US"),
+                    )
+                ).initSavedStateHandle()
+            )
+
+            verify(tracker).trackOnboardingState(
+                StripeAccountCountryNotSupported(WOOCOMMERCE_PAYMENTS, "US")
+            )
+        }
+
+    @Test
     fun `given country not supported incoming, when view model init, then country not supported state shown`() =
         testBlocking {
             val viewModel = createVM(
@@ -201,7 +553,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 CardReaderOnboardingFragmentArgs(
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
-                        onboardingState = CardReaderOnboardingState.WcpayNotInstalled,
+                        onboardingState = WcpayNotInstalled,
                     )
                 ).initSavedStateHandle()
             )
@@ -213,7 +565,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when stripe account country not supported, then country not supported state shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.StripeAccountCountryNotSupported(mock(), ""))
+                .thenReturn(StripeAccountCountryNotSupported(mock(), ""))
 
             val viewModel = createVM()
 
@@ -229,7 +581,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 CardReaderOnboardingFragmentArgs(
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
-                        onboardingState = CardReaderOnboardingState.StripeAccountCountryNotSupported(mock(), ""),
+                        onboardingState = StripeAccountCountryNotSupported(mock(), ""),
                     )
                 ).initSavedStateHandle()
             )
@@ -281,7 +633,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when country not supported, then current store country name shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.StoreCountryNotSupported("US"))
+                .thenReturn(StoreCountryNotSupported("US"))
             val viewModel = createVM()
 
             val countryName = (
@@ -299,7 +651,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 CardReaderOnboardingFragmentArgs(
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
-                        onboardingState = CardReaderOnboardingState.StoreCountryNotSupported("US"),
+                        onboardingState = StoreCountryNotSupported("US"),
                     )
                 ).initSavedStateHandle()
             )
@@ -334,7 +686,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `given store country not supported, when learn more clicked, then app shows learn more section`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.StoreCountryNotSupported(""))
+                .thenReturn(StoreCountryNotSupported(""))
             val viewModel = createVM()
 
             (viewModel.viewStateData.value as UnsupportedErrorState.Country)
@@ -348,7 +700,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `given store country not supported, when contact support clicked, then app navigates to support screen`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.StoreCountryNotSupported(""))
+                .thenReturn(StoreCountryNotSupported(""))
             val viewModel = createVM()
 
             (viewModel.viewStateData.value as UnsupportedErrorState.Country).onContactSupportActionClicked.invoke()
@@ -380,7 +732,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `given preferred plugin Stripe, when learn more clicked, then app navigates to Stripe docs`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.StoreCountryNotSupported(""))
+                .thenReturn(StoreCountryNotSupported(""))
             whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
                 .thenReturn(STRIPE_EXTENSION_GATEWAY)
 
@@ -396,7 +748,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `given preferred plugin WCPay, when learn more clicked, then app navigates to wcpay docs`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.StoreCountryNotSupported(""))
+                .thenReturn(StoreCountryNotSupported(""))
             whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
                 .thenReturn(WOOCOMMERCE_PAYMENTS)
 
@@ -412,7 +764,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `given preferred plugin null, when learn more clicked, then app navigates to wcpay docs`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.StoreCountryNotSupported(""))
+                .thenReturn(StoreCountryNotSupported(""))
             whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
                 .thenReturn(null)
 
@@ -428,7 +780,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `given stripe account country not supported, when learn more clicked, then app shows learn more section`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.StripeAccountCountryNotSupported(mock(), ""))
+                .thenReturn(StripeAccountCountryNotSupported(mock(), ""))
             val viewModel = createVM()
 
             (viewModel.viewStateData.value as UnsupportedErrorState.StripeAccountInUnsupportedCountry)
@@ -442,7 +794,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `given stripe account country not supported, when contact support clicked, then app navs to support screen`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.StripeAccountCountryNotSupported(mock(), ""))
+                .thenReturn(StripeAccountCountryNotSupported(mock(), ""))
             val viewModel = createVM()
 
             (viewModel.viewStateData.value as UnsupportedErrorState.StripeAccountInUnsupportedCountry)
@@ -454,7 +806,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     @Test
     fun `when wcpay not installed, then wcpay not installed state shown`() =
         testBlocking {
-            whenever(onboardingChecker.getOnboardingState()).thenReturn(CardReaderOnboardingState.WcpayNotInstalled)
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(WcpayNotInstalled)
 
             val viewModel = createVM()
 
@@ -464,7 +816,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     @Test
     fun `when wcpay not activated, then wcpay not activated state shown`() =
         testBlocking {
-            whenever(onboardingChecker.getOnboardingState()).thenReturn(CardReaderOnboardingState.WcpayNotActivated)
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(WcpayNotActivated)
 
             val viewModel = createVM()
 
@@ -478,7 +830,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 CardReaderOnboardingFragmentArgs(
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
-                        onboardingState = CardReaderOnboardingState.WcpayNotActivated
+                        onboardingState = WcpayNotActivated
                     )
                 ).initSavedStateHandle()
             )
@@ -490,7 +842,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when wcpay not setup, then wcpay not setup state shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.SetupNotCompleted(WOOCOMMERCE_PAYMENTS))
+                .thenReturn(SetupNotCompleted(WOOCOMMERCE_PAYMENTS))
 
             val viewModel = createVM()
 
@@ -504,7 +856,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 CardReaderOnboardingFragmentArgs(
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
-                        onboardingState = CardReaderOnboardingState.SetupNotCompleted(WOOCOMMERCE_PAYMENTS),
+                        onboardingState = SetupNotCompleted(WOOCOMMERCE_PAYMENTS),
                     )
                 ).initSavedStateHandle()
             )
@@ -516,7 +868,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when stripe extension not setup, then stripe extension not setup state shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.SetupNotCompleted(STRIPE_EXTENSION_GATEWAY))
+                .thenReturn(SetupNotCompleted(STRIPE_EXTENSION_GATEWAY))
 
             val viewModel = createVM()
 
@@ -529,7 +881,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when stripe extension not setup, then correct labels and illustrations shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.SetupNotCompleted(STRIPE_EXTENSION_GATEWAY))
+                .thenReturn(SetupNotCompleted(STRIPE_EXTENSION_GATEWAY))
 
             val viewModel = createVM()
 
@@ -554,7 +906,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when unsupported wcpay version installed, then unsupported wcpay version state shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.PluginUnsupportedVersion(WOOCOMMERCE_PAYMENTS))
+                .thenReturn(PluginUnsupportedVersion(WOOCOMMERCE_PAYMENTS))
 
             val viewModel = createVM()
 
@@ -565,7 +917,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when wcpay in test mode with live stripe account, then wcpay in test mode state shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount(mock()))
+                .thenReturn(PluginInTestModeWithLiveStripeAccount(mock()))
 
             val viewModel = createVM()
 
@@ -581,7 +933,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 CardReaderOnboardingFragmentArgs(
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
-                        onboardingState = CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount(mock()),
+                        onboardingState = PluginInTestModeWithLiveStripeAccount(mock()),
                     )
                 ).initSavedStateHandle()
             )
@@ -595,7 +947,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when unsupported stripe extension installed, then unsupported stripe extension state shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.PluginUnsupportedVersion(STRIPE_EXTENSION_GATEWAY)
+                PluginUnsupportedVersion(STRIPE_EXTENSION_GATEWAY)
             )
 
             val viewModel = createVM()
@@ -609,7 +961,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when stripe extension outdated, then correct labels and illustrations shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.PluginUnsupportedVersion(STRIPE_EXTENSION_GATEWAY)
+                PluginUnsupportedVersion(STRIPE_EXTENSION_GATEWAY)
             )
 
             val viewModel = createVM()
@@ -647,7 +999,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when wcpay and stripe extension installed-activated, then payment gateway screen is shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.ChoosePaymentGatewayProvider
+                ChoosePaymentGatewayProvider
             )
 
             val viewModel = createVM()
@@ -661,7 +1013,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when wcpay and stripe extension active, then confirm illustration shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.ChoosePaymentGatewayProvider
+                ChoosePaymentGatewayProvider
             )
 
             val viewModel = createVM()
@@ -674,7 +1026,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when wcpay and stripe extension active, then confirm header shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.ChoosePaymentGatewayProvider
+                ChoosePaymentGatewayProvider
             )
 
             val viewModel = createVM()
@@ -687,7 +1039,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when wcpay and stripe extension active, then confirm hint shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.ChoosePaymentGatewayProvider
+                ChoosePaymentGatewayProvider
             )
 
             val viewModel = createVM()
@@ -700,7 +1052,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when wcpay and stripe active, then wcpay button shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.ChoosePaymentGatewayProvider
+                ChoosePaymentGatewayProvider
             )
 
             val viewModel = createVM()
@@ -713,7 +1065,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when wcpay and stripe active, then stripe button shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.ChoosePaymentGatewayProvider
+                ChoosePaymentGatewayProvider
             )
 
             val viewModel = createVM()
@@ -726,7 +1078,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when wcpay and stripe extension active, then confirm payment method button shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.ChoosePaymentGatewayProvider
+                ChoosePaymentGatewayProvider
             )
 
             val viewModel = createVM()
@@ -739,7 +1091,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when wcpay and stripe extension active, then correct labels and illustrations shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.ChoosePaymentGatewayProvider
+                ChoosePaymentGatewayProvider
             )
 
             val viewModel = createVM()
@@ -803,7 +1155,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `given wcpay and stripe extension active, when user taps wcpay and confirm button, then load screen shown `() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.ChoosePaymentGatewayProvider
+                ChoosePaymentGatewayProvider
             )
 
             val viewModel = createVM()
@@ -818,7 +1170,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `given plugin type not null, when user selects wcpay and taps confirm button, then clear last known reader`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.ChoosePaymentGatewayProvider
+                ChoosePaymentGatewayProvider
             )
             whenever(cardReaderManager.initialized).thenReturn(true)
 
@@ -834,7 +1186,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `given card reader has inititialized, when user selects wcpay and confirm button, then disconnect reader`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.ChoosePaymentGatewayProvider
+                ChoosePaymentGatewayProvider
             )
             whenever(cardReaderManager.initialized).thenReturn(true)
 
@@ -850,7 +1202,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `given plugin type null, when view model init, then do not clear last known reader`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.ChoosePaymentGatewayProvider
+                ChoosePaymentGatewayProvider
             )
 
             createVM()
@@ -862,7 +1214,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `given plugin type null, when view model init, then do not disconnect reader`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.ChoosePaymentGatewayProvider
+                ChoosePaymentGatewayProvider
             )
 
             createVM()
@@ -875,7 +1227,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
         testBlocking {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.ChoosePaymentGatewayProvider
+                ChoosePaymentGatewayProvider
             )
 
             val viewModel = createVM()
@@ -890,7 +1242,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when refresh clicked, then loading screen shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
-                CardReaderOnboardingState.WcpayNotActivated
+                WcpayNotActivated
             )
             val viewModel = createVM()
             val receivedViewStates = mutableListOf<OnboardingViewState>()
@@ -908,7 +1260,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when account rejected, then account rejected state shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.StripeAccountRejected(mock()))
+                .thenReturn(StripeAccountRejected(mock()))
 
             val viewModel = createVM()
 
@@ -923,7 +1275,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 CardReaderOnboardingFragmentArgs(
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
-                        onboardingState = CardReaderOnboardingState.StripeAccountRejected(mock()),
+                        onboardingState = StripeAccountRejected(mock()),
                     )
                 ).initSavedStateHandle()
             )
@@ -937,7 +1289,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(
-                    CardReaderOnboardingState.StripeAccountPendingRequirement(
+                    StripeAccountPendingRequirement(
                         0L,
                         WOOCOMMERCE_PAYMENTS,
                         pluginVersion,
@@ -957,7 +1309,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(
-                    CardReaderOnboardingState.StripeAccountPendingRequirement(
+                    StripeAccountPendingRequirement(
                         0L,
                         WOOCOMMERCE_PAYMENTS,
                         pluginVersion,
@@ -978,7 +1330,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(
-                    CardReaderOnboardingState.StripeAccountPendingRequirement(
+                    StripeAccountPendingRequirement(
                         0L,
                         WOOCOMMERCE_PAYMENTS,
                         pluginVersion,
@@ -1007,7 +1359,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 CardReaderOnboardingFragmentArgs(
                     cardReaderOnboardingParam = CardReaderOnboardingParams.Failed(
                         CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER),
-                        onboardingState = CardReaderOnboardingState.StripeAccountPendingRequirement(
+                        onboardingState = StripeAccountPendingRequirement(
                             0L,
                             WOOCOMMERCE_PAYMENTS,
                             pluginVersion,
@@ -1028,7 +1380,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(
-                    CardReaderOnboardingState.StripeAccountPendingRequirement(
+                    StripeAccountPendingRequirement(
                         0L,
                         WOOCOMMERCE_PAYMENTS,
                         pluginVersion,
@@ -1047,7 +1399,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when account overdue requirements, then account overdue requirements state shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.StripeAccountOverdueRequirement(mock()))
+                .thenReturn(StripeAccountOverdueRequirement(mock()))
 
             val viewModel = createVM()
 
@@ -1063,7 +1415,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 CardReaderOnboardingFragmentArgs(
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
-                        onboardingState = CardReaderOnboardingState.StripeAccountOverdueRequirement(mock()),
+                        onboardingState = StripeAccountOverdueRequirement(mock()),
                     )
                 ).initSavedStateHandle()
             )
@@ -1077,7 +1429,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when account under review, then account under review state shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.StripeAccountUnderReview(mock()))
+                .thenReturn(StripeAccountUnderReview(mock()))
 
             val viewModel = createVM()
 
@@ -1093,7 +1445,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 CardReaderOnboardingFragmentArgs(
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
-                        onboardingState = CardReaderOnboardingState.StripeAccountUnderReview(mock()),
+                        onboardingState = StripeAccountUnderReview(mock()),
                     )
                 ).initSavedStateHandle()
             )
@@ -1107,7 +1459,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when onboarding check fails, then generic state shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.GenericError)
+                .thenReturn(GenericError)
 
             val viewModel = createVM()
 
@@ -1121,7 +1473,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 CardReaderOnboardingFragmentArgs(
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
-                        onboardingState = CardReaderOnboardingState.GenericError,
+                        onboardingState = GenericError,
                     )
                 ).initSavedStateHandle()
             )
@@ -1133,7 +1485,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when network not available, then no connection error shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.NoConnectionError)
+                .thenReturn(NoConnectionError)
 
             val viewModel = createVM()
 
@@ -1147,7 +1499,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 CardReaderOnboardingFragmentArgs(
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
-                        onboardingState = CardReaderOnboardingState.NoConnectionError,
+                        onboardingState = NoConnectionError,
                     )
                 ).initSavedStateHandle()
             )
@@ -1160,7 +1512,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `given multiple gateway, when user selects wcpay, then track selected gateway`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.ChoosePaymentGatewayProvider)
+                .thenReturn(ChoosePaymentGatewayProvider)
 
             val viewModel = createVM()
             (viewModel.viewStateData.value as OnboardingViewState.SelectPaymentPluginState)
@@ -1173,7 +1525,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `given multiple gateway, when user selects stripe extension, then track selected gateway`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.ChoosePaymentGatewayProvider)
+                .thenReturn(ChoosePaymentGatewayProvider)
 
             val viewModel = createVM()
             (viewModel.viewStateData.value as OnboardingViewState.SelectPaymentPluginState)
@@ -1186,7 +1538,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when learn more tapped, then event tracked`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.GenericError)
+                .thenReturn(GenericError)
             val viewModel = createVM()
 
             (viewModel.viewStateData.value as GenericErrorState).onLearnMoreActionClicked.invoke()

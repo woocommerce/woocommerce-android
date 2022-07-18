@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.coupons.details
 
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.tools.SelectedSite
@@ -70,6 +71,7 @@ class CouponDetailsViewModelTest : BaseUnitTest() {
         resourceProvider = resourceProvider
     )
     private lateinit var viewModel: CouponDetailsViewModel
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     suspend fun setup(mockSetup: suspend () -> Unit = {}) {
         val selectedSite = mock<SelectedSite> {
@@ -81,7 +83,8 @@ class CouponDetailsViewModelTest : BaseUnitTest() {
             wooCommerceStore = wooCommerceStore,
             selectedSite = selectedSite,
             couponRepository = couponRepository,
-            couponUtils = couponUtils
+            couponUtils = couponUtils,
+            analyticsTrackerWrapper = analyticsTrackerWrapper
         )
     }
 

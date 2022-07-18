@@ -9,14 +9,14 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.databinding.FragmentEditCustomerOrderNoteBinding
+import com.woocommerce.android.databinding.FragmentOrderCreateEditCustomerNoteBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import org.wordpress.android.util.ActivityUtils
 import org.wordpress.android.util.DisplayUtils
 
-class SimplePaymentsCustomerNoteFragment : BaseFragment(R.layout.fragment_edit_customer_order_note) {
-    private var _binding: FragmentEditCustomerOrderNoteBinding? = null
+class SimplePaymentsCustomerNoteFragment : BaseFragment(R.layout.fragment_order_create_edit_customer_note) {
+    private var _binding: FragmentOrderCreateEditCustomerNoteBinding? = null
     val binding
         get() = _binding!!
 
@@ -27,7 +27,7 @@ class SimplePaymentsCustomerNoteFragment : BaseFragment(R.layout.fragment_edit_c
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
 
-        _binding = FragmentEditCustomerOrderNoteBinding.bind(view)
+        _binding = FragmentOrderCreateEditCustomerNoteBinding.bind(view)
         if (savedInstanceState == null) {
             binding.customerOrderNoteEditor.setText(navArgs.customerNote)
             if (binding.customerOrderNoteEditor.requestFocus() && !DisplayUtils.isLandscape(requireActivity())) {
