@@ -42,6 +42,7 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import okio.utf8Size
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
@@ -235,7 +236,18 @@ class OrderListViewModel @Inject constructor(
      * data about the order custom fields
      */
     fun trackOrderClickEvent(orderId: Long, orderStatus: String) = launch {
-        val orderMetadata = orderDetailRepository.getOrderMetadata(orderId)
+        val (customFieldsSize, customFieldsCount) =
+            orderDetailRepository.getOrderMetadata(orderId)
+                .map { it.value.utf8Size() }
+                .let {
+                    Pair(
+                        // amount of custom fields in the order
+                        it.size,
+                        // total size in bytes of all custom fields in the order
+                        it.reduce(Long::plus)
+                    )
+                }
+
 
         AnalyticsTracker.track(
             AnalyticsEvent.ORDER_OPEN,
