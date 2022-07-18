@@ -230,15 +230,18 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-    fun trackOrderClickEvent(orderId: Long) = launch {
-        // Track user clicked to open an order and the status of that order
-        val order = orderDetailRepository.getOrderById(orderId) ?: return@launch
+    /**
+     * Track user clicked to open an order and the status of that order, along with some
+     * data about the order custom fields
+     */
+    fun trackOrderClickEvent(orderId: Long, orderStatus: String) = launch {
+        val orderMetadata = orderDetailRepository.getOrderMetadata(orderId)
 
         AnalyticsTracker.track(
             AnalyticsEvent.ORDER_OPEN,
             mapOf(
                 AnalyticsTracker.KEY_ID to orderId,
-                AnalyticsTracker.KEY_STATUS to order.status.value
+                AnalyticsTracker.KEY_STATUS to orderStatus
             )
         )
     }
