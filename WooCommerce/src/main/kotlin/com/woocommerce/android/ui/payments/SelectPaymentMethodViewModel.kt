@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -39,7 +38,6 @@ import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
@@ -54,7 +52,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val orderMapper: OrderMapper,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val cardPaymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
-    private val appPrefsWrapper: AppPrefsWrapper,
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker,
 ) : ScopedViewModel(savedState) {
     private val navArgs: SelectPaymentMethodFragmentArgs by savedState.navArgs()

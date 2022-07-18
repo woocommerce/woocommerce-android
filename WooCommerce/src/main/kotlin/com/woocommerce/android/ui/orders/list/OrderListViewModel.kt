@@ -13,8 +13,6 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.paging.PagedList
-import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -26,8 +24,10 @@ import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChange
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.compose.component.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.OpenPurchaseCardReaderLink
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -40,7 +40,6 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -56,7 +55,6 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderSummariesFetched
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 private const val EMPTY_VIEW_THROTTLE = 250L
@@ -75,10 +73,10 @@ class OrderListViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val fetcher: WCOrderFetcher,
     private val resourceProvider: ResourceProvider,
-    private val appPrefsWrapper: AppPrefsWrapper,
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters,
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount,
     private val store: WooCommerceStore,
+    private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker,
 ) : ScopedViewModel(savedState), LifecycleOwner {
     protected val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
@@ -204,6 +202,7 @@ class OrderListViewModel @Inject constructor(
             showOfflineSnack()
         }
     }
+
     /**
      * Fetch payment gateways so they are available for order refunds later
      */
@@ -418,34 +417,9 @@ class OrderListViewModel @Inject constructor(
         loadOrders()
     }
 
-    fun isCardReaderOnboardingCompleted(): Boolean {
-        return selectedSite.getIfExists()?.let {
-            appPrefsWrapper.isCardReaderOnboardingCompleted(
-                localSiteId = it.id,
-                remoteSiteId = it.siteId,
-                selfHostedSiteId = it.selfHostedSiteId
-            )
-        } ?: false
-    }
-
-    private suspend fun getStoreCountryCode(): String? {
-        return withContext(dispatchers.io) {
-            store.getStoreCountryCode(selectedSite.get()) ?: null.also {
-                WooLog.e(WooLog.T.CARD_READER, "Store's country code not found.")
-            }
-        }
-    }
-
     fun onCtaClicked() {
         launch {
-            val countryCode = getStoreCountryCode()
-            withContext(dispatchers.main) {
-                triggerEvent(
-                    OrderListEvent.OpenPurchaseCardReaderLink(
-                        "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}$countryCode"
-                    )
-                )
-            }
+            triggerEvent(OpenPurchaseCardReaderLink(bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl()))
         }
     }
 
@@ -456,69 +430,25 @@ class OrderListViewModel @Inject constructor(
 
     fun onRemindLaterClicked(currentTimeInMillis: Long) {
         shouldShowUpsellCardReaderDismissDialog.value = false
-        storeRemindLaterTimeStamp(currentTimeInMillis)
+        bannerDisplayEligibilityChecker.onRemindLaterClicked(currentTimeInMillis)
         triggerEvent(OrderListEvent.DismissCardReaderUpsellBannerViaRemindMeLater)
     }
 
     fun onDontShowAgainClicked() {
         shouldShowUpsellCardReaderDismissDialog.value = false
-        storeDismissBannerForever()
+        bannerDisplayEligibilityChecker.onDontShowAgainClicked()
         triggerEvent(OrderListEvent.DismissCardReaderUpsellBannerViaDontShowAgain)
     }
 
-    private fun storeRemindLaterTimeStamp(currentTimeInMillis: Long) {
-        val site = selectedSite.get()
-        appPrefsWrapper.setCardReaderUpsellBannerRemindMeLater(
-            lastDialogDismissedInMillis = currentTimeInMillis,
-            localSiteId = site.id,
-            remoteSiteId = site.siteId,
-            selfHostedSiteId = site.selfHostedSiteId
-        )
-    }
-
-    private fun storeDismissBannerForever() {
-        val site = selectedSite.get()
-        appPrefsWrapper.setCardReaderUpsellBannerDismissed(
-            isDismissed = true,
-            localSiteId = site.id,
-            remoteSiteId = site.siteId,
-            selfHostedSiteId = site.selfHostedSiteId
-        )
-    }
-
-    private fun isCardReaderUpsellBannerDismissedForever(): Boolean {
-        val site = selectedSite.get()
-        return appPrefsWrapper.isCardReaderUpsellBannerDismissedForever(
-            localSiteId = site.id,
-            remoteSiteId = site.siteId,
-            selfHostedSiteId = site.selfHostedSiteId
-        )
-    }
-
-    private fun getCardReaderUpsellBannerLastDismissed(): Long {
-        val site = selectedSite.get()
-        return appPrefsWrapper.getCardReaderUpsellBannerLastDismissed(
-            localSiteId = site.id,
-            remoteSiteId = site.siteId,
-            selfHostedSiteId = site.selfHostedSiteId
-        )
-    }
-
-    fun isLastDialogDismissedMoreThan14DaysAgo(currentTimeInMillis: Long): Boolean {
-        val timeDifference = currentTimeInMillis - getCardReaderUpsellBannerLastDismissed()
-        return TimeUnit.MILLISECONDS.toDays(timeDifference) > CARD_READER_UPSELL_BANNER_REMIND_THRESHOLD_IN_DAYS
-    }
-
-    private fun hasTheMerchantDismissedBannerViaRemindMeLater(): Boolean {
-        return getCardReaderUpsellBannerLastDismissed() != 0L
-    }
-
     fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long): Boolean {
-        return !isCardReaderUpsellBannerDismissedForever() &&
-            (
-                !hasTheMerchantDismissedBannerViaRemindMeLater() || hasTheMerchantDismissedBannerViaRemindMeLater() &&
-                    isLastDialogDismissedMoreThan14DaysAgo(currentTimeInMillis)
-                )
+        with(bannerDisplayEligibilityChecker) {
+            return !isCardReaderUpsellBannerDismissedForever() &&
+                (
+                    !hasTheMerchantDismissedBannerViaRemindMeLater() ||
+                        hasTheMerchantDismissedBannerViaRemindMeLater() &&
+                        isLastDialogDismissedMoreThan14DaysAgo(currentTimeInMillis)
+                    )
+        }
     }
 
     sealed class OrderListEvent : Event() {
@@ -536,8 +466,4 @@ class OrderListViewModel @Inject constructor(
         val arePaymentGatewaysFetched: Boolean = false,
         val filterCount: Int = 0
     ) : Parcelable
-
-    companion object {
-        private const val CARD_READER_UPSELL_BANNER_REMIND_THRESHOLD_IN_DAYS = 14
-    }
 }
