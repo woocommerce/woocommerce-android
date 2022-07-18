@@ -252,16 +252,16 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     }
 
     override fun dismissUpsellCardReaderBanner() {
-        binding.upsellCardReaderComposeView.paymentsComposeView.visibility = View.GONE
+        binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
         applyBannerDismissDialogComposeUI()
     }
 
     override fun dismissUpsellCardReaderBannerViaRemindLater() {
-        binding.upsellCardReaderComposeView.paymentsUpsellCardReaderDismissView.visibility = View.GONE
+        binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
     }
 
     override fun dismissUpsellCardReaderBannerViaDontShowAgain() {
-        binding.upsellCardReaderComposeView.paymentsUpsellCardReaderDismissView.visibility = View.GONE
+        binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
     }
 
     override fun openPurchaseCardReaderLink(url: String) {
@@ -289,7 +289,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     }
 
     private fun applyBannerComposeUI() {
-        binding.upsellCardReaderComposeView.paymentsComposeView.apply {
+        binding.upsellCardReaderComposeView.upsellCardReaderBannerView.apply {
             // Dispose of the Composition when the view's LifecycleOwner is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
@@ -306,7 +306,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     }
 
     private fun applyBannerDismissDialogComposeUI() {
-        binding.upsellCardReaderComposeView.paymentsUpsellCardReaderDismissView.apply {
+        binding.upsellCardReaderComposeView.upsellCardReaderDismissView.apply {
             // Dispose of the Composition when the view's LifecycleOwner is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {

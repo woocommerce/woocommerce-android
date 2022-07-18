@@ -216,7 +216,7 @@ class OrderListFragment :
     }
 
     private fun applyBannerComposeUI() {
-        binding.upsellCardReaderComposeView.paymentsComposeView.apply {
+        binding.upsellCardReaderComposeView.upsellCardReaderBannerView.apply {
             // Dispose of the Composition when the view's LifecycleOwner is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
@@ -233,7 +233,7 @@ class OrderListFragment :
     }
 
     private fun applyBannerDismissDialogComposeUI() {
-        binding.upsellCardReaderComposeView.paymentsUpsellCardReaderDismissView.apply {
+        binding.upsellCardReaderComposeView.upsellCardReaderDismissView.apply {
             // Dispose of the Composition when the view's LifecycleOwner is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
@@ -327,14 +327,14 @@ class OrderListFragment :
                 }
                 is ShowOrderFilters -> showOrderFilters()
                 DismissCardReaderUpsellBanner -> {
-                    binding.upsellCardReaderComposeView.paymentsComposeView.visibility = View.GONE
+                    binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
                     applyBannerDismissDialogComposeUI()
                 }
                 DismissCardReaderUpsellBannerViaRemindMeLater -> {
-                    binding.upsellCardReaderComposeView.paymentsUpsellCardReaderDismissView.visibility = View.GONE
+                    binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
                 }
                 DismissCardReaderUpsellBannerViaDontShowAgain -> {
-                    binding.upsellCardReaderComposeView.paymentsUpsellCardReaderDismissView.visibility = View.GONE
+                    binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
                 }
                 is OrderListViewModel.OrderListEvent.OpenPurchaseCardReaderLink -> {
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)

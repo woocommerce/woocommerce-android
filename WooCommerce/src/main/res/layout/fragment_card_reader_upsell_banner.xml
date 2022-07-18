@@ -4,12 +4,12 @@
     android:layout_height="match_parent">
 
     <androidx.compose.ui.platform.ComposeView
-        android:id="@+id/paymentsComposeView"
+        android:id="@+id/upsellCardReaderBannerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <androidx.compose.ui.platform.ComposeView
-        android:id="@+id/paymentsUpsellCardReaderDismissView"
+        android:id="@+id/upsellCardReaderDismissView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 

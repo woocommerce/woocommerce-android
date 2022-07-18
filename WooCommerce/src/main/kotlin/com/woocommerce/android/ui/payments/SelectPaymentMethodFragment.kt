@@ -76,7 +76,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
     }
 
     private fun applyBannerComposeUI() {
-        binding.upsellCardReaderComposeView.paymentsComposeView.apply {
+        binding.upsellCardReaderComposeView.upsellCardReaderBannerView.apply {
             // Dispose of the Composition when the view's LifecycleOwner is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
@@ -93,7 +93,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
     }
 
     private fun applyBannerDismissDialogComposeUI() {
-        binding.upsellCardReaderComposeView.paymentsUpsellCardReaderDismissView.apply {
+        binding.upsellCardReaderComposeView.upsellCardReaderDismissView.apply {
             // Dispose of the Composition when the view's LifecycleOwner is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
@@ -197,14 +197,14 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
                     findNavController().navigate(action)
                 }
                 SelectPaymentMethodViewModel.DismissCardReaderUpsellBanner -> {
-                    binding.upsellCardReaderComposeView.paymentsComposeView.visibility = View.GONE
+                    binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
                     applyBannerDismissDialogComposeUI()
                 }
                 SelectPaymentMethodViewModel.DismissCardReaderUpsellBannerViaRemindMeLater -> {
-                    binding.upsellCardReaderComposeView.paymentsUpsellCardReaderDismissView.visibility = View.GONE
+                    binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
                 }
                 SelectPaymentMethodViewModel.DismissCardReaderUpsellBannerViaDontShowAgain -> {
-                    binding.upsellCardReaderComposeView.paymentsUpsellCardReaderDismissView.visibility = View.GONE
+                    binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
                 }
                 is SelectPaymentMethodViewModel.OpenPurchaseCardReaderLink -> {
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
