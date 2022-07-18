@@ -65,7 +65,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -1638,29 +1641,35 @@ class ProductDetailViewModel @Inject constructor(
     private fun observeImageUploadEvents() {
         imageUploadsJob?.cancel()
         imageUploadsJob = launch {
-            mediaFileUploadHandler.observeCurrentUploads(getRemoteProductId())
-                .map { list -> list.map { it.toUri() } }
-                .onEach { viewState = viewState.copy(uploadingImageUris = it) }
-                .launchIn(this)
+            draftChanges
+                .distinctUntilChanged { old, new -> old?.remoteId == new?.remoteId }
+                .map { getRemoteProductId() }
+                .filter { productId -> productId != DEFAULT_ADD_NEW_PRODUCT_ID || isAddFlowEntryPoint }
+                .collectLatest { productId ->
+                    mediaFileUploadHandler.observeCurrentUploads(productId)
+                        .map { list -> list.map { it.toUri() } }
+                        .onEach { viewState = viewState.copy(uploadingImageUris = it) }
+                        .launchIn(this)
 
-            mediaFileUploadHandler.observeSuccessfulUploads(getRemoteProductId())
-                .onEach { addProductImageToDraft(it.toAppModel()) }
-                .launchIn(this)
+                    mediaFileUploadHandler.observeSuccessfulUploads(productId)
+                        .onEach { addProductImageToDraft(it.toAppModel()) }
+                        .launchIn(this)
 
-            mediaFileUploadHandler.observeCurrentUploadErrors(getRemoteProductId())
-                .onEach { errorList ->
-                    if (errorList.isEmpty()) {
-                        triggerEvent(HideImageUploadErrorSnackbar)
-                    } else {
-                        val errorMsg = resources.getMediaUploadErrorMessage(errorList.size)
-                        triggerEvent(
-                            ShowActionSnackbar(errorMsg) {
-                                triggerEvent(ProductNavigationTarget.ViewMediaUploadErrors(getRemoteProductId()))
+                    mediaFileUploadHandler.observeCurrentUploadErrors(productId)
+                        .onEach { errorList ->
+                            if (errorList.isEmpty()) {
+                                triggerEvent(HideImageUploadErrorSnackbar)
+                            } else {
+                                val errorMsg = resources.getMediaUploadErrorMessage(errorList.size)
+                                triggerEvent(
+                                    ShowActionSnackbar(errorMsg) {
+                                        triggerEvent(ProductNavigationTarget.ViewMediaUploadErrors(productId))
+                                    }
+                                )
                             }
-                        )
-                    }
+                        }
+                        .launchIn(this)
                 }
-                .launchIn(this)
         }
     }
 

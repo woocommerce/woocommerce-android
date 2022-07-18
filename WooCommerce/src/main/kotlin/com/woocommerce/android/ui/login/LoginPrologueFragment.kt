@@ -43,9 +43,6 @@ class LoginPrologueFragment : Fragment(R.layout.fragment_login_prologue) {
             prologueFinishedListener?.onSecondaryButtonClicked()
         }
 
-        binding.viewPager.adapter = LoginPrologueAdapter(this)
-        binding.viewPagerIndicator.setupFromViewPager(binding.viewPager)
-
         if (savedInstanceState == null) {
             unifiedLoginTracker.track(Flow.PROLOGUE, Step.PROLOGUE)
         }

@@ -8,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Failed
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
@@ -23,6 +24,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.network.BaseRequest
@@ -104,6 +106,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
     protected abstract val tracksFlow: String
 
+    protected abstract fun initMocksForAnalyticsWithOrder(order: Order)
+
     @Test
     fun `when product selected, send tracks event`() {
         sut.onProductSelected(123)
@@ -174,6 +178,99 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 AnalyticsTracker.KEY_TO to Order.Status.Cancelled.value,
                 AnalyticsTracker.KEY_FLOW to tracksFlow
             )
+        )
+    }
+
+    @Test
+    open fun `when product quantity increased, send tracks event`() {
+        val productId = 1L
+        val products = OrderTestUtils.generateTestOrderItems(count = 1, productId = productId)
+        val order = defaultOrderValue.copy(items = products)
+        initMocksForAnalyticsWithOrder(order)
+        createSut()
+        sut.onIncreaseProductsQuantity(productId)
+        verify(tracker).track(
+            AnalyticsEvent.ORDER_PRODUCT_QUANTITY_CHANGE,
+            mapOf(AnalyticsTracker.KEY_FLOW to tracksFlow)
+        )
+    }
+
+    @Test
+    fun `when product quantity decreased, send tracks event`() {
+        val productId = 1L
+        val products = OrderTestUtils.generateTestOrderItems(count = 1, productId = productId, quantity = 3F)
+        val order = defaultOrderValue.copy(items = products)
+        initMocksForAnalyticsWithOrder(order)
+        createSut()
+        sut.onDecreaseProductsQuantity(productId)
+        verify(tracker).track(
+            AnalyticsEvent.ORDER_PRODUCT_QUANTITY_CHANGE,
+            mapOf(AnalyticsTracker.KEY_FLOW to tracksFlow)
+        )
+    }
+
+    @Test
+    fun `when product quantity decreased but quantity 1, don't send tracks event`() {
+        val productId = 1L
+        val products = OrderTestUtils.generateTestOrderItems(count = 1, productId = productId, quantity = 1F)
+        val order = defaultOrderValue.copy(items = products)
+        initMocksForAnalyticsWithOrder(order)
+        createSut()
+        sut.onDecreaseProductsQuantity(productId)
+        verify(tracker, never()).track(
+            AnalyticsEvent.ORDER_PRODUCT_QUANTITY_CHANGE,
+            mapOf(AnalyticsTracker.KEY_FLOW to tracksFlow)
+        )
+    }
+
+    @Test
+    fun `when product removed, send tracks event`() {
+        val productId = 1L
+        val products = OrderTestUtils.generateTestOrderItems(count = 1, productId = productId, quantity = 3F)
+        val order = defaultOrderValue.copy(items = products)
+        initMocksForAnalyticsWithOrder(order)
+        createSut()
+        sut.onRemoveProduct(products.first())
+        verify(tracker).track(
+            AnalyticsEvent.ORDER_PRODUCT_REMOVE,
+            mapOf(AnalyticsTracker.KEY_FLOW to tracksFlow)
+        )
+    }
+
+    @Test
+    fun `when fee removed, send tracks event`() {
+        val feesLines = listOf(
+            Order.FeeLine.EMPTY.copy(
+                name = "order_custom_fee",
+                total = BigDecimal(10)
+            )
+        )
+        val order = defaultOrderValue.copy(feesLines = feesLines)
+        initMocksForAnalyticsWithOrder(order)
+        createSut()
+        sut.onFeeRemoved()
+        verify(tracker).track(
+            AnalyticsEvent.ORDER_FEE_REMOVE,
+            mapOf(AnalyticsTracker.KEY_FLOW to tracksFlow)
+        )
+    }
+
+    @Test
+    fun `when shipping method removed, send tracks event`() {
+        val shippingLines = listOf(
+            Order.ShippingLine(
+                methodId = "other",
+                total = BigDecimal(10),
+                methodTitle = "name"
+            )
+        )
+        val order = defaultOrderValue.copy(shippingLines = shippingLines)
+        initMocksForAnalyticsWithOrder(order)
+        createSut()
+        sut.onShippingRemoved()
+        verify(tracker).track(
+            AnalyticsEvent.ORDER_SHIPPING_METHOD_REMOVE,
+            mapOf(AnalyticsTracker.KEY_FLOW to tracksFlow)
         )
     }
 

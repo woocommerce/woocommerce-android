@@ -195,10 +195,13 @@
     <string name="login_store_address">Enter your store address</string>
     <string name="login_configure_link">Read the %sconfiguration instructions%s.</string>
 
-    <string name="login_prologue_label_analytics">Track sales and high perfoming products</string>
+    <string name="login_prologue_label_analytics">Track sales and high performing products</string>
     <string name="login_prologue_label_orders">Manage your store orders on the go</string>
     <string name="login_prologue_label_products">Edit and add new products from anywhere</string>
-    <string name="login_prologue_label_reviews">Monitor and approve your product reviews</string>
+
+    <string name="login_prologue_label_analytics_subtitle">We know it\'s essential to your business</string>
+    <string name="login_prologue_label_orders_subtitle">You can manage them quickly and easily</string>
+    <string name="login_prologue_label_products_subtitle">We enable you to process them effortlessly</string>
 
     <string name="login_pick_store">Select store to connect</string>
     <string name="login_connected_store">Connected store</string>
@@ -331,6 +334,7 @@
     <string name="simple_payments_choose_method">Choose your payment method</string>
     <string name="simple_payments_cash_dlg_title">Mark as paid?</string>
     <string name="simple_payments_cash_dlg_message">This will create your order and mark it as paid if you received payment outside of WooCommerce</string>
+    <string name="existing_order_cash_dlg_message">This will mark this order as paid if you received payment outside of WooCommerce</string>
     <string name="simple_payments_cash_dlg_button">Mark as paid</string>
     <string name="simple_payments_share_payment_link">Share payment link</string>
     <string name="simple_payments_share_payment_dialog_title">Checkout - %s</string>
@@ -374,7 +378,6 @@
     <string name="order_creation_failure_snackbar">Order creation failed</string>
     <string name="order_creation_success_snackbar">Order created</string>
     <string name="order_creation_payment_tax">Taxes</string>
-    <string name="order_creation_price_calculation_failed">Couldn’t update pricing</string>
     <string name="order_creation_shipping_name">Name</string>
     <string name="order_creation_shipping_title_add">Add Shipping</string>
     <string name="order_creation_add_shipping">Add shipping</string>
@@ -393,6 +396,7 @@
     <string name="order_editing_non_editable_title">Parts of this order are not currently editable</string>
     <string name="order_editing_non_editable_message">To edit Products or Payment Details, change the status to Pending Payment.</string>
     <string name="order_editing_locked_content_description">locked</string>
+    <string name="order_sync_failed">Unable to save changes</string>
     <!--
         Order Filters
     -->
@@ -2406,6 +2410,7 @@
     <string name="enter_email_to_continue_wordpress_com">Enter your email address to log in or create a WordPress.com account.</string>
     <string name="enter_account_info_for_site">Enter your account information for %1$s.</string>
     <string name="get_started">Get Started</string>
+    <string name="lets_get_started">Let\'s get started!</string>
     <string name="check_email">Check email</string>
     <string name="login_text_otp">Text me a code instead</string>
     <string name="login_text_otp_another">Text me another code instead</string>

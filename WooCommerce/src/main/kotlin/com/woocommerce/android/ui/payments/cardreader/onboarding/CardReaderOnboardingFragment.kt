@@ -122,9 +122,9 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         UiHelpers.setTextOrHide(binding.selectWcPayButton, state.selectWcPayButtonLabel)
         UiHelpers.setTextOrHide(binding.selectStripeButton, state.selectStripeButtonLabel)
         UiHelpers.setTextOrHide(binding.confirmPaymentMethod, state.confirmPaymentMethodButtonLabel)
-        UiHelpers.setImageOrHideInLandscape(binding.cardIllustration, state.cardIllustration)
-        UiHelpers.setImageOrHideInLandscape(binding.icSelectWcPay, state.icWcPayLogo)
-        UiHelpers.setImageOrHideInLandscape(binding.icCheckmarkWcPay, state.icCheckmarkWcPay)
+        binding.cardIllustration.setImageResource(state.cardIllustration)
+        binding.icSelectWcPay.setImageResource(state.icWcPayLogo)
+        binding.icCheckmarkWcPay.setImageResource(state.icCheckmarkWcPay)
 
         binding.selectWcPayButton.setOnClickListener {
             selectedPluginType = PluginType.WOOCOMMERCE_PAYMENTS
@@ -133,7 +133,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
             binding.icCheckmarkWcPay.visibility = View.VISIBLE
             binding.icCheckmarkStripe.visibility = View.GONE
             binding.selectStripeButton.strokeColor =
-                ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.gray_5))
+                ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.select_payment_gateway_stroke))
         }
         binding.selectStripeButton.setOnClickListener {
             selectedPluginType = PluginType.STRIPE_EXTENSION_GATEWAY
@@ -142,7 +142,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
             binding.icCheckmarkWcPay.visibility = View.GONE
             binding.icCheckmarkStripe.visibility = View.VISIBLE
             binding.selectWcPayButton.strokeColor =
-                ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.gray_5))
+                ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.select_payment_gateway_stroke))
         }
         binding.confirmPaymentMethod.setOnClickListener {
             state.onConfirmPaymentMethodClicked.invoke(selectedPluginType)

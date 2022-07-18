@@ -25,6 +25,15 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
     override val mode: Mode = Edit(defaultOrderValue.id)
     override val tracksFlow: String = VALUE_FLOW_EDITING
 
+    override fun initMocksForAnalyticsWithOrder(order: Order) {
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(order))
+        }
+        orderDetailRepository = mock {
+            onBlocking { getOrderById(order.id) }.doReturn(order)
+        }
+    }
+
     @Test
     fun `should load order from repository`() = testBlocking {
         orderDetailRepository.stub {
