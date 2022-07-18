@@ -14,8 +14,9 @@ import com.woocommerce.android.screenshots.orders.OrderSelectProductScreen
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
-// import org.junit.Test
+import org.junit.Test
 
 @HiltAndroidTest
 class OrdersUITest : TestBase() {
@@ -43,7 +44,8 @@ class OrdersUITest : TestBase() {
         TabNavComponent().gotoOrdersScreen()
     }
 
-//    @Test
+    @Ignore("Disabled because it fails in CI")
+    @Test
     fun createOrderTest() {
         val productName = OrderSelectProductScreen.SIMPLE_PRODUCT_NAME
         OrderListScreen()

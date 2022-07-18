@@ -17,8 +17,9 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.json.JSONObject
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
-// import org.junit.Test
+import org.junit.Test
 
 @HiltAndroidTest
 class ProductsUITest : TestBase() {
@@ -46,7 +47,8 @@ class ProductsUITest : TestBase() {
         TabNavComponent().gotoProductsScreen()
     }
 
-//    @Test
+    @Ignore("Disabled because it fails in CI")
+    @Test
     fun productListShowsAllProducts() {
         val productsJSONArray = MocksReader().readAllProductsToArray()
 
