@@ -15,7 +15,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
+// import org.junit.Test
 
 @HiltAndroidTest
 class OrdersUITest : TestBase() {
@@ -43,7 +43,7 @@ class OrdersUITest : TestBase() {
         TabNavComponent().gotoOrdersScreen()
     }
 
-    @Test
+//    @Test
     fun createOrderTest() {
         val productName = OrderSelectProductScreen.SIMPLE_PRODUCT_NAME
         OrderListScreen()

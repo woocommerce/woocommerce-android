@@ -17,7 +17,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
+// import org.junit.Test
 
 @HiltAndroidTest
 class ReviewsUITest : TestBase() {
@@ -45,7 +45,7 @@ class ReviewsUITest : TestBase() {
         TabNavComponent().gotoMoreMenuScreen().openReviewsListScreen(composeTestRule)
     }
 
-    @Test
+//    @Test
     fun reviewListShowsAllReviews() {
         val reviewsJSONArray = MocksReader().readAllReviewsToArray()
 
