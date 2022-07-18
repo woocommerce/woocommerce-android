@@ -128,8 +128,12 @@ class OrderCreateEditFormFragment : BaseFragment(R.layout.fragment_order_create_
     }
 
     private fun FragmentOrderCreateEditFormBinding.initOrderStatusView() {
+        val mode =   when (viewModel.mode) {
+            OrderCreateEditViewModel.Mode.Creation -> OrderDetailOrderStatusView.Mode.OrderCreation
+            is OrderCreateEditViewModel.Mode.Edit -> OrderDetailOrderStatusView.Mode.OrderEdit
+        }
         orderStatusView.initView(
-            mode = OrderDetailOrderStatusView.Mode.OrderCreation,
+            mode = mode,
             editOrderStatusClickListener = {
                 viewModel.orderStatusData.value?.let {
                     viewModel.onEditOrderStatusClicked(it)
