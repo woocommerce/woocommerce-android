@@ -230,6 +230,23 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
+    fun onOrderItemClick(orderId: Long, orderStatus: String, sharedView: View?) {
+        triggerEvent(OrderListEvent.ShowOrderDetail(orderId, sharedView))
+
+        launch {
+            // Track user clicked to open an order and the status of that order
+            val order = orderDetailRepository.getOrderById(orderId)
+
+            AnalyticsTracker.track(
+                AnalyticsEvent.ORDER_OPEN,
+                mapOf(
+                    AnalyticsTracker.KEY_ID to orderId,
+                    AnalyticsTracker.KEY_STATUS to orderStatus
+                )
+            )
+        }
+    }
+
     /**
      * Activates the provided list by first removing the LiveData sources for the active list,
      * then creating new LiveData sources for the provided [pagedListWrapper] and setting it as
