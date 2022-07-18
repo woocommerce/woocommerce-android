@@ -16,19 +16,22 @@ import org.wordpress.android.util.DisplayUtils
 class LoginPrologueViewPagerItemFragment : Fragment(R.layout.fragment_login_prologue_viewpager_item) {
     companion object {
         private const val ARG_DRAWABLE_ID = "drawable_id"
-        private const val ARG_STRING_ID = "string_id"
+        private const val ARG_TITLE_ID = "title_id"
+        private const val ARG_SUBTITLE_ID = "subtitle_id"
 
         private const val RATIO_PORTRAIT = 0.6f
         private const val RATIO_LANDSCAPE = 0.2f
 
         fun newInstance(
             @DrawableRes drawableId: Int,
-            @StringRes stringId: Int
+            @StringRes titleId: Int,
+            @StringRes subtitleId: Int
         ): LoginPrologueViewPagerItemFragment {
             LoginPrologueViewPagerItemFragment().also { fragment ->
                 fragment.arguments = Bundle().also { bundle ->
                     bundle.putInt(ARG_DRAWABLE_ID, drawableId)
-                    bundle.putInt(ARG_STRING_ID, stringId)
+                    bundle.putInt(ARG_TITLE_ID, titleId)
+                    bundle.putInt(ARG_SUBTITLE_ID, subtitleId)
                 }
                 return fragment
             }
@@ -38,7 +41,8 @@ class LoginPrologueViewPagerItemFragment : Fragment(R.layout.fragment_login_prol
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         arguments?.let { args ->
             val binding = FragmentLoginPrologueViewpagerItemBinding.bind(view)
-            binding.textView.setText(args.getInt(ARG_STRING_ID))
+            binding.prologueTitle.setText(args.getInt(ARG_TITLE_ID))
+            binding.prologueSubtitle.setText(args.getInt(ARG_SUBTITLE_ID))
 
             val isLandscape = DisplayUtils.isLandscape(context)
             val isTablet = DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context)
@@ -56,7 +60,7 @@ class LoginPrologueViewPagerItemFragment : Fragment(R.layout.fragment_login_prol
             } else {
                 (DisplayUtils.getWindowPixelWidth(requireContext()) * RATIO_PORTRAIT).toInt()
             }
-            binding.textView.layoutParams.width = ratio
+            binding.prologueTitle.layoutParams.width = ratio
             binding.imageView.layoutParams.width = ratio
         }
     }

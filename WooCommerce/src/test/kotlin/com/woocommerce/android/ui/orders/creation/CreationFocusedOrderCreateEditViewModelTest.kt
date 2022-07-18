@@ -39,6 +39,12 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     override val mode: Mode = Creation
     override val tracksFlow: String = VALUE_FLOW_CREATION
 
+    override fun initMocksForAnalyticsWithOrder(order: Order) {
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(order))
+        }
+    }
+
     @Test
     fun `when initializing the view model, then register the orderDraft flowState`() {
         verify(createUpdateOrderUseCase).invoke(any(), any())
