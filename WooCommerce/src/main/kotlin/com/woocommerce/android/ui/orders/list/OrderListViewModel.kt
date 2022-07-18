@@ -230,21 +230,17 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-    fun onOrderItemClick(orderId: Long, orderStatus: String, sharedView: View?) {
-        triggerEvent(OrderListEvent.ShowOrderDetail(orderId, sharedView))
+    fun trackOrderClickEvent(orderId: Long) = launch {
+        // Track user clicked to open an order and the status of that order
+        val order = orderDetailRepository.getOrderById(orderId) ?: return@launch
 
-        launch {
-            // Track user clicked to open an order and the status of that order
-            val order = orderDetailRepository.getOrderById(orderId)
-
-            AnalyticsTracker.track(
-                AnalyticsEvent.ORDER_OPEN,
-                mapOf(
-                    AnalyticsTracker.KEY_ID to orderId,
-                    AnalyticsTracker.KEY_STATUS to orderStatus
-                )
+        AnalyticsTracker.track(
+            AnalyticsEvent.ORDER_OPEN,
+            mapOf(
+                AnalyticsTracker.KEY_ID to orderId,
+                AnalyticsTracker.KEY_STATUS to order.status.value
             )
-        }
+        )
     }
 
     /**
@@ -443,7 +439,6 @@ class OrderListViewModel @Inject constructor(
 
     sealed class OrderListEvent : Event() {
         data class ShowErrorSnack(@StringRes val messageRes: Int) : OrderListEvent()
-        data class ShowOrderDetail(val orderId: Long, val sharedView: View?) : OrderListEvent()
         object ShowOrderFilters : OrderListEvent()
     }
 
