@@ -2514,8 +2514,8 @@
 
     <!-- Qr code login -->
     <string name="qr_code_login_scanner_title">Camera Barcode Scanner</string>
-    <string name="qr_code_login_camera_permission_denied_title">Camera Permission Denied</string>
-    <string name="qr_code_login_camera_permission_denied_message">Camera permission is needed to scan the QR code and login. Please, edit the camera permission to use this feature.</string>
+    <string name="qr_code_login_camera_permission_denied_title">Camera Access Needed</string>
+    <string name="qr_code_login_camera_permission_denied_message">To use this feature, kindly allow the permissions to use your camera.</string>
     <string name="qr_code_login_edit_camera_permission">Edit permissions</string>
 
 </resources>
