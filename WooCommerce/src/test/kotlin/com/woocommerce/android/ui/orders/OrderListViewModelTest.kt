@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.NotificationReceivedEvent
@@ -38,7 +37,6 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers
 import org.mockito.kotlin.any
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
@@ -79,7 +77,6 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val orderFetcher: WCOrderFetcher = mock()
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters = mock()
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount = mock()
-    private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val store: WooCommerceStore = mock()
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker = mock()
 

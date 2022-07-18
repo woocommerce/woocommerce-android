@@ -446,7 +446,7 @@ class OrderListViewModel @Inject constructor(
                 (
                     !hasTheMerchantDismissedBannerViaRemindMeLater() ||
                         hasTheMerchantDismissedBannerViaRemindMeLater() &&
-                        isLastDialogDismissedMoreThan14DaysAgo(currentTimeInMillis)
+                            isLastDialogDismissedMoreThan14DaysAgo(currentTimeInMillis)
                     )
         }
     }

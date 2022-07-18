@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.payments
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -298,7 +297,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 (
                     !hasTheMerchantDismissedBannerViaRemindMeLater() ||
                         hasTheMerchantDismissedBannerViaRemindMeLater() &&
-                        isLastDialogDismissedMoreThan14DaysAgo(currentTimeInMillis)
+                            isLastDialogDismissedMoreThan14DaysAgo(currentTimeInMillis)
                     )
         }
     }
@@ -336,6 +335,5 @@ class SelectPaymentMethodViewModel @Inject constructor(
 
     companion object {
         private const val DELAY_MS = 1L
-        private const val CARD_READER_UPSELL_BANNER_REMIND_THRESHOLD_IN_DAYS = 14
     }
 }

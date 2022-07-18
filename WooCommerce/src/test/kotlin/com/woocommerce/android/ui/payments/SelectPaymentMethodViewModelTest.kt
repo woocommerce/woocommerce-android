@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.payments
 
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
