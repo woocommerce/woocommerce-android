@@ -8,7 +8,6 @@ import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
 import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_COMPLETED
-import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_IS_PLUGIN_EXPLICITLY_SELECTED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_ONBOARDING_COMPLETED_STATUS_V2
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_PREFERRED_PLUGIN
@@ -80,6 +79,7 @@ object AppPrefs {
         ORDER_FILTER_CUSTOM_DATE_RANGE_START,
         ORDER_FILTER_CUSTOM_DATE_RANGE_END,
         PRODUCT_SORTING_PREFIX,
+        LOGIN_LOCAL_NOTIFICATION_WORK_REQUEST
     }
 
     /**
@@ -461,7 +461,7 @@ object AppPrefs {
                     remoteSiteId,
                     selfHostedSiteId
                 ),
-                CARD_READER_ONBOARDING_NOT_COMPLETED.name
+                CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED.name
             )
         )
     }
@@ -676,6 +676,12 @@ object AppPrefs {
             PrefKeyString("${UndeletablePrefKey.WC_SHIPPING_BANNER_DISMISSED}:$currentSiteId"),
             false
         )
+
+    fun getLocalNotificationWorkRequestId() = getString(DeletablePrefKey.LOGIN_LOCAL_NOTIFICATION_WORK_REQUEST)
+
+    fun setLocalNotificationWorkRequestId(workRequestId: String) {
+        setString(DeletablePrefKey.LOGIN_LOCAL_NOTIFICATION_WORK_REQUEST, workRequestId)
+    }
 
     /**
      * Remove all user and site-related preferences.

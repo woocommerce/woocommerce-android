@@ -5,34 +5,49 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
 import androidx.work.workDataOf
+import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.ui.login.localnotifications.LoginFlowUsageTracker.LoginSupportNotificationType.LOGIN_ERROR_WRONG_EMAIL
 import dagger.hilt.android.qualifiers.ApplicationContext
+import java.util.UUID
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class LoginFlowUsageTracker @Inject constructor(
-    @ApplicationContext private val appContext: Context
+    @ApplicationContext private val appContext: Context,
+    private val prefsWrapper: AppPrefsWrapper
 ) {
     companion object {
         const val LOGIN_NOTIFICATION_TYPE_KEY = "Notification-type"
     }
 
+    private val workManager = WorkManager.getInstance(appContext)
+
     fun onLoginWithWordPressAccount() {
-        val notificationData = workDataOf(LOGIN_NOTIFICATION_TYPE_KEY to "WordPress")
-//        val constraints = Constraints.Builder()
-//            .setRequiredNetworkType(NetworkType.CONNECTED)
-//            .build()
-        val uploadWorkRequest: WorkRequest =
+        cancelCurrentNotificationWorkRequest()
+        val notificationData = workDataOf(
+            LOGIN_NOTIFICATION_TYPE_KEY to LOGIN_ERROR_WRONG_EMAIL.name
+        )
+        val workRequest: WorkRequest =
             OneTimeWorkRequestBuilder<LocalNotificationWorker>()
                 .setInputData(notificationData)
-//                .setConstraints(constraints)
                 .setInitialDelay(5, TimeUnit.SECONDS)
                 .build()
 
-        val workManager = WorkManager.getInstance(appContext)
-        workManager.enqueue(uploadWorkRequest)
+        prefsWrapper.setLocalNotificationWorkRequestId(workRequest.stringId)
+        workManager.enqueue(workRequest)
     }
 
-//    fun cancelScheduledNotification() {
-//
-//    }
+    fun cancelCurrentNotificationWorkRequest() {
+        val currentWorkRequestId = prefsWrapper.getLocalNotificationWorkRequestId()
+        if (currentWorkRequestId.isNotEmpty()) {
+            workManager.cancelWorkById(UUID.fromString(currentWorkRequestId))
+            prefsWrapper.setLocalNotificationWorkRequestId("")
+        }
+    }
+
+    enum class LoginSupportNotificationType(val notification: String) {
+        NO_LOGIN_INTERACTION("login_no_interaction"),
+        LOGIN_ERROR_WRONG_EMAIL("wrong_email"),
+        DEFAULT_SUPPORT("default_support")
+    }
 }

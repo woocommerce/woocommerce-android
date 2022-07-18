@@ -235,11 +235,12 @@ class LoginActivity :
 
     override fun onSecondaryButtonClicked() {
         unifiedLoginTracker.trackClick(Click.CONTINUE_WITH_WORDPRESS_COM)
-        startLoginViaWPCom()
         loginFlowUsageTracker.onLoginWithWordPressAccount()
+        startLoginViaWPCom()
     }
 
     private fun showMainActivityAndFinish() {
+        loginFlowUsageTracker.cancelCurrentNotificationWorkRequest()
         val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         startActivity(intent)

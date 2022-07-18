@@ -151,6 +151,11 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getWcShippingBannerDismissed(currentSiteId: Int) = AppPrefs.getWcShippingBannerDismissed(currentSiteId)
 
+    fun getLocalNotificationWorkRequestId() = AppPrefs.getLocalNotificationWorkRequestId()
+
+    fun setLocalNotificationWorkRequestId(workRequestId: String) =
+        AppPrefs.setLocalNotificationWorkRequestId(workRequestId)
+
     /**
      * Observes changes to the preferences
      */
