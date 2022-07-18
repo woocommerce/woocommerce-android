@@ -248,12 +248,13 @@ class OrderListViewModel @Inject constructor(
                     )
                 }
 
-
         AnalyticsTracker.track(
             AnalyticsEvent.ORDER_OPEN,
             mapOf(
                 AnalyticsTracker.KEY_ID to orderId,
-                AnalyticsTracker.KEY_STATUS to orderStatus
+                AnalyticsTracker.KEY_STATUS to orderStatus,
+                "custom_fields_count" to customFieldsCount,
+                "custom_fields_size" to customFieldsSize
             )
         )
     }
