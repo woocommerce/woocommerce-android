@@ -116,6 +116,7 @@
         Payment reader
     -->
     <color name="disconnected_state_number_background_color">@color/woo_black_900</color>
+    <color name="select_payment_gateway_stroke">@color/woo_gray_80</color>
 
     <!--
     Jetpack plugin installation dialog
