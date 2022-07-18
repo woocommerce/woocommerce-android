@@ -7,6 +7,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R.string
 import com.woocommerce.android.WooException
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_SUCCESS
@@ -103,6 +104,11 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private val args: OrderCreateEditFormFragmentArgs by savedState.navArgs()
     val mode: Mode = args.mode
+
+    private val flow = when (mode) {
+        Mode.Creation -> VALUE_FLOW_CREATION
+        is Mode.Edit -> VALUE_FLOW_EDITING
+    }
 
     private val _orderDraft = savedState.getStateFlow(viewModelScope, Order.EMPTY)
     val orderDraft = _orderDraft
@@ -240,11 +246,6 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    private val flow = when (mode) {
-        Mode.Creation -> VALUE_FLOW_CREATION
-        is Mode.Edit -> VALUE_FLOW_EDITING
-    }
-
     fun onCustomerAddressEdited(billingAddress: Address, shippingAddress: Address) {
         val hasDifferentShippingDetails = _orderDraft.value.shippingAddress != _orderDraft.value.billingAddress
         tracker.track(
@@ -377,8 +378,10 @@ class OrderCreateEditViewModel @Inject constructor(
                             viewState = viewState.copy(willUpdateOrderDraft = true, showOrderUpdateSnackbar = false)
                         OrderUpdateStatus.Ongoing ->
                             viewState = viewState.copy(willUpdateOrderDraft = false, isUpdatingOrderDraft = true)
-                        OrderUpdateStatus.Failed ->
+                        is OrderUpdateStatus.Failed -> {
+                            trackOrderSyncFailed(updateStatus.throwable)
                             viewState = viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = true)
+                        }
                         is OrderUpdateStatus.Succeeded -> {
                             viewState = viewState.copy(
                                 isUpdatingOrderDraft = false,
@@ -397,7 +400,7 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun trackOrderCreationFailure(it: Throwable) {
-        AnalyticsTracker.track(
+        tracker.track(
             ORDER_CREATION_FAILED,
             mapOf(
                 KEY_ERROR_CONTEXT to this::class.java.simpleName,
@@ -417,6 +420,16 @@ class OrderCreateEditViewModel @Inject constructor(
                 KEY_HAS_FEES to _orderDraft.value.feesLines.isNotEmpty(),
                 KEY_HAS_SHIPPING_METHOD to _orderDraft.value.shippingLines.isNotEmpty()
             )
+        )
+    }
+
+    private fun trackOrderSyncFailed(throwable: Throwable) {
+        tracker.track(
+            stat = AnalyticsEvent.ORDER_SYNC_FAILED,
+            properties = mapOf(KEY_FLOW to flow),
+            errorContext = this::class.java.simpleName,
+            errorType = (throwable as? WooException)?.error?.type?.name,
+            errorDescription = (throwable as? WooException)?.error?.message
         )
     }
 
