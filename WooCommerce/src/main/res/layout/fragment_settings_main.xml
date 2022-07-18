@@ -12,6 +12,18 @@
 
         <View style="@style/Woo.Divider" />
 
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/paymentsComposeView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/paymentsUpsellCardReaderDismissView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <View style="@style/Woo.Divider" />
+
         <!--
             Help & support
         -->
