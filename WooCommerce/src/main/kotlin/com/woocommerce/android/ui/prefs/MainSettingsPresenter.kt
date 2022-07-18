@@ -73,7 +73,9 @@ class MainSettingsPresenter @Inject constructor(
 
     override fun onCtaClicked() {
         coroutineScope.launch {
-            bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl()
+            appSettingsFragmentView?.openPurchaseCardReaderLink(
+                bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl()
+            )
         }
     }
 
