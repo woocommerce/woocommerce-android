@@ -42,6 +42,7 @@
     <color name="color_default_image_background">@color/woo_gray_900</color>
 
     <color name="color_back_arrow">@color/color_on_surface</color>
+    <color name="color_text_link">@color/woo_pink_50</color>
 
     <!--
         Icon-related resources that use the surface color should be assigned

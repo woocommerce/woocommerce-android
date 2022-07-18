@@ -123,7 +123,7 @@ private fun clickableTextValueItem(value: String) {
     ClickableText(
         text = text,
         style = MaterialTheme.typography.body2.copy(
-            color = colorResource(R.color.color_primary)
+            color = colorResource(R.color.color_text_link)
         ),
         onClick = {
             clickListener?.onCustomOrderFieldClicked(value)
