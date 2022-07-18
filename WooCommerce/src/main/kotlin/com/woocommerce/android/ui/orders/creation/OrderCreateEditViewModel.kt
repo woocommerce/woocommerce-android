@@ -101,6 +101,11 @@ class OrderCreateEditViewModel @Inject constructor(
     private val args: OrderCreateEditFormFragmentArgs by savedState.navArgs()
     val mode: Mode = args.mode
 
+    private val flow = when (mode) {
+        Mode.Creation -> VALUE_FLOW_CREATION
+        is Mode.Edit -> VALUE_FLOW_EDITING
+    }
+
     private val _orderDraft = savedState.getStateFlow(viewModelScope, Order.EMPTY)
     val orderDraft = _orderDraft
         .asLiveData()
@@ -219,11 +224,6 @@ class OrderCreateEditViewModel @Inject constructor(
                 add(createOrderItem(remoteProductId, variationId))
             }.let { items -> _orderDraft.update { it.updateItems(items) } }
         }
-    }
-
-    private val flow = when (mode) {
-        Mode.Creation -> VALUE_FLOW_CREATION
-        is Mode.Edit -> VALUE_FLOW_EDITING
     }
 
     fun onCustomerAddressEdited(billingAddress: Address, shippingAddress: Address) {
@@ -404,7 +404,7 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun trackOrderSyncFailed(throwable: Throwable) {
-        AnalyticsTracker.track(
+        tracker.track(
             stat = AnalyticsEvent.ORDER_SYNC_FAILED,
             properties = mapOf(KEY_FLOW to flow),
             errorContext = this::class.java.simpleName,
