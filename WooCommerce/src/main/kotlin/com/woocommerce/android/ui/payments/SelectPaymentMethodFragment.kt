@@ -21,8 +21,8 @@ import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.compose.component.BannerDismissDialog
-import com.woocommerce.android.ui.compose.component.PaymentsScreenBanner
+import com.woocommerce.android.ui.compose.component.banner.PaymentsScreenBannerDismissDialog
+import com.woocommerce.android.ui.compose.component.banner.PaymentsScreenBanner
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
@@ -98,7 +98,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    BannerDismissDialog(viewModel)
+                    PaymentsScreenBannerDismissDialog(viewModel)
                 }
             }
         }

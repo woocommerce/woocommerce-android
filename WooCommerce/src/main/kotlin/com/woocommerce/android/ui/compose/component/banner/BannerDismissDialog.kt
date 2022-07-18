@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.compose.component
+package com.woocommerce.android.ui.compose.component.banner
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -22,7 +22,7 @@ import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel
 import com.woocommerce.android.ui.prefs.MainSettingsContract
 
 @Composable
-fun BannerDismissDialog(viewModel: SelectPaymentMethodViewModel) {
+fun PaymentsScreenBannerDismissDialog(viewModel: SelectPaymentMethodViewModel) {
     val showDialog by viewModel.shouldShowUpsellCardReaderDismissDialog.observeAsState(true)
     BannerDismissDialog(
         onRemindLaterClick = viewModel::onRemindLaterClicked,
