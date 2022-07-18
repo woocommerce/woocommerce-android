@@ -128,7 +128,7 @@ class OrderCreateEditFormFragment : BaseFragment(R.layout.fragment_order_create_
     }
 
     private fun FragmentOrderCreateEditFormBinding.initOrderStatusView() {
-        val mode =   when (viewModel.mode) {
+        val mode = when (viewModel.mode) {
             OrderCreateEditViewModel.Mode.Creation -> OrderDetailOrderStatusView.Mode.OrderCreation
             is OrderCreateEditViewModel.Mode.Edit -> OrderDetailOrderStatusView.Mode.OrderEdit
         }
