@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.details.customfields
 
-import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -142,6 +141,7 @@ private fun clickableTextValueItem(value: String) {
     )
 }
 
+@Preview
 @Composable
 private fun CustomFieldsPreview() {
     CustomFieldsScreen(
