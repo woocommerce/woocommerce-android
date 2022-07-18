@@ -10,6 +10,7 @@ import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.compose.component.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
 import com.woocommerce.android.ui.orders.list.OrderListItemIdentifier
@@ -80,6 +81,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val store: WooCommerceStore = mock()
+    private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker = mock()
 
     @Before
     fun setup() = testBlocking {
@@ -110,10 +112,10 @@ class OrderListViewModelTest : BaseUnitTest() {
             selectedSite = selectedSite,
             fetcher = orderFetcher,
             resourceProvider = resourceProvider,
-            appPrefsWrapper = appPrefsWrapper,
             getWCOrderListDescriptorWithFilters = getWCOrderListDescriptorWithFilters,
             getSelectedOrderFiltersCount = getSelectedOrderFiltersCount,
             store = store,
+            bannerDisplayEligibilityChecker = bannerDisplayEligibilityChecker
         )
     }
 
@@ -437,42 +439,18 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `given upsell banner, when purchase reader clicked, then trigger proper event`() {
         runTest {
+            // GIVEN
+            whenever(bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl()).thenReturn(
+                "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
+            )
+
             // WHEN
-            whenever(store.getStoreCountryCode(any())).thenReturn("US")
             viewModel.onCtaClicked()
 
             // Then
             Assertions.assertThat(
                 viewModel.event.value
             ).isInstanceOf(OpenPurchaseCardReaderLink::class.java)
-        }
-    }
-
-    @Test
-    fun `given upsell banner and store in the US, when purchase reader clicked, then verify url is proper`() {
-        runTest {
-            // WHEN
-            whenever(store.getStoreCountryCode(any())).thenReturn("US")
-            viewModel.onCtaClicked()
-
-            // Then
-            Assertions.assertThat(
-                viewModel.event.value
-            ).isEqualTo(OpenPurchaseCardReaderLink("${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"))
-        }
-    }
-
-    @Test
-    fun `given upsell banner and store in the Canada, when purchase reader clicked, then verify url is proper`() {
-        runTest {
-            // WHEN
-            whenever(store.getStoreCountryCode(any())).thenReturn("CA")
-            viewModel.onCtaClicked()
-
-            // Then
-            Assertions.assertThat(
-                viewModel.event.value
-            ).isEqualTo(OpenPurchaseCardReaderLink("${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}CA"))
         }
     }
 
@@ -505,161 +483,6 @@ class OrderListViewModelTest : BaseUnitTest() {
         // Then
         Assertions.assertThat(viewModel.event.value).isEqualTo(
             DismissCardReaderUpsellBannerViaDontShowAgain
-        )
-    }
-
-    @Test
-    fun `given banner dismissed and current time in millis less than 14 days, then show banner again`() {
-        // GIVEN
-        val currentTimeInMillis = System.currentTimeMillis()
-        val tenDays = (1000 * 60 * 60 * 24 * 10)
-        val lastDialogDismissedInMillis = currentTimeInMillis - tenDays
-        whenever(
-            appPrefsWrapper.getCardReaderUpsellBannerLastDismissed(
-                ArgumentMatchers.anyInt(),
-                ArgumentMatchers.anyLong(),
-                ArgumentMatchers.anyLong()
-            )
-        ).thenReturn(lastDialogDismissedInMillis)
-
-        // WHEN
-        val result = viewModel.isLastDialogDismissedMoreThan14DaysAgo(currentTimeInMillis)
-
-        // Then
-        Assertions.assertThat(result).isFalse
-    }
-
-    @Test
-    fun `given banner dismissed and current time in millis greater than 14 days, then show banner again`() {
-        // GIVEN
-        val currentTimeInMillis = System.currentTimeMillis()
-        val fifteenDays = (1000 * 60 * 60 * 24 * 15)
-        val lastDialogDismissedInMillis = currentTimeInMillis - fifteenDays
-        whenever(
-            appPrefsWrapper.getCardReaderUpsellBannerLastDismissed(
-                ArgumentMatchers.anyInt(),
-                ArgumentMatchers.anyLong(),
-                ArgumentMatchers.anyLong()
-            )
-        ).thenReturn(lastDialogDismissedInMillis)
-
-        // WHEN
-        val result = viewModel.isLastDialogDismissedMoreThan14DaysAgo(currentTimeInMillis)
-
-        // Then
-        Assertions.assertThat(result).isTrue
-    }
-
-    @Test
-    fun `given card reader hasnt dismissed even once, then display upsell card reader banner`() {
-        whenever(
-            appPrefsWrapper.isCardReaderUpsellBannerDismissedForever(
-                ArgumentMatchers.anyInt(),
-                ArgumentMatchers.anyLong(),
-                ArgumentMatchers.anyLong()
-            )
-        ).thenReturn(false)
-        whenever(
-            appPrefsWrapper.getCardReaderUpsellBannerLastDismissed(
-                ArgumentMatchers.anyInt(),
-                ArgumentMatchers.anyLong(),
-                ArgumentMatchers.anyLong()
-            )
-        ).thenReturn(0L)
-
-        val canShowBanner = viewModel.canShowCardReaderUpsellBanner(0L)
-
-        Assertions.assertThat(canShowBanner).isTrue
-    }
-
-    @Test
-    fun `given card reader has dismissed forever, then don't display upsell card reader banner`() {
-        whenever(
-            appPrefsWrapper.isCardReaderUpsellBannerDismissedForever(
-                ArgumentMatchers.anyInt(),
-                ArgumentMatchers.anyLong(),
-                ArgumentMatchers.anyLong()
-            )
-        ).thenReturn(true)
-
-        val canShowBanner = viewModel.canShowCardReaderUpsellBanner(0L)
-
-        Assertions.assertThat(canShowBanner).isFalse
-    }
-
-    @Test
-    fun `given card reader has dismissed via remind later, when threshold isn't passed, then don't display banner`() {
-        whenever(
-            appPrefsWrapper.isCardReaderUpsellBannerDismissedForever(
-                ArgumentMatchers.anyInt(),
-                ArgumentMatchers.anyLong(),
-                ArgumentMatchers.anyLong()
-            )
-        ).thenReturn(false)
-        val currentTimeInMillis = System.currentTimeMillis()
-        val tenDays = (1000 * 60 * 60 * 24 * 10)
-        val lastDialogDismissedInMillis = currentTimeInMillis - tenDays
-        whenever(
-            appPrefsWrapper.getCardReaderUpsellBannerLastDismissed(
-                ArgumentMatchers.anyInt(),
-                ArgumentMatchers.anyLong(),
-                ArgumentMatchers.anyLong()
-            )
-        ).thenReturn(lastDialogDismissedInMillis)
-
-        val canShowBanner = viewModel.canShowCardReaderUpsellBanner(currentTimeInMillis)
-
-        Assertions.assertThat(canShowBanner).isFalse
-    }
-
-    @Test
-    fun `given card reader has dismissed via remind later, when threshold has passed, then display banner`() {
-        whenever(
-            appPrefsWrapper.isCardReaderUpsellBannerDismissedForever(
-                ArgumentMatchers.anyInt(),
-                ArgumentMatchers.anyLong(),
-                ArgumentMatchers.anyLong()
-            )
-        ).thenReturn(false)
-        val currentTimeInMillis = System.currentTimeMillis()
-        val fifteenDays = (1000 * 60 * 60 * 24 * 15)
-        val lastDialogDismissedInMillis = currentTimeInMillis - fifteenDays
-        whenever(
-            appPrefsWrapper.getCardReaderUpsellBannerLastDismissed(
-                ArgumentMatchers.anyInt(),
-                ArgumentMatchers.anyLong(),
-                ArgumentMatchers.anyLong()
-            )
-        ).thenReturn(lastDialogDismissedInMillis)
-
-        val canShowBanner = viewModel.canShowCardReaderUpsellBanner(currentTimeInMillis)
-
-        Assertions.assertThat(canShowBanner).isTrue
-    }
-
-    @Test
-    fun `given card reader has dismissed via remind later, then store current time in millis to shared prefs`() {
-        val currentTimeInMillis = System.currentTimeMillis()
-
-        viewModel.onRemindLaterClicked(currentTimeInMillis)
-
-        verify(appPrefsWrapper).setCardReaderUpsellBannerRemindMeLater(
-            ArgumentMatchers.eq(currentTimeInMillis),
-            ArgumentMatchers.anyInt(),
-            ArgumentMatchers.anyLong(),
-            ArgumentMatchers.anyLong()
-        )
-    }
-
-    @Test
-    fun `given card reader banner has dismissed forever, then store this info to shared prefs`() {
-        viewModel.onDontShowAgainClicked()
-
-        verify(appPrefsWrapper).setCardReaderUpsellBannerDismissed(
-            ArgumentMatchers.eq(true),
-            ArgumentMatchers.anyInt(),
-            ArgumentMatchers.anyLong(),
-            ArgumentMatchers.anyLong()
         )
     }
 
