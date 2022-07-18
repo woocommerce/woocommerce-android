@@ -17,6 +17,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.compose.component.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Loading
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
@@ -54,7 +55,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val cardPaymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
     private val appPrefsWrapper: AppPrefsWrapper,
-    private val store: WooCommerceStore,
+    private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker,
 ) : ScopedViewModel(savedState) {
     private val navArgs: SelectPaymentMethodFragmentArgs by savedState.navArgs()
     val shouldShowUpsellCardReaderDismissDialog: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -265,7 +266,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
 
     private suspend fun getStoreCountryCode(): String? {
         return withContext(dispatchers.io) {
-            store.getStoreCountryCode(selectedSite.get()) ?: null.also {
+            wooCommerceStore.getStoreCountryCode(selectedSite.get()) ?: null.also {
                 WooLog.e(WooLog.T.CARD_READER, "Store's country code not found.")
             }
         }
@@ -273,14 +274,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
 
     fun onCtaClicked() {
         launch {
-            val countryCode = getStoreCountryCode()
-            withContext(dispatchers.main) {
-                triggerEvent(
-                    OpenPurchaseCardReaderLink(
-                        "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}$countryCode"
-                    )
-                )
-            }
+            triggerEvent(OpenPurchaseCardReaderLink(bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl()))
         }
     }
 
@@ -291,69 +285,25 @@ class SelectPaymentMethodViewModel @Inject constructor(
 
     fun onRemindLaterClicked(currentTimeInMillis: Long) {
         shouldShowUpsellCardReaderDismissDialog.value = false
-        storeRemindLaterTimeStamp(currentTimeInMillis)
+        bannerDisplayEligibilityChecker.onRemindLaterClicked(currentTimeInMillis)
         triggerEvent(DismissCardReaderUpsellBannerViaRemindMeLater)
     }
 
     fun onDontShowAgainClicked() {
         shouldShowUpsellCardReaderDismissDialog.value = false
-        storeDismissBannerForever()
+        bannerDisplayEligibilityChecker.onDontShowAgainClicked()
         triggerEvent(DismissCardReaderUpsellBannerViaDontShowAgain)
     }
 
-    private fun storeRemindLaterTimeStamp(currentTimeInMillis: Long) {
-        val site = selectedSite.get()
-        appPrefsWrapper.setCardReaderUpsellBannerRemindMeLater(
-            lastDialogDismissedInMillis = currentTimeInMillis,
-            localSiteId = site.id,
-            remoteSiteId = site.siteId,
-            selfHostedSiteId = site.selfHostedSiteId
-        )
-    }
-
-    private fun storeDismissBannerForever() {
-        val site = selectedSite.get()
-        appPrefsWrapper.setCardReaderUpsellBannerDismissed(
-            isDismissed = true,
-            localSiteId = site.id,
-            remoteSiteId = site.siteId,
-            selfHostedSiteId = site.selfHostedSiteId
-        )
-    }
-
-    private fun isCardReaderUpsellBannerDismissedForever(): Boolean {
-        val site = selectedSite.get()
-        return appPrefsWrapper.isCardReaderUpsellBannerDismissedForever(
-            localSiteId = site.id,
-            remoteSiteId = site.siteId,
-            selfHostedSiteId = site.selfHostedSiteId
-        )
-    }
-
-    private fun getCardReaderUpsellBannerLastDismissed(): Long {
-        val site = selectedSite.get()
-        return appPrefsWrapper.getCardReaderUpsellBannerLastDismissed(
-            localSiteId = site.id,
-            remoteSiteId = site.siteId,
-            selfHostedSiteId = site.selfHostedSiteId
-        )
-    }
-
-    fun isLastDialogDismissedMoreThan14DaysAgo(currentTimeInMillis: Long): Boolean {
-        val timeDifference = currentTimeInMillis - getCardReaderUpsellBannerLastDismissed()
-        return TimeUnit.MILLISECONDS.toDays(timeDifference) > CARD_READER_UPSELL_BANNER_REMIND_THRESHOLD_IN_DAYS
-    }
-
-    private fun hasTheMerchantDismissedBannerViaRemindMeLater(): Boolean {
-        return getCardReaderUpsellBannerLastDismissed() != 0L
-    }
-
     fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long): Boolean {
-        return !isCardReaderUpsellBannerDismissedForever() &&
-            (
-                !hasTheMerchantDismissedBannerViaRemindMeLater() || hasTheMerchantDismissedBannerViaRemindMeLater() &&
-                    isLastDialogDismissedMoreThan14DaysAgo(currentTimeInMillis)
-                )
+        with(bannerDisplayEligibilityChecker) {
+            return !isCardReaderUpsellBannerDismissedForever() &&
+                (
+                    !hasTheMerchantDismissedBannerViaRemindMeLater() ||
+                        hasTheMerchantDismissedBannerViaRemindMeLater() &&
+                        isLastDialogDismissedMoreThan14DaysAgo(currentTimeInMillis)
+                    )
+        }
     }
 
     sealed class TakePaymentViewState {
