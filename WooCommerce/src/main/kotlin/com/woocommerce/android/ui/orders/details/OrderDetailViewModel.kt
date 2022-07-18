@@ -11,6 +11,7 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_DETAIL_CREATE_SHIPPING_LABEL_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_DETAIL_PULLED_TO_REFRESH
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_EDIT_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_STATUS_CHANGE
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_STATUS_CHANGE_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_STATUS_CHANGE_SUCCESS
@@ -81,7 +82,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUp
 import javax.inject.Inject
 
 @HiltViewModel
-final class OrderDetailViewModel @Inject constructor(
+class OrderDetailViewModel @Inject constructor(
     private val coroutineDispatchers: CoroutineDispatchers,
     savedState: SavedStateHandle,
     private val appPrefs: AppPrefs,
@@ -98,7 +99,7 @@ final class OrderDetailViewModel @Inject constructor(
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
-    final var order: Order
+    var order: Order
         get() = requireNotNull(viewState.orderInfo?.order)
         set(value) {
             viewState = viewState.copy(
@@ -114,7 +115,7 @@ final class OrderDetailViewModel @Inject constructor(
     // and add the deleted tracking number back to the list
     private var deletedOrderShipmentTrackingSet = mutableSetOf<String>()
 
-    final val viewStateData = LiveDataDelegate(savedState, ViewState())
+    val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
     private val _orderNotes = MutableLiveData<List<OrderNote>>()
@@ -239,6 +240,13 @@ final class OrderDetailViewModel @Inject constructor(
     }
 
     fun onEditClicked() {
+        trackerWrapper.track(
+            ORDER_EDIT_BUTTON_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_HAS_MULTIPLE_FEE_LINES to (order.feesLines.size > 1),
+                AnalyticsTracker.KEY_HAS_MULTIPLE_SHIPPING_LINES to (order.shippingLines.size > 1)
+            )
+        )
         triggerEvent(OrderNavigationTarget.EditOrder(order.id))
     }
 

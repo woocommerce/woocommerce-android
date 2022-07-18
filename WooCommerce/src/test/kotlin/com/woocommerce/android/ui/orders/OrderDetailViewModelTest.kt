@@ -11,7 +11,6 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
-import com.woocommerce.android.model.Order.Status
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Product
@@ -912,7 +911,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `re-fetch order when payment flow completes`() = testBlocking {
         viewModel.start()
-        val orderAfterPayment = order.copy(status = Status.fromDataModel(CoreOrderStatus.COMPLETED)!!)
+        val orderAfterPayment = order.copy(status = Order.Status.fromDataModel(CoreOrderStatus.COMPLETED)!!)
         doReturn(orderAfterPayment).whenever(orderDetailRepository).getOrderById(any())
         doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
@@ -1417,5 +1416,28 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             // Then
             verify(analyticsTraWrapper).track(AnalyticsEvent.PRODUCT_ADDONS_ORDER_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED)
+        }
+
+    @Test
+    fun `when user taps order edit button, then event tracked`() =
+        testBlocking {
+            // Given
+            doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
+            doReturn(false).whenever(orderDetailRepository).fetchOrderNotes(any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+            viewModel.start()
+
+            // When
+            viewModel.onEditClicked()
+
+            // Then
+            verify(analyticsTraWrapper).track(
+                AnalyticsEvent.ORDER_EDIT_BUTTON_TAPPED,
+                mapOf(
+                    AnalyticsTracker.KEY_HAS_MULTIPLE_FEE_LINES to (order.feesLines.size > 1),
+                    AnalyticsTracker.KEY_HAS_MULTIPLE_SHIPPING_LINES to (order.shippingLines.size > 1)
+                )
+            )
         }
 }
