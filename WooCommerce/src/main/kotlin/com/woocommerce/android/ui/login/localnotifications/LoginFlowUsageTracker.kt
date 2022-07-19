@@ -6,7 +6,6 @@ import androidx.work.WorkManager
 import androidx.work.WorkRequest
 import androidx.work.workDataOf
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.ui.login.localnotifications.LoginFlowUsageTracker.LoginSupportNotificationType.LOGIN_ERROR_WRONG_EMAIL
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.UUID
 import java.util.concurrent.TimeUnit
@@ -25,7 +24,7 @@ class LoginFlowUsageTracker @Inject constructor(
     fun onLoginWithWordPressAccount() {
         cancelCurrentNotificationWorkRequest()
         val notificationData = workDataOf(
-            LOGIN_NOTIFICATION_TYPE_KEY to LOGIN_ERROR_WRONG_EMAIL.name
+            LOGIN_NOTIFICATION_TYPE_KEY to LoginSupportNotificationType.DEFAULT_SUPPORT.name
         )
         val workRequest: WorkRequest =
             OneTimeWorkRequestBuilder<LocalNotificationWorker>()

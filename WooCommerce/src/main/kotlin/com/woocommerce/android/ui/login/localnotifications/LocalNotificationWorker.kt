@@ -38,17 +38,18 @@ class LocalNotificationWorker @AssistedInject constructor(
         wooNotificationBuilder.buildAndDisplayWooNotification(
             0,
             0,
-            appContext.getString(R.string.notification_channel_general_id),
+            appContext.getString(R.string.notification_channel_pre_login_id),
             notification = Notification(
                 noteId = 1,
                 uniqueId = 1L,
                 remoteNoteId = 1L,
                 remoteSiteId = 1L,
                 icon = "https://s.wp.com/wp-content/mu-plugins/notes/images/update-payment-2x.png",
-                noteTitle = "Test NOTE TITLE",
-                noteMessage = "Test NOTE MESSAGE",
-                noteType = WooNotificationType.NEW_ORDER,
-                channelType = NotificationChannelType.NEW_ORDER
+                noteTitle = "Trouble login into WooCommerce?",
+                noteMessage = "If you are having issues login into your store from the app, " +
+                    "please reach support so we can help you. ",
+                noteType = WooNotificationType.PRE_LOGIN,
+                channelType = NotificationChannelType.PRE_LOGIN
             ),
             addCustomNotificationSound = false,
             isGroupNotification = false
@@ -56,24 +57,7 @@ class LocalNotificationWorker @AssistedInject constructor(
     }
 
     private fun wrongEmailNotification() {
-        wooNotificationBuilder.buildAndDisplayWooNotification(
-            0,
-            0,
-            appContext.getString(R.string.notification_channel_general_id),
-            notification = Notification(
-                noteId = 1,
-                uniqueId = 1L,
-                remoteNoteId = 1L,
-                remoteSiteId = 1L,
-                icon = "https://s.wp.com/wp-content/mu-plugins/notes/images/update-payment-2x.png",
-                noteTitle = "Test NOTE TITLE",
-                noteMessage = "Test NOTE MESSAGE",
-                noteType = WooNotificationType.NEW_ORDER,
-                channelType = NotificationChannelType.NEW_ORDER
-            ),
-            addCustomNotificationSound = false,
-            isGroupNotification = false
-        )
+        TODO("Not yet implemented")
     }
 
     private fun noInteractionNotification() {
@@ -83,5 +67,4 @@ class LocalNotificationWorker @AssistedInject constructor(
     private fun getNotificationType(): LoginSupportNotificationType = runCatching {
         valueOf(inputData.getString(LOGIN_NOTIFICATION_TYPE_KEY).orEmpty())
     }.getOrDefault(DEFAULT_SUPPORT)
-
 }
