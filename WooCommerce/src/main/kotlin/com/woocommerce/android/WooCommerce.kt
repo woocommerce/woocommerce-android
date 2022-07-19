@@ -2,6 +2,7 @@ package com.woocommerce.android
 
 import android.app.Application
 import com.android.volley.VolleyLog
+import com.woocommerce.android.config.RemoteConfigManager
 import com.yarolegovich.wellsql.WellSql
 import dagger.Lazy
 import dagger.android.AndroidInjector
@@ -13,6 +14,7 @@ open class WooCommerce : Application(), HasAndroidInjector {
     @Inject lateinit var androidInjector: DispatchingAndroidInjector<Any>
     // inject it lazily to avoid creating it before initializing WellSql
     @Inject lateinit var appInitializer: Lazy<AppInitializer>
+    @Inject lateinit var remoteConfigManager: RemoteConfigManager
 
     override fun onCreate() {
         super.onCreate()
@@ -25,6 +27,8 @@ open class WooCommerce : Application(), HasAndroidInjector {
 
         val wellSqlConfig = WooWellSqlConfig(applicationContext)
         WellSql.init(wellSqlConfig)
+
+        remoteConfigManager.getRemoteConfigValues()
 
         appInitializer.get().init(this)
     }
