@@ -235,7 +235,6 @@ class LoginActivity :
 
     override fun onSecondaryButtonClicked() {
         unifiedLoginTracker.trackClick(Click.CONTINUE_WITH_WORDPRESS_COM)
-        loginFlowUsageTracker.onLoginWithWordPressAccount()
         startLoginViaWPCom()
     }
 

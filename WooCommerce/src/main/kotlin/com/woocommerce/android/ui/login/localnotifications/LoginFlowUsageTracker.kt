@@ -23,10 +23,15 @@ class LoginFlowUsageTracker @Inject constructor(
 
     private val workManager = WorkManager.getInstance(appContext)
 
-    fun onLoginWithWordPressAccount() {
+    fun onLoginSuccess() {
+        cancelCurrentNotificationWorkRequest()
+        NotificationManagerCompat.from(appContext).cancel(PRE_LOGIN_LOCAL_NOTIFICATION_ID)
+    }
+
+    fun scheduleNotification(notificationType: LoginSupportNotificationType) {
         cancelCurrentNotificationWorkRequest()
         val notificationData = workDataOf(
-            LOGIN_NOTIFICATION_TYPE_KEY to LoginSupportNotificationType.DEFAULT_SUPPORT.name
+            LOGIN_NOTIFICATION_TYPE_KEY to notificationType.name
         )
         val workRequest: WorkRequest =
             OneTimeWorkRequestBuilder<LocalNotificationWorker>()
@@ -36,11 +41,6 @@ class LoginFlowUsageTracker @Inject constructor(
 
         prefsWrapper.setLocalNotificationWorkRequestId(workRequest.stringId)
         workManager.enqueue(workRequest)
-    }
-
-    fun onLoginSuccess() {
-        cancelCurrentNotificationWorkRequest()
-        NotificationManagerCompat.from(appContext).cancel(PRE_LOGIN_LOCAL_NOTIFICATION_ID)
     }
 
     private fun cancelCurrentNotificationWorkRequest() {
@@ -54,6 +54,7 @@ class LoginFlowUsageTracker @Inject constructor(
     enum class LoginSupportNotificationType(val notification: String) {
         NO_LOGIN_INTERACTION("no_login_interaction"),
         LOGIN_ERROR_WRONG_EMAIL("wrong_email"),
+        LOGIN_SITE_ADDRESS_ERROR("site_address_error"),
         DEFAULT_SUPPORT("default_support")
     }
 }
