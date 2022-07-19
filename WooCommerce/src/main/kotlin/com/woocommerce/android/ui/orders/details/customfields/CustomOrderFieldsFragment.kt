@@ -11,10 +11,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
+import com.woocommerce.android.ui.orders.details.customfields.CustomOrderFieldsHelper.CustomOrderFieldClickListener
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CustomOrderFieldsFragment : BaseFragment() {
+class CustomOrderFieldsFragment : BaseFragment(), CustomOrderFieldClickListener {
     private val viewModel by hiltNavGraphViewModels<OrderDetailViewModel>(R.id.nav_graph_orders)
 
     override fun onCreateView(
@@ -26,11 +27,15 @@ class CustomOrderFieldsFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    CustomOrderFieldsScreen(viewModel)
+                    CustomOrderFieldsScreen(viewModel, this@CustomOrderFieldsFragment)
                 }
             }
         }
     }
 
     override fun getFragmentTitle() = getString(R.string.orderdetail_custom_fields)
+
+    override fun onCustomOrderFieldClicked(value: String) {
+        viewModel.onCustomFieldClicked(requireActivity(), value)
+    }
 }
