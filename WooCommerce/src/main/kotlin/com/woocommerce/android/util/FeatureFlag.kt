@@ -24,15 +24,13 @@ enum class FeatureFlag {
             }
             COUPONS_M2,
             JETPACK_CP,
-            IN_PERSON_PAYMENTS_CANADA -> true
+            IN_PERSON_PAYMENTS_CANADA,
+            UNIFIED_ORDER_EDITING -> true
             ANALYTICS_HUB,
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
-            UNIFIED_ORDER_EDITING -> PackageUtils.isDebugBuild()
             ORDER_CREATION_CUSTOMER_SEARCH,
-            ORDER_METADATA -> {
-                UNIFIED_ORDER_EDITING.isEnabled()
-            }
+            ORDER_METADATA -> PackageUtils.isDebugBuild()
         }
     }
 }
