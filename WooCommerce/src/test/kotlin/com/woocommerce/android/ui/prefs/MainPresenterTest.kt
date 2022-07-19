@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.prefs
 
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_BANNER_PAYMENTS
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.compose.component.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -24,7 +23,6 @@ class MainPresenterTest : BaseUnitTest() {
     private val mainPresenterSettingsContractView: MainSettingsContract.View = mock()
     private val accountStore: AccountStore = mock()
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker = mock()
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     private lateinit var mainSettingsPresenter: MainSettingsPresenter
 
