@@ -9,6 +9,7 @@ import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
 import com.woocommerce.android.ui.orders.list.OrderListItemIdentifier
@@ -20,7 +21,11 @@ import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.*
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_ERROR
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_OFFLINE
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_LOADING
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SEARCH_RESULTS
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -53,6 +58,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val networkStatus: NetworkStatus = mock()
     private val orderListRepository: OrderListRepository = mock()
+    private val orderDetailRepository: OrderDetailRepository = mock()
     private val dispatcher: Dispatcher = mock()
     private val orderStore: WCOrderStore = mock()
     private val resourceProvider: ResourceProvider = mock()
@@ -89,6 +95,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             savedState = savedStateHandle,
             dispatchers = coroutinesTestRule.testDispatchers,
             orderListRepository = orderListRepository,
+            orderDetailRepository = orderDetailRepository,
             orderStore = orderStore,
             listStore = listStore,
             networkStatus = networkStatus,
