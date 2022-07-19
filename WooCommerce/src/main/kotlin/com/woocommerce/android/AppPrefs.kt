@@ -8,6 +8,8 @@ import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
 import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_COMPLETED
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.valueOf
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_IS_PLUGIN_EXPLICITLY_SELECTED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_ONBOARDING_COMPLETED_STATUS_V2
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_PREFERRED_PLUGIN
@@ -454,14 +456,14 @@ object AppPrefs {
         remoteSiteId: Long,
         selfHostedSiteId: Long
     ): CardReaderOnboardingStatus {
-        return CardReaderOnboardingStatus.valueOf(
+        return valueOf(
             getString(
                 getCardReaderOnboardingStatusKey(
                     localSiteId,
                     remoteSiteId,
                     selfHostedSiteId
                 ),
-                CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED.name
+                CARD_READER_ONBOARDING_NOT_COMPLETED.name
             )
         )
     }
