@@ -37,7 +37,6 @@ class MainPresenterTest : BaseUnitTest() {
             mock(),
             mock(),
             bannerDisplayEligibilityChecker,
-            analyticsTrackerWrapper,
         )
         mainSettingsPresenter.takeView(mainPresenterSettingsContractView)
     }
