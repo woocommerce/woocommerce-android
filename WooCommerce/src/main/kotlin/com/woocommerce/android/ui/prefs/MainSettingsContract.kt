@@ -12,7 +12,7 @@ interface MainSettingsContract {
         fun hasMultipleStores(): Boolean
         fun setupAnnouncementOption()
         fun setupJetpackInstallOption()
-        fun onCtaClicked()
+        fun onCtaClicked(source: String)
         fun onDismissClicked()
         fun onRemindLaterClicked(currentTimeInMillis: Long, source: String)
         fun onDontShowAgainClicked(source: String)

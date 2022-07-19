@@ -268,9 +268,11 @@ class SelectPaymentMethodViewModel @Inject constructor(
         }
     }
 
-    fun onCtaClicked() {
+    fun onCtaClicked(source: String) {
         launch {
-            triggerEvent(OpenPurchaseCardReaderLink(bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl()))
+            triggerEvent(
+                OpenPurchaseCardReaderLink(bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(source))
+            )
         }
     }
 

@@ -79,7 +79,9 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
             whenever(wooStore.getStoreCountryCode(any())).thenReturn("US")
 
             // WHEN
-            val actualUrl = bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl()
+            val actualUrl = bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(
+                KEY_BANNER_PAYMENTS
+            )
 
             // Then
             assertThat(
@@ -95,7 +97,9 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
             whenever(wooStore.getStoreCountryCode(any())).thenReturn("CA")
 
             // WHEN
-            val actualUrl = bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl()
+            val actualUrl = bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(
+                KEY_BANNER_PAYMENTS
+            )
 
             // Then
             assertThat(
@@ -526,5 +530,56 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
                 KEY_BANNER_REMIND_LATER to false
             )
         )
+    }
+
+    @Test
+    fun `given payments screen, when banner cta is tapped, then track proper event`() {
+        runTest {
+            // WHEN
+            bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(KEY_BANNER_PAYMENTS)
+
+            // Then
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.FEATURE_CARD_CTA_TAPPED,
+                mapOf(
+                    AnalyticsTracker.KEY_BANNER_SOURCE to KEY_BANNER_PAYMENTS,
+                    AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS,
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given order list screen, when banner cta is tapped, then track proper event`() {
+        runTest {
+            // WHEN
+            bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(KEY_BANNER_ORDER_LIST)
+
+            // Then
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.FEATURE_CARD_CTA_TAPPED,
+                mapOf(
+                    AnalyticsTracker.KEY_BANNER_SOURCE to KEY_BANNER_ORDER_LIST,
+                    AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS,
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given settings screen, when banner cta is tapped, then track proper event`() {
+        runTest {
+            // WHEN
+            bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(KEY_BANNER_SETTINGS)
+
+            // Then
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.FEATURE_CARD_CTA_TAPPED,
+                mapOf(
+                    AnalyticsTracker.KEY_BANNER_SOURCE to KEY_BANNER_SETTINGS,
+                    AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS,
+                )
+            )
+        }
     }
 }

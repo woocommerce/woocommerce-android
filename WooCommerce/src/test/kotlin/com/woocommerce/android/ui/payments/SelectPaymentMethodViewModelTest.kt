@@ -553,13 +553,15 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     fun `given upsell banner, when purchase reader clicked, then trigger proper event`() {
         runTest {
             // GIVEN
-            whenever(bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl()).thenReturn(
+            whenever(
+                bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(KEY_BANNER_PAYMENTS)
+            ).thenReturn(
                 "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
             )
             val viewModel = initViewModel(Payment(1L, ORDER))
 
             // WHEN
-            viewModel.onCtaClicked()
+            viewModel.onCtaClicked(KEY_BANNER_PAYMENTS)
 
             // Then
             assertThat(

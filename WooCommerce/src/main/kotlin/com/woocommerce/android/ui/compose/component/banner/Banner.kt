@@ -60,6 +60,7 @@ fun PaymentsScreenBanner(
             title = title,
             subtitle = subtitle,
             ctaLabel = ctaLabel,
+            source = AnalyticsTracker.KEY_BANNER_PAYMENTS
         )
     }
 }
@@ -83,6 +84,7 @@ fun OrderListScreenBanner(
             title = title,
             subtitle = subtitle,
             ctaLabel = ctaLabel,
+            source = AnalyticsTracker.KEY_BANNER_ORDER_LIST
         )
     }
 }
@@ -105,17 +107,19 @@ fun SettingsScreenBanner(
             title = title,
             subtitle = subtitle,
             ctaLabel = ctaLabel,
+            source = AnalyticsTracker.KEY_BANNER_SETTINGS
         )
     }
 }
 
 @Composable
 fun Banner(
-    onCtaClick: () -> Unit,
+    onCtaClick: (String) -> Unit,
     onDismissClick: () -> Unit,
     title: String,
     subtitle: String,
     ctaLabel: String,
+    source: String,
 ) {
     Card(
         modifier = Modifier.fillMaxWidth()
@@ -180,7 +184,7 @@ fun Banner(
                             bottom = dimensionResource(id = R.dimen.major_110)
                         )
                         .clickable(
-                            onClick = onCtaClick
+                            onClick = { onCtaClick(source) }
                         )
                 )
             }
@@ -218,7 +222,8 @@ fun PaymentScreenBannerPreview() {
             onDismissClick = {},
             title = stringResource(id = R.string.card_reader_upsell_card_reader_banner_title),
             subtitle = stringResource(id = R.string.card_reader_upsell_card_reader_banner_description),
-            ctaLabel = stringResource(id = R.string.card_reader_upsell_card_reader_banner_cta)
+            ctaLabel = stringResource(id = R.string.card_reader_upsell_card_reader_banner_cta),
+            source = AnalyticsTracker.KEY_BANNER_PAYMENTS
         )
     }
 }

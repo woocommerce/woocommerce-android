@@ -33,7 +33,8 @@ class BannerDisplayEligibilityChecker @Inject constructor(
         }
     }
 
-    suspend fun getPurchaseCardReaderUrl(): String {
+    suspend fun getPurchaseCardReaderUrl(source: String): String {
+        trackBannerCtaClicked(source)
         val countryCode = getStoreCountryCode()
         return withContext(dispatchers.main) {
             "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}$countryCode"
@@ -137,6 +138,16 @@ class BannerDisplayEligibilityChecker @Inject constructor(
                 AnalyticsTracker.KEY_BANNER_SOURCE to source,
                 AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS,
                 AnalyticsTracker.KEY_BANNER_REMIND_LATER to isRemindLaterSelected
+            )
+        )
+    }
+
+    private fun trackBannerCtaClicked(source: String) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.FEATURE_CARD_CTA_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_BANNER_SOURCE to source,
+                AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS,
             )
         )
     }
