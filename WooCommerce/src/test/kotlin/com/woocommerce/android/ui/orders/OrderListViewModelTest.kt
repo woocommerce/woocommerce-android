@@ -9,6 +9,7 @@ import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
 import com.woocommerce.android.ui.orders.list.OrderListItemIdentifier
@@ -53,6 +54,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val networkStatus: NetworkStatus = mock()
     private val orderListRepository: OrderListRepository = mock()
+    private val orderDetailRepository: OrderDetailRepository = mock()
     private val dispatcher: Dispatcher = mock()
     private val orderStore: WCOrderStore = mock()
     private val resourceProvider: ResourceProvider = mock()
@@ -89,6 +91,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             savedState = savedStateHandle,
             dispatchers = coroutinesTestRule.testDispatchers,
             orderListRepository = orderListRepository,
+            orderDetailRepository = orderDetailRepository,
             orderStore = orderStore,
             listStore = listStore,
             networkStatus = networkStatus,
