@@ -3,7 +3,6 @@
 package com.woocommerce.android.ui.orders.list
 
 import android.os.Parcelable
-import android.view.View
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.Lifecycle
