@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.prefs
 
 import androidx.lifecycle.MutableLiveData
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.compose.component.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
@@ -22,7 +21,6 @@ class MainSettingsPresenter @Inject constructor(
     private val featureAnnouncementRepository: FeatureAnnouncementRepository,
     private val buildConfigWrapper: BuildConfigWrapper,
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : MainSettingsContract.Presenter {
     private var appSettingsFragmentView: MainSettingsContract.View? = null
 

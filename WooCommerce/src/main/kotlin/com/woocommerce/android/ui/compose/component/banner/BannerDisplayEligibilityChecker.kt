@@ -103,19 +103,19 @@ class BannerDisplayEligibilityChecker @Inject constructor(
                 (
                     !hasTheMerchantDismissedBannerViaRemindMeLater() ||
                         hasTheMerchantDismissedBannerViaRemindMeLater() &&
-                        isLastDialogDismissedMoreThan14DaysAgo(currentTimeInMillis)
+                            isLastDialogDismissedMoreThan14DaysAgo(currentTimeInMillis)
                     )
             ).also { trackable ->
-                if (trackable) {
-                    analyticsTrackerWrapper.track(
-                        AnalyticsEvent.FEATURE_CARD_SHOWN,
-                        mapOf(
-                            AnalyticsTracker.KEY_BANNER_SOURCE to source,
-                            AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
-                        )
+            if (trackable) {
+                analyticsTrackerWrapper.track(
+                    AnalyticsEvent.FEATURE_CARD_SHOWN,
+                    mapOf(
+                        AnalyticsTracker.KEY_BANNER_SOURCE to source,
+                        AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
                     )
-                }
+                )
             }
+        }
     }
 
     suspend fun isEligibleForInPersonPayments(): Boolean {

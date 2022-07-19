@@ -18,7 +18,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TOTAL_DURATION
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
@@ -76,7 +75,6 @@ class OrderListViewModel @Inject constructor(
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters,
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount,
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState), LifecycleOwner {
     protected val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
