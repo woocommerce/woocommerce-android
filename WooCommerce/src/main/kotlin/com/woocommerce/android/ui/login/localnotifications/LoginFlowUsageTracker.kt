@@ -20,6 +20,7 @@ class LoginFlowUsageTracker @Inject constructor(
 ) {
     companion object {
         const val LOGIN_NOTIFICATION_TYPE_KEY = "Notification-type"
+        const val NOTIFICATION_TEST_DELAY_IN_SECONDS = 5L
     }
 
     private val workManager = WorkManager.getInstance(appContext)
@@ -38,7 +39,7 @@ class LoginFlowUsageTracker @Inject constructor(
             val workRequest: WorkRequest =
                 OneTimeWorkRequestBuilder<LocalNotificationWorker>()
                     .setInputData(notificationData)
-                    .setInitialDelay(5, TimeUnit.SECONDS)
+                    .setInitialDelay(NOTIFICATION_TEST_DELAY_IN_SECONDS, TimeUnit.SECONDS)
                     .build()
 
             prefsWrapper.setLocalNotificationWorkRequestId(workRequest.stringId)
