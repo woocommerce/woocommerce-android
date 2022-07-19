@@ -296,14 +296,16 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long): Boolean {
-        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis).also {
-            analyticsTrackerWrapper.track(
-                AnalyticsEvent.FEATURE_CARD_SHOWN,
-                mapOf(
-                    KEY_BANNER_SOURCE to KEY_BANNER_PAYMENTS,
-                    KEY_BANNER_CAMPAIGN_NAME to KEY_BANNER_UPSELL_CARD_READERS
+        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis).also { trackable ->
+            if (trackable) {
+                analyticsTrackerWrapper.track(
+                    AnalyticsEvent.FEATURE_CARD_SHOWN,
+                    mapOf(
+                        KEY_BANNER_SOURCE to KEY_BANNER_PAYMENTS,
+                        KEY_BANNER_CAMPAIGN_NAME to KEY_BANNER_UPSELL_CARD_READERS
+                    )
                 )
-            )
+            }
         }
     }
 

@@ -105,14 +105,16 @@ class MainSettingsPresenter @Inject constructor(
     }
 
     override fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long): Boolean {
-        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis).also {
-            analyticsTrackerWrapper.track(
-                AnalyticsEvent.FEATURE_CARD_SHOWN,
-                mapOf(
-                    AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.KEY_BANNER_SETTINGS,
-                    AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
+        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis).also { trackable ->
+            if (trackable) {
+                analyticsTrackerWrapper.track(
+                    AnalyticsEvent.FEATURE_CARD_SHOWN,
+                    mapOf(
+                        AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.KEY_BANNER_SETTINGS,
+                        AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
+                    )
                 )
-            )
+            }
         }
     }
 }
