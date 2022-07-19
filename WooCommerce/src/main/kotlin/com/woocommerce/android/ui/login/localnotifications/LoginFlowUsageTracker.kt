@@ -8,6 +8,7 @@ import androidx.work.WorkRequest
 import androidx.work.workDataOf
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.ui.login.localnotifications.LocalNotificationWorker.Companion.PRE_LOGIN_LOCAL_NOTIFICATION_ID
+import com.woocommerce.android.util.FeatureFlag
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.UUID
 import java.util.concurrent.TimeUnit
@@ -29,18 +30,20 @@ class LoginFlowUsageTracker @Inject constructor(
     }
 
     fun scheduleNotification(notificationType: LoginSupportNotificationType) {
-        cancelCurrentNotificationWorkRequest()
-        val notificationData = workDataOf(
-            LOGIN_NOTIFICATION_TYPE_KEY to notificationType.name
-        )
-        val workRequest: WorkRequest =
-            OneTimeWorkRequestBuilder<LocalNotificationWorker>()
-                .setInputData(notificationData)
-                .setInitialDelay(5, TimeUnit.SECONDS)
-                .build()
+        if (FeatureFlag.PRE_LOGIN_NOTIFICATIONS.isEnabled()) {
+            cancelCurrentNotificationWorkRequest()
+            val notificationData = workDataOf(
+                LOGIN_NOTIFICATION_TYPE_KEY to notificationType.name
+            )
+            val workRequest: WorkRequest =
+                OneTimeWorkRequestBuilder<LocalNotificationWorker>()
+                    .setInputData(notificationData)
+                    .setInitialDelay(5, TimeUnit.SECONDS)
+                    .build()
 
-        prefsWrapper.setLocalNotificationWorkRequestId(workRequest.stringId)
-        workManager.enqueue(workRequest)
+            prefsWrapper.setLocalNotificationWorkRequestId(workRequest.stringId)
+            workManager.enqueue(workRequest)
+        }
     }
 
     private fun cancelCurrentNotificationWorkRequest() {
