@@ -379,7 +379,7 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given upsell banner from payments, when banner is shown, then trigger proper event`() {
+    fun `given upsell banner from payments, when banner is shown, then track proper event`() {
         // WHEN
         bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
             0L,
@@ -397,7 +397,7 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given upsell banner from order list, when banner is shown, then trigger proper event`() {
+    fun `given upsell banner from order list, when banner is shown, then track proper event`() {
         // WHEN
         bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
             0L,
@@ -415,7 +415,7 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given upsell banner from settings, when banner is shown, then trigger proper event`() {
+    fun `given upsell banner from settings, when banner is shown, then track proper event`() {
         // WHEN
         bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
             0L,
@@ -433,7 +433,7 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given payments screen, when banner is dismissed via remind me later, then trigger proper event`() {
+    fun `given payments screen, when banner is dismissed via remind me later, then track proper event`() {
         // WHEN
         bannerDisplayEligibilityChecker.onRemindLaterClicked(0L, KEY_BANNER_PAYMENTS)
 
@@ -449,7 +449,7 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given order list screen, when banner is dismissed via remind me later, then trigger proper event`() {
+    fun `given order list screen, when banner is dismissed via remind me later, then track proper event`() {
         // WHEN
         bannerDisplayEligibilityChecker.onRemindLaterClicked(0L, KEY_BANNER_ORDER_LIST)
 
@@ -465,7 +465,7 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given settings screen, when banner is dismissed via remind me later, then trigger proper event`() {
+    fun `given settings screen, when banner is dismissed via remind me later, then track proper event`() {
         // WHEN
         bannerDisplayEligibilityChecker.onRemindLaterClicked(0L, KEY_BANNER_SETTINGS)
 
@@ -481,7 +481,7 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given payments screen, when banner is dismissed via don't show again, then trigger proper event`() {
+    fun `given payments screen, when banner is dismissed via don't show again, then track proper event`() {
         // WHEN
         bannerDisplayEligibilityChecker.onDontShowAgainClicked(KEY_BANNER_PAYMENTS)
 
@@ -497,7 +497,7 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given order list screen, when banner is dismissed via don't show again, then trigger proper event`() {
+    fun `given order list screen, when banner is dismissed via don't show again, then track proper event`() {
         // WHEN
         bannerDisplayEligibilityChecker.onDontShowAgainClicked(KEY_BANNER_ORDER_LIST)
 
@@ -513,7 +513,7 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given settings screen, when banner is dismissed via don't show again, then trigger proper event`() {
+    fun `given settings screen, when banner is dismissed via don't show again, then track proper event`() {
         // WHEN
         bannerDisplayEligibilityChecker.onDontShowAgainClicked(KEY_BANNER_SETTINGS)
 
