@@ -540,6 +540,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     fun `given upsell banner displayed, then track proper event`() {
         runTest {
             whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(true)
+            whenever(bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(any())).thenReturn(true)
 
             viewModel.canShowCardReaderUpsellBanner(0L)
 
