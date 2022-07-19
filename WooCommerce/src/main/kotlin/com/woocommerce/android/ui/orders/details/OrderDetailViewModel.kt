@@ -9,6 +9,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_DETAIL_CREATE_SHIPPING_LABEL_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_DETAIL_PULLED_TO_REFRESH
@@ -209,6 +210,7 @@ class OrderDetailViewModel @Inject constructor(
      * User clicked the button to view custom fields
      */
     fun onCustomFieldsButtonClicked() {
+        AnalyticsTracker.track(AnalyticsEvent.ORDER_VIEW_CUSTOM_FIELDS_TAPPED)
         triggerEvent(OrderNavigationTarget.ViewCustomFields)
     }
 
