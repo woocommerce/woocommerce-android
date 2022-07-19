@@ -2,8 +2,13 @@ package com.woocommerce.android.ui.banner
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForCanada
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUSA
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUnsupportedCountry
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.compose.component.banner.BannerDisplayEligibilityChecker
+import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
+import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCurrencySupportedChecker
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -23,6 +28,8 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val wooStore: WooCommerceStore = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
+    private val cardReaderConfigProvider: CardReaderCountryConfigProvider = mock()
+    private val cardReaderPaymentCurrencySupportedChecker: CardReaderPaymentCurrencySupportedChecker = mock()
 
     private lateinit var bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker
 
@@ -34,7 +41,9 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
             wooStore,
             appPrefsWrapper,
             coroutinesTestRule.testDispatchers,
-            selectedSite
+            selectedSite,
+            cardReaderConfigProvider,
+            cardReaderPaymentCurrencySupportedChecker
         )
         whenever(selectedSite.get()).thenReturn(site)
     }
@@ -254,5 +263,53 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
         val result = bannerDisplayEligibilityChecker.hasTheMerchantDismissedBannerViaRemindMeLater()
 
         assertThat(result).isTrue
+    }
+
+    @Test
+    fun `given store eligible for IPP, then isEligibleForInPersonPayments return true`() {
+        runTest {
+            whenever(wooStore.getStoreCountryCode(any())).thenReturn("US")
+            whenever(
+                cardReaderConfigProvider.provideCountryConfigFor("US")
+            ).thenReturn(CardReaderConfigForUSA)
+            whenever(
+                cardReaderPaymentCurrencySupportedChecker.isCurrencySupported("USD")
+            ).thenReturn(true)
+
+            val result = bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()
+
+            assertThat(result).isTrue
+        }
+    }
+
+    @Test
+    fun `given store is not eligible for IPP, then isEligibleForInPersonPayments return false`() {
+        runTest {
+            whenever(wooStore.getStoreCountryCode(any())).thenReturn("IN")
+            whenever(
+                cardReaderConfigProvider.provideCountryConfigFor("IN")
+            ).thenReturn(CardReaderConfigForUnsupportedCountry)
+
+            val result = bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()
+
+            assertThat(result).isFalse
+        }
+    }
+
+    @Test
+    fun `given store is eligible for IPP, when currency is invalid then isEligibleForInPersonPayments return false`() {
+        runTest {
+            whenever(wooStore.getStoreCountryCode(any())).thenReturn("CA")
+            whenever(
+                cardReaderConfigProvider.provideCountryConfigFor("CA")
+            ).thenReturn(CardReaderConfigForCanada)
+            whenever(
+                cardReaderPaymentCurrencySupportedChecker.isCurrencySupported(any())
+            ).thenReturn(false)
+
+            val result = bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()
+
+            assertThat(result).isFalse
+        }
     }
 }

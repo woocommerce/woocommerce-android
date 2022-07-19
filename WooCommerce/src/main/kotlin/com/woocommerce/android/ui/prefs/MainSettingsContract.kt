@@ -18,6 +18,7 @@ interface MainSettingsContract {
         fun onDontShowAgainClicked()
         fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long): Boolean
         val shouldShowUpsellCardReaderDismissDialog: MutableLiveData<Boolean>
+        val isEligibleForInPersonPayments: MutableLiveData<Boolean>
     }
 
     interface View : BaseView<Presenter> {

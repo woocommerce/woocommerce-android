@@ -2,7 +2,10 @@ package com.woocommerce.android.ui.compose.component.banner
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
+import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCurrencySupportedChecker
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.withContext
@@ -15,6 +18,8 @@ class BannerDisplayEligibilityChecker @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val dispatchers: CoroutineDispatchers,
     private val selectedSite: SelectedSite,
+    private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider,
+    private val cardReaderPaymentCurrencySupportedChecker: CardReaderPaymentCurrencySupportedChecker,
 ) {
     private suspend fun getStoreCountryCode(): String? {
         return withContext(dispatchers.io) {
@@ -92,6 +97,18 @@ class BannerDisplayEligibilityChecker @Inject constructor(
                 !hasTheMerchantDismissedBannerViaRemindMeLater() || hasTheMerchantDismissedBannerViaRemindMeLater() &&
                     isLastDialogDismissedMoreThan14DaysAgo(currentTimeInMillis)
                 )
+    }
+
+    suspend fun isEligibleForInPersonPayments(): Boolean {
+        val cardReaderConfig = cardReaderCountryConfigProvider.provideCountryConfigFor(
+            wooCommerceStore.getStoreCountryCode(selectedSite.get())
+        )
+        if (cardReaderConfig is CardReaderConfigForSupportedCountry) {
+            return cardReaderPaymentCurrencySupportedChecker.isCurrencySupported(
+                cardReaderConfig.currency
+            )
+        }
+        return false
     }
 
     companion object {

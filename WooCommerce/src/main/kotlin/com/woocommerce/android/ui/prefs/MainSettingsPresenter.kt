@@ -27,9 +27,13 @@ class MainSettingsPresenter @Inject constructor(
     private var jetpackMonitoringJob: Job? = null
 
     override val shouldShowUpsellCardReaderDismissDialog: MutableLiveData<Boolean> = MutableLiveData(false)
+    override val isEligibleForInPersonPayments: MutableLiveData<Boolean> = MutableLiveData(false)
 
     override fun takeView(view: MainSettingsContract.View) {
         appSettingsFragmentView = view
+        coroutineScope.launch {
+            isEligibleForInPersonPayments.value = bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()
+        }
     }
 
     override fun dropView() {

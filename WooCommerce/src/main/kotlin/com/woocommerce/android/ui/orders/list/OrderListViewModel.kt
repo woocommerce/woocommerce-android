@@ -54,7 +54,6 @@ import org.wordpress.android.fluxc.store.WCOrderFetcher
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderSummariesFetched
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 private const val EMPTY_VIEW_THROTTLE = 250L
@@ -75,7 +74,6 @@ class OrderListViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters,
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount,
-    private val store: WooCommerceStore,
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker,
 ) : ScopedViewModel(savedState), LifecycleOwner {
     protected val lifecycleRegistry: LifecycleRegistry by lazy {
@@ -120,6 +118,7 @@ class OrderListViewModel @Inject constructor(
     val emptyViewType: LiveData<EmptyViewType?> = _emptyViewType
 
     val shouldShowUpsellCardReaderDismissDialog: MutableLiveData<Boolean> = MutableLiveData(false)
+    val isEligibleForInPersonPayments: MutableLiveData<Boolean> = MutableLiveData(false)
 
     var isSearching = false
     var searchQuery = ""
@@ -139,6 +138,7 @@ class OrderListViewModel @Inject constructor(
             _emptyViewType.postValue(EmptyViewType.ORDER_LIST_LOADING)
             if (selectedSite.exists()) {
                 loadOrders()
+                isEligibleForInPersonPayments()
             } else {
                 WooLog.w(
                     WooLog.T.ORDERS,
@@ -147,6 +147,10 @@ class OrderListViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    private suspend fun isEligibleForInPersonPayments() {
+        isEligibleForInPersonPayments.value = bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()
     }
 
     fun loadOrders() {
@@ -441,14 +445,7 @@ class OrderListViewModel @Inject constructor(
     }
 
     fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long): Boolean {
-        with(bannerDisplayEligibilityChecker) {
-            return !isCardReaderUpsellBannerDismissedForever() &&
-                (
-                    !hasTheMerchantDismissedBannerViaRemindMeLater() ||
-                        hasTheMerchantDismissedBannerViaRemindMeLater() &&
-                            isLastDialogDismissedMoreThan14DaysAgo(currentTimeInMillis)
-                    )
-        }
+        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis)
     }
 
     sealed class OrderListEvent : Event() {

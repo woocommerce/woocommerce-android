@@ -109,5 +109,27 @@ class MainPresenterTest : BaseUnitTest() {
     fun `given presenter init, then update dialogShow state to false`() {
         Assertions.assertThat(mainSettingsPresenter.shouldShowUpsellCardReaderDismissDialog.value).isFalse
     }
+
+    @Test
+    fun `given store not eligible for IPP, then isEligibleForInPersonPayments is false`() {
+        runTest {
+            whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(false)
+
+            setup()
+
+            Assertions.assertThat(mainSettingsPresenter.isEligibleForInPersonPayments.value).isFalse
+        }
+    }
+
+    @Test
+    fun `given store eligible for IPP, then isEligibleForInPersonPayments is true`() {
+        runTest {
+            whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(true)
+
+            setup()
+
+            Assertions.assertThat(mainSettingsPresenter.isEligibleForInPersonPayments.value).isTrue
+        }
+    }
     //endregion
 }
