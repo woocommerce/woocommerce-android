@@ -1,11 +1,13 @@
 package com.woocommerce.android.ui.login.localnotifications
 
 import android.content.Context
+import androidx.core.app.NotificationManagerCompat
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
 import androidx.work.workDataOf
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.ui.login.localnotifications.LocalNotificationWorker.Companion.PRE_LOGIN_LOCAL_NOTIFICATION_ID
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.UUID
 import java.util.concurrent.TimeUnit
@@ -36,7 +38,12 @@ class LoginFlowUsageTracker @Inject constructor(
         workManager.enqueue(workRequest)
     }
 
-    fun cancelCurrentNotificationWorkRequest() {
+    fun onLoginSuccess() {
+        cancelCurrentNotificationWorkRequest()
+        NotificationManagerCompat.from(appContext).cancel(PRE_LOGIN_LOCAL_NOTIFICATION_ID)
+    }
+
+    private fun cancelCurrentNotificationWorkRequest() {
         val currentWorkRequestId = prefsWrapper.getLocalNotificationWorkRequestId()
         if (currentWorkRequestId.isNotEmpty()) {
             workManager.cancelWorkById(UUID.fromString(currentWorkRequestId))
