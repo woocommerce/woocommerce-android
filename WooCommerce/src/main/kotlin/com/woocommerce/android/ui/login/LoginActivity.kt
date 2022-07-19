@@ -15,6 +15,7 @@ import com.woocommerce.android.AppUrls.LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_AC
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.FirebaseTracker
 import com.woocommerce.android.databinding.ActivityLoginBinding
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
@@ -85,6 +86,7 @@ class LoginActivity :
     @Inject internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
     @Inject internal lateinit var zendeskHelper: ZendeskHelper
     @Inject internal lateinit var urlUtils: UrlUtils
+    @Inject internal lateinit var firebaseTracker: FirebaseTracker
 
     private var loginMode: LoginMode? = null
 
@@ -131,6 +133,8 @@ class LoginActivity :
             .replace(R.id.fragment_container, fragment, LoginPrologueCarouselFragment.TAG)
             .addToBackStack(LoginPrologueCarouselFragment.TAG)
             .commitAllowingStateLoss()
+
+        firebaseTracker.log(FirebaseTracker.Event.PROLOGUE_CAROUSEL_DISPLAYED)
     }
 
     private fun hasMagicLinkLoginIntent(): Boolean {
@@ -250,6 +254,10 @@ class LoginActivity :
     }
 
     private fun jumpToUsernamePassword(username: String?, password: String?) {
+        firebaseTracker.log(FirebaseTracker.Event.LOGIN_OPTION_SELECTED) {
+            param(FirebaseTracker.Param.LOGIN_TYPE, FirebaseTracker.Value.LOGIN_TYPE_WPCOM)
+        }
+
         val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
             "wordpress.com", "wordpress.com", username, password, true
         )
@@ -257,6 +265,10 @@ class LoginActivity :
     }
 
     private fun startLoginViaWPCom() {
+        firebaseTracker.log(FirebaseTracker.Event.LOGIN_OPTION_SELECTED) {
+            param(FirebaseTracker.Param.LOGIN_TYPE, FirebaseTracker.Value.LOGIN_TYPE_WPCOM)
+        }
+
         unifiedLoginTracker.setFlow(Flow.WORDPRESS_COM.value)
         showEmailLoginScreen()
     }
@@ -301,6 +313,10 @@ class LoginActivity :
     }
 
     override fun loginViaSiteAddress() {
+        firebaseTracker.log(FirebaseTracker.Event.LOGIN_OPTION_SELECTED) {
+            param(FirebaseTracker.Param.LOGIN_TYPE, FirebaseTracker.Value.LOGIN_TYPE_SITE_ADDRESS)
+        }
+
         unifiedLoginTracker.setFlowAndStep(LOGIN_SITE_ADDRESS, ENTER_SITE_ADDRESS)
         val loginSiteAddressFragment = getLoginViaSiteAddressFragment() ?: WooLoginSiteAddressFragment()
         slideInFragment(loginSiteAddressFragment, true, LoginSiteAddressFragment.TAG)
@@ -317,6 +333,10 @@ class LoginActivity :
         service: String?,
         isPasswordRequired: Boolean
     ) {
+        firebaseTracker.log(FirebaseTracker.Event.LOGIN_OPTION_SELECTED) {
+            param(FirebaseTracker.Param.LOGIN_TYPE, FirebaseTracker.Value.LOGIN_TYPE_SOCIAL)
+        }
+
         val loginEmailPasswordFragment = LoginEmailPasswordFragment.newInstance(
             email, null, idToken,
             service, isPasswordRequired
@@ -325,6 +345,8 @@ class LoginActivity :
     }
 
     override fun loggedInViaSocialAccount(oldSitesIds: ArrayList<Int>, doLoginUpdate: Boolean) {
+        firebaseTracker.log(FirebaseTracker.Event.LOGIN_SUCCESSFUL)
+
         loginAnalyticsListener.trackLoginSocialSuccess()
         showMainActivityAndFinish()
     }
@@ -334,6 +356,10 @@ class LoginActivity :
     }
 
     override fun showMagicLinkSentScreen(email: String?, allowPassword: Boolean) {
+        firebaseTracker.log(FirebaseTracker.Event.LOGIN_OPTION_SELECTED) {
+            param(FirebaseTracker.Param.LOGIN_TYPE, FirebaseTracker.Value.LOGIN_TYPE_MAGIC_LINK)
+        }
+
         val loginMagicLinkSentFragment = LoginMagicLinkSentFragment.newInstance(email, allowPassword)
         slideInFragment(loginMagicLinkSentFragment, true, LoginMagicLinkSentFragment.TAG)
     }
@@ -348,6 +374,10 @@ class LoginActivity :
     }
 
     override fun usePasswordInstead(email: String?) {
+        firebaseTracker.log(FirebaseTracker.Event.LOGIN_OPTION_SELECTED) {
+            param(FirebaseTracker.Param.LOGIN_TYPE, FirebaseTracker.Value.LOGIN_TYPE_WPCOM)
+        }
+
         loginAnalyticsListener.trackLoginMagicLinkExited()
         val loginEmailPasswordFragment = LoginEmailPasswordFragment.newInstance(email, null, null, null, false)
         slideInFragment(loginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
@@ -385,10 +415,14 @@ class LoginActivity :
     }
 
     override fun loggedInViaPassword(oldSitesIds: ArrayList<Int>) {
+        firebaseTracker.log(FirebaseTracker.Event.LOGIN_SUCCESSFUL)
+
         showMainActivityAndFinish()
     }
 
     override fun alreadyLoggedInWpcom(oldSitesIds: ArrayList<Int>) {
+        firebaseTracker.log(FirebaseTracker.Event.LOGIN_SUCCESSFUL)
+
         ToastUtils.showToast(this, R.string.already_logged_in_wpcom, ToastUtils.Duration.LONG)
         showMainActivityAndFinish()
     }
@@ -432,6 +466,10 @@ class LoginActivity :
      * in the login process.
      */
     override fun loginViaSiteCredentials(inputSiteAddress: String?) {
+        firebaseTracker.log(FirebaseTracker.Event.LOGIN_OPTION_SELECTED) {
+            param(FirebaseTracker.Param.LOGIN_TYPE, FirebaseTracker.Value.LOGIN_TYPE_SITE_CREDENTIALS)
+        }
+
         unifiedLoginTracker.trackClick(Click.LOGIN_WITH_SITE_CREDS)
         showUsernamePasswordScreen(inputSiteAddress, null, null, null)
     }
@@ -471,6 +509,7 @@ class LoginActivity :
 
     // TODO This can be modified to also receive the URL the user entered, so we can make that the primary store
     override fun loggedInViaUsernamePassword(oldSitesIds: ArrayList<Int>) {
+        firebaseTracker.log(FirebaseTracker.Event.LOGIN_SUCCESSFUL)
         showMainActivityAndFinish()
     }
 
