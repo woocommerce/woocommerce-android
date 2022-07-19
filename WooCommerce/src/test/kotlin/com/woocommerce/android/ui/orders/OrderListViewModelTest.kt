@@ -539,7 +539,6 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `given upsell banner displayed, then track proper event`() {
         runTest {
-            whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(true)
             whenever(bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(any())).thenReturn(true)
 
             viewModel.canShowCardReaderUpsellBanner(0L)
@@ -557,7 +556,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `given upsell banner not displayed, then do not track event`() {
         runTest {
-            whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(false)
+            whenever(bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(any())).thenReturn(false)
 
             viewModel.canShowCardReaderUpsellBanner(0L)
 
