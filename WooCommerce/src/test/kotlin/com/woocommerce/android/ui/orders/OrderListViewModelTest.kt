@@ -3,6 +3,9 @@ package com.woocommerce.android.ui.orders
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.RequestResult
@@ -77,6 +80,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters = mock()
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount = mock()
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker = mock()
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     @Before
     fun setup() = testBlocking {
@@ -109,7 +113,8 @@ class OrderListViewModelTest : BaseUnitTest() {
             resourceProvider = resourceProvider,
             getWCOrderListDescriptorWithFilters = getWCOrderListDescriptorWithFilters,
             getSelectedOrderFiltersCount = getSelectedOrderFiltersCount,
-            bannerDisplayEligibilityChecker = bannerDisplayEligibilityChecker
+            bannerDisplayEligibilityChecker = bannerDisplayEligibilityChecker,
+            analyticsTrackerWrapper = analyticsTrackerWrapper,
         )
     }
 
@@ -527,6 +532,23 @@ class OrderListViewModelTest : BaseUnitTest() {
             setup()
 
             Assertions.assertThat(viewModel.isEligibleForInPersonPayments.value).isTrue
+        }
+    }
+
+    @Test
+    fun `given upsell banner displayed, then track proper event`() {
+        runTest {
+            whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(true)
+
+            viewModel.canShowCardReaderUpsellBanner(0L)
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.FEATURE_CARD_SHOWN,
+                mapOf(
+                    AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.KEY_BANNER_ORDER_LIST,
+                    AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
+                )
+            )
         }
     }
     //endregion

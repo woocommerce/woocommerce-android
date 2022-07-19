@@ -640,6 +640,22 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
 
         assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
     }
+
+    @Test
+    fun `given banner displayed, then track proper event`() {
+        val viewModel = initViewModel(Payment(1L, ORDER))
+        whenever(bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(any())).thenReturn(true)
+
+        viewModel.canShowCardReaderUpsellBanner(0L)
+
+        verify(analyticsTrackerWrapper).track(
+            AnalyticsEvent.FEATURE_CARD_SHOWN,
+            mapOf(
+                AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.KEY_BANNER_PAYMENTS,
+                AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
+            )
+        )
+    }
     //endregion
 
     private fun initViewModel(cardReaderFlowParam: CardReaderFlowParam): SelectPaymentMethodViewModel {

@@ -343,6 +343,14 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_COUPON_EXPIRY_DATE_UPDATED = "expiry_date_updated"
         const val KEY_COUPON_USAGE_RESTRICTIONS_UPDATED = "usage_restrictions_updated"
 
+        // -- Upsell banner
+        const val KEY_BANNER_SOURCE = "source"
+        const val KEY_BANNER_PAYMENTS = "payment_methods"
+        const val KEY_BANNER_ORDER_LIST = "order_list"
+        const val KEY_BANNER_SETTINGS = "settings"
+        const val KEY_BANNER_CAMPAIGN_NAME = "campaign_name"
+        const val KEY_BANNER_UPSELL_CARD_READERS = "upsell_card_readers"
+
         var sendUsageStats: Boolean = true
             set(value) {
                 if (value != field) {

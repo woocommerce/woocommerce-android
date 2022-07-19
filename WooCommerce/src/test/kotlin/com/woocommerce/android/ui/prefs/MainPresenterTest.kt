@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.prefs
 
 import com.woocommerce.android.AppUrls
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.compose.component.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -9,6 +12,7 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -22,6 +26,7 @@ class MainPresenterTest : BaseUnitTest() {
     private val mainPresenterSettingsContractView: MainSettingsContract.View = mock()
     private val accountStore: AccountStore = mock()
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker = mock()
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     private lateinit var mainSettingsPresenter: MainSettingsPresenter
 
@@ -33,7 +38,8 @@ class MainPresenterTest : BaseUnitTest() {
             store,
             mock(),
             mock(),
-            bannerDisplayEligibilityChecker
+            bannerDisplayEligibilityChecker,
+            analyticsTrackerWrapper,
         )
         mainSettingsPresenter.takeView(mainPresenterSettingsContractView)
     }
@@ -129,6 +135,23 @@ class MainPresenterTest : BaseUnitTest() {
             setup()
 
             Assertions.assertThat(mainSettingsPresenter.isEligibleForInPersonPayments.value).isTrue
+        }
+    }
+
+    @Test
+    fun `given upsell banner displayed, then track proper event`() {
+        runTest {
+            whenever(bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(any())).thenReturn(true)
+
+            mainSettingsPresenter.canShowCardReaderUpsellBanner(0L)
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.FEATURE_CARD_SHOWN,
+                mapOf(
+                    AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.KEY_BANNER_SETTINGS,
+                    AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
+                )
+            )
         }
     }
     //endregion
