@@ -30,7 +30,7 @@ enum class FeatureFlag {
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             ORDER_CREATION_CUSTOMER_SEARCH,
-            ORDER_METADATA-> PackageUtils.isDebugBuild()
+            ORDER_METADATA -> PackageUtils.isDebugBuild()
         }
     }
 }
