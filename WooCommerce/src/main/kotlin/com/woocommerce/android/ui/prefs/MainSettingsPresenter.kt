@@ -101,13 +101,6 @@ class MainSettingsPresenter @Inject constructor(
     }
 
     override fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long): Boolean {
-        with(bannerDisplayEligibilityChecker) {
-            return !isCardReaderUpsellBannerDismissedForever() &&
-                (
-                    !hasTheMerchantDismissedBannerViaRemindMeLater() ||
-                        hasTheMerchantDismissedBannerViaRemindMeLater() &&
-                            isLastDialogDismissedMoreThan14DaysAgo(currentTimeInMillis)
-                    )
-        }
+        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis)
     }
 }

@@ -292,14 +292,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long): Boolean {
-        with(bannerDisplayEligibilityChecker) {
-            return !isCardReaderUpsellBannerDismissedForever() &&
-                (
-                    !hasTheMerchantDismissedBannerViaRemindMeLater() ||
-                        hasTheMerchantDismissedBannerViaRemindMeLater() &&
-                            isLastDialogDismissedMoreThan14DaysAgo(currentTimeInMillis)
-                    )
-        }
+        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis)
     }
 
     sealed class TakePaymentViewState {
