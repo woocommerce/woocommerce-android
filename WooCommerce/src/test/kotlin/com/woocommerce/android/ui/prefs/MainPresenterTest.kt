@@ -1,8 +1,7 @@
 package com.woocommerce.android.ui.prefs
 
 import com.woocommerce.android.AppUrls
-import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_BANNER_PAYMENTS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.compose.component.banner.BannerDisplayEligibilityChecker
@@ -12,9 +11,7 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.store.AccountStore
@@ -76,7 +73,7 @@ class MainPresenterTest : BaseUnitTest() {
     @Test
     fun `given upsell banner, when banner is dismissed via remind later, then trigger proper event`() {
         // WHEN
-        mainSettingsPresenter.onRemindLaterClicked(0L)
+        mainSettingsPresenter.onRemindLaterClicked(0L, KEY_BANNER_PAYMENTS)
 
         // Then
         verify(mainPresenterSettingsContractView).dismissUpsellCardReaderBannerViaRemindLater()
@@ -85,7 +82,7 @@ class MainPresenterTest : BaseUnitTest() {
     @Test
     fun `given upsell banner, when banner is dismissed via don't show gain, then trigger proper event`() {
         // WHEN
-        mainSettingsPresenter.onDontShowAgainClicked()
+        mainSettingsPresenter.onDontShowAgainClicked(KEY_BANNER_PAYMENTS)
 
         // Then
         verify(mainPresenterSettingsContractView).dismissUpsellCardReaderBannerViaDontShowAgain()
@@ -100,14 +97,14 @@ class MainPresenterTest : BaseUnitTest() {
 
     @Test
     fun `given card reader banner has dismissed via remind later, then update dialogShow state to false`() {
-        mainSettingsPresenter.onRemindLaterClicked(0L)
+        mainSettingsPresenter.onRemindLaterClicked(0L, KEY_BANNER_PAYMENTS)
 
         Assertions.assertThat(mainSettingsPresenter.shouldShowUpsellCardReaderDismissDialog.value).isFalse
     }
 
     @Test
     fun `given card reader banner has dismissed via don't show again, then update dialogShow state to false`() {
-        mainSettingsPresenter.onDontShowAgainClicked()
+        mainSettingsPresenter.onDontShowAgainClicked(KEY_BANNER_PAYMENTS)
 
         Assertions.assertThat(mainSettingsPresenter.shouldShowUpsellCardReaderDismissDialog.value).isFalse
     }
@@ -136,40 +133,6 @@ class MainPresenterTest : BaseUnitTest() {
             setup()
 
             Assertions.assertThat(mainSettingsPresenter.isEligibleForInPersonPayments.value).isTrue
-        }
-    }
-
-    @Test
-    fun `given upsell banner displayed, then track proper event`() {
-        runTest {
-            whenever(bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(any())).thenReturn(true)
-
-            mainSettingsPresenter.canShowCardReaderUpsellBanner(0L)
-
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.FEATURE_CARD_SHOWN,
-                mapOf(
-                    AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.KEY_BANNER_SETTINGS,
-                    AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
-                )
-            )
-        }
-    }
-
-    @Test
-    fun `given upsell banner not displayed, then do not track event`() {
-        runTest {
-            whenever(bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(any())).thenReturn(false)
-
-            mainSettingsPresenter.canShowCardReaderUpsellBanner(0L)
-
-            verify(analyticsTrackerWrapper, never()).track(
-                AnalyticsEvent.FEATURE_CARD_SHOWN,
-                mapOf(
-                    AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.KEY_BANNER_SETTINGS,
-                    AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
-                )
-            )
         }
     }
     //endregion

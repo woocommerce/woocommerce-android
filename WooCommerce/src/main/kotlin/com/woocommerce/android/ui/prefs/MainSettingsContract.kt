@@ -14,9 +14,9 @@ interface MainSettingsContract {
         fun setupJetpackInstallOption()
         fun onCtaClicked()
         fun onDismissClicked()
-        fun onRemindLaterClicked(currentTimeInMillis: Long)
-        fun onDontShowAgainClicked()
-        fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long): Boolean
+        fun onRemindLaterClicked(currentTimeInMillis: Long, source: String)
+        fun onDontShowAgainClicked(source: String)
+        fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long, source: String): Boolean
         val shouldShowUpsellCardReaderDismissDialog: MutableLiveData<Boolean>
         val isEligibleForInPersonPayments: MutableLiveData<Boolean>
     }

@@ -4,6 +4,7 @@ import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_BANNER_PAYMENTS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
@@ -585,7 +586,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         val viewModel = initViewModel(Payment(1L, ORDER))
 
         // WHEN
-        viewModel.onRemindLaterClicked(0L)
+        viewModel.onRemindLaterClicked(0L, KEY_BANNER_PAYMENTS)
 
         // Then
         assertThat(viewModel.event.value).isEqualTo(
@@ -599,7 +600,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         val viewModel = initViewModel(Payment(1L, ORDER))
 
         // WHEN
-        viewModel.onDontShowAgainClicked()
+        viewModel.onDontShowAgainClicked(KEY_BANNER_PAYMENTS)
 
         // Then
         assertThat(viewModel.event.value).isEqualTo(
@@ -620,7 +621,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     fun `given card reader banner has dismissed via remind later, then update dialogShow state to false`() {
         val viewModel = initViewModel(Payment(1L, ORDER))
 
-        viewModel.onRemindLaterClicked(0L)
+        viewModel.onRemindLaterClicked(0L, KEY_BANNER_PAYMENTS)
 
         assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
     }
@@ -629,7 +630,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     fun `given card reader banner has dismissed via don't show again, then update dialogShow state to false`() {
         val viewModel = initViewModel(Payment(1L, ORDER))
 
-        viewModel.onDontShowAgainClicked()
+        viewModel.onDontShowAgainClicked(KEY_BANNER_PAYMENTS)
 
         assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
     }
@@ -639,38 +640,6 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         val viewModel = initViewModel(Payment(1L, ORDER))
 
         assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
-    }
-
-    @Test
-    fun `given banner displayed, then track proper event`() {
-        val viewModel = initViewModel(Payment(1L, ORDER))
-        whenever(bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(any())).thenReturn(true)
-
-        viewModel.canShowCardReaderUpsellBanner(0L)
-
-        verify(analyticsTrackerWrapper).track(
-            AnalyticsEvent.FEATURE_CARD_SHOWN,
-            mapOf(
-                AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.KEY_BANNER_PAYMENTS,
-                AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
-            )
-        )
-    }
-
-    @Test
-    fun `given banner not displayed, then do not track event`() {
-        val viewModel = initViewModel(Payment(1L, ORDER))
-        whenever(bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(any())).thenReturn(false)
-
-        viewModel.canShowCardReaderUpsellBanner(0L)
-
-        verify(analyticsTrackerWrapper, never()).track(
-            AnalyticsEvent.FEATURE_CARD_SHOWN,
-            mapOf(
-                AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.KEY_BANNER_PAYMENTS,
-                AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
-            )
-        )
     }
     //endregion
 

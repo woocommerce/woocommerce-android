@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.prefs
 
 import androidx.lifecycle.MutableLiveData
-import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.compose.component.banner.BannerDisplayEligibilityChecker
@@ -92,29 +90,19 @@ class MainSettingsPresenter @Inject constructor(
         appSettingsFragmentView?.dismissUpsellCardReaderBanner()
     }
 
-    override fun onRemindLaterClicked(currentTimeInMillis: Long) {
+    override fun onRemindLaterClicked(currentTimeInMillis: Long, source: String) {
         shouldShowUpsellCardReaderDismissDialog.value = false
-        bannerDisplayEligibilityChecker.onRemindLaterClicked(currentTimeInMillis)
+        bannerDisplayEligibilityChecker.onRemindLaterClicked(currentTimeInMillis, source)
         appSettingsFragmentView?.dismissUpsellCardReaderBannerViaRemindLater()
     }
 
-    override fun onDontShowAgainClicked() {
+    override fun onDontShowAgainClicked(source: String) {
         shouldShowUpsellCardReaderDismissDialog.value = false
-        bannerDisplayEligibilityChecker.onDontShowAgainClicked()
+        bannerDisplayEligibilityChecker.onDontShowAgainClicked(source)
         appSettingsFragmentView?.dismissUpsellCardReaderBannerViaDontShowAgain()
     }
 
-    override fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long): Boolean {
-        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis).also { trackable ->
-            if (trackable) {
-                analyticsTrackerWrapper.track(
-                    AnalyticsEvent.FEATURE_CARD_SHOWN,
-                    mapOf(
-                        AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.KEY_BANNER_SETTINGS,
-                        AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
-                    )
-                )
-            }
-        }
+    override fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long, source: String): Boolean {
+        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis, source)
     }
 }

@@ -17,6 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel
 import com.woocommerce.android.ui.prefs.MainSettingsContract
@@ -28,6 +29,7 @@ fun PaymentsScreenBannerDismissDialog(viewModel: SelectPaymentMethodViewModel) {
         onRemindLaterClick = viewModel::onRemindLaterClicked,
         onDontShowAgainClick = viewModel::onDontShowAgainClicked,
         showDialog,
+        AnalyticsTracker.KEY_BANNER_PAYMENTS
     )
 }
 
@@ -38,6 +40,7 @@ fun OrderListBannerDismissDialog(viewModel: OrderListViewModel) {
         onRemindLaterClick = viewModel::onRemindLaterClicked,
         onDontShowAgainClick = viewModel::onDontShowAgainClicked,
         showDialog,
+        AnalyticsTracker.KEY_BANNER_ORDER_LIST
     )
 }
 
@@ -48,14 +51,16 @@ fun SettingsBannerDismissDialog(presenter: MainSettingsContract.Presenter) {
         onRemindLaterClick = presenter::onRemindLaterClicked,
         onDontShowAgainClick = presenter::onDontShowAgainClicked,
         showDialog,
+        AnalyticsTracker.KEY_BANNER_SETTINGS
     )
 }
 
 @Composable
 fun BannerDismissDialog(
-    onRemindLaterClick: (Long) -> Unit,
-    onDontShowAgainClick: () -> Unit,
+    onRemindLaterClick: (Long, String) -> Unit,
+    onDontShowAgainClick: (String) -> Unit,
     showDialog: Boolean,
+    source: String,
     title: String = stringResource(
         id = R.string.card_reader_upsell_card_reader_banner_payments
     ),
@@ -97,7 +102,7 @@ fun BannerDismissDialog(
                             )
                             .clickable(
                                 onClick = {
-                                    onRemindLaterClick(System.currentTimeMillis())
+                                    onRemindLaterClick(System.currentTimeMillis(), source)
                                 }
                             )
                     )
@@ -114,7 +119,7 @@ fun BannerDismissDialog(
                             )
                             .clickable(
                                 onClick = {
-                                    onDontShowAgainClick()
+                                    onDontShowAgainClick(source)
                                 }
                             )
                     )
@@ -128,9 +133,10 @@ fun BannerDismissDialog(
 @Composable
 fun BannerDismissDialogPreview() {
     BannerDismissDialog(
-        onRemindLaterClick = {},
+        onRemindLaterClick = { _, _ -> },
         onDontShowAgainClick = {},
         true,
+        AnalyticsTracker.KEY_BANNER_PAYMENTS,
         title = stringResource(
             id = R.string.card_reader_upsell_card_reader_banner_payments
         ),

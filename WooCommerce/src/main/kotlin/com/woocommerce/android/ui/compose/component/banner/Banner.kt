@@ -32,6 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel
@@ -51,7 +52,7 @@ fun PaymentsScreenBanner(
     if (
         selectPaymentState is Success &&
         (selectPaymentState as Success).isPaymentCollectableWithCardReader &&
-        viewModel.canShowCardReaderUpsellBanner(System.currentTimeMillis())
+        viewModel.canShowCardReaderUpsellBanner(System.currentTimeMillis(), AnalyticsTracker.KEY_BANNER_PAYMENTS)
     ) {
         Banner(
             onCtaClick = viewModel::onCtaClicked,
@@ -73,7 +74,7 @@ fun OrderListScreenBanner(
     val isEligibleForInPersonPayments by viewModel.isEligibleForInPersonPayments.observeAsState(false)
 
     if (
-        viewModel.canShowCardReaderUpsellBanner(System.currentTimeMillis()) &&
+        viewModel.canShowCardReaderUpsellBanner(System.currentTimeMillis(), AnalyticsTracker.KEY_BANNER_ORDER_LIST) &&
         isEligibleForInPersonPayments
     ) {
         Banner(
@@ -95,7 +96,7 @@ fun SettingsScreenBanner(
 ) {
     val isEligibleForInPersonPayments by presenter.isEligibleForInPersonPayments.observeAsState(false)
     if (
-        presenter.canShowCardReaderUpsellBanner(System.currentTimeMillis()) &&
+        presenter.canShowCardReaderUpsellBanner(System.currentTimeMillis(), AnalyticsTracker.KEY_BANNER_SETTINGS) &&
         isEligibleForInPersonPayments
     ) {
         Banner(

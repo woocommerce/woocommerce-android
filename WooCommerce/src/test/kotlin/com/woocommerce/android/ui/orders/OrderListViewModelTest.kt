@@ -3,8 +3,7 @@ package com.woocommerce.android.ui.orders
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_BANNER_PAYMENTS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -44,7 +43,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -468,7 +466,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `given upsell banner, when banner is dismissed via remind later, then trigger proper event`() {
         // WHEN
-        viewModel.onRemindLaterClicked(0L)
+        viewModel.onRemindLaterClicked(0L, KEY_BANNER_PAYMENTS)
 
         // Then
         Assertions.assertThat(viewModel.event.value).isEqualTo(
@@ -478,7 +476,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `given upsell banner, when banner is dismissed via don't show again, then trigger proper event`() {
         // WHEN
-        viewModel.onDontShowAgainClicked()
+        viewModel.onDontShowAgainClicked(KEY_BANNER_PAYMENTS)
 
         // Then
         Assertions.assertThat(viewModel.event.value).isEqualTo(
@@ -495,14 +493,14 @@ class OrderListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given card reader banner has dismissed via remind later, then update dialogShow state to false`() {
-        viewModel.onRemindLaterClicked(0L)
+        viewModel.onRemindLaterClicked(0L, KEY_BANNER_PAYMENTS)
 
         Assertions.assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
     }
 
     @Test
     fun `given card reader banner has dismissed via don't show again, then update dialogShow state to false`() {
-        viewModel.onDontShowAgainClicked()
+        viewModel.onDontShowAgainClicked(KEY_BANNER_PAYMENTS)
 
         Assertions.assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
     }
@@ -533,40 +531,6 @@ class OrderListViewModelTest : BaseUnitTest() {
             setup()
 
             Assertions.assertThat(viewModel.isEligibleForInPersonPayments.value).isTrue
-        }
-    }
-
-    @Test
-    fun `given upsell banner displayed, then track proper event`() {
-        runTest {
-            whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(true)
-
-            viewModel.canShowCardReaderUpsellBanner(0L)
-
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.FEATURE_CARD_SHOWN,
-                mapOf(
-                    AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.KEY_BANNER_ORDER_LIST,
-                    AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
-                )
-            )
-        }
-    }
-
-    @Test
-    fun `given upsell banner not displayed, then do not track event`() {
-        runTest {
-            whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(false)
-
-            viewModel.canShowCardReaderUpsellBanner(0L)
-
-            verify(analyticsTrackerWrapper, never()).track(
-                AnalyticsEvent.FEATURE_CARD_SHOWN,
-                mapOf(
-                    AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.KEY_BANNER_ORDER_LIST,
-                    AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
-                )
-            )
         }
     }
     //endregion

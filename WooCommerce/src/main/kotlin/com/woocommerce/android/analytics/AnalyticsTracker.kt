@@ -350,6 +350,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_BANNER_SETTINGS = "settings"
         const val KEY_BANNER_CAMPAIGN_NAME = "campaign_name"
         const val KEY_BANNER_UPSELL_CARD_READERS = "upsell_card_readers"
+        const val KEY_BANNER_REMIND_LATER = "remind_later"
 
         var sendUsageStats: Boolean = true
             set(value) {

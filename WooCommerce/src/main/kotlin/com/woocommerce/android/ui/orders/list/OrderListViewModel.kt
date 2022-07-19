@@ -434,30 +434,20 @@ class OrderListViewModel @Inject constructor(
         triggerEvent(OrderListEvent.DismissCardReaderUpsellBanner)
     }
 
-    fun onRemindLaterClicked(currentTimeInMillis: Long) {
+    fun onRemindLaterClicked(currentTimeInMillis: Long, source: String) {
         shouldShowUpsellCardReaderDismissDialog.value = false
-        bannerDisplayEligibilityChecker.onRemindLaterClicked(currentTimeInMillis)
+        bannerDisplayEligibilityChecker.onRemindLaterClicked(currentTimeInMillis, source)
         triggerEvent(OrderListEvent.DismissCardReaderUpsellBannerViaRemindMeLater)
     }
 
-    fun onDontShowAgainClicked() {
+    fun onDontShowAgainClicked(source: String) {
         shouldShowUpsellCardReaderDismissDialog.value = false
-        bannerDisplayEligibilityChecker.onDontShowAgainClicked()
+        bannerDisplayEligibilityChecker.onDontShowAgainClicked(source)
         triggerEvent(OrderListEvent.DismissCardReaderUpsellBannerViaDontShowAgain)
     }
 
-    fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long): Boolean {
-        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis).also { trackable ->
-            if (trackable) {
-                analyticsTrackerWrapper.track(
-                    AnalyticsEvent.FEATURE_CARD_SHOWN,
-                    mapOf(
-                        AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.KEY_BANNER_ORDER_LIST,
-                        AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
-                    )
-                )
-            }
-        }
+    fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long, source: String): Boolean {
+        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis, source)
     }
 
     sealed class OrderListEvent : Event() {
