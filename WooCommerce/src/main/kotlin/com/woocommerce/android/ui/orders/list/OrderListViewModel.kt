@@ -238,7 +238,7 @@ class OrderListViewModel @Inject constructor(
      * data about the order custom fields
      */
     fun trackOrderClickEvent(orderId: Long, orderStatus: String) = launch {
-        val (customFieldsSize, customFieldsCount) =
+        val (customFieldsCount, customFieldsSize) =
             orderDetailRepository.getOrderMetadata(orderId)
                 .map { it.value.utf8Size() }
                 .let {
