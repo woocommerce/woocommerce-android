@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.login.localnotifications.LoginFlowUsageTracker
 import com.woocommerce.android.ui.login.localnotifications.LoginFlowUsageTracker.LoginSupportNotificationType.LOGIN_ERROR_WRONG_EMAIL
 import com.woocommerce.android.ui.login.localnotifications.LoginFlowUsageTracker.LoginSupportNotificationType.NO_LOGIN_INTERACTION
 import com.woocommerce.android.ui.login.localnotifications.LoginFlowUsageTracker.LoginSupportNotificationType.valueOf
+import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
@@ -23,7 +24,12 @@ class LocalNotificationWorker @AssistedInject constructor(
     @Assisted private val appContext: Context,
     @Assisted workerParams: WorkerParameters,
     private val wooNotificationBuilder: WooNotificationBuilder,
+    private val resourceProvider: ResourceProvider
 ) : Worker(appContext, workerParams) {
+    companion object {
+        const val PRE_LOGIN_LOCAL_NOTIFICATION_ID = 1
+    }
+
     override fun doWork(): Result {
         when (getNotificationType()) {
             NO_LOGIN_INTERACTION -> noInteractionNotification()
@@ -35,24 +41,20 @@ class LocalNotificationWorker @AssistedInject constructor(
     }
 
     private fun defaultLoginSupportNotification() {
-        wooNotificationBuilder.buildAndDisplayWooNotification(
-            0,
-            0,
+        wooNotificationBuilder.buildAndDisplayPreLoginLocalNotification(
+            notificationLocalId = PRE_LOGIN_LOCAL_NOTIFICATION_ID,
             appContext.getString(R.string.notification_channel_pre_login_id),
             notification = Notification(
-                noteId = 1,
-                uniqueId = 1L,
-                remoteNoteId = 1L,
-                remoteSiteId = 1L,
-                icon = "https://s.wp.com/wp-content/mu-plugins/notes/images/update-payment-2x.png",
-                noteTitle = "Trouble login into WooCommerce?",
-                noteMessage = "If you are having issues login into your store from the app, " +
-                    "please reach support so we can help you. ",
+                noteId = PRE_LOGIN_LOCAL_NOTIFICATION_ID,
+                uniqueId = 0,
+                remoteNoteId = 0,
+                remoteSiteId = 0,
+                icon = null,
+                noteTitle = resourceProvider.getString(R.string.login_local_notification_no_interaction_title),
+                noteMessage = resourceProvider.getString(R.string.login_local_notification_no_interaction_description),
                 noteType = WooNotificationType.PRE_LOGIN,
                 channelType = NotificationChannelType.PRE_LOGIN
-            ),
-            addCustomNotificationSound = false,
-            isGroupNotification = false
+            )
         )
     }
 

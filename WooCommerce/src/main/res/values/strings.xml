@@ -2100,6 +2100,11 @@
     <string name="install_wc_shipping_flow_onboarding_screen_not_now_button">Not Now</string>
     <string name="install_wc_shipping_extension_name">WooCommerce Shipping</string>
 
+    <!-- Login local notifications -->
+    <string name="login_local_notification_no_interaction_title">Trouble login in?</string>
+    <string name="login_local_notification_no_interaction_description">If you are experiencing issues login into your store from the app, please contact support so we can help you.</string>
+
+
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>
     <string name="login_invalid_site_url">Please enter a complete website address, like example.com.</string>

@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Notification
+import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.SystemVersionUtils
 import com.woocommerce.android.util.WooLog
@@ -72,6 +73,30 @@ class WooNotificationBuilder @Inject constructor(private val context: Context) {
     ) {
         getNotificationBuilder(channelId, notification).apply {
             showNotification(notification.noteId, notification = notification, builder = this)
+        }
+    }
+
+    fun buildAndDisplayPreLoginLocalNotification(
+        notificationLocalId: Int,
+        channelId: String,
+        notification: Notification,
+    ) {
+        val channelType = notification.channelType
+        getNotificationBuilder(channelId, notification).apply {
+            setLargeIcon(getLargeIconBitmap(context, notification.icon, channelType.shouldCircularizeNoteIcon()))
+        }.apply {
+            val flags = if (SystemVersionUtils.isAtLeastS()) {
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            } else {
+                PendingIntent.FLAG_UPDATE_CURRENT
+            }
+            val pendingIntent = PendingIntent.getActivity(
+                context, notificationLocalId,
+                HelpActivity.createIntent(context, HelpActivity.Origin.LOGIN_LOCAL_NOTIFICATION, null),
+                flags
+            )
+            setContentIntent(pendingIntent)
+            NotificationManagerCompat.from(context).notify(notificationLocalId, build())
         }
     }
 
@@ -138,7 +163,7 @@ class WooNotificationBuilder @Inject constructor(private val context: Context) {
             }
     }
 
-    fun showNotification(
+    private fun showNotification(
         pushId: Int,
         notification: Notification,
         builder: NotificationCompat.Builder

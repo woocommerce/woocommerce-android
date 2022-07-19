@@ -45,7 +45,7 @@ class LoginFlowUsageTracker @Inject constructor(
     }
 
     enum class LoginSupportNotificationType(val notification: String) {
-        NO_LOGIN_INTERACTION("login_no_interaction"),
+        NO_LOGIN_INTERACTION("no_login_interaction"),
         LOGIN_ERROR_WRONG_EMAIL("wrong_email"),
         DEFAULT_SUPPORT("default_support")
     }
