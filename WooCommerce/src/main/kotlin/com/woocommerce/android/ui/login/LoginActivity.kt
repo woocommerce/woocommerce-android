@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow.LOGIN_SITE_ADDR
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Source
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step.ENTER_SITE_ADDRESS
 import com.woocommerce.android.ui.login.localnotifications.LoginFlowUsageTracker
+import com.woocommerce.android.ui.login.localnotifications.LoginFlowUsageTracker.LoginSupportNotificationType
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
 import com.woocommerce.android.ui.main.MainActivity
@@ -710,6 +711,7 @@ class LoginActivity :
                 shouldAddToBackStack = true,
                 tag = LoginSiteCheckErrorFragment.TAG
             )
+            loginFlowUsageTracker.scheduleNotification(LoginSupportNotificationType.LOGIN_SITE_ADDRESS_ERROR)
         } else {
             // Just in case we use this method for a different scenario in the future
             TODO("Handle a new error scenario")

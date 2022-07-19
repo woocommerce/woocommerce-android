@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.login.localnotifications.LoginFlowUsageTracker
 import com.woocommerce.android.ui.login.localnotifications.LoginFlowUsageTracker.LoginSupportNotificationType
 import com.woocommerce.android.ui.login.localnotifications.LoginFlowUsageTracker.LoginSupportNotificationType.DEFAULT_SUPPORT
 import com.woocommerce.android.ui.login.localnotifications.LoginFlowUsageTracker.LoginSupportNotificationType.LOGIN_ERROR_WRONG_EMAIL
+import com.woocommerce.android.ui.login.localnotifications.LoginFlowUsageTracker.LoginSupportNotificationType.LOGIN_SITE_ADDRESS_ERROR
 import com.woocommerce.android.ui.login.localnotifications.LoginFlowUsageTracker.LoginSupportNotificationType.NO_LOGIN_INTERACTION
 import com.woocommerce.android.ui.login.localnotifications.LoginFlowUsageTracker.LoginSupportNotificationType.valueOf
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -35,6 +36,7 @@ class LocalNotificationWorker @AssistedInject constructor(
             NO_LOGIN_INTERACTION -> noInteractionNotification()
             LOGIN_ERROR_WRONG_EMAIL -> wrongEmailNotification()
             DEFAULT_SUPPORT -> defaultLoginSupportNotification()
+            LOGIN_SITE_ADDRESS_ERROR -> defaultLoginSupportNotification()
         }
         // Indicate whether the work finished successfully with the Result
         return Result.success()
