@@ -56,8 +56,10 @@ object MediaPickerUtil {
     }
 
     private fun handleMediaLibraryPickerResult(data: Bundle): List<Product.Image> {
-        return data.getParcelableArrayList<MediaItem.Identifier.RemoteMedia>(MediaPickerConstants.EXTRA_REMOTE_MEDIA)
-            ?.map { Product.Image(it.id, it.name, it.url, DateTimeUtils.dateFromIso8601(it.date)) }
+        return data.getParcelableArrayList(
+            MediaPickerConstants.EXTRA_REMOTE_MEDIA,
+            MediaItem.Identifier.RemoteMedia::class.java
+        )?.map { Product.Image(it.id, it.name, it.url, DateTimeUtils.dateFromIso8601(it.date)) }
             ?: emptyList()
     }
 }

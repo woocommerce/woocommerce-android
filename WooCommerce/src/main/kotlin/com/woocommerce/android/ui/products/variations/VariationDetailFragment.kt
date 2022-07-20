@@ -141,7 +141,7 @@ class VariationDetailFragment :
         val layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         this.layoutManager = layoutManager
 
-        savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY)?.let {
+        savedInstanceState?.getParcelable(LIST_STATE_KEY, Parcelable::class.java)?.let {
             layoutManager.onRestoreInstanceState(it)
         }
         binding.cardsRecyclerView.layoutManager = layoutManager

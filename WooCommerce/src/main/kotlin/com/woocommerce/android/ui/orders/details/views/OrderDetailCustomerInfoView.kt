@@ -48,7 +48,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         var viewState = state
         if (state is Bundle) {
             isCustomerInfoViewExpanded = state.getBoolean(KEY_IS_CUSTOMER_INFO_VIEW_EXPANDED)
-            viewState = state.getParcelable(KEY_SUPER_STATE)
+            viewState = state.getParcelable(KEY_SUPER_STATE, Parcelable::class.java)
         }
         super.onRestoreInstanceState(viewState)
     }
