@@ -25,11 +25,11 @@ enum class FeatureFlag {
             COUPONS_M2,
             JETPACK_CP,
             IN_PERSON_PAYMENTS_CANADA,
+            ORDER_CREATION_CUSTOMER_SEARCH,
             UNIFIED_ORDER_EDITING -> true
             ANALYTICS_HUB,
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
-            ORDER_CREATION_CUSTOMER_SEARCH,
             ORDER_METADATA -> PackageUtils.isDebugBuild()
         }
     }
