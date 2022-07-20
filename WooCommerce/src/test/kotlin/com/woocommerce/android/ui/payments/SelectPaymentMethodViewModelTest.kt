@@ -643,6 +643,15 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
 
         assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
     }
+
+    @Test
+    fun `when alert dialog dismissed by pressing back, then shouldShowUpsellCardReaderDismissDialog set to false`() {
+        val viewModel = initViewModel(Payment(1L, ORDER))
+
+        viewModel.onBannerAlertDismiss()
+
+        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
+    }
     //endregion
 
     private fun initViewModel(cardReaderFlowParam: CardReaderFlowParam): SelectPaymentMethodViewModel {

@@ -28,6 +28,7 @@ fun PaymentsScreenBannerDismissDialog(viewModel: SelectPaymentMethodViewModel) {
     BannerDismissDialog(
         onRemindLaterClick = viewModel::onRemindLaterClicked,
         onDontShowAgainClick = viewModel::onDontShowAgainClicked,
+        onDismissClick = viewModel::onBannerAlertDismiss,
         showDialog,
         AnalyticsTracker.KEY_BANNER_PAYMENTS
     )
@@ -39,6 +40,7 @@ fun OrderListBannerDismissDialog(viewModel: OrderListViewModel) {
     BannerDismissDialog(
         onRemindLaterClick = viewModel::onRemindLaterClicked,
         onDontShowAgainClick = viewModel::onDontShowAgainClicked,
+        onDismissClick = viewModel::onBannerAlertDismiss,
         showDialog,
         AnalyticsTracker.KEY_BANNER_ORDER_LIST
     )
@@ -50,6 +52,7 @@ fun SettingsBannerDismissDialog(presenter: MainSettingsContract.Presenter) {
     BannerDismissDialog(
         onRemindLaterClick = presenter::onRemindLaterClicked,
         onDontShowAgainClick = presenter::onDontShowAgainClicked,
+        onDismissClick = presenter::onBannerAlertDismiss,
         showDialog,
         AnalyticsTracker.KEY_BANNER_SETTINGS
     )
@@ -59,6 +62,7 @@ fun SettingsBannerDismissDialog(presenter: MainSettingsContract.Presenter) {
 fun BannerDismissDialog(
     onRemindLaterClick: (Long, String) -> Unit,
     onDontShowAgainClick: (String) -> Unit,
+    onDismissClick: () -> Unit,
     showDialog: Boolean,
     source: String,
     title: String = stringResource(
@@ -70,7 +74,7 @@ fun BannerDismissDialog(
 ) {
     if (showDialog) {
         androidx.compose.material.AlertDialog(
-            onDismissRequest = {},
+            onDismissRequest = onDismissClick,
             title = {
                 Text(
                     text = title,
@@ -135,6 +139,7 @@ fun BannerDismissDialogPreview() {
     BannerDismissDialog(
         onRemindLaterClick = { _, _ -> },
         onDontShowAgainClick = {},
+        onDismissClick = {},
         true,
         AnalyticsTracker.KEY_BANNER_PAYMENTS,
         title = stringResource(

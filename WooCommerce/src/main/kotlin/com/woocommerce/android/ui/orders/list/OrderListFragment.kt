@@ -155,9 +155,8 @@ class OrderListFragment :
         val view = binding.root
         if (viewModel.shouldShowUpsellCardReaderDismissDialog.value == true) {
             applyBannerDismissDialogComposeUI()
-        } else {
-            applyBannerComposeUI()
         }
+        applyBannerComposeUI()
         return view
     }
 
@@ -327,13 +326,14 @@ class OrderListFragment :
                 }
                 is ShowOrderFilters -> showOrderFilters()
                 DismissCardReaderUpsellBanner -> {
-                    binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
                     applyBannerDismissDialogComposeUI()
                 }
                 DismissCardReaderUpsellBannerViaRemindMeLater -> {
+                    binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
                     binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
                 }
                 DismissCardReaderUpsellBannerViaDontShowAgain -> {
+                    binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
                     binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
                 }
                 is OrderListViewModel.OrderListEvent.OpenPurchaseCardReaderLink -> {

@@ -134,5 +134,19 @@ class MainPresenterTest : BaseUnitTest() {
             Assertions.assertThat(mainSettingsPresenter.isEligibleForInPersonPayments.value).isTrue
         }
     }
+
+    @Test
+    fun `when alert dialog dismissed by pressing back, then shouldShowUpsellCardReaderDismissDialog set to false`() {
+        mainSettingsPresenter.onBannerAlertDismiss()
+
+        Assertions.assertThat(mainSettingsPresenter.shouldShowUpsellCardReaderDismissDialog.value).isFalse
+    }
+
+    @Test
+    fun `when alert dialog dismissed by pressing back, then dismissUpsellCardReaderBannerViaBack is called`() {
+        mainSettingsPresenter.onBannerAlertDismiss()
+
+        verify(mainPresenterSettingsContractView).dismissUpsellCardReaderBannerViaBack()
+    }
     //endregion
 }

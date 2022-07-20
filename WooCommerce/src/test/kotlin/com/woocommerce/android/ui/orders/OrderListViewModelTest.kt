@@ -472,6 +472,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             DismissCardReaderUpsellBannerViaRemindMeLater
         )
     }
+
     @Test
     fun `given upsell banner, when banner is dismissed via don't show again, then trigger proper event`() {
         // WHEN
@@ -531,6 +532,13 @@ class OrderListViewModelTest : BaseUnitTest() {
 
             Assertions.assertThat(viewModel.isEligibleForInPersonPayments.value).isTrue
         }
+    }
+
+    @Test
+    fun `when alert dialog dismissed by pressing back, then shouldShowUpsellCardReaderDismissDialog set to false`() {
+        viewModel.onBannerAlertDismiss()
+
+        Assertions.assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
     }
     //endregion
 

@@ -100,6 +100,11 @@ class MainSettingsPresenter @Inject constructor(
         appSettingsFragmentView?.dismissUpsellCardReaderBannerViaDontShowAgain()
     }
 
+    override fun onBannerAlertDismiss() {
+        shouldShowUpsellCardReaderDismissDialog.value = false
+        appSettingsFragmentView?.dismissUpsellCardReaderBannerViaBack()
+    }
+
     override fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long, source: String): Boolean {
         return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis, source)
     }

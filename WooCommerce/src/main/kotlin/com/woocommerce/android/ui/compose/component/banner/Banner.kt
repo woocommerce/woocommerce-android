@@ -131,6 +131,27 @@ fun Banner(
                     start = dimensionResource(id = R.dimen.major_100),
                     top = dimensionResource(id = R.dimen.minor_100)
                 ),
+            horizontalArrangement = Arrangement.End
+        ) {
+            IconButton(
+                onClick = onDismissClick
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_close),
+                    contentDescription = stringResource(
+                        id = R.string.card_reader_upsell_card_reader_banner_dismiss
+                    ),
+                    tint = colorResource(id = R.color.color_on_surface)
+                )
+            }
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = dimensionResource(id = R.dimen.major_100),
+                    top = dimensionResource(id = R.dimen.minor_100)
+                ),
             verticalAlignment = Alignment.Bottom,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -189,19 +210,6 @@ fun Banner(
                 )
             }
             Column {
-                IconButton(
-                    modifier = Modifier
-                        .align(Alignment.End),
-                    onClick = onDismissClick
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_close),
-                        contentDescription = stringResource(
-                            id = R.string.card_reader_upsell_card_reader_banner_dismiss
-                        ),
-                        tint = colorResource(id = R.color.color_on_surface)
-                    )
-                }
                 Image(
                     painter = painterResource(id = R.drawable.ic_banner_upsell_card_reader_illustration),
                     contentDescription = null,

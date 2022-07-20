@@ -63,9 +63,8 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
         val view = binding.root
         if (viewModel.shouldShowUpsellCardReaderDismissDialog.value == true) {
             applyBannerDismissDialogComposeUI()
-        } else {
-            applyBannerComposeUI()
         }
+        applyBannerComposeUI()
         return view
     }
 
@@ -153,6 +152,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
         }
     }
 
+    @Suppress("LongMethod")
     private fun handleEvents(binding: FragmentTakePaymentBinding) {
         viewModel.event.observe(
             viewLifecycleOwner
@@ -197,13 +197,14 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
                     findNavController().navigate(action)
                 }
                 SelectPaymentMethodViewModel.DismissCardReaderUpsellBanner -> {
-                    binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
                     applyBannerDismissDialogComposeUI()
                 }
                 SelectPaymentMethodViewModel.DismissCardReaderUpsellBannerViaRemindMeLater -> {
+                    binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
                     binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
                 }
                 SelectPaymentMethodViewModel.DismissCardReaderUpsellBannerViaDontShowAgain -> {
+                    binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
                     binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
                 }
                 is SelectPaymentMethodViewModel.OpenPurchaseCardReaderLink -> {

@@ -26,7 +26,6 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -260,14 +259,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
             ORDER -> AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW
         }
 
-    private suspend fun getStoreCountryCode(): String? {
-        return withContext(dispatchers.io) {
-            wooCommerceStore.getStoreCountryCode(selectedSite.get()) ?: null.also {
-                WooLog.e(WooLog.T.CARD_READER, "Store's country code not found.")
-            }
-        }
-    }
-
     fun onCtaClicked(source: String) {
         launch {
             triggerEvent(
@@ -291,6 +282,10 @@ class SelectPaymentMethodViewModel @Inject constructor(
         shouldShowUpsellCardReaderDismissDialog.value = false
         bannerDisplayEligibilityChecker.onDontShowAgainClicked(source)
         triggerEvent(DismissCardReaderUpsellBannerViaDontShowAgain)
+    }
+
+    fun onBannerAlertDismiss() {
+        shouldShowUpsellCardReaderDismissDialog.value = false
     }
 
     fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long, source: String): Boolean {

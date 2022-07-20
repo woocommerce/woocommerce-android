@@ -252,15 +252,20 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     }
 
     override fun dismissUpsellCardReaderBanner() {
-        binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
         applyBannerDismissDialogComposeUI()
     }
 
+    override fun dismissUpsellCardReaderBannerViaBack() {
+        binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
+    }
+
     override fun dismissUpsellCardReaderBannerViaRemindLater() {
+        binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
         binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
     }
 
     override fun dismissUpsellCardReaderBannerViaDontShowAgain() {
+        binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
         binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
     }
 

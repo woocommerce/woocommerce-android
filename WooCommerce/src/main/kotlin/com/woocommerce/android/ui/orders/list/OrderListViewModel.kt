@@ -446,6 +446,10 @@ class OrderListViewModel @Inject constructor(
         triggerEvent(OrderListEvent.DismissCardReaderUpsellBannerViaDontShowAgain)
     }
 
+    fun onBannerAlertDismiss() {
+        shouldShowUpsellCardReaderDismissDialog.value = false
+    }
+
     fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long, source: String): Boolean {
         return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis, source)
     }
