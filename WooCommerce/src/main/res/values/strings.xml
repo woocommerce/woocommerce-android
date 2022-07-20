@@ -198,7 +198,7 @@
     <string name="login_prologue_label_analytics">Track sales and high performing products</string>
     <string name="login_prologue_label_orders">Manage your store orders on the go</string>
     <string name="login_prologue_label_products">Edit and add new products from anywhere</string>
-
+    <string name="login_prologue_new_to_woo">New to WooCommerce</string>
     <string name="login_prologue_label_analytics_subtitle">We know it\'s essential to your business</string>
     <string name="login_prologue_label_orders_subtitle">You can manage them quickly and easily</string>
     <string name="login_prologue_label_products_subtitle">We enable you to process them effortlessly</string>
