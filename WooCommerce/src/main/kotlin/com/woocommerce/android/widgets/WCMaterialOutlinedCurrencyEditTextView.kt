@@ -166,7 +166,7 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
     }
 
     override fun onRestoreInstanceState(state: Parcelable?) {
-        val bundle = (state as? Bundle)?.getParcelable<WCSavedState>(KEY_SUPER_STATE)?.let {
+        val bundle = (state as? Bundle)?.getParcelable(KEY_SUPER_STATE, WCSavedState::class.java)?.let {
             restoreViewState(it)
         } ?: state
         super.onRestoreInstanceState(bundle)
