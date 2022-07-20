@@ -4,6 +4,7 @@ import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager.ResolveInfoFlags
 import android.net.Uri
 import android.os.Bundle
 import androidx.browser.customtabs.CustomTabColorSchemeParams
@@ -126,12 +127,12 @@ object ChromeCustomTabUtils {
 
         val pm = context.packageManager
         val activityIntent = Intent(Intent.ACTION_VIEW, Uri.parse("http://www.example.com"))
-        val resolvedActivityList = pm.queryIntentActivities(activityIntent, 0)
+        val resolvedActivityList = pm.queryIntentActivities(activityIntent, ResolveInfoFlags.of(0))
         for (info in resolvedActivityList) {
             val serviceIntent = Intent()
             serviceIntent.action = ACTION_CUSTOM_TABS_CONNECTION
             serviceIntent.setPackage(info.activityInfo.packageName)
-            if (pm.resolveService(serviceIntent, 0) != null) {
+            if (pm.resolveService(serviceIntent, ResolveInfoFlags.of(0)) != null) {
                 canUseCustomTabs = true
                 return true
             }
