@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.content.pm.PackageManager.PackageInfoFlags
 import android.net.Uri
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -185,7 +186,7 @@ object AppRatingDialog {
         var installDate = Date()
         val packMan = context.packageManager
         try {
-            val pkgInfo = packMan.getPackageInfo(context.packageName, 0)
+            val pkgInfo = packMan.getPackageInfo(context.packageName, PackageInfoFlags.of(0))
             installDate = Date(pkgInfo.firstInstallTime)
         } catch (e: PackageManager.NameNotFoundException) {
             WooLog.e(T.UTILS, e)
