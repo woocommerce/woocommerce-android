@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLab
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartPaymentFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabelCreationFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCustomFields
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderFulfillInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderedAddons
@@ -183,6 +184,10 @@ class OrderNavigator @Inject constructor() {
                     .actionOrderDetailFragmentToOrderCreationFragment(
                         OrderCreateEditViewModel.Mode.Edit(target.orderId)
                     ).let { fragment.findNavController().navigateSafely(it) }
+            }
+            is ViewCustomFields -> {
+                val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToCustomOrderFieldsFragment()
+                fragment.findNavController().navigateSafely(action)
             }
         }
     }

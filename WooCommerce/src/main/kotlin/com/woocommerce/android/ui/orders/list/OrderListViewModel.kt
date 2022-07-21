@@ -17,6 +17,9 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CUSTOM_FIELDS_COUNT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CUSTOM_FIELDS_SIZE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TOTAL_DURATION
 import com.woocommerce.android.extensions.NotificationReceivedEvent
@@ -25,6 +28,7 @@ import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChange
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
@@ -40,6 +44,7 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import okio.utf8Size
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
@@ -63,7 +68,8 @@ typealias PagedOrdersList = PagedList<OrderListItemUIType>
 class OrderListViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val dispatchers: CoroutineDispatchers,
-    protected val orderListRepository: OrderListRepository,
+    private val orderListRepository: OrderListRepository,
+    private val orderDetailRepository: OrderDetailRepository,
     private val orderStore: WCOrderStore,
     private val listStore: ListStore,
     private val networkStatus: NetworkStatus,
@@ -225,6 +231,34 @@ class OrderListViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    /**
+     * Track user clicked to open an order and the status of that order, along with some
+     * data about the order custom fields
+     */
+    fun trackOrderClickEvent(orderId: Long, orderStatus: String) = launch {
+        val (customFieldsCount, customFieldsSize) =
+            orderDetailRepository.getOrderMetadata(orderId)
+                .map { it.value.utf8Size() }
+                .let {
+                    Pair(
+                        // amount of custom fields in the order
+                        it.size,
+                        // total size in bytes of all custom fields in the order
+                        if (it.isEmpty()) 0 else it.reduce(Long::plus)
+                    )
+                }
+
+        AnalyticsTracker.track(
+            AnalyticsEvent.ORDER_OPEN,
+            mapOf(
+                KEY_ID to orderId,
+                KEY_STATUS to orderStatus,
+                KEY_CUSTOM_FIELDS_COUNT to customFieldsCount,
+                KEY_CUSTOM_FIELDS_SIZE to customFieldsSize
+            )
+        )
     }
 
     /**

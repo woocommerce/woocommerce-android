@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.creation
 
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_CREATION
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
@@ -36,6 +37,13 @@ import java.math.BigDecimal
 @ExperimentalCoroutinesApi
 class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() {
     override val mode: Mode = Creation
+    override val tracksFlow: String = VALUE_FLOW_CREATION
+
+    override fun initMocksForAnalyticsWithOrder(order: Order) {
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(order))
+        }
+    }
 
     @Test
     fun `when initializing the view model, then register the orderDraft flowState`() {
@@ -711,7 +719,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     @Test
     fun `when OrderDraftUpdateStatus is Failed, then adjust view state to reflect the failure`() {
         createUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(Failed)
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Failed(throwable = Throwable(message = "fail")))
         }
         createSut()
 

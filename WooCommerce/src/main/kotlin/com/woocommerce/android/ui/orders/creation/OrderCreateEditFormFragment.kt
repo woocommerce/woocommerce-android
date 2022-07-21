@@ -128,8 +128,12 @@ class OrderCreateEditFormFragment : BaseFragment(R.layout.fragment_order_create_
     }
 
     private fun FragmentOrderCreateEditFormBinding.initOrderStatusView() {
+        val mode = when (viewModel.mode) {
+            OrderCreateEditViewModel.Mode.Creation -> OrderDetailOrderStatusView.Mode.OrderCreation
+            is OrderCreateEditViewModel.Mode.Edit -> OrderDetailOrderStatusView.Mode.OrderEdit
+        }
         orderStatusView.initView(
-            mode = OrderDetailOrderStatusView.Mode.OrderCreation,
+            mode = mode,
             editOrderStatusClickListener = {
                 viewModel.orderStatusData.value?.let {
                     viewModel.onEditOrderStatusClicked(it)
@@ -348,7 +352,10 @@ class OrderCreateEditFormFragment : BaseFragment(R.layout.fragment_order_create_
                     isNestedScrollingEnabled = false
                 }
             }
-            productsSection.content.productsAdapter?.submitList(products)
+            productsSection.content.productsAdapter?.apply {
+                submitList(products)
+                areProductsEditable = viewModel.currentDraft.isEditable
+            }
         }
     }
 
@@ -421,7 +428,7 @@ class OrderCreateEditFormFragment : BaseFragment(R.layout.fragment_order_create_
     private fun showOrHideErrorSnackBar(show: Boolean) {
         if (show) {
             val orderUpdateFailureSnackBar = orderUpdateFailureSnackBar ?: uiMessageResolver.getIndefiniteActionSnack(
-                message = getString(R.string.order_creation_price_calculation_failed),
+                message = getString(R.string.order_sync_failed),
                 actionText = getString(R.string.retry),
                 actionListener = { viewModel.onRetryPaymentsClicked() }
             ).also {

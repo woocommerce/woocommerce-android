@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.creation
 
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode
@@ -22,11 +23,24 @@ import org.mockito.kotlin.stub
 @RunWith(MockitoJUnitRunner.Silent::class)
 class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() {
     override val mode: Mode = Edit(defaultOrderValue.id)
+    override val tracksFlow: String = VALUE_FLOW_EDITING
+
+    override fun initMocksForAnalyticsWithOrder(order: Order) {
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(order))
+        }
+        orderDetailRepository = mock {
+            onBlocking { getOrderById(order.id) }.doReturn(order)
+        }
+    }
 
     @Test
     fun `should load order from repository`() = testBlocking {
         orderDetailRepository.stub {
             onBlocking { getOrderById(defaultOrderValue.id) }.doReturn(defaultOrderValue)
+        }
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(defaultOrderValue))
         }
 
         createSut()
@@ -70,8 +84,12 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
 
     @Test
     fun `when isEditable is true on the edit flow the order is editable`() {
+        val order = defaultOrderValue.copy(isEditable = true)
+        orderDetailRepository.stub {
+            onBlocking { getOrderById(defaultOrderValue.id) }.doReturn(order)
+        }
         createUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(defaultOrderValue.copy(isEditable = true)))
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(order))
         }
         createSut()
         var lastReceivedState: OrderCreateEditViewModel.ViewState? = null
@@ -83,8 +101,12 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
 
     @Test
     fun `when isEditable is false on the edit flow the order is NOT editable`() {
+        val order = defaultOrderValue.copy(isEditable = false)
+        orderDetailRepository.stub {
+            onBlocking { getOrderById(defaultOrderValue.id) }.doReturn(order)
+        }
         createUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(defaultOrderValue.copy(isEditable = false)))
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(order))
         }
         createSut()
         var lastReceivedState: OrderCreateEditViewModel.ViewState? = null

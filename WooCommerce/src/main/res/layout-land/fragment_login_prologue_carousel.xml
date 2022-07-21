@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/image_major_64"
+        android:layout_marginTop="@dimen/major_150"
         android:layout_marginBottom="@dimen/image_major_72"
         android:importantForAccessibility="no"
         app:layout_constraintEnd_toEndOf="parent"
@@ -33,68 +33,53 @@
         app:layout_constraintTop_toBottomOf="@+id/image_prologue"
         app:srcCompat="@drawable/img_prologue_bg" />
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
-        android:layout_marginTop="@dimen/major_400"
-        android:importantForAccessibility="no"
-        android:src="@drawable/img_prologue_reviews"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/viewPagerIndicator"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/image_prologue" />
+        app:layout_constraintTop_toBottomOf="@+id/image_prologue"
+        app:layout_constraintWidth_percent="0.5"
+        tools:background="@color/blue_dark" />
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/prologueTitle"
-        style="@style/Woo.TextView.Headline5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center"
-        android:textStyle="bold"
-        tools:layout_width="200dp"
-        android:layout_marginTop="@dimen/major_300"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/imageView"
-        app:layout_constraintBottom_toTopOf="@id/newToWooButton"
-        android:text="@string/lets_get_started" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/newToWooButton"
-        style="@style/Woo.Button.TextButton"
+    <com.woocommerce.android.widgets.WCViewPagerIndicator
+        android:id="@+id/viewPagerIndicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/major_150"
-        android:text="@string/login_prologue_new_to_woo"
-        android:textAllCaps="false"
-        app:layout_constraintTop_toBottomOf="@id/prologueTitle"
-        app:layout_constraintBottom_toTopOf="@id/button_login_store"
+        app:layout_constraintBottom_toTopOf="@+id/button_next"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/button_login_store"
+        android:id="@+id/button_next"
         style="@style/Woo.Button.Colored"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/major_100"
-        android:layout_marginEnd="@dimen/major_100"
-        android:text="@string/login_store_address"
+        android:layout_marginEnd="@dimen/minor_100"
+        android:layout_marginBottom="@dimen/major_150"
+        android:text="@string/next"
         android:textAllCaps="false"
-        app:layout_constraintBottom_toTopOf="@id/button_login_wpcom" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/button_skip"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/button_login_wpcom"
+        android:id="@+id/button_skip"
         style="@style/Woo.Button.Colored.White"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginStart="@dimen/minor_100"
         android:layout_marginEnd="@dimen/major_100"
         android:layout_marginBottom="@dimen/major_150"
-        android:text="@string/login_wpcom"
+        android:text="@string/skip"
         android:textAllCaps="false"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/button_next" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
