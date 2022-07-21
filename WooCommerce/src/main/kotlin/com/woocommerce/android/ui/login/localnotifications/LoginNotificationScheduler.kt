@@ -14,13 +14,13 @@ import java.util.UUID
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class LoginFlowUsageTracker @Inject constructor(
+class LoginNotificationScheduler @Inject constructor(
     @ApplicationContext private val appContext: Context,
     private val prefsWrapper: AppPrefsWrapper
 ) {
     companion object {
         const val LOGIN_NOTIFICATION_TYPE_KEY = "Notification-type"
-        const val NOTIFICATION_TEST_DELAY_IN_SECONDS = 5L
+        const val NOTIFICATION_TEST_DELAY_IN_SECONDS = 5L //TODO SET THIS TO 24H BEFORE MERGE
     }
 
     private val workManager = WorkManager.getInstance(appContext)
@@ -56,8 +56,6 @@ class LoginFlowUsageTracker @Inject constructor(
     }
 
     enum class LoginSupportNotificationType(val notification: String) {
-        NO_LOGIN_INTERACTION("no_login_interaction"),
-        LOGIN_ERROR_WRONG_EMAIL("wrong_email"),
         LOGIN_SITE_ADDRESS_ERROR("site_address_error"),
         DEFAULT_SUPPORT("default_support")
     }

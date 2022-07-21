@@ -10,13 +10,11 @@ import com.woocommerce.android.model.Notification
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.push.WooNotificationBuilder
 import com.woocommerce.android.push.WooNotificationType
-import com.woocommerce.android.ui.login.localnotifications.LoginFlowUsageTracker.Companion.LOGIN_NOTIFICATION_TYPE_KEY
-import com.woocommerce.android.ui.login.localnotifications.LoginFlowUsageTracker.LoginSupportNotificationType
-import com.woocommerce.android.ui.login.localnotifications.LoginFlowUsageTracker.LoginSupportNotificationType.DEFAULT_SUPPORT
-import com.woocommerce.android.ui.login.localnotifications.LoginFlowUsageTracker.LoginSupportNotificationType.LOGIN_ERROR_WRONG_EMAIL
-import com.woocommerce.android.ui.login.localnotifications.LoginFlowUsageTracker.LoginSupportNotificationType.LOGIN_SITE_ADDRESS_ERROR
-import com.woocommerce.android.ui.login.localnotifications.LoginFlowUsageTracker.LoginSupportNotificationType.NO_LOGIN_INTERACTION
-import com.woocommerce.android.ui.login.localnotifications.LoginFlowUsageTracker.LoginSupportNotificationType.valueOf
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_NOTIFICATION_TYPE_KEY
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginSupportNotificationType
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginSupportNotificationType.DEFAULT_SUPPORT
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginSupportNotificationType.LOGIN_SITE_ADDRESS_ERROR
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginSupportNotificationType.valueOf
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -35,8 +33,6 @@ class LocalNotificationWorker @AssistedInject constructor(
 
     override fun doWork(): Result {
         when (getNotificationType()) {
-            NO_LOGIN_INTERACTION -> noInteractionNotification()
-            LOGIN_ERROR_WRONG_EMAIL -> wrongEmailNotification()
             DEFAULT_SUPPORT -> defaultLoginSupportNotification()
             LOGIN_SITE_ADDRESS_ERROR -> defaultLoginSupportNotification()
         }
@@ -60,14 +56,6 @@ class LocalNotificationWorker @AssistedInject constructor(
                 channelType = NotificationChannelType.PRE_LOGIN
             )
         )
-    }
-
-    private fun wrongEmailNotification() {
-        TODO("Not yet implemented")
-    }
-
-    private fun noInteractionNotification() {
-        TODO("Not yet implemented")
     }
 
     private fun getNotificationType(): LoginSupportNotificationType = runCatching {
