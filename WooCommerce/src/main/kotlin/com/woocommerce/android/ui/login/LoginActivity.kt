@@ -196,6 +196,9 @@ class LoginActivity :
     private fun getPrologueFragment(): LoginPrologueFragment? =
         supportFragmentManager.findFragmentByTag(LoginPrologueFragment.TAG) as? LoginPrologueFragment
 
+    private fun getPrologueSurveyFragment(): LoginPrologueSurveyFragment? =
+        supportFragmentManager.findFragmentByTag(LoginPrologueSurveyFragment.TAG) as? LoginPrologueSurveyFragment
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
             onBackPressed()
@@ -315,6 +318,11 @@ class LoginActivity :
     private fun showPrologueFragment() {
         val prologueFragment = getPrologueFragment() ?: LoginPrologueFragment()
         slideInFragment(prologueFragment, true, LoginPrologueFragment.TAG)
+    }
+
+    private fun showPrologueSurveyFragment() {
+        val prologueSurveyFragment = getPrologueFragment() ?: LoginPrologueSurveyFragment()
+        slideInFragment(prologueSurveyFragment, true, LoginPrologueSurveyFragment.TAG)
     }
 
     override fun loginViaSocialAccount(
@@ -735,6 +743,10 @@ class LoginActivity :
     }
 
     override fun onCarouselFinished() {
-        showPrologueFragment()
+        if (true) {
+            showPrologueSurveyFragment()
+        } else {
+            showPrologueFragment()
+        }
     }
 }
