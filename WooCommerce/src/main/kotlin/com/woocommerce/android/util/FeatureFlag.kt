@@ -32,7 +32,7 @@ enum class FeatureFlag {
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             ORDER_METADATA,
-            PRE_LOGIN_NOTIFICATIONS-> PackageUtils.isDebugBuild()
+            PRE_LOGIN_NOTIFICATIONS -> PackageUtils.isDebugBuild()
         }
     }
 }
