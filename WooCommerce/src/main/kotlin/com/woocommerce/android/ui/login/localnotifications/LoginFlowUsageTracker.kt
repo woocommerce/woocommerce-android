@@ -42,7 +42,7 @@ class LoginFlowUsageTracker @Inject constructor(
                     .setInitialDelay(NOTIFICATION_TEST_DELAY_IN_SECONDS, TimeUnit.SECONDS)
                     .build()
 
-            prefsWrapper.setPreLoginNotificationWorkRequestId(workRequest.stringId)
+            prefsWrapper.setPreLoginNotificationWorkRequestId(workRequest.id.toString())
             workManager.enqueue(workRequest)
         }
     }
