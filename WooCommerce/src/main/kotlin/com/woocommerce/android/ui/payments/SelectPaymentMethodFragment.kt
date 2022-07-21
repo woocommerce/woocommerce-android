@@ -21,8 +21,8 @@ import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.compose.component.banner.PaymentsScreenBanner
-import com.woocommerce.android.ui.compose.component.banner.PaymentsScreenBannerDismissDialog
+import com.woocommerce.android.ui.payments.banner.PaymentsScreenBanner
+import com.woocommerce.android.ui.payments.banner.PaymentsScreenBannerDismissDialog
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
@@ -57,7 +57,6 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        setHasOptionsMenu(true)
         _binding = FragmentTakePaymentBinding.inflate(inflater, container, false)
 
         val view = binding.root

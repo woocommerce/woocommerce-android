@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.compose.component.banner
+package com.woocommerce.android.ui.payments.banner
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls

@@ -1,8 +1,9 @@
-package com.woocommerce.android.ui.compose.component.banner
+package com.woocommerce.android.ui.payments.banner
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -73,7 +74,7 @@ fun BannerDismissDialog(
     )
 ) {
     if (showDialog) {
-        androidx.compose.material.AlertDialog(
+        AlertDialog(
             onDismissRequest = onDismissClick,
             title = {
                 Text(
