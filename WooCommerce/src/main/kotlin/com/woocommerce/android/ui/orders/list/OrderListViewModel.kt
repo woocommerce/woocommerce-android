@@ -246,7 +246,7 @@ class OrderListViewModel @Inject constructor(
                         // amount of custom fields in the order
                         it.size,
                         // total size in bytes of all custom fields in the order
-                        it.reduce(Long::plus)
+                        if (it.isEmpty()) 0 else it.reduce(Long::plus)
                     )
                 }
 
