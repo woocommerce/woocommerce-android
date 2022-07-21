@@ -81,7 +81,8 @@ object AppPrefs {
         ORDER_FILTER_CUSTOM_DATE_RANGE_START,
         ORDER_FILTER_CUSTOM_DATE_RANGE_END,
         PRODUCT_SORTING_PREFIX,
-        LOGIN_LOCAL_NOTIFICATION_WORK_REQUEST
+        PRE_LOGIN_NOTIFICATION_WORK_REQUEST,
+        PRE_LOGIN_NOTIFICATION_DISPLAYED
     }
 
     /**
@@ -679,11 +680,18 @@ object AppPrefs {
             false
         )
 
-    fun getLocalNotificationWorkRequestId() = getString(DeletablePrefKey.LOGIN_LOCAL_NOTIFICATION_WORK_REQUEST)
+    fun getLocalNotificationWorkRequestId() = getString(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_WORK_REQUEST)
 
     fun setLocalNotificationWorkRequestId(workRequestId: String) {
-        setString(DeletablePrefKey.LOGIN_LOCAL_NOTIFICATION_WORK_REQUEST, workRequestId)
+        setString(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_WORK_REQUEST, workRequestId)
     }
+
+    fun setPreLoginNotificationDisplayed(displayed: Boolean) {
+        setBoolean(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_DISPLAYED, displayed)
+    }
+
+    fun isPreLoginNotificationBeenDisplayed(): Boolean =
+        getBoolean(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_DISPLAYED, false)
 
     /**
      * Remove all user and site-related preferences.

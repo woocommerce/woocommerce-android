@@ -31,7 +31,7 @@ class LoginFlowUsageTracker @Inject constructor(
     }
 
     fun scheduleNotification(notificationType: LoginSupportNotificationType) {
-        if (FeatureFlag.PRE_LOGIN_NOTIFICATIONS.isEnabled()) {
+        if (FeatureFlag.PRE_LOGIN_NOTIFICATIONS.isEnabled() && !prefsWrapper.hasPreLoginNotificationBeenDisplayed()) {
             cancelCurrentNotificationWorkRequest()
             val notificationData = workDataOf(
                 LOGIN_NOTIFICATION_TYPE_KEY to notificationType.name
@@ -42,16 +42,16 @@ class LoginFlowUsageTracker @Inject constructor(
                     .setInitialDelay(NOTIFICATION_TEST_DELAY_IN_SECONDS, TimeUnit.SECONDS)
                     .build()
 
-            prefsWrapper.setLocalNotificationWorkRequestId(workRequest.stringId)
+            prefsWrapper.setPreLoginNotificationWorkRequestId(workRequest.stringId)
             workManager.enqueue(workRequest)
         }
     }
 
     private fun cancelCurrentNotificationWorkRequest() {
-        val currentWorkRequestId = prefsWrapper.getLocalNotificationWorkRequestId()
+        val currentWorkRequestId = prefsWrapper.getPreLoginNotificationWorkRequestId()
         if (currentWorkRequestId.isNotEmpty()) {
             workManager.cancelWorkById(UUID.fromString(currentWorkRequestId))
-            prefsWrapper.setLocalNotificationWorkRequestId("")
+            prefsWrapper.setPreLoginNotificationWorkRequestId("")
         }
     }
 

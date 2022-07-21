@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.push.NotificationChannelType
@@ -25,7 +26,8 @@ class LocalNotificationWorker @AssistedInject constructor(
     @Assisted private val appContext: Context,
     @Assisted workerParams: WorkerParameters,
     private val wooNotificationBuilder: WooNotificationBuilder,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val prefsWrapper: AppPrefsWrapper
 ) : Worker(appContext, workerParams) {
     companion object {
         const val PRE_LOGIN_LOCAL_NOTIFICATION_ID = 1
@@ -38,7 +40,7 @@ class LocalNotificationWorker @AssistedInject constructor(
             DEFAULT_SUPPORT -> defaultLoginSupportNotification()
             LOGIN_SITE_ADDRESS_ERROR -> defaultLoginSupportNotification()
         }
-        // Indicate whether the work finished successfully with the Result
+        prefsWrapper.setPreLoginNotificationDisplayed(displayed = true)
         return Result.success()
     }
 
