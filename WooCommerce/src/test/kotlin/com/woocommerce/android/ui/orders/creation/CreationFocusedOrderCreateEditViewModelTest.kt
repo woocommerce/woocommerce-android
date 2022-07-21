@@ -39,6 +39,12 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     override val mode: Mode = Creation
     override val tracksFlow: String = VALUE_FLOW_CREATION
 
+    override fun initMocksForAnalyticsWithOrder(order: Order) {
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(order))
+        }
+    }
+
     @Test
     fun `when initializing the view model, then register the orderDraft flowState`() {
         verify(createUpdateOrderUseCase).invoke(any(), any())
@@ -713,7 +719,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     @Test
     fun `when OrderDraftUpdateStatus is Failed, then adjust view state to reflect the failure`() {
         createUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(Failed)
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Failed(throwable = Throwable(message = "fail")))
         }
         createSut()
 

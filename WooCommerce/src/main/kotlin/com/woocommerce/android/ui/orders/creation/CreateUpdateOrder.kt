@@ -26,7 +26,7 @@ class CreateUpdateOrder @Inject constructor(
         orderCreateEditRepository.createOrUpdateDraft(order)
             .fold(
                 onSuccess = { emit(OrderUpdateStatus.Succeeded(it)) },
-                onFailure = { emit(OrderUpdateStatus.Failed) }
+                onFailure = { emit(OrderUpdateStatus.Failed(it)) }
             )
     }
 
@@ -34,7 +34,7 @@ class CreateUpdateOrder @Inject constructor(
         object PendingDebounce : OrderUpdateStatus
         object Ongoing : OrderUpdateStatus
         data class Succeeded(val order: Order) : OrderUpdateStatus
-        object Failed : OrderUpdateStatus
+        data class Failed(val throwable: Throwable) : OrderUpdateStatus
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

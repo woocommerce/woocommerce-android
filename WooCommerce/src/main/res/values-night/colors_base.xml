@@ -36,6 +36,7 @@
     <color name="color_accent_3">@color/woo_blue_30</color>
 
     <color name="inverted_surface_overlay">@color/color_surface</color>
+    <color name="color_text_link">@color/woo_pink_30</color>
 
     <!--
         App colors

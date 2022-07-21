@@ -9,6 +9,7 @@ import android.content.SharedPreferences.Editor
 import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.valueOf
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_IS_PLUGIN_EXPLICITLY_SELECTED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_ONBOARDING_COMPLETED_STATUS_V2
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_PREFERRED_PLUGIN
@@ -80,6 +81,8 @@ object AppPrefs {
         ORDER_FILTER_CUSTOM_DATE_RANGE_START,
         ORDER_FILTER_CUSTOM_DATE_RANGE_END,
         PRODUCT_SORTING_PREFIX,
+        PRE_LOGIN_NOTIFICATION_WORK_REQUEST,
+        PRE_LOGIN_NOTIFICATION_DISPLAYED
     }
 
     /**
@@ -454,7 +457,7 @@ object AppPrefs {
         remoteSiteId: Long,
         selfHostedSiteId: Long
     ): CardReaderOnboardingStatus {
-        return CardReaderOnboardingStatus.valueOf(
+        return valueOf(
             getString(
                 getCardReaderOnboardingStatusKey(
                     localSiteId,
@@ -676,6 +679,19 @@ object AppPrefs {
             PrefKeyString("${UndeletablePrefKey.WC_SHIPPING_BANNER_DISMISSED}:$currentSiteId"),
             false
         )
+
+    fun getLocalNotificationWorkRequestId() = getString(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_WORK_REQUEST)
+
+    fun setLocalNotificationWorkRequestId(workRequestId: String) {
+        setString(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_WORK_REQUEST, workRequestId)
+    }
+
+    fun setPreLoginNotificationDisplayed(displayed: Boolean) {
+        setBoolean(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_DISPLAYED, displayed)
+    }
+
+    fun isPreLoginNotificationBeenDisplayed(): Boolean =
+        getBoolean(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_DISPLAYED, false)
 
     /**
      * Remove all user and site-related preferences.

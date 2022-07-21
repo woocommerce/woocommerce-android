@@ -64,9 +64,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "9.6-rc-1"
+            versionName "9.6-rc-2"
         }
-        versionCode 312
+        versionCode 313
 
         minSdkVersion 21
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
@@ -194,6 +194,8 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:$gradle.ext.navigationVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$gradle.ext.navigationVersion"
 
+    implementation "androidx.work:work-runtime-ktx:$workManagerVersion"
+
     implementation("org.wordpress:utils:$wordPressUtilsVersion") {
         exclude group: "com.mcxiaoke.volley"
         exclude group: "com.android.support"
@@ -240,6 +242,10 @@ dependencies {
     // Dagger
     implementation "com.google.dagger:hilt-android:$gradle.ext.daggerVersion"
     implementation "androidx.hilt:hilt-navigation-fragment:$hiltJetpackVersion"
+    implementation "androidx.hilt:hilt-common:$hiltJetpackVersion"
+    implementation "androidx.hilt:hilt-work:$hiltJetpackVersion"
+
+    kapt"androidx.hilt:hilt-compiler:$hiltJetpackVersion"
     kapt "com.google.dagger:hilt-compiler:$gradle.ext.daggerVersion"
     implementation "com.google.dagger:dagger-android-support:$gradle.ext.daggerVersion"
     kapt "com.google.dagger:dagger-android-processor:$gradle.ext.daggerVersion"

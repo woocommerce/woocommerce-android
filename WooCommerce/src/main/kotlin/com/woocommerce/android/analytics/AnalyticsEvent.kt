@@ -98,6 +98,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     UNIFIED_LOGIN_STEP(siteless = true),
     UNIFIED_LOGIN_FAILURE(siteless = true),
     UNIFIED_LOGIN_INTERACTION(siteless = true),
+    LOGIN_NEW_TO_WOO_BUTTON_TAPPED(siteless = true),
 
     // -- Site Picker
     SITE_PICKER_STORES_SHOWN(siteless = true),
@@ -179,12 +180,14 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     ORDER_DETAIL_ISSUE_REFUND_BUTTON_TAPPED,
     ORDER_DETAIL_VIEW_REFUND_DETAILS_BUTTON_TAPPED,
     ORDER_DETAIL_CREATE_SHIPPING_LABEL_BUTTON_TAPPED,
+    ORDER_VIEW_CUSTOM_FIELDS_TAPPED,
 
     // - Order detail editing
     ORDER_DETAIL_EDIT_FLOW_STARTED,
     ORDER_DETAIL_EDIT_FLOW_COMPLETED,
     ORDER_DETAIL_EDIT_FLOW_FAILED,
     ORDER_DETAIL_EDIT_FLOW_CANCELED,
+    ORDER_EDIT_BUTTON_TAPPED,
 
     // -- Order Creation
     ORDER_ADD_NEW,
@@ -198,6 +201,10 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     ORDER_SYNC_FAILED,
     ORDER_CREATION_CUSTOMER_SEARCH,
     ORDER_CREATION_CUSTOMER_ADDED,
+    ORDER_PRODUCT_QUANTITY_CHANGE,
+    ORDER_PRODUCT_REMOVE,
+    ORDER_FEE_REMOVE,
+    ORDER_SHIPPING_METHOD_REMOVE,
 
     // -- Refunds
     CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
