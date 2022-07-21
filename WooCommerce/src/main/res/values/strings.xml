@@ -2109,6 +2109,7 @@
     <!-- Login local notifications -->
     <string name="login_local_notification_no_interaction_title">Problems with logging in?</string>
     <string name="login_local_notification_no_interaction_description">Get some help!</string>
+    <string name="login_local_notification_contact_support_button">Contact support</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>

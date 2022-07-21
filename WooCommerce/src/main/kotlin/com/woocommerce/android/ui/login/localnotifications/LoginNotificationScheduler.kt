@@ -7,7 +7,6 @@ import androidx.work.WorkManager
 import androidx.work.WorkRequest
 import androidx.work.workDataOf
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.ui.login.localnotifications.LocalNotificationWorker.Companion.PRE_LOGIN_LOCAL_NOTIFICATION_ID
 import com.woocommerce.android.util.FeatureFlag
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.UUID
@@ -21,13 +20,18 @@ class LoginNotificationScheduler @Inject constructor(
     companion object {
         const val LOGIN_NOTIFICATION_TYPE_KEY = "Notification-type"
         const val NOTIFICATION_TEST_DELAY_IN_SECONDS = 5L //TODO SET THIS TO 24H BEFORE MERGE
+        const val LOGIN_HELP_NOTIFICATION_ID = 1
+        const val LOGIN_HELP_NOTIFICATION_TAG = "login-help-notification"
     }
 
     private val workManager = WorkManager.getInstance(appContext)
 
     fun onLoginSuccess() {
         cancelCurrentNotificationWorkRequest()
-        NotificationManagerCompat.from(appContext).cancel(PRE_LOGIN_LOCAL_NOTIFICATION_ID)
+        NotificationManagerCompat.from(appContext).cancel(
+            LOGIN_HELP_NOTIFICATION_TAG,
+            LOGIN_HELP_NOTIFICATION_ID
+        )
     }
 
     fun scheduleNotification(notificationType: LoginSupportNotificationType) {
