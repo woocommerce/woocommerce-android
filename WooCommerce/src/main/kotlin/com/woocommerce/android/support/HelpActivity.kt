@@ -33,7 +33,7 @@ class HelpActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHelpBinding
 
     private val originFromExtras by lazy {
-        (intent.extras?.get(ORIGIN_KEY) as Origin?) ?: Origin.UNKNOWN
+        intent.extras?.getSerializable(ORIGIN_KEY, Origin::class.java) ?: Origin.UNKNOWN
     }
 
     private val extraTagsFromExtras by lazy {
@@ -95,7 +95,7 @@ class HelpActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
-            onBackPressed()
+            onBackPressedDispatcher.onBackPressed()
             return true
         }
         return super.onOptionsItemSelected(item)

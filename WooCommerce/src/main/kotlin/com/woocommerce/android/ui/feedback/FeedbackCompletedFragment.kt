@@ -41,7 +41,9 @@ class FeedbackCompletedFragment : androidx.fragment.app.Fragment(R.layout.fragme
             clickableContent = contactUsText,
             clickAction = WooClickableSpan { activity?.startHelpActivity(FEEDBACK_SURVEY) }
         )
-        binding.btnBackToStore.setOnClickListener { activity?.onBackPressed() }
+        binding.btnBackToStore.setOnClickListener {
+            activity?.onBackPressedDispatcher?.onBackPressed()
+        }
     }
 
     override fun onResume() {
