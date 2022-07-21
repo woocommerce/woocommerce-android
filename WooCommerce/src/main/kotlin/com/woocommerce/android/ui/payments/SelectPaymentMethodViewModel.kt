@@ -81,10 +81,19 @@ class SelectPaymentMethodViewModel @Inject constructor(
                         }
                         val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: ""
                         orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode)
+                        val isPaymentCollectableWithCardReader = cardPaymentCollectibilityChecker.isCollectable(order)
                         viewState.value = TakePaymentViewState.Success(
                             paymentUrl = order.paymentUrl,
                             orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode),
-                            isPaymentCollectableWithCardReader = cardPaymentCollectibilityChecker.isCollectable(order)
+                            isPaymentCollectableWithCardReader = isPaymentCollectableWithCardReader,
+                            shouldShowCardReaderUpsellBanner =
+                            (
+                                canShowCardReaderUpsellBanner(
+                                    System.currentTimeMillis(),
+                                    AnalyticsTracker.KEY_BANNER_PAYMENTS
+                                ) &&
+                                    isPaymentCollectableWithCardReader
+                                )
                         )
                     }
                     is Refund -> triggerEvent(NavigateToCardReaderRefundFlow(param))
@@ -288,7 +297,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
         shouldShowUpsellCardReaderDismissDialog.value = false
     }
 
-    fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long, source: String): Boolean {
+    private fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long, source: String): Boolean {
         return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis, source)
     }
 
@@ -298,6 +307,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
             val paymentUrl: String,
             val orderTotal: String,
             val isPaymentCollectableWithCardReader: Boolean,
+            val shouldShowCardReaderUpsellBanner: Boolean
         ) : TakePaymentViewState()
     }
 

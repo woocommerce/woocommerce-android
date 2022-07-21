@@ -3,10 +3,10 @@ package com.woocommerce.android.ui.compose.component.banner
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,6 +18,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -49,11 +50,7 @@ fun PaymentsScreenBanner(
     val selectPaymentState by viewModel.viewStateData.observeAsState(
         SelectPaymentMethodViewModel.TakePaymentViewState.Loading
     )
-    if (
-        selectPaymentState is Success &&
-        (selectPaymentState as Success).isPaymentCollectableWithCardReader &&
-        viewModel.canShowCardReaderUpsellBanner(System.currentTimeMillis(), AnalyticsTracker.KEY_BANNER_PAYMENTS)
-    ) {
+    if ((selectPaymentState as? Success)?.shouldShowCardReaderUpsellBanner == true) {
         Banner(
             onCtaClick = viewModel::onCtaClicked,
             onDismissClick = viewModel::onDismissClicked,
@@ -75,8 +72,8 @@ fun OrderListScreenBanner(
     val isEligibleForInPersonPayments by viewModel.isEligibleForInPersonPayments.observeAsState(false)
 
     if (
-        isEligibleForInPersonPayments &&
-        viewModel.canShowCardReaderUpsellBanner(System.currentTimeMillis(), AnalyticsTracker.KEY_BANNER_ORDER_LIST)
+        viewModel.canShowCardReaderUpsellBanner(System.currentTimeMillis(), AnalyticsTracker.KEY_BANNER_ORDER_LIST) &&
+        isEligibleForInPersonPayments
     ) {
         Banner(
             onCtaClick = viewModel::onCtaClicked,
@@ -194,20 +191,22 @@ fun Banner(
                         bottom = dimensionResource(id = R.dimen.minor_100)
                     )
                 )
-                Text(
-                    text = ctaLabel,
-                    color = colorResource(id = R.color.color_secondary),
-                    style = MaterialTheme.typography.subtitle1,
-                    fontWeight = FontWeight.Bold,
+                TextButton(
                     modifier = Modifier
                         .padding(
                             top = dimensionResource(id = R.dimen.minor_100),
-                            bottom = dimensionResource(id = R.dimen.major_110)
-                        )
-                        .clickable(
-                            onClick = { onCtaClick(source) }
-                        )
-                )
+                            bottom = dimensionResource(id = R.dimen.minor_100),
+                        ),
+                    contentPadding = PaddingValues(start = dimensionResource(id = R.dimen.minor_00)),
+                    onClick = { onCtaClick(source) }
+                ) {
+                    Text(
+                        text = ctaLabel,
+                        color = colorResource(id = R.color.color_secondary),
+                        style = MaterialTheme.typography.subtitle1,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
             }
             Column {
                 Image(

@@ -33,6 +33,8 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.ArgumentMatchers.anyLong
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -134,6 +136,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 orderTotal = ORDER_TOTAL,
                 paymentUrl = PAYMENT_URL,
                 isPaymentCollectableWithCardReader = false,
+                shouldShowCardReaderUpsellBanner = false,
             )
         )
     }
@@ -152,6 +155,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                     orderTotal = ORDER_TOTAL,
                     paymentUrl = PAYMENT_URL,
                     isPaymentCollectableWithCardReader = true,
+                    shouldShowCardReaderUpsellBanner = false,
                 )
             )
         }
@@ -652,6 +656,81 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
 
         assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
     }
+
+    @Test
+    fun `given banner displayable, when success state, then shouldShowCardReaderUpsellBanner set to true`() =
+        testBlocking {
+            // GIVEN & WHEN
+            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
+            whenever(
+                bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
+                    anyLong(),
+                    anyString()
+                )
+            ).thenReturn(true)
+            val orderId = 1L
+            val viewModel = initViewModel(Payment(orderId, ORDER))
+
+            // THEN
+            assertThat(viewModel.viewStateData.value).isEqualTo(
+                Success(
+                    orderTotal = ORDER_TOTAL,
+                    paymentUrl = PAYMENT_URL,
+                    isPaymentCollectableWithCardReader = true,
+                    shouldShowCardReaderUpsellBanner = true,
+                )
+            )
+        }
+
+    @Test
+    fun `given payment not collectable, when success state, then shouldShowCardReaderUpsellBanner set to false`() =
+        testBlocking {
+            // GIVEN & WHEN
+            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(false)
+            whenever(
+                bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
+                    anyLong(),
+                    anyString()
+                )
+            ).thenReturn(true)
+            val orderId = 1L
+            val viewModel = initViewModel(Payment(orderId, ORDER))
+
+            // THEN
+            assertThat(viewModel.viewStateData.value).isEqualTo(
+                Success(
+                    orderTotal = ORDER_TOTAL,
+                    paymentUrl = PAYMENT_URL,
+                    isPaymentCollectableWithCardReader = false,
+                    shouldShowCardReaderUpsellBanner = false,
+                )
+            )
+        }
+
+    @Test
+    fun `given banner not displayable, when success state, then shouldShowCardReaderUpsellBanner set to false`() =
+        testBlocking {
+            // GIVEN & WHEN
+            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
+            whenever(
+                bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
+                    anyLong(),
+                    anyString()
+                )
+            ).thenReturn(false)
+            val orderId = 1L
+            val viewModel = initViewModel(Payment(orderId, ORDER))
+
+            // THEN
+            assertThat(viewModel.viewStateData.value).isEqualTo(
+                Success(
+                    orderTotal = ORDER_TOTAL,
+                    paymentUrl = PAYMENT_URL,
+                    isPaymentCollectableWithCardReader = true,
+                    shouldShowCardReaderUpsellBanner = false,
+                )
+            )
+        }
     //endregion
 
     private fun initViewModel(cardReaderFlowParam: CardReaderFlowParam): SelectPaymentMethodViewModel {
