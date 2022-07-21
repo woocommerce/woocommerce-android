@@ -156,7 +156,14 @@ class OrderListFragment :
         if (viewModel.shouldShowUpsellCardReaderDismissDialog.value == true) {
             applyBannerDismissDialogComposeUI()
         }
-        applyBannerComposeUI()
+        val isLandscape = DisplayUtils.isLandscape(view.context)
+        /**
+         * We are hiding the upsell card reader banner in the landscape mode since it becomes impossible for
+         * the merchants to scroll the order list. More info here: pdfdoF-12d-p2
+         */
+        if (!isLandscape) {
+            applyBannerComposeUI()
+        }
         return view
     }
 
