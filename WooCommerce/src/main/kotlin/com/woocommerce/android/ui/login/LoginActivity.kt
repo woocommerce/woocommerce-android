@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.AppUrls.LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT
 import com.woocommerce.android.R
@@ -90,6 +91,7 @@ class LoginActivity :
     @Inject internal lateinit var urlUtils: UrlUtils
     @Inject internal lateinit var firebaseTracker: FirebaseTracker
     @Inject internal lateinit var loginFlowUsageTracker: LoginFlowUsageTracker
+    @Inject internal lateinit var appPrefsWrapper: AppPrefsWrapper
 
     private var loginMode: LoginMode? = null
 
@@ -107,7 +109,8 @@ class LoginActivity :
             getAuthTokenFromIntent()?.let { showMagicLinkInterceptFragment(it) }
         } else if (savedInstanceState == null) {
             loginAnalyticsListener.trackLoginAccessed()
-            showPrologueCarouselFragment()
+
+            showPrologue()
         }
 
         savedInstanceState?.let { ss ->
@@ -138,6 +141,14 @@ class LoginActivity :
             .commitAllowingStateLoss()
 
         firebaseTracker.log(FirebaseTracker.Event.PROLOGUE_CAROUSEL_DISPLAYED)
+    }
+
+    private fun showPrologue() {
+        if (!appPrefsWrapper.hasOnboardingCarouselBeenDisplayed()) {
+            showPrologueCarouselFragment()
+        } else {
+            showPrologueFragment()
+        }
     }
 
     private fun hasMagicLinkLoginIntent(): Boolean {

@@ -82,7 +82,8 @@ object AppPrefs {
         ORDER_FILTER_CUSTOM_DATE_RANGE_END,
         PRODUCT_SORTING_PREFIX,
         PRE_LOGIN_NOTIFICATION_WORK_REQUEST,
-        PRE_LOGIN_NOTIFICATION_DISPLAYED
+        PRE_LOGIN_NOTIFICATION_DISPLAYED,
+        ONBOARDING_CAROUSEL_DISPLAYED
     }
 
     /**
@@ -692,6 +693,13 @@ object AppPrefs {
 
     fun isPreLoginNotificationBeenDisplayed(): Boolean =
         getBoolean(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_DISPLAYED, false)
+
+    fun setOnboardingCarouselDisplayed(displayed: Boolean) {
+        setBoolean(DeletablePrefKey.ONBOARDING_CAROUSEL_DISPLAYED, displayed)
+    }
+
+    fun hasOnboardingCarouselBeenDisplayed(): Boolean =
+        getBoolean(DeletablePrefKey.ONBOARDING_CAROUSEL_DISPLAYED, false)
 
     /**
      * Remove all user and site-related preferences.
