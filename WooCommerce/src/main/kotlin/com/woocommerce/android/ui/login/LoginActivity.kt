@@ -27,6 +27,8 @@ import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow.LOGIN_SITE_ADDRESS
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Source
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step.ENTER_SITE_ADDRESS
+import com.woocommerce.android.ui.login.localnotifications.LoginFlowUsageTracker
+import com.woocommerce.android.ui.login.localnotifications.LoginFlowUsageTracker.LoginSupportNotificationType
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
 import com.woocommerce.android.ui.main.MainActivity
@@ -85,6 +87,7 @@ class LoginActivity :
     @Inject internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
     @Inject internal lateinit var zendeskHelper: ZendeskHelper
     @Inject internal lateinit var urlUtils: UrlUtils
+    @Inject internal lateinit var loginFlowUsageTracker: LoginFlowUsageTracker
 
     private var loginMode: LoginMode? = null
 
@@ -241,7 +244,12 @@ class LoginActivity :
         startLoginViaWPCom()
     }
 
+    override fun onNewToWooButtonClicked() {
+        ChromeCustomTabUtils.launchUrl(this, AppUrls.NEW_TO_WOO_DOC)
+    }
+
     private fun showMainActivityAndFinish() {
+        loginFlowUsageTracker.onLoginSuccess()
         val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         startActivity(intent)
@@ -717,6 +725,7 @@ class LoginActivity :
                 shouldAddToBackStack = true,
                 tag = LoginSiteCheckErrorFragment.TAG
             )
+            loginFlowUsageTracker.scheduleNotification(LoginSupportNotificationType.LOGIN_SITE_ADDRESS_ERROR)
         } else {
             // Just in case we use this method for a different scenario in the future
             TODO("Handle a new error scenario")
