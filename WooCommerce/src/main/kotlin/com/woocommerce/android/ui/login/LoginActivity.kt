@@ -196,6 +196,9 @@ class LoginActivity :
     private fun getPrologueFragment(): LoginPrologueFragment? =
         supportFragmentManager.findFragmentByTag(LoginPrologueFragment.TAG) as? LoginPrologueFragment
 
+    private fun getPrologueSurveyFragment(): LoginPrologueSurveyFragment? =
+        supportFragmentManager.findFragmentByTag(LoginPrologueSurveyFragment.TAG) as? LoginPrologueSurveyFragment
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
             onBackPressed()
@@ -246,6 +249,8 @@ class LoginActivity :
     }
 
     private fun showMainActivityAndFinish() {
+        firebaseTracker.log(FirebaseTracker.Event.LOGIN_SUCCESSFUL)
+
         val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         startActivity(intent)
@@ -254,10 +259,6 @@ class LoginActivity :
     }
 
     private fun jumpToUsernamePassword(username: String?, password: String?) {
-        firebaseTracker.log(FirebaseTracker.Event.LOGIN_OPTION_SELECTED) {
-            param(FirebaseTracker.Param.LOGIN_TYPE, FirebaseTracker.Value.LOGIN_TYPE_WPCOM)
-        }
-
         val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
             "wordpress.com", "wordpress.com", username, password, true
         )
@@ -265,10 +266,6 @@ class LoginActivity :
     }
 
     private fun startLoginViaWPCom() {
-        firebaseTracker.log(FirebaseTracker.Event.LOGIN_OPTION_SELECTED) {
-            param(FirebaseTracker.Param.LOGIN_TYPE, FirebaseTracker.Value.LOGIN_TYPE_WPCOM)
-        }
-
         unifiedLoginTracker.setFlow(Flow.WORDPRESS_COM.value)
         showEmailLoginScreen()
     }
@@ -313,10 +310,6 @@ class LoginActivity :
     }
 
     override fun loginViaSiteAddress() {
-        firebaseTracker.log(FirebaseTracker.Event.LOGIN_OPTION_SELECTED) {
-            param(FirebaseTracker.Param.LOGIN_TYPE, FirebaseTracker.Value.LOGIN_TYPE_SITE_ADDRESS)
-        }
-
         unifiedLoginTracker.setFlowAndStep(LOGIN_SITE_ADDRESS, ENTER_SITE_ADDRESS)
         val loginSiteAddressFragment = getLoginViaSiteAddressFragment() ?: WooLoginSiteAddressFragment()
         slideInFragment(loginSiteAddressFragment, true, LoginSiteAddressFragment.TAG)
@@ -327,16 +320,17 @@ class LoginActivity :
         slideInFragment(prologueFragment, true, LoginPrologueFragment.TAG)
     }
 
+    private fun showPrologueSurveyFragment() {
+        val prologueSurveyFragment = getPrologueFragment() ?: LoginPrologueSurveyFragment()
+        slideInFragment(prologueSurveyFragment, true, LoginPrologueSurveyFragment.TAG)
+    }
+
     override fun loginViaSocialAccount(
         email: String?,
         idToken: String?,
         service: String?,
         isPasswordRequired: Boolean
     ) {
-        firebaseTracker.log(FirebaseTracker.Event.LOGIN_OPTION_SELECTED) {
-            param(FirebaseTracker.Param.LOGIN_TYPE, FirebaseTracker.Value.LOGIN_TYPE_SOCIAL)
-        }
-
         val loginEmailPasswordFragment = LoginEmailPasswordFragment.newInstance(
             email, null, idToken,
             service, isPasswordRequired
@@ -345,8 +339,6 @@ class LoginActivity :
     }
 
     override fun loggedInViaSocialAccount(oldSitesIds: ArrayList<Int>, doLoginUpdate: Boolean) {
-        firebaseTracker.log(FirebaseTracker.Event.LOGIN_SUCCESSFUL)
-
         loginAnalyticsListener.trackLoginSocialSuccess()
         showMainActivityAndFinish()
     }
@@ -356,10 +348,6 @@ class LoginActivity :
     }
 
     override fun showMagicLinkSentScreen(email: String?, allowPassword: Boolean) {
-        firebaseTracker.log(FirebaseTracker.Event.LOGIN_OPTION_SELECTED) {
-            param(FirebaseTracker.Param.LOGIN_TYPE, FirebaseTracker.Value.LOGIN_TYPE_MAGIC_LINK)
-        }
-
         val loginMagicLinkSentFragment = LoginMagicLinkSentFragment.newInstance(email, allowPassword)
         slideInFragment(loginMagicLinkSentFragment, true, LoginMagicLinkSentFragment.TAG)
     }
@@ -374,10 +362,6 @@ class LoginActivity :
     }
 
     override fun usePasswordInstead(email: String?) {
-        firebaseTracker.log(FirebaseTracker.Event.LOGIN_OPTION_SELECTED) {
-            param(FirebaseTracker.Param.LOGIN_TYPE, FirebaseTracker.Value.LOGIN_TYPE_WPCOM)
-        }
-
         loginAnalyticsListener.trackLoginMagicLinkExited()
         val loginEmailPasswordFragment = LoginEmailPasswordFragment.newInstance(email, null, null, null, false)
         slideInFragment(loginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
@@ -415,14 +399,10 @@ class LoginActivity :
     }
 
     override fun loggedInViaPassword(oldSitesIds: ArrayList<Int>) {
-        firebaseTracker.log(FirebaseTracker.Event.LOGIN_SUCCESSFUL)
-
         showMainActivityAndFinish()
     }
 
     override fun alreadyLoggedInWpcom(oldSitesIds: ArrayList<Int>) {
-        firebaseTracker.log(FirebaseTracker.Event.LOGIN_SUCCESSFUL)
-
         ToastUtils.showToast(this, R.string.already_logged_in_wpcom, ToastUtils.Duration.LONG)
         showMainActivityAndFinish()
     }
@@ -466,10 +446,6 @@ class LoginActivity :
      * in the login process.
      */
     override fun loginViaSiteCredentials(inputSiteAddress: String?) {
-        firebaseTracker.log(FirebaseTracker.Event.LOGIN_OPTION_SELECTED) {
-            param(FirebaseTracker.Param.LOGIN_TYPE, FirebaseTracker.Value.LOGIN_TYPE_SITE_CREDENTIALS)
-        }
-
         unifiedLoginTracker.trackClick(Click.LOGIN_WITH_SITE_CREDS)
         showUsernamePasswordScreen(inputSiteAddress, null, null, null)
     }
@@ -509,7 +485,6 @@ class LoginActivity :
 
     // TODO This can be modified to also receive the URL the user entered, so we can make that the primary store
     override fun loggedInViaUsernamePassword(oldSitesIds: ArrayList<Int>) {
-        firebaseTracker.log(FirebaseTracker.Event.LOGIN_SUCCESSFUL)
         showMainActivityAndFinish()
     }
 
@@ -768,6 +743,10 @@ class LoginActivity :
     }
 
     override fun onCarouselFinished() {
-        showPrologueFragment()
+        if (true) {
+            showPrologueSurveyFragment()
+        } else {
+            showPrologueFragment()
+        }
     }
 }
