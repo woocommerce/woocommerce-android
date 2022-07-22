@@ -103,8 +103,7 @@ class BannerDisplayEligibilityChecker @Inject constructor(
             !isCardReaderUpsellBannerDismissedForever() &&
                 (
                     !hasTheMerchantDismissedBannerViaRemindMeLater() ||
-                        hasTheMerchantDismissedBannerViaRemindMeLater() &&
-                            isLastDialogDismissedMoreThan14DaysAgo(currentTimeInMillis)
+                        isLastDialogDismissedMoreThan14DaysAgo(currentTimeInMillis)
                     )
             ).also { trackable ->
             if (trackable) {
