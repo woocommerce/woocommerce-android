@@ -48,10 +48,14 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import dagger.hilt.android.AndroidEntryPoint
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode.MAIN
+import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.network.MemorizingTrustManager
 import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayloadScheme.WOOCOMMERCE
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload
+import org.wordpress.android.fluxc.store.SiteStore.OnConnectSiteInfoChecked
 import org.wordpress.android.login.AuthOptions
 import org.wordpress.android.login.GoogleFragment.GoogleListener
 import org.wordpress.android.login.Login2FaFragment
@@ -113,9 +117,11 @@ class LoginActivity :
     @Inject internal lateinit var urlUtils: UrlUtils
     @Inject internal lateinit var experimentTracker: ExperimentTracker
     @Inject internal lateinit var appPrefsWrapper: AppPrefsWrapper
+    @Inject internal lateinit var dispatcher: Dispatcher
     @Inject internal lateinit var loginNotificationScheduler: LoginNotificationScheduler
 
     private var loginMode: LoginMode? = null
+    private var isSiteOnWPcom: Boolean? = null
 
     private lateinit var binding: ActivityLoginBinding
 
@@ -123,6 +129,8 @@ class LoginActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        dispatcher.register(this)
 
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -165,6 +173,12 @@ class LoginActivity :
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        dispatcher.unregister(this)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -489,11 +503,12 @@ class LoginActivity :
         AppPrefs.setLoginSiteAddress(siteAddressClean)
 
         if (hasJetpack) {
-            showEmailLoginScreen(inputSiteAddress)
+            if (isSiteOnWPcom == true) {
+                showEmailLoginScreen(inputSiteAddress)
+            } else {
+                loginViaSiteCredentials(inputSiteAddress)
+            }
         } else {
-            // hide the keyboard
-            org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
-
             // Let user log in via site credentials first before showing Jetpack missing screen.
             loginViaSiteCredentials(inputSiteAddress)
         }
@@ -507,6 +522,9 @@ class LoginActivity :
      * in the login process.
      */
     override fun loginViaSiteCredentials(inputSiteAddress: String?) {
+        // hide the keyboard
+        org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
+
         unifiedLoginTracker.trackClick(Click.LOGIN_WITH_SITE_CREDS)
         showUsernamePasswordScreen(inputSiteAddress, null, null, null)
     }
@@ -816,5 +834,11 @@ class LoginActivity :
 
     override fun onCarouselFinished() {
         showPrologueFragment()
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = MAIN)
+    fun onFetchedConnectSiteInfo(event: OnConnectSiteInfoChecked) {
+        isSiteOnWPcom = event.info.isWPCom
     }
 }
