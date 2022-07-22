@@ -14,6 +14,8 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_ONBOARDING_
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_PREFERRED_PLUGIN
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_PREFERRED_PLUGIN_VERSION
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_STATEMENT_DESCRIPTOR
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_FOREVER
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.DATABASE_DOWNGRADED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.IMAGE_OPTIMIZE_ENABLED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.IS_COUPONS_ENABLED
@@ -80,6 +82,8 @@ object AppPrefs {
         ORDER_FILTER_CUSTOM_DATE_RANGE_START,
         ORDER_FILTER_CUSTOM_DATE_RANGE_END,
         PRODUCT_SORTING_PREFIX,
+        CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_FOREVER,
+        CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER,
     }
 
     /**
@@ -241,6 +245,82 @@ object AppPrefs {
     fun removeSupportName() {
         remove(DeletablePrefKey.SUPPORT_NAME)
     }
+
+    /**
+     * Card Reader Upsell Banner
+     */
+    fun setCardReaderUpsellBannerDismissedForever(
+        isDismissed: Boolean,
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) {
+        setBoolean(
+            getCardReaderUpsellDismissedForeverKey(
+                localSiteId,
+                remoteSiteId,
+                selfHostedSiteId
+            ),
+            isDismissed
+        )
+    }
+
+    fun isCardReaderUpsellBannerDismissedForever(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = getBoolean(
+        getCardReaderUpsellDismissedForeverKey(
+            localSiteId,
+            remoteSiteId,
+            selfHostedSiteId
+        ),
+        false
+    )
+
+    fun setCardReaderUpsellBannerRemindMeLater(
+        lastDialogDismissedInMillis: Long,
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) {
+        setLong(
+            getCardReaderUpsellDismissedRemindMeLaterKey(
+                localSiteId,
+                remoteSiteId,
+                selfHostedSiteId
+            ),
+            lastDialogDismissedInMillis
+        )
+    }
+
+    fun getCardReaderUpsellBannerLastDismissed(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = getLong(
+        getCardReaderUpsellDismissedRemindMeLaterKey(
+            localSiteId,
+            remoteSiteId,
+            selfHostedSiteId
+        )
+    )
+
+    private fun getCardReaderUpsellDismissedForeverKey(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = PrefKeyString(
+        "$CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_FOREVER:$localSiteId:$remoteSiteId:$selfHostedSiteId"
+    )
+
+    private fun getCardReaderUpsellDismissedRemindMeLaterKey(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = PrefKeyString(
+        "$CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER:$localSiteId:$remoteSiteId:$selfHostedSiteId"
+    )
 
     /**
      * Method to check if the v4 stats UI is supported.

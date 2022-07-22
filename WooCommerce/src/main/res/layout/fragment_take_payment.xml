@@ -7,7 +7,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true">
 
         <LinearLayout
             android:id="@+id/container"
@@ -91,12 +92,13 @@
 
         </LinearLayout>
 
-        <androidx.compose.ui.platform.ComposeView
-            android:id="@+id/paymentsComposeView"
+        <include
+            android:id="@+id/upsellCardReaderComposeView"
+            layout="@layout/fragment_card_reader_upsell_banner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/major_150"
-            app:layout_constraintTop_toBottomOf="@id/container" />
+            app:layout_constraintTop_toBottomOf="@id/container"/>
 
         <ProgressBar
             android:id="@+id/pbLoading"

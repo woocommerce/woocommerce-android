@@ -13,7 +13,6 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.paging.PagedList
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -27,8 +26,10 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.OpenPurchaseCardReaderLink
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
+import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.ThrottleLiveData
 import com.woocommerce.android.util.WooLog
@@ -71,9 +72,9 @@ class OrderListViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val fetcher: WCOrderFetcher,
     private val resourceProvider: ResourceProvider,
-    private val appPrefsWrapper: AppPrefsWrapper,
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters,
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount,
+    private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker,
 ) : ScopedViewModel(savedState), LifecycleOwner {
     protected val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
@@ -116,6 +117,9 @@ class OrderListViewModel @Inject constructor(
     }
     val emptyViewType: LiveData<EmptyViewType?> = _emptyViewType
 
+    val shouldShowUpsellCardReaderDismissDialog: MutableLiveData<Boolean> = MutableLiveData(false)
+    val isEligibleForInPersonPayments: MutableLiveData<Boolean> = MutableLiveData(false)
+
     var isSearching = false
     var searchQuery = ""
 
@@ -134,6 +138,7 @@ class OrderListViewModel @Inject constructor(
             _emptyViewType.postValue(EmptyViewType.ORDER_LIST_LOADING)
             if (selectedSite.exists()) {
                 loadOrders()
+                isEligibleForInPersonPayments()
             } else {
                 WooLog.w(
                     WooLog.T.ORDERS,
@@ -142,6 +147,10 @@ class OrderListViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    private suspend fun isEligibleForInPersonPayments() {
+        isEligibleForInPersonPayments.value = bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()
     }
 
     fun loadOrders() {
@@ -197,6 +206,7 @@ class OrderListViewModel @Inject constructor(
             showOfflineSnack()
         }
     }
+
     /**
      * Fetch payment gateways so they are available for order refunds later
      */
@@ -411,19 +421,46 @@ class OrderListViewModel @Inject constructor(
         loadOrders()
     }
 
-    fun isCardReaderOnboardingCompleted(): Boolean {
-        return selectedSite.getIfExists()?.let {
-            appPrefsWrapper.isCardReaderOnboardingCompleted(
-                localSiteId = it.id,
-                remoteSiteId = it.siteId,
-                selfHostedSiteId = it.selfHostedSiteId
+    fun onCtaClicked(source: String) {
+        launch {
+            triggerEvent(
+                OpenPurchaseCardReaderLink(bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(source))
             )
-        } ?: false
+        }
+    }
+
+    fun onDismissClicked() {
+        shouldShowUpsellCardReaderDismissDialog.value = true
+        triggerEvent(OrderListEvent.DismissCardReaderUpsellBanner)
+    }
+
+    fun onRemindLaterClicked(currentTimeInMillis: Long, source: String) {
+        shouldShowUpsellCardReaderDismissDialog.value = false
+        bannerDisplayEligibilityChecker.onRemindLaterClicked(currentTimeInMillis, source)
+        triggerEvent(OrderListEvent.DismissCardReaderUpsellBannerViaRemindMeLater)
+    }
+
+    fun onDontShowAgainClicked(source: String) {
+        shouldShowUpsellCardReaderDismissDialog.value = false
+        bannerDisplayEligibilityChecker.onDontShowAgainClicked(source)
+        triggerEvent(OrderListEvent.DismissCardReaderUpsellBannerViaDontShowAgain)
+    }
+
+    fun onBannerAlertDismiss() {
+        shouldShowUpsellCardReaderDismissDialog.value = false
+    }
+
+    fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long, source: String): Boolean {
+        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis, source)
     }
 
     sealed class OrderListEvent : Event() {
         data class ShowErrorSnack(@StringRes val messageRes: Int) : OrderListEvent()
         object ShowOrderFilters : OrderListEvent()
+        object DismissCardReaderUpsellBanner : OrderListEvent()
+        object DismissCardReaderUpsellBannerViaRemindMeLater : OrderListEvent()
+        object DismissCardReaderUpsellBannerViaDontShowAgain : OrderListEvent()
+        data class OpenPurchaseCardReaderLink(val url: String) : OrderListEvent()
     }
 
     @Parcelize
