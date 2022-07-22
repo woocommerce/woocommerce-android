@@ -1,5 +1,6 @@
 package com.woocommerce.android.di
 
+import com.automattic.android.tracks.crashlogging.CrashLoggingOkHttpInterceptorProvider
 import com.facebook.flipper.android.AndroidFlipperClient
 import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin
@@ -18,4 +19,6 @@ class InterceptorModule {
     fun provideNetworkInterceptor(): Interceptor = FlipperOkhttpInterceptor(
         AndroidFlipperClient.getInstanceIfInitialized()?.getPlugin(NetworkFlipperPlugin.ID)
     )
+    @Provides @IntoSet @Named("network-interceptors")
+    fun provideMonitoring(): Interceptor = CrashLoggingOkHttpInterceptorProvider.createInstance()
 }

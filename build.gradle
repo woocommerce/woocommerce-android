@@ -18,6 +18,12 @@ tracks {
     username.set(findProperty('tracksUsername'))
 }
 
+sentry {
+    tracingInstrumentation {
+        enabled = false
+    }
+}
+
 allprojects {
     apply plugin: 'checkstyle'
     apply plugin: 'io.gitlab.arturbosch.detekt'

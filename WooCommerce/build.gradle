@@ -202,7 +202,7 @@ dependencies {
     implementation("com.automattic.tracks:experimentation:trunk-f25f5b5e77df8313f19d47d07e7411256d18df79") {
         exclude group: "org.wordpress", module: "fluxc"
     }
-    implementation 'com.automattic:Automattic-Tracks-Android:2.2.0'
+    implementation 'com.automattic:Automattic-Tracks-Android:136-77c162e3c3dc31cdd09bd94e9ad69c6b3e8d6ffe'
 
     implementation("${gradle.ext.fluxCBinaryPath}:$fluxCVersion") {
         exclude group: "com.android.support"
