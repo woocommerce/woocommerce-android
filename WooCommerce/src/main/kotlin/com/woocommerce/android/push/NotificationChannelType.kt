@@ -4,7 +4,10 @@ import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
-import com.woocommerce.android.push.NotificationChannelType.*
+import com.woocommerce.android.push.NotificationChannelType.NEW_ORDER
+import com.woocommerce.android.push.NotificationChannelType.OTHER
+import com.woocommerce.android.push.NotificationChannelType.PRE_LOGIN
+import com.woocommerce.android.push.NotificationChannelType.REVIEW
 
 /**
  * Note that we have separate notification channels for orders with and without the cha-ching sound - this is
@@ -15,7 +18,8 @@ import com.woocommerce.android.push.NotificationChannelType.*
 enum class NotificationChannelType {
     NEW_ORDER,
     REVIEW,
-    OTHER;
+    PRE_LOGIN,
+    OTHER
 }
 
 private const val GROUP_NOTIFICATION_ID_ORDER = 30001
@@ -28,6 +32,7 @@ fun NotificationChannelType.getChannelId(): Int {
         NEW_ORDER -> R.string.notification_channel_order_id
         REVIEW -> R.string.notification_channel_review_id
         OTHER -> R.string.notification_channel_general_id
+        PRE_LOGIN -> R.string.notification_channel_pre_login_id
     }
 }
 
@@ -37,6 +42,7 @@ fun NotificationChannelType.getChannelTitle(): Int {
         NEW_ORDER -> R.string.notification_channel_order_title
         REVIEW -> R.string.notification_channel_review_title
         OTHER -> R.string.notification_channel_general_title
+        PRE_LOGIN -> R.string.notification_channel_pre_login_title
     }
 }
 
@@ -46,6 +52,7 @@ fun NotificationChannelType.getGroupId(): Int {
         NEW_ORDER -> GROUP_NOTIFICATION_ID_ORDER
         REVIEW -> GROUP_NOTIFICATION_ID_REVIEW
         OTHER -> GROUP_NOTIFICATION_ID_OTHER
+        PRE_LOGIN -> TODO()
     }
 }
 

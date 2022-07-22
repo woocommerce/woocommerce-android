@@ -58,6 +58,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/imageView"
+        app:layout_constraintBottom_toTopOf="@id/newToWooButton"
         android:text="@string/lets_get_started" />
 
     <com.google.android.material.button.MaterialButton
@@ -68,6 +69,7 @@
         android:layout_marginBottom="@dimen/major_150"
         android:text="@string/login_prologue_new_to_woo"
         android:textAllCaps="false"
+        app:layout_constraintTop_toBottomOf="@id/prologueTitle"
         app:layout_constraintBottom_toTopOf="@id/button_login_store"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

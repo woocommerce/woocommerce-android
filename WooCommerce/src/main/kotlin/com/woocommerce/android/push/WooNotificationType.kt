@@ -8,7 +8,8 @@ import org.wordpress.android.fluxc.model.notification.NotificationModel
 enum class WooNotificationType {
     NEW_ORDER,
     PRODUCT_REVIEW,
-    ZENDESK
+    ZENDESK,
+    PRE_LOGIN
 }
 
 fun NotificationModel.getWooType(): WooNotificationType {
