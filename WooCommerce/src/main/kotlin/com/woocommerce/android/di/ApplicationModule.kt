@@ -1,6 +1,7 @@
 package com.woocommerce.android.di
 
 import android.content.Context
+import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.analytics.FirebaseTracker
 import com.woocommerce.android.config.DataStoreRemoteConfigRepository
 import com.woocommerce.android.config.RemoteConfigRepository
@@ -42,6 +43,9 @@ abstract class ApplicationModule {
 
     @Binds
     abstract fun bindRemoteConfigRepository(repository: DataStoreRemoteConfigRepository): RemoteConfigRepository
+
+    @Binds
+    abstract fun bindFirebaseTracker(tracker: FirebaseTracker): ExperimentTracker
 
     companion object {
         @Provides

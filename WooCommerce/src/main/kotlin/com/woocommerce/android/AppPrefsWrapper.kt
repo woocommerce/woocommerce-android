@@ -151,6 +151,21 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getWcShippingBannerDismissed(currentSiteId: Int) = AppPrefs.getWcShippingBannerDismissed(currentSiteId)
 
+    fun getPreLoginNotificationWorkRequestId() = AppPrefs.getLocalNotificationWorkRequestId()
+
+    fun setPreLoginNotificationWorkRequestId(workRequestId: String) =
+        AppPrefs.setLocalNotificationWorkRequestId(workRequestId)
+
+    fun hasPreLoginNotificationBeenDisplayed() = AppPrefs.isPreLoginNotificationBeenDisplayed()
+
+    fun setPreLoginNotificationDisplayed(displayed: Boolean) =
+        AppPrefs.setPreLoginNotificationDisplayed(displayed)
+
+    fun setOnboardingCarouselDisplayed(displayed: Boolean) =
+        AppPrefs.setOnboardingCarouselDisplayed(displayed)
+
+    fun hasOnboardingCarouselBeenDisplayed(): Boolean = AppPrefs.hasOnboardingCarouselBeenDisplayed()
+
     /**
      * Observes changes to the preferences
      */

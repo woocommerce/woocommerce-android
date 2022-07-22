@@ -10,12 +10,13 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.AppUrls.LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.FirebaseTracker
+import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.databinding.ActivityLoginBinding
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
@@ -28,6 +29,8 @@ import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow.LOGIN_SITE_ADDRESS
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Source
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step.ENTER_SITE_ADDRESS
+import com.woocommerce.android.ui.login.localnotifications.LoginFlowUsageTracker
+import com.woocommerce.android.ui.login.localnotifications.LoginFlowUsageTracker.LoginSupportNotificationType
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
 import com.woocommerce.android.ui.main.MainActivity
@@ -86,7 +89,9 @@ class LoginActivity :
     @Inject internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
     @Inject internal lateinit var zendeskHelper: ZendeskHelper
     @Inject internal lateinit var urlUtils: UrlUtils
-    @Inject internal lateinit var firebaseTracker: FirebaseTracker
+    @Inject internal lateinit var experimentTracker: ExperimentTracker
+    @Inject internal lateinit var loginFlowUsageTracker: LoginFlowUsageTracker
+    @Inject internal lateinit var appPrefsWrapper: AppPrefsWrapper
 
     private var loginMode: LoginMode? = null
 
@@ -104,7 +109,8 @@ class LoginActivity :
             getAuthTokenFromIntent()?.let { showMagicLinkInterceptFragment(it) }
         } else if (savedInstanceState == null) {
             loginAnalyticsListener.trackLoginAccessed()
-            showPrologueCarouselFragment()
+
+            showPrologue()
         }
 
         savedInstanceState?.let { ss ->
@@ -134,7 +140,15 @@ class LoginActivity :
             .addToBackStack(LoginPrologueCarouselFragment.TAG)
             .commitAllowingStateLoss()
 
-        firebaseTracker.log(FirebaseTracker.Event.PROLOGUE_CAROUSEL_DISPLAYED)
+        experimentTracker.log(ExperimentTracker.PROLOGUE_CAROUSEL_DISPLAYED_EVENT)
+    }
+
+    private fun showPrologue() {
+        if (!appPrefsWrapper.hasOnboardingCarouselBeenDisplayed()) {
+            showPrologueCarouselFragment()
+        } else {
+            showPrologueFragment()
+        }
     }
 
     private fun hasMagicLinkLoginIntent(): Boolean {
@@ -248,8 +262,13 @@ class LoginActivity :
         startLoginViaWPCom()
     }
 
+    override fun onNewToWooButtonClicked() {
+        ChromeCustomTabUtils.launchUrl(this, AppUrls.NEW_TO_WOO_DOC)
+    }
+
     private fun showMainActivityAndFinish() {
-        firebaseTracker.log(FirebaseTracker.Event.LOGIN_SUCCESSFUL)
+        experimentTracker.log(ExperimentTracker.LOGIN_SUCCESSFUL_EVENT)
+        loginFlowUsageTracker.onLoginSuccess()
 
         val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -731,6 +750,7 @@ class LoginActivity :
                 shouldAddToBackStack = true,
                 tag = LoginSiteCheckErrorFragment.TAG
             )
+            loginFlowUsageTracker.scheduleNotification(LoginSupportNotificationType.LOGIN_SITE_ADDRESS_ERROR)
         } else {
             // Just in case we use this method for a different scenario in the future
             TODO("Handle a new error scenario")

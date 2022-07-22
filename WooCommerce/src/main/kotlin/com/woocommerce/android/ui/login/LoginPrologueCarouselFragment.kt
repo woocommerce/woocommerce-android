@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.LOGIN_ONBOARDING_NEXT_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.LOGIN_ONBOARDING_SHOWN
@@ -32,6 +33,8 @@ class LoginPrologueCarouselFragment : Fragment(R.layout.fragment_login_prologue_
 
     @Inject lateinit var unifiedLoginTracker: UnifiedLoginTracker
     @Inject lateinit var analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    @Inject lateinit var appPrefsWrapper: AppPrefsWrapper
+
     private var prologueCarouselListener: PrologueCarouselListener? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -45,6 +48,8 @@ class LoginPrologueCarouselFragment : Fragment(R.layout.fragment_login_prologue_
                     LOGIN_ONBOARDING_NEXT_BUTTON_TAPPED,
                     mapOf(Pair(AnalyticsTracker.VALUE_LOGIN_ONBOARDING_IS_FINAL_PAGE, true))
                 )
+
+                appPrefsWrapper.setOnboardingCarouselDisplayed(true)
             } else {
                 binding.viewPager.setCurrentItem(binding.viewPager.currentItem + 1, true)
                 analyticsTrackerWrapper.track(
@@ -57,6 +62,8 @@ class LoginPrologueCarouselFragment : Fragment(R.layout.fragment_login_prologue_
         binding.buttonSkip.setOnClickListener {
             prologueCarouselListener?.onCarouselFinished()
             analyticsTrackerWrapper.track(LOGIN_ONBOARDING_SKIP_BUTTON_TAPPED)
+
+            appPrefsWrapper.setOnboardingCarouselDisplayed(true)
         }
 
         binding.viewPager.adapter = adapter

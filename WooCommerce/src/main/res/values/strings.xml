@@ -10,7 +10,8 @@
     <string name="notification_channel_review_title">Product review alerts</string>
     <string name="notification_channel_review_id" content_override="true" translatable="false">wooandroid_notification_channel_review_id</string>
     <string name="notification_order_ringtone_title" translatable="false">WooCommerce Cha-ching</string>
-
+    <string name="notification_channel_pre_login_title">Login troubleshooting reminders</string>
+    <string name="notification_channel_pre_login_id" content_override="true" translatable="false">wooandroid_notification_channel_pre_login_id</string>
     <!-- Required by the login library - overwrites the placeholder value with a real channel -->
     <string name="login_notification_channel_id" content_override="true" translatable="false">@string/notification_channel_general_id</string>
     <!--
@@ -198,7 +199,7 @@
     <string name="login_prologue_label_analytics">Track sales and high performing products</string>
     <string name="login_prologue_label_orders">Manage and edit orders on the go</string>
     <string name="login_prologue_label_products">Edit and add new products from anywhere</string>
-
+    <string name="login_prologue_new_to_woo">New to WooCommerce</string>
     <string name="login_prologue_label_analytics_subtitle">We know it\'s essential to your business</string>
     <string name="login_prologue_label_orders_subtitle">You can manage them quickly and easily</string>
     <string name="login_prologue_label_products_subtitle">We enable you to process them effortlessly</string>
@@ -2111,6 +2112,11 @@
     <string name="install_wc_shipping_flow_onboarding_screen_add_extension_button">Add Extension To Store</string>
     <string name="install_wc_shipping_flow_onboarding_screen_not_now_button">Not Now</string>
     <string name="install_wc_shipping_extension_name">WooCommerce Shipping</string>
+
+    <!-- Login local notifications -->
+    <string name="login_local_notification_no_interaction_title">Trouble login in?</string>
+    <string name="login_local_notification_no_interaction_description">If you are experiencing issues login into your store from the app, please contact support so we can help you.</string>
+
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>

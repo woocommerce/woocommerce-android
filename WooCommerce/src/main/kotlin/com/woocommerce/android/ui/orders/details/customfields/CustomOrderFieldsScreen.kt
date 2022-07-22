@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.orders.details.customfields
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,20 +17,29 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight.Companion.W700
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
+import com.woocommerce.android.ui.orders.details.customfields.CustomOrderFieldsHelper.CustomOrderFieldClickListener
+import com.woocommerce.android.ui.orders.details.customfields.CustomOrderFieldsHelper.CustomOrderFieldType
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.persistence.entity.OrderMetaDataEntity
 
+private var clickListener: CustomOrderFieldClickListener? = null
+
 @Composable
-fun CustomOrderFieldsScreen(viewModel: OrderDetailViewModel) {
+fun CustomOrderFieldsScreen(viewModel: OrderDetailViewModel, listener: CustomOrderFieldClickListener? = null) {
+    clickListener = listener
     CustomFieldsScreen(
         viewModel.getOrderMetadata()
     )
@@ -80,36 +92,93 @@ private fun CustomFieldListItem(metadata: OrderMetaDataEntity) {
                     )
                 }
                 SelectionContainer {
-                    Text(
-                        text = metadata.value,
-                        style = MaterialTheme.typography.body2,
-                        color = MaterialTheme.colors.onSurface
-                    )
+                    if (CustomOrderFieldType.fromMetadataValue(metadata.value) == CustomOrderFieldType.TEXT) {
+                        textValueItem(metadata.value)
+                    } else {
+                        clickableTextValueItem(metadata.value)
+                    }
                 }
             }
         }
     }
 }
 
-@Preview
 @Composable
-private fun CustomFieldsPreview() {
-    CustomFieldsScreen(
-        listOf(
-            OrderMetaDataEntity(
-                id = 0,
-                localSiteId = LocalOrRemoteId.LocalId(0),
-                orderId = 0,
-                key = "key_zero",
-                value = "value_zero"
+private fun textValueItem(value: String) {
+    Text(
+        text = value,
+        style = MaterialTheme.typography.body2,
+        color = MaterialTheme.colors.onSurface
+    )
+}
+
+@Composable
+private fun clickableTextValueItem(value: String) {
+    val text = with(AnnotatedString.Builder()) {
+        append(value)
+        addStringAnnotation(
+            tag = value,
+            annotation = value,
+            start = 0,
+            end = value.length - 1
+        )
+        toAnnotatedString()
+    }
+
+    Text(
+        text = text,
+        style = MaterialTheme.typography.body2.copy(
+            color = colorResource(R.color.color_text_link)
+        ),
+        modifier = Modifier.clickable(
+            indication = rememberRipple(
+                bounded = true,
+                color = colorResource(id = R.color.color_ripple_overlay)
             ),
-            OrderMetaDataEntity(
-                id = 1,
-                localSiteId = LocalOrRemoteId.LocalId(0),
-                orderId = 0,
-                key = "key_one",
-                value = "value_one"
-            )
+            interactionSource = remember { MutableInteractionSource() },
+            onClick = {
+                clickListener?.onCustomOrderFieldClicked(value)
+            }
         )
     )
+}
+
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun CustomFieldsPreview() {
+    WooThemeWithBackground {
+        CustomFieldsScreen(
+            listOf(
+                OrderMetaDataEntity(
+                    id = 1,
+                    localSiteId = LocalOrRemoteId.LocalId(0),
+                    orderId = 0,
+                    key = "text key",
+                    value = "text value"
+                ),
+                OrderMetaDataEntity(
+                    id = 2,
+                    localSiteId = LocalOrRemoteId.LocalId(0),
+                    orderId = 0,
+                    key = "url key",
+                    value = "https://automattic.com/"
+                ),
+                OrderMetaDataEntity(
+                    id = 3,
+                    localSiteId = LocalOrRemoteId.LocalId(0),
+                    orderId = 0,
+                    key = "email key",
+                    value = "example@example.com"
+                ),
+                OrderMetaDataEntity(
+                    id = 4,
+                    localSiteId = LocalOrRemoteId.LocalId(0),
+                    orderId = 0,
+                    key = "phone key",
+                    value = "tel://1234567890"
+                )
+            )
+        )
+    }
 }

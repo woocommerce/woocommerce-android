@@ -1,18 +1,18 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 9.7
 -----
+- [***] Orders: Orders can now be edited within the app. [https://github.com/woocommerce/woocommerce-android/pull/6987]
+- [**] You can now search customers when creating or editing an order. [https://github.com/woocommerce/woocommerce-android/pull/6999]
 - [*] Fixed a bug that resulted in not showing ongoing image uploads in product details. [https://github.com/woocommerce/woocommerce-android/pull/6964]
-
-9.7
------
-- [*] Login: Improved login flow when a WordPress site exists but has no Jetpack plugin installed. [https://github.com/woocommerce/woocommerce-android/pull/6910/]
 
 9.6
 -----
 - [*] New "What is WordPress.com?" link in login with email screen, to provide better context of why WordPress.com account is needed during login [https://github.com/woocommerce/woocommerce-android/pull/6891]
+- [*] Login: Improved login flow when a WordPress site exists but has no Jetpack plugin installed. [https://github.com/woocommerce/woocommerce-android/pull/6910/]
 - [**] Order Details: All unpaid orders have a Collect Payment button, which shows a payment method selection screen. Choices are Cash, Card, and Payment Link. [https://github.com/woocommerce/woocommerce-android/pull/6861]
 - [**] In-Person Payments: Support for selecting preferred payment gateway when multiple extensions are installed on the store. [https://github.com/woocommerce/woocommerce-android/pull/6887]
 - [*] In-Person Payments: Update phrasing of IPP description [https://github.com/woocommerce/woocommerce-android/pull/6867]
+- [*] Login: add a "new to woocommerce" button to the prologue [https://github.com/woocommerce/woocommerce-android/pull/6947]
 
 9.5
 -----

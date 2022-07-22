@@ -7,14 +7,19 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R.string
 import com.woocommerce.android.WooException
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CUSTOMER_ADD
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_FEE_ADD
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_FEE_REMOVE
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_NOTE_ADD
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_PRODUCT_ADD
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_PRODUCT_QUANTITY_CHANGE
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_PRODUCT_REMOVE
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_SHIPPING_METHOD_ADD
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_SHIPPING_METHOD_REMOVE
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_STATUS_CHANGE
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_CONTEXT
@@ -100,6 +105,11 @@ class OrderCreateEditViewModel @Inject constructor(
     private val args: OrderCreateEditFormFragmentArgs by savedState.navArgs()
     val mode: Mode = args.mode
 
+    private val flow = when (mode) {
+        Mode.Creation -> VALUE_FLOW_CREATION
+        is Mode.Edit -> VALUE_FLOW_EDITING
+    }
+
     private val _orderDraft = savedState.getStateFlow(viewModelScope, Order.EMPTY)
     val orderDraft = _orderDraft
         .asLiveData()
@@ -180,14 +190,26 @@ class OrderCreateEditViewModel @Inject constructor(
         _orderDraft.update { it.copy(customerNote = newNote) }
     }
 
-    fun onIncreaseProductsQuantity(id: Long) = _orderDraft.update { it.adjustProductQuantity(id, +1) }
+    fun onIncreaseProductsQuantity(id: Long) {
+        tracker.track(
+            ORDER_PRODUCT_QUANTITY_CHANGE,
+            mapOf(KEY_FLOW to flow)
+        )
+        _orderDraft.update { it.adjustProductQuantity(id, +1) }
+    }
 
     fun onDecreaseProductsQuantity(id: Long) {
         _orderDraft.value.items
             .find { it.itemId == id }
             ?.takeIf { it.quantity == 1F }
             ?.let { onProductClicked(it) }
-            ?: _orderDraft.update { it.adjustProductQuantity(id, -1) }
+            ?: run {
+                tracker.track(
+                    ORDER_PRODUCT_QUANTITY_CHANGE,
+                    mapOf(KEY_FLOW to flow)
+                )
+                _orderDraft.update { it.adjustProductQuantity(id, -1) }
+            }
     }
 
     fun onOrderStatusChanged(status: Order.Status) {
@@ -204,6 +226,10 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onRemoveProduct(item: Order.Item) = _orderDraft.update {
+        tracker.track(
+            ORDER_PRODUCT_REMOVE,
+            mapOf(KEY_FLOW to flow)
+        )
         it.adjustProductQuantity(item.itemId, -item.quantity.toInt())
     }
 
@@ -220,11 +246,6 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    private val flow = when (mode) {
-        Mode.Creation -> VALUE_FLOW_CREATION
-        is Mode.Edit -> VALUE_FLOW_EDITING
-    }
-
     fun onCustomerAddressEdited(billingAddress: Address, shippingAddress: Address) {
         val hasDifferentShippingDetails = _orderDraft.value.shippingAddress != _orderDraft.value.billingAddress
         tracker.track(
@@ -235,8 +256,8 @@ class OrderCreateEditViewModel @Inject constructor(
             )
         )
 
-        _orderDraft.update {
-            it.copy(
+        _orderDraft.update { order ->
+            order.copy(
                 billingAddress = billingAddress,
                 shippingAddress = shippingAddress.takeIf { it != Address.EMPTY } ?: billingAddress
             )
@@ -357,8 +378,10 @@ class OrderCreateEditViewModel @Inject constructor(
                             viewState = viewState.copy(willUpdateOrderDraft = true, showOrderUpdateSnackbar = false)
                         OrderUpdateStatus.Ongoing ->
                             viewState = viewState.copy(willUpdateOrderDraft = false, isUpdatingOrderDraft = true)
-                        OrderUpdateStatus.Failed ->
+                        is OrderUpdateStatus.Failed -> {
+                            trackOrderSyncFailed(updateStatus.throwable)
                             viewState = viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = true)
+                        }
                         is OrderUpdateStatus.Succeeded -> {
                             viewState = viewState.copy(
                                 isUpdatingOrderDraft = false,
@@ -377,7 +400,7 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun trackOrderCreationFailure(it: Throwable) {
-        AnalyticsTracker.track(
+        tracker.track(
             ORDER_CREATION_FAILED,
             mapOf(
                 KEY_ERROR_CONTEXT to this::class.java.simpleName,
@@ -397,6 +420,16 @@ class OrderCreateEditViewModel @Inject constructor(
                 KEY_HAS_FEES to _orderDraft.value.feesLines.isNotEmpty(),
                 KEY_HAS_SHIPPING_METHOD to _orderDraft.value.shippingLines.isNotEmpty()
             )
+        )
+    }
+
+    private fun trackOrderSyncFailed(throwable: Throwable) {
+        tracker.track(
+            stat = AnalyticsEvent.ORDER_SYNC_FAILED,
+            properties = mapOf(KEY_FLOW to flow),
+            errorContext = this::class.java.simpleName,
+            errorType = (throwable as? WooException)?.error?.type?.name,
+            errorDescription = (throwable as? WooException)?.error?.message
         )
     }
 
@@ -422,6 +455,10 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onShippingRemoved() {
+        tracker.track(
+            ORDER_SHIPPING_METHOD_REMOVE,
+            mapOf(KEY_FLOW to flow)
+        )
         _orderDraft.update { draft ->
             draft.copy(
                 shippingLines = draft.shippingLines.mapIndexed { index, shippingLine ->
@@ -463,6 +500,10 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onFeeRemoved() {
+        tracker.track(
+            ORDER_FEE_REMOVE,
+            mapOf(KEY_FLOW to flow)
+        )
         _orderDraft.update { draft ->
             draft.copy(
                 feesLines = draft.feesLines.mapIndexed { index, feeLine ->
