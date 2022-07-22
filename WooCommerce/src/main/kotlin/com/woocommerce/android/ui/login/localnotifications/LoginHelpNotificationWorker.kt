@@ -85,7 +85,6 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
     private fun buildOpenLoginWithEmailScreenIntent(): Intent =
         LoginActivity.createIntent(appContext, LOGIN_SITE_ADDRESS_ERROR)
 
-
     private fun getActionsForSiteAddressErrorNotification(): List<Pair<String, Intent>> =
         listOf(
             resourceProvider.getString(R.string.login_local_notification_contact_support_button)

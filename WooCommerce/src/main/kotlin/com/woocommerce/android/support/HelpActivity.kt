@@ -190,7 +190,7 @@ class HelpActivity : AppCompatActivity() {
         NotificationManagerCompat.from(this).cancel(LOGIN_HELP_NOTIFICATION_TAG, LOGIN_HELP_NOTIFICATION_ID)
         AnalyticsTracker.track(
             AnalyticsEvent.LOGIN_LOCAL_NOTIFICATION_TAPPED,
-            mapOf(AnalyticsTracker.KEY_TYPE to LOGIN_SITE_ADDRESS_ERROR.name) //TODO REMOVE HARDCODED VALUE FOR TYPE
+            mapOf(AnalyticsTracker.KEY_TYPE to LOGIN_SITE_ADDRESS_ERROR.name)
         )
     }
 
