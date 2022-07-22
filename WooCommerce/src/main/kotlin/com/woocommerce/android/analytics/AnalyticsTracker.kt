@@ -354,6 +354,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_COUPON_EXPIRY_DATE_UPDATED = "expiry_date_updated"
         const val KEY_COUPON_USAGE_RESTRICTIONS_UPDATED = "usage_restrictions_updated"
 
+        // -- Onboarding
+        const val VALUE_LOGIN_ONBOARDING_IS_FINAL_PAGE = "is_final_page"
+
         // -- Jetpack Installation
         const val VALUE_JETPACK_INSTALLATION_SOURCE_WEB = "web"
         const val VALUE_JETPACK_INSTALLATION_SOURCE_NATIVE = "native"
