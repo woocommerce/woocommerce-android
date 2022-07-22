@@ -72,8 +72,8 @@ fun OrderListScreenBanner(
     val isEligibleForInPersonPayments by viewModel.isEligibleForInPersonPayments.observeAsState(false)
 
     if (
-        viewModel.canShowCardReaderUpsellBanner(System.currentTimeMillis(), AnalyticsTracker.KEY_BANNER_ORDER_LIST) &&
-        isEligibleForInPersonPayments
+        isEligibleForInPersonPayments &&
+        viewModel.canShowCardReaderUpsellBanner(System.currentTimeMillis(), AnalyticsTracker.KEY_BANNER_ORDER_LIST)
     ) {
         Banner(
             onCtaClick = viewModel::onCtaClicked,
