@@ -12,12 +12,13 @@ import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.push.WooNotificationBuilder
 import com.woocommerce.android.push.WooNotificationType
 import com.woocommerce.android.support.HelpActivity
+import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_ID
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_NOTIFICATION_TYPE_KEY
-import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginSupportNotificationType
-import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginSupportNotificationType.DEFAULT_SUPPORT
-import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginSupportNotificationType.LOGIN_SITE_ADDRESS_ERROR
-import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginSupportNotificationType.valueOf
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.DEFAULT_HELP
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_ERROR
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.valueOf
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -32,7 +33,7 @@ class LocalNotificationWorker @AssistedInject constructor(
 ) : Worker(appContext, workerParams) {
     override fun doWork(): Result {
         when (getNotificationType()) {
-            DEFAULT_SUPPORT -> defaultLoginSupportNotification()
+            DEFAULT_HELP -> defaultLoginSupportNotification()
             LOGIN_SITE_ADDRESS_ERROR -> siteAddressErrorNotification()
         }
         prefsWrapper.setPreLoginNotificationDisplayed(displayed = true)
@@ -73,13 +74,19 @@ class LocalNotificationWorker @AssistedInject constructor(
     private fun buildOpenSupportScreenIntent(): Intent =
         HelpActivity.createIntent(appContext, HelpActivity.Origin.LOGIN_LOCAL_NOTIFICATION, null)
 
+    private fun buildOpenLoginWithEmailScreenIntent(): Intent =
+        LoginActivity.createIntent(appContext, LOGIN_SITE_ADDRESS_ERROR)
+
+
     private fun getActionsForSiteAddressErrorNotification(): List<Pair<String, Intent>> =
         listOf(
             resourceProvider.getString(R.string.login_local_notification_contact_support_button)
-                to buildOpenSupportScreenIntent()
+                to buildOpenSupportScreenIntent(),
+            resourceProvider.getString(R.string.login_local_notification_wordpress_login_button)
+                to buildOpenLoginWithEmailScreenIntent()
         )
 
-    private fun getNotificationType(): LoginSupportNotificationType = runCatching {
+    private fun getNotificationType(): LoginHelpNotificationType = runCatching {
         valueOf(inputData.getString(LOGIN_NOTIFICATION_TYPE_KEY).orEmpty())
-    }.getOrDefault(DEFAULT_SUPPORT)
+    }.getOrDefault(DEFAULT_HELP)
 }

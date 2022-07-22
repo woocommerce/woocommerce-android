@@ -34,8 +34,8 @@ class LoginNotificationScheduler @Inject constructor(
         )
     }
 
-    fun scheduleNotification(notificationType: LoginSupportNotificationType) {
-        if (FeatureFlag.PRE_LOGIN_NOTIFICATIONS.isEnabled() && !prefsWrapper.hasPreLoginNotificationBeenDisplayed()) {
+    fun scheduleNotification(notificationType: LoginHelpNotificationType) {
+        if (FeatureFlag.PRE_LOGIN_NOTIFICATIONS.isEnabled()) { //TODO RE-ENABLE !prefsWrapper.hasPreLoginNotificationBeenDisplayed()
             cancelCurrentNotificationWorkRequest()
             val notificationData = workDataOf(
                 LOGIN_NOTIFICATION_TYPE_KEY to notificationType.name
@@ -59,8 +59,8 @@ class LoginNotificationScheduler @Inject constructor(
         }
     }
 
-    enum class LoginSupportNotificationType(val notification: String) {
+    enum class LoginHelpNotificationType(val notification: String) {
         LOGIN_SITE_ADDRESS_ERROR("site_address_error"),
-        DEFAULT_SUPPORT("default_support")
+        DEFAULT_HELP("default_support")
     }
 }

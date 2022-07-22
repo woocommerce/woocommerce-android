@@ -1,11 +1,13 @@
 package com.woocommerce.android.ui.login
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
@@ -28,7 +30,7 @@ import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow.LOGIN_SITE_ADDR
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Source
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step.ENTER_SITE_ADDRESS
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler
-import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginSupportNotificationType
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
 import com.woocommerce.android.ui.main.MainActivity
@@ -80,6 +82,20 @@ class LoginActivity :
 
         private const val KEY_UNIFIED_TRACKER_SOURCE = "KEY_UNIFIED_TRACKER_SOURCE"
         private const val KEY_UNIFIED_TRACKER_FLOW = "KEY_UNIFIED_TRACKER_FLOW"
+        private const val KEY_LOGIN_HELP_NOTIFICATION = "KEY_LOGIN_HELP_NOTIFICATION"
+
+        fun createIntent(
+            context: Context,
+            notificationType: LoginHelpNotificationType
+        ): Intent {
+            val intent = Intent(context, LoginActivity::class.java)
+            intent.apply {
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_CLEAR_TASK
+                putExtra(KEY_LOGIN_HELP_NOTIFICATION, notificationType.name)
+            }
+            return intent
+        }
     }
 
     @Inject internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
@@ -103,6 +119,8 @@ class LoginActivity :
 
         if (hasMagicLinkLoginIntent()) {
             getAuthTokenFromIntent()?.let { showMagicLinkInterceptFragment(it) }
+        } else if (openedFromLoginHelpNotification()) {
+            processLoginHelpNotification()
         } else if (savedInstanceState == null) {
             loginAnalyticsListener.trackLoginAccessed()
             showPrologueCarouselFragment()
@@ -113,6 +131,17 @@ class LoginActivity :
             unifiedLoginTracker.setFlow(ss.getString(KEY_UNIFIED_TRACKER_FLOW))
         }
     }
+
+    private fun processLoginHelpNotification() {
+        startLoginViaWPCom()
+        NotificationManagerCompat.from(this).cancel(
+            LoginNotificationScheduler.LOGIN_HELP_NOTIFICATION_TAG,
+            LoginNotificationScheduler.LOGIN_HELP_NOTIFICATION_ID
+        )
+    }
+
+    private fun openedFromLoginHelpNotification(): Boolean =
+        !intent.extras?.getString(KEY_LOGIN_HELP_NOTIFICATION).isNullOrBlank()
 
     override fun onResume() {
         super.onResume()
@@ -725,7 +754,7 @@ class LoginActivity :
                 shouldAddToBackStack = true,
                 tag = LoginSiteCheckErrorFragment.TAG
             )
-            loginNotificationScheduler.scheduleNotification(LoginSupportNotificationType.LOGIN_SITE_ADDRESS_ERROR)
+            loginNotificationScheduler.scheduleNotification(LoginHelpNotificationType.LOGIN_SITE_ADDRESS_ERROR)
         } else {
             // Just in case we use this method for a different scenario in the future
             TODO("Handle a new error scenario")
