@@ -7,7 +7,6 @@ import androidx.work.WorkManager
 import androidx.work.WorkRequest
 import androidx.work.workDataOf
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.util.FeatureFlag
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.UUID
 import java.util.concurrent.TimeUnit
@@ -35,7 +34,7 @@ class LoginNotificationScheduler @Inject constructor(
     }
 
     fun scheduleNotification(notificationType: LoginHelpNotificationType) {
-        if (FeatureFlag.PRE_LOGIN_NOTIFICATIONS.isEnabled() && !prefsWrapper.hasPreLoginNotificationBeenDisplayed()) {
+        if (!prefsWrapper.hasPreLoginNotificationBeenDisplayed()) {
             cancelCurrentNotificationWorkRequest()
             val notificationData = workDataOf(
                 LOGIN_NOTIFICATION_TYPE_KEY to notificationType.toString()
