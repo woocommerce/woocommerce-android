@@ -197,7 +197,7 @@
     <string name="login_configure_link">Read the %sconfiguration instructions%s.</string>
 
     <string name="login_prologue_label_analytics">Track sales and high performing products</string>
-    <string name="login_prologue_label_orders">Manage your store orders on the go</string>
+    <string name="login_prologue_label_orders">Manage and edit orders on the go</string>
     <string name="login_prologue_label_products">Edit and add new products from anywhere</string>
     <string name="login_prologue_new_to_woo">New to WooCommerce</string>
     <string name="login_prologue_label_analytics_subtitle">We know it\'s essential to your business</string>
