@@ -41,8 +41,6 @@ import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.compose.component.OrderListBannerDismissDialog
-import com.woocommerce.android.ui.compose.component.OrderListScreenBanner
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivity
@@ -55,6 +53,8 @@ import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBannerViaRemindMeLater
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
+import com.woocommerce.android.ui.payments.banner.OrderListBannerDismissDialog
+import com.woocommerce.android.ui.payments.banner.OrderListScreenBanner
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
@@ -155,7 +155,13 @@ class OrderListFragment :
         val view = binding.root
         if (viewModel.shouldShowUpsellCardReaderDismissDialog.value == true) {
             applyBannerDismissDialogComposeUI()
-        } else {
+        }
+        val isLandscape = DisplayUtils.isLandscape(view.context)
+        /**
+         * We are hiding the upsell card reader banner in the landscape mode since it becomes impossible for
+         * the merchants to scroll the order list. More info here: pdfdoF-12d-p2
+         */
+        if (!isLandscape) {
             applyBannerComposeUI()
         }
         return view
@@ -216,7 +222,7 @@ class OrderListFragment :
     }
 
     private fun applyBannerComposeUI() {
-        binding.paymentsComposeView.apply {
+        binding.upsellCardReaderComposeView.upsellCardReaderBannerView.apply {
             // Dispose of the Composition when the view's LifecycleOwner is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
@@ -233,7 +239,7 @@ class OrderListFragment :
     }
 
     private fun applyBannerDismissDialogComposeUI() {
-        binding.paymentsUpsellCardReaderDismissView.apply {
+        binding.upsellCardReaderComposeView.upsellCardReaderDismissView.apply {
             // Dispose of the Composition when the view's LifecycleOwner is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
@@ -327,14 +333,15 @@ class OrderListFragment :
                 }
                 is ShowOrderFilters -> showOrderFilters()
                 DismissCardReaderUpsellBanner -> {
-                    binding.paymentsComposeView.visibility = View.GONE
                     applyBannerDismissDialogComposeUI()
                 }
                 DismissCardReaderUpsellBannerViaRemindMeLater -> {
-                    binding.paymentsUpsellCardReaderDismissView.visibility = View.GONE
+                    binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
+                    binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
                 }
                 DismissCardReaderUpsellBannerViaDontShowAgain -> {
-                    binding.paymentsUpsellCardReaderDismissView.visibility = View.GONE
+                    binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
+                    binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
                 }
                 is OrderListViewModel.OrderListEvent.OpenPurchaseCardReaderLink -> {
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)

@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.orders
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_BANNER_PAYMENTS
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.RequestResult
@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBannerViaRemindMeLater
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.OpenPurchaseCardReaderLink
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
+import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -34,10 +35,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers
 import org.mockito.kotlin.any
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
@@ -53,7 +53,6 @@ import org.wordpress.android.fluxc.model.list.PagedListWrapper
 import org.wordpress.android.fluxc.store.ListStore
 import org.wordpress.android.fluxc.store.WCOrderFetcher
 import org.wordpress.android.fluxc.store.WCOrderStore
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
@@ -78,8 +77,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val orderFetcher: WCOrderFetcher = mock()
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters = mock()
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount = mock()
-    private val appPrefsWrapper: AppPrefsWrapper = mock()
-    private val store: WooCommerceStore = mock()
+    private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker = mock()
 
     @Before
     fun setup() = testBlocking {
@@ -110,10 +108,9 @@ class OrderListViewModelTest : BaseUnitTest() {
             selectedSite = selectedSite,
             fetcher = orderFetcher,
             resourceProvider = resourceProvider,
-            appPrefsWrapper = appPrefsWrapper,
             getWCOrderListDescriptorWithFilters = getWCOrderListDescriptorWithFilters,
             getSelectedOrderFiltersCount = getSelectedOrderFiltersCount,
-            store = store,
+            bannerDisplayEligibilityChecker = bannerDisplayEligibilityChecker,
         )
     }
 
@@ -437,42 +434,20 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `given upsell banner, when purchase reader clicked, then trigger proper event`() {
         runTest {
+            // GIVEN
+            whenever(
+                bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(KEY_BANNER_PAYMENTS)
+            ).thenReturn(
+                "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
+            )
+
             // WHEN
-            whenever(store.getStoreCountryCode(any())).thenReturn("US")
-            viewModel.onCtaClicked()
+            viewModel.onCtaClicked(KEY_BANNER_PAYMENTS)
 
             // Then
-            Assertions.assertThat(
+            assertThat(
                 viewModel.event.value
             ).isInstanceOf(OpenPurchaseCardReaderLink::class.java)
-        }
-    }
-
-    @Test
-    fun `given upsell banner and store in the US, when purchase reader clicked, then verify url is proper`() {
-        runTest {
-            // WHEN
-            whenever(store.getStoreCountryCode(any())).thenReturn("US")
-            viewModel.onCtaClicked()
-
-            // Then
-            Assertions.assertThat(
-                viewModel.event.value
-            ).isEqualTo(OpenPurchaseCardReaderLink("${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"))
-        }
-    }
-
-    @Test
-    fun `given upsell banner and store in the Canada, when purchase reader clicked, then verify url is proper`() {
-        runTest {
-            // WHEN
-            whenever(store.getStoreCountryCode(any())).thenReturn("CA")
-            viewModel.onCtaClicked()
-
-            // Then
-            Assertions.assertThat(
-                viewModel.event.value
-            ).isEqualTo(OpenPurchaseCardReaderLink("${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}CA"))
         }
     }
 
@@ -482,7 +457,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel.onDismissClicked()
 
         // Then
-        Assertions.assertThat(
+        assertThat(
             viewModel.event.value
         ).isEqualTo(DismissCardReaderUpsellBanner)
     }
@@ -490,176 +465,22 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `given upsell banner, when banner is dismissed via remind later, then trigger proper event`() {
         // WHEN
-        viewModel.onRemindLaterClicked(0L)
+        viewModel.onRemindLaterClicked(0L, KEY_BANNER_PAYMENTS)
 
         // Then
-        Assertions.assertThat(viewModel.event.value).isEqualTo(
+        assertThat(viewModel.event.value).isEqualTo(
             DismissCardReaderUpsellBannerViaRemindMeLater
         )
     }
+
     @Test
     fun `given upsell banner, when banner is dismissed via don't show again, then trigger proper event`() {
         // WHEN
-        viewModel.onDontShowAgainClicked()
+        viewModel.onDontShowAgainClicked(KEY_BANNER_PAYMENTS)
 
         // Then
-        Assertions.assertThat(viewModel.event.value).isEqualTo(
+        assertThat(viewModel.event.value).isEqualTo(
             DismissCardReaderUpsellBannerViaDontShowAgain
-        )
-    }
-
-    @Test
-    fun `given banner dismissed and current time in millis less than 14 days, then show banner again`() {
-        // GIVEN
-        val currentTimeInMillis = System.currentTimeMillis()
-        val tenDays = (1000 * 60 * 60 * 24 * 10)
-        val lastDialogDismissedInMillis = currentTimeInMillis - tenDays
-        whenever(
-            appPrefsWrapper.getCardReaderUpsellBannerLastDismissed(
-                ArgumentMatchers.anyInt(),
-                ArgumentMatchers.anyLong(),
-                ArgumentMatchers.anyLong()
-            )
-        ).thenReturn(lastDialogDismissedInMillis)
-
-        // WHEN
-        val result = viewModel.isLastDialogDismissedMoreThan14DaysAgo(currentTimeInMillis)
-
-        // Then
-        Assertions.assertThat(result).isFalse
-    }
-
-    @Test
-    fun `given banner dismissed and current time in millis greater than 14 days, then show banner again`() {
-        // GIVEN
-        val currentTimeInMillis = System.currentTimeMillis()
-        val fifteenDays = (1000 * 60 * 60 * 24 * 15)
-        val lastDialogDismissedInMillis = currentTimeInMillis - fifteenDays
-        whenever(
-            appPrefsWrapper.getCardReaderUpsellBannerLastDismissed(
-                ArgumentMatchers.anyInt(),
-                ArgumentMatchers.anyLong(),
-                ArgumentMatchers.anyLong()
-            )
-        ).thenReturn(lastDialogDismissedInMillis)
-
-        // WHEN
-        val result = viewModel.isLastDialogDismissedMoreThan14DaysAgo(currentTimeInMillis)
-
-        // Then
-        Assertions.assertThat(result).isTrue
-    }
-
-    @Test
-    fun `given card reader hasnt dismissed even once, then display upsell card reader banner`() {
-        whenever(
-            appPrefsWrapper.isCardReaderUpsellBannerDismissedForever(
-                ArgumentMatchers.anyInt(),
-                ArgumentMatchers.anyLong(),
-                ArgumentMatchers.anyLong()
-            )
-        ).thenReturn(false)
-        whenever(
-            appPrefsWrapper.getCardReaderUpsellBannerLastDismissed(
-                ArgumentMatchers.anyInt(),
-                ArgumentMatchers.anyLong(),
-                ArgumentMatchers.anyLong()
-            )
-        ).thenReturn(0L)
-
-        val canShowBanner = viewModel.canShowCardReaderUpsellBanner(0L)
-
-        Assertions.assertThat(canShowBanner).isTrue
-    }
-
-    @Test
-    fun `given card reader has dismissed forever, then don't display upsell card reader banner`() {
-        whenever(
-            appPrefsWrapper.isCardReaderUpsellBannerDismissedForever(
-                ArgumentMatchers.anyInt(),
-                ArgumentMatchers.anyLong(),
-                ArgumentMatchers.anyLong()
-            )
-        ).thenReturn(true)
-
-        val canShowBanner = viewModel.canShowCardReaderUpsellBanner(0L)
-
-        Assertions.assertThat(canShowBanner).isFalse
-    }
-
-    @Test
-    fun `given card reader has dismissed via remind later, when threshold isn't passed, then don't display banner`() {
-        whenever(
-            appPrefsWrapper.isCardReaderUpsellBannerDismissedForever(
-                ArgumentMatchers.anyInt(),
-                ArgumentMatchers.anyLong(),
-                ArgumentMatchers.anyLong()
-            )
-        ).thenReturn(false)
-        val currentTimeInMillis = System.currentTimeMillis()
-        val tenDays = (1000 * 60 * 60 * 24 * 10)
-        val lastDialogDismissedInMillis = currentTimeInMillis - tenDays
-        whenever(
-            appPrefsWrapper.getCardReaderUpsellBannerLastDismissed(
-                ArgumentMatchers.anyInt(),
-                ArgumentMatchers.anyLong(),
-                ArgumentMatchers.anyLong()
-            )
-        ).thenReturn(lastDialogDismissedInMillis)
-
-        val canShowBanner = viewModel.canShowCardReaderUpsellBanner(currentTimeInMillis)
-
-        Assertions.assertThat(canShowBanner).isFalse
-    }
-
-    @Test
-    fun `given card reader has dismissed via remind later, when threshold has passed, then display banner`() {
-        whenever(
-            appPrefsWrapper.isCardReaderUpsellBannerDismissedForever(
-                ArgumentMatchers.anyInt(),
-                ArgumentMatchers.anyLong(),
-                ArgumentMatchers.anyLong()
-            )
-        ).thenReturn(false)
-        val currentTimeInMillis = System.currentTimeMillis()
-        val fifteenDays = (1000 * 60 * 60 * 24 * 15)
-        val lastDialogDismissedInMillis = currentTimeInMillis - fifteenDays
-        whenever(
-            appPrefsWrapper.getCardReaderUpsellBannerLastDismissed(
-                ArgumentMatchers.anyInt(),
-                ArgumentMatchers.anyLong(),
-                ArgumentMatchers.anyLong()
-            )
-        ).thenReturn(lastDialogDismissedInMillis)
-
-        val canShowBanner = viewModel.canShowCardReaderUpsellBanner(currentTimeInMillis)
-
-        Assertions.assertThat(canShowBanner).isTrue
-    }
-
-    @Test
-    fun `given card reader has dismissed via remind later, then store current time in millis to shared prefs`() {
-        val currentTimeInMillis = System.currentTimeMillis()
-
-        viewModel.onRemindLaterClicked(currentTimeInMillis)
-
-        verify(appPrefsWrapper).setCardReaderUpsellBannerRemindMeLater(
-            ArgumentMatchers.eq(currentTimeInMillis),
-            ArgumentMatchers.anyInt(),
-            ArgumentMatchers.anyLong(),
-            ArgumentMatchers.anyLong()
-        )
-    }
-
-    @Test
-    fun `given card reader banner has dismissed forever, then store this info to shared prefs`() {
-        viewModel.onDontShowAgainClicked()
-
-        verify(appPrefsWrapper).setCardReaderUpsellBannerDismissed(
-            ArgumentMatchers.eq(true),
-            ArgumentMatchers.anyInt(),
-            ArgumentMatchers.anyLong(),
-            ArgumentMatchers.anyLong()
         )
     }
 
@@ -667,26 +488,57 @@ class OrderListViewModelTest : BaseUnitTest() {
     fun `given card reader banner has dismissed, then update dialogShow state to true`() {
         viewModel.onDismissClicked()
 
-        Assertions.assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isTrue
+        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isTrue
     }
 
     @Test
     fun `given card reader banner has dismissed via remind later, then update dialogShow state to false`() {
-        viewModel.onRemindLaterClicked(0L)
+        viewModel.onRemindLaterClicked(0L, KEY_BANNER_PAYMENTS)
 
-        Assertions.assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
+        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
     }
 
     @Test
     fun `given card reader banner has dismissed via don't show again, then update dialogShow state to false`() {
-        viewModel.onDontShowAgainClicked()
+        viewModel.onDontShowAgainClicked(KEY_BANNER_PAYMENTS)
 
-        Assertions.assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
+        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
     }
 
     @Test
     fun `given view model init, then update dialogShow state to false`() {
-        Assertions.assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
+        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
+    }
+
+    @Test
+    fun `given store not eligible for IPP, then isEligibleForInPersonPayments is false`() {
+        runTest {
+            whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(false)
+            whenever(selectedSite.exists()).thenReturn(true)
+
+            setup()
+
+            assertThat(viewModel.isEligibleForInPersonPayments.value).isFalse
+        }
+    }
+
+    @Test
+    fun `given store eligible for IPP, then isEligibleForInPersonPayments is true`() {
+        runTest {
+            whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(true)
+            whenever(selectedSite.exists()).thenReturn(true)
+
+            setup()
+
+            assertThat(viewModel.isEligibleForInPersonPayments.value).isTrue
+        }
+    }
+
+    @Test
+    fun `when alert dialog dismissed by pressing back, then shouldShowUpsellCardReaderDismissDialog set to false`() {
+        viewModel.onBannerAlertDismiss()
+
+        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
     }
     //endregion
 
