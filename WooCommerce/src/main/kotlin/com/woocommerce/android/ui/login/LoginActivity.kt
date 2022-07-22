@@ -40,10 +40,14 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import dagger.hilt.android.AndroidEntryPoint
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode.MAIN
+import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.network.MemorizingTrustManager
 import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayloadScheme.WOOCOMMERCE
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload
+import org.wordpress.android.fluxc.store.SiteStore.OnConnectSiteInfoChecked
 import org.wordpress.android.login.AuthOptions
 import org.wordpress.android.login.GoogleFragment.GoogleListener
 import org.wordpress.android.login.Login2FaFragment
@@ -88,8 +92,10 @@ class LoginActivity :
     @Inject internal lateinit var zendeskHelper: ZendeskHelper
     @Inject internal lateinit var urlUtils: UrlUtils
     @Inject internal lateinit var loginFlowUsageTracker: LoginFlowUsageTracker
+    @Inject internal lateinit var dispatcher: Dispatcher
 
     private var loginMode: LoginMode? = null
+    private var isSiteOnWPcom: Boolean? = null
 
     private lateinit var binding: ActivityLoginBinding
 
@@ -97,6 +103,8 @@ class LoginActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        dispatcher.register(this)
 
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -117,6 +125,12 @@ class LoginActivity :
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        dispatcher.unregister(this)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -739,5 +753,11 @@ class LoginActivity :
 
     override fun onCarouselFinished() {
         showPrologueFragment()
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = MAIN)
+    fun onFetchedConnectSiteInfo(event: OnConnectSiteInfoChecked) {
+        isSiteOnWPcom = event.info.isWPCom
     }
 }
