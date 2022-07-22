@@ -80,7 +80,6 @@ class LoginActivity :
         private const val JETPACK_CONNECT_URL = "https://wordpress.com/jetpack/connect/"
         private const val JETPACK_CONNECTED_REDIRECT_URL = "woocommerce://jetpack-connected"
 
-
         private const val KEY_UNIFIED_TRACKER_SOURCE = "KEY_UNIFIED_TRACKER_SOURCE"
         private const val KEY_UNIFIED_TRACKER_FLOW = "KEY_UNIFIED_TRACKER_FLOW"
     }
