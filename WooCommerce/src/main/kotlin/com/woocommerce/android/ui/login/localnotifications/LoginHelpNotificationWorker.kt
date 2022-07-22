@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.login.localnotifications
 
 import android.content.Context
 import android.content.Intent
+import androidx.annotation.StringRes
 import androidx.hilt.work.HiltWorker
 import androidx.work.Worker
 import androidx.work.WorkerParameters
@@ -52,7 +53,10 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
         wooNotificationBuilder.buildAndDisplayLoginHelpNotification(
             notificationLocalId = LOGIN_HELP_NOTIFICATION_ID,
             appContext.getString(R.string.notification_channel_pre_login_id),
-            notification = buildDefaultLoginNotification(),
+            notification = buildLoginNotification(
+                title = R.string.login_help_notification_default_title,
+                description = R.string.login_help_notification_no_interaction_default_description
+            ),
             notificationTappedIntent = buildOpenSupportScreenIntent()
         )
     }
@@ -61,20 +65,26 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
         wooNotificationBuilder.buildAndDisplayLoginHelpNotification(
             notificationLocalId = LOGIN_HELP_NOTIFICATION_ID,
             appContext.getString(R.string.notification_channel_pre_login_id),
-            notification = buildDefaultLoginNotification(),
+            notification = buildLoginNotification(
+                title = R.string.login_help_notification_default_title,
+                description = R.string.login_help_notification_site_error_description
+            ),
             notificationTappedIntent = buildOpenLoginWithEmailScreenIntent(),
             actions = getActionsForSiteAddressErrorNotification()
         )
     }
 
-    private fun buildDefaultLoginNotification() = Notification(
+    private fun buildLoginNotification(
+        @StringRes title: Int,
+        @StringRes description: Int
+    ) = Notification(
         noteId = LOGIN_HELP_NOTIFICATION_ID,
         uniqueId = 0,
         remoteNoteId = 0,
         remoteSiteId = 0,
         icon = null,
-        noteTitle = resourceProvider.getString(R.string.login_local_notification_no_interaction_title),
-        noteMessage = resourceProvider.getString(R.string.login_local_notification_no_interaction_description),
+        noteTitle = resourceProvider.getString(title),
+        noteMessage = resourceProvider.getString(description),
         noteType = WooNotificationType.PRE_LOGIN,
         channelType = NotificationChannelType.PRE_LOGIN
     )
@@ -87,9 +97,9 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
 
     private fun getActionsForSiteAddressErrorNotification(): List<Pair<String, Intent>> =
         listOf(
-            resourceProvider.getString(R.string.login_local_notification_wordpress_login_button)
+            resourceProvider.getString(R.string.login_help_notification_wordpress_login_button)
                 to buildOpenLoginWithEmailScreenIntent(),
-            resourceProvider.getString(R.string.login_local_notification_contact_support_button)
+            resourceProvider.getString(R.string.login_help_notification_contact_support_button)
                 to buildOpenSupportScreenIntent(),
         )
 }
