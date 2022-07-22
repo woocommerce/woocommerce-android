@@ -436,11 +436,12 @@ class LoginActivity :
         AppPrefs.setLoginSiteAddress(siteAddressClean)
 
         if (hasJetpack) {
-            showEmailLoginScreen(inputSiteAddress)
+            if (isSiteOnWPcom == true) {
+                showEmailLoginScreen(inputSiteAddress)
+            } else {
+                loginViaSiteCredentials(inputSiteAddress)
+            }
         } else {
-            // hide the keyboard
-            org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
-
             // Let user log in via site credentials first before showing Jetpack missing screen.
             loginViaSiteCredentials(inputSiteAddress)
         }
@@ -454,6 +455,9 @@ class LoginActivity :
      * in the login process.
      */
     override fun loginViaSiteCredentials(inputSiteAddress: String?) {
+        // hide the keyboard
+        org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
+
         unifiedLoginTracker.trackClick(Click.LOGIN_WITH_SITE_CREDS)
         showUsernamePasswordScreen(inputSiteAddress, null, null, null)
     }
