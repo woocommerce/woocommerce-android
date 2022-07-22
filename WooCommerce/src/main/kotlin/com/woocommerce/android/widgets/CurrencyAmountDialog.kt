@@ -46,9 +46,9 @@ open class CurrencyAmountDialog : DialogFragment(), DialogInterface.OnClickListe
         val args = arguments
         if (args != null) {
             headerText.text = args.getString(TITLE_KEY, "")
-            currentValue = args.getSerializable(CURRENT_VALUE_KEY, BigDecimal::class.java) ?: BigDecimal.ZERO
-            maxValue = args.getSerializable(MAX_VALUE_KEY, BigDecimal::class.java) ?: BigDecimal(Double.MAX_VALUE)
-            minValue = args.getSerializable(MIN_VALUE_KEY, BigDecimal::class.java) ?: BigDecimal(Double.MIN_VALUE)
+            currentValue = args.getSerializable(CURRENT_VALUE_KEY) as? BigDecimal ?: BigDecimal.ZERO
+            maxValue = args.getSerializable(MAX_VALUE_KEY) as? BigDecimal ?: BigDecimal(Double.MAX_VALUE)
+            minValue = args.getSerializable(MIN_VALUE_KEY) as? BigDecimal ?: BigDecimal(Double.MIN_VALUE)
             messageText.text = args.getString(MESSAGE_KEY, "")
         }
 
