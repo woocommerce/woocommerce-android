@@ -35,7 +35,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -445,7 +445,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             viewModel.onCtaClicked(KEY_BANNER_PAYMENTS)
 
             // Then
-            Assertions.assertThat(
+            assertThat(
                 viewModel.event.value
             ).isInstanceOf(OpenPurchaseCardReaderLink::class.java)
         }
@@ -457,7 +457,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel.onDismissClicked()
 
         // Then
-        Assertions.assertThat(
+        assertThat(
             viewModel.event.value
         ).isEqualTo(DismissCardReaderUpsellBanner)
     }
@@ -468,7 +468,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel.onRemindLaterClicked(0L, KEY_BANNER_PAYMENTS)
 
         // Then
-        Assertions.assertThat(viewModel.event.value).isEqualTo(
+        assertThat(viewModel.event.value).isEqualTo(
             DismissCardReaderUpsellBannerViaRemindMeLater
         )
     }
@@ -479,7 +479,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel.onDontShowAgainClicked(KEY_BANNER_PAYMENTS)
 
         // Then
-        Assertions.assertThat(viewModel.event.value).isEqualTo(
+        assertThat(viewModel.event.value).isEqualTo(
             DismissCardReaderUpsellBannerViaDontShowAgain
         )
     }
@@ -488,26 +488,26 @@ class OrderListViewModelTest : BaseUnitTest() {
     fun `given card reader banner has dismissed, then update dialogShow state to true`() {
         viewModel.onDismissClicked()
 
-        Assertions.assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isTrue
+        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isTrue
     }
 
     @Test
     fun `given card reader banner has dismissed via remind later, then update dialogShow state to false`() {
         viewModel.onRemindLaterClicked(0L, KEY_BANNER_PAYMENTS)
 
-        Assertions.assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
+        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
     }
 
     @Test
     fun `given card reader banner has dismissed via don't show again, then update dialogShow state to false`() {
         viewModel.onDontShowAgainClicked(KEY_BANNER_PAYMENTS)
 
-        Assertions.assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
+        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
     }
 
     @Test
     fun `given view model init, then update dialogShow state to false`() {
-        Assertions.assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
+        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
     }
 
     @Test
@@ -518,7 +518,7 @@ class OrderListViewModelTest : BaseUnitTest() {
 
             setup()
 
-            Assertions.assertThat(viewModel.isEligibleForInPersonPayments.value).isFalse
+            assertThat(viewModel.isEligibleForInPersonPayments.value).isFalse
         }
     }
 
@@ -530,7 +530,7 @@ class OrderListViewModelTest : BaseUnitTest() {
 
             setup()
 
-            Assertions.assertThat(viewModel.isEligibleForInPersonPayments.value).isTrue
+            assertThat(viewModel.isEligibleForInPersonPayments.value).isTrue
         }
     }
 
@@ -538,7 +538,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     fun `when alert dialog dismissed by pressing back, then shouldShowUpsellCardReaderDismissDialog set to false`() {
         viewModel.onBannerAlertDismiss()
 
-        Assertions.assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
+        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
     }
     //endregion
 
