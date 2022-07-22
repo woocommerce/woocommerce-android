@@ -62,7 +62,7 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
             notificationLocalId = LOGIN_HELP_NOTIFICATION_ID,
             appContext.getString(R.string.notification_channel_pre_login_id),
             notification = buildDefaultLoginNotification(),
-            notificationTappedIntent = buildOpenSupportScreenIntent(),
+            notificationTappedIntent = buildOpenLoginWithEmailScreenIntent(),
             actions = getActionsForSiteAddressErrorNotification()
         )
     }
