@@ -96,6 +96,11 @@ class WooNotificationBuilder @Inject constructor(private val context: Context) {
                 )
             }
             setLargeIcon(getLargeIconBitmap(context, notification.icon, channelType.shouldCircularizeNoteIcon()))
+            // Call processing service when notification is dismissed
+            val pendingDeleteIntent = NotificationsProcessingService.getPendingIntentForNotificationDismiss(
+                context, notificationLocalId
+            )
+            setDeleteIntent(pendingDeleteIntent)
             NotificationManagerCompat.from(context).notify(
                 LoginNotificationScheduler.LOGIN_HELP_NOTIFICATION_TAG,
                 notificationLocalId,

@@ -627,4 +627,9 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     COUPON_UPDATE_FAILED,
     COUPON_DELETE_SUCCESS,
     COUPON_DELETE_FAILED,
+
+    // Login help scheduled notifications
+    LOGIN_LOCAL_NOTIFICATION_DISPLAYED(siteless = true),
+    LOGIN_LOCAL_NOTIFICATION_TAPPED(siteless = true),
+    LOGIN_LOCAL_NOTIFICATION_DISMISSED(siteless = true),
 }

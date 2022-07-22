@@ -94,7 +94,7 @@ class LoginActivity :
             intent.apply {
                 flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or
                     Intent.FLAG_ACTIVITY_CLEAR_TASK
-                putExtra(KEY_LOGIN_HELP_NOTIFICATION, notificationType.name)
+                putExtra(KEY_LOGIN_HELP_NOTIFICATION, notificationType.toString())
             }
             return intent
         }
@@ -118,11 +118,12 @@ class LoginActivity :
 
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val loginHelpNotification = getLoginHelpNotification()
 
         if (hasMagicLinkLoginIntent()) {
             getAuthTokenFromIntent()?.let { showMagicLinkInterceptFragment(it) }
-        } else if (openedFromLoginHelpNotification()) {
-            processLoginHelpNotification()
+        } else if (!loginHelpNotification.isNullOrBlank()) {
+            processLoginHelpNotification(loginHelpNotification)
         } else if (savedInstanceState == null) {
             loginAnalyticsListener.trackLoginAccessed()
             showPrologueCarouselFragment()
@@ -134,16 +135,17 @@ class LoginActivity :
         }
     }
 
-    private fun processLoginHelpNotification() {
+    private fun processLoginHelpNotification(loginHelpNotification: String) {
         startLoginViaWPCom()
         NotificationManagerCompat.from(this).cancel(
             LOGIN_HELP_NOTIFICATION_TAG,
             LOGIN_HELP_NOTIFICATION_ID
         )
+        AnalyticsTracker.track(
+            AnalyticsEvent.LOGIN_LOCAL_NOTIFICATION_TAPPED,
+            mapOf(AnalyticsTracker.KEY_TYPE to loginHelpNotification)
+        )
     }
-
-    private fun openedFromLoginHelpNotification(): Boolean =
-        !intent.extras?.getString(KEY_LOGIN_HELP_NOTIFICATION).isNullOrBlank()
 
     override fun onResume() {
         super.onResume()
@@ -767,6 +769,9 @@ class LoginActivity :
         ChromeCustomTabUtils.launchUrl(this, LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT)
         unifiedLoginTracker.trackClick(Click.WHAT_IS_WORDPRESS_COM)
     }
+
+    private fun getLoginHelpNotification(): String? =
+        intent.extras?.getString(KEY_LOGIN_HELP_NOTIFICATION)
 
     override fun onCarouselFinished() {
         showPrologueFragment()

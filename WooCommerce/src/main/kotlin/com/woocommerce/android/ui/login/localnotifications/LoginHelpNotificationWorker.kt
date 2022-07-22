@@ -7,6 +7,8 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.LOGIN_LOCAL_NOTIFICATION_DISPLAYED
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.push.WooNotificationBuilder
@@ -18,7 +20,6 @@ import com.woocommerce.android.ui.login.localnotifications.LoginNotificationSche
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.DEFAULT_HELP
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_ERROR
-import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.valueOf
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -32,10 +33,17 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
     private val prefsWrapper: AppPrefsWrapper
 ) : Worker(appContext, workerParams) {
     override fun doWork(): Result {
-        when (getNotificationType()) {
+        val notificationType = LoginHelpNotificationType.fromString(
+            inputData.getString(LOGIN_NOTIFICATION_TYPE_KEY)
+        )
+        when (notificationType) {
             DEFAULT_HELP -> defaultLoginSupportNotification()
             LOGIN_SITE_ADDRESS_ERROR -> siteAddressErrorNotification()
         }
+        AnalyticsTracker.track(
+            LOGIN_LOCAL_NOTIFICATION_DISPLAYED,
+            mapOf(AnalyticsTracker.KEY_TYPE to notificationType.toString())
+        )
         prefsWrapper.setPreLoginNotificationDisplayed(displayed = true)
         return Result.success()
     }
@@ -72,7 +80,7 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
     )
 
     private fun buildOpenSupportScreenIntent(): Intent =
-        HelpActivity.createIntent(appContext, HelpActivity.Origin.LOGIN_LOCAL_NOTIFICATION, null)
+        HelpActivity.createIntent(appContext, HelpActivity.Origin.LOGIN_HELP_NOTIFICATION, null)
 
     private fun buildOpenLoginWithEmailScreenIntent(): Intent =
         LoginActivity.createIntent(appContext, LOGIN_SITE_ADDRESS_ERROR)
@@ -85,8 +93,4 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
             resourceProvider.getString(R.string.login_local_notification_wordpress_login_button)
                 to buildOpenLoginWithEmailScreenIntent()
         )
-
-    private fun getNotificationType(): LoginHelpNotificationType = runCatching {
-        valueOf(inputData.getString(LOGIN_NOTIFICATION_TYPE_KEY).orEmpty())
-    }.getOrDefault(DEFAULT_HELP)
 }

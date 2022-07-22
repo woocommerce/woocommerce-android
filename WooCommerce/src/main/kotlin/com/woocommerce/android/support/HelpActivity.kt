@@ -17,6 +17,7 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_ID
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_TAG
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_ERROR
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.PackageUtils
 import dagger.hilt.android.AndroidEntryPoint
@@ -79,7 +80,9 @@ class HelpActivity : AppCompatActivity() {
             showZendeskTickets()
         }
 
-        NotificationManagerCompat.from(this).cancel(LOGIN_HELP_NOTIFICATION_TAG, LOGIN_HELP_NOTIFICATION_ID)
+        if (originFromExtras == Origin.LOGIN_HELP_NOTIFICATION) {
+            handleOpenedFromLoginHelpNotification()
+        }
     }
 
     override fun onResume() {
@@ -183,6 +186,14 @@ class HelpActivity : AppCompatActivity() {
         startActivity(Intent(this, SSRActivity::class.java))
     }
 
+    private fun handleOpenedFromLoginHelpNotification() {
+        NotificationManagerCompat.from(this).cancel(LOGIN_HELP_NOTIFICATION_TAG, LOGIN_HELP_NOTIFICATION_ID)
+        AnalyticsTracker.track(
+            AnalyticsEvent.LOGIN_LOCAL_NOTIFICATION_TAPPED,
+            mapOf(AnalyticsTracker.KEY_TYPE to LOGIN_SITE_ADDRESS_ERROR.name) //TODO REMOVE HARDCODED VALUE FOR TYPE
+        )
+    }
+
     enum class Origin(private val stringValue: String) {
         UNKNOWN("origin:unknown"),
         SETTINGS("origin:settings"),
@@ -203,7 +214,7 @@ class HelpActivity : AppCompatActivity() {
         SIGNUP_EMAIL("origin:signup-email"),
         SIGNUP_MAGIC_LINK("origin:signup-magic-link"),
         JETPACK_INSTALLATION("origin:jetpack-installation"),
-        LOGIN_LOCAL_NOTIFICATION("origin:login-local-notification");
+        LOGIN_HELP_NOTIFICATION("origin:login-local-notification");
 
         override fun toString(): String {
             return stringValue
