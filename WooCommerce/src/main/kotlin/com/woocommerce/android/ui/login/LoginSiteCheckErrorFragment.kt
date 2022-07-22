@@ -71,7 +71,7 @@ class LoginSiteCheckErrorFragment : Fragment(R.layout.fragment_login_site_check_
             setOnClickListener {
                 unifiedLoginTracker.trackClick(Click.TRY_ANOTHER_STORE)
 
-                requireActivity().onBackPressedDispatcher.onBackPressed()
+                requireActivity().onBackPressed()
             }
         }
 

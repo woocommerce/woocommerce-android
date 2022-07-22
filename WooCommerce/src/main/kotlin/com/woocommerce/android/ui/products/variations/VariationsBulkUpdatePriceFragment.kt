@@ -55,7 +55,7 @@ class VariationsBulkUpdatePriceFragment : BaseFragment(R.layout.fragment_variati
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
+                is Exit -> requireActivity().onBackPressed()
             }
         }
     }

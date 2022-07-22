@@ -202,7 +202,7 @@ class LoginActivity :
         if (supportFragmentManager.backStackEntryCount == 1) {
             finish()
         } else {
-            onBackPressedDispatcher.onBackPressed()
+            super.onBackPressed()
         }
     }
 

@@ -19,7 +19,7 @@ class WooLogViewerActivity : AppCompatActivity() {
             WooThemeWithBackground {
                 WooLogViewerScreen(
                     WooLog.logEntries,
-                    onBackPress = { onBackPressedDispatcher.onBackPressed() },
+                    onBackPress = ::onBackPressed,
                     onCopyButtonClick = ::copyAppLogToClipboard,
                     onShareButtonClick = ::shareAppLog
                 )
