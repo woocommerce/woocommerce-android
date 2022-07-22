@@ -77,6 +77,9 @@ class LoginActivity :
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
         private const val MAGIC_LOGIN = "magic-login"
         private const val TOKEN_PARAMETER = "token"
+        private const val JETPACK_CONNECT_URL = "https://wordpress.com/jetpack/connect/"
+        private const val JETPACK_CONNECTED_REDIRECT_URL = "woocommerce://jetpack-connected"
+
 
         private const val KEY_UNIFIED_TRACKER_SOURCE = "KEY_UNIFIED_TRACKER_SOURCE"
         private const val KEY_UNIFIED_TRACKER_FLOW = "KEY_UNIFIED_TRACKER_FLOW"
@@ -668,7 +671,10 @@ class LoginActivity :
     }
 
     override fun startJetpackInstall(siteAddress: String?) {
-        TODO("Not yet implemented")
+        siteAddress?.let {
+            val url = "$JETPACK_CONNECT_URL?url=$it&mobile_redirect=$JETPACK_CONNECTED_REDIRECT_URL&from=mobile"
+            ChromeCustomTabUtils.launchUrl(this, url)
+        }
     }
 
     override fun gotUnregisteredEmail(email: String?) {
