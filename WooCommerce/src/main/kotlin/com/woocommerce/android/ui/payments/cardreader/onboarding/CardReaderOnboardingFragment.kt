@@ -133,7 +133,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
             binding.icCheckmarkWcPay.visibility = View.VISIBLE
             binding.icCheckmarkStripe.visibility = View.GONE
             binding.selectStripeButton.strokeColor =
-                ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.gray_5))
+                ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.select_payment_gateway_stroke))
         }
         binding.selectStripeButton.setOnClickListener {
             selectedPluginType = PluginType.STRIPE_EXTENSION_GATEWAY
@@ -142,7 +142,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
             binding.icCheckmarkWcPay.visibility = View.GONE
             binding.icCheckmarkStripe.visibility = View.VISIBLE
             binding.selectWcPayButton.strokeColor =
-                ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.gray_5))
+                ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.select_payment_gateway_stroke))
         }
         binding.confirmPaymentMethod.setOnClickListener {
             state.onConfirmPaymentMethodClicked.invoke(selectedPluginType)

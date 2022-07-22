@@ -20,6 +20,7 @@ import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.support.ZendeskExtraTags
 import com.woocommerce.android.support.ZendeskHelper
+import com.woocommerce.android.ui.login.LoginPrologueCarouselFragment.PrologueCarouselListener
 import com.woocommerce.android.ui.login.LoginPrologueFragment.PrologueFinishedListener
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
@@ -65,6 +66,7 @@ class LoginActivity :
     LoginListener,
     GoogleListener,
     PrologueFinishedListener,
+    PrologueCarouselListener,
     HasAndroidInjector,
     LoginNoJetpackListener,
     LoginEmailHelpDialogFragment.Listener,
@@ -100,7 +102,7 @@ class LoginActivity :
             getAuthTokenFromIntent()?.let { showMagicLinkInterceptFragment(it) }
         } else if (savedInstanceState == null) {
             loginAnalyticsListener.trackLoginAccessed()
-            showPrologueFragment()
+            showPrologueCarouselFragment()
         }
 
         savedInstanceState?.let { ss ->
@@ -123,11 +125,11 @@ class LoginActivity :
         }
     }
 
-    private fun showPrologueFragment() {
-        val fragment = LoginPrologueFragment.newInstance()
+    private fun showPrologueCarouselFragment() {
+        val fragment = LoginPrologueCarouselFragment.newInstance()
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment, LoginPrologueFragment.TAG)
-            .addToBackStack(LoginPrologueFragment.TAG)
+            .replace(R.id.fragment_container, fragment, LoginPrologueCarouselFragment.TAG)
+            .addToBackStack(LoginPrologueCarouselFragment.TAG)
             .commitAllowingStateLoss()
     }
 
@@ -187,6 +189,9 @@ class LoginActivity :
     private fun getLoginViaSiteAddressFragment(): LoginSiteAddressFragment? =
         supportFragmentManager.findFragmentByTag(LoginSiteAddressFragment.TAG) as? WooLoginSiteAddressFragment
 
+    private fun getPrologueFragment(): LoginPrologueFragment? =
+        supportFragmentManager.findFragmentByTag(LoginPrologueFragment.TAG) as? LoginPrologueFragment
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
             onBackPressed()
@@ -234,6 +239,10 @@ class LoginActivity :
     override fun onSecondaryButtonClicked() {
         unifiedLoginTracker.trackClick(Click.CONTINUE_WITH_WORDPRESS_COM)
         startLoginViaWPCom()
+    }
+
+    override fun onNewToWooButtonClicked() {
+        ChromeCustomTabUtils.launchUrl(this, AppUrls.NEW_TO_WOO_DOC)
     }
 
     private fun showMainActivityAndFinish() {
@@ -299,6 +308,11 @@ class LoginActivity :
         unifiedLoginTracker.setFlowAndStep(LOGIN_SITE_ADDRESS, ENTER_SITE_ADDRESS)
         val loginSiteAddressFragment = getLoginViaSiteAddressFragment() ?: WooLoginSiteAddressFragment()
         slideInFragment(loginSiteAddressFragment, true, LoginSiteAddressFragment.TAG)
+    }
+
+    private fun showPrologueFragment() {
+        val prologueFragment = getPrologueFragment() ?: LoginPrologueFragment()
+        slideInFragment(prologueFragment, true, LoginPrologueFragment.TAG)
     }
 
     override fun loginViaSocialAccount(
@@ -716,5 +730,9 @@ class LoginActivity :
     override fun onWhatIsWordPressLinkClicked() {
         ChromeCustomTabUtils.launchUrl(this, LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT)
         unifiedLoginTracker.trackClick(Click.WHAT_IS_WORDPRESS_COM)
+    }
+
+    override fun onCarouselFinished() {
+        showPrologueFragment()
     }
 }

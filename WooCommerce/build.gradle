@@ -64,9 +64,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "9.6-rc-1"
+            versionName "9.6-rc-2"
         }
-        versionCode 312
+        versionCode 313
 
         minSdkVersion gradle.ext.minSdkVersion
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
@@ -102,13 +102,6 @@ android {
             // TODO fix all the warnings in the codebase and change to true before end of 2022
             allWarningsAsErrors = false
         }
-    }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
-        freeCompilerArgs += [
-                "-Xopt-in=kotlin.RequiresOptIn"
-        ]
     }
 
     composeOptions {
