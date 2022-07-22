@@ -102,7 +102,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
         val layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         this.layoutManager = layoutManager
 
-        savedInstanceState?.getParcelable(LIST_STATE_KEY, Parcelable::class.java)?.let {
+        savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY)?.let {
             layoutManager.onRestoreInstanceState(it)
         }
 

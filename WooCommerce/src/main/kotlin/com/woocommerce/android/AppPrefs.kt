@@ -6,7 +6,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
-import android.content.pm.PackageManager.PackageInfoFlags
 import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
@@ -154,7 +153,7 @@ object AppPrefs {
         get() = try {
             context
                 .packageManager
-                .getPackageInfo(context.packageName, PackageInfoFlags.of(0))
+                .getPackageInfo(context.packageName, 0)
                 .firstInstallTime
                 .let { Date(it) }
         } catch (ex: Throwable) {

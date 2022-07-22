@@ -255,7 +255,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         )
         assignedTermsAdapter = binding.assignedTermList.adapter as AttributeTermsListAdapter
         assignedTermsAdapter.setOnTermListener(assignedTermListener)
-        savedInstanceState?.getParcelable(LIST_STATE_KEY_ASSIGNED, Parcelable::class.java)?.let {
+        savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY_ASSIGNED)?.let {
             layoutManagerAssigned!!.onRestoreInstanceState(it)
         }
 
@@ -266,7 +266,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         )
         globalTermsAdapter = binding.globalTermList.adapter as AttributeTermsListAdapter
         globalTermsAdapter.setOnTermListener(globalTermListener)
-        savedInstanceState?.getParcelable(LIST_STATE_KEY_GLOBAL, Parcelable::class.java)?.let {
+        savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY_GLOBAL)?.let {
             layoutManagerGlobal!!.onRestoreInstanceState(it)
         }
 
