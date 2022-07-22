@@ -30,6 +30,8 @@ import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow.LOGIN_SITE_ADDR
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Source
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step.ENTER_SITE_ADDRESS
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_ID
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_TAG
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
@@ -135,8 +137,8 @@ class LoginActivity :
     private fun processLoginHelpNotification() {
         startLoginViaWPCom()
         NotificationManagerCompat.from(this).cancel(
-            LoginNotificationScheduler.LOGIN_HELP_NOTIFICATION_TAG,
-            LoginNotificationScheduler.LOGIN_HELP_NOTIFICATION_ID
+            LOGIN_HELP_NOTIFICATION_TAG,
+            LOGIN_HELP_NOTIFICATION_ID
         )
     }
 

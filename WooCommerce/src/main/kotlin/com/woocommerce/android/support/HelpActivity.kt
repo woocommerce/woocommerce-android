@@ -15,8 +15,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ActivityHelpBinding
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_ID
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_TAG
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.PackageUtils
 import dagger.hilt.android.AndroidEntryPoint
@@ -79,10 +79,7 @@ class HelpActivity : AppCompatActivity() {
             showZendeskTickets()
         }
 
-        NotificationManagerCompat.from(this).cancel(
-            LoginNotificationScheduler.LOGIN_HELP_NOTIFICATION_TAG,
-            LOGIN_HELP_NOTIFICATION_ID
-        )
+        NotificationManagerCompat.from(this).cancel(LOGIN_HELP_NOTIFICATION_TAG, LOGIN_HELP_NOTIFICATION_ID)
     }
 
     override fun onResume() {
