@@ -151,10 +151,9 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
         }
 
         with(btnBinding.buttonPrimary) {
-            text = getString(R.string.login_jetpack_view_setup_instructions)
+            text = getString(R.string.login_jetpack_install)
             setOnClickListener {
-                AnalyticsTracker.track(AnalyticsEvent.LOGIN_NO_JETPACK_VIEW_INSTRUCTIONS_BUTTON_TAPPED)
-                jetpackLoginListener?.showJetpackInstructions()
+                jetpackLoginListener?.startJetpackInstall(siteAddress)
             }
         }
 

@@ -667,6 +667,10 @@ class LoginActivity :
         slideInFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
     }
 
+    override fun startJetpackInstall(siteAddress: String?) {
+        TODO("Not yet implemented")
+    }
+
     override fun gotUnregisteredEmail(email: String?) {
         // Show the 'No WordPress.com account found' screen
         val fragment = LoginNoWPcomAccountFoundFragment.newInstance(email)
