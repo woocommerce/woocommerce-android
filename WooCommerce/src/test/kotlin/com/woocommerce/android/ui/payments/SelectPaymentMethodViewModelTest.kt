@@ -4,18 +4,19 @@ import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_BANNER_PAYMENTS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.compose.component.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderHubFlow
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderRefundFlow
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.OpenPurchaseCardReaderLink
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Loading
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Success
+import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment
@@ -32,6 +33,8 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.ArgumentMatchers.anyLong
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -133,6 +136,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 orderTotal = ORDER_TOTAL,
                 paymentUrl = PAYMENT_URL,
                 isPaymentCollectableWithCardReader = false,
+                shouldShowCardReaderUpsellBanner = false,
             )
         )
     }
@@ -151,6 +155,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                     orderTotal = ORDER_TOTAL,
                     paymentUrl = PAYMENT_URL,
                     isPaymentCollectableWithCardReader = true,
+                    shouldShowCardReaderUpsellBanner = false,
                 )
             )
         }
@@ -552,13 +557,15 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     fun `given upsell banner, when purchase reader clicked, then trigger proper event`() {
         runTest {
             // GIVEN
-            whenever(bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl()).thenReturn(
+            whenever(
+                bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(KEY_BANNER_PAYMENTS)
+            ).thenReturn(
                 "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
             )
             val viewModel = initViewModel(Payment(1L, ORDER))
 
             // WHEN
-            viewModel.onCtaClicked()
+            viewModel.onCtaClicked(KEY_BANNER_PAYMENTS)
 
             // Then
             assertThat(
@@ -585,7 +592,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         val viewModel = initViewModel(Payment(1L, ORDER))
 
         // WHEN
-        viewModel.onRemindLaterClicked(0L)
+        viewModel.onRemindLaterClicked(0L, KEY_BANNER_PAYMENTS)
 
         // Then
         assertThat(viewModel.event.value).isEqualTo(
@@ -599,7 +606,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         val viewModel = initViewModel(Payment(1L, ORDER))
 
         // WHEN
-        viewModel.onDontShowAgainClicked()
+        viewModel.onDontShowAgainClicked(KEY_BANNER_PAYMENTS)
 
         // Then
         assertThat(viewModel.event.value).isEqualTo(
@@ -620,7 +627,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     fun `given card reader banner has dismissed via remind later, then update dialogShow state to false`() {
         val viewModel = initViewModel(Payment(1L, ORDER))
 
-        viewModel.onRemindLaterClicked(0L)
+        viewModel.onRemindLaterClicked(0L, KEY_BANNER_PAYMENTS)
 
         assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
     }
@@ -629,7 +636,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     fun `given card reader banner has dismissed via don't show again, then update dialogShow state to false`() {
         val viewModel = initViewModel(Payment(1L, ORDER))
 
-        viewModel.onDontShowAgainClicked()
+        viewModel.onDontShowAgainClicked(KEY_BANNER_PAYMENTS)
 
         assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
     }
@@ -642,36 +649,88 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given banner displayed, then track proper event`() {
+    fun `when alert dialog dismissed by pressing back, then shouldShowUpsellCardReaderDismissDialog set to false`() {
         val viewModel = initViewModel(Payment(1L, ORDER))
-        whenever(bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(any())).thenReturn(true)
 
-        viewModel.canShowCardReaderUpsellBanner(0L)
+        viewModel.onBannerAlertDismiss()
 
-        verify(analyticsTrackerWrapper).track(
-            AnalyticsEvent.FEATURE_CARD_SHOWN,
-            mapOf(
-                AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.KEY_BANNER_PAYMENTS,
-                AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
-            )
-        )
+        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
     }
 
     @Test
-    fun `given banner not displayed, then do not track event`() {
-        val viewModel = initViewModel(Payment(1L, ORDER))
-        whenever(bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(any())).thenReturn(false)
+    fun `given banner displayable, when success state, then shouldShowCardReaderUpsellBanner set to true`() =
+        testBlocking {
+            // GIVEN & WHEN
+            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
+            whenever(
+                bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
+                    anyLong(),
+                    anyString()
+                )
+            ).thenReturn(true)
+            val orderId = 1L
+            val viewModel = initViewModel(Payment(orderId, ORDER))
 
-        viewModel.canShowCardReaderUpsellBanner(0L)
-
-        verify(analyticsTrackerWrapper, never()).track(
-            AnalyticsEvent.FEATURE_CARD_SHOWN,
-            mapOf(
-                AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.KEY_BANNER_PAYMENTS,
-                AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
+            // THEN
+            assertThat(viewModel.viewStateData.value).isEqualTo(
+                Success(
+                    orderTotal = ORDER_TOTAL,
+                    paymentUrl = PAYMENT_URL,
+                    isPaymentCollectableWithCardReader = true,
+                    shouldShowCardReaderUpsellBanner = true,
+                )
             )
-        )
-    }
+        }
+
+    @Test
+    fun `given payment not collectable, when success state, then shouldShowCardReaderUpsellBanner set to false`() =
+        testBlocking {
+            // GIVEN & WHEN
+            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(false)
+            whenever(
+                bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
+                    anyLong(),
+                    anyString()
+                )
+            ).thenReturn(true)
+            val orderId = 1L
+            val viewModel = initViewModel(Payment(orderId, ORDER))
+
+            // THEN
+            assertThat(viewModel.viewStateData.value).isEqualTo(
+                Success(
+                    orderTotal = ORDER_TOTAL,
+                    paymentUrl = PAYMENT_URL,
+                    isPaymentCollectableWithCardReader = false,
+                    shouldShowCardReaderUpsellBanner = false,
+                )
+            )
+        }
+
+    @Test
+    fun `given banner not displayable, when success state, then shouldShowCardReaderUpsellBanner set to false`() =
+        testBlocking {
+            // GIVEN & WHEN
+            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
+            whenever(
+                bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
+                    anyLong(),
+                    anyString()
+                )
+            ).thenReturn(false)
+            val orderId = 1L
+            val viewModel = initViewModel(Payment(orderId, ORDER))
+
+            // THEN
+            assertThat(viewModel.viewStateData.value).isEqualTo(
+                Success(
+                    orderTotal = ORDER_TOTAL,
+                    paymentUrl = PAYMENT_URL,
+                    isPaymentCollectableWithCardReader = true,
+                    shouldShowCardReaderUpsellBanner = false,
+                )
+            )
+        }
     //endregion
 
     private fun initViewModel(cardReaderFlowParam: CardReaderFlowParam): SelectPaymentMethodViewModel {

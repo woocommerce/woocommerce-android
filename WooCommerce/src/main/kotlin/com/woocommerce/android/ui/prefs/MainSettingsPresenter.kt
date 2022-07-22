@@ -1,11 +1,8 @@
 package com.woocommerce.android.ui.prefs
 
 import androidx.lifecycle.MutableLiveData
-import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.compose.component.banner.BannerDisplayEligibilityChecker
+import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.StringUtils
@@ -24,7 +21,6 @@ class MainSettingsPresenter @Inject constructor(
     private val featureAnnouncementRepository: FeatureAnnouncementRepository,
     private val buildConfigWrapper: BuildConfigWrapper,
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : MainSettingsContract.Presenter {
     private var appSettingsFragmentView: MainSettingsContract.View? = null
 
@@ -79,10 +75,10 @@ class MainSettingsPresenter @Inject constructor(
         }
     }
 
-    override fun onCtaClicked() {
+    override fun onCtaClicked(source: String) {
         coroutineScope.launch {
             appSettingsFragmentView?.openPurchaseCardReaderLink(
-                bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl()
+                bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(source)
             )
         }
     }
@@ -92,29 +88,24 @@ class MainSettingsPresenter @Inject constructor(
         appSettingsFragmentView?.dismissUpsellCardReaderBanner()
     }
 
-    override fun onRemindLaterClicked(currentTimeInMillis: Long) {
+    override fun onRemindLaterClicked(currentTimeInMillis: Long, source: String) {
         shouldShowUpsellCardReaderDismissDialog.value = false
-        bannerDisplayEligibilityChecker.onRemindLaterClicked(currentTimeInMillis)
+        bannerDisplayEligibilityChecker.onRemindLaterClicked(currentTimeInMillis, source)
         appSettingsFragmentView?.dismissUpsellCardReaderBannerViaRemindLater()
     }
 
-    override fun onDontShowAgainClicked() {
+    override fun onDontShowAgainClicked(source: String) {
         shouldShowUpsellCardReaderDismissDialog.value = false
-        bannerDisplayEligibilityChecker.onDontShowAgainClicked()
+        bannerDisplayEligibilityChecker.onDontShowAgainClicked(source)
         appSettingsFragmentView?.dismissUpsellCardReaderBannerViaDontShowAgain()
     }
 
-    override fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long): Boolean {
-        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis).also { trackable ->
-            if (trackable) {
-                analyticsTrackerWrapper.track(
-                    AnalyticsEvent.FEATURE_CARD_SHOWN,
-                    mapOf(
-                        AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.KEY_BANNER_SETTINGS,
-                        AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
-                    )
-                )
-            }
-        }
+    override fun onBannerAlertDismiss() {
+        shouldShowUpsellCardReaderDismissDialog.value = false
+        appSettingsFragmentView?.dismissUpsellCardReaderBannerViaBack()
+    }
+
+    override fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long, source: String): Boolean {
+        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis, source)
     }
 }

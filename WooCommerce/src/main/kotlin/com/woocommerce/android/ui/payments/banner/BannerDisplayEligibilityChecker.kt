@@ -1,7 +1,10 @@
-package com.woocommerce.android.ui.compose.component.banner
+package com.woocommerce.android.ui.payments.banner
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
@@ -20,6 +23,7 @@ class BannerDisplayEligibilityChecker @Inject constructor(
     private val selectedSite: SelectedSite,
     private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider,
     private val cardReaderPaymentCurrencySupportedChecker: CardReaderPaymentCurrencySupportedChecker,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) {
     private suspend fun getStoreCountryCode(): String? {
         return withContext(dispatchers.io) {
@@ -29,18 +33,21 @@ class BannerDisplayEligibilityChecker @Inject constructor(
         }
     }
 
-    suspend fun getPurchaseCardReaderUrl(): String {
+    suspend fun getPurchaseCardReaderUrl(source: String): String {
+        trackBannerCtaClicked(source)
         val countryCode = getStoreCountryCode()
         return withContext(dispatchers.main) {
             "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}$countryCode"
         }
     }
 
-    fun onRemindLaterClicked(currentTimeInMillis: Long) {
+    fun onRemindLaterClicked(currentTimeInMillis: Long, source: String) {
+        trackBannerDismissEvent(isRemindLaterSelected = true, source)
         storeRemindLaterTimeStamp(currentTimeInMillis)
     }
 
-    fun onDontShowAgainClicked() {
+    fun onDontShowAgainClicked(source: String) {
+        trackBannerDismissEvent(isRemindLaterSelected = false, source)
         storeDismissBannerForever()
     }
 
@@ -91,12 +98,24 @@ class BannerDisplayEligibilityChecker @Inject constructor(
         return getCardReaderUpsellBannerLastDismissed() != 0L
     }
 
-    fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long): Boolean {
-        return !isCardReaderUpsellBannerDismissedForever() &&
-            (
-                !hasTheMerchantDismissedBannerViaRemindMeLater() || hasTheMerchantDismissedBannerViaRemindMeLater() &&
-                    isLastDialogDismissedMoreThan14DaysAgo(currentTimeInMillis)
+    fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long, source: String): Boolean {
+        return (
+            !isCardReaderUpsellBannerDismissedForever() &&
+                (
+                    !hasTheMerchantDismissedBannerViaRemindMeLater() ||
+                        isLastDialogDismissedMoreThan14DaysAgo(currentTimeInMillis)
+                    )
+            ).also { trackable ->
+            if (trackable) {
+                analyticsTrackerWrapper.track(
+                    AnalyticsEvent.FEATURE_CARD_SHOWN,
+                    mapOf(
+                        AnalyticsTracker.KEY_BANNER_SOURCE to source,
+                        AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
+                    )
                 )
+            }
+        }
     }
 
     suspend fun isEligibleForInPersonPayments(): Boolean {
@@ -109,6 +128,27 @@ class BannerDisplayEligibilityChecker @Inject constructor(
             )
         }
         return false
+    }
+
+    private fun trackBannerDismissEvent(isRemindLaterSelected: Boolean, source: String) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.FEATURE_CARD_DISMISSED,
+            mapOf(
+                AnalyticsTracker.KEY_BANNER_SOURCE to source,
+                AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS,
+                AnalyticsTracker.KEY_BANNER_REMIND_LATER to isRemindLaterSelected
+            )
+        )
+    }
+
+    private fun trackBannerCtaClicked(source: String) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.FEATURE_CARD_CTA_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_BANNER_SOURCE to source,
+                AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS,
+            )
+        )
     }
 
     companion object {

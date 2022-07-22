@@ -3,16 +3,13 @@ package com.woocommerce.android.ui.orders
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_BANNER_PAYMENTS
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.compose.component.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
 import com.woocommerce.android.ui.orders.list.OrderListItemIdentifier
@@ -24,6 +21,7 @@ import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBannerViaRemindMeLater
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.OpenPurchaseCardReaderLink
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
+import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -37,14 +35,13 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -81,7 +78,6 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters = mock()
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount = mock()
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker = mock()
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     @Before
     fun setup() = testBlocking {
@@ -115,7 +111,6 @@ class OrderListViewModelTest : BaseUnitTest() {
             getWCOrderListDescriptorWithFilters = getWCOrderListDescriptorWithFilters,
             getSelectedOrderFiltersCount = getSelectedOrderFiltersCount,
             bannerDisplayEligibilityChecker = bannerDisplayEligibilityChecker,
-            analyticsTrackerWrapper = analyticsTrackerWrapper,
         )
     }
 
@@ -440,15 +435,17 @@ class OrderListViewModelTest : BaseUnitTest() {
     fun `given upsell banner, when purchase reader clicked, then trigger proper event`() {
         runTest {
             // GIVEN
-            whenever(bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl()).thenReturn(
+            whenever(
+                bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(KEY_BANNER_PAYMENTS)
+            ).thenReturn(
                 "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
             )
 
             // WHEN
-            viewModel.onCtaClicked()
+            viewModel.onCtaClicked(KEY_BANNER_PAYMENTS)
 
             // Then
-            Assertions.assertThat(
+            assertThat(
                 viewModel.event.value
             ).isInstanceOf(OpenPurchaseCardReaderLink::class.java)
         }
@@ -460,7 +457,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel.onDismissClicked()
 
         // Then
-        Assertions.assertThat(
+        assertThat(
             viewModel.event.value
         ).isEqualTo(DismissCardReaderUpsellBanner)
     }
@@ -468,20 +465,21 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `given upsell banner, when banner is dismissed via remind later, then trigger proper event`() {
         // WHEN
-        viewModel.onRemindLaterClicked(0L)
+        viewModel.onRemindLaterClicked(0L, KEY_BANNER_PAYMENTS)
 
         // Then
-        Assertions.assertThat(viewModel.event.value).isEqualTo(
+        assertThat(viewModel.event.value).isEqualTo(
             DismissCardReaderUpsellBannerViaRemindMeLater
         )
     }
+
     @Test
     fun `given upsell banner, when banner is dismissed via don't show again, then trigger proper event`() {
         // WHEN
-        viewModel.onDontShowAgainClicked()
+        viewModel.onDontShowAgainClicked(KEY_BANNER_PAYMENTS)
 
         // Then
-        Assertions.assertThat(viewModel.event.value).isEqualTo(
+        assertThat(viewModel.event.value).isEqualTo(
             DismissCardReaderUpsellBannerViaDontShowAgain
         )
     }
@@ -490,26 +488,26 @@ class OrderListViewModelTest : BaseUnitTest() {
     fun `given card reader banner has dismissed, then update dialogShow state to true`() {
         viewModel.onDismissClicked()
 
-        Assertions.assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isTrue
+        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isTrue
     }
 
     @Test
     fun `given card reader banner has dismissed via remind later, then update dialogShow state to false`() {
-        viewModel.onRemindLaterClicked(0L)
+        viewModel.onRemindLaterClicked(0L, KEY_BANNER_PAYMENTS)
 
-        Assertions.assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
+        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
     }
 
     @Test
     fun `given card reader banner has dismissed via don't show again, then update dialogShow state to false`() {
-        viewModel.onDontShowAgainClicked()
+        viewModel.onDontShowAgainClicked(KEY_BANNER_PAYMENTS)
 
-        Assertions.assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
+        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
     }
 
     @Test
     fun `given view model init, then update dialogShow state to false`() {
-        Assertions.assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
+        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
     }
 
     @Test
@@ -520,7 +518,7 @@ class OrderListViewModelTest : BaseUnitTest() {
 
             setup()
 
-            Assertions.assertThat(viewModel.isEligibleForInPersonPayments.value).isFalse
+            assertThat(viewModel.isEligibleForInPersonPayments.value).isFalse
         }
     }
 
@@ -532,42 +530,15 @@ class OrderListViewModelTest : BaseUnitTest() {
 
             setup()
 
-            Assertions.assertThat(viewModel.isEligibleForInPersonPayments.value).isTrue
+            assertThat(viewModel.isEligibleForInPersonPayments.value).isTrue
         }
     }
 
     @Test
-    fun `given upsell banner displayed, then track proper event`() {
-        runTest {
-            whenever(bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(any())).thenReturn(true)
+    fun `when alert dialog dismissed by pressing back, then shouldShowUpsellCardReaderDismissDialog set to false`() {
+        viewModel.onBannerAlertDismiss()
 
-            viewModel.canShowCardReaderUpsellBanner(0L)
-
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.FEATURE_CARD_SHOWN,
-                mapOf(
-                    AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.KEY_BANNER_ORDER_LIST,
-                    AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
-                )
-            )
-        }
-    }
-
-    @Test
-    fun `given upsell banner not displayed, then do not track event`() {
-        runTest {
-            whenever(bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(any())).thenReturn(false)
-
-            viewModel.canShowCardReaderUpsellBanner(0L)
-
-            verify(analyticsTrackerWrapper, never()).track(
-                AnalyticsEvent.FEATURE_CARD_SHOWN,
-                mapOf(
-                    AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.KEY_BANNER_ORDER_LIST,
-                    AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
-                )
-            )
-        }
+        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
     }
     //endregion
 

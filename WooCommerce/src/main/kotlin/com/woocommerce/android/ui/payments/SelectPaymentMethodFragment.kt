@@ -21,8 +21,6 @@ import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.compose.component.banner.PaymentsScreenBanner
-import com.woocommerce.android.ui.compose.component.banner.PaymentsScreenBannerDismissDialog
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
@@ -32,6 +30,8 @@ import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.Navigate
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.SharePaymentUrl
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Loading
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Success
+import com.woocommerce.android.ui.payments.banner.PaymentsScreenBanner
+import com.woocommerce.android.ui.payments.banner.PaymentsScreenBannerDismissDialog
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectDialogFragment
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -57,15 +57,13 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        setHasOptionsMenu(true)
         _binding = FragmentTakePaymentBinding.inflate(inflater, container, false)
 
         val view = binding.root
         if (viewModel.shouldShowUpsellCardReaderDismissDialog.value == true) {
             applyBannerDismissDialogComposeUI()
-        } else {
-            applyBannerComposeUI()
         }
+        applyBannerComposeUI()
         return view
     }
 
@@ -153,6 +151,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
         }
     }
 
+    @Suppress("LongMethod")
     private fun handleEvents(binding: FragmentTakePaymentBinding) {
         viewModel.event.observe(
             viewLifecycleOwner
@@ -197,13 +196,14 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
                     findNavController().navigate(action)
                 }
                 SelectPaymentMethodViewModel.DismissCardReaderUpsellBanner -> {
-                    binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
                     applyBannerDismissDialogComposeUI()
                 }
                 SelectPaymentMethodViewModel.DismissCardReaderUpsellBannerViaRemindMeLater -> {
+                    binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
                     binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
                 }
                 SelectPaymentMethodViewModel.DismissCardReaderUpsellBannerViaDontShowAgain -> {
+                    binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
                     binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
                 }
                 is SelectPaymentMethodViewModel.OpenPurchaseCardReaderLink -> {
