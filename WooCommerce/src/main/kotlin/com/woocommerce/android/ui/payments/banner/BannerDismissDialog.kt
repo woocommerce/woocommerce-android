@@ -1,11 +1,12 @@
-package com.woocommerce.android.ui.compose.component.banner
+package com.woocommerce.android.ui.payments.banner
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -28,6 +29,7 @@ fun PaymentsScreenBannerDismissDialog(viewModel: SelectPaymentMethodViewModel) {
     BannerDismissDialog(
         onRemindLaterClick = viewModel::onRemindLaterClicked,
         onDontShowAgainClick = viewModel::onDontShowAgainClicked,
+        onDismissClick = viewModel::onBannerAlertDismiss,
         showDialog,
         AnalyticsTracker.KEY_BANNER_PAYMENTS
     )
@@ -39,6 +41,7 @@ fun OrderListBannerDismissDialog(viewModel: OrderListViewModel) {
     BannerDismissDialog(
         onRemindLaterClick = viewModel::onRemindLaterClicked,
         onDontShowAgainClick = viewModel::onDontShowAgainClicked,
+        onDismissClick = viewModel::onBannerAlertDismiss,
         showDialog,
         AnalyticsTracker.KEY_BANNER_ORDER_LIST
     )
@@ -50,6 +53,7 @@ fun SettingsBannerDismissDialog(presenter: MainSettingsContract.Presenter) {
     BannerDismissDialog(
         onRemindLaterClick = presenter::onRemindLaterClicked,
         onDontShowAgainClick = presenter::onDontShowAgainClicked,
+        onDismissClick = presenter::onBannerAlertDismiss,
         showDialog,
         AnalyticsTracker.KEY_BANNER_SETTINGS
     )
@@ -59,6 +63,7 @@ fun SettingsBannerDismissDialog(presenter: MainSettingsContract.Presenter) {
 fun BannerDismissDialog(
     onRemindLaterClick: (Long, String) -> Unit,
     onDontShowAgainClick: (String) -> Unit,
+    onDismissClick: () -> Unit,
     showDialog: Boolean,
     source: String,
     title: String = stringResource(
@@ -69,8 +74,8 @@ fun BannerDismissDialog(
     )
 ) {
     if (showDialog) {
-        androidx.compose.material.AlertDialog(
-            onDismissRequest = {},
+        AlertDialog(
+            onDismissRequest = onDismissClick,
             title = {
                 Text(
                     text = title,
@@ -81,6 +86,7 @@ fun BannerDismissDialog(
                 Text(
                     text = description,
                     style = MaterialTheme.typography.subtitle1,
+                    color = colorResource(id = R.color.woo_black_90)
                 )
             },
             buttons = {
@@ -90,39 +96,41 @@ fun BannerDismissDialog(
                         .padding(end = dimensionResource(id = R.dimen.major_100)),
                     horizontalAlignment = Alignment.End
                 ) {
-                    Text(
-                        text = stringResource(id = R.string.card_reader_upsell_card_reader_banner_remind_me_later),
-                        color = colorResource(id = R.color.woo_purple_60),
-                        style = MaterialTheme.typography.subtitle2,
-                        fontWeight = FontWeight.Bold,
+                    TextButton(
                         modifier = Modifier
                             .padding(
                                 top = dimensionResource(id = R.dimen.minor_100),
-                                bottom = dimensionResource(id = R.dimen.major_100)
-                            )
-                            .clickable(
-                                onClick = {
-                                    onRemindLaterClick(System.currentTimeMillis(), source)
-                                }
-                            )
-                    )
+                            ),
+                        onClick = {
+                            onRemindLaterClick(System.currentTimeMillis(), source)
+                        }
 
-                    Text(
-                        text = stringResource(id = R.string.card_reader_upsell_card_reader_banner_dont_show_again),
-                        color = colorResource(id = R.color.woo_purple_60),
-                        style = MaterialTheme.typography.subtitle2,
-                        fontWeight = FontWeight.Bold,
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.card_reader_upsell_card_reader_banner_remind_me_later),
+                            color = colorResource(id = R.color.woo_purple_60),
+                            style = MaterialTheme.typography.subtitle2,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
+
+                    TextButton(
                         modifier = Modifier
                             .padding(
-                                top = dimensionResource(id = R.dimen.minor_100),
-                                bottom = dimensionResource(id = R.dimen.major_100)
-                            )
-                            .clickable(
-                                onClick = {
-                                    onDontShowAgainClick(source)
-                                }
-                            )
-                    )
+                                bottom = dimensionResource(id = R.dimen.minor_100)
+                            ),
+                        onClick = {
+                            onDontShowAgainClick(source)
+                        }
+
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.card_reader_upsell_card_reader_banner_dont_show_again),
+                            color = colorResource(id = R.color.woo_purple_60),
+                            style = MaterialTheme.typography.subtitle2,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
                 }
             }
         )
@@ -135,6 +143,7 @@ fun BannerDismissDialogPreview() {
     BannerDismissDialog(
         onRemindLaterClick = { _, _ -> },
         onDontShowAgainClick = {},
+        onDismissClick = {},
         true,
         AnalyticsTracker.KEY_BANNER_PAYMENTS,
         title = stringResource(

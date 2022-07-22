@@ -35,9 +35,9 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
-import com.woocommerce.android.ui.compose.component.banner.SettingsBannerDismissDialog
-import com.woocommerce.android.ui.compose.component.banner.SettingsScreenBanner
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.payments.banner.SettingsBannerDismissDialog
+import com.woocommerce.android.ui.payments.banner.SettingsScreenBanner
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.AppThemeUtils
@@ -252,15 +252,20 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     }
 
     override fun dismissUpsellCardReaderBanner() {
-        binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
         applyBannerDismissDialogComposeUI()
     }
 
+    override fun dismissUpsellCardReaderBannerViaBack() {
+        binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
+    }
+
     override fun dismissUpsellCardReaderBannerViaRemindLater() {
+        binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
         binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
     }
 
     override fun dismissUpsellCardReaderBannerViaDontShowAgain() {
+        binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
         binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
     }
 

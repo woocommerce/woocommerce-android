@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.prefs
 
 import androidx.lifecycle.MutableLiveData
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.compose.component.banner.BannerDisplayEligibilityChecker
+import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.StringUtils
@@ -75,10 +75,10 @@ class MainSettingsPresenter @Inject constructor(
         }
     }
 
-    override fun onCtaClicked() {
+    override fun onCtaClicked(source: String) {
         coroutineScope.launch {
             appSettingsFragmentView?.openPurchaseCardReaderLink(
-                bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl()
+                bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(source)
             )
         }
     }
@@ -98,6 +98,11 @@ class MainSettingsPresenter @Inject constructor(
         shouldShowUpsellCardReaderDismissDialog.value = false
         bannerDisplayEligibilityChecker.onDontShowAgainClicked(source)
         appSettingsFragmentView?.dismissUpsellCardReaderBannerViaDontShowAgain()
+    }
+
+    override fun onBannerAlertDismiss() {
+        shouldShowUpsellCardReaderDismissDialog.value = false
+        appSettingsFragmentView?.dismissUpsellCardReaderBannerViaBack()
     }
 
     override fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long, source: String): Boolean {
