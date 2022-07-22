@@ -628,6 +628,11 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     COUPON_DELETE_SUCCESS,
     COUPON_DELETE_FAILED,
 
+    // Onboarding
+    LOGIN_ONBOARDING_SHOWN,
+    LOGIN_ONBOARDING_NEXT_BUTTON_TAPPED,
+    LOGIN_ONBOARDING_SKIP_BUTTON_TAPPED,
+
     // Login help scheduled notifications
     LOGIN_LOCAL_NOTIFICATION_DISPLAYED(siteless = true),
     LOGIN_LOCAL_NOTIFICATION_TAPPED(siteless = true),

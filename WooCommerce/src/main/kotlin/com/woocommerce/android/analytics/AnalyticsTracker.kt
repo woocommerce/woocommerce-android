@@ -354,6 +354,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_COUPON_EXPIRY_DATE_UPDATED = "expiry_date_updated"
         const val KEY_COUPON_USAGE_RESTRICTIONS_UPDATED = "usage_restrictions_updated"
 
+        // -- Onboarding
+        const val VALUE_LOGIN_ONBOARDING_IS_FINAL_PAGE = "is_final_page"
+
         var sendUsageStats: Boolean = true
             set(value) {
                 if (value != field) {

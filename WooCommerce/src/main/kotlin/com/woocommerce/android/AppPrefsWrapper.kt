@@ -161,6 +161,11 @@ class AppPrefsWrapper @Inject constructor() {
     fun setPreLoginNotificationDisplayed(displayed: Boolean) =
         AppPrefs.setPreLoginNotificationDisplayed(displayed)
 
+    fun setOnboardingCarouselDisplayed(displayed: Boolean) =
+        AppPrefs.setOnboardingCarouselDisplayed(displayed)
+
+    fun hasOnboardingCarouselBeenDisplayed(): Boolean = AppPrefs.hasOnboardingCarouselBeenDisplayed()
+
     /**
      * Observes changes to the preferences
      */

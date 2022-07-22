@@ -70,11 +70,11 @@ class WCSelectableTextView @JvmOverloads constructor(
     // can't simply set the OnClickListener because of an Android bug that causes TextView to
     // require two clicks when text is selectable
 
-    override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
+    override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
         return clickableParent?.performClick() ?: false
     }
 
-    override fun onDoubleTap(e: MotionEvent?) = false
+    override fun onDoubleTap(e: MotionEvent) = false
 
-    override fun onDoubleTapEvent(e: MotionEvent?) = false
+    override fun onDoubleTapEvent(e: MotionEvent) = false
 }

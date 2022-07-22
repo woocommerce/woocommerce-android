@@ -12,11 +12,13 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.AppUrls.LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.databinding.ActivityLoginBinding
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
@@ -105,6 +107,8 @@ class LoginActivity :
     @Inject internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
     @Inject internal lateinit var zendeskHelper: ZendeskHelper
     @Inject internal lateinit var urlUtils: UrlUtils
+    @Inject internal lateinit var experimentTracker: ExperimentTracker
+    @Inject internal lateinit var appPrefsWrapper: AppPrefsWrapper
     @Inject internal lateinit var loginNotificationScheduler: LoginNotificationScheduler
 
     private var loginMode: LoginMode? = null
@@ -126,7 +130,8 @@ class LoginActivity :
             processLoginHelpNotification(loginHelpNotification)
         } else if (savedInstanceState == null) {
             loginAnalyticsListener.trackLoginAccessed()
-            showPrologueCarouselFragment()
+
+            showPrologue()
         }
 
         savedInstanceState?.let { ss ->
@@ -167,6 +172,16 @@ class LoginActivity :
             .replace(R.id.fragment_container, fragment, LoginPrologueCarouselFragment.TAG)
             .addToBackStack(LoginPrologueCarouselFragment.TAG)
             .commitAllowingStateLoss()
+
+        experimentTracker.log(ExperimentTracker.PROLOGUE_CAROUSEL_DISPLAYED_EVENT)
+    }
+
+    private fun showPrologue() {
+        if (!appPrefsWrapper.hasOnboardingCarouselBeenDisplayed()) {
+            showPrologueCarouselFragment()
+        } else {
+            showPrologueFragment()
+        }
     }
 
     private fun hasMagicLinkLoginIntent(): Boolean {
@@ -282,7 +297,9 @@ class LoginActivity :
     }
 
     private fun showMainActivityAndFinish() {
+        experimentTracker.log(ExperimentTracker.LOGIN_SUCCESSFUL_EVENT)
         loginNotificationScheduler.onLoginSuccess()
+
         val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         startActivity(intent)
