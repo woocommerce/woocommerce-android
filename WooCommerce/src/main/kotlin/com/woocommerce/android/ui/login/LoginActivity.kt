@@ -77,7 +77,7 @@ class LoginActivity :
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
         private const val MAGIC_LOGIN = "magic-login"
         private const val TOKEN_PARAMETER = "token"
-        private const val JETPACK_CONNECT_URL = "https://wordpress.com/jetpack/connect/"
+        private const val JETPACK_CONNECT_URL = "https://wordpress.com/jetpack/connect"
         private const val JETPACK_CONNECTED_REDIRECT_URL = "woocommerce://jetpack-connected"
 
         private const val KEY_UNIFIED_TRACKER_SOURCE = "KEY_UNIFIED_TRACKER_SOURCE"
@@ -103,7 +103,9 @@ class LoginActivity :
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        if (hasMagicLinkLoginIntent()) {
+        if (hasJetpackConnectedIntent()) {
+            startLoginViaWPCom()
+        } else if (hasMagicLinkLoginIntent()) {
             getAuthTokenFromIntent()?.let { showMagicLinkInterceptFragment(it) }
         } else if (savedInstanceState == null) {
             loginAnalyticsListener.trackLoginAccessed()
@@ -156,6 +158,13 @@ class LoginActivity :
             .replace(R.id.fragment_container, fragment, LoginPrologueFragment.TAG)
             .addToBackStack(null)
             .commitAllowingStateLoss()
+    }
+
+    private fun hasJetpackConnectedIntent(): Boolean {
+        val action = intent.action
+        val uri = intent.data
+
+        return Intent.ACTION_VIEW == action && uri.toString() == JETPACK_CONNECTED_REDIRECT_URL
     }
 
     private fun slideInFragment(fragment: Fragment, shouldAddToBackStack: Boolean, tag: String) {
