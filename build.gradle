@@ -41,7 +41,8 @@ allprojects {
     tasks.withType(KotlinCompile).all {
         kotlinOptions {
             jvmTarget = JavaVersion.VERSION_1_8
-            allWarningsAsErrors = true
+            // TODO fix all the warnings and change to true before end of 2022
+            allWarningsAsErrors = false
             freeCompilerArgs += [
                     "-Xopt-in=kotlin.RequiresOptIn"
             ]
