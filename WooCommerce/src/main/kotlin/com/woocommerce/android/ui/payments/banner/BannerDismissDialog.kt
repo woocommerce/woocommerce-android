@@ -86,6 +86,7 @@ fun BannerDismissDialog(
                 Text(
                     text = description,
                     style = MaterialTheme.typography.subtitle1,
+                    color = colorResource(id = R.color.woo_black_90)
                 )
             },
             buttons = {
