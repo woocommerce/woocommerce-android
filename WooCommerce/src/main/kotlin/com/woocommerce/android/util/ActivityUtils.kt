@@ -7,7 +7,6 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.pm.PackageManager.ResolveInfoFlags
 import android.net.Uri
 import androidx.core.content.FileProvider
 import com.woocommerce.android.R
@@ -26,10 +25,7 @@ object ActivityUtils {
         val intent = Intent(Intent.ACTION_MAIN)
         intent.addCategory(Intent.CATEGORY_APP_EMAIL)
         val packageManager = context.packageManager
-        val emailApps = packageManager.queryIntentActivities(
-            intent,
-            ResolveInfoFlags.of(PackageManager.MATCH_DEFAULT_ONLY.toLong())
-        )
+        val emailApps = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
 
         return !emailApps.isEmpty()
     }
@@ -57,7 +53,7 @@ object ActivityUtils {
         } catch (se: SecurityException) {
             WooLog.e(T.UTILS, "Error opening url in default browser. Url: $url", se)
 
-            val infos = context.packageManager.queryIntentActivities(intent, ResolveInfoFlags.of(0))
+            val infos = context.packageManager.queryIntentActivities(intent, 0)
             if (infos.size == 1) {
                 // there's only one handler and apparently it caused the exception so, just inform and bail
                 WooLog.d(T.UTILS, "Only one url handler found so, bailing.")
