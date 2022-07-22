@@ -18,6 +18,8 @@ import com.woocommerce.android.AppUrls.LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_AC
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_JETPACK_INSTALLATION_SOURCE_WEB
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.databinding.ActivityLoginBinding
 import com.woocommerce.android.support.HelpActivity
@@ -83,6 +85,8 @@ class LoginActivity :
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
         private const val MAGIC_LOGIN = "magic-login"
         private const val TOKEN_PARAMETER = "token"
+        private const val JETPACK_CONNECT_URL = "https://wordpress.com/jetpack/connect"
+        private const val JETPACK_CONNECTED_REDIRECT_URL = "woocommerce://jetpack-connected"
 
         private const val KEY_UNIFIED_TRACKER_SOURCE = "KEY_UNIFIED_TRACKER_SOURCE"
         private const val KEY_UNIFIED_TRACKER_FLOW = "KEY_UNIFIED_TRACKER_FLOW"
@@ -124,7 +128,13 @@ class LoginActivity :
         setContentView(binding.root)
         val loginHelpNotification = getLoginHelpNotification()
 
-        if (hasMagicLinkLoginIntent()) {
+        if (hasJetpackConnectedIntent()) {
+            AnalyticsTracker.track(
+                stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_COMPLETED,
+                properties = mapOf(KEY_SOURCE to VALUE_JETPACK_INSTALLATION_SOURCE_WEB)
+            )
+            startLoginViaWPCom()
+        } else if (hasMagicLinkLoginIntent()) {
             getAuthTokenFromIntent()?.let { showMagicLinkInterceptFragment(it) }
         } else if (!loginHelpNotification.isNullOrBlank()) {
             processLoginHelpNotification(loginHelpNotification)
@@ -202,6 +212,13 @@ class LoginActivity :
             .replace(R.id.fragment_container, fragment, LoginPrologueFragment.TAG)
             .addToBackStack(null)
             .commitAllowingStateLoss()
+    }
+
+    private fun hasJetpackConnectedIntent(): Boolean {
+        val action = intent.action
+        val uri = intent.data
+
+        return Intent.ACTION_VIEW == action && uri.toString() == JETPACK_CONNECTED_REDIRECT_URL
     }
 
     private fun slideInFragment(fragment: Fragment, shouldAddToBackStack: Boolean, tag: String) {
@@ -715,6 +732,13 @@ class LoginActivity :
             siteAddress, endpointAddress, inputUsername, inputPassword, false
         )
         slideInFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
+    }
+
+    override fun startJetpackInstall(siteAddress: String?) {
+        siteAddress?.let {
+            val url = "$JETPACK_CONNECT_URL?url=$it&mobile_redirect=$JETPACK_CONNECTED_REDIRECT_URL&from=mobile"
+            ChromeCustomTabUtils.launchUrl(this, url)
+        }
     }
 
     override fun gotUnregisteredEmail(email: String?) {

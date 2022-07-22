@@ -234,6 +234,7 @@
     <string name="login_jetpack_what_is_description">Jetpack is a free WordPress plugin that connects your store with the tools needed to give you the best mobile experience, including push notifications and stats</string>
     <string name="login_jetpack_installed_sign_in">Already have Jetpack? %1$s</string>
     <string name="login_jetpack_not_found">Jetpack not found. Please try again</string>
+    <string name="login_jetpack_install">Install Jetpack</string>
     <string name="login_sign_in">Sign in</string>
     <string name="login_need_help_finding_email">Need help finding the connected email?</string>
     <string name="login_email_help_title">What email do I use to sign in?</string>

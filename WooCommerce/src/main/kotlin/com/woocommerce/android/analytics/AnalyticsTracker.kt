@@ -357,6 +357,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- Onboarding
         const val VALUE_LOGIN_ONBOARDING_IS_FINAL_PAGE = "is_final_page"
 
+        // -- Jetpack Installation
+        const val VALUE_JETPACK_INSTALLATION_SOURCE_WEB = "web"
+        const val VALUE_JETPACK_INSTALLATION_SOURCE_NATIVE = "native"
+
         var sendUsageStats: Boolean = true
             set(value) {
                 if (value != field) {
