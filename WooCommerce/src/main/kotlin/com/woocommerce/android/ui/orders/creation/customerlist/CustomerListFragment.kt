@@ -82,13 +82,13 @@ class CustomerListFragment :
         super.onCreateOptionsMenu(menu, inflater)
     }
 
-    override fun onMenuItemActionExpand(item: MenuItem) = true
+    override fun onMenuItemActionExpand(item: MenuItem?) = true
 
     /**
      * We want the search action view always expanded, so if the user taps the back button
      * to collapse it we leave the screen rather than collapse it
      */
-    override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
+    override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
         findNavController().navigateUp()
         return false
     }
