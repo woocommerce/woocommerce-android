@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-07-04 09:54:03+0000
+Translation-Revision-Date: 2022-07-16 08:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="tests_notification_new_order_message">Nieuwe bestelling van $ 50 in je WooCommerce-winkel</string>
+    <string name="tests_notification_new_order_title">Je hebt een nieuwe bestelling!</string>
+    <string name="lines_all_details">gegevens</string>
+    <string name="lines_incomplete_explanation">Om alle %1$s te bewerken, zoek je naar de bestelling in de beheerdersomgeving van je WooCommerce-winkel</string>
+    <string name="lines_incomplete">%1$s zijn onvolledig</string>
+    <string name="support_system_status_report_share_label">Systeemstatusrapport delen</string>
+    <string name="support_system_status_report_copy_label">Systeemstatusrapport kopiëren naar klembord</string>
+    <string name="card_reader_connect_keep_searching_button">Verder zoeken</string>
+    <string name="card_reader_payment_description_v2">Fysieke betaling voor bestelnr. %s voor %s blog_id %s.</string>
+    <string name="card_reader_manage_payment_provider">Betaalverwerker wijzigen</string>
+    <string name="orderdetail_refunded_line_with_info">Terugbetaald: %1$s</string>
+    <string name="orderdetail_payment_summary_onhold_plain">Openstaande betaling</string>
     <string name="install_wc_shipping_proceed_button">Ga verder met installatie</string>
     <string name="install_wc_shipping_installation_info">Onthoud deze dingen voordat je begint met installeren</string>
     <string name="install_wc_shipping_preinstall_title">Extensie installeren</string>
@@ -216,7 +228,6 @@ Language: nl
     <string name="coupon_details_minimum_spend">Minimale besteding van %s</string>
     <string name="coupon_details_heading">Couponoverzicht</string>
     <string name="coupon_list_view_coupon">Couponoverzicht weergeven</string>
-    <string name="coupon_list_wip_message_enabled">We hebben hard gewerkt zodat jij coupons vanaf je apparaat kunt bekijken!</string>
     <string name="coupon_list_wip_title">Coupons bekijken en bewerken</string>
     <string name="coupon_list_empty_heading">Geen coupons gevonden</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s excl. %2s</string>
@@ -703,7 +714,6 @@ Language: nl
     <string name="card_reader_refetching_order_failed">Fout bij ophalen bestelling. De bestellingsstatus in de app kan verouderd zijn.</string>
     <string name="card_reader_payment_email_client_not_found">Detectie van mailclient-app mislukt</string>
     <string name="card_reader_payment_receipt_email_subject">Je kwitantie van %s</string>
-    <string name="card_reader_payment_description">Fysieke betaling voor bestelling %s voor %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Bestelling aan het vernieuwen…</string>
     <string name="card_reader_payment_fetch_order_loading_header">Status in de app aan het bijwerken…</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Je klant heeft het volgende geselecteerd %1$s</string>

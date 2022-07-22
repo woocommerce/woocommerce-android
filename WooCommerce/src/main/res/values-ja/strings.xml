@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-30 09:54:04+0000
+Translation-Revision-Date: 2022-07-15 09:54:15+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="tests_notification_new_order_message">WooCommerce ストアに $50の新しい注文があります</string>
+    <string name="tests_notification_new_order_title">新しい注文があります。🎉</string>
+    <string name="lines_all_details">詳細</string>
+    <string name="lines_incomplete_explanation">すべての %1$s を編集するには、WooCommerce ストア管理で注文を閲覧します</string>
+    <string name="lines_incomplete">%1$s が未完了です</string>
+    <string name="support_system_status_report_share_label">システムステータスレポートを共有</string>
+    <string name="support_system_status_report_copy_label">システムステータスレポートをクリップボードにコピー</string>
+    <string name="card_reader_connect_keep_searching_button">検索を続行</string>
+    <string name="card_reader_payment_description_v2">%s blog_id %s への注文 #%sのオフラインでの支払い。</string>
+    <string name="card_reader_manage_payment_provider">決済サービス業者を変更</string>
+    <string name="orderdetail_refunded_line_with_info">返金済み: %1$s</string>
+    <string name="orderdetail_payment_summary_onhold_plain">支払い待ち</string>
     <string name="install_wc_shipping_proceed_button">インストールを進める</string>
     <string name="install_wc_shipping_installation_info">インストール前に</string>
     <string name="install_wc_shipping_preinstall_title">拡張機能をインストール</string>
@@ -216,7 +228,6 @@ Language: ja_JP
     <string name="coupon_details_minimum_spend">%sの利用最小額</string>
     <string name="coupon_details_heading">クーポンの概要</string>
     <string name="coupon_list_view_coupon">クーポンの概要を表示</string>
-    <string name="coupon_list_wip_message_enabled">デバイスでクーポンを表示できる機能を開発中です !</string>
     <string name="coupon_list_wip_title">クーポンを表示して編集する</string>
     <string name="coupon_list_empty_heading">クーポンが見つかりません</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s (%2s を除く)</string>
@@ -702,7 +713,6 @@ Language: ja_JP
     <string name="card_reader_refetching_order_failed">注文を取得する際にエラーが発生しました。 アプリの注文状態が古い可能性があります。</string>
     <string name="card_reader_payment_email_client_not_found">メールクライアントアプリを検出できません</string>
     <string name="card_reader_payment_receipt_email_subject">%s のレシート</string>
-    <string name="card_reader_payment_description">%s への %s の注文のオフラインでの支払い</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">注文を更新する</string>
     <string name="card_reader_payment_fetch_order_loading_header">アプリの状態を更新する</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">お客様が %1$s を選択しました</string>
