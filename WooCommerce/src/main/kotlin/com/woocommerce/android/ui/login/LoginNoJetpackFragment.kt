@@ -100,7 +100,10 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
             mInputPassword = it.getString(ARG_INPUT_PASSWORD, null)
             userAvatarUrl = it.getString(ARG_USER_AVATAR_URL, null)
             mCheckJetpackAvailability = it.getBoolean(ARG_CHECK_JETPACK_AVAILABILITY)
-            isJetpackConnectCustomTabOpened = it.getBoolean(ARG_IS_JETPACK_CONNECT_CUSTOM_TAB_OPENED)
+        }
+
+        savedInstanceState?.let { bundle ->
+            isJetpackConnectCustomTabOpened = bundle.getBoolean(ARG_IS_JETPACK_CONNECT_CUSTOM_TAB_OPENED)
         }
     }
 
@@ -267,5 +270,10 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
         jetpackLoginListener?.showUsernamePasswordScreen(
             siteAddress, siteXmlRpcAddress, mInputUsername, mInputPassword
         )
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean(ARG_IS_JETPACK_CONNECT_CUSTOM_TAB_OPENED, isJetpackConnectCustomTabOpened)
+        super.onSaveInstanceState(outState)
     }
 }
