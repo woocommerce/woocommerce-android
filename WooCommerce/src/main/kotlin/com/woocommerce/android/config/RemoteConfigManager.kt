@@ -12,9 +12,7 @@ import com.woocommerce.android.util.WooLog.T
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
 class RemoteConfigManager @Inject constructor(
     private val repository: RemoteConfigRepository,
     @AppCoroutineScope private val scope: CoroutineScope
