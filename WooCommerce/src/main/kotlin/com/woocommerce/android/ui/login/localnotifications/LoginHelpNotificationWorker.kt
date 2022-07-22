@@ -87,9 +87,9 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
 
     private fun getActionsForSiteAddressErrorNotification(): List<Pair<String, Intent>> =
         listOf(
+            resourceProvider.getString(R.string.login_local_notification_wordpress_login_button)
+                to buildOpenLoginWithEmailScreenIntent(),
             resourceProvider.getString(R.string.login_local_notification_contact_support_button)
                 to buildOpenSupportScreenIntent(),
-            resourceProvider.getString(R.string.login_local_notification_wordpress_login_button)
-                to buildOpenLoginWithEmailScreenIntent()
         )
 }
