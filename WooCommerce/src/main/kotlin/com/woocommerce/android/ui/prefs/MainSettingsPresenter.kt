@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.prefs
 
 import androidx.lifecycle.MutableLiveData
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.compose.component.banner.BannerDisplayEligibilityChecker
+import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.StringUtils
@@ -75,10 +75,10 @@ class MainSettingsPresenter @Inject constructor(
         }
     }
 
-    override fun onCtaClicked() {
+    override fun onCtaClicked(source: String) {
         coroutineScope.launch {
             appSettingsFragmentView?.openPurchaseCardReaderLink(
-                bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl()
+                bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(source)
             )
         }
     }
@@ -88,19 +88,24 @@ class MainSettingsPresenter @Inject constructor(
         appSettingsFragmentView?.dismissUpsellCardReaderBanner()
     }
 
-    override fun onRemindLaterClicked(currentTimeInMillis: Long) {
+    override fun onRemindLaterClicked(currentTimeInMillis: Long, source: String) {
         shouldShowUpsellCardReaderDismissDialog.value = false
-        bannerDisplayEligibilityChecker.onRemindLaterClicked(currentTimeInMillis)
+        bannerDisplayEligibilityChecker.onRemindLaterClicked(currentTimeInMillis, source)
         appSettingsFragmentView?.dismissUpsellCardReaderBannerViaRemindLater()
     }
 
-    override fun onDontShowAgainClicked() {
+    override fun onDontShowAgainClicked(source: String) {
         shouldShowUpsellCardReaderDismissDialog.value = false
-        bannerDisplayEligibilityChecker.onDontShowAgainClicked()
+        bannerDisplayEligibilityChecker.onDontShowAgainClicked(source)
         appSettingsFragmentView?.dismissUpsellCardReaderBannerViaDontShowAgain()
     }
 
-    override fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long): Boolean {
-        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis)
+    override fun onBannerAlertDismiss() {
+        shouldShowUpsellCardReaderDismissDialog.value = false
+        appSettingsFragmentView?.dismissUpsellCardReaderBannerViaBack()
+    }
+
+    override fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long, source: String): Boolean {
+        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis, source)
     }
 }

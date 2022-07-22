@@ -12,11 +12,12 @@ interface MainSettingsContract {
         fun hasMultipleStores(): Boolean
         fun setupAnnouncementOption()
         fun setupJetpackInstallOption()
-        fun onCtaClicked()
+        fun onCtaClicked(source: String)
         fun onDismissClicked()
-        fun onRemindLaterClicked(currentTimeInMillis: Long)
-        fun onDontShowAgainClicked()
-        fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long): Boolean
+        fun onRemindLaterClicked(currentTimeInMillis: Long, source: String)
+        fun onDontShowAgainClicked(source: String)
+        fun onBannerAlertDismiss()
+        fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long, source: String): Boolean
         val shouldShowUpsellCardReaderDismissDialog: MutableLiveData<Boolean>
         val isEligibleForInPersonPayments: MutableLiveData<Boolean>
     }
@@ -26,6 +27,7 @@ interface MainSettingsContract {
         fun showLatestAnnouncementOption(announcement: FeatureAnnouncement)
         fun handleJetpackInstallOption(isJetpackCPSite: Boolean)
         fun dismissUpsellCardReaderBanner()
+        fun dismissUpsellCardReaderBannerViaBack()
         fun dismissUpsellCardReaderBannerViaRemindLater()
         fun dismissUpsellCardReaderBannerViaDontShowAgain()
         fun openPurchaseCardReaderLink(url: String)

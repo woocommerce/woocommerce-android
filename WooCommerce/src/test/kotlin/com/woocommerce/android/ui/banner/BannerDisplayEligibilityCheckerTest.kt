@@ -2,11 +2,18 @@ package com.woocommerce.android.ui.banner
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_BANNER_ORDER_LIST
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_BANNER_PAYMENTS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_BANNER_REMIND_LATER
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_BANNER_SETTINGS
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForCanada
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUnsupportedCountry
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.compose.component.banner.BannerDisplayEligibilityChecker
+import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCurrencySupportedChecker
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -18,6 +25,7 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
@@ -30,6 +38,7 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val cardReaderConfigProvider: CardReaderCountryConfigProvider = mock()
     private val cardReaderPaymentCurrencySupportedChecker: CardReaderPaymentCurrencySupportedChecker = mock()
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     private lateinit var bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker
 
@@ -43,9 +52,24 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
             coroutinesTestRule.testDispatchers,
             selectedSite,
             cardReaderConfigProvider,
-            cardReaderPaymentCurrencySupportedChecker
+            cardReaderPaymentCurrencySupportedChecker,
+            analyticsTrackerWrapper,
         )
         whenever(selectedSite.get()).thenReturn(site)
+        whenever(
+            appPrefsWrapper.isCardReaderUpsellBannerDismissedForever(
+                ArgumentMatchers.anyInt(),
+                ArgumentMatchers.anyLong(),
+                ArgumentMatchers.anyLong()
+            )
+        ).thenReturn(false)
+        whenever(
+            appPrefsWrapper.getCardReaderUpsellBannerLastDismissed(
+                ArgumentMatchers.anyInt(),
+                ArgumentMatchers.anyLong(),
+                ArgumentMatchers.anyLong()
+            )
+        ).thenReturn(0L)
     }
 
     @Test
@@ -55,7 +79,9 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
             whenever(wooStore.getStoreCountryCode(any())).thenReturn("US")
 
             // WHEN
-            val actualUrl = bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl()
+            val actualUrl = bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(
+                KEY_BANNER_PAYMENTS
+            )
 
             // Then
             assertThat(
@@ -71,7 +97,9 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
             whenever(wooStore.getStoreCountryCode(any())).thenReturn("CA")
 
             // WHEN
-            val actualUrl = bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl()
+            val actualUrl = bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(
+                KEY_BANNER_PAYMENTS
+            )
 
             // Then
             assertThat(
@@ -139,7 +167,10 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
             )
         ).thenReturn(0L)
 
-        val canShowBanner = bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(0L)
+        val canShowBanner = bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
+            0L,
+            KEY_BANNER_PAYMENTS
+        )
 
         assertThat(canShowBanner).isTrue
     }
@@ -154,7 +185,10 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
             )
         ).thenReturn(true)
 
-        val canShowBanner = bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(0L)
+        val canShowBanner = bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
+            0L,
+            KEY_BANNER_PAYMENTS
+        )
 
         assertThat(canShowBanner).isFalse
     }
@@ -179,7 +213,10 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
             )
         ).thenReturn(lastDialogDismissedInMillis)
 
-        val canShowBanner = bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis)
+        val canShowBanner = bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
+            currentTimeInMillis,
+            KEY_BANNER_PAYMENTS
+        )
 
         assertThat(canShowBanner).isFalse
     }
@@ -204,7 +241,10 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
             )
         ).thenReturn(lastDialogDismissedInMillis)
 
-        val canShowBanner = bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis)
+        val canShowBanner = bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
+            currentTimeInMillis,
+            KEY_BANNER_PAYMENTS
+        )
 
         assertThat(canShowBanner).isTrue
     }
@@ -213,7 +253,10 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
     fun `given card reader has dismissed via remind later, then store current time in millis to shared prefs`() {
         val currentTimeInMillis = System.currentTimeMillis()
 
-        bannerDisplayEligibilityChecker.onRemindLaterClicked(currentTimeInMillis)
+        bannerDisplayEligibilityChecker.onRemindLaterClicked(
+            currentTimeInMillis,
+            KEY_BANNER_PAYMENTS
+        )
 
         verify(appPrefsWrapper).setCardReaderUpsellBannerRemindMeLater(
             ArgumentMatchers.eq(currentTimeInMillis),
@@ -225,7 +268,7 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
 
     @Test
     fun `given card reader banner has dismissed forever, then store this info to shared prefs`() {
-        bannerDisplayEligibilityChecker.onDontShowAgainClicked()
+        bannerDisplayEligibilityChecker.onDontShowAgainClicked(KEY_BANNER_PAYMENTS)
 
         verify(appPrefsWrapper).setCardReaderUpsellBannerDismissed(
             ArgumentMatchers.eq(true),
@@ -310,6 +353,233 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
             val result = bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()
 
             assertThat(result).isFalse
+        }
+    }
+
+    @Test
+    fun `given upsell banner, when banner is not eligible for display, then do not track event`() {
+        // WHEN
+        whenever(
+            appPrefsWrapper.getCardReaderUpsellBannerLastDismissed(
+                ArgumentMatchers.anyInt(),
+                ArgumentMatchers.anyLong(),
+                ArgumentMatchers.anyLong()
+            )
+        ).thenReturn(12345L)
+
+        bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
+            0L,
+            KEY_BANNER_PAYMENTS
+        )
+
+        // Then
+        verify(analyticsTrackerWrapper, never()).track(
+            AnalyticsEvent.FEATURE_CARD_SHOWN,
+            mapOf(
+                AnalyticsTracker.KEY_BANNER_SOURCE to KEY_BANNER_PAYMENTS,
+                AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
+            )
+        )
+    }
+
+    @Test
+    fun `given upsell banner from payments, when banner is shown, then track proper event`() {
+        // WHEN
+        bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
+            0L,
+            KEY_BANNER_PAYMENTS
+        )
+
+        // Then
+        verify(analyticsTrackerWrapper).track(
+            AnalyticsEvent.FEATURE_CARD_SHOWN,
+            mapOf(
+                AnalyticsTracker.KEY_BANNER_SOURCE to KEY_BANNER_PAYMENTS,
+                AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
+            )
+        )
+    }
+
+    @Test
+    fun `given upsell banner from order list, when banner is shown, then track proper event`() {
+        // WHEN
+        bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
+            0L,
+            KEY_BANNER_ORDER_LIST
+        )
+
+        // Then
+        verify(analyticsTrackerWrapper).track(
+            AnalyticsEvent.FEATURE_CARD_SHOWN,
+            mapOf(
+                AnalyticsTracker.KEY_BANNER_SOURCE to KEY_BANNER_ORDER_LIST,
+                AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
+            )
+        )
+    }
+
+    @Test
+    fun `given upsell banner from settings, when banner is shown, then track proper event`() {
+        // WHEN
+        bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
+            0L,
+            KEY_BANNER_SETTINGS
+        )
+
+        // Then
+        verify(analyticsTrackerWrapper).track(
+            AnalyticsEvent.FEATURE_CARD_SHOWN,
+            mapOf(
+                AnalyticsTracker.KEY_BANNER_SOURCE to KEY_BANNER_SETTINGS,
+                AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
+            )
+        )
+    }
+
+    @Test
+    fun `given payments screen, when banner is dismissed via remind me later, then track proper event`() {
+        // WHEN
+        bannerDisplayEligibilityChecker.onRemindLaterClicked(0L, KEY_BANNER_PAYMENTS)
+
+        // Then
+        verify(analyticsTrackerWrapper).track(
+            AnalyticsEvent.FEATURE_CARD_DISMISSED,
+            mapOf(
+                AnalyticsTracker.KEY_BANNER_SOURCE to KEY_BANNER_PAYMENTS,
+                AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS,
+                KEY_BANNER_REMIND_LATER to true
+            )
+        )
+    }
+
+    @Test
+    fun `given order list screen, when banner is dismissed via remind me later, then track proper event`() {
+        // WHEN
+        bannerDisplayEligibilityChecker.onRemindLaterClicked(0L, KEY_BANNER_ORDER_LIST)
+
+        // Then
+        verify(analyticsTrackerWrapper).track(
+            AnalyticsEvent.FEATURE_CARD_DISMISSED,
+            mapOf(
+                AnalyticsTracker.KEY_BANNER_SOURCE to KEY_BANNER_ORDER_LIST,
+                AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS,
+                KEY_BANNER_REMIND_LATER to true
+            )
+        )
+    }
+
+    @Test
+    fun `given settings screen, when banner is dismissed via remind me later, then track proper event`() {
+        // WHEN
+        bannerDisplayEligibilityChecker.onRemindLaterClicked(0L, KEY_BANNER_SETTINGS)
+
+        // Then
+        verify(analyticsTrackerWrapper).track(
+            AnalyticsEvent.FEATURE_CARD_DISMISSED,
+            mapOf(
+                AnalyticsTracker.KEY_BANNER_SOURCE to KEY_BANNER_SETTINGS,
+                AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS,
+                KEY_BANNER_REMIND_LATER to true
+            )
+        )
+    }
+
+    @Test
+    fun `given payments screen, when banner is dismissed via don't show again, then track proper event`() {
+        // WHEN
+        bannerDisplayEligibilityChecker.onDontShowAgainClicked(KEY_BANNER_PAYMENTS)
+
+        // Then
+        verify(analyticsTrackerWrapper).track(
+            AnalyticsEvent.FEATURE_CARD_DISMISSED,
+            mapOf(
+                AnalyticsTracker.KEY_BANNER_SOURCE to KEY_BANNER_PAYMENTS,
+                AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS,
+                KEY_BANNER_REMIND_LATER to false
+            )
+        )
+    }
+
+    @Test
+    fun `given order list screen, when banner is dismissed via don't show again, then track proper event`() {
+        // WHEN
+        bannerDisplayEligibilityChecker.onDontShowAgainClicked(KEY_BANNER_ORDER_LIST)
+
+        // Then
+        verify(analyticsTrackerWrapper).track(
+            AnalyticsEvent.FEATURE_CARD_DISMISSED,
+            mapOf(
+                AnalyticsTracker.KEY_BANNER_SOURCE to KEY_BANNER_ORDER_LIST,
+                AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS,
+                KEY_BANNER_REMIND_LATER to false
+            )
+        )
+    }
+
+    @Test
+    fun `given settings screen, when banner is dismissed via don't show again, then track proper event`() {
+        // WHEN
+        bannerDisplayEligibilityChecker.onDontShowAgainClicked(KEY_BANNER_SETTINGS)
+
+        // Then
+        verify(analyticsTrackerWrapper).track(
+            AnalyticsEvent.FEATURE_CARD_DISMISSED,
+            mapOf(
+                AnalyticsTracker.KEY_BANNER_SOURCE to KEY_BANNER_SETTINGS,
+                AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS,
+                KEY_BANNER_REMIND_LATER to false
+            )
+        )
+    }
+
+    @Test
+    fun `given payments screen, when banner cta is tapped, then track proper event`() {
+        runTest {
+            // WHEN
+            bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(KEY_BANNER_PAYMENTS)
+
+            // Then
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.FEATURE_CARD_CTA_TAPPED,
+                mapOf(
+                    AnalyticsTracker.KEY_BANNER_SOURCE to KEY_BANNER_PAYMENTS,
+                    AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS,
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given order list screen, when banner cta is tapped, then track proper event`() {
+        runTest {
+            // WHEN
+            bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(KEY_BANNER_ORDER_LIST)
+
+            // Then
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.FEATURE_CARD_CTA_TAPPED,
+                mapOf(
+                    AnalyticsTracker.KEY_BANNER_SOURCE to KEY_BANNER_ORDER_LIST,
+                    AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS,
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given settings screen, when banner cta is tapped, then track proper event`() {
+        runTest {
+            // WHEN
+            bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(KEY_BANNER_SETTINGS)
+
+            // Then
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.FEATURE_CARD_CTA_TAPPED,
+                mapOf(
+                    AnalyticsTracker.KEY_BANNER_SOURCE to KEY_BANNER_SETTINGS,
+                    AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS,
+                )
+            )
         }
     }
 }

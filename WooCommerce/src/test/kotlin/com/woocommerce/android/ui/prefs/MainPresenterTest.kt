@@ -1,8 +1,9 @@
 package com.woocommerce.android.ui.prefs
 
 import com.woocommerce.android.AppUrls
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_BANNER_PAYMENTS
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.compose.component.banner.BannerDisplayEligibilityChecker
+import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -33,7 +34,7 @@ class MainPresenterTest : BaseUnitTest() {
             store,
             mock(),
             mock(),
-            bannerDisplayEligibilityChecker
+            bannerDisplayEligibilityChecker,
         )
         mainSettingsPresenter.takeView(mainPresenterSettingsContractView)
     }
@@ -43,12 +44,14 @@ class MainPresenterTest : BaseUnitTest() {
     fun `given upsell banner, when purchase reader clicked, then trigger proper event`() {
         runTest {
             // GIVEN
-            whenever(bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl()).thenReturn(
+            whenever(
+                bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(KEY_BANNER_PAYMENTS)
+            ).thenReturn(
                 "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
             )
 
             // WHEN
-            mainSettingsPresenter.onCtaClicked()
+            mainSettingsPresenter.onCtaClicked(KEY_BANNER_PAYMENTS)
 
             // Then
             verify(mainPresenterSettingsContractView).openPurchaseCardReaderLink(
@@ -69,7 +72,7 @@ class MainPresenterTest : BaseUnitTest() {
     @Test
     fun `given upsell banner, when banner is dismissed via remind later, then trigger proper event`() {
         // WHEN
-        mainSettingsPresenter.onRemindLaterClicked(0L)
+        mainSettingsPresenter.onRemindLaterClicked(0L, KEY_BANNER_PAYMENTS)
 
         // Then
         verify(mainPresenterSettingsContractView).dismissUpsellCardReaderBannerViaRemindLater()
@@ -78,7 +81,7 @@ class MainPresenterTest : BaseUnitTest() {
     @Test
     fun `given upsell banner, when banner is dismissed via don't show gain, then trigger proper event`() {
         // WHEN
-        mainSettingsPresenter.onDontShowAgainClicked()
+        mainSettingsPresenter.onDontShowAgainClicked(KEY_BANNER_PAYMENTS)
 
         // Then
         verify(mainPresenterSettingsContractView).dismissUpsellCardReaderBannerViaDontShowAgain()
@@ -93,14 +96,14 @@ class MainPresenterTest : BaseUnitTest() {
 
     @Test
     fun `given card reader banner has dismissed via remind later, then update dialogShow state to false`() {
-        mainSettingsPresenter.onRemindLaterClicked(0L)
+        mainSettingsPresenter.onRemindLaterClicked(0L, KEY_BANNER_PAYMENTS)
 
         Assertions.assertThat(mainSettingsPresenter.shouldShowUpsellCardReaderDismissDialog.value).isFalse
     }
 
     @Test
     fun `given card reader banner has dismissed via don't show again, then update dialogShow state to false`() {
-        mainSettingsPresenter.onDontShowAgainClicked()
+        mainSettingsPresenter.onDontShowAgainClicked(KEY_BANNER_PAYMENTS)
 
         Assertions.assertThat(mainSettingsPresenter.shouldShowUpsellCardReaderDismissDialog.value).isFalse
     }
@@ -130,6 +133,20 @@ class MainPresenterTest : BaseUnitTest() {
 
             Assertions.assertThat(mainSettingsPresenter.isEligibleForInPersonPayments.value).isTrue
         }
+    }
+
+    @Test
+    fun `when alert dialog dismissed by pressing back, then shouldShowUpsellCardReaderDismissDialog set to false`() {
+        mainSettingsPresenter.onBannerAlertDismiss()
+
+        Assertions.assertThat(mainSettingsPresenter.shouldShowUpsellCardReaderDismissDialog.value).isFalse
+    }
+
+    @Test
+    fun `when alert dialog dismissed by pressing back, then dismissUpsellCardReaderBannerViaBack is called`() {
+        mainSettingsPresenter.onBannerAlertDismiss()
+
+        verify(mainPresenterSettingsContractView).dismissUpsellCardReaderBannerViaBack()
     }
     //endregion
 }

@@ -24,12 +24,12 @@ import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChange
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.compose.component.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.OpenPurchaseCardReaderLink
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
+import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.ThrottleLiveData
 import com.woocommerce.android.util.WooLog
@@ -421,9 +421,11 @@ class OrderListViewModel @Inject constructor(
         loadOrders()
     }
 
-    fun onCtaClicked() {
+    fun onCtaClicked(source: String) {
         launch {
-            triggerEvent(OpenPurchaseCardReaderLink(bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl()))
+            triggerEvent(
+                OpenPurchaseCardReaderLink(bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(source))
+            )
         }
     }
 
@@ -432,20 +434,24 @@ class OrderListViewModel @Inject constructor(
         triggerEvent(OrderListEvent.DismissCardReaderUpsellBanner)
     }
 
-    fun onRemindLaterClicked(currentTimeInMillis: Long) {
+    fun onRemindLaterClicked(currentTimeInMillis: Long, source: String) {
         shouldShowUpsellCardReaderDismissDialog.value = false
-        bannerDisplayEligibilityChecker.onRemindLaterClicked(currentTimeInMillis)
+        bannerDisplayEligibilityChecker.onRemindLaterClicked(currentTimeInMillis, source)
         triggerEvent(OrderListEvent.DismissCardReaderUpsellBannerViaRemindMeLater)
     }
 
-    fun onDontShowAgainClicked() {
+    fun onDontShowAgainClicked(source: String) {
         shouldShowUpsellCardReaderDismissDialog.value = false
-        bannerDisplayEligibilityChecker.onDontShowAgainClicked()
+        bannerDisplayEligibilityChecker.onDontShowAgainClicked(source)
         triggerEvent(OrderListEvent.DismissCardReaderUpsellBannerViaDontShowAgain)
     }
 
-    fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long): Boolean {
-        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis)
+    fun onBannerAlertDismiss() {
+        shouldShowUpsellCardReaderDismissDialog.value = false
+    }
+
+    fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long, source: String): Boolean {
+        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis, source)
     }
 
     sealed class OrderListEvent : Event() {

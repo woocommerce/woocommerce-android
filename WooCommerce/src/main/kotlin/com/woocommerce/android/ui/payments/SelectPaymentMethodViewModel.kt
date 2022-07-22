@@ -15,8 +15,8 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.compose.component.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Loading
+import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment
@@ -26,7 +26,6 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -82,10 +81,19 @@ class SelectPaymentMethodViewModel @Inject constructor(
                         }
                         val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: ""
                         orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode)
+                        val isPaymentCollectableWithCardReader = cardPaymentCollectibilityChecker.isCollectable(order)
                         viewState.value = TakePaymentViewState.Success(
                             paymentUrl = order.paymentUrl,
                             orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode),
-                            isPaymentCollectableWithCardReader = cardPaymentCollectibilityChecker.isCollectable(order)
+                            isPaymentCollectableWithCardReader = isPaymentCollectableWithCardReader,
+                            shouldShowCardReaderUpsellBanner =
+                            (
+                                canShowCardReaderUpsellBanner(
+                                    System.currentTimeMillis(),
+                                    AnalyticsTracker.KEY_BANNER_PAYMENTS
+                                ) &&
+                                    isPaymentCollectableWithCardReader
+                                )
                         )
                     }
                     is Refund -> triggerEvent(NavigateToCardReaderRefundFlow(param))
@@ -260,17 +268,11 @@ class SelectPaymentMethodViewModel @Inject constructor(
             ORDER -> AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW
         }
 
-    private suspend fun getStoreCountryCode(): String? {
-        return withContext(dispatchers.io) {
-            wooCommerceStore.getStoreCountryCode(selectedSite.get()) ?: null.also {
-                WooLog.e(WooLog.T.CARD_READER, "Store's country code not found.")
-            }
-        }
-    }
-
-    fun onCtaClicked() {
+    fun onCtaClicked(source: String) {
         launch {
-            triggerEvent(OpenPurchaseCardReaderLink(bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl()))
+            triggerEvent(
+                OpenPurchaseCardReaderLink(bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(source))
+            )
         }
     }
 
@@ -279,20 +281,24 @@ class SelectPaymentMethodViewModel @Inject constructor(
         triggerEvent(DismissCardReaderUpsellBanner)
     }
 
-    fun onRemindLaterClicked(currentTimeInMillis: Long) {
+    fun onRemindLaterClicked(currentTimeInMillis: Long, source: String) {
         shouldShowUpsellCardReaderDismissDialog.value = false
-        bannerDisplayEligibilityChecker.onRemindLaterClicked(currentTimeInMillis)
+        bannerDisplayEligibilityChecker.onRemindLaterClicked(currentTimeInMillis, source)
         triggerEvent(DismissCardReaderUpsellBannerViaRemindMeLater)
     }
 
-    fun onDontShowAgainClicked() {
+    fun onDontShowAgainClicked(source: String) {
         shouldShowUpsellCardReaderDismissDialog.value = false
-        bannerDisplayEligibilityChecker.onDontShowAgainClicked()
+        bannerDisplayEligibilityChecker.onDontShowAgainClicked(source)
         triggerEvent(DismissCardReaderUpsellBannerViaDontShowAgain)
     }
 
-    fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long): Boolean {
-        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis)
+    fun onBannerAlertDismiss() {
+        shouldShowUpsellCardReaderDismissDialog.value = false
+    }
+
+    private fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long, source: String): Boolean {
+        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis, source)
     }
 
     sealed class TakePaymentViewState {
@@ -301,6 +307,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
             val paymentUrl: String,
             val orderTotal: String,
             val isPaymentCollectableWithCardReader: Boolean,
+            val shouldShowCardReaderUpsellBanner: Boolean
         ) : TakePaymentViewState()
     }
 
