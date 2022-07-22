@@ -52,6 +52,7 @@ GLOTPRESS_APP_STRINGS_PROJECT_URL = 'https://translate.wordpress.com/projects/wo
 GLOTPRESS_PLAYSTORE_METADATA_PROJECT_URL = 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/release-notes/'
 
 APP_PACKAGE_NAME = 'com.woocommerce.android'
+GOOGLE_FIREBASE_SECRETS_PATH = File.join(PROJECT_ROOT_FOLDER, '.configure-files', 'firebase.secrets.json')
 
 ########################################################################
 # Environment
@@ -718,6 +719,37 @@ platform :android do
   end
 
   #####################################################################################
+  # build_and_instrumented_test
+  # -----------------------------------------------------------------------------------
+  # Run instrumented tests in Google Firebase Test Lab
+  # -----------------------------------------------------------------------------------
+  # Usage:
+  # bundle exec fastlane build_and_instrumented_test
+  #
+  #####################################################################################
+  desc "Build the application and instrumented tests, then run the tests in Firebase Test Lab"
+  lane :build_and_instrumented_test do | options |
+    gradle(tasks: ['assembleVanillaDebug', 'assembleVanillaDebugAndroidTest'])
+
+    # Run the instrumented tests in Firebase Test Lab
+    firebase_login(
+      key_file: GOOGLE_FIREBASE_SECRETS_PATH
+    )
+
+    apk_dir = File.join(PROJECT_ROOT_FOLDER, 'WooCommerce', 'build', 'outputs', 'apk')
+
+    android_firebase_test(
+      project_id: firebase_secret(name: 'project_id'),
+      key_file: GOOGLE_FIREBASE_SECRETS_PATH,
+      model: 'Nexus5',
+      version: 23,
+      test_apk_path: File.join(apk_dir, 'androidTest', 'vanilla', 'debug', 'WooCommerce-vanilla-debug-androidTest.apk'),
+      apk_path: File.join(apk_dir, 'vanilla', 'debug', 'WooCommerce-vanilla-debug.apk'),
+      results_output_dir: File.join(PROJECT_ROOT_FOLDER, 'build', 'instrumented-tests')
+     )
+  end
+
+  #####################################################################################
   # create_promo_screenshots
   # -----------------------------------------------------------------------------------
   # This lane creates the promo screenshot from the original ones that
@@ -882,6 +914,13 @@ platform :android do
   def is_beta_version(version)
     version['name'].include? "-rc-"
   end
+
+  def firebase_secret(name:)
+     UI.user_error!('Unable to locale Firebase Secrets File – did you run `configure apply`?') unless File.file? GOOGLE_FIREBASE_SECRETS_PATH
+     key_file_secrets = JSON.parse(File.read(GOOGLE_FIREBASE_SECRETS_PATH))
+     UI.user_error!("Unable to find key `#{name}` in #{GOOGLE_FIREBASE_SECRETS_PATH}") if key_file_secrets[name].nil?
+     key_file_secrets[name]
+   end
 
   # This function is Buildkite-specific
   def generate_installable_build_number

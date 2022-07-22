@@ -36,8 +36,8 @@ class SingleOrderScreen : Screen {
         return assertSingleOrderScreen()
     }
 
-    fun tapOnCollectPayment(): CardReaderPaymentScreen {
+    fun tapOnCollectPayment(): PaymentSelectionScreen {
         clickOn(R.id.paymentInfo_collectCardPresentPaymentButton)
-        return CardReaderPaymentScreen()
+        return PaymentSelectionScreen()
     }
 }

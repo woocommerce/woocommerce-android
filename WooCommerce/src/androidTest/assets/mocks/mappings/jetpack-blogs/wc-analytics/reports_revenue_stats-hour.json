@@ -8,10 +8,10 @@
       },
       "path": {
         "matches": "/wc-analytics/reports/revenue/stats(.*)"
-      },     
+      },
       "query": {
         "matches": "(.*)interval\":\"hour(.*)"
-      },          
+      },
       "locale": {
           "matches": "(.*)"
       }
@@ -41,7 +41,7 @@
           "segments": []
         },
         "intervals": [{
-          "interval": "{{#assign 'currentDay'}}{{now format='yyyy-MM-dd'}}{{/assign}}{{currentDay}} 00",          
+          "interval": "{{#assign 'currentDay'}}{{fnow format='yyyy-MM-dd'}}{{/assign}}{{currentDay}} 00",
           "date_start": "{{currentDay}} 00:00:00",
           "date_start_gmt": "{{currentDay}} 00:00:00",
           "date_end": "{{currentDay}} 00:59:59",

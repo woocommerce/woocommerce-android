@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/loadingProgress"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"/>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/loadingProgress">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/order_creation_root"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <com.woocommerce.android.ui.common.ExpandableMessageView
+                android:id="@+id/message_no_editable_fields"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:icon="@drawable/ic_lock"
+                app:message="@string/order_editing_non_editable_message"
+                app:title="@string/order_editing_non_editable_title" />
+
+            <com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
+                android:id="@+id/order_status_view"
+                style="@style/Woo.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView
+                android:id="@+id/products_section"
+                style="@style/Woo.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hasEditButton="false"
+                app:header="@string/products"
+                app:keepAddButtons="true" />
+
+            <include
+                android:id="@+id/multiple_lines_warning_section"
+                layout="@layout/multiple_lines_warning" />
+
+            <include
+                android:id="@+id/payment_section"
+                layout="@layout/order_creation_payment_section" />
+
+            <com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView
+                android:id="@+id/customer_section"
+                style="@style/Woo.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:header="@string/order_creation_customer" />
+
+            <com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView
+                android:id="@+id/notes_section"
+                style="@style/Woo.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:header="@string/order_creation_customer_note" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+    </androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+

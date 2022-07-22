@@ -45,7 +45,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.Companion.KEY_ORDER_CREATION_ACTION_RESULT
 import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.OrderCreationAction
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBanner
@@ -415,7 +415,7 @@ class OrderListFragment :
         AnalyticsTracker.track(AnalyticsEvent.ORDER_ADD_NEW)
         findNavController().navigateSafely(
             OrderListFragmentDirections.actionOrderListFragmentToOrderCreationFragment(
-                OrderCreationViewModel.Mode.Creation
+                OrderCreateEditViewModel.Mode.Creation
             )
         )
     }
@@ -440,14 +440,7 @@ class OrderListFragment :
     }
 
     override fun openOrderDetail(orderId: Long, orderStatus: String, sharedView: View?) {
-        // Track user clicked to open an order and the status of that order
-        AnalyticsTracker.track(
-            AnalyticsEvent.ORDER_OPEN,
-            mapOf(
-                AnalyticsTracker.KEY_ID to orderId,
-                AnalyticsTracker.KEY_STATUS to orderStatus
-            )
-        )
+        viewModel.trackOrderClickEvent(orderId, orderStatus)
 
         // if a search is active, we need to collapse the search view so order detail can show it's title and then
         // remember the user was searching (since both searchQuery and isSearching will be reset)

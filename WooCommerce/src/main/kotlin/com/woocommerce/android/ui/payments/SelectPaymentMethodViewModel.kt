@@ -110,10 +110,14 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
             )
         )
+        val messageIdForPaymentType = when (cardReaderPaymentFlowParam.paymentType) {
+            SIMPLE -> R.string.simple_payments_cash_dlg_message
+            ORDER -> R.string.existing_order_cash_dlg_message
+        }
         triggerEvent(
             MultiLiveEvent.Event.ShowDialog(
                 titleId = R.string.simple_payments_cash_dlg_title,
-                messageId = R.string.simple_payments_cash_dlg_message,
+                messageId = messageIdForPaymentType,
                 positiveButtonId = R.string.simple_payments_cash_dlg_button,
                 positiveBtnAction = { _, _ ->
                     onCashPaymentConfirmed()

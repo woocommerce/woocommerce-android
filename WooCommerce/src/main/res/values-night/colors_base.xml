@@ -36,6 +36,7 @@
     <color name="color_accent_3">@color/woo_blue_30</color>
 
     <color name="inverted_surface_overlay">@color/color_surface</color>
+    <color name="color_text_link">@color/woo_pink_30</color>
 
     <!--
         App colors
@@ -116,6 +117,7 @@
         Payment reader
     -->
     <color name="disconnected_state_number_background_color">@color/woo_black_900</color>
+    <color name="select_payment_gateway_stroke">@color/woo_gray_80</color>
 
     <!--
     Jetpack plugin installation dialog

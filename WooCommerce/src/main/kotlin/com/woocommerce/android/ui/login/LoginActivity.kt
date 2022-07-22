@@ -20,12 +20,15 @@ import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.support.ZendeskExtraTags
 import com.woocommerce.android.support.ZendeskHelper
+import com.woocommerce.android.ui.login.LoginPrologueCarouselFragment.PrologueCarouselListener
 import com.woocommerce.android.ui.login.LoginPrologueFragment.PrologueFinishedListener
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow.LOGIN_SITE_ADDRESS
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Source
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step.ENTER_SITE_ADDRESS
+import com.woocommerce.android.ui.login.localnotifications.LoginFlowUsageTracker
+import com.woocommerce.android.ui.login.localnotifications.LoginFlowUsageTracker.LoginSupportNotificationType
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
 import com.woocommerce.android.ui.main.MainActivity
@@ -65,6 +68,7 @@ class LoginActivity :
     LoginListener,
     GoogleListener,
     PrologueFinishedListener,
+    PrologueCarouselListener,
     HasAndroidInjector,
     LoginNoJetpackListener,
     LoginEmailHelpDialogFragment.Listener,
@@ -83,6 +87,7 @@ class LoginActivity :
     @Inject internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
     @Inject internal lateinit var zendeskHelper: ZendeskHelper
     @Inject internal lateinit var urlUtils: UrlUtils
+    @Inject internal lateinit var loginFlowUsageTracker: LoginFlowUsageTracker
 
     private var loginMode: LoginMode? = null
 
@@ -100,7 +105,7 @@ class LoginActivity :
             getAuthTokenFromIntent()?.let { showMagicLinkInterceptFragment(it) }
         } else if (savedInstanceState == null) {
             loginAnalyticsListener.trackLoginAccessed()
-            showPrologueFragment()
+            showPrologueCarouselFragment()
         }
 
         savedInstanceState?.let { ss ->
@@ -123,11 +128,11 @@ class LoginActivity :
         }
     }
 
-    private fun showPrologueFragment() {
-        val fragment = LoginPrologueFragment.newInstance()
+    private fun showPrologueCarouselFragment() {
+        val fragment = LoginPrologueCarouselFragment.newInstance()
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment, LoginPrologueFragment.TAG)
-            .addToBackStack(LoginPrologueFragment.TAG)
+            .replace(R.id.fragment_container, fragment, LoginPrologueCarouselFragment.TAG)
+            .addToBackStack(LoginPrologueCarouselFragment.TAG)
             .commitAllowingStateLoss()
     }
 
@@ -187,6 +192,9 @@ class LoginActivity :
     private fun getLoginViaSiteAddressFragment(): LoginSiteAddressFragment? =
         supportFragmentManager.findFragmentByTag(LoginSiteAddressFragment.TAG) as? WooLoginSiteAddressFragment
 
+    private fun getPrologueFragment(): LoginPrologueFragment? =
+        supportFragmentManager.findFragmentByTag(LoginPrologueFragment.TAG) as? LoginPrologueFragment
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
             onBackPressed()
@@ -236,7 +244,12 @@ class LoginActivity :
         startLoginViaWPCom()
     }
 
+    override fun onNewToWooButtonClicked() {
+        ChromeCustomTabUtils.launchUrl(this, AppUrls.NEW_TO_WOO_DOC)
+    }
+
     private fun showMainActivityAndFinish() {
+        loginFlowUsageTracker.onLoginSuccess()
         val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         startActivity(intent)
@@ -299,6 +312,11 @@ class LoginActivity :
         unifiedLoginTracker.setFlowAndStep(LOGIN_SITE_ADDRESS, ENTER_SITE_ADDRESS)
         val loginSiteAddressFragment = getLoginViaSiteAddressFragment() ?: WooLoginSiteAddressFragment()
         slideInFragment(loginSiteAddressFragment, true, LoginSiteAddressFragment.TAG)
+    }
+
+    private fun showPrologueFragment() {
+        val prologueFragment = getPrologueFragment() ?: LoginPrologueFragment()
+        slideInFragment(prologueFragment, true, LoginPrologueFragment.TAG)
     }
 
     override fun loginViaSocialAccount(
@@ -707,6 +725,7 @@ class LoginActivity :
                 shouldAddToBackStack = true,
                 tag = LoginSiteCheckErrorFragment.TAG
             )
+            loginFlowUsageTracker.scheduleNotification(LoginSupportNotificationType.LOGIN_SITE_ADDRESS_ERROR)
         } else {
             // Just in case we use this method for a different scenario in the future
             TODO("Handle a new error scenario")
@@ -716,5 +735,9 @@ class LoginActivity :
     override fun onWhatIsWordPressLinkClicked() {
         ChromeCustomTabUtils.launchUrl(this, LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT)
         unifiedLoginTracker.trackClick(Click.WHAT_IS_WORDPRESS_COM)
+    }
+
+    override fun onCarouselFinished() {
+        showPrologueFragment()
     }
 }

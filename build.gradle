@@ -1,4 +1,5 @@
 import io.github.wzieba.tracks.plugin.TracksExtension
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id 'com.automattic.android.fetchstyle'
@@ -35,6 +36,16 @@ allprojects {
     checkstyle {
         toolVersion = '8.3'
         configFile file("${project.rootDir}/config/checkstyle.xml")
+    }
+
+    tasks.withType(KotlinCompile).all {
+        kotlinOptions {
+            jvmTarget = JavaVersion.VERSION_1_8
+            allWarningsAsErrors = true
+            freeCompilerArgs += [
+                    "-Xopt-in=kotlin.RequiresOptIn"
+            ]
+        }
     }
 }
 
@@ -82,7 +93,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = '1.47.0'
+    fluxCVersion = 'trunk-a77852dee4a3835c4be4cdb6641e73702da3ca9b'
     glideVersion = '4.13.2'
     coilVersion = '2.1.0'
     constraintLayoutVersion = '1.2.0'
@@ -102,6 +113,7 @@ ext {
     mediapickerVersion = '0.1.0'
     wordPressLoginVersion = '0.15.0'
     aboutAutomatticVersion = '0.0.6'
+    workManagerVersion = '2.7.1'
 
     // Compose and its module versions need to be consistent with each other (for example 'compose-theme-adapter')
     composeVersion = "1.1.1"
