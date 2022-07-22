@@ -41,7 +41,7 @@ class LoginNotificationScheduler @Inject constructor(
                 LOGIN_NOTIFICATION_TYPE_KEY to notificationType.name
             )
             val workRequest: WorkRequest =
-                OneTimeWorkRequestBuilder<LocalNotificationWorker>()
+                OneTimeWorkRequestBuilder<LoginHelpNotificationWorker>()
                     .setInputData(notificationData)
                     .setInitialDelay(NOTIFICATION_TEST_DELAY_IN_SECONDS, TimeUnit.SECONDS)
                     .build()
