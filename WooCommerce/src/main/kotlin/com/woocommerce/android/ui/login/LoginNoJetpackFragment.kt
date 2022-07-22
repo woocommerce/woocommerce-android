@@ -22,6 +22,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_JETPACK_INSTALLATION_SOURCE_WEB
 import com.woocommerce.android.databinding.FragmentLoginNoJetpackBinding
 import com.woocommerce.android.databinding.ViewLoginNoStoresBinding
 import com.woocommerce.android.databinding.ViewLoginUserInfoBinding
@@ -41,6 +43,7 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
         private const val ARG_INPUT_PASSWORD = "ARG_INPUT_PASSWORD"
         private const val ARG_USER_AVATAR_URL = "ARG_USER_AVATAR_URL"
         private const val ARG_CHECK_JETPACK_AVAILABILITY = "ARG_CHECK_JETPACK_AVAILABILITY"
+        private const val ARG_IS_JETPACK_CONNECT_CUSTOM_TAB_OPENED = "ARG_IS_JETPACK_CONNECT_CUSTOM_TAB_OPENED"
 
         fun newInstance(
             siteAddress: String,
@@ -70,6 +73,7 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
     private var mInputUsername: String? = null
     private var mInputPassword: String? = null
     private var userAvatarUrl: String? = null
+    private var isJetpackConnectCustomTabOpened = false
 
     @Suppress("DEPRECATION") private var progressDialog: ProgressDialog? = null
 
@@ -96,6 +100,10 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
             mInputPassword = it.getString(ARG_INPUT_PASSWORD, null)
             userAvatarUrl = it.getString(ARG_USER_AVATAR_URL, null)
             mCheckJetpackAvailability = it.getBoolean(ARG_CHECK_JETPACK_AVAILABILITY)
+        }
+
+        savedInstanceState?.let { bundle ->
+            isJetpackConnectCustomTabOpened = bundle.getBoolean(ARG_IS_JETPACK_CONNECT_CUSTOM_TAB_OPENED)
         }
     }
 
@@ -153,6 +161,8 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
         with(btnBinding.buttonPrimary) {
             text = getString(R.string.login_jetpack_install)
             setOnClickListener {
+                isJetpackConnectCustomTabOpened = true
+                AnalyticsTracker.track(AnalyticsEvent.LOGIN_JETPACK_SETUP_BUTTON_TAPPED)
                 jetpackLoginListener?.startJetpackInstall(siteAddress)
             }
         }
@@ -201,6 +211,16 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
         AnalyticsTracker.track(AnalyticsEvent.LOGIN_NO_JETPACK_SCREEN_VIEWED)
+
+        // This is used to track whether the Jetpack Connect Custom Tab is dismissed
+        // before connection is finished.
+        if (isJetpackConnectCustomTabOpened) {
+            AnalyticsTracker.track(
+                stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_DISMISSED,
+                properties = mapOf(KEY_SOURCE to VALUE_JETPACK_INSTALLATION_SOURCE_WEB)
+            )
+            isJetpackConnectCustomTabOpened = false
+        }
     }
 
     private fun initializeViewModel() {
@@ -250,5 +270,10 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
         jetpackLoginListener?.showUsernamePasswordScreen(
             siteAddress, siteXmlRpcAddress, mInputUsername, mInputPassword
         )
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean(ARG_IS_JETPACK_CONNECT_CUSTOM_TAB_OPENED, isJetpackConnectCustomTabOpened)
+        super.onSaveInstanceState(outState)
     }
 }
