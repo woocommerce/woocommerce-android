@@ -147,6 +147,11 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     PAYMENTS_FLOW_COLLECT,
     PAYMENTS_FLOW_FAILED,
 
+    // -- Upsell Banner
+    FEATURE_CARD_SHOWN,
+    FEATURE_CARD_DISMISSED,
+    FEATURE_CARD_CTA_TAPPED,
+
     // -- Simple Payments
     SIMPLE_PAYMENTS_FLOW_STARTED,
     PAYMENTS_FLOW_CANCELED,

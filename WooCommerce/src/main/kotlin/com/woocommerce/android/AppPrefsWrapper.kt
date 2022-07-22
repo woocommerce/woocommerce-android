@@ -152,6 +152,53 @@ class AppPrefsWrapper @Inject constructor() {
     fun getWcShippingBannerDismissed(currentSiteId: Int) = AppPrefs.getWcShippingBannerDismissed(currentSiteId)
 
     /**
+     * Card Reader Upsell
+     */
+    fun setCardReaderUpsellBannerDismissed(
+        isDismissed: Boolean,
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = AppPrefs.setCardReaderUpsellBannerDismissedForever(
+        isDismissed,
+        localSiteId,
+        remoteSiteId,
+        selfHostedSiteId
+    )
+
+    fun isCardReaderUpsellBannerDismissedForever(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = AppPrefs.isCardReaderUpsellBannerDismissedForever(
+        localSiteId,
+        remoteSiteId,
+        selfHostedSiteId
+    )
+
+    fun setCardReaderUpsellBannerRemindMeLater(
+        lastDialogDismissedInMillis: Long,
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = AppPrefs.setCardReaderUpsellBannerRemindMeLater(
+        lastDialogDismissedInMillis,
+        localSiteId,
+        remoteSiteId,
+        selfHostedSiteId
+    )
+
+    fun getCardReaderUpsellBannerLastDismissed(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = AppPrefs.getCardReaderUpsellBannerLastDismissed(
+        localSiteId,
+        remoteSiteId,
+        selfHostedSiteId
+    )
+
+    /**
      * Observes changes to the preferences
      */
     fun observePrefs(): Flow<Unit> {
