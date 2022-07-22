@@ -1,11 +1,13 @@
 package com.woocommerce.android.ui.login
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
@@ -29,8 +31,10 @@ import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow.LOGIN_SITE_ADDRESS
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Source
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step.ENTER_SITE_ADDRESS
-import com.woocommerce.android.ui.login.localnotifications.LoginFlowUsageTracker
-import com.woocommerce.android.ui.login.localnotifications.LoginFlowUsageTracker.LoginSupportNotificationType
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_ID
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_TAG
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
 import com.woocommerce.android.ui.main.MainActivity
@@ -82,6 +86,20 @@ class LoginActivity :
 
         private const val KEY_UNIFIED_TRACKER_SOURCE = "KEY_UNIFIED_TRACKER_SOURCE"
         private const val KEY_UNIFIED_TRACKER_FLOW = "KEY_UNIFIED_TRACKER_FLOW"
+        private const val KEY_LOGIN_HELP_NOTIFICATION = "KEY_LOGIN_HELP_NOTIFICATION"
+
+        fun createIntent(
+            context: Context,
+            notificationType: LoginHelpNotificationType
+        ): Intent {
+            val intent = Intent(context, LoginActivity::class.java)
+            intent.apply {
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_CLEAR_TASK
+                putExtra(KEY_LOGIN_HELP_NOTIFICATION, notificationType.toString())
+            }
+            return intent
+        }
     }
 
     @Inject internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
@@ -90,8 +108,8 @@ class LoginActivity :
     @Inject internal lateinit var zendeskHelper: ZendeskHelper
     @Inject internal lateinit var urlUtils: UrlUtils
     @Inject internal lateinit var experimentTracker: ExperimentTracker
-    @Inject internal lateinit var loginFlowUsageTracker: LoginFlowUsageTracker
     @Inject internal lateinit var appPrefsWrapper: AppPrefsWrapper
+    @Inject internal lateinit var loginNotificationScheduler: LoginNotificationScheduler
 
     private var loginMode: LoginMode? = null
 
@@ -104,9 +122,12 @@ class LoginActivity :
 
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val loginHelpNotification = getLoginHelpNotification()
 
         if (hasMagicLinkLoginIntent()) {
             getAuthTokenFromIntent()?.let { showMagicLinkInterceptFragment(it) }
+        } else if (!loginHelpNotification.isNullOrBlank()) {
+            processLoginHelpNotification(loginHelpNotification)
         } else if (savedInstanceState == null) {
             loginAnalyticsListener.trackLoginAccessed()
 
@@ -117,6 +138,18 @@ class LoginActivity :
             unifiedLoginTracker.setSource(ss.getString(KEY_UNIFIED_TRACKER_SOURCE, Source.DEFAULT.value))
             unifiedLoginTracker.setFlow(ss.getString(KEY_UNIFIED_TRACKER_FLOW))
         }
+    }
+
+    private fun processLoginHelpNotification(loginHelpNotification: String) {
+        startLoginViaWPCom()
+        NotificationManagerCompat.from(this).cancel(
+            LOGIN_HELP_NOTIFICATION_TAG,
+            LOGIN_HELP_NOTIFICATION_ID
+        )
+        AnalyticsTracker.track(
+            AnalyticsEvent.LOGIN_LOCAL_NOTIFICATION_TAPPED,
+            mapOf(AnalyticsTracker.KEY_TYPE to loginHelpNotification)
+        )
     }
 
     override fun onResume() {
@@ -265,7 +298,7 @@ class LoginActivity :
 
     private fun showMainActivityAndFinish() {
         experimentTracker.log(ExperimentTracker.LOGIN_SUCCESSFUL_EVENT)
-        loginFlowUsageTracker.onLoginSuccess()
+        loginNotificationScheduler.onLoginSuccess()
 
         val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -742,7 +775,7 @@ class LoginActivity :
                 shouldAddToBackStack = true,
                 tag = LoginSiteCheckErrorFragment.TAG
             )
-            loginFlowUsageTracker.scheduleNotification(LoginSupportNotificationType.LOGIN_SITE_ADDRESS_ERROR)
+            loginNotificationScheduler.scheduleNotification(LoginHelpNotificationType.LOGIN_SITE_ADDRESS_ERROR)
         } else {
             // Just in case we use this method for a different scenario in the future
             TODO("Handle a new error scenario")
@@ -753,6 +786,9 @@ class LoginActivity :
         ChromeCustomTabUtils.launchUrl(this, LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT)
         unifiedLoginTracker.trackClick(Click.WHAT_IS_WORDPRESS_COM)
     }
+
+    private fun getLoginHelpNotification(): String? =
+        intent.extras?.getString(KEY_LOGIN_HELP_NOTIFICATION)
 
     override fun onCarouselFinished() {
         showPrologueFragment()

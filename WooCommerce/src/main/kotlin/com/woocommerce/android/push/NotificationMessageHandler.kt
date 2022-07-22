@@ -4,13 +4,16 @@ import android.content.Context
 import android.os.Build
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.PUSH_NOTIFICATION_RECEIVED
 import com.woocommerce.android.analytics.AnalyticsEvent.PUSH_NOTIFICATION_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.model.isOrderNotification
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.support.ZendeskHelper
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_ID
 import com.woocommerce.android.util.NotificationsParser
 import com.woocommerce.android.util.WooLog.T.NOTIFS
 import com.woocommerce.android.util.WooLogWrapper
@@ -61,6 +64,9 @@ class NotificationMessageHandler @Inject constructor(
     @Synchronized
     fun onNotificationDismissed(localPushId: Int) {
         removeNotificationByPushIdFromSystemsBar(localPushId)
+        if (localPushId == LOGIN_HELP_NOTIFICATION_ID) {
+            AnalyticsTracker.track(AnalyticsEvent.LOGIN_LOCAL_NOTIFICATION_DISMISSED)
+        }
     }
 
     @Suppress("ReturnCount", "ComplexMethod")
