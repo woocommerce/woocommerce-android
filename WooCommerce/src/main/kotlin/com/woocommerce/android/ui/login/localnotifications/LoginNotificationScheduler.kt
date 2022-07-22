@@ -19,7 +19,7 @@ class LoginNotificationScheduler @Inject constructor(
 ) {
     companion object {
         const val LOGIN_NOTIFICATION_TYPE_KEY = "Notification-type"
-        const val NOTIFICATION_TEST_DELAY_IN_SECONDS = 5L //TODO SET THIS TO 24H BEFORE MERGE
+        const val NOTIFICATION_TEST_DELAY_IN_SECONDS = 5L // TODO SET THIS TO 24H BEFORE MERGE
         const val LOGIN_HELP_NOTIFICATION_ID = 987612345
         const val LOGIN_HELP_NOTIFICATION_TAG = "login-help-notification"
     }
@@ -35,7 +35,7 @@ class LoginNotificationScheduler @Inject constructor(
     }
 
     fun scheduleNotification(notificationType: LoginHelpNotificationType) {
-        if (FeatureFlag.PRE_LOGIN_NOTIFICATIONS.isEnabled()) { //TODO RE-ENABLE !prefsWrapper.hasPreLoginNotificationBeenDisplayed()
+        if (FeatureFlag.PRE_LOGIN_NOTIFICATIONS.isEnabled() && !prefsWrapper.hasPreLoginNotificationBeenDisplayed()) {
             cancelCurrentNotificationWorkRequest()
             val notificationData = workDataOf(
                 LOGIN_NOTIFICATION_TYPE_KEY to notificationType.toString()
