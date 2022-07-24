@@ -7,9 +7,11 @@
 -----
 - [*] Login: Improved login flow when a WordPress site exists but has no Jetpack plugin installed. [https://github.com/woocommerce/woocommerce-android/pull/6910/]
 - [***] In-Person Payments: Display Upsell Card reader banner in the Payment, Order List, and Settings screen for the stores set up in the US and Canada [https://github.com/woocommerce/woocommerce-android/pull/6984]
+- [***] Order detail now enables viewing custom fields (metadata) for the order [https://github.com/woocommerce/woocommerce-android/pull/6993]
 - [***] Orders: Orders can now be edited within the app. [https://github.com/woocommerce/woocommerce-android/pull/6987]
 - [**] You can now search customers when creating or editing an order. [https://github.com/woocommerce/woocommerce-android/pull/6999]
 - [*] Fixed a bug that resulted in not showing ongoing image uploads in product details. [https://github.com/woocommerce/woocommerce-android/pull/6964]
+- [*] Login: Jetpack setup flow is now accessible from the Login with Store Address flow. [https://github.com/woocommerce/woocommerce-android/pull/7015]
 
 9.6
 -----

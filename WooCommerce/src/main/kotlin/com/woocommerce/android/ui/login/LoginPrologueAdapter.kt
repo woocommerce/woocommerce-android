@@ -6,21 +6,21 @@ import com.woocommerce.android.R
 
 class LoginPrologueAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
     private val drawableIds = arrayOf(
-        R.drawable.img_prologue_analytics,
+        R.drawable.img_prologue_products,
         R.drawable.img_prologue_orders,
-        R.drawable.img_prologue_products
+        R.drawable.img_prologue_analytics
     )
 
     private val titleIds = arrayOf(
-        R.string.login_prologue_label_analytics,
+        R.string.login_prologue_label_products,
         R.string.login_prologue_label_orders,
-        R.string.login_prologue_label_products
+        R.string.login_prologue_label_analytics
     )
 
     private val subtitleIds = arrayOf(
-        R.string.login_prologue_label_analytics_subtitle,
+        R.string.login_prologue_label_products_subtitle,
         R.string.login_prologue_label_orders_subtitle,
-        R.string.login_prologue_label_products_subtitle
+        R.string.login_prologue_label_analytics_subtitle
     )
 
     override fun createFragment(position: Int): Fragment {

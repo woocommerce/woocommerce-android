@@ -485,7 +485,7 @@ class OrderListFragment :
         return true
     }
 
-    override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+    override fun onMenuItemActionExpand(item: MenuItem): Boolean {
         isSearching = true
         checkOrientation()
         onSearchViewActiveChanged(isActive = true)
@@ -494,7 +494,7 @@ class OrderListFragment :
         return true
     }
 
-    override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+    override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
         clearSearchResults()
         searchMenuItem?.isVisible = true
         viewModel.onSearchClosed()

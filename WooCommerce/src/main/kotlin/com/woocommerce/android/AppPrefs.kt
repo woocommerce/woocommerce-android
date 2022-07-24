@@ -25,6 +25,7 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_CUSTOM_DAT
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.PRODUCT_SORTING_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
+import com.woocommerce.android.AppPrefs.UndeletablePrefKey.ONBOARDING_CAROUSEL_DISPLAYED
 import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
@@ -145,6 +146,8 @@ object AppPrefs {
 
         // Hide banner in order detail to install WC Shipping plugin
         WC_SHIPPING_BANNER_DISMISSED,
+
+        ONBOARDING_CAROUSEL_DISPLAYED
     }
 
     fun init(context: Context) {
@@ -772,6 +775,13 @@ object AppPrefs {
 
     fun isPreLoginNotificationBeenDisplayed(): Boolean =
         getBoolean(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_DISPLAYED, false)
+
+    fun setOnboardingCarouselDisplayed(displayed: Boolean) {
+        setBoolean(ONBOARDING_CAROUSEL_DISPLAYED, displayed)
+    }
+
+    fun hasOnboardingCarouselBeenDisplayed(): Boolean =
+        getBoolean(ONBOARDING_CAROUSEL_DISPLAYED, false)
 
     /**
      * Remove all user and site-related preferences.

@@ -99,6 +99,9 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     UNIFIED_LOGIN_FAILURE(siteless = true),
     UNIFIED_LOGIN_INTERACTION(siteless = true),
     LOGIN_NEW_TO_WOO_BUTTON_TAPPED(siteless = true),
+    LOGIN_JETPACK_SETUP_BUTTON_TAPPED(siteless = true),
+    LOGIN_JETPACK_SETUP_DISMISSED(siteless = true),
+    LOGIN_JETPACK_SETUP_COMPLETED(siteless = true),
 
     // -- Site Picker
     SITE_PICKER_STORES_SHOWN(siteless = true),
@@ -632,4 +635,14 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     COUPON_UPDATE_FAILED,
     COUPON_DELETE_SUCCESS,
     COUPON_DELETE_FAILED,
+
+    // Onboarding
+    LOGIN_ONBOARDING_SHOWN,
+    LOGIN_ONBOARDING_NEXT_BUTTON_TAPPED,
+    LOGIN_ONBOARDING_SKIP_BUTTON_TAPPED,
+
+    // Login help scheduled notifications
+    LOGIN_LOCAL_NOTIFICATION_DISPLAYED(siteless = true),
+    LOGIN_LOCAL_NOTIFICATION_TAPPED(siteless = true),
+    LOGIN_LOCAL_NOTIFICATION_DISMISSED(siteless = true),
 }

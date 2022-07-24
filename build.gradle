@@ -41,7 +41,8 @@ allprojects {
     tasks.withType(KotlinCompile).all {
         kotlinOptions {
             jvmTarget = JavaVersion.VERSION_1_8
-            allWarningsAsErrors = true
+            // TODO fix all the warnings and change to true before end of 2022
+            allWarningsAsErrors = false
             freeCompilerArgs += [
                     "-Xopt-in=kotlin.RequiresOptIn"
             ]
@@ -93,7 +94,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = 'trunk-a77852dee4a3835c4be4cdb6641e73702da3ca9b'
+    fluxCVersion = 'trunk-5bce27afc6c377d404c088f683451609263b71f3'
     glideVersion = '4.13.2'
     coilVersion = '2.1.0'
     constraintLayoutVersion = '1.2.0'
