@@ -42,6 +42,7 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.products.ProductDetailViewModel.HideImageUploadErrorSnackbar
 import com.woocommerce.android.ui.products.ProductDetailViewModel.MenuButtonsState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.RefreshMenu
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowLinkedProductPromoBanner
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
@@ -285,6 +286,8 @@ class ProductDetailFragment :
                 }
                 is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
                 is HideImageUploadErrorSnackbar -> imageUploadErrorsSnackbar?.dismiss()
+                is ShowLinkedProductPromoBanner -> showLinkedProductPromoBanner()
+
                 else -> event.isHandled = false
             }
         }
@@ -455,6 +458,10 @@ class ProductDetailFragment :
         val recyclerViewState = binding.cardsRecyclerView.layoutManager?.onSaveInstanceState()
         adapter.update(cards)
         binding.cardsRecyclerView.layoutManager?.onRestoreInstanceState(recyclerViewState)
+    }
+
+    private fun showLinkedProductPromoBanner() {
+        // TODO nbradbury
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

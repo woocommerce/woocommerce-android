@@ -1,7 +1,6 @@
-package com.woocommerce.android.ui.compose.component
+package com.woocommerce.android.ui.promo_banner
 
 import android.content.res.Configuration
-import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,16 +26,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-
-enum class PromoBannerType(
-    @StringRes val titleRes: Int,
-    @StringRes val messageRes: Int
-) {
-    LINKED_PRODUCTS(
-        R.string.product_detail_linked_products,
-        R.string.product_detail_linked_products
-    )
-}
 
 @Composable
 fun PromoBanner(

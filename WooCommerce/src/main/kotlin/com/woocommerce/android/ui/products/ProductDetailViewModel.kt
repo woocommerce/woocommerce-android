@@ -47,6 +47,7 @@ import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.ui.products.variations.VariationRepository
+import com.woocommerce.android.ui.promo_banner.PromoBannerType
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooLog
@@ -1593,11 +1594,18 @@ class ProductDetailViewModel @Inject constructor(
             viewState = viewState.copy(
                 productDraft = null
             )
+            checkedLinkedProductPromo()
             loadRemoteProduct(newProductRemoteId)
             triggerEvent(RefreshMenu)
         }
 
         return result
+    }
+
+    private fun checkedLinkedProductPromo() {
+        if (prefs.hasPromoBannerShown(PromoBannerType.LINKED_PRODUCTS).not()) {
+            triggerEvent(ShowLinkedProductPromoBanner)
+        }
     }
 
     /**
@@ -2085,6 +2093,8 @@ class ProductDetailViewModel @Inject constructor(
 
     object HideImageUploadErrorSnackbar : Event()
 
+    object ShowLinkedProductPromoBanner : Event()
+
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.
      * [storedProduct.value] is the [Product] model that is fetched from the API and available in the local db.
@@ -2107,7 +2117,7 @@ class ProductDetailViewModel @Inject constructor(
         val showBottomSheetButton: Boolean? = null,
         val isConfirmingTrash: Boolean = false,
         val isUploadingDownloadableFile: Boolean? = null,
-        val isVariationListEmpty: Boolean? = null
+        val isVariationListEmpty: Boolean? = null,
     ) : Parcelable {
         val isPasswordChanged: Boolean
             get() = storedPassword != draftPassword
@@ -2135,7 +2145,8 @@ class ProductDetailViewModel @Inject constructor(
         val isRefreshing: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null,
         val isProgressDialogShown: Boolean? = null,
-        val currentFilter: String = ""
+        val currentFilter: String = "",
+        val isLinkedProductPromoShown: Boolean? = null
     ) : Parcelable
 
     @Parcelize
