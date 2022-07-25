@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.promo_banner
+package com.woocommerce.android.ui.promobanner
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image

@@ -53,6 +53,8 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.reviews.ProductReviewsFragment
 import com.woocommerce.android.ui.products.variations.VariationListFragment
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.VariationListData
+import com.woocommerce.android.ui.promobanner.PromoBanner
+import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
@@ -286,7 +288,7 @@ class ProductDetailFragment :
                 }
                 is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
                 is HideImageUploadErrorSnackbar -> imageUploadErrorsSnackbar?.dismiss()
-                is ShowLinkedProductPromoBanner -> showLinkedProductPromoBanner()
+                is ShowLinkedProductPromoBanner -> showLinkedProductPromoBanner(true)
 
                 else -> event.isHandled = false
             }
@@ -460,8 +462,20 @@ class ProductDetailFragment :
         binding.cardsRecyclerView.layoutManager?.onRestoreInstanceState(recyclerViewState)
     }
 
-    private fun showLinkedProductPromoBanner() {
-        // TODO nbradbury
+    private fun showLinkedProductPromoBanner(show: Boolean) {
+        if (binding.promoComposable.isVisible != show) {
+            binding.promoComposable.isVisible = show
+            if (show && binding.promoComposable.hasComposition.not()) {
+                binding.promoComposable.setContent {
+                    PromoBanner(
+                        bannerType = PromoBannerType.LINKED_PRODUCTS,
+                        onCtaClick = { },
+                        onDismissClick = { },
+                        source = ""
+                    )
+                }
+            }
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

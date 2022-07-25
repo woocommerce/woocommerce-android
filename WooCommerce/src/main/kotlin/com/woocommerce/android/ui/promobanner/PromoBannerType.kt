@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.promo_banner
+package com.woocommerce.android.ui.promobanner
 
 import androidx.annotation.StringRes
 import com.woocommerce.android.R

@@ -31,7 +31,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.products.ProductType
-import com.woocommerce.android.ui.promo_banner.PromoBannerType
+import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.PreferenceUtils
 import com.woocommerce.android.util.ThemeOption
 import com.woocommerce.android.util.ThemeOption.DEFAULT
@@ -358,7 +358,7 @@ object AppPrefs {
         PrefKeyString("$RECEIPT_PREFIX:$localSiteId:$remoteSiteId:$selfHostedSiteId:$orderId")
 
     private fun getPromoBannerKey(bannerType: PromoBannerType) =
-        PrefKeyString("PROMO_BANNER_SHOWN_${bannerType}")
+        PrefKeyString("PROMO_BANNER_SHOWN_${bannerType.name}")
 
     fun hasPromoBannerShown(bannerType: PromoBannerType): Boolean {
         return getBoolean(getPromoBannerKey(bannerType), false)
