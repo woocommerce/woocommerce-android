@@ -1,6 +1,5 @@
 package com.woocommerce.android.config
 
-import androidx.compose.ui.text.toUpperCase
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
