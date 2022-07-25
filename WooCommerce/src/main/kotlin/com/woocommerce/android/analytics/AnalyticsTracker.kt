@@ -370,6 +370,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_BANNER_UPSELL_CARD_READERS = "upsell_card_readers"
         const val KEY_BANNER_REMIND_LATER = "remind_later"
 
+        // -- Experiments
+        const val KEY_SITE_CREDENTIALS_EXPERIMENT_VARIANT = "site_credentials_experiment_variant"
+
         var sendUsageStats: Boolean = true
             set(value) {
                 if (value != field) {
