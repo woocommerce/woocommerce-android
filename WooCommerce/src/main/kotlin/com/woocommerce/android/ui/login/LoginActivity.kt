@@ -9,6 +9,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
@@ -22,6 +23,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_JETPACK_INSTALLATION_SOURCE_WEB
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.databinding.ActivityLoginBinding
+import com.woocommerce.android.experiment.SiteLoginExperiment
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.support.ZendeskExtraTags
@@ -119,6 +121,7 @@ class LoginActivity :
     @Inject internal lateinit var appPrefsWrapper: AppPrefsWrapper
     @Inject internal lateinit var dispatcher: Dispatcher
     @Inject internal lateinit var loginNotificationScheduler: LoginNotificationScheduler
+    @Inject internal lateinit var siteLoginExperiment: SiteLoginExperiment
 
     private var loginMode: LoginMode? = null
     private var isSiteOnWPcom: Boolean? = null
@@ -328,7 +331,7 @@ class LoginActivity :
     }
 
     private fun showMainActivityAndFinish() {
-        experimentTracker.log(ExperimentTracker.LOGIN_SUCCESSFUL_EVENT)
+        siteLoginExperiment.trackSuccess()
         loginNotificationScheduler.onLoginSuccess()
 
         val intent = Intent(this, MainActivity::class.java)
@@ -502,15 +505,18 @@ class LoginActivity :
         val siteAddressClean = inputSiteAddress.replaceFirst(protocolRegex, "")
         AppPrefs.setLoginSiteAddress(siteAddressClean)
 
-        if (hasJetpack) {
-            if (isSiteOnWPcom == true) {
-                showEmailLoginScreen(inputSiteAddress)
+        lifecycleScope.launchWhenStarted {
+            if (hasJetpack) {
+                // if a site is self-hosted, we show either email login screen or site credentials login screen
+                if (isSiteOnWPcom != true) {
+                    siteLoginExperiment.run(inputSiteAddress, ::showEmailLoginScreen, ::loginViaSiteCredentials)
+                } else {
+                    showEmailLoginScreen(inputSiteAddress)
+                }
             } else {
+                // Let user log in via site credentials first before showing Jetpack missing screen.
                 loginViaSiteCredentials(inputSiteAddress)
             }
-        } else {
-            // Let user log in via site credentials first before showing Jetpack missing screen.
-            loginViaSiteCredentials(inputSiteAddress)
         }
     }
 
