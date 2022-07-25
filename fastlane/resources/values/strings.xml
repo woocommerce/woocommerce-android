@@ -10,7 +10,8 @@
     <string name="notification_channel_review_title">Product review alerts</string>
     <string name="notification_channel_review_id" content_override="true" translatable="false">wooandroid_notification_channel_review_id</string>
     <string name="notification_order_ringtone_title" translatable="false">WooCommerce Cha-ching</string>
-
+    <string name="notification_channel_pre_login_title">Login troubleshooting reminders</string>
+    <string name="notification_channel_pre_login_id" content_override="true" translatable="false">wooandroid_notification_channel_pre_login_id</string>
     <!-- Required by the login library - overwrites the placeholder value with a real channel -->
     <string name="login_notification_channel_id" content_override="true" translatable="false">@string/notification_channel_general_id</string>
     <!--
@@ -195,10 +196,13 @@
     <string name="login_store_address">Enter your store address</string>
     <string name="login_configure_link">Read the %sconfiguration instructions%s.</string>
 
-    <string name="login_prologue_label_analytics">Track sales and high perfoming products</string>
-    <string name="login_prologue_label_orders">Manage your store orders on the go</string>
+    <string name="login_prologue_label_analytics">Track sales and high performing products</string>
+    <string name="login_prologue_label_orders">Manage and edit orders on the go</string>
     <string name="login_prologue_label_products">Edit and add new products from anywhere</string>
-    <string name="login_prologue_label_reviews">Monitor and approve your product reviews</string>
+    <string name="login_prologue_new_to_woo">New to WooCommerce</string>
+    <string name="login_prologue_label_analytics_subtitle">We know it\'s essential to your business</string>
+    <string name="login_prologue_label_orders_subtitle">You can manage them quickly and easily</string>
+    <string name="login_prologue_label_products_subtitle">We enable you to process them effortlessly</string>
 
     <string name="login_pick_store">Select store to connect</string>
     <string name="login_connected_store">Connected store</string>
@@ -230,6 +234,7 @@
     <string name="login_jetpack_what_is_description">Jetpack is a free WordPress plugin that connects your store with the tools needed to give you the best mobile experience, including push notifications and stats</string>
     <string name="login_jetpack_installed_sign_in">Already have Jetpack? %1$s</string>
     <string name="login_jetpack_not_found">Jetpack not found. Please try again</string>
+    <string name="login_jetpack_install">Install Jetpack</string>
     <string name="login_sign_in">Sign in</string>
     <string name="login_need_help_finding_email">Need help finding the connected email?</string>
     <string name="login_email_help_title">What email do I use to sign in?</string>
@@ -331,6 +336,7 @@
     <string name="simple_payments_choose_method">Choose your payment method</string>
     <string name="simple_payments_cash_dlg_title">Mark as paid?</string>
     <string name="simple_payments_cash_dlg_message">This will create your order and mark it as paid if you received payment outside of WooCommerce</string>
+    <string name="existing_order_cash_dlg_message">This will mark this order as paid if you received payment outside of WooCommerce</string>
     <string name="simple_payments_cash_dlg_button">Mark as paid</string>
     <string name="simple_payments_share_payment_link">Share payment link</string>
     <string name="simple_payments_share_payment_dialog_title">Checkout - %s</string>
@@ -374,7 +380,6 @@
     <string name="order_creation_failure_snackbar">Order creation failed</string>
     <string name="order_creation_success_snackbar">Order created</string>
     <string name="order_creation_payment_tax">Taxes</string>
-    <string name="order_creation_price_calculation_failed">Couldn’t update pricing</string>
     <string name="order_creation_shipping_name">Name</string>
     <string name="order_creation_shipping_title_add">Add Shipping</string>
     <string name="order_creation_add_shipping">Add shipping</string>
@@ -393,6 +398,7 @@
     <string name="order_editing_non_editable_title">Parts of this order are not currently editable</string>
     <string name="order_editing_non_editable_message">To edit Products or Payment Details, change the status to Pending Payment.</string>
     <string name="order_editing_locked_content_description">locked</string>
+    <string name="order_sync_failed">Unable to save changes</string>
     <!--
         Order Filters
     -->
@@ -503,6 +509,8 @@
     <string name="orderdetail_shipping_label_m3_wip_message">You can now create shipping labels for all physical orders directly from your device with the free WooCommerce Shipping plugin. Tap on "Create shipping label" to try our beta feature!</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Create shipping label</string>
     <string name="orderdetail_shipping_label_notice">Learn more about creating labels with your mobile device</string>
+    <string name="orderdetail_custom_fields">Custom fields</string>
+    <string name="orderdetail_view_custom_fields">View custom fields</string>
     <string name="receipt_preview_print_menu_item">Print</string>
     <string name="receipt_preview_send_menu_item">Send</string>
     <string name="order_mark_complete">Mark order complete</string>
@@ -923,6 +931,20 @@
     <string name="order_shipment_tracking_progress_message">Please wait</string>
 
     <!--
+            Card Reader Upsell Banner
+        -->
+
+    <string name="card_reader_upsell_card_reader_banner_dismiss">Dismiss</string>
+    <string name="card_reader_upsell_card_reader_banner_new">NEW</string>
+    <string name="card_reader_upsell_card_reader_banner_title">Accept payments easily</string>
+    <string name="card_reader_upsell_card_reader_banner_description">Get ready to accept payments with card reader.</string>
+    <string name="card_reader_upsell_card_reader_banner_cta">Purchase Card Reader</string>
+    <string name="card_reader_upsell_card_reader_banner_payments">In-Person Payments</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">No worries! You can always get started with In-Person Payments in Settings.</string>
+    <string name="card_reader_upsell_card_reader_banner_remind_me_later">REMIND ME LATER</string>
+    <string name="card_reader_upsell_card_reader_banner_dont_show_again">DON\'T SHOW AGAIN</string>
+
+    <!--
             Card Reader Hub
         -->
     <string name="card_reader_manage_card_reader">Manage Card Reader</string>
@@ -1332,6 +1354,8 @@
     <string name="product_list_filters_show_products">Show products</string>
     <string name="product_list_filters_list_item">Selected filter option</string>
     <string name="product_search_hint">Search products</string>
+    <string name="product_search_all">All products</string>
+    <string name="product_search_sku">SKU</string>
     <string name="product_list_sorting_list_item">Selected sorting option</string>
     <string name="product_limited_editing_title">Limited editing available</string>
     <string name="product_limited_editing_message">We\'ve added editing functionality to simple products. Keep an eye out for more options soon!</string>
@@ -2097,6 +2121,13 @@
     <string name="install_wc_shipping_flow_onboarding_screen_not_now_button">Not Now</string>
     <string name="install_wc_shipping_extension_name">WooCommerce Shipping</string>
 
+    <!-- Login local notifications -->
+    <string name="login_help_notification_default_title">Problems with logging in?</string>
+    <string name="login_help_notification_no_interaction_default_description">Get some help!</string>
+    <string name="login_help_notification_site_error_description">Try login with your WordPress.com account</string>
+    <string name="login_help_notification_contact_support_button">Contact support</string>
+    <string name="login_help_notification_wordpress_login_button">Login with WordPress.com</string>
+
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>
     <string name="login_invalid_site_url">Please enter a complete website address, like example.com.</string>
@@ -2402,6 +2433,7 @@
     <string name="enter_email_to_continue_wordpress_com">Enter your email address to log in or create a WordPress.com account.</string>
     <string name="enter_account_info_for_site">Enter your account information for %1$s.</string>
     <string name="get_started">Get Started</string>
+    <string name="lets_get_started">Let\'s get started!</string>
     <string name="check_email">Check email</string>
     <string name="login_text_otp">Text me a code instead</string>
     <string name="login_text_otp_another">Text me another code instead</string>
