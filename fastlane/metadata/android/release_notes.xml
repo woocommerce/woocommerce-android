@@ -1,119 +1,102 @@
 <ar>
-9.5:
-نواصل إضافة وظائف جديدة إلى ميزة إدارة القسائم التجريبية الخاصة بنا! يتضمن هذا الإصدار تحرير القسائم وحذفها إلى جانب العديد من التحسينات على طريقة العرض. قم بتشغيل هذه الميزة للوصول المبكر إلى علامة تبويب المزيد والإعدادات والميزات التجريبية.
+9.6:
+يتضمن هذا الإصدار خيار تحصيل المدفوعات لجميع الطلبات التي لم يتم دفعها عن طريق الدفع النقدي أو بطاقة أو روابط الدفع. يمكنك كذلك تحديد بوابة دفع مُفضَّلة عند تثبيت عدة إضافات على المتجر.
 
-قمنا كذلك بإصلاح خطأ كان يُصعب على بعض منكم البحث عن طلبات. شكرًا إلى كل شخص قام بالإبلاغ عن هذا! ملاحظاتك مهمة جدًا بالنسبة إلينا!
-
+لقد أجرينا كذلك القليل من التحسينات الطفيفة الأخرى. شكرًا لكم جميعًا مرة أخرى على ملحوظاتكم الرائعة. استمروا!
 </ar>
 <de-DE>
-9.5:
-Wir fügen weiterhin neue Funktionen zu unserer experimentellen Gutscheinmanagement-Funktion hinzu!  Diese Version enthält Optionen zum Bearbeiten und Löschen von Gutscheinen sowie mehrere Verbesserungen bei der Anzeige. Aktiviere diese Funktion über den Tab „Mehr“ > „Einstellungen“ > „Betafunktionen“, um frühzeitigen Zugriff zu erhalten.
+9.6:
+Diese Version enthält die Möglichkeit, für alle unbezahlten Bestellungen Zahlungen in bar, per Karte oder per Zahlungslink zu empfangen. Du kannst auch ein bevorzugtes Zahlungs-Gateway auswählen, wenn mehrere Erweiterungen im Shop installiert sind.
 
-Darüber hinaus haben wir ein Problem behoben, das die Suche nach Bestellungen teilweise erschwert hat. Vielen Dank an alle, die dieses Problem gemeldet haben! Euer Feedback ist enorm wichtig für uns!
-
+Wir haben außerdem noch ein paar andere Optimierungen vorgenommen. Danke an alle für euer hervorragendes Feedback. Weiter so!
 </de-DE>
 <es-ES>
-9.5:
-Seguimos añadiendo nuevas funcionalidades a nuestra función experimental Gestión de cupones. Esta versión incluye la edición y eliminación de cupones, así como varias mejoras en la visualización. Para obtener acceso anticipado, activa esta función en la pestaña Más, Ajustes, Funciones beta.
+9.6:
+Esta versión incluye la opción de recibir los pagos de los pedidos pendientes en efectivo, tarjeta o enlaces de pago. Además, si tienes varias extensiones instaladas en la tienda, puedes elegir la pasarela de pago que prefieras.
 
-También hemos corregido un error que dificultaba la búsqueda de pedidos a algunos usuarios. Gracias a todos los que nos habéis informado de este problema. Valoramos mucho tu opinión.
-
+También hemos introducido otras mejoras más pequeñas. Gracias de nuevo por tus increíbles comentarios. ¡Sigue así!
 </es-ES>
 <fr-FR>
-9.5 :
-Nous ajoutons continuellement de nouvelles fonctions à notre fonctionnalité expérimentale de gestion des codes promo ! Cette version comprend la modification et la suppression de codes promo ainsi que plusieurs améliorations de l’affichage. Activez cette fonctionnalité sous l’onglet Plus > Réglages > Fonctionnalités bêta pour bénéficier d’un accès en avant-première.
+9.6 :
+Cette version vous permet d’encaisser les paiements de toutes les commandes impayées en espèces, par carte ou via des liens de paiement. Vous pouvez également sélectionner votre passerelle de paiement préférée lorsque plusieurs extensions sont installées dans votre boutique. 
 
-Nous avons également corrigé un bug qui gênait la recherche des commandes chez certains utilisateurs. Merci aux internautes qui nous ont signalé le problème ! Votre avis compte beaucoup à nos yeux !
-
+Nous avons également apporté quelques corrections mineures. Une fois encore, merci à tous pour vos précieux commentaires ! Continuez à nous les envoyer !
 </fr-FR>
 <iw-IL>
-9.5:
-אנחנו ממשיכים להוסיף פונקציונליות לאפשרות 'ניהול קופונים' הניסיונית שלנו! בגרסה הזאת הוספנו עריכה ומחיקה של קופונים לצד כמה שיפורים בצפייה. כדי לקבל גישה מוקדמת, ניתן להפעיל את האפשרות הזאת בלשונית 'עוד' > 'הגדרות' > 'אפשרויות בטא'.
+9.6:
+בגרסה הזאת הוספנו אפשרות לגביית תשלומים עבור כל ההזמנות שלא שולמו במזומן, באמצעות כרטיס או דרך קישורים לתשלום. אפשר גם לבחור שער תשלום מועדף אם מותקנות מספר הרחבות בחנות.
 
-בנוסף, תיקנו באג שסיבך את חיפוש ההזמנות אצל משתמשים מסוימים. תודה לכל מי שדיווח על הבאג הזה! המשוב שלכם חשוב לנו!
-
+הוספנו גם כמה שיפורים קטנים אחרים. אנחנו שוב רוצים להודות לכולם על המשוב החשוב. תמיד נשמח לשמוע מה דעתכם!
 </iw-IL>
 <id>
-9.5:
-Kami terus menambahkan fungsi baru untuk fitur uji coba Pengelolaan Kupon! Rilis ini mencakup pengeditan dan penghapusan kupon dan beberapa perbaikan pada pratinjau. Untuk mendapatkan akses dini, aktifkan fitur ini di tab Lainnya, Pengaturan, Fitur Beta.
+9.6:
+Rilis ini mencakup pilihan untuk menerima pembayaran untuk semua pesanan yang belum dibayar melalui tunai, kartu, atau tautan pembayaran. Jika beberapa ekstensi diinstal di toko, Anda juga dapat memilih gateway pembayaran yang diutamakan.
 
-Kami juga memperbaiki bug yang membuat Anda kesulitan mencari pesanan. Terima kasih untuk semua yang telah melaporkan bug ini! Feedback Anda sangat penting bagi kami!
-
+Kami juga telah membuat peningkatan minor lainnya. Sekali lagi, terima kasih atas feedback Anda. Terus kirimkan feedback Anda!
 </id>
 <it-IT>
-9.5:
-Continuiamo ad aggiungere nuove funzionalità alla nostra funzionalità sperimentale di gestione dei codici promozionali! Questa versione include la modifica e l'eliminazione dei codici promozionali insieme a numerosi miglioramenti alla visualizzazione. Attiva questa funzionalità per l'accesso anticipato nella scheda Altro, Impostazioni, Funzionalità sperimentali.
+9.6:
+Questo rilascio include l'opzione per ricevere pagamenti per tutti gli ordini non pagati tramite contanti, carta o link di pagamento. Puoi anche selezionare un gateway di pagamento preferito quando vengono installate più estensioni nel negozio.
 
-Abbiamo anche risolto un bug che rendeva difficile per alcuni utenti la ricerca degli ordini. Grazie a tutti coloro che hanno segnalato questo problema. Il tuo feedback è di vitale importanza per noi.
-
+Abbiamo anche apportato altri miglioramenti minori. Grazie a tutti ancora per il meraviglioso feedback. Continuate a inviarlo.
 </it-IT>
 <ja-JP>
-9.5:
-試験的なクーポン管理機能に新しい機能を継続的に追加しています。 このリリースでは、クーポンの編集と削除に加え、表示の改善を行いました。 この機能をオンにして「詳細」タブ、「設定」、「ベータ版の機能」をいち早く利用しましょう。
+9.6:
+このリリースには、すべての未払い注文に対する支払いを現金、カード、支払いリンク経由で受け取るオプションが含まれています。 複数の拡張機能がストアにインストールされている場合は、希望の決済方法を選択することもできます。
 
-一部のユーザーの注文検索を困難にするバグの修正も行いました。 ご報告いただいた皆さま、ありがとうございました。 皆さまからのフィードバックは、当社にとって不可欠です。
-
+いくつかの細かな改善も行っています。 皆さまからのフィードバックが改善の励みになります。 今後ともよろしくお願いいたします。
 </ja-JP>
 <ko-KR>
-9.5:
-실험적인 쿠폰 관리 기능에 새로운 기능을 계속 추가하고 있습니다! 이 릴리스에는 쿠폰 편집 및 삭제와 함께 여러 가지 보기 개선 사항이 포함됩니다. 이 기능을 사용하면 자세히 탭, 설정, 베타 기능에 앞서 접근할 수 있습니다.
+9.6:
+이 릴리스에는 현금, 카드 또는 결제 링크를 통한 모든 미결제 주문에 대한 결제를 수령하는 옵션이 있습니다. 스토어에 여러 확장 기능이 있으면 선호하는 결제 게이트웨이를 선택할 수도 있습니다.
 
-가끔 주문이 잘 검색되지 않던 버그도 수정했습니다. 이 버그를 신고해 주신 모든 분께 감사합니다! 여러분의 피드백은 필수불가결합니다!
-
+다른 몇 가지도 소소하게 개선했습니다. 놀라운 피드백을 제공해 주셔서 정말로 감사합니다. 계속 보내주세요!
 </ko-KR>
 <nl-NL>
-9.5:
-We blijven nieuwe functionaliteit toevoegen aan onze experimentele functie Couponbeheer! Deze release omvat het bewerken en verwijderen van coupons en verschillende verbeteringen voor de weergave. Schakel deze functie in voor vroege toegang in het tabblad Meer, Instellingen, Bèta-functies.
+9.6:
+Met deze versie kun je betalingen met cash, betaalkaart of betaallinks innen voor alle onbetaalde bestellingen. Daarnaast kun je een favoriete betaalgateway selecteren als je meerdere extensies voor je winkel hebt geïnstalleerd.
 
-Daarnaast hebben we een bug verholpen waardoor het voor een aantal mensen lastig was om bestellingen te doorzoeken. Bedankt dat jullie deze bugs hebben gemeld. Jullie feedback is essentieel voor ons!
-
+We hebben tevens enkele kleine verbeteringen doorgevoerd. Wederom bedankt voor jullie geweldige feedback. Blijf zo doorgaan!
 </nl-NL>
 <pt-BR>
-9.5:
-Estamos sempre adicionando novos recursos à nossa funcionalidade experimental de gerenciamento de cupons. Esta versão inclui opções de edição e exclusão de cupons, além de diversas melhorias na visualização. Ative esta funcionalidade na guia Mais > Configurações > Funcionalidades Beta para receber acesso antecipado.
+9.6:
+Esta versão inclui a opção de receber os pagamentos de todos os pedidos não pagos em dinheiro, cartão ou links de pagamento. Você também pode selecionar o gateway de pagamento que quiser quando várias extensões estão instaladas na loja.
 
-Solucionamos um bug que estava dificultando a pesquisa de pedidos para alguns de vocês. Agradecemos a todos que relataram esse erro. O feedback de vocês é essencial para nós.
-
+Além disso, fizemos algumas outras pequenas melhorias. Obrigado a todos pelos incríveis feedbacks. Continuem mandando!
 </pt-BR>
 <ru-RU>
-9.5:
-Мы по-прежнему добавляем новый функционал в экспериментальную функцию управления купонами! В этой версии добавлено редактирование и удаление купонов, а также улучшены некоторые возможности просмотра. Чтобы получить ранний доступ, активируйте функцию на вкладке "Дополнительно" > "Настройки" > "Бета-функции".
+9.6:
+В этой версии добавлена возможность получения платежей за неоплаченные заказы наличными средствами, картой или посредством ссылок для оплаты. Кроме того, можно выбрать предпочтительный платёжный сервис, если для магазина установлено несколько расширений.
 
-Также исправлена ошибка, из-за которой некоторые пользователи не могли искать заказы. Благодарим всех, кто сообщил нам об этой ошибке! Ваши отзывы очень важны!
-
+Мы также внесли некоторые незначительные усовершенствования. Благодарим вас за невероятные отзывы. Они очень важны для нас!
 </ru-RU>
 <sv-SE>
-9.5:
-Vi fortsätter att lägga till ny funktionalitet till vår experimentella funktion för rabattkodshantering. Den här versionen inkluderar redigering och borttagning av rabattkoder samt flertalet visningsförbättringar. Aktivera den här funktionen via fliken Mer, Inställningar, Betafunktioner för att få tidig åtkomst.
+9.6:
+Den här versionen inkluderar möjligheten att ta betalt för alla obetalda beställningar via kontanter, kort eller betalningslänkar. Du kan även välja en föredragen betalnings-gateway när det finns flera utökningar installerade på butiken.
 
-Vi har också åtgärdat ett fel som gjorde det svårt för vissa av er att söka efter beställningar. Tack till alla som har rapporterat det här felet. Er feedback är jätteviktig för oss.
-
+Vi har även utfört vissa mindre förbättringar. Tack ännu en gång för all fantastisk feedback. Fortsätt skicka in den!
 </sv-SE>
 <tr-TR>
-9.5:
-Deneysel Kupon Yönetimi özelliğimize yeni işlevler eklemeye devam ediyoruz! Bu sürümde, kuponların düzenlenmesi, silinmesi ve ayrıca görüntülemeyle ilgili çeşitli iyileştirmeler yapılmıştır. Erken erişim için, Diğer sekmesi, Ayarlar, Beta Özellikleri bölümünden bu özelliği etkinleştirin.
+9.6:
+Bu sürüm, ödenmemiş tüm siparişler için ödemeleri nakit, kart veya ödeme bağlantıları aracılığıyla tahsil etme seçeneğini içerir. Mağazada birden fazla uzantı yüklü olduğunda da tercih edilen bir ödeme ağ geçidini seçebilirsiniz.
 
-Ayrıca bazen sipariş aramayı zorlaştıran bir hatayı da düzelttik. Bu hatayı bildiren herkese teşekkürler! Görüşleriniz bizim için çok önemli!
-
+Ayrıca birkaç küçük iyileştirme daha yaptık. Harika geri bildirimleriniz için herkese tekrar teşekkür ederim. Devam edin!
 </tr-TR>
 <zh-CN>
-9.5：
-我们不断为测试版优惠券管理功能添加新功能。 此版本包括编辑和删除优惠券以及关于查看的几项改进。 在“更多”选项卡、“设置”和“测试版功能”中开启此功能，抢先体验。
+9.6：
+此版本包括选择通过现金、银行卡或付款链接向所有未付款订单收款。 当商店安装了多个扩展时，您也可以选择推荐的付款网关。
 
-我们还修复了一个导致部分用户难以搜索订单的错误。 感谢向我们反馈此错误的所有人！ 您的反馈对我们很重要！
-
+我们还做了其他一些细微改进。 再次感谢您宝贵的反馈。 请继续提供反馈！
 </zh-CN>
 <zh-TW>
-9.5：
-我們持續在實驗性「優惠券管理」功能中增添新功能！ 此版本包含了編輯和刪除優惠券功能以及一些檢視功能的改善。 開啟此功能即可搶先在「更多」分頁、「設定」及測試版功能中使用。
+9.6：
+此版本包含收款選項，可讓你透過現金、信用卡或付款連結收取所有未付款訂單的費用。 如果商店安裝多個擴充功能，你也可以選擇偏好的付款閘道。
 
-我們也修正了會導致部分使用者難以搜尋訂單的錯誤。 感謝回報此問題的所有人！ 你的意見反應對我們至關重要！
-
+我們也完成了幾項微幅改善作業。 再次感謝你提供寶貴的意見回饋， 未來請繼續多多指教！
 </zh-TW>
 <en-US>
-9.5:
-We keep adding new functionality to our experimental Coupon Management feature! This release includes editing and deleting coupons along with several improvements on viewing. Turn this feature on for early access in the More tab, Settings, Beta Features.
+9.6:
+This release includes the option to collect payments for all unpaid orders via cash, card or payment links. You can also select a preferred payment gateway when multiple extensions are installed on the store.
 
-We also fixed a bug that was making it hard for some of you to search orders. Thanks to everyone who reported this! Your feedback is vital to us!
-
+We’ve also made a few other minor improvements. Thank you all again for your amazing feedback. Keep it coming!
 </en-US>
