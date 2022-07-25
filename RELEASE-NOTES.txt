@@ -3,18 +3,6 @@
 -----
 
 
-9.8
------
-
-
-9.8
------
-
-
-9.7
------
-
-
 9.7
 -----
 - [*] Login: Improved login flow when a WordPress site exists but has no Jetpack plugin installed. [https://github.com/woocommerce/woocommerce-android/pull/6910/]
