@@ -81,7 +81,6 @@ class MainBottomNavigationView @JvmOverloads constructor(
 
         moreMenuBadge = getOrCreateBadge(R.id.moreMenu)
         moreMenuBadge.isVisible = false
-        moreMenuBadge.backgroundColor = ContextCompat.getColor(context, R.color.color_primary)
     }
 
     /**
@@ -111,20 +110,27 @@ class MainBottomNavigationView @JvmOverloads constructor(
         assignNavigationListeners(true)
     }
 
-    fun showMoreMenuBadge(count: Int) {
-        showBadge(moreMenuBadge, count)
+    fun showMoreMenuUnseenReviewsBadge(count: Int) {
+        moreMenuBadge.backgroundColor = ContextCompat.getColor(context, R.color.color_primary)
+        moreMenuBadge.number = count
+        moreMenuBadge.isVisible = true
+    }
+
+    fun showMoreMenuNewFeatureBadge() {
+        moreMenuBadge.backgroundColor = ContextCompat.getColor(context, R.color.color_secondary)
+        moreMenuBadge.isVisible = true
+    }
+
+    fun hideMoreMenuBadge() {
+        moreMenuBadge.isVisible = false
     }
 
     fun setOrderBadgeCount(count: Int) {
-        showBadge(ordersBadge, count)
-    }
-
-    private fun showBadge(badgeDrawable: BadgeDrawable, count: Int) {
         if (count > 0) {
-            badgeDrawable.number = count
-            badgeDrawable.isVisible = true
+            ordersBadge.number = count
+            ordersBadge.isVisible = true
         } else {
-            badgeDrawable.isVisible = false
+            ordersBadge.isVisible = false
         }
     }
 
