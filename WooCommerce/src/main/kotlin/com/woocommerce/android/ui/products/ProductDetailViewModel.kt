@@ -288,6 +288,7 @@ class ProductDetailViewModel @Inject constructor(
             initializeStoredProductAfterRestoration()
         }
         observeImageUploadEvents()
+        checkLinkedProductPromo() // TODO remove
     }
 
     private fun initializeViewState() {

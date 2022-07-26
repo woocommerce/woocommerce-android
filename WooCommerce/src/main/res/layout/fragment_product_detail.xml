@@ -102,13 +102,29 @@
                     android:overScrollMode="never"
                     android:scrollbars="vertical" />
 
-                <androidx.compose.ui.platform.ComposeView
-                    android:id="@+id/promoComposable"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:id="@+id/promoComposableContainer"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:orientation="vertical"
                     android:visibility="gone"
-                    tools:visibility="visible" />
+                    tools:visibility="visible">
 
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/minor_10"
+                        android:background="@color/divider_color" />
+
+                    <androidx.compose.ui.platform.ComposeView
+                        android:id="@+id/promoComposable"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/minor_10"
+                        android:background="@color/divider_color" />
+                </LinearLayout>
             </FrameLayout>
         </androidx.core.widget.NestedScrollView>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

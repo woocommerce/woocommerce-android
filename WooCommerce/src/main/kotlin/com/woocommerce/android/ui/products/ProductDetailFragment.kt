@@ -57,6 +57,7 @@ import com.woocommerce.android.ui.products.variations.VariationListViewModel.Var
 import com.woocommerce.android.ui.promobanner.PromoBanner
 import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
@@ -289,7 +290,7 @@ class ProductDetailFragment :
                 }
                 is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
                 is HideImageUploadErrorSnackbar -> imageUploadErrorsSnackbar?.dismiss()
-                is ShowLinkedProductPromoBanner -> showLinkedProductPromoBanner(true)
+                is ShowLinkedProductPromoBanner -> showLinkedProductPromoBanner()
 
                 else -> event.isHandled = false
             }
@@ -463,16 +464,18 @@ class ProductDetailFragment :
         binding.cardsRecyclerView.layoutManager?.onRestoreInstanceState(recyclerViewState)
     }
 
-    private fun showLinkedProductPromoBanner(show: Boolean) {
-        if (binding.promoComposable.isVisible != show) {
-            binding.promoComposable.isVisible = show
-            if (show && binding.promoComposable.hasComposition.not()) {
+    private fun showLinkedProductPromoBanner() {
+        if (binding.promoComposableContainer.isVisible.not()) {
+            WooAnimUtils.scaleIn(binding.promoComposableContainer)
+            if (binding.promoComposable.hasComposition.not()) {
                 binding.promoComposable.setContent {
                     WooThemeWithBackground {
                         PromoBanner(
                             bannerType = PromoBannerType.LINKED_PRODUCTS,
                             onCtaClick = { },
-                            onDismissClick = { },
+                            onDismissClick = {
+                                WooAnimUtils.scaleOut(binding.promoComposableContainer)
+                            },
                             source = ""
                         )
                     }
