@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.moremenu
 
+import android.content.res.Configuration.UI_MODE_NIGHT_NO
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
@@ -49,6 +51,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.bumptech.glide.Glide
@@ -89,7 +92,7 @@ fun MoreMenuScreen(
 @Composable
 private fun MoreMenuItems(state: MoreMenuViewState) {
     LazyVerticalGrid(
-        cells = Fixed(2),
+        cells = Fixed(3),
         contentPadding = PaddingValues(
             horizontal = dimensionResource(id = R.dimen.major_100),
             vertical = dimensionResource(id = R.dimen.major_100)
@@ -270,7 +273,7 @@ private fun MoreMenuButton(
                         painter = painterResource(id = iconDrawable),
                         contentDescription = stringResource(id = text),
                         modifier = Modifier
-                            .size(dimensionResource(id = R.dimen.major_200))
+                            .size(dimensionResource(id = R.dimen.major_150))
                             .align(Alignment.Center)
                     )
                 }
@@ -310,12 +313,17 @@ fun MoreMenuBadge(badgeCount: Int) {
 }
 
 @ExperimentalFoundationApi
-@Preview
+@Preview(name = "dark", uiMode = UI_MODE_NIGHT_YES)
+@Preview(name = "light", uiMode = UI_MODE_NIGHT_NO)
+@Preview(name = "small screen", device = Devices.PIXEL)
+@Preview(name = "mid screen", device = Devices.PIXEL_4)
+@Preview(name = "large screen", device = Devices.NEXUS_10)
 @Composable
 private fun MoreMenuPreview() {
     val state = MoreMenuViewState(
         moreMenuItems = listOf(
-            MenuUiButton(string.more_menu_button_woo_admin, drawable.ic_more_menu_wp_admin),
+            MenuUiButton(string.more_menu_button_payments, drawable.ic_more_menu_payments),
+            MenuUiButton(string.more_menu_button_wс_admin, drawable.ic_more_menu_wp_admin),
             MenuUiButton(string.more_menu_button_store, drawable.ic_more_menu_store),
             MenuUiButton(string.more_menu_button_coupons, drawable.ic_more_menu_coupons),
             MenuUiButton(string.more_menu_button_reviews, drawable.ic_more_menu_reviews, 3)

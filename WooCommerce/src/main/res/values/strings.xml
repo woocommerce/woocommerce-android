@@ -88,6 +88,7 @@
     <string name="review_notifications">Reviews</string>
     <string name="more_menu">Menu</string>
     <string name="more_menu_button_woo_admin">WooCommerce Admin</string>
+    <string name="more_menu_button_wс_admin">WC Admin</string>
     <string name="more_menu_button_payments">Payments</string>
     <string name="more_menu_button_analytics">Analytics</string>
     <string name="more_menu_button_inbox">Inbox</string>

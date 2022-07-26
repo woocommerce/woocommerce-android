@@ -59,7 +59,7 @@ class MoreMenuViewModel @Inject constructor(
                 onClick = ::onPaymentsButtonClick
             ),
             MenuUiButton(
-                text = R.string.more_menu_button_woo_admin,
+                text = R.string.more_menu_button_wс_admin,
                 icon = R.drawable.ic_more_menu_wp_admin,
                 onClick = ::onViewAdminButtonClick
             ),
