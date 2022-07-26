@@ -50,6 +50,7 @@ import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -1602,10 +1603,10 @@ class ProductDetailViewModel @Inject constructor(
         val result = productRepository.addProduct(product)
         val (isSuccess, newProductRemoteId) = result
         if (isSuccess) {
+            checkLinkedProductPromo()
             viewState = viewState.copy(
                 productDraft = null
             )
-            checkLinkedProductPromo()
             loadRemoteProduct(newProductRemoteId)
             triggerEvent(RefreshMenu)
         }
@@ -1618,7 +1619,8 @@ class ProductDetailViewModel @Inject constructor(
      * doesn't already have linked products
      */
     private fun checkLinkedProductPromo() {
-        if (prefs.isPromoBannerShown(PromoBannerType.LINKED_PRODUCTS).not() &&
+        if (FeatureFlag.LINKED_PRODUCTS_PROMO.isEnabled() &&
+            prefs.isPromoBannerShown(PromoBannerType.LINKED_PRODUCTS).not() &&
             viewState.productDraft?.hasLinkedProducts() == false
         ) {
             triggerEvent(ShowLinkedProductPromoBanner)

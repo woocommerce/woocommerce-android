@@ -301,6 +301,9 @@ class ProductDetailFragment :
         }
     }
 
+    /**
+     *  Triggered when the view modal updates or creates an order that doesn't already have linked products
+     */
     private fun showProductDetails(product: Product) {
         productName = updateProductNameFromDetails(product)
         productId = product.remoteId
