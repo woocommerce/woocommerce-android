@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.Navigate
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.OpenPurchaseCardReaderLink
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Loading
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Success
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.UpsellCardReaderBanner
 import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub
@@ -136,7 +137,6 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 orderTotal = ORDER_TOTAL,
                 paymentUrl = PAYMENT_URL,
                 isPaymentCollectableWithCardReader = false,
-                shouldShowCardReaderUpsellBanner = false,
             )
         )
     }
@@ -146,6 +146,12 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN & WHEN
             whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
+            whenever(
+                bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
+                    anyLong(),
+                    anyString()
+                )
+            ).thenReturn(true)
             val orderId = 1L
             val viewModel = initViewModel(Payment(orderId, ORDER))
 
@@ -155,7 +161,9 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                     orderTotal = ORDER_TOTAL,
                     paymentUrl = PAYMENT_URL,
                     isPaymentCollectableWithCardReader = true,
-                    shouldShowCardReaderUpsellBanner = false,
+                    upsellCardReaderBannerState = UpsellCardReaderBanner(
+                        shouldShowCardReaderUpsellBanner = true
+                    )
                 )
             )
         }
@@ -679,7 +687,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given banner displayable, when success state, then shouldShowCardReaderUpsellBanner set to true`() =
+    fun `given banner displayable, when success state, then upsell banner state set`() =
         testBlocking {
             // GIVEN & WHEN
             whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
@@ -698,16 +706,18 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                     orderTotal = ORDER_TOTAL,
                     paymentUrl = PAYMENT_URL,
                     isPaymentCollectableWithCardReader = true,
-                    shouldShowCardReaderUpsellBanner = true,
+                    upsellCardReaderBannerState = UpsellCardReaderBanner(
+                        shouldShowCardReaderUpsellBanner = true
+                    )
                 )
             )
         }
 
     @Test
-    fun `given payment not collectable, when success state, then shouldShowCardReaderUpsellBanner set to false`() =
+    fun `given banner displayable, when success state, then upsell banner title is correct`() =
         testBlocking {
             // GIVEN & WHEN
-            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(false)
+            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
             whenever(
                 bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
                     anyLong(),
@@ -718,18 +728,53 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             val viewModel = initViewModel(Payment(orderId, ORDER))
 
             // THEN
-            assertThat(viewModel.viewStateData.value).isEqualTo(
-                Success(
-                    orderTotal = ORDER_TOTAL,
-                    paymentUrl = PAYMENT_URL,
-                    isPaymentCollectableWithCardReader = false,
-                    shouldShowCardReaderUpsellBanner = false,
-                )
+            assertThat((viewModel.viewStateData.value as Success).upsellCardReaderBannerState?.title).isEqualTo(
+                R.string.card_reader_upsell_card_reader_banner_title
             )
         }
 
     @Test
-    fun `given banner not displayable, when success state, then shouldShowCardReaderUpsellBanner set to false`() =
+    fun `given banner displayable, when success state, then upsell banner description is correct`() =
+        testBlocking {
+            // GIVEN & WHEN
+            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
+            whenever(
+                bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
+                    anyLong(),
+                    anyString()
+                )
+            ).thenReturn(true)
+            val orderId = 1L
+            val viewModel = initViewModel(Payment(orderId, ORDER))
+
+            // THEN
+            assertThat((viewModel.viewStateData.value as Success).upsellCardReaderBannerState?.description).isEqualTo(
+                R.string.card_reader_upsell_card_reader_banner_description
+            )
+        }
+
+    @Test
+    fun `given banner displayable, when success state, then upsell banner cta label is correct`() =
+        testBlocking {
+            // GIVEN & WHEN
+            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
+            whenever(
+                bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
+                    anyLong(),
+                    anyString()
+                )
+            ).thenReturn(true)
+            val orderId = 1L
+            val viewModel = initViewModel(Payment(orderId, ORDER))
+
+            // THEN
+            assertThat((viewModel.viewStateData.value as Success).upsellCardReaderBannerState?.ctaLabel).isEqualTo(
+                R.string.card_reader_upsell_card_reader_banner_cta
+            )
+        }
+
+    @Test
+    fun `given banner displayable, when remind me threshold hasn't passed, then upsell banner state set to false`() =
         testBlocking {
             // GIVEN & WHEN
             whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
@@ -748,7 +793,28 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                     orderTotal = ORDER_TOTAL,
                     paymentUrl = PAYMENT_URL,
                     isPaymentCollectableWithCardReader = true,
-                    shouldShowCardReaderUpsellBanner = false,
+                    upsellCardReaderBannerState = UpsellCardReaderBanner(
+                        shouldShowCardReaderUpsellBanner = false
+                    )
+                )
+            )
+        }
+
+    @Test
+    fun `given payment not collectable, when success state, then upsell banner state set to null`() =
+        testBlocking {
+            // GIVEN & WHEN
+            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(false)
+            val orderId = 1L
+            val viewModel = initViewModel(Payment(orderId, ORDER))
+
+            // THEN
+            assertThat(viewModel.viewStateData.value).isEqualTo(
+                Success(
+                    orderTotal = ORDER_TOTAL,
+                    paymentUrl = PAYMENT_URL,
+                    isPaymentCollectableWithCardReader = false,
+                    upsellCardReaderBannerState = null
                 )
             )
         }

@@ -229,9 +229,9 @@ class OrderListFragment :
                 WooThemeWithBackground {
                     OrderListScreenBanner(
                         viewModel = viewModel,
-                        title = stringResource(id = R.string.card_reader_upsell_card_reader_banner_title),
-                        subtitle = stringResource(id = R.string.card_reader_upsell_card_reader_banner_description),
-                        ctaLabel = stringResource(id = R.string.card_reader_upsell_card_reader_banner_cta)
+                        title  = R.string.card_reader_upsell_card_reader_banner_title,
+                        subtitle  = R.string.card_reader_upsell_card_reader_banner_description,
+                        ctaLabel  = R.string.card_reader_upsell_card_reader_banner_cta
                     )
                 }
             }
