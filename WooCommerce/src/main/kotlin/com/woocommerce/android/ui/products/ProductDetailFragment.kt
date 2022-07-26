@@ -476,6 +476,7 @@ class ProductDetailFragment :
                             bannerType = PromoBannerType.LINKED_PRODUCTS,
                             onCtaClick = {
                                 WooAnimUtils.scaleOut(binding.promoComposableContainer)
+                                viewModel.onLinkedProductPromoClicked()
                             },
                             onDismissClick = {
                                 WooAnimUtils.scaleOut(binding.promoComposableContainer)

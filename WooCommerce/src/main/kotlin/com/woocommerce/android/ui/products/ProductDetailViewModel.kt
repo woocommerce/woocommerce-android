@@ -1627,6 +1627,10 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
+    fun onLinkedProductPromoClicked() {
+        triggerEvent(ProductNavigationTarget.ViewLinkedProducts(getRemoteProductId()))
+    }
+
     /**
      * Fetch the shipping class name of a product based on the remote shipping class id
      */
