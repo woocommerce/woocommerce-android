@@ -43,30 +43,31 @@ import com.woocommerce.android.ui.prefs.MainSettingsContract
 @Composable
 fun PaymentsScreenBanner(
     viewModel: SelectPaymentMethodViewModel,
+    title: String,
+    subtitle: String,
+    ctaLabel: String,
 ) {
     val selectPaymentState by viewModel.viewStateData.observeAsState(
         SelectPaymentMethodViewModel.TakePaymentViewState.Loading
     )
-    (selectPaymentState as? Success)?.upsellCardReaderBannerState?.let { banner ->
-        if (banner.shouldShowCardReaderUpsellBanner) {
-            Banner(
-                onCtaClick = viewModel::onCtaClicked,
-                onDismissClick = viewModel::onDismissClicked,
-                title = banner.title,
-                subtitle = banner.description,
-                ctaLabel = banner.ctaLabel,
-                source = AnalyticsTracker.KEY_BANNER_PAYMENTS
-            )
-        }
+    if ((selectPaymentState as? Success)?.shouldShowCardReaderUpsellBanner == true) {
+        Banner(
+            onCtaClick = viewModel::onCtaClicked,
+            onDismissClick = viewModel::onDismissClicked,
+            title = title,
+            subtitle = subtitle,
+            ctaLabel = ctaLabel,
+            source = AnalyticsTracker.KEY_BANNER_PAYMENTS
+        )
     }
 }
 
 @Composable
 fun OrderListScreenBanner(
     viewModel: OrderListViewModel,
-    title: Int,
-    subtitle: Int,
-    ctaLabel: Int,
+    title: String,
+    subtitle: String,
+    ctaLabel: String,
 ) {
     val isEligibleForInPersonPayments by viewModel.isEligibleForInPersonPayments.observeAsState(false)
 
@@ -88,9 +89,9 @@ fun OrderListScreenBanner(
 @Composable
 fun SettingsScreenBanner(
     presenter: MainSettingsContract.Presenter,
-    title: Int,
-    subtitle: Int,
-    ctaLabel: Int,
+    title: String,
+    subtitle: String,
+    ctaLabel: String,
 ) {
     val isEligibleForInPersonPayments by presenter.isEligibleForInPersonPayments.observeAsState(false)
     if (
@@ -112,9 +113,9 @@ fun SettingsScreenBanner(
 fun Banner(
     onCtaClick: (String) -> Unit,
     onDismissClick: () -> Unit,
-    title: Int,
-    subtitle: Int,
-    ctaLabel: Int,
+    title: String,
+    subtitle: String,
+    ctaLabel: String,
     source: String,
 ) {
     Card(
@@ -176,7 +177,7 @@ fun Banner(
                     )
                 }
                 Text(
-                    text = stringResource(id = title),
+                    text = title,
                     style = MaterialTheme.typography.subtitle1,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(
@@ -184,7 +185,7 @@ fun Banner(
                     )
                 )
                 Text(
-                    text = stringResource(id = subtitle),
+                    text = subtitle,
                     style = MaterialTheme.typography.subtitle1,
                     modifier = Modifier.padding(
                         bottom = dimensionResource(id = R.dimen.minor_100)
@@ -200,7 +201,7 @@ fun Banner(
                     onClick = { onCtaClick(source) }
                 ) {
                     Text(
-                        text = stringResource(id = ctaLabel),
+                        text = ctaLabel,
                         color = colorResource(id = R.color.color_secondary),
                         style = MaterialTheme.typography.subtitle1,
                         fontWeight = FontWeight.Bold,
@@ -226,9 +227,9 @@ fun PaymentScreenBannerPreview() {
         Banner(
             onCtaClick = {},
             onDismissClick = {},
-            title = R.string.card_reader_upsell_card_reader_banner_title,
-            subtitle = R.string.card_reader_upsell_card_reader_banner_description,
-            ctaLabel = R.string.card_reader_upsell_card_reader_banner_cta,
+            title = stringResource(id = R.string.card_reader_upsell_card_reader_banner_title),
+            subtitle = stringResource(id = R.string.card_reader_upsell_card_reader_banner_description),
+            ctaLabel = stringResource(id = R.string.card_reader_upsell_card_reader_banner_cta),
             source = AnalyticsTracker.KEY_BANNER_PAYMENTS
         )
     }

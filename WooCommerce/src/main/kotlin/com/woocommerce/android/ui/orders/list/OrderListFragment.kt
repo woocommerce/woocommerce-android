@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
 import androidx.core.view.ViewGroupCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
@@ -75,12 +76,9 @@ class OrderListFragment :
         const val FILTER_CHANGE_NOTICE_KEY = "filters_changed_notice"
     }
 
-    @Inject
-    internal lateinit var uiMessageResolver: UIMessageResolver
-    @Inject
-    internal lateinit var selectedSite: SelectedSite
-    @Inject
-    internal lateinit var currencyFormatter: CurrencyFormatter
+    @Inject internal lateinit var uiMessageResolver: UIMessageResolver
+    @Inject internal lateinit var selectedSite: SelectedSite
+    @Inject internal lateinit var currencyFormatter: CurrencyFormatter
 
     private val viewModel: OrderListViewModel by viewModels()
 
@@ -231,9 +229,9 @@ class OrderListFragment :
                 WooThemeWithBackground {
                     OrderListScreenBanner(
                         viewModel = viewModel,
-                        title = R.string.card_reader_upsell_card_reader_banner_title,
-                        subtitle = R.string.card_reader_upsell_card_reader_banner_description,
-                        ctaLabel = R.string.card_reader_upsell_card_reader_banner_cta
+                        title = stringResource(id = R.string.card_reader_upsell_card_reader_banner_title),
+                        subtitle = stringResource(id = R.string.card_reader_upsell_card_reader_banner_description),
+                        ctaLabel = stringResource(id = R.string.card_reader_upsell_card_reader_banner_cta)
                     )
                 }
             }

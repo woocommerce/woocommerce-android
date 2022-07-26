@@ -86,9 +86,14 @@ class SelectPaymentMethodViewModel @Inject constructor(
                             paymentUrl = order.paymentUrl,
                             orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode),
                             isPaymentCollectableWithCardReader = isPaymentCollectableWithCardReader,
-                            upsellCardReaderBannerState = getUpsellCardReaderBannerState(
-                                isPaymentCollectableWithCardReader
-                            )
+                            shouldShowCardReaderUpsellBanner =
+                            (
+                                canShowCardReaderUpsellBanner(
+                                    System.currentTimeMillis(),
+                                    AnalyticsTracker.KEY_BANNER_PAYMENTS
+                                ) &&
+                                    isPaymentCollectableWithCardReader
+                                )
                         )
                     }
                     is Refund -> triggerEvent(NavigateToCardReaderRefundFlow(param))
@@ -96,22 +101,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
             }
         }.exhaustive
     }
-
-    private fun getUpsellCardReaderBannerState(isPaymentCollectableWithCardReader: Boolean) =
-        if (isPaymentCollectableWithCardReader) {
-            UpsellCardReaderBanner(
-                shouldShowCardReaderUpsellBanner =
-                (
-                    canShowCardReaderUpsellBanner(
-                        System.currentTimeMillis(),
-                        AnalyticsTracker.KEY_BANNER_PAYMENTS
-                    ) &&
-                        isPaymentCollectableWithCardReader
-                    )
-            )
-        } else {
-            null
-        }
 
     fun onCashPaymentClicked() {
         analyticsTrackerWrapper.track(
@@ -322,16 +311,9 @@ class SelectPaymentMethodViewModel @Inject constructor(
             val paymentUrl: String,
             val orderTotal: String,
             val isPaymentCollectableWithCardReader: Boolean,
-            val upsellCardReaderBannerState: UpsellCardReaderBanner? = null
+            val shouldShowCardReaderUpsellBanner: Boolean
         ) : TakePaymentViewState()
     }
-
-    data class UpsellCardReaderBanner(
-        val title: Int = R.string.card_reader_upsell_card_reader_banner_title,
-        val description: Int = R.string.card_reader_upsell_card_reader_banner_description,
-        val ctaLabel: Int = R.string.card_reader_upsell_card_reader_banner_cta,
-        val shouldShowCardReaderUpsellBanner: Boolean,
-    )
 
     object DismissCardReaderUpsellBanner : MultiLiveEvent.Event()
     object DismissCardReaderUpsellBannerViaRemindMeLater : MultiLiveEvent.Event()
