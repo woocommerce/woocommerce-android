@@ -58,10 +58,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
-import com.woocommerce.android.ui.moremenu.MenuButtonType.COUPONS
-import com.woocommerce.android.ui.moremenu.MenuButtonType.PRODUCT_REVIEWS
-import com.woocommerce.android.ui.moremenu.MenuButtonType.VIEW_ADMIN
-import com.woocommerce.android.ui.moremenu.MenuButtonType.VIEW_STORE
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuViewState
 
 @ExperimentalFoundationApi
@@ -319,10 +315,10 @@ fun MoreMenuBadge(badgeCount: Int) {
 private fun MoreMenuPreview() {
     val state = MoreMenuViewState(
         moreMenuItems = listOf(
-            MenuUiButton(VIEW_ADMIN, string.more_menu_button_woo_admin, drawable.ic_more_menu_wp_admin),
-            MenuUiButton(VIEW_STORE, string.more_menu_button_store, drawable.ic_more_menu_store),
-            MenuUiButton(COUPONS, string.more_menu_button_coupons, drawable.ic_more_menu_coupons),
-            MenuUiButton(PRODUCT_REVIEWS, string.more_menu_button_reviews, drawable.ic_more_menu_reviews, 3)
+            MenuUiButton(string.more_menu_button_woo_admin, drawable.ic_more_menu_wp_admin),
+            MenuUiButton(string.more_menu_button_store, drawable.ic_more_menu_store),
+            MenuUiButton(string.more_menu_button_coupons, drawable.ic_more_menu_coupons),
+            MenuUiButton(string.more_menu_button_reviews, drawable.ic_more_menu_reviews, 3)
         ),
         siteName = "Example Site",
         siteUrl = "woocommerce.com",
