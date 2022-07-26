@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Card
-import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -35,18 +34,10 @@ fun PromoBanner(
     onDismissClick: () -> Unit,
     source: String
 ) {
+    // TODO nbradbury AppPrefs.setPromoBannerShown(bannerType, true)
     Card(
         modifier = Modifier.fillMaxWidth()
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            Divider(
-                color = colorResource(id = R.color.divider_color),
-                thickness = dimensionResource(id = R.dimen.minor_10)
-            )
-        }
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End
@@ -96,7 +87,9 @@ fun PromoBanner(
                             bottom = dimensionResource(id = R.dimen.minor_100),
                         ),
                     contentPadding = PaddingValues(start = dimensionResource(id = R.dimen.minor_00)),
-                    onClick = { onCtaClick(source) }
+                    onClick = {
+                        onCtaClick(source)
+                    }
                 ) {
                     Text(
                         text = stringResource(id = R.string.try_it_now),

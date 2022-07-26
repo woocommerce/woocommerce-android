@@ -1607,7 +1607,7 @@ class ProductDetailViewModel @Inject constructor(
      * Show the upsell/cross-sell promo if it hasn't already been shown
      */
     private fun checkLinkedProductPromo() {
-        if (prefs.hasPromoBannerShown(PromoBannerType.LINKED_PRODUCTS).not()) {
+        if (prefs.isPromoBannerShown(PromoBannerType.LINKED_PRODUCTS).not()) {
             triggerEvent(ShowLinkedProductPromoBanner)
         }
     }

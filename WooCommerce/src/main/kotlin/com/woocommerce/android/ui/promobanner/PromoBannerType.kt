@@ -8,7 +8,7 @@ enum class PromoBannerType(
     @StringRes val messageRes: Int
 ) {
     LINKED_PRODUCTS(
-        R.string.product_detail_linked_products,
-        R.string.product_detail_linked_products
+        R.string.promo_linked_products_banner_title,
+        R.string.promo_linked_products_banner_message
     )
 }

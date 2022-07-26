@@ -360,7 +360,7 @@ object AppPrefs {
     private fun getPromoBannerKey(bannerType: PromoBannerType) =
         PrefKeyString("PROMO_BANNER_SHOWN_${bannerType.name}")
 
-    fun hasPromoBannerShown(bannerType: PromoBannerType): Boolean {
+    fun isPromoBannerShown(bannerType: PromoBannerType): Boolean {
         return getBoolean(getPromoBannerKey(bannerType), false)
     }
 
