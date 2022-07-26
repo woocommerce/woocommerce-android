@@ -67,6 +67,12 @@ class MoreMenuFragment : TopLevelFragment() {
         setupObservers()
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        viewModel.onViewResumed()
+    }
+
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {

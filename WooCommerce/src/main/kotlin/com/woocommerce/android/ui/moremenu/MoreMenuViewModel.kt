@@ -35,8 +35,10 @@ class MoreMenuViewModel @Inject constructor(
     accountStore: AccountStore,
     private val selectedSite: SelectedSite,
     private val moreMenuRepository: MoreMenuRepository,
+    private val moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     unseenReviewsCountHandler: UnseenReviewsCountHandler
 ) : ScopedViewModel(savedState) {
+
     val moreMenuViewState =
         combine(
             unseenReviewsCountHandler.observeUnseenCount(),
@@ -50,6 +52,10 @@ class MoreMenuViewModel @Inject constructor(
                 userAvatarUrl = accountStore.account.avatarUrl
             )
         }.asLiveData()
+
+    fun onViewResumed() {
+        moreMenuNewFeatureHandler.markNewFeatureAsSeen()
+    }
 
     private suspend fun generateMenuButtons(unseenReviewsCount: Int, isCouponsEnabled: Boolean): List<MenuUiButton> =
         listOf(

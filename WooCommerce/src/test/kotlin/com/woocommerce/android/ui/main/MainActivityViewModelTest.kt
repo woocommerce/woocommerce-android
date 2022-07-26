@@ -25,7 +25,7 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
 import com.woocommerce.android.ui.moremenu.MoreMenuNewFeature.Payments
-import com.woocommerce.android.ui.moremenu.MoreMenuNewFeatureProvider
+import com.woocommerce.android.ui.moremenu.MoreMenuNewFeatureHandler
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -105,7 +105,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
     private val featureAnnouncementRepository: FeatureAnnouncementRepository = mock()
     private val buildConfigWrapper: BuildConfigWrapper = mock()
     private val prefs: AppPrefs = mock()
-    private val moreMenuNewFeatureProvider: MoreMenuNewFeatureProvider = mock()
+    private val moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler = mock()
     private val unseenReviewsCountHandler: UnseenReviewsCountHandler = mock {
         on { observeUnseenCount() } doReturn MutableStateFlow(1)
     }
@@ -370,7 +370,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(unseenReviewsCountHandler.observeUnseenCount()).thenReturn(flowOf(0))
-            whenever(moreMenuNewFeatureProvider.provideNewFeatures()).thenReturn(emptyList())
+            whenever(moreMenuNewFeatureHandler.provideNewUnseenFeatures()).thenReturn(emptyList())
             createViewModel()
 
             // WHEN
@@ -385,7 +385,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(unseenReviewsCountHandler.observeUnseenCount()).thenReturn(flowOf(1))
-            whenever(moreMenuNewFeatureProvider.provideNewFeatures()).thenReturn(emptyList())
+            whenever(moreMenuNewFeatureHandler.provideNewUnseenFeatures()).thenReturn(emptyList())
             createViewModel()
 
             // WHEN
@@ -400,7 +400,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(unseenReviewsCountHandler.observeUnseenCount()).thenReturn(flowOf(1))
-            whenever(moreMenuNewFeatureProvider.provideNewFeatures()).thenReturn(listOf(Payments))
+            whenever(moreMenuNewFeatureHandler.provideNewUnseenFeatures()).thenReturn(listOf(Payments))
             createViewModel()
 
             // WHEN
@@ -421,7 +421,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
                 buildConfigWrapper,
                 prefs,
                 analyticsTrackerWrapper,
-                moreMenuNewFeatureProvider,
+                moreMenuNewFeatureHandler,
                 unseenReviewsCountHandler,
             )
         )

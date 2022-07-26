@@ -141,6 +141,8 @@ object AppPrefs {
 
         // Hide banner in order detail to install WC Shipping plugin
         WC_SHIPPING_BANNER_DISMISSED,
+
+        USER_SEEN_NEW_FEATURE_MORE_SCREEN,
     }
 
     fun init(context: Context) {
@@ -692,6 +694,13 @@ object AppPrefs {
 
     fun isPreLoginNotificationBeenDisplayed(): Boolean =
         getBoolean(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_DISPLAYED, false)
+
+    fun isUserSeenNewFeatureOnMoreScreen(): Boolean =
+        getBoolean(UndeletablePrefKey.USER_SEEN_NEW_FEATURE_MORE_SCREEN, false)
+
+    fun setUserSeenNewFeatureOnMoreScreen() {
+        setBoolean(UndeletablePrefKey.USER_SEEN_NEW_FEATURE_MORE_SCREEN, true)
+    }
 
     /**
      * Remove all user and site-related preferences.
