@@ -38,7 +38,6 @@ class MoreMenuViewModel @Inject constructor(
     private val moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     unseenReviewsCountHandler: UnseenReviewsCountHandler
 ) : ScopedViewModel(savedState) {
-
     val moreMenuViewState =
         combine(
             unseenReviewsCountHandler.observeUnseenCount(),
