@@ -24,6 +24,7 @@ import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewI
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewPayments
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewReviewsEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewStoreEvent
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -90,6 +91,9 @@ class MoreMenuFragment : TopLevelFragment() {
     }
 
     private fun navigateToPayments() {
+        findNavController().navigateSafely(
+            MoreMenuFragmentDirections.actionMoreMenuToPaymentFlow(CardReaderFlowParam.CardReadersHub)
+        )
     }
 
     private fun navigateToSettings() {
