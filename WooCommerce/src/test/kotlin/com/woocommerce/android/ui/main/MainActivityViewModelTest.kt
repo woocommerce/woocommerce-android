@@ -370,7 +370,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(unseenReviewsCountHandler.observeUnseenCount()).thenReturn(flowOf(0))
-            whenever(moreMenuNewFeatureHandler.provideNewUnseenFeatures()).thenReturn(emptyList())
+            whenever(moreMenuNewFeatureHandler.moreMenuNewFeaturesAvailable).thenReturn(MutableStateFlow(emptyList()))
             createViewModel()
 
             // WHEN
@@ -385,7 +385,9 @@ class MainActivityViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(unseenReviewsCountHandler.observeUnseenCount()).thenReturn(flowOf(1))
-            whenever(moreMenuNewFeatureHandler.provideNewUnseenFeatures()).thenReturn(emptyList())
+            whenever(moreMenuNewFeatureHandler.moreMenuNewFeaturesAvailable).thenReturn(
+                MutableStateFlow(emptyList())
+            )
             createViewModel()
 
             // WHEN
@@ -400,7 +402,9 @@ class MainActivityViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(unseenReviewsCountHandler.observeUnseenCount()).thenReturn(flowOf(1))
-            whenever(moreMenuNewFeatureHandler.provideNewUnseenFeatures()).thenReturn(listOf(Payments))
+            whenever(moreMenuNewFeatureHandler.moreMenuNewFeaturesAvailable).thenReturn(
+                MutableStateFlow(listOf(Payments))
+            )
             createViewModel()
 
             // WHEN

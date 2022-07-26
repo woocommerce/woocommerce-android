@@ -13,6 +13,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
@@ -40,6 +41,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             avatarUrl = "avatar"
         }
     }
+    private val moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler = mock()
 
     private lateinit var viewModel: MoreMenuViewModel
 
@@ -50,7 +52,8 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             accountStore = accountStore,
             selectedSite = selectedSite,
             moreMenuRepository = moreMenuRepository,
-            unseenReviewsCountHandler = unseenReviewsCountHandler
+            moreMenuNewFeatureHandler = moreMenuNewFeatureHandler,
+            unseenReviewsCountHandler = unseenReviewsCountHandler,
         )
     }
 
@@ -66,5 +69,15 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         prefsChanges.emit(true)
 
         assertThat(states.size).isEqualTo(2)
+    }
+
+    @Test
+    fun `when on view resumed, then new feature handler marks new feature as seen`() = testBlocking {
+        // WHEN
+        setup { }
+        viewModel.onViewResumed()
+
+        // THEN
+        verify(moreMenuNewFeatureHandler).markNewFeatureAsSeen()
     }
 }
